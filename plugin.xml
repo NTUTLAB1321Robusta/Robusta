@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="RL Exception Handling Tools"
+            id="RLEHT">
+      </category>
+      <view
+            name="≡ RL Method ≡"
+            icon="icons/showwarn_tsk.gif"
+            category="RLEHT"
+            class="ntut.csie.rleht.views.RLMethodView"
+            id="ntut.csie.rleht.views.RLView">
+      </view>
+      <view
+            class="ntut.csie.rleht.caller.CallersView"
+            id="ntut.csie.rleht.caller.CallersView"
+            name="≡ RL Call Hierarchy ≡"
+            icon="icons/showwarn_tsk.gif"
+            category="RLEHT"
+            />
+   </extension>
+   
+   <extension
+         id="ntut.csie.rleht.RLPerspective"
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.ui.resourcePerspective">
+         <view
+               closeable="true"
+               id="rleht.views.RLView"
+               moveable="true"
+               ratio="0.5"
+               relationship="right"
+               relative="org.eclipse.ui.views.TaskList"
+               visible="true">
+         </view>
+      </perspectiveExtension>
+   </extension>
+   
+   <extension
+         id="ntut.csie.rleht.builder.RLBuilder"
+         name="RLMethodBuilder"
+         point="org.eclipse.core.resources.builders">
+      <builder hasNature="true">
+         <run class="ntut.csie.rleht.builder.RLBuilder"/>
+      </builder>
+   </extension>
+   
+   <extension
+         id="ntut.csie.rleht.builder.RLNature"
+         name="RLNature"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run class="ntut.csie.rleht.builder.RLNature"/>
+      </runtime>
+      <builder id="ntut.csie.rleht.builder.RLBuilder"/>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            adaptable="true"
+            id="RLEHT.contribution1"
+            nameFilter="*"
+            objectClass="org.eclipse.core.resources.IProject">
+         <action
+               class="ntut.csie.rleht.builder.ToggleNatureAction"
+               enablesFor="+"
+               id="RLEHT.addRemoveNatureAction"
+               label="≡ Add/Remove RL Builder ≡"
+               menubarPath="additions"/>
+      </objectContribution>
+      
+      <viewerContribution
+            targetID="#CompilationUnitEditorContext"
+            id="ntut.csie.rleht.caller.popup.editor">
+         <action
+               label="≡ RL Call Hierarchy ≡"
+               class="ntut.csie.rleht.caller.CallersEditorAction"
+               menubarPath="additions"
+               id="ntut.csie.rleht.caller.updatepopupaction">
+         </action>
+      </viewerContribution>
+      <objectContribution
+            objectClass="org.eclipse.jdt.core.IMethod"
+            id="ntut.csie.rleht.caller.explorers">
+         <action
+               label="≡ RL Call Hierarchy ≡"
+               class="ntut.csie.rleht.caller.CallersEditorAction"
+               menubarPath="additions"
+               enablesFor="1"
+               id="ntut.csie.rleht.caller.explorer">
+         </action>
+      </objectContribution>
+   </extension>
+   
+   <extension
+         id="ntut.csie.rleht.builder.RLProblem"
+         name="RLProblem"
+         point="org.eclipse.core.resources.markers">
+      <super type="org.eclipse.core.resources.problemmarker"/>
+      <persistent value="true"/>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.ide.markerResolution">
+      <markerResolutionGenerator
+            class="ntut.csie.rleht.builder.RLQuickFixer"
+            markerType="ntut.csie.rleht.builder.RLProblem"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="ntut.csie.rleht.preferences.PreferencePage"
+            id="ntut.csie.rleht.preferences.PreferencePage"
+            name="RLEHT設定">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="ntut.csie.rleht.preferences.PreferenceInitializer">
+      </initializer>
+   </extension>
+   
+
+</plugin>
