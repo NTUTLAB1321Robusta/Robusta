@@ -11,7 +11,6 @@ import java.util.Stack;
 import net.java.amateras.uml.sequencediagram.model.InstanceModel;
 import net.java.amateras.uml.sequencediagram.model.MessageModel;
 import net.java.amateras.uml.sequencediagram.model.RLSequenceModelBuilder;
-import net.java.amateras.uml.sequencediagram.model.ReturnMessageModel;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;

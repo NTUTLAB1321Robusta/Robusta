@@ -32,5 +32,6 @@ Require-Bundle: org.eclipse.ui,
  net.java.amateras.umleditor,
  net.java.amateras.umleditor.java,
  net.java.amateras.xstream,
- org.eclipse.draw2d
+ org.eclipse.draw2d,
+ org.eclipse.gef
 Eclipse-LazyStart: true

@@ -1,7 +1,10 @@
 package ntut.csie.rleht.caller;
 
+import net.java.amateras.uml.action.SaveAsImageAction;
+import net.java.amateras.uml.sequencediagram.SequenceDiagramEditor;
 import ntut.csie.rleht.common.ImageManager;
 
+import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
@@ -9,6 +12,8 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +38,12 @@ public class CallersViewAction extends ActionGroup {
 	private ChangeCallerTypeAction showCallerInfoAction;
 
 	private ChangeCallerTypeAction showCalleeInfoAction;
+	
+	//列印產生的Sequence Diagram的動作
+	private PrintSDAction printSDAction; 
+	
+	//將產生的Sequence Diagram存檔的動作
+//	private SaveSDAction saveSDAction;
 
 	public CallersViewAction(CallersView view) {
 		this.view = view;
@@ -52,8 +63,11 @@ public class CallersViewAction extends ActionGroup {
 		this.genSeqDiagramSelectedAction = new GenSeqDiagramSelectedAction();
 		this.showCallerInfoAction = new ChangeCallerTypeAction(TYPE_CALL_UP, TYPE_CALL_UP, ImageManager.getInstance().getDescriptor("CallUp"), this.getView().isShowCallerType());
 		this.showCalleeInfoAction = new ChangeCallerTypeAction(TYPE_CALL_DOWN, TYPE_CALL_DOWN, ImageManager.getInstance().getDescriptor("CallDown"), !this.getView().isShowCallerType());
+		
+		this.printSDAction = new PrintSDAction();
+//		this.saveSDAction = new SaveSDAction();
 	}
-
+	
 	private class RefreshAction extends Action {
 		public RefreshAction() {
 			super("&Refresh@F5", ImageManager.getInstance().getDescriptor("refresh"));
@@ -69,6 +83,47 @@ public class CallersViewAction extends ActionGroup {
 		}
 	}
 
+	/**
+	 * 將產生的Sequence Diagram儲存下來
+	 */
+//	private class SaveSDAction extends Action{
+//		public SaveSDAction(){
+//			super("儲存循序圖",ImageManager.getInstance().getDescriptor("save_sd"));
+//			setToolTipText("儲存循序圖");
+//			
+//		}
+//		
+//		public void run(){
+//			//GraphicalViewer view = (GraphicalViewer) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+//			//取得當前的Active Viewer
+//			IWorkbenchPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+//			if(editor instanceof SequenceDiagramEditor){
+//				//getView().saveSequenceDiagram(editor);
+//				SaveAsImageAction action = new SaveAsImageAction((GraphicalViewer)editor);
+//				action.run();
+//			}
+//		}
+//	}
+	
+	/**
+	 * print the Sequence Diagram 
+	 */
+	private class PrintSDAction extends Action{
+		public PrintSDAction(){
+			super("列印循序圖",ImageManager.getInstance().getDescriptor("print_sd"));
+			setToolTipText("列印循序圖");
+			
+		}
+		
+		public void run(){				
+			IWorkbenchPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();			
+			if(editor instanceof SequenceDiagramEditor){
+				getView().printSequenceDiagram(editor);
+				
+			}
+		}
+	}
+	
 	private class AddRLAnnotationAction extends Action {
 		public AddRLAnnotationAction() {
 			super("新增所有勾選項目的RL Annotation", ImageManager.getInstance().getDescriptor("annotation"));
@@ -85,9 +140,7 @@ public class CallersViewAction extends ActionGroup {
 
 	/**
 	 * 清除所勾選的項目
-	 * 
 	 * @author chenyf
-	 * 
 	 */
 	private class GenSeqDiagramSelectedAction extends Action {
 		public GenSeqDiagramSelectedAction() {
@@ -140,9 +193,11 @@ public class CallersViewAction extends ActionGroup {
 		toolBar.add(showCalleeInfoAction);
 
 		toolBar.add(refreshAction);
-
+		
 		toolBar.add(genSeqDiagramSelectedAction);
-
+		toolBar.add(printSDAction);
+		//toolBar.add(saveSDAction);
+		
 		if (showAddRLAnnotation) {
 			toolBar.add(addRLAnnotationAction);
 		}
@@ -155,6 +210,8 @@ public class CallersViewAction extends ActionGroup {
 
 		menu.add(refreshAction);
 		menu.add(genSeqDiagramSelectedAction);
+		menu.add(printSDAction);
+		//menu.add(saveSDAction);
 
 		menu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 		if (showAddRLAnnotation) {
@@ -168,6 +225,8 @@ public class CallersViewAction extends ActionGroup {
 		menuMgr.appendToGroup(CallersViewAction.MENU_GROUP_ID, this.showCalleeInfoAction);
 
 		menuMgr.appendToGroup(CallersViewAction.MENU_GROUP_ID, this.refreshAction);
+		menuMgr.appendToGroup(CallersViewAction.MENU_GROUP_ID, this.printSDAction);
+		//menuMgr.appendToGroup(CallersViewAction.MENU_GROUP_ID, this.saveSDAction);
 		menuMgr.appendToGroup(CallersViewAction.MENU_GROUP_ID, new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 		menuMgr.appendToGroup(CallersViewAction.MENU_GROUP_ID, this.addRLAnnotationAction);
 		super.fillContextMenu(menuMgr);

@@ -1,9 +1,12 @@
 package ntut.csie.rleht.caller;
 
+import net.java.amateras.uml.action.SaveAsImageAction;
 import ntut.csie.rleht.RLEHTPlugin;
 import ntut.csie.rleht.common.ConsoleLog;
 import ntut.csie.rleht.common.RLUtils;
 
+import org.eclipse.gef.GraphicalViewer;
+import org.eclipse.gef.ui.actions.PrintAction;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
@@ -39,6 +42,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.actions.ActionContext;
 import org.eclipse.ui.part.ViewPart;
@@ -478,6 +482,20 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 
 	}
 
+	/**
+	 * 利用GEF列印產生出來的循序圖
+	 * @param editor
+	 */
+	public void printSequenceDiagram(IWorkbenchPart editor){		
+		PrintAction printAction = new PrintAction(editor);
+		printAction.run();
+	}
+	
+	public void saveSequenceDiagram(IWorkbenchPart editor){
+		SaveAsImageAction saveSDAction = new SaveAsImageAction((GraphicalViewer)editor);
+		saveSDAction.run();
+	}
+	
 	public void handleChangeShowView() {
 		this.updateView(this.lastMethod);
 	}
