@@ -21,7 +21,11 @@ public class CallersContentProvider implements ITreeContentProvider {
 			if (parentElement != null) {
 				MethodWrapper wrapper = (MethodWrapper) parentElement;
 				wrappers = wrapper.getCalls(new NullProgressMonitor());
-				wrappers = CallersUtils.sortCallers(wrappers);
+				//TODO 目前不清楚為什麼要排序,等問學長之後再看怎麼樣
+				//wrappers = CallersUtils.sortCallers(wrappers);
+				for(int i=0;i<wrappers.length;i++){
+					System.out.println("*****Wrappers******"+wrappers[i].getName());
+				}
 			}
 			return wrappers;
 		}

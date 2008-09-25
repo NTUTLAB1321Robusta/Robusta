@@ -18,6 +18,7 @@ public class CallersEditorAction implements IEditorActionDelegate {
 
 	public void run(IAction action) {
 		try {
+			System.out.println("=====Start To Call Hierarchy=====");
 			IWorkbenchPage workbenchPage = editor.getSite().getPage();
 			CallersView callersView = (CallersView) workbenchPage.showView(CallersView.ID);
 			callersView.handleSelectionChanged4Editor();

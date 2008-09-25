@@ -225,8 +225,9 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 						// return;
 						// }
 						// lastMethodName = method.toString();
+						//取得使用者所選擇要Call Hierarchy的method
 						lastMethod = method;
-
+						
 						this.updateView(method);
 					}
 				}
@@ -242,12 +243,15 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 
 	protected void updateView(IMethod method) {
 		if (method != null) {
+			//依據showCaller來決定是往上或往下做Call Hierarchy
 			MethodWrapper mw = showCaller ? new CallHierarchy().getCallerRoot(method) : new CallHierarchy().getCalleeRoot(method);
-
+			System.out.println("=====showCaller====="+showCaller);
+			System.out.println("=====MW====="+mw.getName());
+			//不論是由上往下或由下往上的Call Hierarchy最多都先只展開兩層而已
+			//防止memory一次用太多,容易memory leak
 			int expand = showCaller ? 2 : 2;
 
 			CallersRoot root = new CallersRoot(mw);
-
 			treeviewer.setInput(root);
 			if (root != null) {
 				treeviewer.expandToLevel(expand);
@@ -270,12 +274,15 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 			}
 
 			try {
+				System.out.println("=====CU====="+cu.getElementName());
 				IType[] types = cu.getAllTypes();
 				for (int i = 0, size = types.length; i < size; i++) {
 					IType type = types[i];
+					System.out.println("=====Type"+i+"====="+type.getElementName());
 					IMethod[] methods = type.getMethods();
-
+					
 					for (int j = 0; j < methods.length; j++) {
+						System.out.println("=====Method"+j+"====="+methods[j].getElementName());
 						if (isWithinMethodRange(offset, methods[j])) {
 							return methods[j];
 						}

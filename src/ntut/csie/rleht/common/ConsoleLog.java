@@ -3,8 +3,6 @@ package ntut.csie.rleht.common;
 import ntut.csie.rleht.RLEHTPlugin;
 import ntut.csie.rleht.caller.CallersLabelProvider;
 
-import org.eclipse.ui.console.ConsolePlugin;
-import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
 import org.slf4j.Logger;

@@ -38,13 +38,11 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 
 	@Override
 	public boolean performOk() {
-		// TODO Auto-generated method stub
 		return super.performOk();
 	}
 
 	@Override
 	public void propertyChange(PropertyChangeEvent event) {
-		// TODO Auto-generated method stub
 		super.propertyChange(event);
 	}
 

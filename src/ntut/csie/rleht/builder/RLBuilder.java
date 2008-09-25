@@ -40,8 +40,16 @@ public class RLBuilder extends IncrementalProjectBuilder {
 
 	private void addMarker(IFile file, String message, int lineNumber, int severity, String mtype, RLMessage msg,
 			int msgIdx, int methodIdx) {
-
+		
 		logger.debug("[RLBuilder][addMarker] START! ");
+//		System.out.println("=======IFile======="+file.getName());
+//		System.out.println("=======message======="+message);
+//		System.out.println("=======lineNumber======="+String.valueOf(lineNumber));
+//		System.out.println("=======severity======="+String.valueOf(severity));
+//		System.out.println("=======mtype======="+mtype);
+//		System.out.println("=======msg======="+msg.);
+//		System.out.println("=======msgIdx======="+msgIdx);
+//		System.out.println("=======methodIdx======="+methodIdx);
 		try {
 			IMarker marker = file.createMarker(MARKER_TYPE);
 			marker.setAttribute(IMarker.MESSAGE, message);
@@ -66,7 +74,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	}
 
 	/*
-	 * (non-Javadoc)
+	 * (non-Javadoc)每次有build的時候,都會invoke這個method
 	 * 
 	 * @see org.eclipse.core.internal.events.InternalBuilder#build(int,
 	 *      java.util.Map, org.eclipse.core.runtime.IProgressMonitor)
@@ -108,6 +116,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				CompilationUnit root = (CompilationUnit) parser.createAST(null);
 				ASTMethodCollector methodCollector = new ASTMethodCollector();
 				root.accept(methodCollector);
+				//取得專案中所有的method
 				List<ASTNode> methodList = methodCollector.getMethodList();
 
 				ExceptionAnalyzer visitor = null;
@@ -133,7 +142,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 						RLChecker checker = new RLChecker();
 						currentMethodExList = checker.check(visitor);
 					}
-
+					
 					// 檢查@RL是否存在(丟出的例外是否被註記)
 					int msgIdx = -1;
 					for (RLMessage msg : currentMethodExList) {
