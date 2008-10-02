@@ -3,6 +3,7 @@ package ntut.csie.rleht.builder;
 import java.util.List;
 import java.util.Map;
 
+import ntut.csie.csdet.data.CSMessage;
 import ntut.csie.rleht.common.ASTHandler;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLChecker;
@@ -33,23 +34,18 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	private static Logger logger = LoggerFactory.getLogger(RLBuilder.class);
 	
 	public static final String BUILDER_ID = "ntut.csie.rleht.builder.RLBuilder";
-
+	
+	//延伸problem view好讓自己的marker可以加進去view中
 	public static final String MARKER_TYPE = "ntut.csie.rleht.builder.RLProblem";
 
-	// private SAXParserFactory parserFactory;
-
+	/**
+	 * 將相關例外資訊貼上marker
+	 */
 	private void addMarker(IFile file, String message, int lineNumber, int severity, String mtype, RLMessage msg,
 			int msgIdx, int methodIdx) {
 		
 		logger.debug("[RLBuilder][addMarker] START! ");
-//		System.out.println("=======IFile======="+file.getName());
-//		System.out.println("=======message======="+message);
-//		System.out.println("=======lineNumber======="+String.valueOf(lineNumber));
-//		System.out.println("=======severity======="+String.valueOf(severity));
-//		System.out.println("=======mtype======="+mtype);
-//		System.out.println("=======msg======="+msg.);
-//		System.out.println("=======msgIdx======="+msgIdx);
-//		System.out.println("=======methodIdx======="+methodIdx);
+
 		try {
 			IMarker marker = file.createMarker(MARKER_TYPE);
 			marker.setAttribute(IMarker.MESSAGE, message);
@@ -73,6 +69,35 @@ public class RLBuilder extends IncrementalProjectBuilder {
 		logger.debug("[RLBuilder][addMarker] END ! ");
 	}
 
+	/**
+	 * 加code smell type的marker到problem view 中
+	 */
+	private void addMarker(IFile file, String message, int lineNumber, int severity, String mtype, CSMessage msg,
+			int msgIdx, int methodIdx) {
+		logger.debug("[RLBuilder][addCSMarker] START! ");
+		IMarker marker;
+		try {
+			marker = file.createMarker(MARKER_TYPE);
+			marker.setAttribute(IMarker.MESSAGE, message);
+			marker.setAttribute(IMarker.SEVERITY, severity);
+			if (lineNumber == -1) {
+				lineNumber = 1;
+			}
+			
+			marker.setAttribute(IMarker.LINE_NUMBER, lineNumber);
+			//marker type =  code smell type
+			marker.setAttribute(RLMarkerAttribute.RL_MARKER_TYPE, mtype);
+			marker.setAttribute(RLMarkerAttribute.RL_INFO_SRC_POS, String.valueOf(msg.getPosition()));
+			marker.setAttribute(RLMarkerAttribute.RL_METHOD_INDEX, String.valueOf(methodIdx));
+			marker.setAttribute(RLMarkerAttribute.RL_MSG_INDEX, String.valueOf(msgIdx));
+			
+		} catch (CoreException e) {
+			logger.error("[addCSMarker] EXCEPTION ",e);
+		}
+		logger.debug("[RLBuilder][addCSMarker] END ! ");
+	
+	}
+	
 	/*
 	 * (non-Javadoc)每次有build的時候,都會invoke這個method
 	 * 
@@ -95,6 +120,10 @@ public class RLBuilder extends IncrementalProjectBuilder {
 		return null;
 	}
 
+	/**
+	 * 進行fullBuild or inrementalBuild時,都會去呼叫這個method
+	 * @param resource
+	 */
 	void checkRLAnnotation(IResource resource) {
 		if (resource instanceof IFile && resource.getName().endsWith(".java")) {
 
@@ -126,6 +155,11 @@ public class RLBuilder extends IncrementalProjectBuilder {
 
 				// 目前method的RL Annotation資訊
 				List<RLMessage> currentMethodRLList = null;
+				
+				// 目前method的有ignore Ex的資訊
+//				List<RLMessage> ignoreExList = null;
+				List<CSMessage> ignoreExList = null;
+	
 
 				// 目前的Method AST Node
 				ASTNode currentMethodNode = null;
@@ -138,10 +172,23 @@ public class RLBuilder extends IncrementalProjectBuilder {
 					currentMethodNode = visitor.getCurrentMethodNode();
 					currentMethodRLList = visitor.getMethodRLAnnotationList();
 
+					// 將ignore exception的code smell貼上marker並加到problem view中
+					ignoreExList = visitor.getIgnoreExList();
+					int csIdx = -1;
+					if(ignoreExList != null){
+						csIdx++;
+						for(CSMessage msg : ignoreExList){
+							String errmsg = "Code Smell Type:["+ msg.getCodeSmellType() + "]未處理!!!";
+							this.addMarker(file, errmsg, msg.getLineNumber(), IMarker.SEVERITY_WARNING,
+									msg.getCodeSmellType(), msg, csIdx, methodIdx);
+						}
+					}
+					
 					if (currentMethodNode != null) {
 						RLChecker checker = new RLChecker();
 						currentMethodExList = checker.check(visitor);
 					}
+					
 					
 					// 檢查@RL是否存在(丟出的例外是否被註記)
 					int msgIdx = -1;
@@ -212,6 +259,8 @@ public class RLBuilder extends IncrementalProjectBuilder {
 						}
 					}
 
+
+					
 				}
 
 			}

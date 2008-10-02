@@ -72,8 +72,8 @@ public class RLQuickFix implements IMarkerResolution {
 	public void run(IMarker marker) {
 		try {
 
-			String problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
-
+			String problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);			
+			
 			if (problem != null && problem.equals(RLMarkerAttribute.ERR_RL_LEVEL)) {
 				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
 				String msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);

@@ -21,4 +21,6 @@ public interface RLMarkerAttribute {
 
 	public static final String RL_MSG_INDEX = "RL_MSG_INDEX";
 
+	//ignore exceptionªºtype
+	public static final String CS_INGNORE_EXCEPTION = "CS_INGNORE_EXCEPTION";
 }

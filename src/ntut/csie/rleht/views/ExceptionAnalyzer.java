@@ -3,6 +3,8 @@ package ntut.csie.rleht.views;
 import java.util.ArrayList;
 import java.util.List;
 
+import ntut.csie.csdet.data.CSMessage;
+import ntut.csie.csdet.visitor.CodeSmellAnalyzer;
 import ntut.csie.rleht.common.RLBaseVisitor;
 
 import org.apache.commons.lang.text.StrTokenizer;
@@ -55,6 +57,10 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 	private List<RLMessage> exceptionList;
 
 	private List<RLMessage> methodRLList;
+	
+//	private List<RLMessage> codeSmellList;
+	
+	private List<CSMessage> ignoreExList;
 
 	private ASTNode currentRLAnnotationNode;
 
@@ -68,9 +74,9 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		if(methodRLList!=null){
 			methodRLList.clear();
 		}
+		
 		currentRLAnnotationNode=null;
 		currentMethodNode=null;
-		
 	}
 
 	/**
@@ -206,7 +212,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 	 * @see ntut.csie.rleht.views.ASTBaseVisitor#visitNode(org.eclipse.jdt.core.dom.ASTNode)
 	 */
 	protected boolean visitNode(ASTNode node) {
-		
+
 		//long m1=Runtime.getRuntime().freeMemory();
 		//logger.debug("!!!!!===>["+parentId+"][BEGIN] freeMemory=["+m1+ "] max mem="+Runtime.getRuntime().maxMemory() + " totalMem="+Runtime.getRuntime().totalMemory() );		
 
@@ -233,12 +239,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 						currentMethodFound = false;
 					}
 					
-					return true;
-//				case ASTNode.CATCH_CLAUSE:
-//					System.out.println("=======22222CATCH_CLAUSE22222=======");
-//					System.out.println(node.toString());
-//					return true;		
-					
+					return true;					
 				case ASTNode.TRY_STATEMENT:
 //					System.out.println("=======TRY_STATEMENT=======");
 //					System.out.println(node.toString());
@@ -248,13 +249,11 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 						return false;
 					}
 					return true;
-				
 				case ASTNode.THROW_STATEMENT:
 					// ConsoleLog.debug("THROW_STATEMENT=>currentMethodFound="
 					// + currentMethodFound + ":" + node);
 					if (currentMethodFound) {
 						// ConsoleLog.debug("THROW_STATEMENT");
-
 						ThrowStatement ts = (ThrowStatement) node;
 						Object obj = ts.getStructuralProperty(ThrowStatement.EXPRESSION_PROPERTY);
 
@@ -309,7 +308,6 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 							this.findExceptionTypes(node, mi.resolveMethodBinding().getExceptionTypes());
 
 						}
-
 					}
 					return true;
 
@@ -338,26 +336,31 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		idxTry = (++tryBlock);
 		idxCatch = 0;
 
-		TryStatement trystat = (TryStatement) node;
-		
-		
+		TryStatement trystat = (TryStatement) node;		
 		
 		// ConsoleLog.debug("[TRY_STATEMENT][BEGIN]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 		// ConsoleLog.debug("TRY===>" + idxTry + ":" + idxCatch + "\t[BEGIN]" +
 		// trystat.getBody().getStartPosition());
-
+		
+		CodeSmellAnalyzer detector = new CodeSmellAnalyzer(root);
+		trystat.accept(detector);
+//		codeSmellList = detector.getCodeSmell();
+		ignoreExList = detector.getCodeSmell();
+		
+//		for(int i=0;i<codeSmellList.size();i++){
+//			System.out.println("=====Code Smell Line=====");
+//			System.out.println(codeSmellList.get(i).getLineNumber());
+//			System.out.println("=====Code Smell Line=====");
+//		}
+		
+		
 		// 處理Try Block
 		ExceptionAnalyzer visitor = new ExceptionAnalyzer(this.root, true, this.createParentId());
-		System.out.println("=======this.root=======");
-		System.out.println(this.root.getJavaElement().getElementName());
 		trystat.getBody().accept(visitor);
 		
-		System.out.println("=======try Block=======");
-		System.out.println(trystat.getBody().toString());
 		this.mergeRL(visitor.getExceptionList());
-//		System.out.println("============EH List============"+visitor.getExceptionList().size());
 		visitor.clear();
-		
+
 		// this.visitNode(trystat.getBody());
 
 //		 ConsoleLog.debug("TRY===>" + idxTry + ":" + idxCatch + "\t[END]"+
@@ -371,14 +374,11 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 			
 			cc = (CatchClause) catchList.get(i);
 			
-			
 			// 處理各個Catch
 			SingleVariableDeclaration svd = (SingleVariableDeclaration) cc
 					.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
-			System.out.println("=====SingleVariableDeclaration=====");
-			System.out.println(svd.getName().toString());
 			//logger.debug("\t#####===>CatchClause= "+cc.toString() );
-
+			
 			if (svd == null || cc == null) {
 				continue;
 			}
@@ -397,13 +397,9 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 			visitor = new ExceptionAnalyzer(this.root, true, this.createParentId());
 			
 			cc.getBody().accept(visitor);
-			System.out.println("=====After visit=====");
-			System.out.println("=====Catch Clause=====");
-			System.out.println(cc.getBody().toString());
-
 			this.mergeRL(visitor.getExceptionList());
 			visitor.clear();
-			
+
 			// ConsoleLog.debug(i + ") CATCH===>" + idxTry + ":" + idxCatch +
 			// "\t\t[END]" + cc.getBody().getStartPosition());
 		}
@@ -412,8 +408,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		Block finallyBlock = trystat.getFinally();
 		
 		if (finallyBlock != null) {
-			//logger.debug("\t#####===> FinallyBlock  " );
-			
+			//logger.debug("\t#####===> FinallyBlock  " );			
 			idxCatch++;
 			visitor = new ExceptionAnalyzer(this.root, true, this.createParentId());
 			finallyBlock.accept(visitor);
@@ -425,6 +420,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		idxCatch = 0;
 
 		idxTry = 0;
+
 
 		// ConsoleLog.debug("[TRY_STATEMENT][END]<<<<<<<<<<<<<<<<<<<<<<<<<");
 
@@ -539,6 +535,10 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 			this.exceptionList.add(msg);
 		}
 	}
+	
+//	private void saveCodeSmell(RLMessage rlmsg){
+//		codeSmellList.add(rlmsg);
+//	}
 
 	/**
 	 * @return
@@ -550,5 +550,12 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 	public ASTNode getCurrentRLAnnotationNode() {
 		return currentRLAnnotationNode;
 	}
-
+	
+//	public List<RLMessage> getCodeSmellList(){
+//		return codeSmellList;
+//	}
+	
+	public List<CSMessage> getIgnoreExList(){
+		return ignoreExList;
+	}
 }

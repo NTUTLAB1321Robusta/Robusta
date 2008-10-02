@@ -43,7 +43,9 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				return new IMarkerResolution[] { new RLQuickFix("移除首次出現之@RL (" + exception + ")") };
 			} else if (problem.equals(RLMarkerAttribute.ERR_RL_INSTANCE)) {
 				return new IMarkerResolution[] { new RLQuickFix("@RL順序對調(" + marker.getAttribute(IMarker.MESSAGE) + ")") };
-
+				//碰到Ignore Exception的Quick fix
+			} else if(problem.equals(RLMarkerAttribute.CS_INGNORE_EXCEPTION)){
+				return new IMarkerResolution[] { new RLQuickFix("修正@CS (level=" + level + ",exception=" + exception + ")") };
 			}
 
 			return null;
