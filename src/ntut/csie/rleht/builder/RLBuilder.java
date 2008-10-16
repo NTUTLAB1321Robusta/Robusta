@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import ntut.csie.csdet.data.CSMessage;
+import ntut.csie.csdet.visitor.CodeSmellAnalyzer;
 import ntut.csie.rleht.common.ASTHandler;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLChecker;
@@ -87,6 +88,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 			marker.setAttribute(IMarker.LINE_NUMBER, lineNumber);
 			//marker type =  code smell type
 			marker.setAttribute(RLMarkerAttribute.RL_MARKER_TYPE, mtype);
+			marker.setAttribute(RLMarkerAttribute.RL_INFO_EXCEPTION, msg.getExceptionType());
 			marker.setAttribute(RLMarkerAttribute.RL_INFO_SRC_POS, String.valueOf(msg.getPosition()));
 			marker.setAttribute(RLMarkerAttribute.RL_METHOD_INDEX, String.valueOf(methodIdx));
 			marker.setAttribute(RLMarkerAttribute.RL_MSG_INDEX, String.valueOf(msgIdx));
@@ -149,6 +151,8 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				List<ASTNode> methodList = methodCollector.getMethodList();
 
 				ExceptionAnalyzer visitor = null;
+				
+				CodeSmellAnalyzer csVisitor = null;
 
 				// 目前method的Exception資訊
 				List<RLMessage> currentMethodExList = null;
@@ -157,7 +161,6 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				List<RLMessage> currentMethodRLList = null;
 				
 				// 目前method的有ignore Ex的資訊
-//				List<RLMessage> ignoreExList = null;
 				List<CSMessage> ignoreExList = null;
 	
 
@@ -171,14 +174,18 @@ public class RLBuilder extends IncrementalProjectBuilder {
 					method.accept(visitor);
 					currentMethodNode = visitor.getCurrentMethodNode();
 					currentMethodRLList = visitor.getMethodRLAnnotationList();
-
+					
 					// 將ignore exception的code smell貼上marker並加到problem view中
-					ignoreExList = visitor.getIgnoreExList();
+					csVisitor = new CodeSmellAnalyzer(root);
+					method.accept(csVisitor);
+					ignoreExList = csVisitor.getIgnoreExList();
+					
 					int csIdx = -1;
 					if(ignoreExList != null){
 						csIdx++;
 						for(CSMessage msg : ignoreExList){
 							String errmsg = "Code Smell Type:["+ msg.getCodeSmellType() + "]未處理!!!";
+							//貼marker
 							this.addMarker(file, errmsg, msg.getLineNumber(), IMarker.SEVERITY_WARNING,
 									msg.getCodeSmellType(), msg, csIdx, methodIdx);
 						}

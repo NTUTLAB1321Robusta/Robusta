@@ -27,11 +27,12 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.console,
  org.eclipse.ui.ide,
  org.eclipse.compare,
- org.eclipse.jdt.junit4.runtime,
  org.eclipse.jdt.junit,
  net.java.amateras.umleditor,
  net.java.amateras.umleditor.java,
  net.java.amateras.xstream,
  org.eclipse.draw2d,
- org.eclipse.gef
+ org.eclipse.gef,
+ org.eclipse.jdt.launching,
+ org.junit
 Eclipse-LazyStart: true

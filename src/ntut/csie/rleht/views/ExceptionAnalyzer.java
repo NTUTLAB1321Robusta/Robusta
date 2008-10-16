@@ -180,8 +180,6 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		MethodDeclaration method = (MethodDeclaration) node;
 		List<Name> throwsList = method.thrownExceptions();
 
-		
-		
 		for (Name name : throwsList) {
 			
 			//logger.debug("#####===>throw list=" + name.getFullyQualifiedName());
@@ -256,7 +254,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 						// ConsoleLog.debug("THROW_STATEMENT");
 						ThrowStatement ts = (ThrowStatement) node;
 						Object obj = ts.getStructuralProperty(ThrowStatement.EXPRESSION_PROPERTY);
-
+						
 						RLMessage rlmsg = null;
 						if (obj instanceof ClassInstanceCreation) {
 							rlmsg = new RLMessage(0, ((ClassInstanceCreation) obj).resolveTypeBinding(), ts
@@ -281,9 +279,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 
 						if (!this.findAnnotation(node, cic.resolveConstructorBinding().getAnnotations())) {
 							// 取得Method的Throw Exception Type
-							this
-									.findExceptionTypes(node, cic.resolveConstructorBinding()
-											.getExceptionTypes());
+							this.findExceptionTypes(node, cic.resolveConstructorBinding().getExceptionTypes());
 						}
 
 					}
@@ -341,18 +337,6 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		// ConsoleLog.debug("[TRY_STATEMENT][BEGIN]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 		// ConsoleLog.debug("TRY===>" + idxTry + ":" + idxCatch + "\t[BEGIN]" +
 		// trystat.getBody().getStartPosition());
-		
-		CodeSmellAnalyzer detector = new CodeSmellAnalyzer(root);
-		trystat.accept(detector);
-//		codeSmellList = detector.getCodeSmell();
-		ignoreExList = detector.getCodeSmell();
-		
-//		for(int i=0;i<codeSmellList.size();i++){
-//			System.out.println("=====Code Smell Line=====");
-//			System.out.println(codeSmellList.get(i).getLineNumber());
-//			System.out.println("=====Code Smell Line=====");
-//		}
-		
 		
 		// 處理Try Block
 		ExceptionAnalyzer visitor = new ExceptionAnalyzer(this.root, true, this.createParentId());
@@ -551,11 +535,5 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		return currentRLAnnotationNode;
 	}
 	
-//	public List<RLMessage> getCodeSmellList(){
-//		return codeSmellList;
-//	}
-	
-	public List<CSMessage> getIgnoreExList(){
-		return ignoreExList;
-	}
+
 }

@@ -1,5 +1,6 @@
 package ntut.csie.rleht.builder;
 
+import ntut.csie.csdet.quickfix.CSQuickFix;
 import ntut.csie.rleht.common.RLUtils;
 import ntut.csie.rleht.views.RLData;
 
@@ -17,7 +18,7 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 
 	public IMarkerResolution[] getResolutions(IMarker marker) {
 		try {
-
+			
 			String problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
 			if (problem == null) {
 				return null;
@@ -45,7 +46,7 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				return new IMarkerResolution[] { new RLQuickFix("@RL順序對調(" + marker.getAttribute(IMarker.MESSAGE) + ")") };
 				//碰到Ignore Exception的Quick fix
 			} else if(problem.equals(RLMarkerAttribute.CS_INGNORE_EXCEPTION)){
-				return new IMarkerResolution[] { new RLQuickFix("修正@CS (level=" + level + ",exception=" + exception + ")") };
+				return new IMarkerResolution[] { new CSQuickFix("修正Code Smell==>Rethrow Unchecked Excetpion") };
 			}
 
 			return null;

@@ -192,7 +192,7 @@ public class RLQuickFix implements IMarkerResolution {
 
 			AST ast = currentMethodNode.getAST();
 
-
+			
 			NormalAnnotation root = ast.newNormalAnnotation();
 			root.setTypeName(ast.newSimpleName("Robustness"));
 
@@ -200,7 +200,7 @@ public class RLQuickFix implements IMarkerResolution {
 			value.setName(ast.newSimpleName("value"));
 
 			root.values().add(value);
-
+			
 			ArrayInitializer rlary = ast.newArrayInitializer();
 			value.setValue(rlary);
 

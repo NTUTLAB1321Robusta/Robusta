@@ -88,6 +88,7 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 			judgeIgnoreEx(cc,svd);
 			visitor = new CodeSmellAnalyzer(this.root,true,0);
 			cc.getBody().accept(visitor);
+			
 		}
 		
 		// 處理Finally Block
@@ -107,11 +108,12 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 	 */
 	private void judgeIgnoreEx(CatchClause cc,SingleVariableDeclaration svd ){
 		List statementTemp = cc.getBody().statements();
-		if(statementTemp.size() == 0){
-			CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_INGNORE_EXCEPTION,svd.resolveBinding().getType(),											cc.toString(),cc.getStartPosition(),this.getLineNumber(cc.getStartPosition()));
+		if(statementTemp.size() == 0){			
+			CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_INGNORE_EXCEPTION,svd.resolveBinding().getType(),											
+					cc.toString(),cc.getStartPosition(),this.getLineNumber(cc.getStartPosition()),svd.getType().toString());
 			this.codeSmellList.add(csmsg);
-			System.out.println("【Find Ignore Exception】");
-			System.out.println("【Ignore Ex line】====>"+this.getLineNumber(cc.getStartPosition()));
+//			System.out.println("【Find Ignore Exception】");
+//			System.out.println("【Ignore Ex line】====>"+this.getLineNumber(cc.getStartPosition()));
 		}
 	}
 	
@@ -122,14 +124,10 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 		return root.getLineNumber(pos);
 	}
 	
-//	public List<RLMessage> getCodeSmell(){
-//		return codeSmellList;
-//	}
-	
 	/**
 	 * 取得ignore Exception的List
 	 */
-	public List<CSMessage> getCodeSmell(){
+	public List<CSMessage> getIgnoreExList(){
 		return codeSmellList;
 	}
 }

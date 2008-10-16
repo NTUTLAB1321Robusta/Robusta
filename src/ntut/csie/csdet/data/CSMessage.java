@@ -19,12 +19,15 @@ public class CSMessage {
 
 	private int lineNumber;
 	
-	public CSMessage(String type,ITypeBinding typeBinding, String statement, int pos, int lineNumber){
+	private String exceptionType;
+	
+	public CSMessage(String type,ITypeBinding typeBinding, String statement, int pos, int lineNumber,String exceptionType){
 		this.cstype = type;
 		this.typeBinding = typeBinding;
 		this.statement = statement;
 		this.position = pos;
 		this.lineNumber = lineNumber;
+		this.exceptionType = exceptionType;
 	}
 	
 	public String getCodeSmellType(){
@@ -35,6 +38,9 @@ public class CSMessage {
 		return lineNumber;
 	}
 
+	public String getExceptionType() {
+		return exceptionType;
+	}
 	/**
 	 * @return the statement
 	 */
