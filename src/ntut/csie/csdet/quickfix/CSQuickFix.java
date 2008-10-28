@@ -23,6 +23,7 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jface.text.Document;
@@ -159,8 +160,8 @@ public class CSQuickFix  implements IMarkerResolution{
 			
 			for (ASTNode cc : catchList){
 				if(cc.getStartPosition() == msg.getPosition()){
-//					SingleVariableDeclaration svd = (SingleVariableDeclaration) cc
-//					.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
+					SingleVariableDeclaration svd = (SingleVariableDeclaration) cc
+					.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
 					System.out.println("【Quick fixCatch Clause】=====>"+cc.toString());	
 //					System.out.println("Variable=====>"+svd.resolveBinding().getName());
 					CatchClause clause = (CatchClause)cc;
@@ -169,6 +170,7 @@ public class CSQuickFix  implements IMarkerResolution{
 					//將throw的variable傳入
 					ClassInstanceCreation cic = ast.newClassInstanceCreation();
 					cic.setType(ast.newSimpleType(ast.newSimpleName("RuntimeException")));
+					cic.arguments().add(ast.newSimpleName(svd.resolveBinding().getName()));
 //					Expression expression = ts.getAST().newSimpleName(svd.resolveBinding().getName()) ;
 					//取得CatchClause所有的statement
 					List<Statement> statement = clause.getBody().statements();			
@@ -194,7 +196,7 @@ public class CSQuickFix  implements IMarkerResolution{
 			int offset = document.getLineOffset(msg.getLineNumber());
 			//在Quick fix完之後,可以將游標定位在Quick Fix那行
 			//TODO 可以將Fix的那行給highlight起來,但要先取得length,暫時先把長度固定
-			EditorUtils.selectInEditor(editor,offset,32);
+			EditorUtils.selectInEditor(editor,offset,34);
 		}catch (Exception ex) {
 			logger.error("[Rethrow Exception] EXCEPTION ",ex);
 			ex.printStackTrace();
