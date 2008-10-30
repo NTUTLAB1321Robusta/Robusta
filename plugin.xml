@@ -25,6 +25,15 @@
    </extension>
    
    <extension
+         point="org.eclipse.ui.propertyPages">
+         <!-- Code Smell detect Settings-->
+      <page
+            name="Code Smell detect Settings"
+            class="ntut.csie.csdet.views.CSPropertyPage"
+            id="ntut.csie.csdet.views.CSPropertyPage">
+      </page>
+   </extension>
+   <extension
          id="ntut.csie.rleht.RLPerspective"
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension
