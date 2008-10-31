@@ -59,6 +59,9 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage{
 //		tabPages.add(page);
 	}
 	
+	/**
+	 * 砍xml file
+	 */
 	private void deleteXMLFile(){
 		String path = JDomUtil.getProjectPath()+File.separator+"CSPreference.xml";
 		File file = new File(path);
@@ -71,11 +74,9 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage{
 	 * 然後將他儲存下來
 	 */
 	public boolean performOk() {
+		//每次都先將xml檔砍掉,這樣code寫起來比較少
 		deleteXMLFile();
 		for(int i=0;i<tabPages.size();i++){
-//			if(!tabPages.get(i).storeSettings()){
-//				return false;
-//			}
 			tabPages.get(i).storeSettings();
 		}		
 		return true;

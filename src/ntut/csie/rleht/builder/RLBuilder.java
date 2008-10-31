@@ -135,7 +135,8 @@ public class RLBuilder extends IncrementalProjectBuilder {
 			deleteMarkers(file);
 
 			try {
-				// STEP1:針對每一個Java程式的Method檢查RLAnnotation
+				/* STEP1:針對每一個Java程式的Method檢查RLAnnotation */
+				/*       並且找出專案中所有的Code Smell  */
 
 				IJavaElement javaElement = JavaCore.create(resource);
 
@@ -175,14 +176,19 @@ public class RLBuilder extends IncrementalProjectBuilder {
 					currentMethodNode = visitor.getCurrentMethodNode();
 					currentMethodRLList = visitor.getMethodRLAnnotationList();
 					
-					// 將ignore exception的code smell貼上marker並加到problem view中
+					// 找尋專案中所有的ignore Exception
 					csVisitor = new CodeSmellAnalyzer(root);
 					method.accept(csVisitor);
+					//取得專案中的ignore Exception
 					ignoreExList = csVisitor.getIgnoreExList();
+					
+//					DummyHandlerAnalyzer handler = new DummyHandlerAnalyzer();
+//					method.accept(handler);
 					
 					int csIdx = -1;
 					if(ignoreExList != null){
 						csIdx++;
+						//將每個ignore exception都貼上marker
 						for(CSMessage msg : ignoreExList){
 							String errmsg = "Code Smell Type:["+ msg.getCodeSmellType() + "]未處理!!!";
 							//貼marker
@@ -190,7 +196,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 									msg.getCodeSmellType(), msg, csIdx, methodIdx);
 						}
 					}
-					
+
 					if (currentMethodNode != null) {
 						RLChecker checker = new RLChecker();
 						currentMethodExList = checker.check(visitor);

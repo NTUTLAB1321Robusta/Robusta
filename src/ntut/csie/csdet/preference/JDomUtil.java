@@ -39,6 +39,11 @@ public class JDomUtil {
 		return elementRoot;
 	}
 	
+	/**
+	 * 輸出xml file
+	 * @param docXML
+	 * @param path
+	 */
 	public static void OutputXMLFile(Document docXML,String path){
 		try{
 			XMLOutputter xmlOut = new XMLOutputter();
@@ -52,6 +57,10 @@ public class JDomUtil {
 		}
 	}
 	
+	/**
+	 * 取得document,順便判斷xml檔本來有沒有存在
+	 * @return
+	 */
 	public static Document readXMLFile(){
 		String path = getProjectPath()+File.separator+"CSPreference.xml";
 		File xmlPath = new File(path);

@@ -23,4 +23,7 @@ public interface RLMarkerAttribute {
 
 	//ignore exceptionªºtype
 	public static final String CS_INGNORE_EXCEPTION = "CS_INGNORE_EXCEPTION";
+	
+	//Dummy Handlerªºtype
+	public static final String CS_DUMMY_HANDLER = "CS_DUMMY_HANDLER";
 }
