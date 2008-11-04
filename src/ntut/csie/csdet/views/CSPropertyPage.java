@@ -63,7 +63,7 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage{
 	 * ¬åxml file
 	 */
 	private void deleteXMLFile(){
-		String path = JDomUtil.getProjectPath()+File.separator+"CSPreference.xml";
+		String path = JDomUtil.getWorkspace()+File.separator+"CSPreference.xml";
 		File file = new File(path);
 		if(file.exists())
 			file.delete();

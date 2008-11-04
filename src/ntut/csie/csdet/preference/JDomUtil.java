@@ -4,7 +4,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import ntut.csie.rleht.builder.RLNature;
+
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IWorkbench;
@@ -16,6 +21,11 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
+/**
+ * 主要是用來建立xml檔的(存放在workspace的下面,所有專案共享一個config檔)
+ * @author chewei
+ */
+
 public class JDomUtil {
 	
 	//XML tag
@@ -23,16 +33,16 @@ public class JDomUtil {
 	final static public String project = "ProjectName";
 	final static public String DummyHandlerTag = "DummyHandler";
 	final static public String systemoutprint = "systemoutprint";
-	final static public String printStackTrace = "printStackTrace";
+	final static public String println = "systemoutprintln";
 	
 	public static Element createXMLContent(){
 		Document docJDOM = readXMLFile();	
 		Element elementRoot ;
 		//先取得docJDOM,不存在就從先建立一個
 		if(docJDOM == null){
+			// 建立一個root
 			elementRoot = new Element(root);
-			docJDOM = new Document(elementRoot);	
-			elementRoot.setAttribute(project,getSelectProject().getResource().getName());
+			docJDOM = new Document(elementRoot);				
 		}else{
 			elementRoot = docJDOM.getRootElement();
 		}
@@ -62,7 +72,7 @@ public class JDomUtil {
 	 * @return
 	 */
 	public static Document readXMLFile(){
-		String path = getProjectPath()+File.separator+"CSPreference.xml";
+		String path = getWorkspace()+File.separator+"CSPreference.xml";
 		File xmlPath = new File(path);
 		if(xmlPath.exists()){
 			Document docJDOM = null;
@@ -81,20 +91,31 @@ public class JDomUtil {
 		}
 	}
 	
-	public static IJavaProject getSelectProject(){
-		IWorkbench workbench = PlatformUI.getWorkbench();
-		ISelection sel =  workbench.getActiveWorkbenchWindow().getActivePage().getSelection();
-		if(!(sel instanceof IStructuredSelection)){
-			return null;
-		}
-		//取得user所點選的地方,再將其轉換成Project路徑
-		IStructuredSelection selection = (IStructuredSelection)sel;	
-		IJavaProject project = (IJavaProject) selection.getFirstElement();
-		return project;
-	}
+//	/**
+//	 * 當user去設定一些preference時,就可以利用此method
+//	 * 來取得現在user所點選的project
+//	 * @return
+//	 */
+//	public static IJavaProject getSelectProject(){
+//		IProject project = RLNature.project;
+//		if(project !=null){
+//			IJavaProject javaProject = JavaCore.create(project);
+//			return javaProject;
+//		}		
+//		else{
+//			// 取project取到null表示使用者還未加nature
+//			IWorkbench workbench = PlatformUI.getWorkbench();
+//			ISelection sel = workbench.getActiveWorkbenchWindow().getActivePage().getSelection();
+//			//取得user所點選的地方,再將其轉換成Project路徑
+//			IStructuredSelection selection = (IStructuredSelection)sel;	
+//			IJavaProject javaproject = (IJavaProject) selection.getFirstElement();
+//			return javaproject;
+//		}
+//
+//	}
 	
-	public static String getProjectPath(){
-		String path = getSelectProject().getResource().getLocation().toOSString();
-		return path;
+	public static String getWorkspace(){
+		String workspace = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
+		return workspace;
 	}
 }

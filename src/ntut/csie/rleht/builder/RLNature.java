@@ -13,7 +13,8 @@ public class RLNature implements IProjectNature {
 	 */
 	public static final String NATURE_ID = "ntut.csie.rleht.builder.RLNature";
 
-	private IProject project;
+	//TODO 原來是private 因為需要取到project,所以暫時用public static
+	public static IProject project;
 
 	/*
 	 * (non-Javadoc)
@@ -23,7 +24,7 @@ public class RLNature implements IProjectNature {
 	public void configure() throws CoreException {
 		IProjectDescription desc = project.getDescription();
 		ICommand[] commands = desc.getBuildSpec();
-
+		
 		for (int i = 0; i < commands.length; ++i) {
 			if (commands[i].getBuilderName().equals(RLBuilder.BUILDER_ID)) {
 				return;

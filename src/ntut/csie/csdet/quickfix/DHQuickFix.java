@@ -34,7 +34,13 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CSQuickFix  implements IMarkerResolution{
+/**
+ * 提供給Dummy handler的解法
+ * @author chewei
+ *
+ */
+
+public class DHQuickFix implements IMarkerResolution{
 	private static Logger logger = LoggerFactory.getLogger(CSQuickFix.class);
 	
 	private String label;
@@ -50,7 +56,7 @@ public class CSQuickFix  implements IMarkerResolution{
 	private List<CSMessage> currentExList = null;
 	
 	
-	public CSQuickFix(String label){
+	public DHQuickFix(String label){
 		this.label = label;
 	}
 	
@@ -64,33 +70,24 @@ public class CSQuickFix  implements IMarkerResolution{
 		try {
 			String problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
 			
-			if (problem != null && problem.equals(RLMarkerAttribute.CS_INGNORE_EXCEPTION)){
-//							||problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER))) {
-			   //如果碰到ignore Exception,則將exception rethrow
+			if(problem != null && problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)){
+				//如果碰到dummy handler,則將exception rethrow
 				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
 				String msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
 				String exception = marker.getAttribute(RLMarkerAttribute.RL_INFO_EXCEPTION).toString();
-				// 找出要被Quick fix的method
-				boolean isok = findMethod(marker.getResource(), Integer.parseInt(methodIdx));
-				
-				if(isok){					
+				boolean isok = findDummyMethod(marker.getResource(), Integer.parseInt(methodIdx));
+				if(isok)
 					rethrowException(exception,Integer.parseInt(msgIdx));
-				}
 			}
 			
 		} catch (CoreException e) {
-			logger.error("[Ignore Ex QuickFix] EXCEPTION ",e);
+			logger.error("[DHQuickFix] EXCEPTION ",e);
 			e.printStackTrace();
 		}
+		
 	}
 	
-	/**
-	 * 找出要被Quick fix的method node(Ignore Exception)
-	 * @param resource 要被修改的source
-	 * @param methodIdx method node
-	 * @return
-	 */
-	private boolean findMethod(IResource resource, int methodIdx){
+	private boolean findDummyMethod(IResource resource, int methodIdx){
 		if (resource instanceof IFile && resource.getName().endsWith(".java")) {
 			try {
 				IJavaElement javaElement = JavaCore.create(resource);
@@ -117,20 +114,18 @@ public class CSQuickFix  implements IMarkerResolution{
 				if(currentMethodNode != null){
 					CodeSmellAnalyzer visitor = new CodeSmellAnalyzer(this.actRoot);
 					currentMethodNode.accept(visitor);
-					currentExList = visitor.getIgnoreExList();
+					currentExList = visitor.getDummyList();
 				}
 				
 				return true;
 			
 			}catch (Exception ex) {
-				logger.error("[Find CS Method] EXCEPTION ",ex);
+				logger.error("[Find DH Method] EXCEPTION ",ex);
 				ex.printStackTrace();
 			}
 		}
 		return false;
 	}
-	
-
 	
 	/**
 	 * 將該method rethrow unchecked exception
@@ -155,7 +150,7 @@ public class CSQuickFix  implements IMarkerResolution{
 				if(cc.getStartPosition() == msg.getPosition()){
 					SingleVariableDeclaration svd = (SingleVariableDeclaration) cc
 					.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
-					System.out.println("【Quick fixCatch Clause】=====>"+cc.toString());	
+//					System.out.println("【Quick fixCatch Clause】=====>"+cc.toString());	
 //					System.out.println("Variable=====>"+svd.resolveBinding().getName());
 					
 					CatchClause clause = (CatchClause)cc;
@@ -190,8 +185,8 @@ public class CSQuickFix  implements IMarkerResolution{
 			IEditorPart editorPart = EditorUtils.getActiveEditor();
 			ITextEditor editor = (ITextEditor) editorPart;
 
-			//利用document取得定位點
-			int offset = document.getLineOffset(msg.getLineNumber());
+			//利用document取得定位點(要加1是因為取到的那行是標marker那行)
+			int offset = document.getLineOffset(msg.getLineNumber()+1);
 			//在Quick fix完之後,可以將游標定位在Quick Fix那行
 			//TODO 可以將Fix的那行給highlight起來,但要先取得length,暫時先把長度固定
 			EditorUtils.selectInEditor(editor,offset,34);
@@ -201,5 +196,4 @@ public class CSQuickFix  implements IMarkerResolution{
 		}
 		
 	}
-
 }

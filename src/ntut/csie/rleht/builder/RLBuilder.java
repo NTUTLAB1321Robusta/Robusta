@@ -161,9 +161,10 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				// 目前method的RL Annotation資訊
 				List<RLMessage> currentMethodRLList = null;
 				
-				// 目前method的有ignore Ex的資訊
+				// 目前method內的ignore Ex的資訊
 				List<CSMessage> ignoreExList = null;
-	
+				// 目前method內的dummy handler的資訊
+				List<CSMessage> dummyList = null;
 
 				// 目前的Method AST Node
 				ASTNode currentMethodNode = null;
@@ -182,9 +183,6 @@ public class RLBuilder extends IncrementalProjectBuilder {
 					//取得專案中的ignore Exception
 					ignoreExList = csVisitor.getIgnoreExList();
 					
-//					DummyHandlerAnalyzer handler = new DummyHandlerAnalyzer();
-//					method.accept(handler);
-					
 					int csIdx = -1;
 					if(ignoreExList != null){
 						csIdx++;
@@ -196,7 +194,21 @@ public class RLBuilder extends IncrementalProjectBuilder {
 									msg.getCodeSmellType(), msg, csIdx, methodIdx);
 						}
 					}
-
+					
+					//取得專案中dummy handler
+					dummyList = csVisitor.getDummyList();
+					csIdx = -1;
+					if(dummyList != null){
+						csIdx++;
+						// 將每個dummy handler都貼上marker
+						for(CSMessage msg : dummyList){
+							String errmsg = "Code Smell Type:["+ msg.getCodeSmellType() + "]未處理!!!";
+							//貼marker
+							this.addMarker(file, errmsg, msg.getLineNumber(), IMarker.SEVERITY_WARNING,
+									msg.getCodeSmellType(), msg, csIdx, methodIdx);
+						}
+					}
+					
 					if (currentMethodNode != null) {
 						RLChecker checker = new RLChecker();
 						currentMethodExList = checker.check(visitor);
@@ -209,14 +221,12 @@ public class RLBuilder extends IncrementalProjectBuilder {
 						msgIdx++;
 						if (msg.getRLData().getLevel() >= 0) {
 							if (!msg.isHandling()) {
-
 								String errmsg = "*例外[" + msg.getRLData().getExceptionType() + "] 未定義@RL！";
 
 								// int lineNumber =
 								// root.getLineNumber(msg.getPosition());
 								this.addMarker(file, errmsg.toString(), msg.getLineNumber(), IMarker.SEVERITY_WARNING,
 										RLMarkerAttribute.ERR_NO_RL, msg, msgIdx, methodIdx);
-
 								// logger.debug("@@===========>>Create
 								// Marker:line=" + lineNumber + " :"
 								// + msg.getPosition() + ":" +
@@ -271,16 +281,11 @@ public class RLBuilder extends IncrementalProjectBuilder {
 
 						}
 					}
-
-
-					
 				}
-
 			}
 			catch (Exception ex) {
 				logger.error("[checkRLAnnotation] EXCEPTION ",ex);
 			}
-
 			logger.debug("[RLBuilder][checkRLAnnotation] END !!");
 
 		}
