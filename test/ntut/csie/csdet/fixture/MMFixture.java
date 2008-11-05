@@ -47,7 +47,7 @@ public class MMFixture {
 	buffer.append("	}\n");
 	buffer.append("	}\n");
 	buffer.append("	}\n");
-
+	buffer.append("	}\n");
 	return buffer.toString();
 	}
 	

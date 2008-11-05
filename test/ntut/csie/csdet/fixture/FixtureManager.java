@@ -108,8 +108,10 @@ public class FixtureManager {
 			//Step 2. create a package
 			tempPackage = testProject.createPackage("a.b.c");
 			//Step 3. create a Type in the package
+			// ignore exception
 			testProject.createType(tempPackage, "MM.java", new MMFixture().getSource());
-//			testProject.createType(tempPackage, "MM2.java", new MM2Fixture().getSource());
+			// dummy handler
+			testProject.createType(tempPackage, "DHFixture.java", new DHFixture().getSource());
 //			testProject.createType(tempPackage, "MMTest.java", new MMTestFixture().getSource());
 //			testProject.createType(tempPackage, "MMTest1.java", new MMTest1Fixture().getSource());
 //			testProject.createType(tempPackage, "MMTest2.java", new MMTest2Fixture().getSource());

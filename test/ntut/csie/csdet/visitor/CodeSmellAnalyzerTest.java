@@ -25,13 +25,14 @@ import junit.framework.TestCase;
 public class CodeSmellAnalyzerTest extends TestCase {
 	FixtureManager fm;
 	IType type;
-	
+	IType dummy;
 	
 	protected void setUp() throws Exception {
 		super.setUp();
 		fm = new FixtureManager();
 		fm.createProject("MM");
 		type = fm.getProject().getIType("a.b.c.MM");
+		dummy = fm.getProject().getIType("a.b.c.DHFixture");
 	}
 
 	protected void tearDown() throws Exception {
@@ -60,4 +61,24 @@ public class CodeSmellAnalyzerTest extends TestCase {
 		assertEquals(4,ignoreEx);
 	}	
 
+	public void testGetDummyList(){
+		IResource resource =  dummy.getResource();
+		IJavaElement javaElement = JavaCore.create(resource);
+		//Create AST to parse
+		ASTParser parser = ASTParser.newParser(AST.JLS3);
+		parser.setKind(ASTParser.K_COMPILATION_UNIT);
+		parser.setSource((ICompilationUnit)javaElement);
+		parser.setResolveBindings(true);
+		ASTMethodCollector methodCollector = new ASTMethodCollector();
+		CompilationUnit unit = (CompilationUnit) parser.createAST(null);
+		unit.accept(methodCollector);
+		List<ASTNode> methodList = methodCollector.getMethodList();
+		int dummyHandler = 0;
+		for(ASTNode method : methodList){
+			CodeSmellAnalyzer csVisitor = new CodeSmellAnalyzer(unit);
+			method.accept(csVisitor);
+			dummyHandler += csVisitor.getDummyList().size();
+		}
+		assertEquals(2,dummyHandler);
+	}
 }
