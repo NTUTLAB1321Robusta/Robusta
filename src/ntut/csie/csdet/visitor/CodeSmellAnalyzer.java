@@ -166,12 +166,14 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 					if(statement.getExpression().toString().contains("System.out.print")||
 							statement.getExpression().toString().contains("printStackTrace")){					
 						//建立Dummy handler的type
+//						if(dummyList.size() == 0){
 						CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_DUMMY_HANDLER,
-								svd.resolveBinding().getType(),cc.toString(),statement.getExpression().getStartPosition(),
+								svd.resolveBinding().getType(),cc.toString(),cc.getStartPosition(),
 								this.getLineNumber(statement.getStartPosition()),svd.getType().toString());
-						this.dummyList.add(csmsg);
-						// 新增一筆dummy handler
-						flag++;
+							this.dummyList.add(csmsg);
+							// 新增一筆dummy handler
+							flag++;
+//						}
 					}
 				}
 				else{
@@ -186,8 +188,7 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 					}
 				}
 
-			}
-			else if(statementTemp.get(i) instanceof ThrowStatement){
+			}else if(statementTemp.get(i) instanceof ThrowStatement){
 				// 碰到有throw 東西出來,就判定不是dummy handler
 				// 可能會碰到有e.printStackTrace(),但下一行又throw東西出來
 				// 所以先取得之前加了幾個dummy handler,接著從list最尾端開始移除

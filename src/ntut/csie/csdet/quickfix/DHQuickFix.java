@@ -150,7 +150,7 @@ public class DHQuickFix implements IMarkerResolution{
 				if(cc.getStartPosition() == msg.getPosition()){
 					SingleVariableDeclaration svd = (SingleVariableDeclaration) cc
 					.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
-//					System.out.println("【Quick fixCatch Clause】=====>"+cc.toString());	
+					System.out.println("【Quick fixCatch Clause】=====>"+cc.toString());	
 //					System.out.println("Variable=====>"+svd.resolveBinding().getName());
 					
 					CatchClause clause = (CatchClause)cc;
@@ -186,7 +186,7 @@ public class DHQuickFix implements IMarkerResolution{
 			ITextEditor editor = (ITextEditor) editorPart;
 
 			//利用document取得定位點(要加1是因為取到的那行是標marker那行)
-			int offset = document.getLineOffset(msg.getLineNumber()+1);
+			int offset = document.getLineOffset(msg.getLineNumber());
 			//在Quick fix完之後,可以將游標定位在Quick Fix那行
 			//TODO 可以將Fix的那行給highlight起來,但要先取得length,暫時先把長度固定
 			EditorUtils.selectInEditor(editor,offset,34);
