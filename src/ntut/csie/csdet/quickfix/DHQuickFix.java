@@ -23,6 +23,7 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.ThrowStatement;
@@ -144,16 +145,20 @@ public class DHQuickFix implements IMarkerResolution{
 			ASTCatchCollect catchCollector = new ASTCatchCollect();
 			currentMethodNode.accept(catchCollector);
 			List<ASTNode> catchList = catchCollector.getMethodList();
-			//去比對startPosition,找出要修改的節點
 			
+			//去比對startPosition,找出要修改的節點			
 			for (ASTNode cc : catchList){
 				if(cc.getStartPosition() == msg.getPosition()){
 					SingleVariableDeclaration svd = (SingleVariableDeclaration) cc
 					.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
-					System.out.println("【Quick fixCatch Clause】=====>"+cc.toString());	
+//					System.out.println("【Quick fixCatch Clause】=====>"+cc.toString());	
 //					System.out.println("Variable=====>"+svd.resolveBinding().getName());
+//					System.out.println("【CC Position】===>"+cc.getStartPosition());
+//					System.out.println("【Msg line number】===>"+msg.getLineNumber());
 					
 					CatchClause clause = (CatchClause)cc;
+					// 將相關print例外資訊的東西移除
+				
 					//自行建立一個throw statement加入
 					ThrowStatement ts = ast.newThrowStatement();
 					//將throw的variable傳入
@@ -166,6 +171,7 @@ public class DHQuickFix implements IMarkerResolution{
 					
 					//取得CatchClause所有的statement
 					List<Statement> statement = clause.getBody().statements();
+					deleteStatement(statement);
 					//將資料寫回
 					ts.setExpression(cic);
 					statement.add(ts);
@@ -195,5 +201,27 @@ public class DHQuickFix implements IMarkerResolution{
 			ex.printStackTrace();
 		}
 		
+	}
+	
+	/**
+	 * 在Rethrow之前,先將相關的print字串都清除掉
+	 */
+	private void deleteStatement(List<Statement> statementTemp){
+		// 從Catch Clause裡面剖析兩種情形
+		if(statementTemp.size() != 0){
+			for(int i=0;i<statementTemp.size();i++){			
+				ExpressionStatement statement = (ExpressionStatement) statementTemp.get(i);
+				// 遇到System.out.print or printStackTrace就把他remove掉
+				if(statement.getExpression().toString().contains("System.out.print")||
+						statement.getExpression().toString().contains("printStackTrace")){	
+//						System.out.println("【Remove Statement】===>"+statement.getExpression().toString());
+						statementTemp.remove(i);
+						//移除完之後ArrayList的位置會重新調整過,所以利用遞回來繼續往下找符合的條件並移除
+						deleteStatement(statementTemp);
+						
+				}			
+			}
+		}
+
 	}
 }
