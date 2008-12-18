@@ -51,6 +51,8 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				// 碰到Dummy Handler的Quick fix
 			} else if(problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)){
 				return new IMarkerResolution[] { new DHQuickFix("修正Code Smell==>Rethrow Unhandled Excetpion") };
+			} else if(problem.equals(RLMarkerAttribute.CS_Nested_Try_Block)){
+				return new IMarkerResolution[] { new DHQuickFix("修正Code Smell==>????????") };
 			}
 
 			return null;

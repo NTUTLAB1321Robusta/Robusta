@@ -5,6 +5,7 @@ import java.util.List;
 
 import ntut.csie.csdet.data.CSMessage;
 import ntut.csie.csdet.visitor.CodeSmellAnalyzer;
+import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.rleht.common.RLBaseVisitor;
 
 import org.apache.commons.lang.text.StrTokenizer;
@@ -58,9 +59,8 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 
 	private List<RLMessage> methodRLList;
 	
-//	private List<RLMessage> codeSmellList;
-	
-//	private List<CSMessage> ignoreExList;
+	// 紀錄Nested Try Block的位置
+	private List<CSMessage> nestedTryList;
 
 	private ASTNode currentRLAnnotationNode;
 
@@ -69,6 +69,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 	public void clear(){
 		if(exceptionList!=null){
 			exceptionList.clear();
+			nestedTryList.clear();
 		}
 		
 		if(methodRLList!=null){
@@ -113,6 +114,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		this.root = root;
 		exceptionList = new ArrayList<RLMessage>();
 		methodRLList = new ArrayList<RLMessage>();
+		nestedTryList = new ArrayList<CSMessage>();
 	}
 
 	protected ExceptionAnalyzer(CompilationUnit root, boolean currentMethodFound, String parentId) {
@@ -123,6 +125,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		this.parentId = parentId;
 		this.root = root;
 		exceptionList = new ArrayList<RLMessage>();
+		nestedTryList = new ArrayList<CSMessage>();
 	}
 
 	private void getMethodAnnotation(ASTNode node) {
@@ -239,10 +242,11 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 					
 					return true;					
 				case ASTNode.TRY_STATEMENT:
-//					System.out.println("=======TRY_STATEMENT=======");
-//					System.out.println(node.toString());
+
 					// currentMethodFound + ":" + node);
 					if (currentMethodFound) {
+//						System.out.println("=======TRY_STATEMENT=======");
+//						System.out.println(node.toString());
 						this.processTryStatement(node);
 						return false;
 					}
@@ -325,7 +329,6 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		
 		//logger.debug("#####===>TRY_STATEMENT " );
 		
-		
 		// ConsoleLog.debug("TRY_STATEMENT");
 		// ------------------------------------------------------
 
@@ -333,15 +336,24 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		idxCatch = 0;
 
 		TryStatement trystat = (TryStatement) node;		
-		
+
 		// ConsoleLog.debug("[TRY_STATEMENT][BEGIN]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 		// ConsoleLog.debug("TRY===>" + idxTry + ":" + idxCatch + "\t[BEGIN]" +
 		// trystat.getBody().getStartPosition());
+		
+		// 假如是第一個Try,那就不是Code Smell 用加進去
+		if(!this.parentId.equals("")){
+			CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_Nested_Try_Block,null,											
+					trystat.toString(),trystat.getStartPosition(),
+					this.getLineNumber(trystat.getStartPosition()),null);
+			this.nestedTryList.add(csmsg);	
+		}
 		
 		// 處理Try Block
 		ExceptionAnalyzer visitor = new ExceptionAnalyzer(this.root, true, this.createParentId());
 		trystat.getBody().accept(visitor);
 		
+		this.mergeCS(visitor.getNestedTryList());
 		this.mergeRL(visitor.getExceptionList());
 		visitor.clear();
 
@@ -372,7 +384,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 			// addRL(rlmsg, idxCatch);
 			String key = this.parentId + idxTry + "." + idxCatch + "-0.0";			
 			this.addRL(rlmsg, key);
-			
+
 			// ConsoleLog.debug(i + ") CATCH===>" + idxTry + ":" + idxCatch +
 			// "\t\t[BEGIN]" + cc.getBody().getStartPosition());
 			// ConsoleLog.debug("CATCH===>" + cc.getBody());
@@ -382,6 +394,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 			
 			cc.getBody().accept(visitor);
 			this.mergeRL(visitor.getExceptionList());
+			this.mergeCS(visitor.getNestedTryList());
 			visitor.clear();
 
 			// ConsoleLog.debug(i + ") CATCH===>" + idxTry + ":" + idxCatch +
@@ -397,14 +410,13 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 			visitor = new ExceptionAnalyzer(this.root, true, this.createParentId());
 			finallyBlock.accept(visitor);
 			this.mergeRL(visitor.getExceptionList());
+			this.mergeCS(visitor.getNestedTryList());
 			visitor.clear();
 			
 		}
 
 		idxCatch = 0;
-
 		idxTry = 0;
-
 
 		// ConsoleLog.debug("[TRY_STATEMENT][END]<<<<<<<<<<<<<<<<<<<<<<<<<");
 
@@ -506,7 +518,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		// ConsoleLog.debug("[addRL]===>" + key + "---->>>" + rlmsg);
 
 	}
-
+	
 	/**
 	 * @param childrenRL
 	 */
@@ -520,10 +532,23 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		}
 	}
 	
-//	private void saveCodeSmell(RLMessage rlmsg){
-//		codeSmellList.add(rlmsg);
-//	}
-
+	private void mergeCS(List<CSMessage> childInfo){
+		if (childInfo == null || childInfo.size() == 0) {
+			return;
+		}
+		
+		for(CSMessage msg : childInfo){
+			this.nestedTryList.add(msg);
+		}
+	}
+	
+	/**
+	 * 紀錄Nested Try Block的位置
+	 */
+	public List<CSMessage> getNestedTryList(){
+		return nestedTryList;
+	}
+	
 	/**
 	 * @return
 	 */

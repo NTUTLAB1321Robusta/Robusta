@@ -26,4 +26,7 @@ public interface RLMarkerAttribute {
 	
 	//Dummy Handlerªºtype
 	public static final String CS_DUMMY_HANDLER = "CS_DUMMY_HANDLER";
+	
+	//Nested Try Blockªºtype
+	public static final String CS_Nested_Try_Block = "CS_Nested_Try_Block";
 }

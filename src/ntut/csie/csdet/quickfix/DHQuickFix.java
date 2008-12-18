@@ -38,7 +38,6 @@ import org.slf4j.LoggerFactory;
 /**
  * 提供給Dummy handler的解法
  * @author chewei
- *
  */
 
 public class DHQuickFix implements IMarkerResolution{
@@ -151,10 +150,6 @@ public class DHQuickFix implements IMarkerResolution{
 				if(cc.getStartPosition() == msg.getPosition()){
 					SingleVariableDeclaration svd = (SingleVariableDeclaration) cc
 					.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
-//					System.out.println("【Quick fixCatch Clause】=====>"+cc.toString());	
-//					System.out.println("Variable=====>"+svd.resolveBinding().getName());
-//					System.out.println("【CC Position】===>"+cc.getStartPosition());
-//					System.out.println("【Msg line number】===>"+msg.getLineNumber());
 					
 					CatchClause clause = (CatchClause)cc;
 					// 將相關print例外資訊的東西移除

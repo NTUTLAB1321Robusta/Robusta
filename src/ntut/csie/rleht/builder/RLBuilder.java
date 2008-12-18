@@ -161,11 +161,15 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				// 目前method的RL Annotation資訊
 				List<RLMessage> currentMethodRLList = null;
 				
-				// 目前method內的ignore Ex的資訊
+				// 目前method內的ignore Exception資訊
 				List<CSMessage> ignoreExList = null;
-				// 目前method內的dummy handler的資訊
+				
+				// 目前method內的dummy handler資訊
 				List<CSMessage> dummyList = null;
-
+				
+				// 目前method內的Nested Try Block資訊
+				List<CSMessage> nestedTryList = null; 
+				
 				// 目前的Method AST Node
 				ASTNode currentMethodNode = null;
 				int methodIdx = -1;
@@ -206,6 +210,18 @@ public class RLBuilder extends IncrementalProjectBuilder {
 							//貼marker
 							this.addMarker(file, errmsg, msg.getLineNumber(), IMarker.SEVERITY_WARNING,
 									msg.getCodeSmellType(), msg, csIdx, methodIdx);
+						}
+					}
+					
+					//取得專案中的Nested Try Block
+					nestedTryList = visitor.getNestedTryList();
+					csIdx = -1;
+					if(nestedTryList != null){
+						for(CSMessage msg : nestedTryList){
+							String errmsg = "Code Smell Type:["+ msg.getCodeSmellType() + "]未處理!!!";
+							//貼marker
+							this.addMarker(file, errmsg, msg.getLineNumber(), IMarker.SEVERITY_WARNING,
+									msg.getCodeSmellType(), msg, csIdx, methodIdx);						
 						}
 					}
 					

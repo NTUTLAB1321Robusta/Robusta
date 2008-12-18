@@ -1,7 +1,6 @@
 package ntut.csie.csdet.visitor;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import ntut.csie.csdet.data.CSMessage;
@@ -11,7 +10,6 @@ import ntut.csie.rleht.common.RLBaseVisitor;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CatchClause;
-import org.eclipse.jdt.core.dom.ChildPropertyDescriptor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
@@ -71,37 +69,6 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 		}	
 	}
 		
-	//TODO 測試沒問題就可以把TRY_STATEMENT這個地方砍掉
-//	private void processTryStatement(ASTNode node){
-//		
-//		//處理try block
-//		TryStatement trystat = (TryStatement) node;		
-//		CodeSmellAnalyzer visitor = new CodeSmellAnalyzer(this.root,true,0);
-//		trystat.getBody().accept(visitor);	
-//		
-//		//處理catch block
-//		List catchList = trystat.catchClauses();
-//		CatchClause cc = null;		
-//		for (int i = 0, size = catchList.size(); i < size; i++) {
-//			cc = (CatchClause) catchList.get(i);
-//			SingleVariableDeclaration svd = (SingleVariableDeclaration) cc
-//			.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
-//			//判斷是否為ignore Exception,是的話就加入到List中
-//			judgeIgnoreEx(cc,svd);
-//			
-//			visitor = new CodeSmellAnalyzer(this.root,true,0);
-//			cc.getBody().accept(visitor);
-//		
-//		}
-//		
-//		// 處理Finally Block
-//		Block finallyBlock = trystat.getFinally();
-//		if (finallyBlock != null) {
-//			visitor = new CodeSmellAnalyzer(this.root,true,0);
-//			finallyBlock.accept(visitor);			
-//			
-//		}
-//	}
 	
 	/**
 	 * 去尋找catch的節點,並且判斷節點內的statement是否為空
