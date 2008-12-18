@@ -60,7 +60,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 	
 //	private List<RLMessage> codeSmellList;
 	
-	private List<CSMessage> ignoreExList;
+//	private List<CSMessage> ignoreExList;
 
 	private ASTNode currentRLAnnotationNode;
 
@@ -298,7 +298,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 				case ASTNode.METHOD_INVOCATION:
 					if (currentMethodFound) {
 						MethodInvocation mi = (MethodInvocation) node;
-
+						
 						if (!this.findAnnotation(node, mi.resolveMethodBinding().getAnnotations())) {
 							// ¨ú±oMethodªºThrow Exception Type
 							this.findExceptionTypes(node, mi.resolveMethodBinding().getExceptionTypes());

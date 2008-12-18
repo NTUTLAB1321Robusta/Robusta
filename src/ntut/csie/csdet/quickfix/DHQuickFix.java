@@ -217,8 +217,7 @@ public class DHQuickFix implements IMarkerResolution{
 //						System.out.println("【Remove Statement】===>"+statement.getExpression().toString());
 						statementTemp.remove(i);
 						//移除完之後ArrayList的位置會重新調整過,所以利用遞回來繼續往下找符合的條件並移除
-						deleteStatement(statementTemp);
-						
+						deleteStatement(statementTemp);						
 				}			
 			}
 		}

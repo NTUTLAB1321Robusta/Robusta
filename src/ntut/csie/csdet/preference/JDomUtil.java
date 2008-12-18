@@ -25,6 +25,8 @@ public class JDomUtil {
 	final static public String DummyHandlerTag = "DummyHandler";
 	final static public String systemoutprint = "systemoutprint";
 	final static public String println = "systemoutprintln";
+	final static public String apache_log4j = "apache_log4j";
+	final static public String java_Logger = "java_Logger";
 	
 	public static Element createXMLContent(){
 		Document docJDOM = readXMLFile();	

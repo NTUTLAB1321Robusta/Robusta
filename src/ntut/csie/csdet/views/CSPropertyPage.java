@@ -49,14 +49,7 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage{
 		APropertyPage page = new DummyHandlerPage(dummyHandlerPage,this);
 		dummyHandlerTabItem.setControl(dummyHandlerPage);
 		tabPages.add(page);
-		
-		
-//		final TabItem nestedPageTabItem = new TabItem(tabFolder,SWT.NONE);
-//		nestedPageTabItem.setText("Nested Try Block");
-//		final Composite nestedPage = new Composite(tabFolder, SWT.NONE);
-//		page = new NestedTryBlockPage(nestedPage,this);
-//		nestedPageTabItem.setControl(nestedPage);
-//		tabPages.add(page);
+
 	}
 	
 	/**

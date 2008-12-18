@@ -26,6 +26,10 @@ public class DummyHandlerPage extends APropertyPage{
 	private String templateText;
 	// 是否要捕捉System.out.println() and print()的按鈕
 	private Button systemoutprintlnButton;
+	// 是否要捕捉log4j的button
+	private Button log4jButton;
+	// 是否要捕捉java.util.logging的button
+	private Button javaUtillogBtn;
 	
 	public DummyHandlerPage(Composite composite,CSPropertyPage page){
 		super(composite,page);
@@ -36,18 +40,30 @@ public class DummyHandlerPage extends APropertyPage{
 	                   "    System.out.println(e);\n" +
 	                   "    System.out.print(e);\n" +
 		               "    e.printStackTrace();\n"+
+		               "    // using log4j\n" +
+		               "    logger.info(e.getMessage()"+ ");\n"+ 
+		               "    // using java.util.logging.Logger \n" +
+		               "    java_logger.info(e.getMessage()"+ "); \n"+ 
 		               "}";
 		//加入頁面的內容
 		addFirstSection(composite);
 	}
 	
 	private void addFirstSection(Composite dummyHandlerPage){
+		final Label detectSettingsLabel = new Label(dummyHandlerPage, SWT.NONE);
+		detectSettingsLabel.setText("Detect Settings");
+		detectSettingsLabel.setBounds(10, 10, 90, 12);
+		
 		Document docJDom = JDomUtil.readXMLFile();
 		String setting = "";
+		String log4jSet = "";
+		String javaLogSet = "";
 		if(docJDom != null){
 			Element root = docJDom.getRootElement();
 			Element rule = root.getChild(JDomUtil.DummyHandlerTag).getChild("rule");
 			setting = rule.getAttribute(JDomUtil.systemoutprint).getValue();
+			log4jSet = rule.getAttribute(JDomUtil.apache_log4j).getValue();
+			javaLogSet = rule.getAttribute(JDomUtil.java_Logger).getValue();
 		}
 		
 		systemoutprintlnButton = new Button(dummyHandlerPage, SWT.CHECK);
@@ -57,28 +73,34 @@ public class DummyHandlerPage extends APropertyPage{
 			systemoutprintlnButton.setSelection(true);
 		}
 
-		final Label detectSettingsLabel = new Label(dummyHandlerPage, SWT.NONE);
-		detectSettingsLabel.setText("Detect Settings");
-		detectSettingsLabel.setBounds(10, 10, 77, 12);
+		log4jButton = new Button(dummyHandlerPage, SWT.CHECK);
+		log4jButton.setText("Detect using org.apache.log4j");
+		log4jButton.setBounds(20, 50, 160, 16);
+		if(log4jSet.equals("Y")){
+			log4jButton.setSelection(true);
+		}
 
-		// 先把這個拿掉
-//		eprintButton = new Button(dummyHandlerPage, SWT.CHECK);
-//		eprintButton.setText("System.out.println();");
-//		eprintButton.setBounds(20, 50, 123, 16);
+		javaUtillogBtn = new Button(dummyHandlerPage, SWT.CHECK);
+		javaUtillogBtn.setText("Detect using java.util.logging.Logger");
+		javaUtillogBtn.setBounds(20, 72, 190, 16);
+		if(javaLogSet.equals("Y")){
+			javaUtillogBtn.setSelection(true);
+		}
+		
+		final Label codeTemplateLabel = new Label(dummyHandlerPage, SWT.NONE);
+		codeTemplateLabel.setText("Code Template:");
+		codeTemplateLabel.setBounds(10, 100, 96, 12);
 
 		final Label label = new Label(dummyHandlerPage, SWT.SEPARATOR| SWT.HORIZONTAL);
-		label.setBounds(10, 72, 472, 12);
+		label.setBounds(10, 112, 472, 12);
 
 		templateArea = new StyledText(dummyHandlerPage, SWT.BORDER);
 		Font font = new Font(dummyHandlerPage.getDisplay(),"Courier New",14,SWT.NORMAL);		
 		templateArea.setFont(font);
 		templateArea.setText(templateText);
-		templateArea.setBounds(10, 115, 440, 177);
+		templateArea.setBounds(10, 125, 458, 263);
 		templateArea.setEditable(false);
 
-		final Label codeTemplateLabel = new Label(dummyHandlerPage, SWT.NONE);
-		codeTemplateLabel.setText("Code Template:");
-		codeTemplateLabel.setBounds(10, 90, 96, 12);
 		//調整程式碼的顏色
 		adjustFont(dummyHandlerPage.getDisplay());
 	}
@@ -88,7 +110,7 @@ public class DummyHandlerPage extends APropertyPage{
 	 * @param display
 	 */
 	private void adjustFont(Display display){
-		StyleRange[] styles = new StyleRange[4];
+		StyleRange[] styles = new StyleRange[8];
 		//Try
 		styles[0] = new StyleRange();
 		styles[0].fontStyle = SWT.BOLD;
@@ -105,8 +127,24 @@ public class DummyHandlerPage extends APropertyPage{
 		styles[3] = new StyleRange();
 		styles[3].fontStyle = SWT.ITALIC;
 		styles[3].foreground = display.getSystemColor(SWT.COLOR_BLUE);
+		// 註解
+		styles[4] = new StyleRange();
+		styles[4].fontStyle = SWT.ITALIC;
+		styles[4].foreground = display.getSystemColor(SWT.COLOR_DARK_GREEN);		
+		// log4j
+		styles[5] = new StyleRange();
+		styles[5].fontStyle = SWT.ITALIC;
+		styles[5].foreground = display.getSystemColor(SWT.COLOR_BLUE);
+		// 註解
+		styles[6] = new StyleRange();
+		styles[6].fontStyle = SWT.ITALIC;
+		styles[6].foreground = display.getSystemColor(SWT.COLOR_DARK_GREEN);	
+		// java.util.logging.Logger
+		styles[7] = new StyleRange();
+		styles[7].fontStyle = SWT.ITALIC;
+		styles[7].foreground = display.getSystemColor(SWT.COLOR_BLUE);
 		
-		int[] ranges = new int[] {0,3,14,5,48,3,75,3};
+		int[] ranges = new int[] {0,3,14,5,48,3,75,3,118,14,137,6,170,33,209,11};
 		templateArea.setStyleRanges(ranges, styles);
 	}
 
@@ -126,6 +164,19 @@ public class DummyHandlerPage extends APropertyPage{
 			rule.setAttribute(JDomUtil.systemoutprint,"N");
 		}
 		
+		//假如log4j有被勾選起來
+		if(log4jButton.getSelection()){
+			rule.setAttribute(JDomUtil.apache_log4j,"Y");	
+		}else{
+			rule.setAttribute(JDomUtil.apache_log4j,"N");	
+		}
+		
+		// 假如java.util.logging.Logger有被勾選起來
+		if(javaUtillogBtn.getSelection()){
+			rule.setAttribute(JDomUtil.java_Logger,"Y");	
+		}else{
+			rule.setAttribute(JDomUtil.java_Logger,"N");
+		}
 		//假如dummy handler有新的rule可以加在這裡
 		
 		//將新建的tag加進去

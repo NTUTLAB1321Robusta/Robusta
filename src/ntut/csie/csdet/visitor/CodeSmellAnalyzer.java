@@ -1,6 +1,7 @@
 package ntut.csie.csdet.visitor;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import ntut.csie.csdet.data.CSMessage;
@@ -10,11 +11,11 @@ import ntut.csie.rleht.common.RLBaseVisitor;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CatchClause;
+import org.eclipse.jdt.core.dom.ChildPropertyDescriptor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.ThrowStatement;
-import org.jdom.Attribute;
 import org.jdom.Element;
 
 /**
@@ -59,9 +60,7 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 	protected boolean visitNode(ASTNode node) {
 		switch (node.getNodeType()) {
 			case ASTNode.TRY_STATEMENT:
-//				System.out.println("【====TRY_STATEMENT====】");
-//				System.out.println(node.toString());
-				//this.processTryStatement(node);
+
 				return true;
 			case ASTNode.CATCH_CLAUSE:
 				processCatchStatement(node);
@@ -149,43 +148,112 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 	 */
 	private void judgeDummyHandler(List statementTemp,CatchClause cc,SingleVariableDeclaration svd){
         /*------------------------------------------------------------------------*
-        -  假設這個catch裡面有throw東西,就判定不是dummy handler
+        -  假設這個catch裡面有throw東西 or 有使用Log的API,就判定不是dummy handler
              如果只要有一個e.printStackTrace或者符合user所設定的條件,就判定為dummy handler  
         *-------------------------------------------------------------------------*/	
 
 		// 利用此flag來記錄到底加入了多少的dummy handler
 		int flag = 0;
-
+		int dummySettings = getDummySettings();
 		for(int i=0;i<statementTemp.size();i++){
 			//取得Expression statement,因為e.printstackTrace這類都是算這種型態			
 			if(statementTemp.get(i) instanceof ExpressionStatement){
 				ExpressionStatement statement = (ExpressionStatement) statementTemp.get(i);
+
+
 				//先取得xml檔的設定,false表示預設只取e.printStackTrace()
-				if(getDummySettings()){
-					// if true,就抓取e.printStackTrace and system.out.print() and println 
-					if(statement.getExpression().toString().contains("System.out.print")||
-							statement.getExpression().toString().contains("printStackTrace")){					
-						//建立Dummy handler的type
-//						if(dummyList.size() == 0){
-						CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_DUMMY_HANDLER,
-								svd.resolveBinding().getType(),cc.toString(),cc.getStartPosition(),
-								this.getLineNumber(statement.getStartPosition()),svd.getType().toString());
+				switch (dummySettings){
+					case 0: //偵測System.out.print ,log4j,java Logger
+						if(statement.getExpression().toString().contains("System.out.print")||
+								statement.getExpression().toString().contains("printStackTrace")){					
+							//建立Dummy handler的type
+							CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_DUMMY_HANDLER,
+									svd.resolveBinding().getType(),cc.toString(),cc.getStartPosition(),
+									this.getLineNumber(statement.getStartPosition()),svd.getType().toString());
+								this.dummyList.add(csmsg);
+								// 新增一筆dummy handler
+								flag++;
+						}else{
+							if(findBindingLib(dummySettings,statement,flag)){
+								break;
+							}							
+						}
+					
+						break;
+					case 1: //偵測System.out.print ,log4j					
+						if(statement.getExpression().toString().contains("System.out.print")||
+								statement.getExpression().toString().contains("printStackTrace")){					
+							//建立Dummy handler的type
+							CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_DUMMY_HANDLER,
+									svd.resolveBinding().getType(),cc.toString(),cc.getStartPosition(),
+									this.getLineNumber(statement.getStartPosition()),svd.getType().toString());
+								this.dummyList.add(csmsg);
+								// 新增一筆dummy handler
+								flag++;
+						}else{
+							if(findBindingLib(dummySettings,statement,flag)){
+								break;
+							}							
+						}
+						
+						break;
+					case 2: //偵測System.out.print ,java Logger
+						if(statement.getExpression().toString().contains("System.out.print")||
+								statement.getExpression().toString().contains("printStackTrace")){					
+							//建立Dummy handler的type
+							CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_DUMMY_HANDLER,
+									svd.resolveBinding().getType(),cc.toString(),cc.getStartPosition(),
+									this.getLineNumber(statement.getStartPosition()),svd.getType().toString());
+								this.dummyList.add(csmsg);
+								// 新增一筆dummy handler
+								flag++;
+						}else{
+							if(findBindingLib(dummySettings,statement,flag)){
+								break;
+							}							
+						}
+					case 3: //偵測System.out.print
+						if(statement.getExpression().toString().contains("System.out.print")||
+								statement.getExpression().toString().contains("printStackTrace")){					
+							//建立Dummy handler的type
+							CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_DUMMY_HANDLER,
+									svd.resolveBinding().getType(),cc.toString(),cc.getStartPosition(),
+									this.getLineNumber(statement.getStartPosition()),svd.getType().toString());
+								this.dummyList.add(csmsg);
+								// 新增一筆dummy handler
+								flag++;
+						}
+
+						break;
+					case 4: //偵測log4j,java Logger
+						if(findBindingLib(dummySettings,statement,flag)){
+							break;
+						}	
+						break;
+					case 5: //偵測log4j
+						if(findBindingLib(dummySettings,statement,flag)){
+							break;
+						}	
+						break;						
+					case 6: //偵測java Logger
+						if(findBindingLib(dummySettings,statement,flag)){
+							break;
+						}	
+						break;	
+						
+					
+					default: //只偵測printStackTrace
+						if(statement.getExpression().toString().contains("printStackTrace")){					
+							//建立Dummy handler的type
+							CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_DUMMY_HANDLER,
+									svd.resolveBinding().getType(),cc.toString(),cc.getStartPosition(),
+									this.getLineNumber(statement.getStartPosition()),svd.getType().toString());
 							this.dummyList.add(csmsg);
 							// 新增一筆dummy handler
 							flag++;
-//						}
-					}
-				}
-				else{
-					if(statement.getExpression().toString().contains("printStackTrace")){					
-						//建立Dummy handler的type
-						CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_DUMMY_HANDLER,
-								svd.resolveBinding().getType(),cc.toString(),cc.getStartPosition(),
-								this.getLineNumber(statement.getStartPosition()),svd.getType().toString());
-						this.dummyList.add(csmsg);
-						// 新增一筆dummy handler
-						flag++;
-					}
+						}
+						break;
+						
 				}
 
 			}else if(statementTemp.get(i) instanceof ThrowStatement){
@@ -202,25 +270,66 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 	}
 
 	/**
+	 * 用來找尋這個catch Clause中是否有log4j or java.logger的東西
+	 * 如果有表示RL = 1,所以不能標示marker
+	 */
+	private Boolean findBindingLib(int dummySettings,ExpressionStatement statement,int flag){
+		ASTBinding visitor = new ASTBinding(dummySettings);
+		statement.getExpression().accept(visitor);
+		if(visitor.getResult()){
+			//假如找到log4j or java.logger,就把之前找到的smell去掉
+			int size = this.dummyList.size()-1;
+			for(int x=0;x<flag;x++){
+				this.dummyList.remove(size-x);
+			}
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
+	/**
 	 * 將user對於dummy handler的設定存下來
 	 * @return
 	 */
-	private boolean getDummySettings(){
+	private int getDummySettings(){
 		Element root = JDomUtil.createXMLContent();
 		// 如果是null表示xml檔是剛建好的,還沒有dummy handler的tag,直接跳出去
 		if(root.getChild(JDomUtil.DummyHandlerTag) == null){
-			return false;
+			return 10000;
 		}else{
 			// 這裡表示之前使用者已經有設定過preference了
 			Element dummyHandler = root.getChild(JDomUtil.DummyHandlerTag);
-			Element rule = dummyHandler.getChild("rule");
-			Attribute systemout = rule.getAttribute(JDomUtil.systemoutprint);
-			String settings = systemout.getValue();
-			if(settings.equals("Y")){
-				return true;	
+			Element rule = dummyHandler.getChild("rule");			
+			String settings = rule.getAttribute(JDomUtil.systemoutprint).getValue();
+			String log4jSet = rule.getAttribute(JDomUtil.apache_log4j).getValue();
+			String javaLogger = rule.getAttribute(JDomUtil.java_Logger).getValue();
+			if(settings.equals("Y") && log4jSet.equals("Y") && javaLogger.equals("Y")){
+				//偵測System.out.print ,log4j,java Logger
+				return 0;
+			}else if(settings.equals("Y") && log4jSet.equals("N") && javaLogger.equals("Y")){
+				//偵測System.out.print ,log4j
+				return 1;
+			}else if(settings.equals("Y") && log4jSet.equals("Y") && javaLogger.equals("N")){
+				//偵測System.out.print ,java Logger
+				return 2;
+			}else if(settings.equals("Y") && log4jSet.equals("N") && javaLogger.equals("N")){
+				//偵測System.out.print
+				return 3;
+			}else if(settings.equals("N") && log4jSet.equals("Y") && javaLogger.equals("Y")){
+				//偵測log4j,java Logger
+				return 4;
+			}else if(settings.equals("N") && log4jSet.equals("Y") && javaLogger.equals("N")){
+				//偵測log4j
+				return 5;
+			}else if(settings.equals("N") && log4jSet.equals("N") && javaLogger.equals("Y")){
+				//偵測java Logger
+				return 6;
 			}else{
-				return false;
+				//default,只偵測e.printStackTrace
+				return 1000;
 			}
+
 		}
 	}
 	
