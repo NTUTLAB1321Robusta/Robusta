@@ -17,7 +17,7 @@ import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.jdom.Element;
 
 /**
- * 找專案中的Ignore Exception
+ * 找專案中的Ignore Exception and dummy handler
  * @author chewei
  */
 
@@ -128,7 +128,7 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 				ExpressionStatement statement = (ExpressionStatement) statementTemp.get(i);
 
 
-				//先取得xml檔的設定,false表示預設只取e.printStackTrace()
+				//先取得xml檔的設定,false表示為預設值(只取e.printStackTrace())
 				switch (dummySettings){
 					case 0: //偵測System.out.print ,log4j,java Logger
 						if(statement.getExpression().toString().contains("System.out.print")||
@@ -142,6 +142,7 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 								flag++;
 						}else{
 							if(findBindingLib(dummySettings,statement,flag)){
+								//找到就跳出去可以不用偵測了
 								break;
 							}							
 						}
@@ -193,14 +194,14 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 
 						break;
 					case 4: //偵測log4j,java Logger
-						if(findBindingLib(dummySettings,statement,flag)){
-							break;
-						}	
-						break;
+//						if(findBindingLib(dummySettings,statement,flag)){
+//							break;
+//						}	
+//						break;
 					case 5: //偵測log4j
-						if(findBindingLib(dummySettings,statement,flag)){
-							break;
-						}	
+//						if(findBindingLib(dummySettings,statement,flag)){
+//							break;
+//						}	
 						break;						
 					case 6: //偵測java Logger
 						if(findBindingLib(dummySettings,statement,flag)){
@@ -265,7 +266,7 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 		if(root.getChild(JDomUtil.DummyHandlerTag) == null){
 			return 10000;
 		}else{
-			// 這裡表示之前使用者已經有設定過preference了
+			// 這裡表示之前使用者已經有設定過preference了,去取得相關偵測設定值
 			Element dummyHandler = root.getChild(JDomUtil.DummyHandlerTag);
 			Element rule = dummyHandler.getChild("rule");			
 			String settings = rule.getAttribute(JDomUtil.systemoutprint).getValue();
@@ -308,7 +309,7 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 	}
 	
 	/**
-	 * 取得,dummy handler的List
+	 * 取得dummy handler的List
 	 */
 	public List<CSMessage> getIgnoreExList(){
 		return codeSmellList;
