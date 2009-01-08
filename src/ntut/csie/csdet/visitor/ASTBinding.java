@@ -22,9 +22,6 @@ public class ASTBinding extends RLBaseVisitor{
 	protected boolean visitNode(ASTNode node){
 		try {
 			switch (node.getNodeType()) {
-				case ASTNode.METHOD_INVOCATION:
-
-					return true;
 			
 				case ASTNode.SIMPLE_NAME:
 					SimpleName name = (SimpleName) node;

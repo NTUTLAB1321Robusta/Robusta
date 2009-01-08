@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ntut.csie.csdet.data.CSMessage;
-import ntut.csie.csdet.visitor.CodeSmellAnalyzer;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.rleht.common.RLBaseVisitor;
 
@@ -341,7 +340,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		// ConsoleLog.debug("TRY===>" + idxTry + ":" + idxCatch + "\t[BEGIN]" +
 		// trystat.getBody().getStartPosition());
 		
-		// 假如是第一個Try,那就不是Code Smell 用加進去
+		// 假如是第一個Try,那就不是Code Smell,不用加進去
 		if(!this.parentId.equals("")){
 			CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_Nested_Try_Block,null,											
 					trystat.toString(),trystat.getStartPosition(),

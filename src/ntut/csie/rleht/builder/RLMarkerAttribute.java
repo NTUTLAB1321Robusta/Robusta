@@ -29,4 +29,7 @@ public interface RLMarkerAttribute {
 	
 	//Nested Try Blockªºtype
 	public static final String CS_Nested_Try_Block = "CS_Nested_Try_Block";
+	
+	//Unprotected Main Program
+	public static final String CS_Unprotected_Main = "CS_Unprotected_Main_Program";
 }

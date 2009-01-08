@@ -5,6 +5,7 @@ import java.util.Map;
 
 import ntut.csie.csdet.data.CSMessage;
 import ntut.csie.csdet.visitor.CodeSmellAnalyzer;
+import ntut.csie.csdet.visitor.MainAnalyzer;
 import ntut.csie.rleht.common.ASTHandler;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLChecker;
@@ -38,7 +39,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	
 	//延伸problem view好讓自己的marker可以加進去view中
 	public static final String MARKER_TYPE = "ntut.csie.rleht.builder.RLProblem";
-
+	
 	/**
 	 * 將相關例外資訊貼上marker
 	 */
@@ -148,12 +149,15 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				CompilationUnit root = (CompilationUnit) parser.createAST(null);
 				ASTMethodCollector methodCollector = new ASTMethodCollector();
 				root.accept(methodCollector);
+						
 				//取得專案中所有的method
 				List<ASTNode> methodList = methodCollector.getMethodList();
 
 				ExceptionAnalyzer visitor = null;
 				
 				CodeSmellAnalyzer csVisitor = null;
+				
+				MainAnalyzer mainVisitor = null;
 
 				// 目前method的Exception資訊
 				List<RLMessage> currentMethodExList = null;
@@ -169,6 +173,9 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				
 				// 目前method內的Nested Try Block資訊
 				List<CSMessage> nestedTryList = null; 
+				
+				// 目前method內的Unprotected Main資訊
+				List<CSMessage> unprotectedMain = null;
 				
 				// 目前的Method AST Node
 				ASTNode currentMethodNode = null;
@@ -225,11 +232,26 @@ public class RLBuilder extends IncrementalProjectBuilder {
 						}
 					}
 					
+					//尋找該method內的unprotected main program
+					mainVisitor = new MainAnalyzer(root);
+					method.accept(mainVisitor);
+					unprotectedMain = mainVisitor.getUnprotedMainList();
+					
+					//依據所取得的code smell來貼Marker
+					csIdx = -1;
+					if(unprotectedMain != null){
+						for(CSMessage msg : unprotectedMain){
+							String errmsg = "Code Smell Type:["+ msg.getCodeSmellType() + "]未處理!!!";
+							//貼marker
+							this.addMarker(file, errmsg, msg.getLineNumber(), IMarker.SEVERITY_WARNING,
+									msg.getCodeSmellType(), msg, csIdx, methodIdx);	
+						}
+					}					
+					
 					if (currentMethodNode != null) {
 						RLChecker checker = new RLChecker();
 						currentMethodExList = checker.check(visitor);
-					}
-					
+					}					
 					
 					// 檢查@RL是否存在(丟出的例外是否被註記)
 					int msgIdx = -1;
