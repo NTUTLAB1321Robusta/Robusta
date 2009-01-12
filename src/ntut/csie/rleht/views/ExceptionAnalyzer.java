@@ -241,11 +241,8 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 					
 					return true;					
 				case ASTNode.TRY_STATEMENT:
-
 					// currentMethodFound + ":" + node);
 					if (currentMethodFound) {
-//						System.out.println("=======TRY_STATEMENT=======");
-//						System.out.println(node.toString());
 						this.processTryStatement(node);
 						return false;
 					}
