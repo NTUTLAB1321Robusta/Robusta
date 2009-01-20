@@ -72,7 +72,7 @@ public class CSQuickFix  implements IMarkerResolution{
 				String exception = marker.getAttribute(RLMarkerAttribute.RL_INFO_EXCEPTION).toString();
 				// 找出要被Quick fix的method
 				boolean isok = findMethod(marker.getResource(), Integer.parseInt(methodIdx));
-				
+
 				if(isok){					
 					rethrowException(exception,Integer.parseInt(msgIdx));
 				}
@@ -141,7 +141,7 @@ public class CSQuickFix  implements IMarkerResolution{
 		
 			actRoot.recordModifications();
 			AST ast = currentMethodNode.getAST();
-		
+			
 			//準備在Catch Caluse中加入throw exception
 			//取得Code smell的資訊
 			CSMessage msg = currentExList.get(msgIdx);
@@ -155,7 +155,7 @@ public class CSQuickFix  implements IMarkerResolution{
 				if(cc.getStartPosition() == msg.getPosition()){
 					SingleVariableDeclaration svd = (SingleVariableDeclaration) cc
 					.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
-					System.out.println("【Quick fixCatch Clause】=====>"+cc.toString());	
+//					System.out.println("【Quick fixCatch Clause】=====>"+cc.toString());	
 //					System.out.println("Variable=====>"+svd.resolveBinding().getName());
 					
 					CatchClause clause = (CatchClause)cc;

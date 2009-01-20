@@ -64,6 +64,8 @@ public class RLBuilder extends IncrementalProjectBuilder {
 
 			marker.setAttribute(RLMarkerAttribute.RL_METHOD_INDEX, String.valueOf(methodIdx));
 			marker.setAttribute(RLMarkerAttribute.RL_MSG_INDEX, String.valueOf(msgIdx));
+			
+			
 		}
 		catch (CoreException ex) {
 			logger.error("[addMarker] EXCEPTION ",ex);

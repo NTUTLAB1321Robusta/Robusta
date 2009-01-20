@@ -127,7 +127,6 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 			if(statementTemp.get(i) instanceof ExpressionStatement){
 				ExpressionStatement statement = (ExpressionStatement) statementTemp.get(i);
 
-
 				//先取得xml檔的設定,false表示為預設值(只取e.printStackTrace())
 				switch (dummySettings){
 					case 0: //偵測System.out.print ,log4j,java Logger

@@ -2,6 +2,7 @@ package ntut.csie.rleht.builder;
 
 import ntut.csie.csdet.quickfix.CSQuickFix;
 import ntut.csie.csdet.quickfix.DHQuickFix;
+import ntut.csie.csdet.refactor.RethrowUncheckExAction;
 import ntut.csie.rleht.common.RLUtils;
 import ntut.csie.rleht.views.RLData;
 
@@ -47,16 +48,17 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				return new IMarkerResolution[] { new RLQuickFix("@RL順序對調(" + marker.getAttribute(IMarker.MESSAGE) + ")") };
 				// 碰到Ignore Exception的Quick fix
 			} else if(problem.equals(RLMarkerAttribute.CS_INGNORE_EXCEPTION)){
-				return new IMarkerResolution[] { new CSQuickFix("修正Code Smell==>Rethrow Unhandled Excetpion") };
+				return new IMarkerResolution[] { new CSQuickFix("Quick Fix Code Smell==>Rethrow Unhandled Excetpion"),
+						new RethrowUncheckExAction("Refactor==>Rethrow Unhandled Excetpion")};
 				// 碰到Dummy Handler的Quick fix
 			} else if(problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)){
-				return new IMarkerResolution[] { new DHQuickFix("修正Code Smell==>Rethrow Unhandled Excetpion") };
+				return new IMarkerResolution[] { new DHQuickFix("Quick Fix Code Smell==>Rethrow Unhandled Excetpion")};
 				// 碰到Nested Try block的Quick fix
 			} else if(problem.equals(RLMarkerAttribute.CS_Nested_Try_Block)){
-				return new IMarkerResolution[] { new DHQuickFix("修正Code Smell==>????????") };
+				return new IMarkerResolution[] { new DHQuickFix("Quick Fix Code Smell==>????????") };
 				// 碰到Unprotected Main program的Quick fix
 			} else if(problem.equals(RLMarkerAttribute.CS_Unprotected_Main)){
-				return new IMarkerResolution[] { new DHQuickFix("修正Code Smell==>????????") };
+				return new IMarkerResolution[] { new DHQuickFix("Quick Fix Code Smell==>????????") };
 			}
 
 			return null;

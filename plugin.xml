@@ -8,6 +8,7 @@
             name="RL Exception Handling Tools"
             id="RLEHT">
       </category>
+	<!-- RL Method view and RL Call Hierarchy view-->    
       <view
             name="≡ RL Method ≡"
             icon="icons/showwarn_tsk.gif"
@@ -25,15 +26,6 @@
    </extension>
    
    <extension
-         point="org.eclipse.ui.propertyPages">
-         <!-- Code Smell detect Settings-->
-      <page
-            name="Code Smell detect Settings"
-            class="ntut.csie.csdet.views.CSPropertyPage"
-            id="ntut.csie.csdet.views.CSPropertyPage">
-      </page>
-   </extension>
-   <extension
          id="ntut.csie.rleht.RLPerspective"
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension
@@ -50,6 +42,7 @@
       </perspectiveExtension>
    </extension>
    
+   <!-- Builder and Nautre-->
    <extension
          id="ntut.csie.rleht.builder.RLBuilder"
          name="RLMethodBuilder"
@@ -57,8 +50,7 @@
       <builder hasNature="true">
          <run class="ntut.csie.rleht.builder.RLBuilder"/>
       </builder>
-   </extension>
-   
+   </extension>   
    <extension
          id="ntut.csie.rleht.builder.RLNature"
          name="RLNature"
@@ -68,7 +60,8 @@
       </runtime>
       <builder id="ntut.csie.rleht.builder.RLBuilder"/>
    </extension>
-   
+ 
+   <!-- pop menu 右鍵加RL Builder and nature-->
    <extension
          point="org.eclipse.ui.popupMenus">
       <objectContribution
@@ -82,8 +75,8 @@
                id="RLEHT.addRemoveNatureAction"
                label="≡ Add/Remove RL Builder ≡"
                menubarPath="additions"/>
-      </objectContribution>
-      
+      </objectContribution>  
+      <!--  右鍵尋找RL Call Hierarchy-->    
       <viewerContribution
             targetID="#CompilationUnitEditorContext"
             id="ntut.csie.rleht.caller.popup.editor">
@@ -105,8 +98,30 @@
                id="ntut.csie.rleht.caller.explorer">
          </action>
       </objectContribution>
+      
+      <!-- Code Smell Refactor //暫時先作選單,不一定會實作此功能-->
+      <objectContribution
+            id="RLEHT.contribution1"
+            objectClass="org.eclipse.ui.IFileEditorInput">
+         <menu
+               id="RLEHT.popupmenu1"
+               label="Code Smell Refactor"
+               path="additions">
+            <separator name="group1"/>
+         </menu>
+         <action
+               class="ntut.csie.csdet.refactor.ThrowUncheckEx"
+			   enablesFor="1"
+               id="RLEHT.throwExAction"
+               label="Rethrowe Uncheck Exception"
+               menubarPath="RLEHT.popupmenu1/group1"/>
+        </objectContribution>
+        
+        
+
    </extension>
    
+   <!-- extend problem view-->
    <extension
          id="ntut.csie.rleht.builder.RLProblem"
          name="RLProblem"
@@ -115,12 +130,15 @@
       <persistent value="true"/>
    </extension>
    
+   <!-- marker的quick fix-->
    <extension
          point="org.eclipse.ui.ide.markerResolution">
       <markerResolutionGenerator
             class="ntut.csie.rleht.builder.RLQuickFixer"
             markerType="ntut.csie.rleht.builder.RLProblem"/>
    </extension>
+   
+   <!-- property page-->
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
@@ -135,6 +153,15 @@
             class="ntut.csie.rleht.preferences.PreferenceInitializer">
       </initializer>
    </extension>
-   
+         
+   <!-- Code Smell detect property Settings-->
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            name="Code Smell detect Settings"
+            class="ntut.csie.csdet.views.CSPropertyPage"
+            id="ntut.csie.csdet.views.CSPropertyPage">
+      </page>
+   </extension>
 
 </plugin>
