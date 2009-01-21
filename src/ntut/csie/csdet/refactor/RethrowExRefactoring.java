@@ -26,6 +26,7 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
@@ -37,6 +38,8 @@ import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.TextFileChange;
 import org.eclipse.text.edits.TextEdit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Rethrow Unhandled exception的具體操作都在這個class中
@@ -44,12 +47,14 @@ import org.eclipse.text.edits.TextEdit;
  */
 
 public class RethrowExRefactoring extends Refactoring {
-
+	private static Logger logger = LoggerFactory.getLogger(RethrowExRefactoring.class);
+	
 	private IJavaProject project;
 	
 	//使用者所選擇的Exception Type
 	private IType exType;
 	
+	//使用者所點選的Marker
 	private IMarker marker;
 	
 	private IOpenable actOpenable;
@@ -70,7 +75,9 @@ public class RethrowExRefactoring extends Refactoring {
 	@Override
 	public RefactoringStatus checkFinalConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
+			//去修改AST Tree
 			collectChange(marker.getResource());
+			//不需check final condition
 			RefactoringStatus status = new RefactoringStatus();		
 			return status;
 	}
@@ -78,6 +85,7 @@ public class RethrowExRefactoring extends Refactoring {
 	@Override
 	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
+		//不需check initial condition
 		RefactoringStatus status = new RefactoringStatus();		
 		return status;
 	}
@@ -85,6 +93,7 @@ public class RethrowExRefactoring extends Refactoring {
 	@Override
 	public Change createChange(IProgressMonitor pm) throws CoreException,
 			OperationCanceledException {
+		//把要變更的結果包成composite傳出去
 		Change[] changes = new Change[] {textFileChange};
 		CompositeChange change = new CompositeChange("Rethrow Unhandled Exception", changes);
 		return change;
@@ -95,6 +104,10 @@ public class RethrowExRefactoring extends Refactoring {
 		return "Rethrow Unhandle Exception";
 	}
 
+	/**
+	 * 把marker傳進來供此class存取一些code smell資訊
+	 * @param marker
+	 */
 	public void setMarker(IMarker marker){
 		this.marker = marker;
 		this.project = JavaCore.create(marker.getResource().getProject());
@@ -105,6 +118,7 @@ public class RethrowExRefactoring extends Refactoring {
 	 * @param resource
 	 */
 	private void collectChange(IResource resource){
+		//取得要修改的CompilationUnit
 		if (resource instanceof IFile && resource.getName().endsWith(".java")) {
 			try {
 				IJavaElement javaElement = JavaCore.create(resource);
@@ -132,13 +146,20 @@ public class RethrowExRefactoring extends Refactoring {
 				if(currentMethodNode != null){
 					CodeSmellAnalyzer visitor = new CodeSmellAnalyzer(this.actRoot);
 					currentMethodNode.accept(visitor);
-					currentExList = visitor.getIgnoreExList();
+					String problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
+					//判斷是Ignore Ex or Dummy handler並取得code smell的List
+					if(problem.equals(RLMarkerAttribute.CS_INGNORE_EXCEPTION)){
+						currentExList = visitor.getIgnoreExList();	
+					}else{
+						currentExList = visitor.getDummyList();
+					}
+					//去修改AST Tree的內容
 					rethrowException();
 				}
 			
 			}catch (Exception ex) {
-				//logger.error("[Find CS Method] EXCEPTION ",ex);
-				ex.printStackTrace();
+				logger.error("[Find CS Method] EXCEPTION ",ex);
+//				ex.printStackTrace();
 			}
 		}
 	}
@@ -159,8 +180,8 @@ public class RethrowExRefactoring extends Refactoring {
 			ASTCatchCollect catchCollector = new ASTCatchCollect();
 			currentMethodNode.accept(catchCollector);
 			List<ASTNode> catchList = catchCollector.getMethodList();
-			//去比對startPosition,找出要修改的節點
 			
+			//去比對startPosition,找出要修改的catch			
 			for (ASTNode cc : catchList){
 				if(cc.getStartPosition() == msg.getPosition()){
 					SingleVariableDeclaration svd = (SingleVariableDeclaration) cc
@@ -178,6 +199,11 @@ public class RethrowExRefactoring extends Refactoring {
 					
 					//取得CatchClause所有的statement
 					List<Statement> statement = clause.getBody().statements();
+					//將如是Dummy handler要相關print例外資訊的東西移除
+					String problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
+					if(problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)){
+						deleteStatement(statement);
+					}
 					//將資料寫回
 					ts.setExpression(cic);
 					statement.add(ts);		
@@ -195,9 +221,29 @@ public class RethrowExRefactoring extends Refactoring {
 			textFileChange.setEdit(edits);
 			
 		}catch (Exception ex) {
-			//logger.error("[Rethrow Exception] EXCEPTION ",ex);
-			ex.printStackTrace();
+			logger.error("[Rethrow Exception] EXCEPTION ",ex);
+//			ex.printStackTrace();
 		}
+	}
+	
+	/**
+	 * 在Rethrow之前,先將相關的print字串都清除掉
+	 */
+	private void deleteStatement(List<Statement> statementTemp){
+		// 從Catch Clause裡面剖析兩種情形
+		if(statementTemp.size() != 0){
+			for(int i=0;i<statementTemp.size();i++){			
+				ExpressionStatement statement = (ExpressionStatement) statementTemp.get(i);
+				// 遇到System.out.print or printStackTrace就把他remove掉
+				if(statement.getExpression().toString().contains("System.out.print")||
+						statement.getExpression().toString().contains("printStackTrace")){	
+						statementTemp.remove(i);
+						//移除完之後ArrayList的位置會重新調整過,所以利用遞回來繼續往下找符合的條件並移除
+						deleteStatement(statementTemp);						
+				}			
+			}
+		}
+
 	}
 	
 	/**
@@ -209,12 +255,12 @@ public class RethrowExRefactoring extends Refactoring {
 		boolean isImportLibrary = false;
 		List<ImportDeclaration> importList = this.actRoot.imports();
 		for(ImportDeclaration id : importList){
-//			System.out.println("【Library Name】===>"+id.toString());
 			if(exType.getFullyQualifiedName().equals(id.getName().getFullyQualifiedName())){
 				isImportLibrary = true;
 			}
 		}
-//		System.out.println("【Library Name】===>"+exType.getFullyQualifiedName());
+		
+		//假如沒有import就加入到AST中
 		AST rootAst = this.actRoot.getAST(); 
 		if(!isImportLibrary){
 			ImportDeclaration imp = rootAst.newImportDeclaration();
@@ -228,8 +274,15 @@ public class RethrowExRefactoring extends Refactoring {
 	 * 紀錄user所要throw的exception type
 	 * @param name : exception type
 	 */
-	public void setExceptionName(String name){
-		this.exceptionType = name;
+	public RefactoringStatus setExceptionName(String name){
+		//假如使用者沒有填寫任何東西,把RefactoringStatus設成Error
+		if(name.length() == 0){
+			return RefactoringStatus.createFatalErrorStatus("Please Choose an Exception Type");
+		}else{
+			//假如有寫就把他存下來
+			this.exceptionType = name;
+			return new RefactoringStatus();
+		}		
 	}
 	
 	/**
@@ -244,6 +297,7 @@ public class RethrowExRefactoring extends Refactoring {
 	 * @param type
 	 */
 	public void setExType(IType type){
+		
 		this.exType = type;
 	}
 }

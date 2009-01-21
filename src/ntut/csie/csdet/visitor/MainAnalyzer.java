@@ -72,8 +72,8 @@ public class MainAnalyzer extends RLBaseVisitor{
 	 */
 	private boolean processMainFunction(List statement){
 		if(statement.size() == 0){
-			// main function柑ぐ或常⊿Τ碞琌code smell
-			return true;
+			// main function柑ぐ或碞ぃ琌衡琌code smell
+			return false;
 		}else{
 			for(int i=0;i<statement.size();i++){
 				//安main functionいΤtry catch,碞ぃ衡琌code smell

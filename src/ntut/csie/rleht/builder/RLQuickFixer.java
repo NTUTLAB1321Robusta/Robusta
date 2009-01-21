@@ -46,13 +46,14 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				return new IMarkerResolution[] { new RLQuickFix("移除首次出現之@RL (" + exception + ")") };
 			} else if (problem.equals(RLMarkerAttribute.ERR_RL_INSTANCE)) {
 				return new IMarkerResolution[] { new RLQuickFix("@RL順序對調(" + marker.getAttribute(IMarker.MESSAGE) + ")") };
-				// 碰到Ignore Exception的Quick fix
+				// 碰到Ignore Exception的Quick fix and refactoring方法
 			} else if(problem.equals(RLMarkerAttribute.CS_INGNORE_EXCEPTION)){
-				return new IMarkerResolution[] { new CSQuickFix("Quick Fix Code Smell==>Rethrow Unhandled Excetpion"),
+				return new IMarkerResolution[] { new CSQuickFix("Quick Fix==>Rethrow Unhandled Excetpion"),
 						new RethrowUncheckExAction("Refactor==>Rethrow Unhandled Excetpion")};
 				// 碰到Dummy Handler的Quick fix
 			} else if(problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)){
-				return new IMarkerResolution[] { new DHQuickFix("Quick Fix Code Smell==>Rethrow Unhandled Excetpion")};
+				return new IMarkerResolution[] { new DHQuickFix("Quick Fix==>Rethrow Unhandled Excetpion"),
+						new RethrowUncheckExAction("Refactor==>Rethrow Unhandled Excetpion")};
 				// 碰到Nested Try block的Quick fix
 			} else if(problem.equals(RLMarkerAttribute.CS_Nested_Try_Block)){
 				return new IMarkerResolution[] { new DHQuickFix("Quick Fix Code Smell==>????????") };

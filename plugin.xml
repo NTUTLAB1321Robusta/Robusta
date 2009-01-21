@@ -99,7 +99,7 @@
          </action>
       </objectContribution>
       
-      <!-- Code Smell Refactor //暫時先作選單,不一定會實作此功能-->
+      <!-- Code Smell Refactor //暫時先作選單,不一定會實作此功能
       <objectContribution
             id="RLEHT.contribution1"
             objectClass="org.eclipse.ui.IFileEditorInput">
@@ -116,7 +116,7 @@
                label="Rethrowe Uncheck Exception"
                menubarPath="RLEHT.popupmenu1/group1"/>
         </objectContribution>
-        
+        -->
         
 
    </extension>
@@ -163,5 +163,5 @@
             id="ntut.csie.csdet.views.CSPropertyPage">
       </page>
    </extension>
-
+		
 </plugin>

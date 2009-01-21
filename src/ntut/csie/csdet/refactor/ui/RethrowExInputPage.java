@@ -25,6 +25,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.SelectionStatusDialog;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 提供一個介面給user,讓user可以選擇要Rethrow什麼樣的Excpetion type
@@ -32,7 +34,9 @@ import org.eclipse.ui.dialogs.SelectionStatusDialog;
  */
 
 public class RethrowExInputPage extends UserInputWizardPage {
-
+	private static Logger logger = LoggerFactory.getLogger(RethrowExInputPage.class);
+	
+	
 	//填寫要throw的Excpetion type
 	private Text exNameField;
 	//使用者所選擇的Exception Type
@@ -43,16 +47,15 @@ public class RethrowExInputPage extends UserInputWizardPage {
 	}
 
 	public void createControl(Composite parent) {
-		Composite result= new Composite(parent, SWT.NONE);
-		
+		Composite result= new Composite(parent, SWT.NONE);		
 		setControl(result);
 
 		GridLayout layout= new GridLayout();
-		layout.numColumns= 2;
+		layout.numColumns= 1;
 		result.setLayout(layout);
 
 		Label label= new Label(result, SWT.NONE);
-		label.setText("&Declaring class:");
+		label.setText("&ReThrow Exception Type:");
 
 		Composite composite= new Composite(result, SWT.NONE);
 		layout= new GridLayout();
@@ -67,7 +70,7 @@ public class RethrowExInputPage extends UserInputWizardPage {
 		// 預設拋出RuntimeException
 		exNameField.setText("RuntimeException");
 		
-		//Browse Button
+		//Browse Button 用來呼叫Selection Dialog
 		final Button browseButton= new Button(composite, SWT.PUSH);
 		browseButton.setText("&Browse...");
 		GridData data= new GridData();
@@ -85,8 +88,6 @@ public class RethrowExInputPage extends UserInputWizardPage {
 			@Override
 			public void widgetSelected(SelectionEvent event) {
 				exType= selectExType();	
-				
-				//System.out.println("【DeclaringClass Type】====>"+exType.getFullyQualifiedName());
 				if (exType == null)
 					return;
 				exNameField.setText(exType.getElementName());				
@@ -95,8 +96,7 @@ public class RethrowExInputPage extends UserInputWizardPage {
 		exNameField.setFocus();
 		exNameField.selectAll();
 		
-		handleInputChange();
-		
+		handleInputChange();		
 	}
 	
 	/**
@@ -120,12 +120,22 @@ public class RethrowExInputPage extends UserInputWizardPage {
 	 * 假入Text中的東西有改變時要處理
 	 */
 	private void handleInputChange(){	
+		RefactoringStatus status = new RefactoringStatus();
 		RethrowExRefactoring refactoring = getRethrowExRefactoring();
-		refactoring.setExceptionName(exNameField.getText());
-		//假如要Throw的exception沒有import進來的話,可利用保留的type來import
+		status.merge(refactoring.setExceptionName(exNameField.getText()));
+		//假如要Throw的exception沒有import進來的話,可利用保留的type來import		
 		refactoring.setExType(exType);
-		//TODO 假如空格沒填或者user所填寫的東西有問題,給予提示
-		setMessage("Hello",RefactoringStatus.WARNING);
+		//TODO 是否有辦法判定使用者所選擇的是exception type??
+		//先確認有沒有error的情形
+		setPageComplete(!status.hasError());
+		int severity = status.getSeverity();
+		String message = status.getMessageMatchingSeverity(severity);
+		if(severity >= RefactoringStatus.INFO){
+			//有Error的情形就把他設定進來
+			setMessage(message,RefactoringStatus.WARNING);
+		}else{
+			setMessage("",NONE);
+		}		
 	}
 	
 	/**
@@ -148,7 +158,7 @@ public class RethrowExInputPage extends UserInputWizardPage {
 				return (IType)dialog.getFirstResult();
 			}
 		} catch (JavaModelException e) {			
-			e.printStackTrace();
+			logger.error("[Refactor][Get Selection Dialog Error] EXCEPTION ",e);
 		}
 		return null;
 	}

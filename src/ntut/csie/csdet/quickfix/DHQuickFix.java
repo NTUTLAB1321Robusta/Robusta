@@ -121,7 +121,7 @@ public class DHQuickFix implements IMarkerResolution{
 			
 			}catch (Exception ex) {
 				logger.error("[Find DH Method] EXCEPTION ",ex);
-				ex.printStackTrace();
+//				ex.printStackTrace();
 			}
 		}
 		return false;
@@ -152,7 +152,7 @@ public class DHQuickFix implements IMarkerResolution{
 					.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
 					
 					CatchClause clause = (CatchClause)cc;
-					// 將相關print例外資訊的東西移除
+
 				
 					//自行建立一個throw statement加入
 					ThrowStatement ts = ast.newThrowStatement();
@@ -164,7 +164,7 @@ public class DHQuickFix implements IMarkerResolution{
 					cic.arguments().add(ast.newSimpleName(svd.resolveBinding().getName()));
 //					Expression expression = ts.getAST().newSimpleName(svd.resolveBinding().getName()) ;
 					
-					//取得CatchClause所有的statement
+					//取得CatchClause所有的statement,將相關print例外資訊的東西移除
 					List<Statement> statement = clause.getBody().statements();
 					deleteStatement(statement);
 					//將資料寫回
