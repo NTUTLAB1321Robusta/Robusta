@@ -66,7 +66,7 @@ public class MainAnalyzer extends RLBaseVisitor{
 	}
 	
 	/**
-	 * 檢查main function中是否有try block
+	 * 檢查main function中是否有code smell
 	 * @param statement
 	 * @return
 	 */
@@ -74,14 +74,14 @@ public class MainAnalyzer extends RLBaseVisitor{
 		if(statement.size() == 0){
 			// main function裡面什麼就不是算是code smell
 			return false;
+		}else if(statement.size() == 1){
+			if(statement.get(0) instanceof TryStatement)
+				return false;
+			return true;
 		}else{
-			for(int i=0;i<statement.size();i++){
-				//假如main function中有try catch時,就不能算是code smell
-				if(statement.get(i) instanceof TryStatement){
-					return false;
-				}
-			}
-			// for loop跑完都沒找到就視為code smell
+			/*如果Main Block有兩種以上的statement,就表示有東西沒被
+			 * Try block包住,或者根本沒有try block
+			 */
 			return true;
 		}
 	}
