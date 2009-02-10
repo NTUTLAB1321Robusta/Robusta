@@ -51,8 +51,6 @@ public class DHQuickFix implements IMarkerResolution{
 	
 	private IOpenable actOpenable;
 	
-//	private ASTRewrite rewrite;
-	
 	private List<CSMessage> currentExList = null;
 	
 	
@@ -121,7 +119,6 @@ public class DHQuickFix implements IMarkerResolution{
 			
 			}catch (Exception ex) {
 				logger.error("[Find DH Method] EXCEPTION ",ex);
-//				ex.printStackTrace();
 			}
 		}
 		return false;

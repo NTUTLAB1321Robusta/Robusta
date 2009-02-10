@@ -8,8 +8,10 @@ import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.rleht.common.RLBaseVisitor;
 
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TryStatement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,18 +52,15 @@ public class MainAnalyzer extends RLBaseVisitor{
 	 */
 	private void processMethodDeclaration(MethodDeclaration node){
 		// parse AST tree看看是否有void main(java.lang.String[])
-		if(node.resolveBinding().toString().contains("void main(java.lang.String[])")){
-			
+		if(node.resolveBinding().toString().contains("void main(java.lang.String[])")){			
 			List statement = node.getBody().statements();
 			if(processMainFunction(statement)){
 				//如果有找到code smell就將其加入
-				CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_Unprotected_Main,null,											
+				CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_UNPROTECTED_MAIN,null,											
 						node.toString(),node.getStartPosition(),
 						this.getLineNumber(node.getStartPosition()),null);
 						this.unprotectedMainList.add(csmsg);				
 			}
-			
-			
 		}
 	}
 	
@@ -72,11 +71,22 @@ public class MainAnalyzer extends RLBaseVisitor{
 	 */
 	private boolean processMainFunction(List statement){
 		if(statement.size() == 0){
-			// main function裡面什麼就不是算是code smell
+			// main function裡面什麼都沒有就不是算是code smell
 			return false;
 		}else if(statement.size() == 1){
-			if(statement.get(0) instanceof TryStatement)
-				return false;
+			if(statement.get(0) instanceof TryStatement){
+				TryStatement ts = (TryStatement)statement.get(0);
+				List catchList = ts.catchClauses();
+				for(int i=0;i<catchList.size();i++){
+					CatchClause cc = (CatchClause)catchList.get(i);
+					SingleVariableDeclaration svd = cc.getException();
+					//如果有try還要判斷catch是否為catch(Exception ..)
+					if(svd.getType().toString().equals("Exception")){
+						//如果有catch(Exception ..)就不算code smell
+						return false;
+					}					
+				}
+			}				
 			return true;
 		}else{
 			/*如果Main Block有兩種以上的statement,就表示有東西沒被

@@ -2,6 +2,7 @@ package ntut.csie.rleht.builder;
 
 import ntut.csie.csdet.quickfix.CSQuickFix;
 import ntut.csie.csdet.quickfix.DHQuickFix;
+import ntut.csie.csdet.quickfix.UMQuickFix;
 import ntut.csie.csdet.refactor.RethrowUncheckExAction;
 import ntut.csie.rleht.common.RLUtils;
 import ntut.csie.rleht.views.RLData;
@@ -55,11 +56,11 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				return new IMarkerResolution[] { new DHQuickFix("Quick Fix==>Rethrow Unhandled Excetpion"),
 						new RethrowUncheckExAction("Refactor==>Rethrow Unhandled Excetpion")};
 				// 碰到Nested Try block的Quick fix
-			} else if(problem.equals(RLMarkerAttribute.CS_Nested_Try_Block)){
+			} else if(problem.equals(RLMarkerAttribute.CS_NESTED_TRY_BLOCK)){
 				return new IMarkerResolution[] { new DHQuickFix("Quick Fix Code Smell==>????????") };
 				// 碰到Unprotected Main program的Quick fix
-			} else if(problem.equals(RLMarkerAttribute.CS_Unprotected_Main)){
-				return new IMarkerResolution[] { new DHQuickFix("Quick Fix Code Smell==>????????") };
+			} else if(problem.equals(RLMarkerAttribute.CS_UNPROTECTED_MAIN)){
+				return new IMarkerResolution[] { new UMQuickFix("Quick Fix==>Big outer try block") };
 			}
 
 			return null;

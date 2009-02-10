@@ -339,7 +339,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		
 		// 假如是第一個Try,那就不是Code Smell,不用加進去
 		if(!this.parentId.equals("")){
-			CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_Nested_Try_Block,null,											
+			CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_NESTED_TRY_BLOCK,null,											
 					trystat.toString(),trystat.getStartPosition(),
 					this.getLineNumber(trystat.getStartPosition()),null);
 			this.nestedTryList.add(csmsg);	

@@ -45,8 +45,6 @@ public class CSQuickFix  implements IMarkerResolution{
 	
 	private IOpenable actOpenable;
 	
-//	private ASTRewrite rewrite;
-	
 	private List<CSMessage> currentExList = null;
 	
 	
