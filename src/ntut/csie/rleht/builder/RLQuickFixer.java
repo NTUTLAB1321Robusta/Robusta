@@ -61,6 +61,8 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				// ¸I¨ìUnprotected Main programªºQuick fix
 			} else if(problem.equals(RLMarkerAttribute.CS_UNPROTECTED_MAIN)){
 				return new IMarkerResolution[] { new UMQuickFix("Quick Fix==>Big outer try block") };
+			} else if(problem.equals(RLMarkerAttribute.CS_SPARE_HANDLER)){
+				return new IMarkerResolution[] { new DHQuickFix("Quick Fix Code Smell==>????????") };
 			}
 
 			return null;

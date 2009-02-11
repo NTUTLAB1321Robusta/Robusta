@@ -203,7 +203,6 @@ public class UMQuickFix implements IMarkerResolution{
 		sv.setName(ast.newSimpleName("ex"));
 		cc.setException(sv);
 		//盢穝catchtry blockい
-		catchStatement.add(cc);
 		
 		//眔璶copytry
 		TryStatement original = (TryStatement)copy.get(pos);
@@ -214,7 +213,6 @@ public class UMQuickFix implements IMarkerResolution{
 		//眔璶copyfinally
 		Block FinalBlock = original.getFinally();
 		if(pos == 0){
-			System.out.println("Enter pos=0");
 			//穝糤セtry珹腹いず甧
 			for(int i=0;i<originalBlock.size();i++){
 				tryStatement.add(ASTNode.copySubtree(ast, (ASTNode) originalBlock.get(i)));
@@ -224,15 +222,21 @@ public class UMQuickFix implements IMarkerResolution{
 				tryStatement.add(ASTNode.copySubtree(ast, (ASTNode) statement.get(i)));
 			}
 			
+			//ノ跑计ㄓ耞セmainいcatch exception篈琌catch(Exception e...)
+			boolean isException = false;
 			//盢catchぇずず甧狡籹筁ㄓ
 			for(int i=0;i<catchBlock.size();i++){
-				System.out.println("Catch Block===>"+catchBlock.get(i).toString());
-				CatchClause cx =(CatchClause)catchBlock.get(i);
-				List cxList = cx.getBody().statements();
-				for(int x=0;x<cxList.size();x++){
-					System.out.println("Block Content===>"+cxList.get(x).toString());
-					cc.getBody().statements().add(ASTNode.copySubtree(cx.getBody().getAST(), (ASTNode) cxList.get(x)));	
-				}				
+				CatchClause temp = (CatchClause)catchBlock.get(i);
+				if(temp.getException().toString().equals("Exception")){
+					//安Τт才篈,碞р跑计砞Θtrue
+					isException = true;
+				}
+				catchStatement.add(ASTNode.copySubtree(temp.getAST(), (ASTNode)temp));	
+			}
+			
+			//Θミボセmain functionいcatch⊿Τcatch Exception
+			if(!isException){	
+				catchStatement.add(cc);
 			}
 			
 			//耞セmainいtry琌Τfinally block,Τ杠碞穝糤finally竊翴
@@ -242,7 +246,6 @@ public class UMQuickFix implements IMarkerResolution{
 			}
 			
 		}else if(pos == (copy.size()-1)){
-			System.out.println("Enter pos=size-1");
 			//安砞main function程祘Α琌try block
 			//盢tryぇ玡祘Α常copy穝try blockい
 			for(int i=0;i<statement.size();i++){
@@ -254,15 +257,21 @@ public class UMQuickFix implements IMarkerResolution{
 				tryStatement.add(ASTNode.copySubtree(ast, (ASTNode) originalBlock.get(i)));
 			}
 			
+			//ノ跑计ㄓ耞セmainいcatch exception篈琌catch(Exception e...)
+			boolean isException = false;
 			//盢catchぇずず甧狡籹筁ㄓ
 			for(int i=0;i<catchBlock.size();i++){
-				System.out.println("Catch Block===>"+catchBlock.get(i).toString());
-				CatchClause cx =(CatchClause)catchBlock.get(i);
-				List cxList = cx.getBody().statements();
-				for(int x=0;x<cxList.size();x++){
-					System.out.println("Block Content===>"+cxList.get(x).toString());
-					cc.getBody().statements().add(ASTNode.copySubtree(cx.getBody().getAST(), (ASTNode) cxList.get(x)));	
-				}				
+				CatchClause temp = (CatchClause)catchBlock.get(i);
+				if(temp.getException().toString().equals("Exception")){
+					//安Τт才篈,碞р跑计砞Θtrue
+					isException = true;
+				}
+				catchStatement.add(ASTNode.copySubtree(temp.getAST(), (ASTNode)temp));	
+			}
+			
+			//Θミボセmain functionいcatch⊿Τcatch Exception
+			if(!isException){	
+				catchStatement.add(cc);
 			}
 			
 			//耞セmainいtry琌Τfinally block,Τ杠碞穝糤finally竊翴
@@ -282,15 +291,21 @@ public class UMQuickFix implements IMarkerResolution{
 				tryStatement.add(ASTNode.copySubtree(ast, (ASTNode) originalBlock.get(i)));
 			}
 
+			//ノ跑计ㄓ耞セmainいcatch exception篈琌catch(Exception e...)
+			boolean isException = false;
 			//盢catchぇずず甧狡籹筁ㄓ
 			for(int i=0;i<catchBlock.size();i++){
-				System.out.println("Catch Block===>"+catchBlock.get(i).toString());
-				CatchClause cx =(CatchClause)catchBlock.get(i);
-				List cxList = cx.getBody().statements();
-				for(int x=0;x<cxList.size();x++){
-					System.out.println("Block Content===>"+cxList.get(x).toString());
-					cc.getBody().statements().add(ASTNode.copySubtree(cx.getBody().getAST(), (ASTNode) cxList.get(x)));	
-				}			
+				CatchClause temp = (CatchClause)catchBlock.get(i);
+				if(temp.getException().toString().equals("Exception")){
+					//安Τт才篈,碞р跑计砞Θtrue
+					isException = true;
+				}
+				catchStatement.add(ASTNode.copySubtree(temp.getAST(), (ASTNode)temp));	
+			}
+			
+			//Θミボセmain functionいcatch⊿Τcatch Exception
+			if(!isException){	
+				catchStatement.add(cc);
 			}
 			
 			//耞セmainいtry琌Τfinally block,Τ杠碞穝糤finally竊翴
@@ -309,6 +324,28 @@ public class UMQuickFix implements IMarkerResolution{
 		//р穝ミtry
 		statement.add(ts);
 	}
+	
+//	private void moveTryBlock2(AST ast,List statement,int pos){
+//		int originalSize = statement.size();
+//		List copy = ASTNode.copySubtrees(ast,statement);
+//		TryStatement ts = ast.newTryStatement();
+//		ts = (TryStatement) ASTNode.copySubtree(ast,(ASTNode) statement.get(pos));
+//		List tryStat = ts.getBody().statements();
+//		List catchStatement = ts.catchClauses();
+//		statement.remove(pos);
+//		if(pos == 0){
+//			for(int i=0;i<copy.size();i++){
+//				tryStat.add(ASTNode.copySubtree(ast, (ASTNode) copy.get(i)));
+//			}
+//			
+//			
+//			for(int i=0;i<catchStatement.size();i++){
+//				CatchClause cc = (CatchClause)catchStatement.get(i);
+//			}
+//		}
+//		statement.clear();
+//		statement.add(ts);
+//	}
 	
 	
 	/**
