@@ -1,5 +1,6 @@
 package ntut.csie.csdet.data;
 
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 
 /**
@@ -8,6 +9,8 @@ import org.eclipse.jdt.core.dom.ITypeBinding;
  */
 
 public class CSMessage {
+	
+	private ASTNode node;
 	
 	private ITypeBinding typeBinding;
 
@@ -29,6 +32,7 @@ public class CSMessage {
 		this.lineNumber = lineNumber;
 		this.exceptionType = exceptionType;
 	}
+	
 	
 	public String getCodeSmellType(){
 		return cstype;
@@ -87,4 +91,5 @@ public class CSMessage {
 	public void setTypeBinding(ITypeBinding typeBinding) {
 		this.typeBinding = typeBinding;
 	}
+
 }

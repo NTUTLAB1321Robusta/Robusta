@@ -298,7 +298,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 				case ASTNode.METHOD_INVOCATION:
 					if (currentMethodFound) {
 						MethodInvocation mi = (MethodInvocation) node;
-						
+						//TODO 下面這行有時候會發生null point exception
 						if (!this.findAnnotation(node, mi.resolveMethodBinding().getAnnotations())) {
 							// 取得Method的Throw Exception Type
 							this.findExceptionTypes(node, mi.resolveMethodBinding().getExceptionTypes());

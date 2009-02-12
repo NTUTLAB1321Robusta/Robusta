@@ -4,6 +4,7 @@ import ntut.csie.csdet.quickfix.CSQuickFix;
 import ntut.csie.csdet.quickfix.DHQuickFix;
 import ntut.csie.csdet.quickfix.UMQuickFix;
 import ntut.csie.csdet.refactor.RethrowUncheckExAction;
+import ntut.csie.csdet.refactor.RetryAction;
 import ntut.csie.rleht.common.RLUtils;
 import ntut.csie.rleht.views.RLData;
 
@@ -62,7 +63,7 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 			} else if(problem.equals(RLMarkerAttribute.CS_UNPROTECTED_MAIN)){
 				return new IMarkerResolution[] { new UMQuickFix("Quick Fix==>Big outer try block") };
 			} else if(problem.equals(RLMarkerAttribute.CS_SPARE_HANDLER)){
-				return new IMarkerResolution[] { new DHQuickFix("Quick Fix Code Smell==>????????") };
+				return new IMarkerResolution[] { new RetryAction("Refactor==>Introduce resourceful try clause")};
 			}
 
 			return null;

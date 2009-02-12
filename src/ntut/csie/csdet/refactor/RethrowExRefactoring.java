@@ -159,7 +159,6 @@ public class RethrowExRefactoring extends Refactoring {
 			
 			}catch (Exception ex) {
 				logger.error("[Find CS Method] EXCEPTION ",ex);
-//				ex.printStackTrace();
 			}
 		}
 	}

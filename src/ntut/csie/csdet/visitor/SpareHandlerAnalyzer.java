@@ -47,7 +47,12 @@ public class SpareHandlerAnalyzer extends RLBaseVisitor{
 		
 	}
 	
+	/**
+	 * 尋找spare handler的code smell
+	 * @param node
+	 */
 	private void processTryStatement(ASTNode node){
+		//只要catch block之中還有一個try,就會被視為spare handler
 		TryStatement ts = (TryStatement)node;
 		List catchList = ts.catchClauses();
 		for(int i=0;i<catchList.size();i++){
@@ -55,6 +60,10 @@ public class SpareHandlerAnalyzer extends RLBaseVisitor{
 			List catchStat = cc.getBody().statements();
 			for(int x=0;x<catchStat.size();x++){
 				if(catchStat.get(x) instanceof TryStatement){
+					//marker的位置選擇標在第一層的try
+//					CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_SPARE_HANDLER,null,											
+//							ts.toString(),ts.getStartPosition(),
+//							this.getLineNumber(ts.getStartPosition()),null);
 					CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_SPARE_HANDLER,null,											
 							ts.toString(),ts.getStartPosition(),
 							this.getLineNumber(ts.getStartPosition()),null);
@@ -72,6 +81,9 @@ public class SpareHandlerAnalyzer extends RLBaseVisitor{
 		return root.getLineNumber(pos);
 	}
 	
+	/**
+	 * 取得spare handler的list 
+	 */
 	public List<CSMessage> getSpareHandler(){
 		return spareHandlerList;
 	}

@@ -267,10 +267,6 @@ public class RLBuilder extends IncrementalProjectBuilder {
 						for(CSMessage msg : spareHandler){
 							String errmsg = "Code Smell Type:[" + msg.getCodeSmellType() + "]¥¼³B²z!!!";
 							//¶Kmarker
-							System.out.println("¡iThis root¡j==>"+file.getName());
-							System.out.println("¡iErr Msg¡j==>"+errmsg);
-							System.out.println("¡iLine Num¡j==>"+msg.getLineNumber());
-							System.out.println("¡iContent¡j==>"+msg.getStatement());
 							this.addMarker(file, errmsg, msg.getLineNumber(), IMarker.SEVERITY_WARNING,
 									msg.getCodeSmellType(), msg, csIdx, methodIdx);	
 						}

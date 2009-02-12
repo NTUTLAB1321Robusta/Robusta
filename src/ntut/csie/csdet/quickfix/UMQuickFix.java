@@ -2,8 +2,6 @@ package ntut.csie.csdet.quickfix;
 
 import java.util.List;
 
-import ntut.csie.csdet.data.CSMessage;
-import ntut.csie.csdet.visitor.MainAnalyzer;
 import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 
@@ -21,7 +19,6 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TryStatement;
@@ -39,9 +36,6 @@ public class UMQuickFix implements IMarkerResolution{
 	private ASTNode currentMethodNode = null;
 	
 	private IOpenable actOpenable;
-	
-	private List<CSMessage> currentExList = null;
-
 	
 	public UMQuickFix(String label){
 		this.label = label;
