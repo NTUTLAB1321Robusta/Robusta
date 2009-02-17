@@ -55,7 +55,7 @@ public class RethrowExInputPage extends UserInputWizardPage {
 		result.setLayout(layout);
 
 		Label label= new Label(result, SWT.NONE);
-		label.setText("&ReThrow Exception Type:");
+		label.setText("&Retry Exception Type:");
 
 		Composite composite= new Composite(result, SWT.NONE);
 		layout= new GridLayout();

@@ -32,7 +32,4 @@ public interface RLMarkerAttribute {
 	
 	//Unprotected Main Program
 	public static final String CS_UNPROTECTED_MAIN = "CS_Unprotected_Main_Program";
-	
-	//Spare Handlerªºtype
-	public static final String CS_SPARE_HANDLER = "CS_SPARE_HANDLER";
 }

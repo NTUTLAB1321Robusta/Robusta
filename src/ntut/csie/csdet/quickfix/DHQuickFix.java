@@ -80,7 +80,6 @@ public class DHQuickFix implements IMarkerResolution{
 			
 		} catch (CoreException e) {
 			logger.error("[DHQuickFix] EXCEPTION ",e);
-			e.printStackTrace();
 		}
 		
 	}
@@ -149,8 +148,6 @@ public class DHQuickFix implements IMarkerResolution{
 					.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
 					
 					CatchClause clause = (CatchClause)cc;
-
-				
 					//自行建立一個throw statement加入
 					ThrowStatement ts = ast.newThrowStatement();
 					//將throw的variable傳入

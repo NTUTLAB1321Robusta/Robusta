@@ -22,12 +22,17 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TryStatement;
+import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
+import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
 import org.eclipse.jface.text.Document;
 import org.eclipse.text.edits.TextEdit;
 import org.eclipse.ui.IMarkerResolution;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UMQuickFix implements IMarkerResolution{
-
+	private static Logger logger = LoggerFactory.getLogger(UMQuickFix.class);
+	
 	private String label;
 	//存放目前要修改的.java檔
 	private CompilationUnit actRoot;
@@ -36,6 +41,8 @@ public class UMQuickFix implements IMarkerResolution{
 	private ASTNode currentMethodNode = null;
 	
 	private IOpenable actOpenable;
+	
+	private ASTRewrite rewrite;
 	
 	public UMQuickFix(String label){
 		this.label = label;
@@ -59,11 +66,10 @@ public class UMQuickFix implements IMarkerResolution{
 				if(isok)
 					addBigOuterTry(Integer.parseInt(msgIdx));
 			}
-		} catch (CoreException e) {
-		
+		} catch (CoreException e) {		
 			e.printStackTrace();
-		}
-		
+			logger.error("[UMQuickFix] EXCEPTION ",e);
+		}		
 	}
 	
 	/**
@@ -100,6 +106,7 @@ public class UMQuickFix implements IMarkerResolution{
 				
 			}catch(Exception ex){
 				ex.printStackTrace();
+				logger.error("[UMQuickFix] EXCEPTION ",ex);
 			}
 		}		
 		return false;
@@ -111,15 +118,17 @@ public class UMQuickFix implements IMarkerResolution{
 	 */
 	private void addBigOuterTry(int msgIdx){
 		AST ast = actRoot.getAST();
-		actRoot.recordModifications();
+		rewrite = ASTRewrite.create(actRoot.getAST());
+		//actRoot.recordModifications();
 		
 		//取得main function block中所有的statement
 		MethodDeclaration md = (MethodDeclaration)currentMethodNode;
-		List statement = md.getBody().statements();
-		
+		Block mdBlock = md.getBody();
+		List statement = mdBlock.statements();
+
 		boolean isTryExist = false;
 		int pos = -1;
-	
+
 		for(int i=0;i<statement.size();i++){
 			if(statement.get(i) instanceof TryStatement){
 				//假如Main function中有try就標示為true
@@ -128,219 +137,135 @@ public class UMQuickFix implements IMarkerResolution{
 				break;
 			}
 		}
+		
 
+		ListRewrite listRewrite = rewrite.getListRewrite(mdBlock,Block.STATEMENTS_PROPERTY);
+		
 		if(isTryExist){
 			 /*------------------------------------------------------------------------*
 	        -  假如Main function中已經有try block了,那就要去確認try block是位於main的一開始
 	            還是中間,或者是在最後面,並依據這三種情況將程式碼都塞進去try block裡面  
 	        *-------------------------------------------------------------------------*/	
-			moveTryBlock(ast,statement,pos);
+			moveTryBlock(ast,statement,pos,listRewrite);
 		}else{
-			addNewTryBlock(ast,statement);
+			 /*------------------------------------------------------------------------*
+	        -  假如Main function中沒有try block了,那就自己增加一個try block,再把main中所有的
+	            程式全部都塞進try block中
+	        *-------------------------------------------------------------------------*/
+			addNewTryBlock(ast,listRewrite);
 		}		
 		applyChange();
 	}
 	
 	/**
-	 * 新增一個Try block區塊,並將在try之外的程式加入至Try block中
+	 * 新增一個Try block,並把相關的程式碼加進去Try中
 	 * @param ast
-	 * @param statement
+	 * @param listRewrite
 	 */
-	private void addNewTryBlock(AST ast,List statement){
-		 /*------------------------------------------------------------------------*
-        -  假如Main function中沒有try block了,那就自己增加一個try block,再把main中所有的
-            程式全部都塞進try block中
-        *-------------------------------------------------------------------------*/
+	private void addNewTryBlock(AST ast,ListRewrite listRewrite){
 		TryStatement ts = ast.newTryStatement();
 		//替try 加入一個Catch clause
+		
 		List catchStatement = ts.catchClauses();
 		CatchClause cc = ast.newCatchClause();
+		ListRewrite catchRewrite = rewrite.getListRewrite(cc.getBody(),Block.STATEMENTS_PROPERTY);
 		//建立catch的type為 catch(Exception ex)
 		SingleVariableDeclaration sv = ast.newSingleVariableDeclaration();
 		sv.setType(ast.newSimpleType(ast.newSimpleName("Exception")));
 		sv.setName(ast.newSimpleName("ex"));
 		cc.setException(sv);
+		//在Catch中加入todo的註解
+		StringBuffer comment = new StringBuffer();
+		comment.append("//TODO: handle exception");
+		ASTNode placeHolder = rewrite.createStringPlaceholder(comment.toString(), ASTNode.EMPTY_STATEMENT);
+		catchRewrite.insertLast(placeHolder, null);
 		catchStatement.add(cc);
 		
-		//取得剛剛建立的try block中的statement,並將在try之外的程式都移至try block之中
-		List tryStatement = ASTNode.copySubtrees(ast, statement);	
-
-		Block block = ts.getBody();
-		for(int i=0;i<tryStatement.size();i++){
-			//將每一行的程式加入至try block中
-			block.statements().add(i, tryStatement.get(i));
-		}
-		//最後把原本在try block之外的程式都移除掉,因為都已經複製進try block中了
-		statement.clear();
-		statement.add(ts);
-		
-
+		//將原本在try block之外的程式都移動進來
+		ListRewrite tryStatement = rewrite.getListRewrite(ts.getBody(),Block.STATEMENTS_PROPERTY);
+		int listSize = listRewrite.getRewrittenList().size();
+		tryStatement.insertLast(listRewrite.createMoveTarget((ASTNode) listRewrite.getRewrittenList().get(0), 
+									(ASTNode) listRewrite.getRewrittenList().get(listSize-1)), null);
+		//將新增的try statement加進來
+		listRewrite.insertLast(ts, null);
+	}
+	
+	/**	
+	 * 新增一個Try block區塊,並將在try之外的程式加入至Try block中
+	 * @param ast
+	 * @param statement
+	 * @param pos : try的位置
+	 * @param listRewrite
+	 */
+	private void moveTryBlock(AST ast,List statement,int pos,ListRewrite listRewrite){
+		TryStatement original = (TryStatement)statement.get(pos);
+		ListRewrite originalRewrite = rewrite.getListRewrite(original.getBody(),Block.STATEMENTS_PROPERTY);
+	
+		//假如Try block之後還有程式碼,就複製進去try block之內
+		int totalSize = statement.size();
+		if(pos == 0){
+			//假如try block在最一開始
+			if(totalSize > 1){
+				//將try block之後的程式碼move到try中
+				originalRewrite.insertLast(listRewrite.createMoveTarget((ASTNode) listRewrite.getRewrittenList().get(1), 
+						(ASTNode) listRewrite.getRewrittenList().get(totalSize-1)), null);
+			}			
+		}else if(pos == listRewrite.getRewrittenList().size()-1){
+			//假如try block在結尾	
+			if(pos > 0 ){
+				//將try block之前的程式碼move到try中
+				originalRewrite.insertFirst(listRewrite.createMoveTarget((ASTNode) listRewrite.getRewrittenList().get(0), 
+						(ASTNode) listRewrite.getRewrittenList().get(pos-1)), null);
+			}
+		}else{
+			//假如try block在中間
+			//將try block之後的程式碼move到try中
+			originalRewrite.insertFirst(listRewrite.createMoveTarget((ASTNode) listRewrite.getRewrittenList().get(0), 
+					(ASTNode) listRewrite.getRewrittenList().get(pos-1)), null);
+			//將try block之前的程式碼move到try中
+			originalRewrite.insertLast(listRewrite.createMoveTarget((ASTNode) listRewrite.getRewrittenList().get(pos+1), 
+					(ASTNode) listRewrite.getRewrittenList().get(totalSize-1)), null);
+		}		
+		addCatchBody(ast,original);
 	}
 	
 	/**
-	 * 假如原先main function就有try block,但有程式並未移至try block內的話就執行這個method
+	 * 如果沒有catch(Exception e)的話要加進去
 	 * @param ast
-	 * @param statement
-	 * @param pos
+	 * @param original
 	 */
-	private void moveTryBlock(AST ast,List statement,int pos){
-		List copy = ASTNode.copySubtrees(ast, statement);
-		//建立新的try 
-		TryStatement ts = ast.newTryStatement(); 		
-		Block block = ts.getBody();
-		List tryStatement = block.statements();
-		List catchStatement = ts.catchClauses();
-		//建立新的catch
-		CatchClause cc = ast.newCatchClause();		
-		SingleVariableDeclaration sv = ast.newSingleVariableDeclaration();
-		sv.setType(ast.newSimpleType(ast.newSimpleName("Exception")));
-		sv.setName(ast.newSimpleName("ex"));
-		cc.setException(sv);
-		//將新建的catch加到try block中
-		
-		//取得要copy的try
-		TryStatement original = (TryStatement)copy.get(pos);
-		List originalBlock = original.getBody().statements();
-		statement.remove(pos);
-		//取得要copy的catch
-		List catchBlock = original.catchClauses();
-		//取得要copy的finally
-		Block FinalBlock = original.getFinally();
-		if(pos == 0){
-			//先新增原本try括號中的內容
-			for(int i=0;i<originalBlock.size();i++){
-				tryStatement.add(ASTNode.copySubtree(ast, (ASTNode) originalBlock.get(i)));
-			}
-			//再將本來在try之外的程式也複製一份到try的括號中
-			for(int i=0;i<statement.size();i++){
-				tryStatement.add(ASTNode.copySubtree(ast, (ASTNode) statement.get(i)));
-			}
-			
-			//利用此變數來判斷原本main中的catch exception型態是否為catch(Exception e...)
-			boolean isException = false;
-			//再將catch之內的內容也複製過來
-			for(int i=0;i<catchBlock.size();i++){
-				CatchClause temp = (CatchClause)catchBlock.get(i);
-				if(temp.getException().toString().equals("Exception")){
-					//假如有找到符合的型態,就把變數設成true
-					isException = true;
-				}
-				catchStatement.add(ASTNode.copySubtree(temp.getAST(), (ASTNode)temp));	
-			}
-			
-			//成立表示原本main function中的catch並沒有catch Exception
-			if(!isException){	
-				catchStatement.add(cc);
-			}
-			
-			//判斷原本main中的try是否有finally block,有的話就新增一個finally節點
-			if(FinalBlock != null){
-				Block realBlock = (Block) ASTNode.copySubtree(ast, FinalBlock);	
-				ts.setFinally(realBlock);
-			}
-			
-		}else if(pos == (copy.size()-1)){
-			//假設main function最後一個程式是try block
-			//先將try之前的程式都copy到新的try block中
-			for(int i=0;i<statement.size();i++){
-				tryStatement.add(ASTNode.copySubtree(ast, (ASTNode) statement.get(i)));
-			}
-			
-			//將原本的try block的內容還原
-			for(int i=0;i<originalBlock.size();i++){
-				tryStatement.add(ASTNode.copySubtree(ast, (ASTNode) originalBlock.get(i)));
-			}
-			
-			//利用此變數來判斷原本main中的catch exception型態是否為catch(Exception e...)
-			boolean isException = false;
-			//再將catch之內的內容也複製過來
-			for(int i=0;i<catchBlock.size();i++){
-				CatchClause temp = (CatchClause)catchBlock.get(i);
-				if(temp.getException().toString().equals("Exception")){
-					//假如有找到符合的型態,就把變數設成true
-					isException = true;
-				}
-				catchStatement.add(ASTNode.copySubtree(temp.getAST(), (ASTNode)temp));	
-			}
-			
-			//成立表示原本main function中的catch並沒有catch Exception
-			if(!isException){	
-				catchStatement.add(cc);
-			}
-			
-			//判斷原本main中的try是否有finally block,有的話就新增一個finally節點
-			if(FinalBlock != null){
-				Block realBlock = (Block) ASTNode.copySubtree(ast, FinalBlock);	
-				ts.setFinally(realBlock);
-			}
-
-		}else{
-
-			//把Try block之前的程式copy近來
-			for(int i=0;i<=statement.size()-pos;i++){
-				tryStatement.add(ASTNode.copySubtree(ast, (ASTNode) statement.get(i)));
-			}
-			//將原本的try block的內容還原
-			for(int i=0;i<originalBlock.size();i++){
-				tryStatement.add(ASTNode.copySubtree(ast, (ASTNode) originalBlock.get(i)));
-			}
-
-			//利用此變數來判斷原本main中的catch exception型態是否為catch(Exception e...)
-			boolean isException = false;
-			//再將catch之內的內容也複製過來
-			for(int i=0;i<catchBlock.size();i++){
-				CatchClause temp = (CatchClause)catchBlock.get(i);
-				if(temp.getException().toString().equals("Exception")){
-					//假如有找到符合的型態,就把變數設成true
-					isException = true;
-				}
-				catchStatement.add(ASTNode.copySubtree(temp.getAST(), (ASTNode)temp));	
-			}
-			
-			//成立表示原本main function中的catch並沒有catch Exception
-			if(!isException){	
-				catchStatement.add(cc);
-			}
-			
-			//判斷原本main中的try是否有finally block,有的話就新增一個finally節點
-			if(FinalBlock != null){
-				Block realBlock = (Block) ASTNode.copySubtree(ast, FinalBlock);	
-				ts.setFinally(realBlock);
-			}
-			//將Try block之後的內容繼續複製
-			for(int i=statement.size()-pos+1;i<statement.size();i++){
-//				System.out.println("Content==>"+statement.get(i).toString());
-				tryStatement.add(ASTNode.copySubtree(ast, (ASTNode) statement.get(i)));
+	private void addCatchBody(AST ast,TryStatement original){
+		//利用此變數來判斷原本main中的catch exception型態是否為catch(Exception e...)
+		boolean isException = false;
+		List catchStatement = original.catchClauses();
+		for(int i=0;i<catchStatement.size();i++){
+			CatchClause temp = (CatchClause)catchStatement.get(i);
+			SingleVariableDeclaration svd = (SingleVariableDeclaration) temp
+			.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
+			if(svd.getType().toString().equals("Exception")){
+				//假如有找到符合的型態,就把變數設成true
+				isException = true;				
 			}
 		}
-		//將原本main中的東西都清除掉
-		statement.clear();
-		//把新建立的try加入
-		statement.add(ts);
+		
+		if(!isException){
+			//建立新的catch(Exception ex)	
+			ListRewrite catchRewrite = rewrite.getListRewrite(original, TryStatement.CATCH_CLAUSES_PROPERTY);
+			CatchClause cc = ast.newCatchClause();		
+			SingleVariableDeclaration sv = ast.newSingleVariableDeclaration();
+			sv.setType(ast.newSimpleType(ast.newSimpleName("Exception")));
+			sv.setName(ast.newSimpleName("exxxxx"));
+			cc.setException(sv);
+			catchRewrite.insertLast(cc, null);
+			//在Catch中加入todo的註解
+			StringBuffer comment = new StringBuffer();
+			comment.append("//TODO: handle exception");
+			ASTNode placeHolder = rewrite.createStringPlaceholder(comment.toString(), ASTNode.RETURN_STATEMENT);
+			ListRewrite todoRewrite = rewrite.getListRewrite(cc.getBody(),Block.STATEMENTS_PROPERTY);
+			todoRewrite.insertLast(placeHolder, null);
+		}
 	}
-	
-//	private void moveTryBlock2(AST ast,List statement,int pos){
-//		int originalSize = statement.size();
-//		List copy = ASTNode.copySubtrees(ast,statement);
-//		TryStatement ts = ast.newTryStatement();
-//		ts = (TryStatement) ASTNode.copySubtree(ast,(ASTNode) statement.get(pos));
-//		List tryStat = ts.getBody().statements();
-//		List catchStatement = ts.catchClauses();
-//		statement.remove(pos);
-//		if(pos == 0){
-//			for(int i=0;i<copy.size();i++){
-//				tryStat.add(ASTNode.copySubtree(ast, (ASTNode) copy.get(i)));
-//			}
-//			
-//			
-//			for(int i=0;i<catchStatement.size();i++){
-//				CatchClause cc = (CatchClause)catchStatement.get(i);
-//			}
-//		}
-//		statement.clear();
-//		statement.add(ts);
-//	}
-	
+
 	
 	/**
 	 * 將要變更的資料寫回至Document中
@@ -349,16 +274,13 @@ public class UMQuickFix implements IMarkerResolution{
 		//寫回Edit中
 		try {
 			ICompilationUnit cu = (ICompilationUnit) actOpenable;
-//			ICompilationUnit cu = (ICompilationUnit) actRoot.getJavaElement();
 			Document document = new Document(cu.getBuffer().getContents());
-
-			TextEdit edits = actRoot.rewrite(document, cu.getJavaProject().getOptions(true));
+			TextEdit edits = rewrite.rewriteAST(document,null);
 			edits.apply(document);
-
 			cu.getBuffer().setContents(document.get());
-
 		}catch (Exception ex) {
 			ex.printStackTrace();
+			logger.error("[UMQuickFix] EXCEPTION ",ex);
 		}
 	}
 }

@@ -178,6 +178,11 @@ public class RetryRefactoring extends Refactoring{
 			TryStatement ts =addTryBlock(ast,doWhile,original);
 			//在try裡面新增catch
 			addCatchBlock(ast, original, ts);
+			
+			for(int i=pos+1;i<methodSt.size();i++){
+				System.out.println("【Copy Content】==>"+methodSt.get(i).toString());
+				newStat.add(ASTNode.copySubtree(ast, (ASTNode) methodSt.get(i)));
+			}
 			//清掉原本的內容
 			methodSt.clear();
 //			Block block = md.getBody();
@@ -185,6 +190,7 @@ public class RetryRefactoring extends Refactoring{
 			//加入refactoring後的結果
 			md.setBody(newBlock);
 			
+
 			//寫回Edit中
 			applyChange();
 
@@ -414,9 +420,6 @@ public class RetryRefactoring extends Refactoring{
 			if(!isExist)
 				thStat.add(ast.newSimpleName(this.exceptionType));
 		}
-		
-
-		
 	}
 	
 	
@@ -440,8 +443,7 @@ public class RetryRefactoring extends Refactoring{
 			ImportDeclaration imp = rootAst.newImportDeclaration();
 			imp.setName(rootAst.newName(exType.getFullyQualifiedName()));
 			this.actRoot.imports().add(imp);
-		}
-		
+		}		
 	}
 	
 	

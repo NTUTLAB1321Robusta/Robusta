@@ -64,10 +64,7 @@ public class SpareHandlerAnalyzer extends RLBaseVisitor{
 //					CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_SPARE_HANDLER,null,											
 //							ts.toString(),ts.getStartPosition(),
 //							this.getLineNumber(ts.getStartPosition()),null);
-					CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_SPARE_HANDLER,null,											
-							ts.toString(),ts.getStartPosition(),
-							this.getLineNumber(ts.getStartPosition()),null);
-					this.spareHandlerList.add(csmsg);
+//					this.spareHandlerList.add(csmsg);
 					break;
 				}					
 			}

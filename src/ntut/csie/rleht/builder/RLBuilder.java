@@ -161,8 +161,6 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				CodeSmellAnalyzer csVisitor = null;
 				
 				MainAnalyzer mainVisitor = null;
-				
-				SpareHandlerAnalyzer spareVisitor = null;
 
 				// 目前method的Exception資訊
 				List<RLMessage> currentMethodExList = null;
@@ -181,9 +179,6 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				
 				// 目前method內的Unprotected Main資訊
 				List<CSMessage> unprotectedMain = null;
-				
-				// 目前method內的spare handler資訊
-				List<CSMessage> spareHandler = null;
 				
 				// 目前的Method AST Node
 				ASTNode currentMethodNode = null;
@@ -256,21 +251,20 @@ public class RLBuilder extends IncrementalProjectBuilder {
 						}
 					}					
 					
-					//尋找該method內的spare handler
-					spareVisitor = new SpareHandlerAnalyzer(root);
-					method.accept(spareVisitor);
-					spareHandler = spareVisitor.getSpareHandler();
-					
-					//依據所取得的code smell來貼Marker
-					csIdx = -1;
-					if(spareHandler != null){
-						for(CSMessage msg : spareHandler){
-							String errmsg = "Code Smell Type:[" + msg.getCodeSmellType() + "]未處理!!!";
-							//貼marker
-							this.addMarker(file, errmsg, msg.getLineNumber(), IMarker.SEVERITY_WARNING,
-									msg.getCodeSmellType(), msg, csIdx, methodIdx);	
-						}
-					}
+			
+//					List<CSMessage> spareHandler = null;
+//					SpareHandlerAnalyzer spareVisitor = new SpareHandlerAnalyzer(root);
+//					method.accept(spareVisitor);
+//					spareHandler = spareVisitor.getSpareHandler();
+//					csIdx = -1;
+//					if(spareHandler != null){
+//						for(CSMessage msg : spareHandler){
+//							String errmsg = "Code Smell Type:["+ msg.getCodeSmellType() + "]未處理!!!";
+//							//貼marker
+//							this.addMarker(file, errmsg, msg.getLineNumber(), IMarker.SEVERITY_WARNING,
+//									msg.getCodeSmellType(), msg, csIdx, methodIdx);	
+//						}
+//					}		
 					
 					if (currentMethodNode != null) {
 						RLChecker checker = new RLChecker();
