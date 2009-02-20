@@ -20,17 +20,17 @@ public class SpareHandlerAnalyzer extends RLBaseVisitor{
 
 	// AST tree的root(檔案名稱)
 	private CompilationUnit root;
-    
-	// 儲存所找到的spare handler 
-	private List<CSMessage> spareHandlerList;
 	
+	private boolean result = false;
 	
-	public SpareHandlerAnalyzer(CompilationUnit root){
+	private ASTNode selectNode = null;
+	
+	public SpareHandlerAnalyzer(CompilationUnit root,ASTNode node){
 		super(true);
 		this.root = root;		
-		spareHandlerList = new ArrayList<CSMessage>();
+		this.selectNode = node;
+
 	}
-	
 	
 	/*
 	 * (non-Javadoc) 
@@ -48,40 +48,35 @@ public class SpareHandlerAnalyzer extends RLBaseVisitor{
 	}
 	
 	/**
-	 * 尋找spare handler的code smell
+	 * 尋找要被refactor的try statement
 	 * @param node
 	 */
 	private void processTryStatement(ASTNode node){
-		//只要catch block之中還有一個try,就會被視為spare handler
 		TryStatement ts = (TryStatement)node;
 		List catchList = ts.catchClauses();
 		for(int i=0;i<catchList.size();i++){
 			CatchClause cc = (CatchClause)catchList.get(i);
 			List catchStat = cc.getBody().statements();
 			for(int x=0;x<catchStat.size();x++){
-				if(catchStat.get(x) instanceof TryStatement){
-					//marker的位置選擇標在第一層的try
-//					CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_SPARE_HANDLER,null,											
-//							ts.toString(),ts.getStartPosition(),
-//							this.getLineNumber(ts.getStartPosition()),null);
-//					this.spareHandlerList.add(csmsg);
-					break;
-				}					
+				if(catchStat.get(i) instanceof TryStatement){
+					if(ts.getStartPosition() == selectNode.getStartPosition()){
+						//找到那個try的節點就設定為true
+						result = true;
+					}
+				}
 			}
 		}
+//		if(ts.getStartPosition() == selectNode.getStartPosition()){
+//			//找到那個try的節點就設定為true
+//			result = true;
+//		}
 	}
 	
 	/**
-	 * 根據startPosition來取得行數
+	 * 利用此結果來得知是否有找到要被refactor的節點
+	 * @return
 	 */
-	private int getLineNumber(int pos) {
-		return root.getLineNumber(pos);
-	}
-	
-	/**
-	 * 取得spare handler的list 
-	 */
-	public List<CSMessage> getSpareHandler(){
-		return spareHandlerList;
+	public boolean getResult(){
+		return this.result;
 	}
 }

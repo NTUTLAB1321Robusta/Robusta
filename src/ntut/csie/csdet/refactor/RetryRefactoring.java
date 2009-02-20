@@ -2,21 +2,18 @@ package ntut.csie.csdet.refactor;
 
 import java.util.List;
 
+import ntut.csie.csdet.visitor.SpareHandlerAnalyzer;
 import ntut.csie.rleht.builder.ASTMethodCollector;
-import ntut.csie.rleht.builder.RLMarkerAttribute;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.jdt.astview.NodeFinder;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IOpenable;
 import org.eclipse.jdt.core.IType;
-import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -40,6 +37,7 @@ import org.eclipse.jdt.core.dom.TryStatement;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jface.text.Document;
+import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.eclipse.ltk.core.refactoring.Refactoring;
@@ -49,8 +47,6 @@ import org.eclipse.text.edits.TextEdit;
 
 public class RetryRefactoring extends Refactoring{
 
-	//使用者所點選的Marker
-	private IMarker marker;
 	//使用者所選擇的Exception Type
 	private IType exType;
 	//retry的變數名稱
@@ -60,14 +56,17 @@ public class RetryRefactoring extends Refactoring{
 	//最大retry次數	
 	private String maxNum;
 	//最大retry次數的變數名稱
-	private String maxAttempt;	
-	
+	private String maxAttempt;		
 	// user 所填寫要丟出的Exception,預設是RunTimeException
 	private String exceptionType;
 	
 	private IJavaProject project;
 	
-	private IOpenable actOpenable;
+	//存放要轉換成ICompilationUnit的物件
+	private IJavaElement element;
+	
+	//存放被框選的物件
+	private ITextSelection iTSelection;
 	
 	private TextFileChange textFileChange;
 	
@@ -77,21 +76,28 @@ public class RetryRefactoring extends Refactoring{
 	//存放目前所要fix的method node
 	private ASTNode currentMethodNode = null;
 	
+	public RetryRefactoring(IJavaProject project,IJavaElement element,ITextSelection sele){
+		this.project = project;
+		this.element = element;
+		this.iTSelection = sele;
+	}	
 	
 	@Override
 	public RefactoringStatus checkFinalConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {	
 		//不需check final condition
-		collectChange(marker.getResource());
 		RefactoringStatus status = new RefactoringStatus();		
+		collectChange(status);
 		return status;
 	}
 
 	@Override
 	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
-		//不需check initial condition
 		RefactoringStatus status = new RefactoringStatus();		
+		if(iTSelection.getOffset() < 0 || iTSelection.getLength() == 0){
+			status.addFatalError("Selection Error, please retry again!!!");
+		}
 		return status;
 	}
 
@@ -103,47 +109,50 @@ public class RetryRefactoring extends Refactoring{
 		return change;
 	}
 
-	private void collectChange(IResource resource){
-		//取得要修改的CompilationUnit
-		if (resource instanceof IFile && resource.getName().endsWith(".java")) {
-			try {
-				IJavaElement javaElement = JavaCore.create(resource);
-				if (javaElement instanceof IOpenable) {
-					this.actOpenable = (IOpenable) javaElement;
+	private void collectChange(RefactoringStatus status){
+		//Create AST to parse
+		ASTParser parser = ASTParser.newParser(AST.JLS3);
+		parser.setKind(ASTParser.K_COMPILATION_UNIT);
+				
+		parser.setSource((ICompilationUnit) element);
+		parser.setResolveBindings(true);
+		this.actRoot = (CompilationUnit) parser.createAST(null);
+				
+		//取得該class所有的method
+		ASTMethodCollector methodCollector = new ASTMethodCollector();
+		actRoot.accept(methodCollector);
+		//利用ITextSelection資訊來取得使用者所選擇要變更的AST Node
+		//要使用這個method需在xml檔import org.eclipse.jdt.astview
+		ASTNode selectNode = NodeFinder.perform(actRoot, iTSelection.getOffset(), iTSelection.getLength());
+		if(selectNode == null){
+			status.addFatalError("Selection Error, please retry again!!!");
+		}else if(!(selectNode instanceof TryStatement)){
+			status.addFatalError("Selection Error, please retry again!!!");
+		}else{			
+			List<ASTNode> methodList = methodCollector.getMethodList();
+			int methodIdx = -1;
+			for(ASTNode method : methodList){
+				methodIdx++;
+				SpareHandlerAnalyzer visitor = new SpareHandlerAnalyzer(actRoot,selectNode);
+				method.accept(visitor);
+				if(visitor.getResult()){
+					break;
 				}
-				
-				//Create AST to parse
-				ASTParser parser = ASTParser.newParser(AST.JLS3);
-				parser.setKind(ASTParser.K_COMPILATION_UNIT);
-				
-				parser.setSource((ICompilationUnit) javaElement);
-				parser.setResolveBindings(true);
-				this.actRoot = (CompilationUnit) parser.createAST(null);
-				
-				//取得該class所有的method
-				ASTMethodCollector methodCollector = new ASTMethodCollector();
-				actRoot.accept(methodCollector);
-				List<ASTNode> methodList = methodCollector.getMethodList();
-				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
-				
-				//取得目前要被修改的method node
-				this.currentMethodNode = methodList.get(Integer.parseInt(methodIdx));
-				if(currentMethodNode != null){
-					//進行retry refactoring
-					introduceRetry();
-				}
-				
-			}catch (Exception ex) {
-				ex.printStackTrace();
-				//logger.error("[Find CS Method] EXCEPTION ",ex);
+			}
+			
+			//取得目前要被修改的method node
+			if(methodIdx != -1){			
+				currentMethodNode = methodList.get(methodIdx);
+				introduceRetry(selectNode);
 			}
 		}
+
 	}
 	
 	/**
 	 * 進retry的Refactoring
 	 */
-	private void introduceRetry(){
+	private void introduceRetry(ASTNode selectNode){
 			actRoot.recordModifications();
 			AST ast = currentMethodNode.getAST();
 			MethodDeclaration md = (MethodDeclaration)currentMethodNode;
@@ -151,13 +160,16 @@ public class RetryRefactoring extends Refactoring{
 
 			List methodSt = md.getBody().statements();
 			//先複製一份method內的statement保留下來
-//			List methodCopy = ASTNode.copySubtrees(ast, methodSt);
 			int pos = -1;
 			TryStatement original = null;
 			for(int i=0;i<methodSt.size();i++){
 				if(methodSt.get(i) instanceof TryStatement){
-					pos = i;
-					original = (TryStatement)methodSt.get(i);
+					TryStatement temp = (TryStatement)methodSt.get(i);
+					if(temp.getStartPosition() == selectNode.getStartPosition()){
+						pos = i;
+						original = (TryStatement)methodSt.get(i);
+						break;
+					}
 				}
 			}
 			
@@ -180,7 +192,7 @@ public class RetryRefactoring extends Refactoring{
 			addCatchBlock(ast, original, ts);
 			
 			for(int i=pos+1;i<methodSt.size();i++){
-				System.out.println("【Copy Content】==>"+methodSt.get(i).toString());
+//				System.out.println("【Copy Content】==>"+methodSt.get(i).toString());
 				newStat.add(ASTNode.copySubtree(ast, (ASTNode) methodSt.get(i)));
 			}
 			//清掉原本的內容
@@ -453,7 +465,7 @@ public class RetryRefactoring extends Refactoring{
 	private void applyChange(){
 		//寫回Edit中
 		try {
-			ICompilationUnit cu = (ICompilationUnit) actOpenable;
+			ICompilationUnit cu = (ICompilationUnit) element;
 			Document document = new Document(cu.getBuffer().getContents());	
 			TextEdit edits = actRoot.rewrite(document, cu.getJavaProject().getOptions(true));
 			textFileChange = new TextFileChange(cu.getElementName(), (IFile)cu.getResource());
@@ -473,11 +485,11 @@ public class RetryRefactoring extends Refactoring{
 	 * 把marker傳進來供此class存取一些code smell資訊
 	 * @param marker
 	 */
-	public void setMarker(IMarker marker){
-		this.marker = marker;
-		this.project = JavaCore.create(marker.getResource().getProject());
-	}
-	
+//	public void setMarker(IMarker marker){
+//		this.marker = marker;
+//		this.project = JavaCore.create(marker.getResource().getProject());
+//	}
+
 	/**
 	 * 取得JavaProject
 	 */

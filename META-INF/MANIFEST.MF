@@ -35,5 +35,6 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.draw2d,
  org.eclipse.gef,
  org.eclipse.jdt.launching,
- org.junit
+ org.junit,
+ org.eclipse.jdt.astview
 Eclipse-LazyStart: true

@@ -99,26 +99,23 @@
          </action>
       </objectContribution>
       
-      <!-- Code Smell Refactor //暫時先作選單,不一定會實作此功能
+      <!-- Code Smell Refactor 選單 -->
       <objectContribution
-            id="RLEHT.contribution1"
-            objectClass="org.eclipse.ui.IFileEditorInput">
+           	objectClass="org.eclipse.ui.IFileEditorInput"
+           	id="RLEHT.contribution1">
          <menu
-               id="RLEHT.popupmenu1"
-               label="Code Smell Refactor"
+               id="RLEHT.popmenu1"
+               label="Code smell Refactor"
                path="additions">
             <separator name="group1"/>
-         </menu>
+         </menu>  
          <action
-               class="ntut.csie.csdet.refactor.ThrowUncheckEx"
+               class="ntut.csie.csdet.refactor.RetryAction"
 			   enablesFor="1"
-               id="RLEHT.throwExAction"
-               label="Rethrowe Uncheck Exception"
-               menubarPath="RLEHT.popupmenu1/group1"/>
-        </objectContribution>
-        -->
-        
-
+               id="RLEHT.RetryAction"
+               label="Introduce resourceful try clause"
+               menubarPath="RLEHT.popmenu1/group1"/>
+      </objectContribution>            
    </extension>
    
    <!-- extend problem view-->
@@ -163,5 +160,6 @@
             id="ntut.csie.csdet.views.CSPropertyPage">
       </page>
    </extension>
+   
 		
 </plugin>
