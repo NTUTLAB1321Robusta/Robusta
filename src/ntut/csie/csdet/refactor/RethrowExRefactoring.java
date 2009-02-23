@@ -7,6 +7,10 @@ import ntut.csie.csdet.visitor.ASTCatchCollect;
 import ntut.csie.csdet.visitor.CodeSmellAnalyzer;
 import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
+import ntut.csie.rleht.common.EditorUtils;
+import ntut.csie.rleht.views.ExceptionAnalyzer;
+import ntut.csie.rleht.views.RLData;
+import ntut.csie.rleht.views.RLMessage;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -20,17 +24,25 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IOpenable;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.ArrayInitializer;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
+import org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
+import org.eclipse.jdt.core.dom.MemberValuePair;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.ThrowStatement;
+import org.eclipse.jdt.core.dom.TypeLiteral;
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
@@ -38,8 +50,13 @@ import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.TextFileChange;
 import org.eclipse.text.edits.TextEdit;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.texteditor.ITextEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import agile.exception.RL;
+import agile.exception.Robustness;
 
 /**
  * Rethrow Unhandled exception的具體操作都在這個class中
@@ -51,6 +68,8 @@ public class RethrowExRefactoring extends Refactoring {
 	
 	private IJavaProject project;
 	
+	//紀錄code smell的type
+	private String problem;
 	//使用者所選擇的Exception Type
 	private IType exType;
 	
@@ -63,6 +82,9 @@ public class RethrowExRefactoring extends Refactoring {
 	private String exceptionType;
 	
 	private TextFileChange textFileChange;
+	
+	// 目前method的RL Annotation資訊
+	private List<RLMessage> currentMethodRLList = null;
 	
 	//存放目前要修改的.java檔
 	private CompilationUnit actRoot;
@@ -144,9 +166,14 @@ public class RethrowExRefactoring extends Refactoring {
 				//取得目前要被修改的method node
 				this.currentMethodNode = methodList.get(Integer.parseInt(methodIdx));
 				if(currentMethodNode != null){
+					//取得這個method的RL資訊
+					ExceptionAnalyzer exVisitor = new ExceptionAnalyzer(this.actRoot, currentMethodNode.getStartPosition(), 0);
+					currentMethodNode.accept(exVisitor);
+					currentMethodRLList = exVisitor.getMethodRLAnnotationList();
+										
 					CodeSmellAnalyzer visitor = new CodeSmellAnalyzer(this.actRoot);
 					currentMethodNode.accept(visitor);
-					String problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
+					problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
 					//判斷是Ignore Ex or Dummy handler並取得code smell的List
 					if(problem.equals(RLMarkerAttribute.CS_INGNORE_EXCEPTION)){
 						currentExList = visitor.getIgnoreExList();	
@@ -159,6 +186,7 @@ public class RethrowExRefactoring extends Refactoring {
 			
 			}catch (Exception ex) {
 				logger.error("[Find CS Method] EXCEPTION ",ex);
+				ex.printStackTrace();
 			}
 		}
 	}
@@ -182,47 +210,65 @@ public class RethrowExRefactoring extends Refactoring {
 			
 			//去比對startPosition,找出要修改的catch			
 			for (ASTNode cc : catchList){
-				if(cc.getStartPosition() == msg.getPosition()){
-					SingleVariableDeclaration svd = (SingleVariableDeclaration) cc
-					.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
-				
-					CatchClause clause = (CatchClause)cc;
-					//自行建立一個throw statement加入
-					ThrowStatement ts = ast.newThrowStatement();
-					//將throw的variable傳入
-					ClassInstanceCreation cic = ast.newClassInstanceCreation();
-					//throw new RuntimeException()
-					cic.setType(ast.newSimpleType(ast.newSimpleName(exceptionType)));
-					//將throw new RuntimeException(ex)括號中加入參數 
-					cic.arguments().add(ast.newSimpleName(svd.resolveBinding().getName()));
-					
-					//取得CatchClause所有的statement
-					List<Statement> statement = clause.getBody().statements();
-					//將如是Dummy handler要相關print例外資訊的東西移除
-					String problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
-					if(problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)){
-						deleteStatement(statement);
-					}
-					//將資料寫回
-					ts.setExpression(cic);
-					statement.add(ts);		
+				if(cc.getStartPosition() == msg.getPosition()){	
+					//在catch clause中建立throw statement
+					addThrowStatement(cc, ast);
+					//建立RL Annotation
+					addAnnotationRoot(ast);
 					//加入未import的Library(遇到RuntimeException就不用加Library)
 					if(!exceptionType.equals("RuntimeException"))
 						addImportDeclaration();
+					break;
 				}
 			}
-		
 			//寫回Edit中
-			ICompilationUnit cu = (ICompilationUnit) actOpenable;
-			Document document = new Document(cu.getBuffer().getContents());	
-			TextEdit edits = actRoot.rewrite(document, cu.getJavaProject().getOptions(true));
-			textFileChange = new TextFileChange(cu.getElementName(), (IFile)cu.getResource());
-			textFileChange.setEdit(edits);
+			applyChange(msg);
 			
 		}catch (Exception ex) {
 			logger.error("[Rethrow Exception] EXCEPTION ",ex);
-//			ex.printStackTrace();
 		}
+	}
+	
+	/**
+	 * 在catch中增加throw new RuntimeException(..)
+	 * @param cc
+	 * @param ast
+	 */
+	private void addThrowStatement(ASTNode cc,AST ast){
+		//取得該catch()中的exception variable
+		SingleVariableDeclaration svd = (SingleVariableDeclaration) cc
+		.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
+		CatchClause clause = (CatchClause)cc;
+		//自行建立一個throw statement加入
+		ThrowStatement ts = ast.newThrowStatement();
+		//將throw的variable傳入
+		ClassInstanceCreation cic = ast.newClassInstanceCreation();
+		//throw new RuntimeException()
+		cic.setType(ast.newSimpleType(ast.newSimpleName(exceptionType)));
+		//將throw new RuntimeException(ex)括號中加入參數 
+		cic.arguments().add(ast.newSimpleName(svd.resolveBinding().getName()));
+		
+		//取得CatchClause所有的statement,將相關print例外資訊的東西移除
+		List<Statement> statement = clause.getBody().statements();
+		if(problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)){	
+			//假如要fix的code smell是dummy handler,就要把catch中的列印資訊刪除
+			deleteStatement(statement);
+		}
+		//將新建立的節點寫回
+		ts.setExpression(cic);
+		statement.add(ts);	
+	}
+	
+	private void applyChange(CSMessage msg){		
+		try {
+			ICompilationUnit cu = (ICompilationUnit) actOpenable;
+			Document document = new Document(cu.getBuffer().getContents());
+			TextEdit edits = actRoot.rewrite(document, cu.getJavaProject().getOptions(true));
+			textFileChange = new TextFileChange(cu.getElementName(), (IFile)cu.getResource());
+			textFileChange.setEdit(edits);
+		} catch (JavaModelException e) {
+			logger.error("[Apply Change Rethrow Exception] EXCEPTION ",e);
+		}	
 	}
 	
 	/**
@@ -245,10 +291,92 @@ public class RethrowExRefactoring extends Refactoring {
 
 	}
 	
+	@SuppressWarnings("unchecked")
+	private void addAnnotationRoot(AST ast){
+		//要建立@Robustness(value={@RL(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
+		//建立Annotation root
+		NormalAnnotation root = ast.newNormalAnnotation();
+		root.setTypeName(ast.newSimpleName("Robustness"));
+
+		MemberValuePair value = ast.newMemberValuePair();
+		value.setName(ast.newSimpleName("value"));
+		root.values().add(value);
+		ArrayInitializer rlary = ast.newArrayInitializer();
+		value.setValue(rlary);
+		
+		MethodDeclaration method = (MethodDeclaration) currentMethodNode;		
+		if(currentMethodRLList.size() == 0){		
+			rlary.expressions().add(getRLAnnotation(ast,1,exceptionType));
+		}else{
+		
+			for (RLMessage rlmsg : currentMethodRLList) {
+				//把舊的annotation加進去
+				rlary.expressions().add(
+							getRLAnnotation(ast, rlmsg.getRLData().getLevel(), rlmsg.getRLData().getExceptionType()));
+			}
+			rlary.expressions().add(getRLAnnotation(ast,1,exceptionType));
+			
+			List<IExtendedModifier> modifiers = method.modifiers();
+			for (int i = 0, size = modifiers.size(); i < size; i++) {
+				//找到舊有的annotation後將它移除
+				if (modifiers.get(i).isAnnotation() && modifiers.get(i).toString().indexOf("Robustness") != -1) {
+					method.modifiers().remove(i);
+					break;
+				}
+			}
+		}
+		if (rlary.expressions().size() > 0) {
+			method.modifiers().add(0, root);
+		}
+		//將RL的library加進來
+		addImportRLDeclaration();
+	}
+	
+	
+	/**
+	 * 產生RL Annotation之RL資料
+	 * 
+	 * @param ast
+	 *            AST Object
+	 * @param levelVal
+	 *            強健度等級
+	 * @param exClass
+	 *            例外類別
+	 * @return NormalAnnotation AST Node
+	 */
+
+	@SuppressWarnings("unchecked")
+	private NormalAnnotation getRLAnnotation(AST ast, int levelVal,String excption) {
+		//要建立@Robustness(value={@RL(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
+		NormalAnnotation rl = ast.newNormalAnnotation();
+		rl.setTypeName(ast.newSimpleName("RL"));
+
+		// level = 1
+		MemberValuePair level = ast.newMemberValuePair();
+		level.setName(ast.newSimpleName("level"));
+		//throw statement 預設level = 1
+		level.setValue(ast.newNumberLiteral(String.valueOf(levelVal)));
+		rl.values().add(level);
+
+		//exception=java.lang.RuntimeException.class
+		MemberValuePair exception = ast.newMemberValuePair();
+		exception.setName(ast.newSimpleName("exception"));
+		TypeLiteral exclass = ast.newTypeLiteral();
+		//預設為RuntimeException
+		exclass.setType(ast.newSimpleType(ast.newName(excption)));
+		exception.setValue(exclass);
+		rl.values().add(exception);
+
+		return rl;
+	}
+	
+	
+	
 	/**
 	 * 判斷是否有未加入的Library,但throw RuntimeException的情況要排除
 	 * 因為throw RuntimeException不需import Library
 	 */
+	@SuppressWarnings("unchecked")
 	private void addImportDeclaration(){
 		//判斷是否有import library
 		boolean isImportLibrary = false;
@@ -268,6 +396,36 @@ public class RethrowExRefactoring extends Refactoring {
 		}
 		
 	}
+	
+	@SuppressWarnings("unchecked")
+	private void addImportRLDeclaration() {
+		// 判斷是否已經Import Robustness及RL的宣告
+		List<ImportDeclaration> importList = this.actRoot.imports();
+		boolean isImportRobustnessClass = false;
+		boolean isImportRLClass = false;
+		for (ImportDeclaration id : importList) {
+			if (RLData.CLASS_ROBUSTNESS.equals(id.getName().getFullyQualifiedName())) {
+				isImportRobustnessClass = true;
+			}
+			if (RLData.CLASS_RL.equals(id.getName().getFullyQualifiedName())) {
+				isImportRLClass = true;
+			}
+		}
+
+		AST rootAst = this.actRoot.getAST();
+		if (!isImportRobustnessClass) {
+			ImportDeclaration imp = rootAst.newImportDeclaration();
+			imp.setName(rootAst.newName(Robustness.class.getName()));
+			this.actRoot.imports().add(imp);
+		}
+		if (!isImportRLClass) {
+			ImportDeclaration imp = rootAst.newImportDeclaration();
+			imp.setName(rootAst.newName(RL.class.getName()));
+			this.actRoot.imports().add(imp);
+		}
+
+	}
+	
 	
 	/**
 	 * 紀錄user所要throw的exception type
@@ -295,8 +453,7 @@ public class RethrowExRefactoring extends Refactoring {
 	 * 儲存要Throw的Exception位置(要import使用)
 	 * @param type
 	 */
-	public void setExType(IType type){
-		
+	public void setExType(IType type){		
 		this.exType = type;
 	}
 }

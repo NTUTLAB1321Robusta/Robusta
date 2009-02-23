@@ -4,6 +4,9 @@ import java.util.List;
 
 import ntut.csie.csdet.visitor.SpareHandlerAnalyzer;
 import ntut.csie.rleht.builder.ASTMethodCollector;
+import ntut.csie.rleht.views.ExceptionAnalyzer;
+import ntut.csie.rleht.views.RLData;
+import ntut.csie.rleht.views.RLMessage;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -17,6 +20,7 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.ArrayInitializer;
 import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CatchClause;
@@ -24,16 +28,20 @@ import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.DoStatement;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
+import org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.InfixExpression;
+import org.eclipse.jdt.core.dom.MemberValuePair;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.PostfixExpression;
 import org.eclipse.jdt.core.dom.PrimitiveType;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TryStatement;
+import org.eclipse.jdt.core.dom.TypeLiteral;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jface.text.Document;
@@ -44,6 +52,9 @@ import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.TextFileChange;
 import org.eclipse.text.edits.TextEdit;
+
+import agile.exception.RL;
+import agile.exception.Robustness;
 
 public class RetryRefactoring extends Refactoring{
 
@@ -64,7 +75,8 @@ public class RetryRefactoring extends Refactoring{
 	
 	//存放要轉換成ICompilationUnit的物件
 	private IJavaElement element;
-	
+	// 目前method的RL Annotation資訊
+	private List<RLMessage> currentMethodRLList = null;
 	//存放被框選的物件
 	private ITextSelection iTSelection;
 	
@@ -141,8 +153,12 @@ public class RetryRefactoring extends Refactoring{
 			}
 			
 			//取得目前要被修改的method node
-			if(methodIdx != -1){			
+			if(methodIdx != -1){
+				//取得這個method的RL資訊
 				currentMethodNode = methodList.get(methodIdx);
+				ExceptionAnalyzer exVisitor = new ExceptionAnalyzer(this.actRoot, currentMethodNode.getStartPosition(), 0);
+				currentMethodNode.accept(exVisitor);
+				currentMethodRLList = exVisitor.getMethodRLAnnotationList();
 				introduceRetry(selectNode);
 			}
 		}
@@ -192,16 +208,14 @@ public class RetryRefactoring extends Refactoring{
 			addCatchBlock(ast, original, ts);
 			
 			for(int i=pos+1;i<methodSt.size();i++){
-//				System.out.println("【Copy Content】==>"+methodSt.get(i).toString());
 				newStat.add(ASTNode.copySubtree(ast, (ASTNode) methodSt.get(i)));
 			}
 			//清掉原本的內容
 			methodSt.clear();
-//			Block block = md.getBody();
-//			block.delete();
 			//加入refactoring後的結果
 			md.setBody(newBlock);
-			
+			//建立RL Annotation
+			addAnnotationRoot(ast);
 
 			//寫回Edit中
 			applyChange();
@@ -459,6 +473,109 @@ public class RetryRefactoring extends Refactoring{
 	}
 	
 	
+	@SuppressWarnings("unchecked")
+	private void addAnnotationRoot(AST ast){
+		//要建立@Robustness(value={@RL(level=3, exception=java.lang.RuntimeException.class)})這樣的Annotation
+		//建立Annotation root
+		NormalAnnotation root = ast.newNormalAnnotation();
+		root.setTypeName(ast.newSimpleName("Robustness"));
+
+		MemberValuePair value = ast.newMemberValuePair();
+		value.setName(ast.newSimpleName("value"));
+		root.values().add(value);
+		ArrayInitializer rlary = ast.newArrayInitializer();
+		value.setValue(rlary);
+		
+		MethodDeclaration method = (MethodDeclaration) currentMethodNode;		
+		if(currentMethodRLList.size() == 0){		
+			//Retry的RL = 3
+			rlary.expressions().add(getRLAnnotation(ast,3,exceptionType));
+		}else{	
+			//假如本來就有annotation先把舊的加進去
+			for (RLMessage rlmsg : currentMethodRLList) {
+				rlary.expressions().add(
+							getRLAnnotation(ast, rlmsg.getRLData().getLevel(), rlmsg.getRLData().getExceptionType()));
+			}
+			//舊的加完之後加新的RL = 3 annotation進來
+			rlary.expressions().add(getRLAnnotation(ast,3,exceptionType));
+			
+			List<IExtendedModifier> modifiers = method.modifiers();
+			for (int i = 0, size = modifiers.size(); i < size; i++) {
+				//找到舊有的annotation後將它移除
+				if (modifiers.get(i).isAnnotation() && modifiers.get(i).toString().indexOf("Robustness") != -1) {
+					method.modifiers().remove(i);
+					break;
+				}
+			}
+		}
+		if (rlary.expressions().size() > 0) {
+			method.modifiers().add(0, root);
+		}
+		//將RL的library加進來
+		addImportRLDeclaration();
+	}
+	
+	/**
+	 * 產生RL Annotation之RL資料 
+	 * @param ast :AST Object
+	 * @param levelVal :強健度等級
+	 * @param exClass : 例外類別
+	 * @return NormalAnnotation AST Node
+	 */
+
+	@SuppressWarnings("unchecked")
+	private NormalAnnotation getRLAnnotation(AST ast, int levelVal,String excption) {
+		//要建立@Robustness(value={@RL(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
+		NormalAnnotation rl = ast.newNormalAnnotation();
+		rl.setTypeName(ast.newSimpleName("RL"));
+
+		// level = 3
+		MemberValuePair level = ast.newMemberValuePair();
+		level.setName(ast.newSimpleName("level"));
+		//Retry 預設level = 3
+		level.setValue(ast.newNumberLiteral(String.valueOf(levelVal)));
+		rl.values().add(level);
+
+		//exception=java.lang.RuntimeException.class
+		MemberValuePair exception = ast.newMemberValuePair();
+		exception.setName(ast.newSimpleName("exception"));
+		TypeLiteral exclass = ast.newTypeLiteral();
+		//預設為RuntimeException
+		exclass.setType(ast.newSimpleType(ast.newName(excption)));
+		exception.setValue(exclass);
+		rl.values().add(exception);
+
+		return rl;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void addImportRLDeclaration() {
+		// 判斷是否已經Import Robustness及RL的宣告
+		List<ImportDeclaration> importList = this.actRoot.imports();
+		boolean isImportRobustnessClass = false;
+		boolean isImportRLClass = false;
+		for (ImportDeclaration id : importList) {
+			if (RLData.CLASS_ROBUSTNESS.equals(id.getName().getFullyQualifiedName())) {
+				isImportRobustnessClass = true;
+			}
+			if (RLData.CLASS_RL.equals(id.getName().getFullyQualifiedName())) {
+				isImportRLClass = true;
+			}
+		}
+
+		AST rootAst = this.actRoot.getAST();
+		if (!isImportRobustnessClass) {
+			ImportDeclaration imp = rootAst.newImportDeclaration();
+			imp.setName(rootAst.newName(Robustness.class.getName()));
+			this.actRoot.imports().add(imp);
+		}
+		if (!isImportRLClass) {
+			ImportDeclaration imp = rootAst.newImportDeclaration();
+			imp.setName(rootAst.newName(RL.class.getName()));
+			this.actRoot.imports().add(imp);
+		}
+	}
+	
 	/**
 	 * 將要變更的資料寫回至Document中
 	 */
@@ -470,7 +587,6 @@ public class RetryRefactoring extends Refactoring{
 			TextEdit edits = actRoot.rewrite(document, cu.getJavaProject().getOptions(true));
 			textFileChange = new TextFileChange(cu.getElementName(), (IFile)cu.getResource());
 			textFileChange.setEdit(edits);
-
 		}catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -481,15 +597,6 @@ public class RetryRefactoring extends Refactoring{
 		return "Introduce resourceful try clause";
 	}
 	
-	/**
-	 * 把marker傳進來供此class存取一些code smell資訊
-	 * @param marker
-	 */
-//	public void setMarker(IMarker marker){
-//		this.marker = marker;
-//		this.project = JavaCore.create(marker.getResource().getProject());
-//	}
-
 	/**
 	 * 取得JavaProject
 	 */

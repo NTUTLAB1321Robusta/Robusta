@@ -73,7 +73,6 @@ public class RLQuickFix implements IMarkerResolution {
 		try {
 
 			String problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);			
-			
 			if (problem != null && problem.equals(RLMarkerAttribute.ERR_RL_LEVEL)) {
 				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
 				String msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
@@ -88,6 +87,7 @@ public class RLQuickFix implements IMarkerResolution {
 				String msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
 
 				boolean isok = findMethod(marker.getResource(), Integer.parseInt(methodIdx));
+				
 
 				if (isok) {
 					this.addOrRemoveRLAnnotation(true, Integer.parseInt(msgIdx));
@@ -283,12 +283,13 @@ public class RLQuickFix implements IMarkerResolution {
 			int msgIdx = 0;
 			for (RLMessage rlmsg : currentMethodRLList) {
 				if (msgIdx++ == pos) {
+
 					rlary.expressions().add(getRLAnnotation(ast, level, rlmsg.getRLData().getExceptionType()));
 				}
 				else {
+
 					rlary.expressions().add(
 							getRLAnnotation(ast, rlmsg.getRLData().getLevel(), rlmsg.getRLData().getExceptionType()));
-
 				}
 			}
 
@@ -296,6 +297,7 @@ public class RLQuickFix implements IMarkerResolution {
 
 			List<IExtendedModifier> modifiers = method.modifiers();
 			for (int i = 0, size = modifiers.size(); i < size; i++) {
+				//找到舊有的annotation後將它移除
 				if (modifiers.get(i).isAnnotation() && modifiers.get(i).toString().indexOf("Robustness") != -1) {
 					method.modifiers().remove(i);
 					break;
@@ -303,16 +305,14 @@ public class RLQuickFix implements IMarkerResolution {
 			}
 
 			if (rlary.expressions().size() > 0) {
+				//將新建立的annotation root加進去
 				method.modifiers().add(0, root);
 			}
 
 			ICompilationUnit cu = (ICompilationUnit) actOpenable;
 			Document document = new Document(cu.getBuffer().getContents());
-
 			TextEdit edits = actRoot.rewrite(document, cu.getJavaProject().getOptions(true));
-
 			edits.apply(document);
-
 			cu.getBuffer().setContents(document.get());
 
 		}
@@ -351,7 +351,6 @@ public class RLQuickFix implements IMarkerResolution {
 		exception.setValue(exclass);
 
 		rl.values().add(exception);
-
 		return rl;
 	}
 

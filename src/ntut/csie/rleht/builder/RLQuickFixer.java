@@ -1,6 +1,5 @@
 package ntut.csie.rleht.builder;
 
-import ntut.csie.csdet.quickfix.CSQuickFix;
 import ntut.csie.csdet.quickfix.DHQuickFix;
 import ntut.csie.csdet.quickfix.NTQuickFix;
 import ntut.csie.csdet.quickfix.UMQuickFix;
@@ -50,7 +49,7 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				return new IMarkerResolution[] { new RLQuickFix("@RL順序對調(" + marker.getAttribute(IMarker.MESSAGE) + ")") };
 				// 碰到Ignore Exception的Quick fix and refactor方法
 			} else if(problem.equals(RLMarkerAttribute.CS_INGNORE_EXCEPTION)){
-				return new IMarkerResolution[] { new CSQuickFix("Quick Fix==>Rethrow Unhandled Excetpion"),
+				return new IMarkerResolution[] { new DHQuickFix("Quick Fix==>Rethrow Unhandled Excetpion"),
 						new RethrowUncheckExAction("Refactor==>Rethrow Unhandled Excetpion")};
 				// 碰到Dummy Handler的Quick fix and refactor方法
 			} else if(problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)){

@@ -6,7 +6,6 @@ import java.util.Map;
 import ntut.csie.csdet.data.CSMessage;
 import ntut.csie.csdet.visitor.CodeSmellAnalyzer;
 import ntut.csie.csdet.visitor.MainAnalyzer;
-import ntut.csie.csdet.visitor.SpareHandlerAnalyzer;
 import ntut.csie.rleht.common.ASTHandler;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLChecker;
