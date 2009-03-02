@@ -95,8 +95,6 @@ public class RLQuickFix implements IMarkerResolution {
 
 			}
 
-			// MessageDialog.openInformation(null, "QuickFix Demo", "This
-			// quick-fix is not yet implemented");
 		}
 		catch (CoreException e) {
 			ErrorLog.getInstance().logError("[RLQuickFix]", e);

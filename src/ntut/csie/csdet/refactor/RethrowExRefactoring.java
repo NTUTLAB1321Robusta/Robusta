@@ -7,7 +7,6 @@ import ntut.csie.csdet.visitor.ASTCatchCollect;
 import ntut.csie.csdet.visitor.CodeSmellAnalyzer;
 import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
-import ntut.csie.rleht.common.EditorUtils;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLData;
 import ntut.csie.rleht.views.RLMessage;
@@ -42,7 +41,6 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TypeLiteral;
-import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
@@ -50,8 +48,6 @@ import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.TextFileChange;
 import org.eclipse.text.edits.TextEdit;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.texteditor.ITextEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -186,7 +182,6 @@ public class RethrowExRefactoring extends Refactoring {
 			
 			}catch (Exception ex) {
 				logger.error("[Find CS Method] EXCEPTION ",ex);
-				ex.printStackTrace();
 			}
 		}
 	}
@@ -335,16 +330,11 @@ public class RethrowExRefactoring extends Refactoring {
 	
 	/**
 	 * 產生RL Annotation之RL資料
-	 * 
-	 * @param ast
-	 *            AST Object
-	 * @param levelVal
-	 *            強健度等級
-	 * @param exClass
-	 *            例外類別
+	 * @param ast:AST Object
+	 * @param levelVal:強健度等級
+	 * @param exClass:例外類別
 	 * @return NormalAnnotation AST Node
 	 */
-
 	@SuppressWarnings("unchecked")
 	private NormalAnnotation getRLAnnotation(AST ast, int levelVal,String excption) {
 		//要建立@Robustness(value={@RL(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
@@ -423,7 +413,6 @@ public class RethrowExRefactoring extends Refactoring {
 			imp.setName(rootAst.newName(RL.class.getName()));
 			this.actRoot.imports().add(imp);
 		}
-
 	}
 	
 	

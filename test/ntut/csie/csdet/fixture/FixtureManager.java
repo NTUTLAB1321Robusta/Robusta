@@ -112,6 +112,7 @@ public class FixtureManager {
 			testProject.createType(tempPackage, "MM.java", new MMFixture().getSource());
 			// dummy handler
 			testProject.createType(tempPackage, "DHFixture.java", new DHFixture().getSource());
+			testProject.createType(tempPackage, "MainFixture.java", new MainFixture().getSource());
 //			testProject.createType(tempPackage, "MMTest.java", new MMTestFixture().getSource());
 //			testProject.createType(tempPackage, "MMTest1.java", new MMTest1Fixture().getSource());
 //			testProject.createType(tempPackage, "MMTest2.java", new MMTest2Fixture().getSource());

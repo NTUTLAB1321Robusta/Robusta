@@ -1,6 +1,5 @@
 package ntut.csie.csdet.data;
 
-import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 
 /**
@@ -9,8 +8,6 @@ import org.eclipse.jdt.core.dom.ITypeBinding;
  */
 
 public class CSMessage {
-	
-	private ASTNode node;
 	
 	private ITypeBinding typeBinding;
 

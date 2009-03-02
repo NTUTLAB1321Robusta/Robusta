@@ -150,7 +150,7 @@ public class ASTHandler {
 	 * @return Y:¬O N:§_
 	 */
 	public static boolean isInstance(ITypeBinding typeBinding, String typeName) {
-
+		
 		if (typeBinding == null || typeName == null) {
 			return false;
 		}

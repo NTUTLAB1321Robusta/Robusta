@@ -84,29 +84,6 @@ public class JDomUtil {
 		}
 	}
 	
-//	/**
-//	 * 當user去設定一些preference時,就可以利用此method
-//	 * 來取得現在user所點選的project
-//	 * @return
-//	 */
-//	public static IJavaProject getSelectProject(){
-//		IProject project = RLNature.project;
-//		if(project !=null){
-//			IJavaProject javaProject = JavaCore.create(project);
-//			return javaProject;
-//		}		
-//		else{
-//			// 取project取到null表示使用者還未加nature
-//			IWorkbench workbench = PlatformUI.getWorkbench();
-//			ISelection sel = workbench.getActiveWorkbenchWindow().getActivePage().getSelection();
-//			//取得user所點選的地方,再將其轉換成Project路徑
-//			IStructuredSelection selection = (IStructuredSelection)sel;	
-//			IJavaProject javaproject = (IJavaProject) selection.getFirstElement();
-//			return javaproject;
-//		}
-//
-//	}
-	
 	public static String getWorkspace(){
 		String workspace = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
 		return workspace;

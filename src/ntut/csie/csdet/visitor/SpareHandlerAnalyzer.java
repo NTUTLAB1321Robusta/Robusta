@@ -1,15 +1,11 @@
 package ntut.csie.csdet.visitor;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import ntut.csie.csdet.data.CSMessage;
-import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.rleht.common.RLBaseVisitor;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CatchClause;
-import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.TryStatement;
 
 /**
@@ -17,17 +13,13 @@ import org.eclipse.jdt.core.dom.TryStatement;
  * @author chewei
  */
 public class SpareHandlerAnalyzer extends RLBaseVisitor{
-
-	// AST treeªºroot(ÀÉ®×¦WºÙ)
-	private CompilationUnit root;
 	
 	private boolean result = false;
 	
 	private ASTNode selectNode = null;
 	
-	public SpareHandlerAnalyzer(CompilationUnit root,ASTNode node){
-		super(true);
-		this.root = root;		
+	public SpareHandlerAnalyzer(ASTNode node){
+		super(true);		
 		this.selectNode = node;
 
 	}

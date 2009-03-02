@@ -145,7 +145,7 @@ public class RetryRefactoring extends Refactoring{
 			int methodIdx = -1;
 			for(ASTNode method : methodList){
 				methodIdx++;
-				SpareHandlerAnalyzer visitor = new SpareHandlerAnalyzer(actRoot,selectNode);
+				SpareHandlerAnalyzer visitor = new SpareHandlerAnalyzer(selectNode);
 				method.accept(visitor);
 				if(visitor.getResult()){
 					break;

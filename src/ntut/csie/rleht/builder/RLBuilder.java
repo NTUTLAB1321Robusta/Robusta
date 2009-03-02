@@ -248,22 +248,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 							this.addMarker(file, errmsg, msg.getLineNumber(), IMarker.SEVERITY_WARNING,
 									msg.getCodeSmellType(), msg, csIdx, methodIdx);	
 						}
-					}					
-					
-			
-//					List<CSMessage> spareHandler = null;
-//					SpareHandlerAnalyzer spareVisitor = new SpareHandlerAnalyzer(root);
-//					method.accept(spareVisitor);
-//					spareHandler = spareVisitor.getSpareHandler();
-//					csIdx = -1;
-//					if(spareHandler != null){
-//						for(CSMessage msg : spareHandler){
-//							String errmsg = "Code Smell Type:["+ msg.getCodeSmellType() + "]¥¼³B²z!!!";
-//							//¶Kmarker
-//							this.addMarker(file, errmsg, msg.getLineNumber(), IMarker.SEVERITY_WARNING,
-//									msg.getCodeSmellType(), msg, csIdx, methodIdx);	
-//						}
-//					}		
+					}						
 					
 					if (currentMethodNode != null) {
 						RLChecker checker = new RLChecker();

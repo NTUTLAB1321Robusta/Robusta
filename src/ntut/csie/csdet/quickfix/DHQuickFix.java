@@ -51,7 +51,7 @@ import agile.exception.RL;
 import agile.exception.Robustness;
 
 /**
- * 提供給Dummy handler的解法
+ * 提供給Ignore Ex與Dummy handler的解法
  * @author chewei
  */
 
@@ -315,6 +315,7 @@ public class DHQuickFix implements IMarkerResolution{
 			edits.apply(document);
 			
 			cu.getBuffer().setContents(document.get());
+			
 			//取得目前的EditPart
 			IEditorPart editorPart = EditorUtils.getActiveEditor();
 			ITextEditor editor = (ITextEditor) editorPart;
