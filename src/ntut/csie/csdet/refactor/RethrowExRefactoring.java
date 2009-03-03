@@ -272,18 +272,19 @@ public class RethrowExRefactoring extends Refactoring {
 	private void deleteStatement(List<Statement> statementTemp){
 		// 從Catch Clause裡面剖析兩種情形
 		if(statementTemp.size() != 0){
-			for(int i=0;i<statementTemp.size();i++){			
-				ExpressionStatement statement = (ExpressionStatement) statementTemp.get(i);
-				// 遇到System.out.print or printStackTrace就把他remove掉
-				if(statement.getExpression().toString().contains("System.out.print")||
-						statement.getExpression().toString().contains("printStackTrace")){	
-						statementTemp.remove(i);
-						//移除完之後ArrayList的位置會重新調整過,所以利用遞回來繼續往下找符合的條件並移除
-						deleteStatement(statementTemp);						
+			for(int i=0;i<statementTemp.size();i++){		
+				if(statementTemp.get(i) instanceof ExpressionStatement ){
+					ExpressionStatement statement = (ExpressionStatement) statementTemp.get(i);
+					// 遇到System.out.print or printStackTrace就把他remove掉
+					if(statement.getExpression().toString().contains("System.out.print")||
+							statement.getExpression().toString().contains("printStackTrace")){	
+							statementTemp.remove(i);
+							//移除完之後ArrayList的位置會重新調整過,所以利用遞回來繼續往下找符合的條件並移除
+							deleteStatement(statementTemp);						
+					}
 				}			
 			}
 		}
-
 	}
 	
 	@SuppressWarnings("unchecked")

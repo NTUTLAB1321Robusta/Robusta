@@ -10,6 +10,7 @@ import ntut.csie.rleht.common.RLBaseVisitor;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TryStatement;
@@ -32,7 +33,6 @@ public class MainAnalyzer extends RLBaseVisitor{
 	protected boolean visitNode(ASTNode node){
 		try {
 			switch (node.getNodeType()) {
-
 				case ASTNode.METHOD_DECLARATION:		
 					//根據Method declaration來找出是否有main function
 					MethodDeclaration md = (MethodDeclaration)node;
@@ -52,13 +52,13 @@ public class MainAnalyzer extends RLBaseVisitor{
 	 */
 	private void processMethodDeclaration(MethodDeclaration node){
 		// parse AST tree看看是否有void main(java.lang.String[])
-		if(node.resolveBinding().toString().contains("void main(java.lang.String[])")){			
+		if(node.resolveBinding().toString().contains("void main(java.lang.String[])")){
 			List statement = node.getBody().statements();
 			if(processMainFunction(statement)){
 				//如果有找到code smell就將其加入
 				CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_UNPROTECTED_MAIN,null,											
 						node.toString(),node.getStartPosition(),
-						this.getLineNumber(node.getStartPosition()),null);
+						this.getLineNumber(node.getStartPosition(),node),null);
 						this.unprotectedMainList.add(csmsg);				
 			}
 		}
@@ -89,7 +89,7 @@ public class MainAnalyzer extends RLBaseVisitor{
 			}				
 			return true;
 		}else{
-			/*如果Main Block有兩種以上的statement,就表示有東西沒被
+			/* 如果Main Block有兩種以上的statement,就表示有東西沒被
 			 * Try block包住,或者根本沒有try block
 			 */
 			return true;
@@ -100,7 +100,17 @@ public class MainAnalyzer extends RLBaseVisitor{
 	/**
 	 * 根據startPosition來取得行數
 	 */
-	private int getLineNumber(int pos) {
+	private int getLineNumber(int pos,MethodDeclaration method) {
+		List<IExtendedModifier> modifiers = method.modifiers();
+		for (int i = 0, size = modifiers.size(); i < size; i++) {
+			//如果原本main function上有annotation的話,marker會變成標在annotation那行
+			//所以透過尋找public那行的位置,來取得marker要標示的行數
+			if ((!modifiers.get(i).isAnnotation()) && (modifiers.get(i).toString().contains("public"))) {
+				ASTNode temp = (ASTNode)modifiers.get(i);
+				return root.getLineNumber(temp.getStartPosition());
+			}
+		}
+		//如果沒有annotation,就可以直接取得main function那行
 		return root.getLineNumber(pos);
 	}
 	

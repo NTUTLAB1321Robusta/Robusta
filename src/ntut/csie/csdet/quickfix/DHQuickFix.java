@@ -178,7 +178,7 @@ public class DHQuickFix implements IMarkerResolution{
 					//在catch clause中建立throw statement
 					addThrowStatement(cc, ast);
 					//建立RL Annotation
-					addAnnotationRoot(ast,msgIdx);		
+					addAnnotationRoot(ast);		
 					break;
 				}
 			}
@@ -224,7 +224,7 @@ public class DHQuickFix implements IMarkerResolution{
 	
 	
 	@SuppressWarnings("unchecked")
-	private void addAnnotationRoot(AST ast,int pos){
+	private void addAnnotationRoot(AST ast){
 		//要建立@Robustness(value={@RL(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
 		//建立Annotation root
 		NormalAnnotation root = ast.newNormalAnnotation();
@@ -266,16 +266,11 @@ public class DHQuickFix implements IMarkerResolution{
 	
 	/**
 	 * 產生RL Annotation之RL資料
-	 * 
-	 * @param ast
-	 *            AST Object
-	 * @param levelVal
-	 *            強健度等級
-	 * @param exClass
-	 *            例外類別
+	 * @param ast: AST Object
+	 * @param levelVal:強健度等級
+	 * @param exClass:例外類別
 	 * @return NormalAnnotation AST Node
 	 */
-
 	@SuppressWarnings("unchecked")
 	private NormalAnnotation getRLAnnotation(AST ast, int levelVal,String excption) {
 		//要建立@Robustness(value={@RL(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
@@ -360,7 +355,6 @@ public class DHQuickFix implements IMarkerResolution{
 			imp.setName(rootAst.newName(RL.class.getName()));
 			this.actRoot.imports().add(imp);
 		}
-
 	}
 	
 	
@@ -371,15 +365,18 @@ public class DHQuickFix implements IMarkerResolution{
 		// 從Catch Clause裡面剖析兩種情形
 		if(statementTemp.size() != 0){
 			for(int i=0;i<statementTemp.size();i++){			
-				ExpressionStatement statement = (ExpressionStatement) statementTemp.get(i);
-				// 遇到System.out.print or printStackTrace就把他remove掉
-				if(statement.getExpression().toString().contains("System.out.print")||
-						statement.getExpression().toString().contains("printStackTrace")){	
-//						System.out.println("【Remove Statement】===>"+statement.getExpression().toString());
-						statementTemp.remove(i);
-						//移除完之後ArrayList的位置會重新調整過,所以利用遞回來繼續往下找符合的條件並移除
-						deleteStatement(statementTemp);						
-				}			
+				if(statementTemp.get(i) instanceof ExpressionStatement ){
+					ExpressionStatement statement = (ExpressionStatement) statementTemp.get(i);
+					// 遇到System.out.print or printStackTrace就把他remove掉
+					if(statement.getExpression().toString().contains("System.out.print")||
+							statement.getExpression().toString().contains("printStackTrace")){	
+//							System.out.println("【Remove Statement】===>"+statement.getExpression().toString());
+							statementTemp.remove(i);
+							//移除完之後ArrayList的位置會重新調整過,所以利用遞回來繼續往下找符合的條件並移除
+							deleteStatement(statementTemp);						
+					}	
+				}
+		
 			}
 		}
 	}

@@ -4,6 +4,9 @@ import java.util.List;
 
 import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
+import ntut.csie.rleht.views.ExceptionAnalyzer;
+import ntut.csie.rleht.views.RLData;
+import ntut.csie.rleht.views.RLMessage;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -16,12 +19,19 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.ArrayInitializer;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.IExtendedModifier;
+import org.eclipse.jdt.core.dom.ImportDeclaration;
+import org.eclipse.jdt.core.dom.MemberValuePair;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.Modifier;
+import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TryStatement;
+import org.eclipse.jdt.core.dom.TypeLiteral;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
 import org.eclipse.jface.text.Document;
@@ -30,6 +40,9 @@ import org.eclipse.ui.IMarkerResolution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import agile.exception.RL;
+import agile.exception.Robustness;
+
 public class UMQuickFix implements IMarkerResolution{
 	private static Logger logger = LoggerFactory.getLogger(UMQuickFix.class);
 	
@@ -37,10 +50,15 @@ public class UMQuickFix implements IMarkerResolution{
 	//存放目前要修改的.java檔
 	private CompilationUnit actRoot;
 	
+	// 目前method的RL Annotation資訊
+	private List<RLMessage> currentMethodRLList = null;
+	
 	//存放目前所要fix的method node
 	private ASTNode currentMethodNode = null;
 	
 	private IOpenable actOpenable;
+	
+	private String exType = "Exception";
 	
 	private ASTRewrite rewrite;
 	
@@ -101,6 +119,10 @@ public class UMQuickFix implements IMarkerResolution{
 				//取得目前要被修改的method node
 				this.currentMethodNode = methodList.get(methodIdx);
 				if(currentMethodNode != null){
+					//取得這個method的RL資訊
+					ExceptionAnalyzer exVisitor = new ExceptionAnalyzer(this.actRoot, currentMethodNode.getStartPosition(), 0);
+					currentMethodNode.accept(exVisitor);
+					currentMethodRLList = exVisitor.getMethodRLAnnotationList();
 					return true;
 				}
 				
@@ -147,13 +169,16 @@ public class UMQuickFix implements IMarkerResolution{
 	            還是中間,或者是在最後面,並依據這三種情況將程式碼都塞進去try block裡面  
 	        *-------------------------------------------------------------------------*/	
 			moveTryBlock(ast,statement,pos,listRewrite);
+			
 		}else{
 			 /*------------------------------------------------------------------------*
 	        -  假如Main function中沒有try block了,那就自己增加一個try block,再把main中所有的
 	            程式全部都塞進try block中
 	        *-------------------------------------------------------------------------*/
 			addNewTryBlock(ast,listRewrite);
-		}		
+			
+		}	
+		addAnnotationRoot(ast);
 		applyChange();
 	}
 	
@@ -266,6 +291,107 @@ public class UMQuickFix implements IMarkerResolution{
 		}
 	}
 
+	private void addAnnotationRoot(AST ast){
+		//要建立@Robustness(value={@RL(level=1, exception=java.lang.Exception.class)})這樣的Annotation
+		//建立Annotation root
+		NormalAnnotation root = ast.newNormalAnnotation();
+		root.setTypeName(ast.newSimpleName("Robustness"));
+
+		MemberValuePair value = ast.newMemberValuePair();
+		value.setName(ast.newSimpleName("value"));
+		root.values().add(value);
+		ArrayInitializer rlary = ast.newArrayInitializer();
+		value.setValue(rlary);
+		
+		MethodDeclaration method = (MethodDeclaration) currentMethodNode;		
+		if(currentMethodRLList.size() == 0){	
+			rlary.expressions().add(getRLAnnotation(ast,1,exType));
+		}else{
+			for (RLMessage rlmsg : currentMethodRLList) {
+				//把舊的annotation加進去
+				rlary.expressions().add(
+							getRLAnnotation(ast, rlmsg.getRLData().getLevel(), rlmsg.getRLData().getExceptionType()));
+			}
+			rlary.expressions().add(getRLAnnotation(ast,1,exType));
+			
+			ListRewrite listRewrite = rewrite.getListRewrite(method, method.getModifiersProperty());
+			List<IExtendedModifier> modifiers = listRewrite.getRewrittenList();
+			for(IExtendedModifier mdf : modifiers){
+				if(mdf.isAnnotation() && mdf.toString().indexOf("Robustness") != -1){
+					listRewrite.remove((ASTNode)mdf, null);
+				}
+			}
+		}
+		
+		if (rlary.expressions().size() > 0) {
+			ListRewrite listRewrite = rewrite.getListRewrite(method, method.getModifiersProperty());
+			listRewrite.insertAt(root, 0, null);
+		}
+		//將RL的library加進來
+		addImportDeclaration();
+
+	}
+	
+	/**
+	 * 產生RL Annotation之RL資料
+	 * @param ast:AST Object
+	 * @param levelVal:強健度等級
+	 * @param exClass:例外類別
+	 * @return NormalAnnotation AST Node
+	 */
+
+	@SuppressWarnings("unchecked")
+	private NormalAnnotation getRLAnnotation(AST ast, int levelVal,String excption) {
+		//要建立@Robustness(value={@RL(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
+		NormalAnnotation rl = ast.newNormalAnnotation();
+		rl.setTypeName(ast.newSimpleName("RL"));
+
+		// level = 1
+		MemberValuePair level = ast.newMemberValuePair();
+		level.setName(ast.newSimpleName("level"));
+		//throw statement 預設level = 1
+		level.setValue(ast.newNumberLiteral(String.valueOf(levelVal)));
+		rl.values().add(level);
+
+		//exception=java.lang.RuntimeException.class
+		MemberValuePair exception = ast.newMemberValuePair();
+		exception.setName(ast.newSimpleName("exception"));
+		TypeLiteral exclass = ast.newTypeLiteral();
+		//預設為Exception
+		exclass.setType(ast.newSimpleType(ast.newName(excption)));
+		exception.setValue(exclass);
+		rl.values().add(exception);
+
+		return rl;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void addImportDeclaration() {
+		// 判斷是否已經Import Robustness及RL的宣告
+		List<ImportDeclaration> importList = this.actRoot.imports();
+		boolean isImportRobustnessClass = false;
+		boolean isImportRLClass = false;
+		for (ImportDeclaration id : importList) {
+			if (RLData.CLASS_ROBUSTNESS.equals(id.getName().getFullyQualifiedName())) {
+				isImportRobustnessClass = true;
+			}
+			if (RLData.CLASS_RL.equals(id.getName().getFullyQualifiedName())) {
+				isImportRLClass = true;
+			}
+		}
+
+		AST rootAst = this.actRoot.getAST();
+		if (!isImportRobustnessClass) {
+			ImportDeclaration imp = rootAst.newImportDeclaration();
+			imp.setName(rootAst.newName(Robustness.class.getName()));
+			this.actRoot.imports().add(imp);
+		}
+		if (!isImportRLClass) {
+			ImportDeclaration imp = rootAst.newImportDeclaration();
+			imp.setName(rootAst.newName(RL.class.getName()));
+			this.actRoot.imports().add(imp);
+		}
+	}
 	
 	/**
 	 * 將要變更的資料寫回至Document中
