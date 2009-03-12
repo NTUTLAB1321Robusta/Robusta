@@ -151,11 +151,11 @@
       </initializer>
    </extension>
          
-   <!-- Code Smell detect property Settings-->
+   <!-- EH Smell detect property Settings-->
    <extension
          point="org.eclipse.ui.propertyPages">
       <page
-            name="Code Smell detect Settings"
+            name="EH Smell detect Settings"
             class="ntut.csie.csdet.views.CSPropertyPage"
             id="ntut.csie.csdet.views.CSPropertyPage">
       </page>

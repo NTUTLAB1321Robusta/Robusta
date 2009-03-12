@@ -244,6 +244,7 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 	protected void updateView(IMethod method) {
 		if (method != null) {
 			//依據showCaller來決定是往上或往下做Call Hierarchy
+			//getCallerRoot:由下往上call,getCalleeRoot:由上往下call
 			MethodWrapper mw = showCaller ? new CallHierarchy().getCallerRoot(method) : new CallHierarchy().getCalleeRoot(method);
 			System.out.println("=====showCaller====="+showCaller);
 			System.out.println("=====MW====="+mw.getName());
@@ -476,8 +477,8 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 	// ICheckStateListener 事件處理 END
 	// *************************************************************************
 
-	public void handleGenSeqDiagram() {
-		new CallersSeqDiagram().draw(this.getSite(), this.treeviewer.getTree().getItems());
+	public void handleGenSeqDiagram(boolean isShowCallerType) {
+		new CallersSeqDiagram().draw(this.getSite(), this.treeviewer.getTree().getItems(),isShowCallerType);
 
 	}
 

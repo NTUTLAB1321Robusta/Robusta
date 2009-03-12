@@ -35,26 +35,48 @@ public class CallersSeqDiagram {
 	private static Logger logger = LoggerFactory.getLogger(CallersSeqDiagram.class);
 	private IEditorPart editor = null;
 
-	public void draw(IWorkbenchPartSite site, TreeItem[] items) {
+	public void draw(IWorkbenchPartSite site, TreeItem[] items,boolean isShowCallerType) {
 		// instanciate builder.
 		RLSequenceModelBuilder builder = new RLSequenceModelBuilder();
-
+	    List<SeqDiagramData> copyList = new ArrayList<SeqDiagramData>();
+	    
 		this.findSelectedItemPath(items);
 
+        /*------------------------------------------------------------------------*
+        -  透過isShowCallerType來判斷是由下往上call hierarchy
+             如果遇到這種情形,則將順序反過來,並且把Level對調
+        *-------------------------------------------------------------------------*/
+		if(isShowCallerType){
+			int count = 0;
+			System.out.println("【由下往上call】");
+			for(int i=seqdataList.size()-1;i>=0;i--){
+				//先從Array最後面把物件copy進去
+				SeqDiagramData sdd = seqdataList.get(i);
+				//把Level反轉
+				sdd.setLevel(seqdataList.get(count).getLevel());
+				copyList.add(sdd);
+				count++;
+			}
+			//把copy後的結果assign
+			seqdataList = copyList;
+		}
+		
 		Map<String, InstanceModel> instanceModelMap = new HashMap<String, InstanceModel>();
-
+		//InstanceModel指的是Class or Actor之類的
 		InstanceModel start = builder.createActor("Debugger");
 
 		for (SeqDiagramData sdd : seqdataList) {
 			if (instanceModelMap.get(sdd.getClassName()) == null) {
+				//指的是要被create的class(sequence diagram上的class方塊)
 				InstanceModel obj = builder.createInstance(sdd.getClassName());
-
+				System.out.println("【SDD is null】====>"+sdd.getClassName());
 				if (start == null) {
 					start = obj;
 				}
 				instanceModelMap.put(sdd.getClassName(), obj);
 			}
 		}
+		
 		if (start == null) {
 			return;
 		}
@@ -69,11 +91,10 @@ public class CallersSeqDiagram {
 			InstanceModel imLast = null;
 			for (int i = 0, size = seqdataList.size(); i < size; i++) {
 				SeqDiagramData sdd = (SeqDiagramData) seqdataList.get(i);
-
+			
 				InstanceModel im = instanceModelMap.get(sdd.getClassName());
-
 				if (i > 0 && sdd.getLevel() <= stackLevel.peek().intValue()) {
-
+				
 					while (stackLevel.size() > 0) {
 						if (sdd.getLevel() >= stackLevel.peek().intValue()) {
 							if (stackMsgModel.size() > 1) {
@@ -96,7 +117,7 @@ public class CallersSeqDiagram {
 					}
 
 				}
-
+				
 				stackInstance.push(im);
 				stackLevel.push(new Integer(sdd.getLevel()));
 
@@ -113,7 +134,6 @@ public class CallersSeqDiagram {
 				logger.debug("\t " + sdd.getMethodName() + " push(+) " + im.getName() + " >> size=" + stackInstance.size() + ": LastIM="+imLast.getName().replace('\n',' '));
 
 			}
-
 		} catch (Exception e) {
 			logger.error("", e);
 		}
@@ -221,18 +241,17 @@ public class CallersSeqDiagram {
 					sdd.setLevel(wrapper.getLevel());
 					sdd.setRLAnnotations(item.getText(1));
 					sdd.setExceptions(item.getText(2));
-
+//					System.out.println("【SDD MethodName"+i+"】===>"+method.getElementName());
+//					System.out.println("【SDD Level"+i+"】===>"+wrapper.getLevel());
 					seqdataList.add(sdd);
-
-					// instanceMap.put(type.getFullyQualifiedName(),
-					// type.getFullyQualifiedName());
 				}
 			}
-
+			
 			if (item.getItemCount() >= 1) {
 				findSelectedItemPath(item.getItems());
 			}
 		}
+
 	}
 
 	private class SeqMessageModelData {

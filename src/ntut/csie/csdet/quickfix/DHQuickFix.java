@@ -175,10 +175,10 @@ public class DHQuickFix implements IMarkerResolution{
 			//去比對startPosition,找出要修改的節點			
 			for (ASTNode cc : catchList){
 				if(cc.getStartPosition() == msg.getPosition()){					
+					//建立RL Annotation
+					addAnnotationRoot(ast);					
 					//在catch clause中建立throw statement
 					addThrowStatement(cc, ast);
-					//建立RL Annotation
-					addAnnotationRoot(ast);		
 					break;
 				}
 			}
@@ -319,7 +319,7 @@ public class DHQuickFix implements IMarkerResolution{
 			int offset = document.getLineOffset(msg.getLineNumber());
 			//在Quick fix完之後,可以將游標定位在Quick Fix那行
 			//TODO 可以將Fix的那行給highlight起來,但要先取得length,暫時先把長度固定
-			EditorUtils.selectInEditor(editor,offset,34);
+			EditorUtils.selectInEditor(editor,offset,40);
 		} catch (BadLocationException e) {
 			logger.error("[Rethrow Exception] EXCEPTION ",e);
 			e.printStackTrace();

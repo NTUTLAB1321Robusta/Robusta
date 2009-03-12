@@ -83,27 +83,6 @@ public class CallersViewAction extends ActionGroup {
 		}
 	}
 
-	/**
-	 * 將產生的Sequence Diagram儲存下來
-	 */
-//	private class SaveSDAction extends Action{
-//		public SaveSDAction(){
-//			super("儲存循序圖",ImageManager.getInstance().getDescriptor("save_sd"));
-//			setToolTipText("儲存循序圖");
-//			
-//		}
-//		
-//		public void run(){
-//			//GraphicalViewer view = (GraphicalViewer) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
-//			//取得當前的Active Viewer
-//			IWorkbenchPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
-//			if(editor instanceof SequenceDiagramEditor){
-//				//getView().saveSequenceDiagram(editor);
-//				SaveAsImageAction action = new SaveAsImageAction((GraphicalViewer)editor);
-//				action.run();
-//			}
-//		}
-//	}
 	
 	/**
 	 * print the Sequence Diagram 
@@ -152,7 +131,7 @@ public class CallersViewAction extends ActionGroup {
 		 * @see Action#run
 		 */
 		public void run() {
-			getView().handleGenSeqDiagram();
+			getView().handleGenSeqDiagram(getView().isShowCallerType());	
 		}
 	}
 

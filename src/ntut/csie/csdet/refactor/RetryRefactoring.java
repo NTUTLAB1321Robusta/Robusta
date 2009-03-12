@@ -143,13 +143,17 @@ public class RetryRefactoring extends Refactoring{
 		}else{			
 			List<ASTNode> methodList = methodCollector.getMethodList();
 			int methodIdx = -1;
+			SpareHandlerAnalyzer visitor = null;
 			for(ASTNode method : methodList){
 				methodIdx++;
-				SpareHandlerAnalyzer visitor = new SpareHandlerAnalyzer(selectNode);
+				visitor = new SpareHandlerAnalyzer(selectNode);
 				method.accept(visitor);
-				if(visitor.getResult()){
+				if(visitor.getResult()){				
 					break;
 				}
+			}
+			if(!visitor.getResult()){
+				status.addFatalError("Selection Error, please retry again!!!");
 			}
 			
 			//取得目前要被修改的method node
@@ -160,6 +164,9 @@ public class RetryRefactoring extends Refactoring{
 				currentMethodNode.accept(exVisitor);
 				currentMethodRLList = exVisitor.getMethodRLAnnotationList();
 				introduceRetry(selectNode);
+			}else{
+				System.out.println("methodIdx is -1");
+				status.addFatalError("Selection Error, please retry again!!!");
 			}
 		}
 
@@ -324,16 +331,21 @@ public class RetryRefactoring extends Refactoring{
 		ifStat.setElseStatement(elseBlock);
 		
 		//找出第二層try的位置
+		boolean isTryExist = false;
 		TryStatement secTs = null;
 		for(int i=0;i<originalCatch.size();i++){
 			CatchClause temp = (CatchClause)originalCatch.get(i);
 			List tempSt = temp.getBody().statements();
-			for(int x=0;x<tempSt.size();x++){
-				if(tempSt.get(x) instanceof TryStatement){
-					secTs = (TryStatement)tempSt.get(x);
-					break;
-				}
+			if(tempSt != null){
+				for(int x=0;x<tempSt.size();x++){
+					if(tempSt.get(x) instanceof TryStatement){
+						secTs = (TryStatement)tempSt.get(x);
+						isTryExist = true;
+						break;
+					}
+				}	
 			}
+			
 		}
 		
 		//開始複製seconde try statement的內容到else statement

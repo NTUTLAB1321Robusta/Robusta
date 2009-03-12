@@ -341,7 +341,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		if(!this.parentId.equals("")){
 			CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_NESTED_TRY_BLOCK,null,											
 					trystat.toString(),trystat.getStartPosition(),
-					this.getLineNumber(trystat.getStartPosition()),null);
+					this.getLineNumber(trystat.getStartPosition()),trystat.toString());
 			this.nestedTryList.add(csmsg);	
 		}
 		
