@@ -3,6 +3,7 @@ package ntut.csie.rleht.caller;
 import net.java.amateras.uml.action.SaveAsImageAction;
 import ntut.csie.rleht.RLEHTPlugin;
 import ntut.csie.rleht.common.ConsoleLog;
+import ntut.csie.rleht.common.EditorUtils;
 import ntut.csie.rleht.common.RLUtils;
 
 import org.eclipse.gef.GraphicalViewer;
@@ -246,8 +247,6 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 			//依據showCaller來決定是往上或往下做Call Hierarchy
 			//getCallerRoot:由下往上call,getCalleeRoot:由上往下call
 			MethodWrapper mw = showCaller ? new CallHierarchy().getCallerRoot(method) : new CallHierarchy().getCalleeRoot(method);
-			System.out.println("=====showCaller====="+showCaller);
-			System.out.println("=====MW====="+mw.getName());
 			//不論是由上往下或由下往上的Call Hierarchy最多都先只展開兩層而已
 			//防止memory一次用太多,容易memory leak
 			int expand = showCaller ? 2 : 2;
@@ -387,6 +386,10 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 
 			TreeItem item = this.findCheckedItem(selection, obj);
 			if (item != null) {
+				if(showCaller){
+					checkMultiChoice(item);	
+				}				
+				//如果使用者勾選Tree中較下層的選項,則會幫他連上層的選項都勾選
 				if (item.getChecked()) {
 					item = item.getParentItem();
 					while (item != null) {
@@ -396,8 +399,10 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 						item = item.getParentItem();
 					}
 				} else {
+					//假設call chain 為A->B->C,使用者將B取消掉的話,要將C同時取消掉
 					disableChildCheckData(item);
 				}
+				
 			}
 
 		}
@@ -409,7 +414,7 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 		logger.debug("\t---->findCheckedItem BEGIN");
 		for (int i = 0, size = items.length; i < size; i++) {
 			TreeItem item = items[i];
-
+			//selectedData : 被勾選的項目
 			logger.debug("\t---->"+ i+" >> " +item.getItemCount()+":"+ selectedData + ":" + item.getData() + " = " + (selectedData == item.getData()) + " = " + (selectedData.equals(item.getData())));
 			if (selectedData == item.getData()) {
 				return item;
@@ -425,8 +430,28 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 		return null;
 	}
 
+	private void checkMultiChoice(TreeItem item){
+//		System.out.println("【Tree Item】====>"+item.getText());
+		boolean checked = false;
+		TreeItem parentItem = item.getParentItem();
+		if(parentItem != null){
+			TreeItem[] items = parentItem.getItems();
+			for(int i = 0; i<items.length; i++){
+				if(items[i].getChecked() && !(items[i].getData().equals(item.getData())) ){
+//					System.out.println("【========Find Items========】");
+//					System.out.println("【Item Name】=====>"+items[i].getText());
+					EditorUtils.showMessage("一次只能選擇一條路徑");
+					item.setChecked(false);
+					break;
+				}
+			}	
+		}
+		
+		
+	}
+	
 	private void disableChildCheckData(TreeItem actitem) {
-		// logger.debug("\t---->disableChildCheckData BEGIN");
+//		 logger.debug("\t---->disableChildCheckData BEGIN");
 
 		actitem.setChecked(false);
 		TreeItem[] items = actitem.getItems();
