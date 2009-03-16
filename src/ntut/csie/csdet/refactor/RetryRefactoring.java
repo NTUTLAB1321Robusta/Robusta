@@ -165,7 +165,6 @@ public class RetryRefactoring extends Refactoring{
 				currentMethodRLList = exVisitor.getMethodRLAnnotationList();
 				introduceRetry(selectNode);
 			}else{
-				System.out.println("methodIdx is -1");
 				status.addFatalError("Selection Error, please retry again!!!");
 			}
 		}
@@ -295,7 +294,7 @@ public class RetryRefactoring extends Refactoring{
 		TryStatement ts = ast.newTryStatement();
 		Block block = ts.getBody();
 		List tryStatement = block.statements();
-		List originalCatch = original.catchClauses();
+		
 		
 		//建立retry = false
 		Assignment as = ast.newAssignment();
@@ -331,6 +330,7 @@ public class RetryRefactoring extends Refactoring{
 		ifStat.setElseStatement(elseBlock);
 		
 		//找出第二層try的位置
+		List originalCatch = original.catchClauses();
 		boolean isTryExist = false;
 		TryStatement secTs = null;
 		for(int i=0;i<originalCatch.size();i++){
@@ -347,12 +347,26 @@ public class RetryRefactoring extends Refactoring{
 			}
 			
 		}
-		
-		//開始複製seconde try statement的內容到else statement
-		List secStat = secTs.getBody().statements();
-		for(int i=0;i<secStat.size();i++){
-			elseStat.add(ASTNode.copySubtree(ast, (ASTNode) secStat.get(i)));
+		if(isTryExist){
+			//開始複製second try statement的內容到else statement
+			List secStat = secTs.getBody().statements();
+			for(int i=0;i<secStat.size();i++){
+				elseStat.add(ASTNode.copySubtree(ast, (ASTNode) secStat.get(i)));
+			}	
+		}else{
+			//若catch statement中並沒有第二個try,則把catch中的結果當作alternative
+			for(int i=0 ; i<originalCatch.size(); i++){
+				//將catch的內容copy進去
+				CatchClause temp = (CatchClause)originalCatch.get(0);
+				List tempSt = temp.getBody().statements();
+				if(tempSt != null){
+					for(int x=0;x<tempSt.size();x++){
+						elseStat.add(ASTNode.copySubtree(ast, (ASTNode) tempSt.get(x)));
+					}	
+				}
+			}
 		}
+		
 
 		//將if statement加進try之中
 		tryStatement.add(ifStat);

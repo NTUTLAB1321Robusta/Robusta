@@ -10,6 +10,7 @@ import ntut.csie.rleht.common.ImageManager;
 import ntut.csie.rleht.common.RLUtils;
 
 import org.eclipse.core.filebuffers.FileBuffers;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IMember;
 import org.eclipse.jface.action.Action;
@@ -45,12 +46,14 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.IShowInSource;
 import org.eclipse.ui.part.ShowInContext;
 import org.eclipse.ui.part.ViewPart;
@@ -947,7 +950,15 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 	}
 
 	public ShowInContext getShowInContext() {
-		return new ShowInContext(null, getSite().getSelectionProvider().getSelection());
+		//移到Eclipse 3.4這邊會發生null point exception,所以這邊改成這樣 
+		IEditorPart editor = PlatformUI.getWorkbench()
+        .getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+                                                                                
+		IEditorInput input = editor.getEditorInput();
+		IFile file = (IFile) input.getAdapter(IFile.class);
+
+		ISelection selection = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getSelectionService().getSelection();
+		return new ShowInContext(file, selection);
 	}
 
 	final void notifyWorkbenchPartClosed(IWorkbenchPartReference partRef) {

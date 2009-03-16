@@ -46,18 +46,22 @@ public class SpareHandlerAnalyzer extends RLBaseVisitor{
 		TryStatement ts = (TryStatement)node;
 		List catchList = ts.catchClauses();
 		if(catchList != null){
-			for(int i=0;i<catchList.size();i++){
-				CatchClause cc = (CatchClause)catchList.get(i);
-				List catchStat = cc.getBody().statements();
-				for(int x=0;x<catchStat.size();x++){
-					if(catchStat.get(i) instanceof TryStatement){
-						if(ts.getStartPosition() == selectNode.getStartPosition()){
-							//找到那個try的節點就設定為true
-							result = true;
-						}
-					}
-				}
-			}			
+			if(ts.getStartPosition() == selectNode.getStartPosition()){
+				//找到那個try的節點就設定為true
+				result = true;
+			}
+//			for(int i=0;i<catchList.size();i++){
+//				CatchClause cc = (CatchClause)catchList.get(i);
+//				List catchStat = cc.getBody().statements();
+//				for(int x=0;x<catchStat.size();x++){
+//					if(catchStat.get(i) instanceof TryStatement){
+//						if(ts.getStartPosition() == selectNode.getStartPosition()){
+//							//找到那個try的節點就設定為true
+//							result = true;
+//						}
+//					}
+//				}
+//			}			
 		}
 	}
 	
