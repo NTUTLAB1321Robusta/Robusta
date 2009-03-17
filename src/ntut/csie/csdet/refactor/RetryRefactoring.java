@@ -519,8 +519,15 @@ public class RetryRefactoring extends Refactoring{
 		}else{	
 			//假如本來就有annotation先把舊的加進去
 			for (RLMessage rlmsg : currentMethodRLList) {
-				rlary.expressions().add(
-							getRLAnnotation(ast, rlmsg.getRLData().getLevel(), rlmsg.getRLData().getExceptionType()));
+				
+				int pos = rlmsg.getRLData().getExceptionType().toString().lastIndexOf(".");
+				String cut = rlmsg.getRLData().getExceptionType().toString().substring(pos+1);
+
+				//如果有有RL annotation重複就不加進去
+				if((!cut.equals(exceptionType)) && (rlmsg.getRLData().getLevel() != 3)){										
+					rlary.expressions().add(
+							getRLAnnotation(ast, rlmsg.getRLData().getLevel(), rlmsg.getRLData().getExceptionType()));					
+				}
 			}
 			//舊的加完之後加新的RL = 3 annotation進來
 			rlary.expressions().add(getRLAnnotation(ast,3,exceptionType));

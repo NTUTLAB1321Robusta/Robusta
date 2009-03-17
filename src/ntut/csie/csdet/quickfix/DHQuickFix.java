@@ -242,8 +242,11 @@ public class DHQuickFix implements IMarkerResolution{
 		}else{
 			for (RLMessage rlmsg : currentMethodRLList) {
 				//把舊的annotation加進去
-				rlary.expressions().add(
-							getRLAnnotation(ast, rlmsg.getRLData().getLevel(), rlmsg.getRLData().getExceptionType()));
+				//判斷如果遇到重複的就不要加annotation
+				if((!rlmsg.getRLData().getExceptionType().toString().contains(exType)) && (rlmsg.getRLData().getLevel() != 1)){					
+					rlary.expressions().add(
+							getRLAnnotation(ast, rlmsg.getRLData().getLevel(), rlmsg.getRLData().getExceptionType()));	
+				}				
 			}
 			rlary.expressions().add(getRLAnnotation(ast,1,exType));
 			

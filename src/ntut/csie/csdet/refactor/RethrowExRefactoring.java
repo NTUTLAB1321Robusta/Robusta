@@ -307,8 +307,14 @@ public class RethrowExRefactoring extends Refactoring {
 		
 			for (RLMessage rlmsg : currentMethodRLList) {
 				//把舊的annotation加進去
-				rlary.expressions().add(
-							getRLAnnotation(ast, rlmsg.getRLData().getLevel(), rlmsg.getRLData().getExceptionType()));
+				int pos = rlmsg.getRLData().getExceptionType().toString().lastIndexOf(".");
+				String cut = rlmsg.getRLData().getExceptionType().toString().substring(pos+1);
+				
+				//如果有有RL annotation重複就不加進去
+				if((!cut.equals(exceptionType)) && (rlmsg.getRLData().getLevel() != 1)){	
+					rlary.expressions().add(
+							getRLAnnotation(ast, rlmsg.getRLData().getLevel(), rlmsg.getRLData().getExceptionType()));					
+				}
 			}
 			rlary.expressions().add(getRLAnnotation(ast,1,exceptionType));
 			
