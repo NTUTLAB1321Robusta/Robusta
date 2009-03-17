@@ -355,7 +355,7 @@ public class RetryRefactoring extends Refactoring{
 			}	
 		}else{
 			//若catch statement中並沒有第二個try,則把catch中的結果當作alternative
-			for(int i=0 ; i<originalCatch.size(); i++){
+			if(originalCatch != null){
 				//將catch的內容copy進去
 				CatchClause temp = (CatchClause)originalCatch.get(0);
 				List tempSt = temp.getBody().statements();
