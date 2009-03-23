@@ -387,15 +387,17 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 			TreeItem item = this.findCheckedItem(selection, obj);
 			if (item != null) {
 				if(showCaller){
-					checkMultiChoice(item);	
+//					checkMultiChoice(item);	
 				}				
 				//如果使用者勾選Tree中較下層的選項,則會幫他連上層的選項都勾選
 				if (item.getChecked()) {
-					item = item.getParentItem();
+					item = item.getParentItem();					
 					while (item != null) {
+						
 						if (!item.getChecked()) {
 							item.setChecked(true);
 						}
+						
 						item = item.getParentItem();
 					}
 				} else {
@@ -431,21 +433,49 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 	}
 
 	private void checkMultiChoice(TreeItem item){
-//		System.out.println("【Tree Item】====>"+item.getText());
-		boolean checked = false;
-		TreeItem parentItem = item.getParentItem();
+		System.out.println("【Tree Item】====>"+item.getText());
+		TreeItem parentItem = null;
+		while(item.getParentItem() != null){
+			parentItem = item.getParentItem();
+		}
 		if(parentItem != null){
+			System.out.println("【Top parent Item】====>"+item.getText());
+			
 			TreeItem[] items = parentItem.getItems();
 			for(int i = 0; i<items.length; i++){
+//				System.out.println("【========Items checked========】"+items[i].getChecked());
+//				System.out.println("【========Items getData========】"+items[i].getData());
+//				System.out.println("【========Items selectData=====】"+item.getData());
 				if(items[i].getChecked() && !(items[i].getData().equals(item.getData())) ){
 //					System.out.println("【========Find Items========】");
 //					System.out.println("【Item Name】=====>"+items[i].getText());
 					EditorUtils.showMessage("一次只能選擇一條路徑");
 					item.setChecked(false);
-					break;
+					
 				}
-			}	
+			}
+			
 		}
+		
+	}
+	
+	/**
+	 * 往下繼續traverse Tree的內容
+	 * @param parentItem
+	 * @param item
+	 */
+	private void traverseTree(TreeItem parentItem,TreeItem item){
+		TreeItem[] items = parentItem.getItems();
+		boolean checked = false;
+		for(int i = 0; i< items.length; i++){
+			if(items[i].getItemCount() > 0){
+				traverseTree(items[i],item);
+			}
+			if(items[i].getChecked() ){
+				
+			}
+		}
+		
 		
 		
 	}

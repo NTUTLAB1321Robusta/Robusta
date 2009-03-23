@@ -73,7 +73,7 @@
                class="ntut.csie.rleht.builder.ToggleNatureAction"
                enablesFor="+"
                id="RLEHT.addRemoveNatureAction"
-               label="≡ Add/Remove RL Builder ≡"
+               label="≡ Add/Remove EH smells Detector ≡"
                menubarPath="additions"/>
       </objectContribution>  
       <!--  右鍵尋找RL Call Hierarchy-->    
@@ -105,7 +105,7 @@
            	id="RLEHT.contribution1">
          <menu
                id="RLEHT.popmenu1"
-               label="Code smell Refactor"
+               label="EH smell Refactor"
                path="additions">
             <separator name="group1"/>
          </menu>  

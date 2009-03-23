@@ -60,7 +60,7 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				return new IMarkerResolution[] { new NTQuickFix("Please use Eclipse refactor==>Extract Method") };
 				// ¸I¨ìUnprotected Main programªºQuick fix
 			} else if(problem.equals(RLMarkerAttribute.CS_UNPROTECTED_MAIN)){
-				return new IMarkerResolution[] { new UMQuickFix("Quick Fix==>Big outer try block") };
+				return new IMarkerResolution[] { new UMQuickFix("Quick Fix==>Add Big outer try block") };
 			} 
 			return null;
 		} catch (CoreException ex) {
