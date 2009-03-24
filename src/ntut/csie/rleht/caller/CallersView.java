@@ -124,16 +124,17 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(new FillLayout());
 
-		int style = SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.SINGLE;
+		int style = SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.SINGLE ;
 		treeviewer = new CheckboxTreeViewer(composite, style);
 		treeviewer.getTree().setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		treeviewer.setContentProvider(new CallersContentProvider());
 		treeviewer.setLabelProvider(new CallersLabelProvider());
-
+		
 		Tree tree = treeviewer.getTree();
 		tree.setHeaderVisible(true);
 		tree.setLinesVisible(true);
+		
 
 		TreeColumn column1 = new TreeColumn(tree, SWT.LEFT);
 		column1.setText("呼叫階層");
@@ -376,7 +377,7 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 		logger.debug("[checkStateChanged] BEGIN --->");
 		// if (event.getChecked()) {
 
-		// showCheckData(this.treeviewer.getTree().getItems());
+		 
 
 		Object obj = event.getElement();
 
@@ -387,7 +388,7 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 			TreeItem item = this.findCheckedItem(selection, obj);
 			if (item != null) {
 				if(showCaller){
-//					checkMultiChoice(item);	
+					showCheckData(this.treeviewer.getTree().getItems(),item);
 				}				
 				//如果使用者勾選Tree中較下層的選項,則會幫他連上層的選項都勾選
 				if (item.getChecked()) {
@@ -406,7 +407,6 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 				}
 				
 			}
-
 		}
 
 		logger.debug("[checkStateChanged] END <---");
@@ -432,53 +432,6 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 		return null;
 	}
 
-	private void checkMultiChoice(TreeItem item){
-		System.out.println("【Tree Item】====>"+item.getText());
-		TreeItem parentItem = null;
-		while(item.getParentItem() != null){
-			parentItem = item.getParentItem();
-		}
-		if(parentItem != null){
-			System.out.println("【Top parent Item】====>"+item.getText());
-			
-			TreeItem[] items = parentItem.getItems();
-			for(int i = 0; i<items.length; i++){
-//				System.out.println("【========Items checked========】"+items[i].getChecked());
-//				System.out.println("【========Items getData========】"+items[i].getData());
-//				System.out.println("【========Items selectData=====】"+item.getData());
-				if(items[i].getChecked() && !(items[i].getData().equals(item.getData())) ){
-//					System.out.println("【========Find Items========】");
-//					System.out.println("【Item Name】=====>"+items[i].getText());
-					EditorUtils.showMessage("一次只能選擇一條路徑");
-					item.setChecked(false);
-					
-				}
-			}
-			
-		}
-		
-	}
-	
-	/**
-	 * 往下繼續traverse Tree的內容
-	 * @param parentItem
-	 * @param item
-	 */
-	private void traverseTree(TreeItem parentItem,TreeItem item){
-		TreeItem[] items = parentItem.getItems();
-		boolean checked = false;
-		for(int i = 0; i< items.length; i++){
-			if(items[i].getItemCount() > 0){
-				traverseTree(items[i],item);
-			}
-			if(items[i].getChecked() ){
-				
-			}
-		}
-		
-		
-		
-	}
 	
 	private void disableChildCheckData(TreeItem actitem) {
 //		 logger.debug("\t---->disableChildCheckData BEGIN");
@@ -500,17 +453,29 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 		}
 	}
 
-	private void showCheckData(TreeItem[] items) {
+	/**
+	 * 用來檢查在由下往上call hierarchy的時候是否選擇多條路徑
+	 * @param items
+	 * @param activeItem
+	 */
+	private void showCheckData(TreeItem[] items,TreeItem activeItem) {
 		for (int xxx = 0, xsize = items.length; xxx < xsize; xxx++) {
 			TreeItem item = items[xxx];
-
+			
 			if (item.getData() instanceof MethodWrapper) {
 				MethodWrapper mwobj = (MethodWrapper) item.getData();
+				MethodWrapper activeMW = (MethodWrapper) activeItem.getData();
 				logger.debug(xxx + ") " + item.getItemCount() + " : " + mwobj.getName() + ":" + mwobj.getLevel());
+				if(item.getChecked() && (activeMW.getLevel() == mwobj.getLevel()) && (item.getData() != activeItem.getData())){
+					EditorUtils.showMessage("一次只能選擇一條路徑！！");
+					activeItem.setChecked(false);
+					break;
+				}
+					
 			}
 
 			if (item.getItemCount() >= 1) {
-				showCheckData(item.getItems());
+				showCheckData(item.getItems(),activeItem);
 			}
 
 			// // ------------------------------------------------------

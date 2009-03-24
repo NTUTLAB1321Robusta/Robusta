@@ -69,7 +69,6 @@ public class CallersSeqDiagram {
 			if (instanceModelMap.get(sdd.getClassName()) == null) {
 				//指的是要被create的class(sequence diagram上的class方塊)
 				InstanceModel obj = builder.createInstance(sdd.getClassName());
-				System.out.println("【SDD is null】====>"+sdd.getClassName());
 				if (start == null) {
 					start = obj;
 				}
