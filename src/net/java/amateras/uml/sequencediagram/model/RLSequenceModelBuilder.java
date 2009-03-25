@@ -1,5 +1,6 @@
 package net.java.amateras.uml.sequencediagram.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -29,22 +30,43 @@ public class RLSequenceModelBuilder {
 	private int currentY = 0;
 
 	private int MAX_WIDTH = 150;
+	
+	public int picPostion = MAX_WIDTH + 20;
+	ArrayList<Integer> picsWidth = new ArrayList<Integer>();
+	int count = 0;
 
 	public RLSequenceModelBuilder() {
 		root.setShowIcon(true);
 	}
 
 	public InstanceModel createInstance(String instanceName) {
+		int width;
 		InstanceModel model = new InstanceModel();
 		int pos = instanceName.lastIndexOf(".");
+			
 		instanceName = (pos != -1 ? instanceName.substring(0, pos + 1) + "\n" + instanceName.substring(pos + 1) : instanceName);
 		model.setName(instanceName);
-
+		
 		// root.getInstances().get(root).getConstraint().getRight().getPosition(root.getConstraint().getRight());
-		model.setConstraint(new Rectangle((MAX_WIDTH + 20) * root.getInstances().size() + 20, InstanceModel.DEFAULT_LOCATION, MAX_WIDTH, -1));
+
+		//判斷是上半部名比較大還是下半部
+		if (instanceName.length()/2<=pos)
+			width = pos*6;
+		else
+			width = (instanceName.length()-pos)*6;
+		//過小就把它調為預設
+		if (width<MAX_WIDTH)
+			width = 150;
+		
+		model.setConstraint(new Rectangle(picPostion + 20, InstanceModel.DEFAULT_LOCATION, width , -1));
+		//儲存起來給底下畫方塊圖的參照
+		picsWidth.add(width/2-5);
+		//記錄位置給下個圖使用
+		picPostion += width+20;
+		//model.setConstraint(new Rectangle((MAX_WIDTH + 20) * root.getInstances().size() + 20, InstanceModel.DEFAULT_LOCATION, instanceName.length()*5 , -1));
 		// model.setConstraint(new Rectangle(120 * root.getInstances().size() + 20, InstanceModel.DEFAULT_LOCATION, MAX_WIDTH, -1));
 		Rectangle lineRect = model.getConstraint().getCopy();
-		lineRect.translate(new Point(50, 0));
+		lineRect.translate(new Point(width/2, 0));
 		lineRect.width = 5;
 		lineRect.height = LifeLineModel.DEFAULT_HEIGHT;
 		model.getModel().setConstraint(lineRect);
@@ -54,6 +76,7 @@ public class RLSequenceModelBuilder {
 	}
 
 	public ActorModel createActor(String instanceName) {
+		
 		ActorModel model = new ActorModel();
 		model.setName(instanceName);
 		model.setConstraint(new Rectangle(120 * root.getInstances().size() + 20, InstanceModel.DEFAULT_LOCATION, 100, -1));
@@ -64,7 +87,7 @@ public class RLSequenceModelBuilder {
 		model.getModel().setConstraint(lineRect);
 		root.addInstance(model);
 		root.copyPresentation(model);
-		//currentY=70;
+		
 		return model;
 	}
 
@@ -171,7 +194,8 @@ public class RLSequenceModelBuilder {
 			currentY += 20;
 			model.setConstraint(					
 					new Rectangle(
-							target.getConstraint().x + 45,
+							//配合文字大小調整
+							target.getConstraint().x + picsWidth.get(count++),
 							currentY, 
 							ActivationModel.DEFAULT_WIDTH, 
 							ActivationModel.DEFAULT_HEIGHT));
@@ -188,7 +212,6 @@ public class RLSequenceModelBuilder {
 			
 			targetModel.addActivation(model);
 		}
-
 		// ----------------------------------------------------------------------
 		SyncMessageModel messageModel = new SyncMessageModel();
 
