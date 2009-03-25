@@ -35,6 +35,21 @@ public class CallersSeqDiagram {
 	private static Logger logger = LoggerFactory.getLogger(CallersSeqDiagram.class);
 	private IEditorPart editor = null;
 
+	
+	/**
+	 * 用來copy舊的sdd資料
+	 * @param sdd
+	 * @return
+	 */
+	private SeqDiagramData copySeqData(SeqDiagramData sdd){
+		SeqDiagramData copy = new SeqDiagramData(); 
+		copy.setClassName(sdd.getClassName());
+		copy.setExceptions(sdd.getExceptions());
+		copy.setMethodName(sdd.getMethodName());
+		copy.setRLAnnotations(sdd.getRLAnnotations());
+		return copy;
+	}
+	
 	public void draw(IWorkbenchPartSite site, TreeItem[] items,boolean isShowCallerType) {
 		// instanciate builder.
 		RLSequenceModelBuilder builder = new RLSequenceModelBuilder();
@@ -51,10 +66,9 @@ public class CallersSeqDiagram {
 			System.out.println("【由下往上call】");
 			for(int i=seqdataList.size()-1;i>=0;i--){
 				//先從Array最後面把物件copy進去
-				SeqDiagramData sdd = seqdataList.get(i);
-				//把Level反轉
+				SeqDiagramData sdd = copySeqData(seqdataList.get(i)); 
+				//設定要反轉的Level
 				sdd.setLevel(seqdataList.get(count).getLevel());
-				copyList.add(sdd);
 				count++;
 			}
 			//把copy後的結果assign
