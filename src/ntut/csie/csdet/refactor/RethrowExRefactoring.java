@@ -37,6 +37,7 @@ import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.MemberValuePair;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
+import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.ThrowStatement;
@@ -211,9 +212,11 @@ public class RethrowExRefactoring extends Refactoring {
 					//建立RL Annotation
 					addAnnotationRoot(ast);
 					//加入未import的Library(遇到RuntimeException就不用加Library)
-					if(!exceptionType.equals("RuntimeException"))
+					if(!exceptionType.equals("RuntimeException")){
 						addImportDeclaration();
-					break;
+						checkMethodThrow(ast);
+						break;
+					}
 				}
 			}
 			//寫回Edit中
@@ -222,6 +225,27 @@ public class RethrowExRefactoring extends Refactoring {
 		}catch (Exception ex) {
 			logger.error("[Rethrow Exception] EXCEPTION ",ex);
 		}
+	}
+	
+	/**
+	 * 檢查在method前面有沒有throw exception
+	 * @param ast
+	 */
+	private void checkMethodThrow(AST ast){
+		MethodDeclaration md = (MethodDeclaration)currentMethodNode;
+		List thStat = md.thrownExceptions();
+		boolean isExist = false;
+		for(int i=0;i<thStat.size();i++){
+			if(thStat.get(i) instanceof SimpleName){
+				SimpleName sn = (SimpleName)thStat.get(i);
+				if(sn.getIdentifier().equals(exceptionType)){
+					isExist = true;
+					break;
+				}
+			}
+		}
+		if(!isExist)
+			thStat.add(ast.newSimpleName(this.exceptionType));
 	}
 	
 	/**
