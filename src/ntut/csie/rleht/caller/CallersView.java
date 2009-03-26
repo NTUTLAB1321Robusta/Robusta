@@ -83,6 +83,8 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 
 	private IMethod lastMethod = null;
 
+	private boolean checkFlag = false;
+	
 	/**
 	 * The constructor.
 	 */
@@ -376,29 +378,30 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 	public void checkStateChanged(CheckStateChangedEvent event) {
 		logger.debug("[checkStateChanged] BEGIN --->");
 		// if (event.getChecked()) {
-
+		checkFlag = false;
 		 
-
+		System.out.println("【Check flag】===>"+checkFlag);
 		Object obj = event.getElement();
 
 		if (obj instanceof MethodWrapper) {
 			TreeItem[] selection = this.treeviewer.getTree().getSelection();
 			//logger.debug("~~~~=>" + selection.length + " :" + selection[0]);
-
+			
 			TreeItem item = this.findCheckedItem(selection, obj);
-			if (item != null) {
-				if(showCaller){
-					showCheckData(this.treeviewer.getTree().getItems(),item);
-				}				
+			if (item != null) {			
 				//如果使用者勾選Tree中較下層的選項,則會幫他連上層的選項都勾選
 				if (item.getChecked()) {
+					if(showCaller){
+						showCheckData(this.treeviewer.getTree().getItems(),item);
+					}	
 					item = item.getParentItem();					
 					while (item != null) {
-						
 						if (!item.getChecked()) {
 							item.setChecked(true);
-						}
-						
+							if(showCaller){
+								showCheckData(this.treeviewer.getTree().getItems(),item);
+							}
+						}						
 						item = item.getParentItem();
 					}
 				} else {
@@ -412,6 +415,7 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 		logger.debug("[checkStateChanged] END <---");
 	}
 
+	
 	private TreeItem findCheckedItem(TreeItem[] items, Object selectedData) {
 		logger.debug("\t---->findCheckedItem BEGIN");
 		for (int i = 0, size = items.length; i < size; i++) {
@@ -444,6 +448,7 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 				TreeItem item = items[i];
 				if (item.getChecked()) {
 					item.setChecked(false);
+					
 				}
 
 				if (item.getItemCount() >= 1) {
@@ -465,10 +470,13 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 			if (item.getData() instanceof MethodWrapper) {
 				MethodWrapper mwobj = (MethodWrapper) item.getData();
 				MethodWrapper activeMW = (MethodWrapper) activeItem.getData();
-				logger.debug(xxx + ") " + item.getItemCount() + " : " + mwobj.getName() + ":" + mwobj.getLevel());
 				if(item.getChecked() && (activeMW.getLevel() == mwobj.getLevel()) && (item.getData() != activeItem.getData())){
-					EditorUtils.showMessage("一次只能選擇一條路徑！！");
+					if(!checkFlag){						
+						EditorUtils.showMessage("一次只能選擇一條路徑！！");
+					}
+					checkFlag = true;
 					activeItem.setChecked(false);
+					disableChildCheckData(activeItem);
 					break;
 				}
 					

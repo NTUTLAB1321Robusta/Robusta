@@ -66,11 +66,6 @@ public class CallersSeqDiagram {
 			System.out.println("【由下往上call】");
 			for(int i=seqdataList.size()-1;i>=0;i--){
 				//先從Array最後面把物件copy進去
-				System.out.println("【Count i】===>"+i);
-				System.out.println("【Class Name】===>"+seqdataList.get(i).getClassName());
-				System.out.println("【method Name】===>"+seqdataList.get(i).getMethodName());
-				System.out.println("【Level】===>"+seqdataList.get(i).getLevel());
-				System.out.println("【欲反轉的Level】===>"+seqdataList.get(count).getLevel());
 				SeqDiagramData sdd = copySeqData(seqdataList.get(i)); 
 				//設定要反轉的Level
 				sdd.setLevel(seqdataList.get(count).getLevel());
@@ -260,8 +255,6 @@ public class CallersSeqDiagram {
 					sdd.setLevel(wrapper.getLevel());
 					sdd.setRLAnnotations(item.getText(1));
 					sdd.setExceptions(item.getText(2));
-//					System.out.println("【SDD MethodName"+i+"】===>"+method.getElementName());
-//					System.out.println("【SDD Level"+i+"】===>"+wrapper.getLevel());
 					seqdataList.add(sdd);
 				}
 			}
