@@ -215,16 +215,18 @@ public class RetryRefactoring extends Refactoring{
 			TryStatement ts = null;
 			if(RETRY_TYPE.equals("Alt_Retry")){
 				ts = addTryBlock(ast,doWhile,original);
-				System.out.println("【ALT_RETRY】");
 			}else if(RETRY_TYPE.equals("No_Alt_Retry")){
 				ts = addNoAltTryBlock(ast, doWhile, original);
-				System.out.println("【NO_ALT_RETRY】");
 			}else{
 				//exception
 			}
 			
 			//在try裡面新增catch
 			addCatchBlock(ast, original, ts);
+			//假如catch之後有finally,就加進去
+			if(original.getFinally() != null){
+				ts.setFinally((Block) ASTNode.copySubtree(ast, original.getFinally() ));
+			}
 			
 			for(int i=pos+1;i<methodSt.size();i++){
 				newStat.add(ASTNode.copySubtree(ast, (ASTNode) methodSt.get(i)));
@@ -500,6 +502,7 @@ public class RetryRefactoring extends Refactoring{
 			ccStat.add(ifStat);
 
 		}
+
 		
 		//加入未import的Library(遇到RuntimeException就不用加Library)
 		if(!exceptionType.equals("RuntimeException")){
@@ -520,6 +523,10 @@ public class RetryRefactoring extends Refactoring{
 			if(!isExist)
 				thStat.add(ast.newSimpleName(this.exceptionType));
 		}
+	}
+	
+	private void addFinallyBlock(){
+		
 	}
 	
 	
