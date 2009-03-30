@@ -18,18 +18,18 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 
 /**
- * 提供另一種有Alternative的Retry template在右鍵選單
- * Introduce resourceful retry
+ * 提供另一種沒有Alternative的Retry template在右鍵選單
+ * No Alternative retry refactoring
  * @author chewei
  */
 
-public class RetryAction implements IEditorActionDelegate{
+public class NoAlternativeRetryAction implements IEditorActionDelegate{
 	private IEditorPart editor;
-	private String retry_type = "Alt_Retry";
-
-	@Override
-	public void setActiveEditor(IAction action, IEditorPart targetEditor) {
 	
+	private String retry_type = "No_Alt_Retry";
+		
+	@Override
+	public void setActiveEditor(IAction action, IEditorPart targetEditor) {	
 	}
 
 	@Override
@@ -43,12 +43,10 @@ public class RetryAction implements IEditorActionDelegate{
 				//取得使用者所選取的文字
 				ITextSelection textSelection = (ITextSelection) selection;
 				IProject project = EditorUtils.getProject(editor);
-				//取得使用者所要變更的java檔
 				IJavaProject javaProject = JavaCore.create(project);
 				IEditorInput input = editor.getEditorInput();
 				IFile file = (IFile) input.getAdapter(IFile.class);
 				IJavaElement javaElement = JavaCore.create(file);
-				
 				try {
 					RetryRefactoring refactoring = new RetryRefactoring(javaProject,javaElement,textSelection,retry_type);
 					//啟動Refactor dialog
@@ -63,8 +61,7 @@ public class RetryAction implements IEditorActionDelegate{
 	}
 
 	@Override
-	public void selectionChanged(IAction action, ISelection selection) {
-
+	public void selectionChanged(IAction action, ISelection selection) {		
 	}
 
 }

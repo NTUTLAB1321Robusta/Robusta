@@ -270,7 +270,6 @@ public class UMQuickFix implements IMarkerResolution{
 			if(svd.getType().toString().equals("Exception")){
 				//假如有找到符合的型態,就把變數設成true
 				isException = true;			
-				ListRewrite catchRewrite = rewrite.getListRewrite(original, TryStatement.CATCH_CLAUSES_PROPERTY);
 				//在Catch中加入todo的註解
 				StringBuffer comment = new StringBuffer();
 				comment.append("//TODO: handle exception");

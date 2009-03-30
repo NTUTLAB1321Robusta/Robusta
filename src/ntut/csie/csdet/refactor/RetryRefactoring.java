@@ -82,16 +82,19 @@ public class RetryRefactoring extends Refactoring{
 	
 	private TextFileChange textFileChange;
 	
+	private String RETRY_TYPE = "";
+	
 	//存放目前要修改的.java檔
 	private CompilationUnit actRoot;
 	
 	//存放目前所要fix的method node
 	private ASTNode currentMethodNode = null;
 	
-	public RetryRefactoring(IJavaProject project,IJavaElement element,ITextSelection sele){
+	public RetryRefactoring(IJavaProject project,IJavaElement element,ITextSelection sele,String retryType){
 		this.project = project;
 		this.element = element;
 		this.iTSelection = sele;
+		this.RETRY_TYPE = retryType;
 	}	
 	
 	@Override
@@ -209,7 +212,17 @@ public class RetryRefactoring extends Refactoring{
 			//新增do-while
 			DoStatement doWhile = addDoWhile(ast,newStat);
 			//在do-while新增try
-			TryStatement ts =addTryBlock(ast,doWhile,original);
+			TryStatement ts = null;
+			if(RETRY_TYPE.equals("Alt_Retry")){
+				ts = addTryBlock(ast,doWhile,original);
+				System.out.println("【ALT_RETRY】");
+			}else if(RETRY_TYPE.equals("No_Alt_Retry")){
+				ts = addNoAltTryBlock(ast, doWhile, original);
+				System.out.println("【NO_ALT_RETRY】");
+			}else{
+				//exception
+			}
+			
 			//在try裡面新增catch
 			addCatchBlock(ast, original, ts);
 			
@@ -222,10 +235,8 @@ public class RetryRefactoring extends Refactoring{
 			md.setBody(newBlock);
 			//建立RL Annotation
 			addAnnotationRoot(ast);
-
 			//寫回Edit中
 			applyChange();
-
 	}
 	
 	/**
@@ -254,8 +265,11 @@ public class RetryRefactoring extends Refactoring{
 		VariableDeclarationStatement retryValue = ast.newVariableDeclarationStatement(retry);
 		//建立boolean型態
 		retryValue.setType(ast.newPrimitiveType(PrimitiveType.BOOLEAN));
-//		retryValue.setType(ast.newSimpleType(ast.newSimpleName()));
-		retry.setInitializer(ast.newBooleanLiteral(false));
+		if(RETRY_TYPE.equals("Alt_Retry")){
+			retry.setInitializer(ast.newBooleanLiteral(false));			
+		}else if(RETRY_TYPE.equals("No_Alt_Retry")){
+			retry.setInitializer(ast.newBooleanLiteral(true));
+		}
 		newStat.add(retryValue);
 	}
 	
@@ -281,6 +295,40 @@ public class RetryRefactoring extends Refactoring{
 		doWhile.setExpression(bigIfe);
 		newStat.add(doWhile);
 		return doWhile;
+	}
+	
+	/**
+	 * 假如是用No alternative Retry refactoring,則用這個method來修改try block
+	 * @param ast
+	 * @param doWhile
+	 * @param original
+	 * @return
+	 */
+	private TryStatement addNoAltTryBlock(AST ast,DoStatement doWhile,TryStatement original){
+		TryStatement ts = ast.newTryStatement();
+		Block block = ts.getBody();
+		List tryStatement = block.statements();
+		List originalStat = original.getBody().statements();
+		for(int i=0;i<originalStat.size();i++){
+			//將原本try的內容複製進來
+			tryStatement.add(ASTNode.copySubtree(ast, (ASTNode) originalStat.get(i)));
+		}
+		
+		//建立retry = true
+		Assignment as = ast.newAssignment();
+		as.setLeftHandSide(ast.newSimpleName(this.retry));
+		as.setOperator(Assignment.Operator.ASSIGN);
+		as.setRightHandSide(ast.newBooleanLiteral(false));
+		ExpressionStatement es =ast.newExpressionStatement(as);
+		tryStatement.add(es);
+		
+		//替do while新建一個Block,並將Try加進去
+		Block doBlock = doWhile.getAST().newBlock();
+		doWhile.setBody(doBlock);
+		List doStat = doBlock.statements();
+		doStat.add(ts);		
+		return ts;
+		
 	}
 	
 	/**
@@ -498,8 +546,6 @@ public class RetryRefactoring extends Refactoring{
 		}		
 	}
 	
-	
-	@SuppressWarnings("unchecked")
 	private void addAnnotationRoot(AST ast){
 		//要建立@Robustness(value={@RL(level=3, exception=java.lang.RuntimeException.class)})這樣的Annotation
 		//建立Annotation root

@@ -115,6 +115,12 @@
                id="RLEHT.RetryAction"
                label="Introduce resourceful try clause"
                menubarPath="RLEHT.popmenu1/group1"/>
+         <action
+               class="ntut.csie.csdet.refactor.NoAlternativeRetryAction"
+			   enablesFor="1"
+               id="RLEHT.NoAltRetryAction"
+               label="No Alternative Retry Refactoring"             
+               menubarPath="RLEHT.popmenu1/group1"/>
       </objectContribution>            
    </extension>
    

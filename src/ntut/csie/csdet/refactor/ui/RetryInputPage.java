@@ -219,7 +219,7 @@ public class RetryInputPage extends UserInputWizardPage {
 			}
 		} catch (JavaModelException e) {			
 			e.printStackTrace();
-			//logger.error("[Refactor][Get Selection Dialog Error] EXCEPTION ",e);
+//			logger.error("[Refactor][Get Selection Dialog Error] EXCEPTION ",e);
 		}
 		return null;
 	}
