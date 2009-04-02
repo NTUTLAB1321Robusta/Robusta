@@ -1,6 +1,6 @@
 package ntut.csie.csdet.refactor;
 
-import ntut.csie.csdet.refactor.ui.RetryWizard;
+import ntut.csie.csdet.refactor.ui.NoAltRetryWizard;
 import ntut.csie.rleht.common.EditorUtils;
 
 import org.eclipse.core.resources.IFile;
@@ -48,11 +48,12 @@ public class NoAlternativeRetryAction implements IEditorActionDelegate{
 				IFile file = (IFile) input.getAdapter(IFile.class);
 				IJavaElement javaElement = JavaCore.create(file);
 				try {
-					RetryRefactoring refactoring = new RetryRefactoring(javaProject,javaElement,textSelection,retry_type);
+					NoAltRetryRefactoring refactoring = new NoAltRetryRefactoring(javaProject,javaElement,textSelection,retry_type);
+//					RetryRefactoring refactoring = new RetryRefactoring(javaProject,javaElement,textSelection,retry_type);
 					//±Ò°ÊRefactor dialog
 					RefactoringWizardOpenOperation operation = 
-						new RefactoringWizardOpenOperation(new RetryWizard(refactoring,0));
-					operation.run(new Shell(), "Introduce resourceful try clause");
+						new RefactoringWizardOpenOperation(new NoAltRetryWizard(refactoring,0));
+					operation.run(new Shell(), "No Alternative Retry");
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

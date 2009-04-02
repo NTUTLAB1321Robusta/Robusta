@@ -167,6 +167,7 @@ public class DHQuickFix implements IMarkerResolution{
 			//準備在Catch Caluse中加入throw exception
 			//取得Code smell的資訊
 			CSMessage msg = currentExList.get(msgIdx);
+			System.out.println("【Msg Idx exception type】===>"+msg.getExceptionType());
 			//收集該method所有的catch clause
 			ASTCatchCollect catchCollector = new ASTCatchCollect();
 			currentMethodNode.accept(catchCollector);
@@ -174,6 +175,7 @@ public class DHQuickFix implements IMarkerResolution{
 			
 			//去比對startPosition,找出要修改的節點			
 			for (ASTNode cc : catchList){
+				System.out.println("【All Catch Line num】===>"+this.actRoot.getLineNumber(cc.getStartPosition()));
 				if(cc.getStartPosition() == msg.getPosition()){					
 					//建立RL Annotation
 					addAnnotationRoot(ast);					
@@ -187,7 +189,6 @@ public class DHQuickFix implements IMarkerResolution{
 			applyChange(msg);
 		}catch (Exception ex) {
 			logger.error("[Rethrow Exception] EXCEPTION ",ex);
-			ex.printStackTrace();
 		}
 		
 	}
@@ -264,7 +265,6 @@ public class DHQuickFix implements IMarkerResolution{
 		}
 		//將RL的library加進來
 		addImportDeclaration();
-
 	}
 	
 	/**
@@ -287,11 +287,11 @@ public class DHQuickFix implements IMarkerResolution{
 		level.setValue(ast.newNumberLiteral(String.valueOf(levelVal)));
 		rl.values().add(level);
 
-		//exception=java.lang.RuntimeException.class
+		// exception=java.lang.RuntimeException.class
 		MemberValuePair exception = ast.newMemberValuePair();
 		exception.setName(ast.newSimpleName("exception"));
 		TypeLiteral exclass = ast.newTypeLiteral();
-		//預設為RuntimeException
+		// 預設為RuntimeException
 		exclass.setType(ast.newSimpleType(ast.newName(excption)));
 		exception.setValue(exclass);
 		rl.values().add(exception);
@@ -325,10 +325,8 @@ public class DHQuickFix implements IMarkerResolution{
 			EditorUtils.selectInEditor(editor,offset,40);
 		} catch (BadLocationException e) {
 			logger.error("[Rethrow Exception] EXCEPTION ",e);
-			e.printStackTrace();
 		} catch (JavaModelException ex) {
 			logger.error("[Rethrow Exception] EXCEPTION ",ex);
-			ex.printStackTrace();
 		}	
 	}
 	
@@ -373,13 +371,11 @@ public class DHQuickFix implements IMarkerResolution{
 					// 遇到System.out.print or printStackTrace就把他remove掉
 					if(statement.getExpression().toString().contains("System.out.print")||
 							statement.getExpression().toString().contains("printStackTrace")){	
-//							System.out.println("【Remove Statement】===>"+statement.getExpression().toString());
 							statementTemp.remove(i);
 							//移除完之後ArrayList的位置會重新調整過,所以利用遞回來繼續往下找符合的條件並移除
 							deleteStatement(statementTemp);						
 					}	
-				}
-		
+				}		
 			}
 		}
 	}

@@ -74,8 +74,9 @@
                enablesFor="+"
                id="RLEHT.addRemoveNatureAction"
                label="≡ Add/Remove EH smells Detector ≡"
-               menubarPath="additions"/>
+               menubarPath="additions"/>         
       </objectContribution>  
+      
       <!--  右鍵尋找RL Call Hierarchy-->    
       <viewerContribution
             targetID="#CompilationUnitEditorContext"
@@ -87,6 +88,7 @@
                id="ntut.csie.rleht.caller.updatepopupaction">
          </action>
       </viewerContribution>
+      
       <objectContribution
             objectClass="org.eclipse.jdt.core.IMethod"
             id="ntut.csie.rleht.caller.explorers">
@@ -99,29 +101,30 @@
          </action>
       </objectContribution>
       
-      <!-- Code Smell Refactor 選單 -->
+      <!-- Code Smell Refactor 選單 --> 
       <objectContribution
            	objectClass="org.eclipse.ui.IFileEditorInput"
-           	id="RLEHT.contribution1">
+           	id="RLMET.contribution1">
          <menu
-               id="RLEHT.popmenu1"
+               id="RLMET.popmenu1"
                label="EH smell Refactor"
                path="additions">
             <separator name="group1"/>
          </menu>  
          <action
+               class="ntut.csie.csdet.refactor.NoAlternativeRetryAction"
+			   enablesFor="1"
+               id="RLEHT.RetryAction"
+               label="Retry with original values"             
+               menubarPath="RLMET.popmenu1/group1"/>
+         <action
                class="ntut.csie.csdet.refactor.RetryAction"
 			   enablesFor="1"
                id="RLEHT.RetryAction"
                label="Introduce resourceful try clause"
-               menubarPath="RLEHT.popmenu1/group1"/>
-         <action
-               class="ntut.csie.csdet.refactor.NoAlternativeRetryAction"
-			   enablesFor="1"
-               id="RLEHT.NoAltRetryAction"
-               label="No Alternative Retry Refactoring"             
-               menubarPath="RLEHT.popmenu1/group1"/>
-      </objectContribution>            
+               menubarPath="RLMET.popmenu1/group1"/>
+
+      </objectContribution>           
    </extension>
    
    <!-- extend problem view-->

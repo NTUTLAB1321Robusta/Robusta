@@ -22,14 +22,17 @@ public interface RLMarkerAttribute {
 	public static final String RL_MSG_INDEX = "RL_MSG_INDEX";
 
 	//ignore exceptionªºtype
-	public static final String CS_INGNORE_EXCEPTION = "CS_INGNORE_EXCEPTION";
+	public static final String CS_INGNORE_EXCEPTION = "Ignore_Checked_Exception";
 	
 	//Dummy Handlerªºtype
-	public static final String CS_DUMMY_HANDLER = "CS_DUMMY_HANDLER";
+	public static final String CS_DUMMY_HANDLER = "Dummy_Handler";
 	
 	//Nested Try Blockªºtype
-	public static final String CS_NESTED_TRY_BLOCK = "CS_Nested_Try_Block";
+	public static final String CS_NESTED_TRY_BLOCK = "Nested_Try_Block";
 	
 	//Unprotected Main Program
-	public static final String CS_UNPROTECTED_MAIN = "CS_Unprotected_Main_Program";
+	public static final String CS_UNPROTECTED_MAIN = "Unprotected_Main_Program";
+	
+	//Spare Handler	
+	public static final String CS_SPARE_HANDLER = "Spare_Handler";
 }

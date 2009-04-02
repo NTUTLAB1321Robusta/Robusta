@@ -2,6 +2,7 @@ package ntut.csie.csdet.refactor;
 
 import java.util.List;
 
+import ntut.csie.csdet.visitor.ASTTryCollect;
 import ntut.csie.csdet.visitor.SpareHandlerAnalyzer;
 import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
@@ -181,16 +182,31 @@ public class RetryRefactoring extends Refactoring{
 			actRoot.recordModifications();
 			AST ast = currentMethodNode.getAST();
 			MethodDeclaration md = (MethodDeclaration)currentMethodNode;
-			//取得Code smell的資訊
-
+			System.out.println("【Method Name】====>"+md.getName());
 			List methodSt = md.getBody().statements();
 			//先複製一份method內的statement保留下來
 			int pos = -1;
 			TryStatement original = null;
+			
+//			ASTTryCollect visitor = new ASTTryCollect();
+//			md.accept(visitor);
+//			List<ASTNode> tryList = visitor.getTryList();
+//			for(int i=0; i<tryList.size() ; i++){
+//				if(tryList.get(i) instanceof TryStatement){					
+//					TryStatement temp = (TryStatement)tryList.get(i);
+//					if(temp.getStartPosition() == selectNode.getStartPosition()){
+//						System.out.println("【Find Try Statement】");
+//						pos = i;
+//						original = (TryStatement)tryList.get(i);
+//						break;
+//					}
+//				}
+//			}
 			for(int i=0;i<methodSt.size();i++){
 				if(methodSt.get(i) instanceof TryStatement){
 					TryStatement temp = (TryStatement)methodSt.get(i);
 					if(temp.getStartPosition() == selectNode.getStartPosition()){
+						System.out.println("【Find Try Statement】");
 						pos = i;
 						original = (TryStatement)methodSt.get(i);
 						break;
@@ -216,6 +232,9 @@ public class RetryRefactoring extends Refactoring{
 			if(RETRY_TYPE.equals("Alt_Retry")){
 				ts = addTryBlock(ast,doWhile,original);
 			}else if(RETRY_TYPE.equals("No_Alt_Retry")){
+				if(original == null){
+					System.out.println("【Original Try Block is null】");
+				}
 				ts = addNoAltTryBlock(ast, doWhile, original);
 			}else{
 				//exception

@@ -195,13 +195,12 @@ public class RLBuilder extends IncrementalProjectBuilder {
 					method.accept(csVisitor);
 					//取得專案中的ignore Exception
 					ignoreExList = csVisitor.getIgnoreExList();
-					
 					int csIdx = -1;
 					if(ignoreExList != null){
-						csIdx++;
 						//將每個ignore exception都貼上marker
 						for(CSMessage msg : ignoreExList){
-							String errmsg = "Code Smell Type:["+ msg.getCodeSmellType() + "]未處理!!!";
+							csIdx++;
+							String errmsg = "EH Smell Type:["+ msg.getCodeSmellType() + "]未處理!!!";
 							//貼marker
 							this.addMarker(file, errmsg, msg.getLineNumber(), IMarker.SEVERITY_WARNING,
 									msg.getCodeSmellType(), msg, csIdx, methodIdx);
@@ -212,10 +211,10 @@ public class RLBuilder extends IncrementalProjectBuilder {
 					dummyList = csVisitor.getDummyList();
 					csIdx = -1;
 					if(dummyList != null){
-						csIdx++;
 						// 將每個dummy handler都貼上marker
 						for(CSMessage msg : dummyList){
-							String errmsg = "Code Smell Type:["+ msg.getCodeSmellType() + "]未處理!!!";
+							csIdx++;
+							String errmsg = "EH Smell Type:["+ msg.getCodeSmellType() + "]未處理!!!";
 							//貼marker
 							this.addMarker(file, errmsg, msg.getLineNumber(), IMarker.SEVERITY_WARNING,
 									msg.getCodeSmellType(), msg, csIdx, methodIdx);
@@ -227,7 +226,8 @@ public class RLBuilder extends IncrementalProjectBuilder {
 					csIdx = -1;
 					if(nestedTryList != null){
 						for(CSMessage msg : nestedTryList){
-							String errmsg = "Code Smell Type:["+ msg.getCodeSmellType() + "]未處理!!!";
+							csIdx++;
+							String errmsg = "EH Smell Type:["+ msg.getCodeSmellType() + "]未處理!!!";
 							//貼marker
 							this.addMarker(file, errmsg, msg.getLineNumber(), IMarker.SEVERITY_WARNING,
 									msg.getCodeSmellType(), msg, csIdx, methodIdx);						
@@ -243,7 +243,8 @@ public class RLBuilder extends IncrementalProjectBuilder {
 					csIdx = -1;
 					if(unprotectedMain != null){
 						for(CSMessage msg : unprotectedMain){
-							String errmsg = "Code Smell Type:["+ msg.getCodeSmellType() + "]未處理!!!";
+							csIdx++;
+							String errmsg = "EH Smell Type:["+ msg.getCodeSmellType() + "]未處理!!!";
 							//貼marker
 							this.addMarker(file, errmsg, msg.getLineNumber(), IMarker.SEVERITY_WARNING,
 									msg.getCodeSmellType(), msg, csIdx, methodIdx);	

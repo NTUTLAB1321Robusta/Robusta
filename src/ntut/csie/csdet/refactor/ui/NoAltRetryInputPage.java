@@ -1,5 +1,6 @@
 package ntut.csie.csdet.refactor.ui;
 
+import ntut.csie.csdet.refactor.NoAltRetryRefactoring;
 import ntut.csie.csdet.refactor.RetryRefactoring;
 
 import org.eclipse.jdt.core.IJavaElement;
@@ -26,7 +27,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.SelectionStatusDialog;
 
-public class RetryInputPage extends UserInputWizardPage {
+public class NoAltRetryInputPage  extends UserInputWizardPage {
 
 	//retry的變數名稱
 	private Text retryText;
@@ -41,12 +42,12 @@ public class RetryInputPage extends UserInputWizardPage {
 	//使用者所選擇的Exception Type
 	private IType exType;
 	
-	public RetryInputPage(String name) {
+	public NoAltRetryInputPage(String name) {
 		super(name);
 	}
 
 	@Override
-	public void createControl(Composite parent) {		
+	public void createControl(Composite parent) {
 		Composite result= new Composite(parent, SWT.NONE);		
 		setControl(result);
 
@@ -83,7 +84,7 @@ public class RetryInputPage extends UserInputWizardPage {
 		maxNumLabel.setText("&Max Attempt Number");
 
 		maxNum = new Text(result, SWT.BORDER);
-		maxNum.setText("2");
+		maxNum.setText("3");
 		maxNum.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		maxNum.addModifyListener(new ModifyListener(){
 			public void modifyText(ModifyEvent e) {
@@ -158,7 +159,7 @@ public class RetryInputPage extends UserInputWizardPage {
 	 */
 	private void handleInputChange(){	
 		RefactoringStatus status = new RefactoringStatus();
-		RetryRefactoring refactoring = getRetryRefactoring();
+		NoAltRetryRefactoring refactoring = getNoAltRetryRefactoring();
 		status.merge(refactoring.setAttemptVariable(attempt.getText()));
 		status.merge(refactoring.setMaxAttemptVariable(maxAttempt.getText()));
 		status.merge(refactoring.setMaxAttemptNum(maxNum.getText()));
@@ -194,8 +195,8 @@ public class RetryInputPage extends UserInputWizardPage {
 	 * 取得Refactoring的物件型態
 	 * @return
 	 */
-	private RetryRefactoring getRetryRefactoring(){
-		return (RetryRefactoring) getRefactoring();
+	private NoAltRetryRefactoring getNoAltRetryRefactoring(){
+		return (NoAltRetryRefactoring) getRefactoring();
 	}
 	
 	
@@ -204,15 +205,13 @@ public class RetryInputPage extends UserInputWizardPage {
 	 * @return
 	 */
 	private IType selectExType(){
-
+		//取得存在getRethrowExRefactoring中的project
+		IJavaProject project = getNoAltRetryRefactoring().getProject();
+		
+		IJavaElement[] elements = new IJavaElement[] {project};
+		IJavaSearchScope scope = SearchEngine.createJavaSearchScope(elements);
+		//透過Eclipse 所提供的Dialog來找尋專案中所有的class or library......等等
 		try {
-			//取得存在getRethrowExRefactoring中的project
-			IJavaProject project = getRetryRefactoring().getProject();	
-//			IType exceptionType = project.findType("java.lang.Exception");
-//			IJavaElement[] elements = new IJavaElement[] {exceptionType};
-			IJavaElement[] elements = new IJavaElement[] {project};
-			IJavaSearchScope scope = SearchEngine.createJavaSearchScope(elements);
-			//透過Eclipse 所提供的Dialog來找尋專案中所有的class or library......等等
 			SelectionStatusDialog dialog = (SelectionStatusDialog) JavaUI.createTypeDialog(getShell(), getContainer(), scope, IJavaElementSearchConstants.CONSIDER_ALL_TYPES, false);
 			dialog.setTitle("Choose Exception type");
 			dialog.setMessage("Choose the Exception type  to Rethrow:");
