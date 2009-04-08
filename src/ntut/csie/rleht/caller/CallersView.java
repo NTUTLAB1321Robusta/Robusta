@@ -37,6 +37,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
@@ -506,8 +507,14 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 	// *************************************************************************
 
 	public void handleGenSeqDiagram(boolean isShowCallerType) {
-		new CallersSeqDiagram().draw(this.getSite(), this.treeviewer.getTree().getItems(),isShowCallerType);
+		//在畫循序圖前先顯示設定視窗
+		SDDialog dialog = new SDDialog(new Shell());
+		dialog.open();
 
+		//若取消則不畫循序圖
+		if (!dialog.getIsCancel())
+			new CallersSeqDiagram().draw(this.getSite(), this.treeviewer.getTree().getItems(),isShowCallerType,
+					dialog.getIsPackage(),dialog.getIsShowAll(),dialog.getPackageCount());
 	}
 
 	public void handleAddRLAnnotation() {

@@ -39,30 +39,69 @@ public class RLSequenceModelBuilder {
 		root.setShowIcon(true);
 	}
 
-	public InstanceModel createInstance(String instanceName) {
+	public InstanceModel createInstance(String instanceName, boolean isPackage, boolean isShowAll, int packageCount)
+	{
+		//class名稱的方塊寬度
 		int width;
 		InstanceModel model = new InstanceModel();
+		//在package+class字串裡找到class名稱的起始位置
 		int pos = instanceName.lastIndexOf(".");
+		
+		//若不顯示package或是顯示0層的package
+		if (!isPackage || (!isShowAll && packageCount == 0))
+		{
+			//若instanceName裡沒有"."把全部顯示出來，若有則把package名稱給清掉
+			instanceName = (pos != -1 ? instanceName.substring(pos + 1) : instanceName);
+
+			model.setName(instanceName);
 			
-		instanceName = (pos != -1 ? instanceName.substring(0, pos + 1) + "\n" + instanceName.substring(pos + 1) : instanceName);
-		model.setName(instanceName);
+			//過小就把它調為預設
+			if (instanceName.length()*6 <MAX_WIDTH)
+				width = 150;
+			else
+				width = pos*6;
+		}
+		//顯示package時
+		else
+		{
+			//若顯示全部的package
+			if (isShowAll)
+				//若instanceName裡沒有"."把全部顯示出來，若有則把class名稱移到下一行
+				instanceName = (pos != -1 ? instanceName.substring(0, pos + 1) + "\n" + instanceName.substring(pos + 1) : instanceName);
+			else
+			{
+				//package後的"."的位置
+				int docPos = 0;
+				//找到指定的package數後的"."的位置(若超過則用最後一個package的"."之位置)
+				for (int i=0;instanceName.indexOf(".",docPos+1)!=-1 && i<packageCount;i++)
+					docPos = instanceName.indexOf(".",docPos+1);
+				//把超過選擇package數目的範圍的package名稱給清掉
+				instanceName = instanceName.substring(0,docPos+1) + "\n" + instanceName.substring(pos+1);
+				//重新找一次class名稱的位置
+				pos = instanceName.lastIndexOf(".");
+			}
+			model.setName(instanceName);
+			
+			//判斷是上半部名比較大還是下半部
+			if (instanceName.length()/2<=pos)			//上半部較大
+				width = pos*6;
+			else
+				width = (instanceName.length()-pos)*6;	//下半部較大
+			//過小就把它調為預設
+			if (width<MAX_WIDTH)
+				width = 150;
+		}
 		
 		// root.getInstances().get(root).getConstraint().getRight().getPosition(root.getConstraint().getRight());
 
-		//判斷是上半部名比較大還是下半部
-		if (instanceName.length()/2<=pos)
-			width = pos*6;
-		else
-			width = (instanceName.length()-pos)*6;
-		//過小就把它調為預設
-		if (width<MAX_WIDTH)
-			width = 150;
-		
+		//Debugger到第一個method的位置
 		model.setConstraint(new Rectangle(picPostion + 20, InstanceModel.DEFAULT_LOCATION, width , -1));
+
 		//儲存起來給底下畫方塊圖的參照
 		picsWidth.add(width/2-5);
 		//記錄位置給下個圖使用
 		picPostion += width+20;
+
 		//model.setConstraint(new Rectangle((MAX_WIDTH + 20) * root.getInstances().size() + 20, InstanceModel.DEFAULT_LOCATION, instanceName.length()*5 , -1));
 		// model.setConstraint(new Rectangle(120 * root.getInstances().size() + 20, InstanceModel.DEFAULT_LOCATION, MAX_WIDTH, -1));
 		Rectangle lineRect = model.getConstraint().getCopy();
@@ -135,10 +174,11 @@ public class RLSequenceModelBuilder {
 		}
 	}
 
-	public MessageModel createMessage(String message, String instanceName) {
-		InstanceModel model = createInstance(instanceName);
-		return createMessage(message, model);
-	}
+//	沒用到(沒人call它)註解掉
+//	public MessageModel createMessage(String message, String instanceName) {
+//		InstanceModel model = createInstance(instanceName);
+//		return createMessage(message, model);
+//	}
 
 	public MessageModel createMessage(String message, InstanceModel target) {
 		ActivationModel model = new ActivationModel();
@@ -191,10 +231,12 @@ public class RLSequenceModelBuilder {
 
 		if (targetModel == null) {
 			//logger.info("<targetModel == null> message="+message+":" + currentY);
+			//每多一個class方框的高就更矮一些
 			currentY += 20;
+			//畫class方框下面的長方形方框
 			model.setConstraint(					
 					new Rectangle(
-							//配合文字大小調整
+							//畫到下一個class的方塊的中間
 							target.getConstraint().x + picsWidth.get(count++),
 							currentY, 
 							ActivationModel.DEFAULT_WIDTH, 
@@ -337,11 +379,12 @@ public class RLSequenceModelBuilder {
 		currentY += 20;
 		return messageModel;
 	}
-
-	public MessageModel createCreationMessage(String message, String instanceName) {
-		InstanceModel model = createInstance(instanceName);
-		return createCreationMessage(message, model);
-	}
+	
+//	沒用到(沒人call它)註解掉
+//	public MessageModel createCreationMessage(String message, String instanceName) {
+//		InstanceModel model = createInstance(instanceName);
+//		return createCreationMessage(message, model);
+//	}
 
 	public MessageModel createCreationMessage(String message, InstanceModel target) {
 		Rectangle rectangle = target.getConstraint().getCopy();

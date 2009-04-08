@@ -13,7 +13,7 @@ public class RLNature implements IProjectNature {
 	 */
 	public static final String NATURE_ID = "ntut.csie.rleht.builder.RLNature";
 
-	//TODO 原來是private 因為需要取到project,所以暫時用public static
+	
 	public static IProject project;
 
 	/*

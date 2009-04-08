@@ -50,7 +50,8 @@ public class CallersSeqDiagram {
 		return copy;
 	}
 	
-	public void draw(IWorkbenchPartSite site, TreeItem[] items,boolean isShowCallerType) {
+	public void draw(IWorkbenchPartSite site, TreeItem[] items,boolean isShowCallerType,
+					 boolean isPackage, boolean isShowAll, int packageCount) {
 		// instanciate builder.
 		RLSequenceModelBuilder builder = new RLSequenceModelBuilder();
 	    List<SeqDiagramData> copyList = new ArrayList<SeqDiagramData>();
@@ -59,11 +60,10 @@ public class CallersSeqDiagram {
 
         /*------------------------------------------------------------------------*
         -  透過isShowCallerType來判斷是由下往上call hierarchy
-             如果遇到這種情形,則將順序反過來,並且把Level對調
+		        如果遇到這種情形,則將順序反過來,並且把Level對調
         *-------------------------------------------------------------------------*/
 		if(isShowCallerType){
 			int count = 0;
-			System.out.println("【由下往上call】");
 			for(int i=seqdataList.size()-1;i>=0;i--){
 				//先從Array最後面把物件copy進去
 				SeqDiagramData sdd = copySeqData(seqdataList.get(i)); 
@@ -83,7 +83,10 @@ public class CallersSeqDiagram {
 		for (SeqDiagramData sdd : seqdataList) {
 			if (instanceModelMap.get(sdd.getClassName()) == null) {
 				//指的是要被create的class(sequence diagram上的class方塊)
-				InstanceModel obj = builder.createInstance(sdd.getClassName());
+				
+				//把SeqDiagram設定視窗得到的參數傳到畫圖的那一層
+				InstanceModel obj = builder.createInstance(sdd.getClassName(),isPackage,isShowAll,packageCount);
+				
 				if (start == null) {
 					start = obj;
 				}
@@ -185,7 +188,7 @@ public class CallersSeqDiagram {
 		// logger.debug("[handleGenSeqDiagram]" + builder.toXML());
 
 		IEditorPart editor = site.getPage().getActiveEditor();
-
+		//TODO editor可能為null point
 		IEditorInput input = editor.getEditorInput();
 		try {
 			if (input instanceof IFileEditorInput) {
@@ -207,12 +210,17 @@ public class CallersSeqDiagram {
 				if (file.exists()) {
 					if (editor.getTitle().equals(fn)) {
 						site.getPage().closeEditor(editor, true);
+//						System.out.println("====== Close Editor =======");
 					}
-					try {
-						file.delete(false, null);
-					} catch (Exception ex) {
 
+					try {
+						//TODO 刪除SD時會有ResourceExcpetion
+//						file.refreshLocal(IResource.DEPTH_INFINITE, null);
+						file.delete(true,null);
+					} catch (Exception ex) {
+//						ex.printStackTrace();
 					}
+					
 				}
 
 				if (!file.exists()) {
@@ -229,6 +237,7 @@ public class CallersSeqDiagram {
 			}
 		} catch (CoreException ex) {
 			logger.error("[handleGenSeqDiagram]", ex);
+			ex.printStackTrace();
 		}
 
 	}
