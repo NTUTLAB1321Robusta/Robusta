@@ -7,12 +7,12 @@ public class NoAltRetryWizard  extends RefactoringWizard{
 
 	public NoAltRetryWizard(Refactoring refactoring, int flags) {
 		super(refactoring, DIALOG_BASED_USER_INTERFACE | PREVIEW_EXPAND_FIRST_NODE);
-		setDefaultPageTitle("No Alternative Retry");
+		setDefaultPageTitle("Retry with original values");
 	}
 
 	@Override
 	protected void addUserInputPages() {
-		addPage(new NoAltRetryInputPage("No Alternative Retry"));
+		addPage(new NoAltRetryInputPage("Retry with original values"));
 	}
 
 }

@@ -168,7 +168,7 @@ public class NoAltRetryInputPage  extends UserInputWizardPage {
 		
 		//假如要Throw的exception沒有import進來的話,可利用保留的type來import		
 		refactoring.setExType(exType);
-		//TODO 是否有辦法判定使用者所選擇的是exception type??
+
 		//先確認有沒有error的情形
 		setPageComplete(!status.hasError());
 		int severity = status.getSeverity();
@@ -208,10 +208,13 @@ public class NoAltRetryInputPage  extends UserInputWizardPage {
 		//取得存在getRethrowExRefactoring中的project
 		IJavaProject project = getNoAltRetryRefactoring().getProject();
 		
-		IJavaElement[] elements = new IJavaElement[] {project};
-		IJavaSearchScope scope = SearchEngine.createJavaSearchScope(elements);
+//		IJavaElement[] elements = new IJavaElement[] {project};
+//		IJavaSearchScope scope = SearchEngine.createJavaSearchScope(elements);
 		//透過Eclipse 所提供的Dialog來找尋專案中所有的class or library......等等
 		try {
+			//TODO 是否有辦法讓使用者只搜尋該專案的例外類別
+			IType type = project.findType("java.lang.Exception");
+			IJavaSearchScope scope = SearchEngine.createHierarchyScope(type);
 			SelectionStatusDialog dialog = (SelectionStatusDialog) JavaUI.createTypeDialog(getShell(), getContainer(), scope, IJavaElementSearchConstants.CONSIDER_ALL_TYPES, false);
 			dialog.setTitle("Choose Exception type");
 			dialog.setMessage("Choose the Exception type  to Rethrow:");

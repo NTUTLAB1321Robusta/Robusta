@@ -126,7 +126,7 @@ public class NoAltRetryRefactoring extends Refactoring {
 			SpareHandlerAnalyzer visitor = null;
 			for(ASTNode method : methodList){
 				methodIdx++;
-				visitor = new SpareHandlerAnalyzer(selectNode);
+				visitor = new SpareHandlerAnalyzer(selectNode,actRoot);
 				method.accept(visitor);
 				if(visitor.getResult()){				
 					break;

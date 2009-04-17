@@ -20,13 +20,15 @@ public class SDDialog extends Dialog
 {
 	//是否要顯示package的RadioButton
 	private Button packageRadBtn;
+	
 	private Button classRadBtn;
 	//是否要全顯示所有的package名字的RadioButton
 	private Button allRadBtn;
+	
 	private Button selectRadBtn;
+	
 	//欲顯示的package數目的Spinner
 	private Spinner packagesSpinner;
-
 	//是否選擇顯示package
 	private boolean isPackage;
 	//是否選擇全部package都顯示

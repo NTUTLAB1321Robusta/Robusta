@@ -210,15 +210,15 @@ public class CallersSeqDiagram {
 				if (file.exists()) {
 					if (editor.getTitle().equals(fn)) {
 						site.getPage().closeEditor(editor, true);
-//						System.out.println("====== Close Editor =======");
 					}
 
 					try {
-						//TODO 刪除SD時會有ResourceExcpetion
+						//TODO 刪除SD時會有ResourceExcpetion,原因是有東西鎖住檔案
+						//若採用沒有被版本控管的專案,則不會有此問題發生
 //						file.refreshLocal(IResource.DEPTH_INFINITE, null);
 						file.delete(true,null);
 					} catch (Exception ex) {
-//						ex.printStackTrace();
+						ex.printStackTrace();
 					}
 					
 				}

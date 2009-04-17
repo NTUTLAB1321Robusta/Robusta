@@ -6,6 +6,7 @@ import java.util.Map;
 import ntut.csie.csdet.data.CSMessage;
 import ntut.csie.csdet.visitor.CodeSmellAnalyzer;
 import ntut.csie.csdet.visitor.MainAnalyzer;
+import ntut.csie.csdet.visitor.SpareHandlerAnalyzer;
 import ntut.csie.rleht.common.ASTHandler;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLChecker;
@@ -160,6 +161,8 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				CodeSmellAnalyzer csVisitor = null;
 				
 				MainAnalyzer mainVisitor = null;
+				
+				SpareHandlerAnalyzer shVisitor = null;
 
 				// 目前method的Exception資訊
 				List<RLMessage> currentMethodExList = null;
@@ -178,6 +181,8 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				
 				// 目前method內的Unprotected Main資訊
 				List<CSMessage> unprotectedMain = null;
+				
+				List<CSMessage> spareHandler = null;
 				
 				// 目前的Method AST Node
 				ASTNode currentMethodNode = null;
@@ -250,6 +255,22 @@ public class RLBuilder extends IncrementalProjectBuilder {
 									msg.getCodeSmellType(), msg, csIdx, methodIdx);	
 						}
 					}						
+					
+//					shVisitor = new SpareHandlerAnalyzer(null,root);
+//					method.accept(shVisitor);
+//					spareHandler = shVisitor.getSpareHandlerList();
+//					csIdx = -1;
+//					if(spareHandler != null){
+//						for(CSMessage msg : spareHandler){
+//							csIdx++;
+//							String errmsg = "EH Smell Type:["+ msg.getCodeSmellType() + "]未處理!!!";
+//							//貼marker
+//							this.addMarker(file, errmsg, msg.getLineNumber(), IMarker.SEVERITY_WARNING,
+//									msg.getCodeSmellType(), msg, csIdx, methodIdx);	
+//						}
+//					}
+					
+					
 					
 					if (currentMethodNode != null) {
 						RLChecker checker = new RLChecker();

@@ -150,7 +150,7 @@ public class RetryRefactoring extends Refactoring{
 			SpareHandlerAnalyzer visitor = null;
 			for(ASTNode method : methodList){
 				methodIdx++;
-				visitor = new SpareHandlerAnalyzer(selectNode);
+				visitor = new SpareHandlerAnalyzer(selectNode,actRoot);
 				method.accept(visitor);
 				if(visitor.getResult()){				
 					break;
@@ -182,7 +182,6 @@ public class RetryRefactoring extends Refactoring{
 			actRoot.recordModifications();
 			AST ast = currentMethodNode.getAST();
 			MethodDeclaration md = (MethodDeclaration)currentMethodNode;
-			System.out.println("【Method Name】====>"+md.getName());
 			List methodSt = md.getBody().statements();
 			//先複製一份method內的statement保留下來
 			int pos = -1;

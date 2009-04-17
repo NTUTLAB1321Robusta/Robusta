@@ -343,6 +343,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 					trystat.toString(),trystat.getStartPosition(),
 					this.getLineNumber(trystat.getStartPosition()),trystat.toString());
 			this.nestedTryList.add(csmsg);	
+			
 		}
 		
 		// ³B²zTry Block

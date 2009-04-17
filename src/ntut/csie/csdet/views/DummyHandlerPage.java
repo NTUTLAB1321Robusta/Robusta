@@ -66,12 +66,12 @@ public class DummyHandlerPage extends APropertyPage{
 	
 	private void addFirstSection(final Composite dummyHandlerPage){
 		final Label detectSettingsLabel1 = new Label(dummyHandlerPage, SWT.NONE);
-		detectSettingsLabel1.setText("Detect Settings");
-		detectSettingsLabel1.setBounds(10, 10, 77, 12);
+		detectSettingsLabel1.setText("偵測條件 (預設只偵測e.printStackTrace())");
+		detectSettingsLabel1.setBounds(10, 10, 210, 12);
 		
 		final Label detectSettingsLabel2 = new Label(dummyHandlerPage, SWT.NONE);
 		detectSettingsLabel2.setBounds(228, 10, 77, 12);
-		detectSettingsLabel2.setText("Detect Settings");
+		detectSettingsLabel2.setText("");
 		
 		Document docJDom = JDomUtil.readXMLFile();
 		String setting = "";
@@ -128,12 +128,12 @@ public class DummyHandlerPage extends APropertyPage{
 		}
 		
 		final Label codeTemplateLabel1 = new Label(dummyHandlerPage, SWT.NONE);
-		codeTemplateLabel1.setText("Code Template:");
-		codeTemplateLabel1.setBounds(10, 82, 96, 12);
+		codeTemplateLabel1.setText("偵測Dummy handler的範例:");
+		codeTemplateLabel1.setBounds(10, 82, 155, 12);
 		
 		final Label codeTemplateLabel2 = new Label(dummyHandlerPage, SWT.NONE);
-		codeTemplateLabel2.setBounds(10, 232, 96, 12);
-		codeTemplateLabel2.setText("Code Template:");
+		codeTemplateLabel2.setBounds(10, 232, 270, 12);
+		codeTemplateLabel2.setText("偵測有Logger機制則不視為Dummy handler的範例:");
 
 		final Label label1 = new Label(dummyHandlerPage, SWT.SHADOW_IN | SWT.HORIZONTAL | SWT.SEPARATOR);
 		label1.setBounds(10, 218, 464, 12);
