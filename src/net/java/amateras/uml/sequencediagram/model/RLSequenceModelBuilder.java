@@ -39,7 +39,7 @@ public class RLSequenceModelBuilder {
 		root.setShowIcon(true);
 	}
 
-	public InstanceModel createInstance(String instanceName, boolean isPackage, boolean isShowAll, int packageCount)
+	public InstanceModel createInstance(String instanceName, boolean isPackage, boolean isShowAll, boolean isTopDown, int packageCount)
 	{
 		//class名稱的方塊寬度
 		int width;
@@ -47,8 +47,8 @@ public class RLSequenceModelBuilder {
 		//在package+class字串裡找到class名稱的起始位置
 		int pos = instanceName.lastIndexOf(".");
 		
-		//若不顯示package或是顯示0層的package
-		if (!isPackage || (!isShowAll && packageCount == 0))
+		//若不顯示package或是顯示0層的package或package無"."
+		if (!isPackage || (!isShowAll && packageCount == 0) || pos == -1)
 		{
 			//若instanceName裡沒有"."把全部顯示出來，若有則把package名稱給清掉
 			instanceName = (pos != -1 ? instanceName.substring(pos + 1) : instanceName);
@@ -68,7 +68,8 @@ public class RLSequenceModelBuilder {
 			if (isShowAll)
 				//若instanceName裡沒有"."把全部顯示出來，若有則把class名稱移到下一行
 				instanceName = (pos != -1 ? instanceName.substring(0, pos + 1) + "\n" + instanceName.substring(pos + 1) : instanceName);
-			else
+			//若顯式方式是由上到下
+			else if (isTopDown)
 			{
 				//package後的"."的位置
 				int docPos = 0;
@@ -77,6 +78,24 @@ public class RLSequenceModelBuilder {
 					docPos = instanceName.indexOf(".",docPos+1);
 				//把超過選擇package數目的範圍的package名稱給清掉
 				instanceName = instanceName.substring(0,docPos+1) + "\n" + instanceName.substring(pos+1);
+				//重新找一次class名稱的位置
+				pos = instanceName.lastIndexOf(".");
+			}
+			//若顯示方式是由下往上
+			else
+			{
+				//class前的"."的位置
+				int docPos = pos;
+				//找到指定的package數後的"."的位置
+				int i=0;
+				for (;instanceName.lastIndexOf(".",docPos-1)!=-1 && i<packageCount;i++)
+					docPos = instanceName.lastIndexOf(".",docPos-1);
+				//若超過則全顯示
+				if (i<packageCount)
+					instanceName = instanceName.substring(0, pos + 1) + "\n" + instanceName.substring(pos + 1);
+				else
+					//把超過選擇package數目的範圍的package名稱給清掉
+					instanceName = instanceName.substring(docPos+1,pos+1) + "\n" + instanceName.substring(pos+1);
 				//重新找一次class名稱的位置
 				pos = instanceName.lastIndexOf(".");
 			}

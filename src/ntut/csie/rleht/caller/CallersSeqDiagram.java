@@ -51,7 +51,7 @@ public class CallersSeqDiagram {
 	}
 	
 	public void draw(IWorkbenchPartSite site, TreeItem[] items,boolean isShowCallerType,
-					 boolean isPackage, boolean isShowAll, int packageCount) {
+					 boolean isPackage, boolean isShowAll, boolean isTopDown, int packageCount) {
 		// instanciate builder.
 		RLSequenceModelBuilder builder = new RLSequenceModelBuilder();
 	    List<SeqDiagramData> copyList = new ArrayList<SeqDiagramData>();
@@ -85,7 +85,7 @@ public class CallersSeqDiagram {
 				//指的是要被create的class(sequence diagram上的class方塊)
 				
 				//把SeqDiagram設定視窗得到的參數傳到畫圖的那一層
-				InstanceModel obj = builder.createInstance(sdd.getClassName(),isPackage,isShowAll,packageCount);
+				InstanceModel obj = builder.createInstance(sdd.getClassName(),isPackage,isShowAll,isTopDown,packageCount);
 				
 				if (start == null) {
 					start = obj;

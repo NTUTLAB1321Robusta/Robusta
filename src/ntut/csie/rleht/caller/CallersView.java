@@ -514,7 +514,7 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 		//若取消則不畫循序圖
 		if (!dialog.getIsCancel())
 			new CallersSeqDiagram().draw(this.getSite(), this.treeviewer.getTree().getItems(),isShowCallerType,
-					dialog.getIsPackage(),dialog.getIsShowAll(),dialog.getPackageCount());
+					dialog.getIsPackage(),dialog.getIsShowAll(),dialog.getIsTopDown(),dialog.getPackageCount());
 	}
 
 	public void handleAddRLAnnotation() {
