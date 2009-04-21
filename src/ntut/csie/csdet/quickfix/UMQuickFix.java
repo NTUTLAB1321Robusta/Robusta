@@ -228,6 +228,8 @@ public class UMQuickFix implements IMarkerResolution{
 	
 		//假如Try block之後還有程式碼,就複製進去try block之內
 		int totalSize = statement.size();
+		System.out.println("【Total Size】====>"+totalSize);
+		System.out.println("【Try position】====>"+pos);
 		if(pos == 0){
 			//假如try block在最一開始
 			if(totalSize > 1){
@@ -244,11 +246,13 @@ public class UMQuickFix implements IMarkerResolution{
 			}
 		}else{
 			//假如try block在中間
-			//將try block之後的程式碼move到try中
+			//先將try block之前的程式碼move到try中
 			originalRewrite.insertFirst(listRewrite.createMoveTarget((ASTNode) listRewrite.getRewrittenList().get(0), 
 					(ASTNode) listRewrite.getRewrittenList().get(pos-1)), null);
-			//將try block之前的程式碼move到try中
-			originalRewrite.insertLast(listRewrite.createMoveTarget((ASTNode) listRewrite.getRewrittenList().get(pos+1), 
+			//將try block之後的程式碼move到try中
+			//由於在把try之前的東西移進新的try block之後,list的位置會更動,try的位置會跑到最前面,所以從1開始複製			
+			totalSize = totalSize - pos;
+			originalRewrite.insertLast(listRewrite.createMoveTarget((ASTNode) listRewrite.getRewrittenList().get(1), 
 					(ASTNode) listRewrite.getRewrittenList().get(totalSize-1)), null);
 		}		
 		addCatchBody(ast,original);
