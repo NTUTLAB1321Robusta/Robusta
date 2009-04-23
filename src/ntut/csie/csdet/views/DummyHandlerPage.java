@@ -25,70 +25,84 @@ public class DummyHandlerPage extends APropertyPage{
 	// 放code template的區域
 	private StyledText templateArea;
 	// 放code template的區域
-	private StyledText templateArea2;
 	// 是否要捕捉System.out.println() and print()的按鈕
-	private Button systemoutprintlnButton;
+	private Button sysoBtn;
+	// 是否要捕捉e.printStackTrace的button
+	private Button eprintBtn;
 	// 是否要捕捉log4j的button
-	private Button log4jButton;
+	private Button log4jBtn;
 	// 是否要捕捉java.util.logging的button
 	private Button javaUtillogBtn;
 	//
-	StyleRange[] sampleStyles1 = new StyleRange[5];
-	StyleRange[] sampleStyles2 = new StyleRange[7];
+	StyleRange[] sampleStyles = new StyleRange[9];
 	// code template前半部內容
 	private String mainText;
 	//　code template的結尾"}"
 	private String endText;
-	// code template
-	private String printText;
+	// system.out.println的button的字串
+	private String sysoText;
+	// e.print的button的字串
+	private String eprintText;
 	// log4j的button的字串
-	private String logText;
+	private String log4jText;
 	// java.util.logging的字串
-	private String javaText;
+	private String javaUtillogText;
 	
 	public DummyHandlerPage(Composite composite,CSPropertyPage page){
 		super(composite,page);
 		//程式碼的內容
 		mainText =		"try {   \n" +
 						"    // code in here\n" +
-						"} catch (Exception e) { \n" +
-						"    e.printStackTrace();\n";
+						"} catch (Exception e) { \n";
+		eprintText = 	"    e.printStackTrace();\n";
 		endText =		"}";
-		printText =		"    System.out.println(e);\n" +
+		sysoText =		"    System.out.println(e);\n" +
 						"    System.out.print(e);\n";
-		logText =		"    // using log4j\n" +
+		log4jText =		"    // using log4j\n" +
 						"    logger.info(e.getMessage()"+ ");\n";
-		javaText =		"    // using java.util.logging.Logger \n" +
+		javaUtillogText =		"    // using java.util.logging.Logger \n" +
 						"    java_logger.info(e.getMessage()"+ "); \n";
 		//加入頁面的內容
 		addFirstSection(composite);
 	}
 	
 	private void addFirstSection(final Composite dummyHandlerPage){
-		final Label detectSettingsLabel1 = new Label(dummyHandlerPage, SWT.NONE);
-		detectSettingsLabel1.setText("偵測條件 (預設只偵測e.printStackTrace())");
-		detectSettingsLabel1.setBounds(10, 10, 210, 12);
-		
-		final Label detectSettingsLabel2 = new Label(dummyHandlerPage, SWT.NONE);
-		detectSettingsLabel2.setBounds(228, 10, 77, 12);
-		detectSettingsLabel2.setText("");
-		
 		Document docJDom = JDomUtil.readXMLFile();
+		String eprint = "";
 		String setting = "";
 		String log4jSet = "";
 		String javaLogSet = "";
 		if(docJDom != null){
 			Element root = docJDom.getRootElement();
 			Element rule = root.getChild(JDomUtil.DummyHandlerTag).getChild("rule");
+			eprint = rule.getAttribute(JDomUtil.eprintstacktrace).getValue();
 			setting = rule.getAttribute(JDomUtil.systemoutprint).getValue();
 			log4jSet = rule.getAttribute(JDomUtil.apache_log4j).getValue();
 			javaLogSet = rule.getAttribute(JDomUtil.java_Logger).getValue();
 		}
 		
-		systemoutprintlnButton = new Button(dummyHandlerPage, SWT.CHECK);
-		systemoutprintlnButton.setText("System.out.print();");
-		systemoutprintlnButton.setBounds(20, 28, 202, 16);
-		systemoutprintlnButton.addSelectionListener(new SelectionAdapter() {
+		final Label detectSettingsLabel = new Label(dummyHandlerPage, SWT.NONE);
+		detectSettingsLabel.setText("偵測條件(打勾偵測,不打勾不偵測):");
+		detectSettingsLabel.setBounds(10, 10, 210, 12);
+		
+		eprintBtn = new Button(dummyHandlerPage, SWT.CHECK);
+		eprintBtn.setText("e.printStackTrace();");
+		eprintBtn.setBounds(20, 28, 123, 16);
+		eprintBtn.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(final SelectionEvent e) {
+				//按下按鈕而改變Text文字和顏色
+				adjustText();
+				adjustFont();
+			}
+		});
+		if(eprint.equals("Y")) {
+			eprintBtn.setSelection(true);
+		}
+		
+		sysoBtn = new Button(dummyHandlerPage, SWT.CHECK);
+		sysoBtn.setText("System.out.print();");
+		sysoBtn.setBounds(20, 50, 123, 16);
+		sysoBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
 				//按下按鈕而改變Text文字和顏色
 				adjustText();
@@ -96,13 +110,13 @@ public class DummyHandlerPage extends APropertyPage{
 			}
 		});
 		if(setting.equals("Y")){
-			systemoutprintlnButton.setSelection(true);
+			sysoBtn.setSelection(true);
 		}
 
-		log4jButton = new Button(dummyHandlerPage, SWT.CHECK);
-		log4jButton.setBounds(238, 28, 202, 16);
-		log4jButton.setText("Detect using org.apache.log4j");
-		log4jButton.addSelectionListener(new SelectionAdapter() {
+		log4jBtn = new Button(dummyHandlerPage, SWT.CHECK);
+		log4jBtn.setBounds(20, 72, 159, 16);
+		log4jBtn.setText("Detect using org.apache.log4j");
+		log4jBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
 				//按下按鈕而改變Text文字和顏色
 				adjustText();
@@ -110,12 +124,12 @@ public class DummyHandlerPage extends APropertyPage{
 			}
 		});
 		if(log4jSet.equals("Y")){
-			log4jButton.setSelection(true);
+			log4jBtn.setSelection(true);
 		}
 
 		javaUtillogBtn = new Button(dummyHandlerPage, SWT.CHECK);
 		javaUtillogBtn.setText("Detect using java.util.logging.Logger");
-		javaUtillogBtn.setBounds(238, 48, 202, 16);
+		javaUtillogBtn.setBounds(20, 94, 194, 16);
 		javaUtillogBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
 				//按下按鈕而改變Text文字和顏色
@@ -127,30 +141,18 @@ public class DummyHandlerPage extends APropertyPage{
 			javaUtillogBtn.setSelection(true);
 		}
 		
-		final Label codeTemplateLabel1 = new Label(dummyHandlerPage, SWT.NONE);
-		codeTemplateLabel1.setText("偵測Dummy handler的範例:");
-		codeTemplateLabel1.setBounds(10, 82, 155, 12);
-		
-		final Label codeTemplateLabel2 = new Label(dummyHandlerPage, SWT.NONE);
-		codeTemplateLabel2.setBounds(10, 232, 270, 12);
-		codeTemplateLabel2.setText("偵測有Logger機制則不視為Dummy handler的範例:");
+		final Label codeTemplateLabel = new Label(dummyHandlerPage, SWT.NONE);
+		codeTemplateLabel.setText("偵測範例:");
+		codeTemplateLabel.setBounds(10, 134, 96, 12);
 
-		final Label label1 = new Label(dummyHandlerPage, SWT.SHADOW_IN | SWT.HORIZONTAL | SWT.SEPARATOR);
-		label1.setBounds(10, 218, 464, 12);
-		final Label label3 = new Label(dummyHandlerPage, SWT.CENTER | SWT.SEPARATOR | SWT.HORIZONTAL);
-		label3.setAlignment(SWT.CENTER);
-		label3.setBounds(0, 68, 484, 12);
+		final Label label1 = new Label(dummyHandlerPage,SWT.SEPARATOR| SWT.HORIZONTAL);
+		label1.setBounds(10, 116, 472, 12);
 
 		templateArea = new StyledText(dummyHandlerPage, SWT.BORDER);
-		Font font = new Font(dummyHandlerPage.getDisplay(),"Courier New",9,SWT.NORMAL);		
+		Font font = new Font(dummyHandlerPage.getDisplay(),"Courier New",14,SWT.NORMAL);		
 		templateArea.setFont(font);
-		templateArea.setBounds(10, 100, 464, 115);
+		templateArea.setBounds(10, 151, 458, 263);
 		templateArea.setEditable(false);
-		
-		templateArea2 = new StyledText(dummyHandlerPage, SWT.BORDER);
-		templateArea2.setFont(font);
-		templateArea2.setBounds(10, 250, 464, 148);
-		templateArea2.setEditable(false);
 
 		//載入預定的字型、顏色
 		addSampleStyle(dummyHandlerPage.getDisplay());
@@ -167,18 +169,19 @@ public class DummyHandlerPage extends APropertyPage{
 	 */
 	private void adjustText()
 	{
-		if(systemoutprintlnButton.getSelection())
-			templateArea.setText(mainText + printText + endText);
-		else
-			templateArea.setText(mainText + endText);
-		if (log4jButton.getSelection() && javaUtillogBtn.getSelection())
-			templateArea2.setText(mainText + logText + javaText + endText);
-		else if (log4jButton.getSelection() && !javaUtillogBtn.getSelection())
-			templateArea2.setText(mainText + logText + endText);
-		else if (!log4jButton.getSelection() && javaUtillogBtn.getSelection())
-			templateArea2.setText(mainText + javaText + endText);
-		else
-			templateArea2.setText(mainText + endText);
+		String temp = mainText;
+		
+		if (eprintBtn.getSelection())
+			temp += eprintText;
+		if(sysoBtn.getSelection())
+			temp += sysoText;
+		if (log4jBtn.getSelection())
+			temp += log4jText;
+		if (javaUtillogBtn.getSelection())
+			temp += javaUtillogText;
+		temp += endText;
+
+		templateArea.setText(temp);
 	}
 
 	/**
@@ -187,77 +190,118 @@ public class DummyHandlerPage extends APropertyPage{
 	 */
 	private void addSampleStyle(Display display) {
 		//Try
-		sampleStyles1[0] = sampleStyles2[0] = new StyleRange();
-		sampleStyles1[0].fontStyle = sampleStyles2[0].fontStyle  = SWT.BOLD;
-		sampleStyles1[0].foreground = sampleStyles2[0].foreground = display.getSystemColor(SWT.COLOR_DARK_MAGENTA);
+		sampleStyles[0] = new StyleRange();
+		sampleStyles[0].fontStyle = SWT.BOLD;
+		sampleStyles[0].foreground = display.getSystemColor(SWT.COLOR_DARK_MAGENTA);
 		// 註解
-		sampleStyles1[1] = sampleStyles2[1] =  new StyleRange();
-		sampleStyles1[1].fontStyle = sampleStyles2[1].fontStyle = SWT.ITALIC;
-		sampleStyles1[1].foreground = sampleStyles2[1].foreground = display.getSystemColor(SWT.COLOR_DARK_GREEN);
+		sampleStyles[1] = new StyleRange();
+		sampleStyles[1].fontStyle = SWT.ITALIC;
+		sampleStyles[1].foreground = display.getSystemColor(SWT.COLOR_DARK_GREEN);
 		//catch
-		sampleStyles1[2] = sampleStyles2[2] = new StyleRange();
-		sampleStyles1[2].fontStyle = sampleStyles2[2].fontStyle = SWT.BOLD;
-		sampleStyles1[2].foreground = sampleStyles2[2].foreground = display.getSystemColor(SWT.COLOR_DARK_MAGENTA);
+		sampleStyles[2] = new StyleRange();
+		sampleStyles[2].fontStyle = SWT.BOLD;
+		sampleStyles[2].foreground = display.getSystemColor(SWT.COLOR_DARK_MAGENTA);
 		//out
-		sampleStyles1[3] = new StyleRange();
-		sampleStyles1[3].fontStyle = SWT.ITALIC;
-		sampleStyles1[3].foreground = display.getSystemColor(SWT.COLOR_BLUE);
+		sampleStyles[3] = new StyleRange();
+		sampleStyles[3].fontStyle = SWT.ITALIC;
+		sampleStyles[3].foreground = display.getSystemColor(SWT.COLOR_BLUE);
 		// out
-		sampleStyles1[4] = new StyleRange();
-		sampleStyles1[4].fontStyle = SWT.ITALIC;
-		sampleStyles1[4].foreground = display.getSystemColor(SWT.COLOR_BLUE);
+		sampleStyles[4] = new StyleRange();
+		sampleStyles[4].fontStyle = SWT.ITALIC;
+		sampleStyles[4].foreground = display.getSystemColor(SWT.COLOR_BLUE);
 		// 註解
-		sampleStyles2[3] = new StyleRange();
-		sampleStyles2[3].fontStyle = SWT.ITALIC;
-		sampleStyles2[3].foreground = display.getSystemColor(SWT.COLOR_DARK_GREEN);		
+		sampleStyles[5] = new StyleRange();
+		sampleStyles[5].fontStyle = SWT.ITALIC;
+		sampleStyles[5].foreground = display.getSystemColor(SWT.COLOR_DARK_GREEN);		
 		// log4j
-		sampleStyles2[4] = new StyleRange();
-		sampleStyles2[4].fontStyle = SWT.ITALIC;
-		sampleStyles2[4].foreground = display.getSystemColor(SWT.COLOR_BLUE);
+		sampleStyles[6] = new StyleRange();
+		sampleStyles[6].fontStyle = SWT.ITALIC;
+		sampleStyles[6].foreground = display.getSystemColor(SWT.COLOR_BLUE);
 		// 註解
-		sampleStyles2[5] = new StyleRange();
-		sampleStyles2[5].fontStyle = SWT.ITALIC;
-		sampleStyles2[5].foreground = display.getSystemColor(SWT.COLOR_DARK_GREEN);	
+		sampleStyles[7] = new StyleRange();
+		sampleStyles[7].fontStyle = SWT.ITALIC;
+		sampleStyles[7].foreground = display.getSystemColor(SWT.COLOR_DARK_GREEN);	
 		// java.util.logging.Logger
-		sampleStyles2[6] = new StyleRange();
-		sampleStyles2[6].fontStyle = SWT.ITALIC;
-		sampleStyles2[6].foreground = display.getSystemColor(SWT.COLOR_BLUE);
+		sampleStyles[8] = new StyleRange();
+		sampleStyles[8].fontStyle = SWT.ITALIC;
+		sampleStyles[8].foreground = display.getSystemColor(SWT.COLOR_BLUE);
 	}
 	
 	/**
 	 * 將程式碼中的Try ,catch,out標上顏色
 	 */
 	private void adjustFont(){
-		int[] ranges1;
-		int[] ranges2;
-		
-		//SystemOutPrint按鈕有無按下而調整顏色位置(起始位置,幾個字元)兩個一組
-		if (systemoutprintlnButton.getSelection())
-			ranges1 = new int[] {0,3,13,15,31,5,90,3,117,3};
-		else
-			ranges1 = new int[] {0,3,13,15,31,5};
+		//目前文字長度
+		int textLength = mainText.length();
 
-		//因log4j和javaUtilog按鈕有無按下而調整顏色位置
-		if (log4jButton.getSelection() && javaUtillogBtn.getSelection())
-			ranges2 = new int[] {0,3,13,15,31,5,83,14,102,6,135,33,174,11};
-		else if (log4jButton.getSelection() && !javaUtillogBtn.getSelection())
-			ranges2 = new int[] {0,3,13,15,31,5,83,14,102,6};
-		else if (!log4jButton.getSelection() && javaUtillogBtn.getSelection())
-			ranges2 = new int[] {0,3,13,15,31,5,83,33,122,11};
-		else
-			ranges2 = new int[] {0,3,13,15,31,5};
-		
-		//把預設字型風格載入到要使用的字型風格(配合字數而改變)
-		StyleRange[] styles1 = new StyleRange[ranges1.length/2];
-		for (int i=0;i<(ranges1.length/2);i++)
-			styles1[i] = sampleStyles1[i];
+		//(styles和ranges)需要配置多少空間
+		int spaceSize = 6;
+		if (sysoBtn.getSelection())
+			spaceSize+=4;
+		if (log4jBtn.getSelection())
+			spaceSize+=4;
+		if (javaUtillogBtn.getSelection())
+			spaceSize+=4;
 
-		StyleRange[] styles2 = new StyleRange[ranges2.length/2];
-		for (int i=0;i<(ranges2.length/2);i++)
-			styles2[i] = sampleStyles2[i];		
+		//ranges為字型風格的位置範圍，根據spaceSize來決定需要多少空間
+		int[] ranges = new int[spaceSize];
+		//字型的風格，根據spaceSize來決定需要多少空間
+		StyleRange[] styles = new StyleRange[spaceSize/2];
 
-		templateArea.setStyleRanges(ranges1, styles1);
-		templateArea2.setStyleRanges(ranges2, styles2);
+		//ranges和styles的index
+		int range_i=0;
+		int style_i=0;
+
+		//本文(try catch)文字的對應位置(兩個一組{起始位置,個數})
+		int[] main = new int[] {0,3,13,15,31,5};
+		//把本文(try catch)文字的字型風格和對應的位置存入
+		for (int i=0;i<3;i++)
+			styles[style_i++] = sampleStyles[i];
+		for (int i=0;i<6;i++)
+			ranges[range_i++] = main[i];
+
+		//如果e.printStack選項被選中
+		if (eprintBtn.getSelection())
+			textLength += eprintText.length();
+		//如果SystemOut選項被選中
+		if (sysoBtn.getSelection())
+		{
+			//SystemOut文字的對應位置(相對位置+目前位章的長度)
+			int[] syso = new int[] {11 + textLength,3,38 + textLength,3};
+			//把本文SystemOut文字的字型風格和對應的位置存入
+			for (int i=0;i<4;i++)
+				ranges[range_i++] = syso[i];
+			for (int i=3;i<5;i++)
+				styles[style_i++] = sampleStyles[i];
+			textLength += sysoText.length();
+		}
+		//如果Log4j選項被選中
+		if (log4jBtn.getSelection())
+		{
+			//Log4J文字的對應位置(相對位置+目前位章的長度)
+			int[] log4j = new int[] {4+textLength,14,23+textLength,6,};
+			//把本文Log4j文字的字型風格和對應的位置存入
+			for (int i=0;i<4;i++)
+				ranges[range_i++] = log4j[i];			
+			for (int i=5;i<7;i++)
+				styles[style_i++] = sampleStyles[i];
+			textLength += log4jText.length();
+		}
+		//如果JavaUtillog選項被選中
+		if (javaUtillogBtn.getSelection())
+		{
+			//javaUtillog文字的對應位置(相對位置+目前位章的長度)
+			int[] javaUtillog = new int[] {4 + textLength,33,43 + textLength,11};
+			//把本文JavaUtillog文字的字型風格和對應的位置存入
+			for (int i=0;i<4;i++)
+				ranges[range_i++] = javaUtillog[i];
+			for (int i=7;i<9;i++)
+				styles[style_i++] = sampleStyles[i];
+			textLength += javaUtillogText.length();
+		}
+
+		//把字型的風格和風格的範圍套用在Template上
+		templateArea.setStyleRanges(ranges, styles);
 	}
 
 	@Override
@@ -268,14 +312,20 @@ public class DummyHandlerPage extends APropertyPage{
 		//建立dummyhandler的tag
 		Element dummyHandler = new Element(JDomUtil.DummyHandlerTag);
 		Element rule = new Element("rule");
+		//假如e.printStackTrace有被勾選起來
+		if (eprintBtn.getSelection()){
+			rule.setAttribute(JDomUtil.eprintstacktrace,"Y");
+		}else{
+			rule.setAttribute(JDomUtil.eprintstacktrace,"N");		
+		}
 		//假如system.out.println有被勾選起來
-		if(systemoutprintlnButton.getSelection()){
+		if(sysoBtn.getSelection()){
 			rule.setAttribute(JDomUtil.systemoutprint,"Y");	
 		}else{
 			rule.setAttribute(JDomUtil.systemoutprint,"N");
 		}
 		//假如log4j有被勾選起來
-		if(log4jButton.getSelection()){
+		if(log4jBtn.getSelection()){
 			rule.setAttribute(JDomUtil.apache_log4j,"Y");	
 		}else{
 			rule.setAttribute(JDomUtil.apache_log4j,"N");	

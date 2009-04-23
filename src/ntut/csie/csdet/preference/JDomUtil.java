@@ -23,6 +23,7 @@ public class JDomUtil {
 	final static public String root = "CodeSmellDetect";
 	final static public String project = "ProjectName";
 	final static public String DummyHandlerTag = "DummyHandler";
+	final static public String eprintstacktrace = "eprintstacktrace";
 	final static public String systemoutprint = "systemoutprint";
 	final static public String println = "systemoutprintln";
 	final static public String apache_log4j = "apache_log4j";
