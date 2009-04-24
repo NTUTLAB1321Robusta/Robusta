@@ -27,7 +27,6 @@ import org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.MemberValuePair;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TryStatement;
@@ -160,7 +159,6 @@ public class UMQuickFix implements IMarkerResolution{
 			}
 		}
 		
-
 		ListRewrite listRewrite = rewrite.getListRewrite(mdBlock,Block.STATEMENTS_PROPERTY);
 		
 		if(isTryExist){
@@ -228,8 +226,6 @@ public class UMQuickFix implements IMarkerResolution{
 	
 		//假如Try block之後還有程式碼,就複製進去try block之內
 		int totalSize = statement.size();
-		System.out.println("【Total Size】====>"+totalSize);
-		System.out.println("【Try position】====>"+pos);
 		if(pos == 0){
 			//假如try block在最一開始
 			if(totalSize > 1){
@@ -352,8 +348,6 @@ public class UMQuickFix implements IMarkerResolution{
 	 * @param exClass:例外類別
 	 * @return NormalAnnotation AST Node
 	 */
-
-	@SuppressWarnings("unchecked")
 	private NormalAnnotation getRLAnnotation(AST ast, int levelVal,String excption) {
 		//要建立@Robustness(value={@RL(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
 		NormalAnnotation rl = ast.newNormalAnnotation();
@@ -378,10 +372,11 @@ public class UMQuickFix implements IMarkerResolution{
 		return rl;
 	}
 	
-	@SuppressWarnings("unchecked")
 	private void addImportDeclaration() {
 		// 判斷是否已經Import Robustness及RL的宣告
-		List<ImportDeclaration> importList = this.actRoot.imports();
+		ListRewrite listRewrite = rewrite.getListRewrite(this.actRoot, this.actRoot.IMPORTS_PROPERTY);
+		List<ImportDeclaration> importList = listRewrite.getRewrittenList();
+		
 		boolean isImportRobustnessClass = false;
 		boolean isImportRLClass = false;
 		for (ImportDeclaration id : importList) {
@@ -397,12 +392,12 @@ public class UMQuickFix implements IMarkerResolution{
 		if (!isImportRobustnessClass) {
 			ImportDeclaration imp = rootAst.newImportDeclaration();
 			imp.setName(rootAst.newName(Robustness.class.getName()));
-			this.actRoot.imports().add(imp);
+			listRewrite.insertLast(imp, null);
 		}
 		if (!isImportRLClass) {
 			ImportDeclaration imp = rootAst.newImportDeclaration();
 			imp.setName(rootAst.newName(RL.class.getName()));
-			this.actRoot.imports().add(imp);
+			listRewrite.insertLast(imp, null);
 		}
 	}
 	
@@ -418,7 +413,6 @@ public class UMQuickFix implements IMarkerResolution{
 			edits.apply(document);
 			cu.getBuffer().setContents(document.get());
 		}catch (Exception ex) {
-			ex.printStackTrace();
 			logger.error("[UMQuickFix] EXCEPTION ",ex);
 		}
 	}

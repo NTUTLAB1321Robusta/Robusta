@@ -2,7 +2,6 @@ package ntut.csie.csdet.refactor;
 
 import java.util.List;
 
-import ntut.csie.csdet.visitor.ASTTryCollect;
 import ntut.csie.csdet.visitor.SpareHandlerAnalyzer;
 import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
@@ -42,9 +41,12 @@ import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TryStatement;
+import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeLiteral;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
+import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
+import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.ltk.core.refactoring.Change;
@@ -53,17 +55,20 @@ import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.TextFileChange;
 import org.eclipse.text.edits.TextEdit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import agile.exception.RL;
 import agile.exception.Robustness;
 
 public class RetryRefactoring extends Refactoring{
-
+	private static Logger logger = LoggerFactory.getLogger(RetryRefactoring.class);
+	
 	//使用者所選擇的Exception Type
 	private IType exType;
 	//retry的變數名稱
 	private String retry;
-	//attemp的變數名稱
+	//attempt的變數名稱
 	private String attempt;
 	//最大retry次數	
 	private String maxNum;
@@ -91,11 +96,15 @@ public class RetryRefactoring extends Refactoring{
 	//存放目前所要fix的method node
 	private ASTNode currentMethodNode = null;
 	
+	private ASTRewrite rewrite;
+	
 	public RetryRefactoring(IJavaProject project,IJavaElement element,ITextSelection sele,String retryType){
 		this.project = project;
 		this.element = element;
 		this.iTSelection = sele;
 		this.RETRY_TYPE = retryType;
+		System.out.println("【RETRY_TYPE】===>"+RETRY_TYPE);
+		
 	}	
 	
 	@Override
@@ -145,6 +154,7 @@ public class RetryRefactoring extends Refactoring{
 		}else if(!(selectNode instanceof TryStatement)){
 			status.addFatalError("Selection Error, please retry again!!!");
 		}else{			
+			//取得class中所有的method
 			List<ASTNode> methodList = methodCollector.getMethodList();
 			int methodIdx = -1;
 			SpareHandlerAnalyzer visitor = null;
@@ -152,10 +162,13 @@ public class RetryRefactoring extends Refactoring{
 				methodIdx++;
 				visitor = new SpareHandlerAnalyzer(selectNode,actRoot);
 				method.accept(visitor);
+				//檢查是否有框選到try statement
 				if(visitor.getResult()){				
 					break;
 				}
 			}
+			
+			//假如框選錯誤就不允許重構
 			if(!visitor.getResult()){
 				status.addFatalError("Selection Error, please retry again!!!");
 			}
@@ -167,96 +180,67 @@ public class RetryRefactoring extends Refactoring{
 				ExceptionAnalyzer exVisitor = new ExceptionAnalyzer(this.actRoot, currentMethodNode.getStartPosition(), 0);
 				currentMethodNode.accept(exVisitor);
 				currentMethodRLList = exVisitor.getMethodRLAnnotationList();
-				introduceRetry(selectNode);
+				//進行Retry Refactoring
+				introduceTryClause(selectNode);				
 			}else{
 				status.addFatalError("Selection Error, please retry again!!!");
 			}
 		}
-
 	}
-	
+
 	/**
-	 * 進retry的Refactoring
+	 * 在do-while中加入try clause
+	 * @param selectNode
 	 */
-	private void introduceRetry(ASTNode selectNode){
-			actRoot.recordModifications();
-			AST ast = currentMethodNode.getAST();
-			MethodDeclaration md = (MethodDeclaration)currentMethodNode;
-			List methodSt = md.getBody().statements();
-			//先複製一份method內的statement保留下來
-			int pos = -1;
-			TryStatement original = null;
-			
-//			ASTTryCollect visitor = new ASTTryCollect();
-//			md.accept(visitor);
-//			List<ASTNode> tryList = visitor.getTryList();
-//			for(int i=0; i<tryList.size() ; i++){
-//				if(tryList.get(i) instanceof TryStatement){					
-//					TryStatement temp = (TryStatement)tryList.get(i);
-//					if(temp.getStartPosition() == selectNode.getStartPosition()){
-//						System.out.println("【Find Try Statement】");
-//						pos = i;
-//						original = (TryStatement)tryList.get(i);
-//						break;
-//					}
-//				}
-//			}
-			for(int i=0;i<methodSt.size();i++){
-				if(methodSt.get(i) instanceof TryStatement){
-					TryStatement temp = (TryStatement)methodSt.get(i);
-					if(temp.getStartPosition() == selectNode.getStartPosition()){
-						System.out.println("【Find Try Statement】");
-						pos = i;
-						original = (TryStatement)methodSt.get(i);
-						break;
-					}
-				}
+	private void introduceTryClause(ASTNode selectNode){
+		AST ast = actRoot.getAST();
+		rewrite = ASTRewrite.create(actRoot.getAST());
+		//去取得selectNode的parent節點,並尋找selectNode在parent block中的位置
+		ListRewrite parentRewrite = rewrite.getListRewrite(selectNode.getParent(),Block.STATEMENTS_PROPERTY );
+		//利用此變數來紀錄Try Statement位置
+		int replacePos = -1;
+		TryStatement original = null;
+		for(int i=0;i<parentRewrite.getRewrittenList().size();i++){
+//			System.out.println("【Content】===>"+catchRewrite.getRewrittenList().get(i).toString());
+			if(parentRewrite.getRewrittenList().get(i).equals(selectNode)){
+				System.out.println("【Find Try Statement!!!!!!!】");
+				System.out.println("【Position is】===>"+i);
+				original = (TryStatement)parentRewrite.getRewrittenList().get(i);
+				//找到Try Statement就把他的位置記錄下來
+				replacePos = i;
 			}
-			
-			Block newBlock = ast.newBlock();
-			List newStat = newBlock.statements();
-			//假設try之前有程式的話,把他加進新的statement中
-			if(pos > 0){
-				for(int i=0;i<pos;i++){
-					newStat.add(ASTNode.copySubtree(ast, (ASTNode) methodSt.get(i)));
-				}
-			}
-			
+		}		
+
+		//假如有找到的話,就開始進行重構
+		if(replacePos >= 0){
 			//新增變數
-			addNewVariable(ast,newStat);
+			addNewVariable(ast,parentRewrite,replacePos);
 			//新增do-while
-			DoStatement doWhile = addDoWhile(ast,newStat);
+			DoStatement doWhile = addDoWhile(ast);
+			parentRewrite.replace(original,doWhile,null);
 			//在do-while新增try
 			TryStatement ts = null;
+			//利用傳入參數來判斷是哪一種Retry
 			if(RETRY_TYPE.equals("Alt_Retry")){
-				ts = addTryBlock(ast,doWhile,original);
-			}else if(RETRY_TYPE.equals("No_Alt_Retry")){
-				if(original == null){
-					System.out.println("【Original Try Block is null】");
-				}
+				ts = addTryClause(ast, doWhile, original);
+			}else if(RETRY_TYPE.equals("Retry_with_original")){
 				ts = addNoAltTryBlock(ast, doWhile, original);
 			}else{
-				//exception
+				System.out.println("【No Retry Action!!!!Exception Occur!!!】");
 			}
-			
+		
 			//在try裡面新增catch
 			addCatchBlock(ast, original, ts);
 			//假如catch之後有finally,就加進去
 			if(original.getFinally() != null){
-				ts.setFinally((Block) ASTNode.copySubtree(ast, original.getFinally() ));
+				ts.setFinally((Block) ASTNode.copySubtree(ast, original.getFinally()));
 			}
-			
-			for(int i=pos+1;i<methodSt.size();i++){
-				newStat.add(ASTNode.copySubtree(ast, (ASTNode) methodSt.get(i)));
-			}
-			//清掉原本的內容
-			methodSt.clear();
-			//加入refactoring後的結果
-			md.setBody(newBlock);
 			//建立RL Annotation
 			addAnnotationRoot(ast);
 			//寫回Edit中
 			applyChange();
+		}
+
 	}
 	
 	/**
@@ -264,20 +248,20 @@ public class RetryRefactoring extends Refactoring{
 	 * @param ast
 	 * @param newStat
 	 */
-	private void addNewVariable(AST ast,List newStat){
+	private void addNewVariable(AST ast,ListRewrite parentRewrite,int replacePos){
 		//建立attempt變數
 		VariableDeclarationFragment vdf = ast.newVariableDeclarationFragment();
 		vdf.setName(ast.newSimpleName(this.attempt));
+		vdf.setInitializer(ast.newNumberLiteral("0"));
 		VariableDeclarationStatement vds = ast.newVariableDeclarationStatement(vdf);
-		vdf.setInitializer(ast.newNumberLiteral("0"));		
-		newStat.add(vds);
-		
+		parentRewrite.insertAt(vds, replacePos, null);
+
 		//建立Max Attempt變數
 		VariableDeclarationFragment maxAttempt = ast.newVariableDeclarationFragment();
 		maxAttempt.setName(ast.newSimpleName(this.maxAttempt));
-		VariableDeclarationStatement number = ast.newVariableDeclarationStatement(maxAttempt);
 		maxAttempt.setInitializer(ast.newNumberLiteral(maxNum));
-		newStat.add(number);
+		VariableDeclarationStatement number = ast.newVariableDeclarationStatement(maxAttempt);
+		parentRewrite.insertAt(number, replacePos+1, null);
 		
 		//建立retry變數
 		VariableDeclarationFragment retry = ast.newVariableDeclarationFragment();
@@ -285,12 +269,13 @@ public class RetryRefactoring extends Refactoring{
 		VariableDeclarationStatement retryValue = ast.newVariableDeclarationStatement(retry);
 		//建立boolean型態
 		retryValue.setType(ast.newPrimitiveType(PrimitiveType.BOOLEAN));
+		
 		if(RETRY_TYPE.equals("Alt_Retry")){
 			retry.setInitializer(ast.newBooleanLiteral(false));			
-		}else if(RETRY_TYPE.equals("No_Alt_Retry")){
+		}else if(RETRY_TYPE.equals("Retry_with_original")){
 			retry.setInitializer(ast.newBooleanLiteral(true));
 		}
-		newStat.add(retryValue);
+		parentRewrite.insertAt(retryValue, replacePos+2, null);
 	}
 	
 	/**
@@ -299,7 +284,7 @@ public class RetryRefactoring extends Refactoring{
 	 * @param newStat
 	 * @return
 	 */
-	private DoStatement addDoWhile(AST ast,List newStat){
+	private DoStatement addDoWhile(AST ast){
 		DoStatement doWhile = ast.newDoStatement();
 		//先建立attempt <= maxAttempt
 		InfixExpression sife = ast.newInfixExpression();
@@ -313,42 +298,8 @@ public class RetryRefactoring extends Refactoring{
 		//建立(attempt<=maxtAttempt && retry)
 		bigIfe.setOperator(InfixExpression.Operator.AND);
 		doWhile.setExpression(bigIfe);
-		newStat.add(doWhile);
+//		newStat.add(doWhile);
 		return doWhile;
-	}
-	
-	/**
-	 * 假如是用No alternative Retry refactoring,則用這個method來修改try block
-	 * @param ast
-	 * @param doWhile
-	 * @param original
-	 * @return
-	 */
-	private TryStatement addNoAltTryBlock(AST ast,DoStatement doWhile,TryStatement original){
-		TryStatement ts = ast.newTryStatement();
-		Block block = ts.getBody();
-		List tryStatement = block.statements();
-		List originalStat = original.getBody().statements();
-		for(int i=0;i<originalStat.size();i++){
-			//將原本try的內容複製進來
-			tryStatement.add(ASTNode.copySubtree(ast, (ASTNode) originalStat.get(i)));
-		}
-		
-		//建立retry = true
-		Assignment as = ast.newAssignment();
-		as.setLeftHandSide(ast.newSimpleName(this.retry));
-		as.setOperator(Assignment.Operator.ASSIGN);
-		as.setRightHandSide(ast.newBooleanLiteral(false));
-		ExpressionStatement es =ast.newExpressionStatement(as);
-		tryStatement.add(es);
-		
-		//替do while新建一個Block,並將Try加進去
-		Block doBlock = doWhile.getAST().newBlock();
-		doWhile.setBody(doBlock);
-		List doStat = doBlock.statements();
-		doStat.add(ts);		
-		return ts;
-		
 	}
 	
 	/**
@@ -358,11 +309,10 @@ public class RetryRefactoring extends Refactoring{
 	 * @param original
 	 * @return
 	 */
-	private TryStatement addTryBlock(AST ast,DoStatement doWhile,TryStatement original){
+	private TryStatement addTryClause(AST ast,DoStatement doWhile,TryStatement original){
 		TryStatement ts = ast.newTryStatement();
 		Block block = ts.getBody();
 		List tryStatement = block.statements();
-		
 		
 		//建立retry = false
 		Assignment as = ast.newAssignment();
@@ -435,7 +385,6 @@ public class RetryRefactoring extends Refactoring{
 			}
 		}
 		
-
 		//將if statement加進try之中
 		tryStatement.add(ifStat);
 		//替do while新建一個Block,並將Try加進去
@@ -446,6 +395,40 @@ public class RetryRefactoring extends Refactoring{
 		return ts;
 	}
 	
+	/**
+	 * 假如是用No alternative Retry refactoring,則用這個method來修改try block
+	 * @param ast
+	 * @param doWhile
+	 * @param original
+	 * @return
+	 */
+	private TryStatement addNoAltTryBlock(AST ast,DoStatement doWhile,TryStatement original){
+		TryStatement ts = ast.newTryStatement();
+		Block block = ts.getBody();
+		List tryStatement = block.statements();
+		List originalStat = original.getBody().statements();
+		for(int i=0;i<originalStat.size();i++){
+			//將原本try的內容複製進來
+			tryStatement.add(ASTNode.copySubtree(ast, (ASTNode) originalStat.get(i)));
+		}
+		
+		//建立retry = true
+		Assignment as = ast.newAssignment();
+		as.setLeftHandSide(ast.newSimpleName(this.retry));
+		as.setOperator(Assignment.Operator.ASSIGN);
+		as.setRightHandSide(ast.newBooleanLiteral(false));
+		ExpressionStatement es =ast.newExpressionStatement(as);
+		tryStatement.add(es);
+		
+		//替do while新建一個Block,並將Try加進去
+		Block doBlock = doWhile.getAST().newBlock();
+		doWhile.setBody(doBlock);
+		List doStat = doBlock.statements();
+		doStat.add(ts);		
+		return ts;
+		
+	}
+		
 	/**
 	 * 在try中建立catch block
 	 * @param ast
@@ -518,9 +501,7 @@ public class RetryRefactoring extends Refactoring{
 			ccStat.add(epfe);
 			ccStat.add(es);
 			ccStat.add(ifStat);
-
 		}
-
 		
 		//加入未import的Library(遇到RuntimeException就不用加Library)
 		if(!exceptionType.equals("RuntimeException")){
@@ -541,12 +522,7 @@ public class RetryRefactoring extends Refactoring{
 			if(!isExist)
 				thStat.add(ast.newSimpleName(this.exceptionType));
 		}
-	}
-	
-	private void addFinallyBlock(){
-		
-	}
-	
+	}	
 	
 	/**
 	 * 判斷是否有未加入的Library,但throw RuntimeException的情況要排除
@@ -554,8 +530,9 @@ public class RetryRefactoring extends Refactoring{
 	 */
 	private void addImportDeclaration(){
 		//判斷是否有import library
+		ListRewrite listRewrite = rewrite.getListRewrite(this.actRoot, this.actRoot.IMPORTS_PROPERTY);
+		List<ImportDeclaration> importList = listRewrite.getRewrittenList();
 		boolean isImportLibrary = false;
-		List<ImportDeclaration> importList = this.actRoot.imports();
 		for(ImportDeclaration id : importList){
 			if(exType.getFullyQualifiedName().equals(id.getName().getFullyQualifiedName())){
 				isImportLibrary = true;
@@ -567,7 +544,7 @@ public class RetryRefactoring extends Refactoring{
 		if(!isImportLibrary){
 			ImportDeclaration imp = rootAst.newImportDeclaration();
 			imp.setName(rootAst.newName(exType.getFullyQualifiedName()));
-			this.actRoot.imports().add(imp);
+			listRewrite.insertLast(imp, null);
 		}		
 	}
 	
@@ -589,8 +566,7 @@ public class RetryRefactoring extends Refactoring{
 			rlary.expressions().add(getRLAnnotation(ast,3,exceptionType));
 		}else{	
 			//假如本來就有annotation先把舊的加進去
-			for (RLMessage rlmsg : currentMethodRLList) {
-				
+			for (RLMessage rlmsg : currentMethodRLList) {				
 				int pos = rlmsg.getRLData().getExceptionType().toString().lastIndexOf(".");
 				String cut = rlmsg.getRLData().getExceptionType().toString().substring(pos+1);
 
@@ -603,17 +579,20 @@ public class RetryRefactoring extends Refactoring{
 			//舊的加完之後加新的RL = 3 annotation進來
 			rlary.expressions().add(getRLAnnotation(ast,3,exceptionType));
 			
-			List<IExtendedModifier> modifiers = method.modifiers();
+			ListRewrite listRewrite = rewrite.getListRewrite(method, method.getModifiersProperty());
+			List<IExtendedModifier> modifiers = listRewrite.getRewrittenList();
 			for (int i = 0, size = modifiers.size(); i < size; i++) {
 				//找到舊有的annotation後將它移除
 				if (modifiers.get(i).isAnnotation() && modifiers.get(i).toString().indexOf("Robustness") != -1) {
-					method.modifiers().remove(i);
+					listRewrite.remove((ASTNode)modifiers.get(i), null);
 					break;
 				}
 			}
 		}
+		
 		if (rlary.expressions().size() > 0) {
-			method.modifiers().add(0, root);
+			ListRewrite listRewrite = rewrite.getListRewrite(method, method.getModifiersProperty());
+			listRewrite.insertAt(root, 0, null);
 		}
 		//將RL的library加進來
 		addImportRLDeclaration();
@@ -626,8 +605,6 @@ public class RetryRefactoring extends Refactoring{
 	 * @param exClass : 例外類別
 	 * @return NormalAnnotation AST Node
 	 */
-
-	@SuppressWarnings("unchecked")
 	private NormalAnnotation getRLAnnotation(AST ast, int levelVal,String excption) {
 		//要建立@Robustness(value={@RL(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
 		NormalAnnotation rl = ast.newNormalAnnotation();
@@ -648,14 +625,13 @@ public class RetryRefactoring extends Refactoring{
 		exclass.setType(ast.newSimpleType(ast.newName(excption)));
 		exception.setValue(exclass);
 		rl.values().add(exception);
-
 		return rl;
 	}
-	
-	@SuppressWarnings("unchecked")
+
 	private void addImportRLDeclaration() {
 		// 判斷是否已經Import Robustness及RL的宣告
-		List<ImportDeclaration> importList = this.actRoot.imports();
+		ListRewrite listRewrite = rewrite.getListRewrite(this.actRoot, this.actRoot.IMPORTS_PROPERTY);
+		List<ImportDeclaration> importList = listRewrite.getRewrittenList();
 		boolean isImportRobustnessClass = false;
 		boolean isImportRLClass = false;
 		for (ImportDeclaration id : importList) {
@@ -671,12 +647,12 @@ public class RetryRefactoring extends Refactoring{
 		if (!isImportRobustnessClass) {
 			ImportDeclaration imp = rootAst.newImportDeclaration();
 			imp.setName(rootAst.newName(Robustness.class.getName()));
-			this.actRoot.imports().add(imp);
+			listRewrite.insertLast(imp, null);
 		}
 		if (!isImportRLClass) {
 			ImportDeclaration imp = rootAst.newImportDeclaration();
 			imp.setName(rootAst.newName(RL.class.getName()));
-			this.actRoot.imports().add(imp);
+			listRewrite.insertLast(imp, null);
 		}
 	}
 	
@@ -688,11 +664,12 @@ public class RetryRefactoring extends Refactoring{
 		try {
 			ICompilationUnit cu = (ICompilationUnit) element;
 			Document document = new Document(cu.getBuffer().getContents());	
-			TextEdit edits = actRoot.rewrite(document, cu.getJavaProject().getOptions(true));
+			TextEdit edits = rewrite.rewriteAST(document,null);
 			textFileChange = new TextFileChange(cu.getElementName(), (IFile)cu.getResource());
 			textFileChange.setEdit(edits);
 		}catch (Exception ex) {
 			ex.printStackTrace();
+			logger.error("[Rewrite to Edit] EXCEPTION ",ex);
 		}
 	}
 	

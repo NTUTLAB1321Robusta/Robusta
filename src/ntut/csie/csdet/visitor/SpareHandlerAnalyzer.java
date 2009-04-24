@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ntut.csie.csdet.data.CSMessage;
-import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.rleht.common.RLBaseVisitor;
 
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.TryStatement;
 
@@ -56,37 +54,39 @@ public class SpareHandlerAnalyzer extends RLBaseVisitor{
 		TryStatement ts = (TryStatement)node;
 		List catchList = ts.catchClauses();
 		if(catchList != null){
-			for(int i=0; i< catchList.size(); i++){
-				CatchClause cc = (CatchClause)catchList.get(i);
-				List catchStat = cc.getBody().statements();
-				if(catchStat != null){
-					for(int x = 0 ; x< catchStat.size(); x++){
-						if(catchStat.get(i) instanceof TryStatement){
-							TryStatement temp = (TryStatement)catchStat.get(i);
-							CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_SPARE_HANDLER,
-									null,											
-									ts.toString(),temp.getStartPosition(),
-									this.getLineNumber(temp.getStartPosition()),null);
-							spareHandlerList.add(csmsg);			
-						}
-					}
-				}
-			}
+			
 			if(selectNode != null){
 				if(ts.getStartPosition() == selectNode.getStartPosition()){
 					//找到那個try的節點就設定為true				
 					result = true;
 				}				
-			}			
+			}	
+//			for(int i=0; i< catchList.size(); i++){
+//				CatchClause cc = (CatchClause)catchList.get(i);
+//				List catchStat = cc.getBody().statements();
+//				if(catchStat != null){
+//					for(int x = 0 ; x< catchStat.size(); x++){
+//						if(catchStat.get(i) instanceof TryStatement){
+//							TryStatement temp = (TryStatement)catchStat.get(i);
+//							CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_SPARE_HANDLER,
+//									null,											
+//									ts.toString(),temp.getStartPosition(),
+//									this.getLineNumber(temp.getStartPosition()),null);
+//							spareHandlerList.add(csmsg);			
+//						}
+//					}
+//				}
+//			}
+		
 		}
 	}
 	
-	/**
-	 * 根據startPosition來取得行數
-	 */
-	private int getLineNumber(int pos) {
-		return root.getLineNumber(pos);
-	}
+//	/**
+//	 * 根據startPosition來取得行數
+//	 */
+//	private int getLineNumber(int pos) {
+//		return root.getLineNumber(pos);
+//	}
 	
 	/**
 	 * 利用此結果來得知是否有找到要被refactor的節點

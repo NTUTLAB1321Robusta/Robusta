@@ -50,8 +50,7 @@ public class RetryAction implements IEditorActionDelegate{
 				IJavaElement javaElement = JavaCore.create(file);
 				
 				try {
-					RetryRefactoring refactoring = new RetryRefactoring(javaProject,javaElement,textSelection,retry_type);
-				
+					RetryRefactoring refactoring = new RetryRefactoring(javaProject,javaElement,textSelection,retry_type);				
 					//±Ò°ÊRefactor dialog
 					RefactoringWizardOpenOperation operation = 
 						new RefactoringWizardOpenOperation(new RetryWizard(refactoring,0));

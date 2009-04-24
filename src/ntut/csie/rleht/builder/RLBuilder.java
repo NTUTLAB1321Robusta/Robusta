@@ -161,8 +161,6 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				CodeSmellAnalyzer csVisitor = null;
 				
 				MainAnalyzer mainVisitor = null;
-				
-				SpareHandlerAnalyzer shVisitor = null;
 
 				// 目前method的Exception資訊
 				List<RLMessage> currentMethodExList = null;
@@ -255,23 +253,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 									msg.getCodeSmellType(), msg, csIdx, methodIdx);	
 						}
 					}						
-					
-//					shVisitor = new SpareHandlerAnalyzer(null,root);
-//					method.accept(shVisitor);
-//					spareHandler = shVisitor.getSpareHandlerList();
-//					csIdx = -1;
-//					if(spareHandler != null){
-//						for(CSMessage msg : spareHandler){
-//							csIdx++;
-//							String errmsg = "EH Smell Type:["+ msg.getCodeSmellType() + "]未處理!!!";
-//							//貼marker
-//							this.addMarker(file, errmsg, msg.getLineNumber(), IMarker.SEVERITY_WARNING,
-//									msg.getCodeSmellType(), msg, csIdx, methodIdx);	
-//						}
-//					}
-					
-					
-					
+									
 					if (currentMethodNode != null) {
 						RLChecker checker = new RLChecker();
 						currentMethodExList = checker.check(visitor);

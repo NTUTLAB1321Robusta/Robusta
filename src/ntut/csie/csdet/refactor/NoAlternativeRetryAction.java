@@ -1,6 +1,6 @@
 package ntut.csie.csdet.refactor;
 
-import ntut.csie.csdet.refactor.ui.NoAltRetryWizard;
+import ntut.csie.csdet.refactor.ui.RetryWizard;
 import ntut.csie.rleht.common.EditorUtils;
 
 import org.eclipse.core.resources.IFile;
@@ -26,7 +26,7 @@ import org.eclipse.ui.IEditorPart;
 public class NoAlternativeRetryAction implements IEditorActionDelegate{
 	private IEditorPart editor;
 	
-	private String retry_type = "No_Alt_Retry";
+	private String retry_type = "Retry_with_original";
 		
 	@Override
 	public void setActiveEditor(IAction action, IEditorPart targetEditor) {	
@@ -48,11 +48,11 @@ public class NoAlternativeRetryAction implements IEditorActionDelegate{
 				IFile file = (IFile) input.getAdapter(IFile.class);
 				IJavaElement javaElement = JavaCore.create(file);
 				try {
-					NoAltRetryRefactoring refactoring = new NoAltRetryRefactoring(javaProject,javaElement,textSelection,retry_type);
-//					RetryRefactoring refactoring = new RetryRefactoring(javaProject,javaElement,textSelection,retry_type);
+					RetryRefactoring refactoring = new RetryRefactoring(javaProject,javaElement,textSelection,retry_type);
 					//±Ò°ÊRefactor dialog
 					RefactoringWizardOpenOperation operation = 
-						new RefactoringWizardOpenOperation(new NoAltRetryWizard(refactoring,0));
+
+						new RefactoringWizardOpenOperation(new RetryWizard(refactoring,0));
 					operation.run(new Shell(), "No Alternative Retry");
 				} catch (InterruptedException e) {
 					e.printStackTrace();
