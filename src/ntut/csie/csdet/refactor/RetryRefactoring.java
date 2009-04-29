@@ -1,5 +1,6 @@
 package ntut.csie.csdet.refactor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ntut.csie.csdet.visitor.SpareHandlerAnalyzer;
@@ -29,6 +30,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.DoStatement;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.IExtendedModifier;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.InfixExpression;
@@ -41,7 +43,6 @@ import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TryStatement;
-import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeLiteral;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
@@ -103,8 +104,6 @@ public class RetryRefactoring extends Refactoring{
 		this.element = element;
 		this.iTSelection = sele;
 		this.RETRY_TYPE = retryType;
-		System.out.println("【RETRY_TYPE】===>"+RETRY_TYPE);
-		
 	}	
 	
 	@Override
@@ -203,8 +202,8 @@ public class RetryRefactoring extends Refactoring{
 		for(int i=0;i<parentRewrite.getRewrittenList().size();i++){
 //			System.out.println("【Content】===>"+catchRewrite.getRewrittenList().get(i).toString());
 			if(parentRewrite.getRewrittenList().get(i).equals(selectNode)){
-				System.out.println("【Find Try Statement!!!!!!!】");
-				System.out.println("【Position is】===>"+i);
+//				System.out.println("【Find Try Statement!!!!!!!】");
+//				System.out.println("【Position is】===>"+i);
 				original = (TryStatement)parentRewrite.getRewrittenList().get(i);
 				//找到Try Statement就把他的位置記錄下來
 				replacePos = i;
@@ -229,7 +228,7 @@ public class RetryRefactoring extends Refactoring{
 				System.out.println("【No Retry Action!!!!Exception Occur!!!】");
 			}
 		
-			//在try裡面新增catch
+			//在第一層的try新增catch
 			addCatchBlock(ast, original, ts);
 			//假如catch之後有finally,就加進去
 			if(original.getFinally() != null){
@@ -362,9 +361,9 @@ public class RetryRefactoring extends Refactoring{
 						break;
 					}
 				}	
-			}
-			
+			}			
 		}
+		
 		if(isTryExist){
 			//開始複製second try statement的內容到else statement
 			List secStat = secTs.getBody().statements();
@@ -439,14 +438,34 @@ public class RetryRefactoring extends Refactoring{
 		Block block = ts.getBody();
 		List catchStatement = ts.catchClauses();
 		List originalCatch = original.catchClauses();
-
+	
 		//建立新的catch
 		for(int i=0;i<originalCatch.size();i++){
+			//第一層的catch,但可能有捕捉不只一種型態的例外,所以需要用迴圈
 			CatchClause temp = (CatchClause)originalCatch.get(i);
+			List catchSt = temp.getBody().statements();
+			//取得catch()括號中的例外型態
+			SingleVariableDeclaration svd = (SingleVariableDeclaration)temp.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
 			SingleVariableDeclaration sv = (SingleVariableDeclaration) ASTNode.copySubtree(ast, temp.getException());
+			//利用此變數來記錄新建立的catch所要捕捉的例外型態
+			String newExType = null;
+			if(catchSt != null){
+				//假如第一層catch區塊內不是空的,就去找try是否存在
+				for(int x=0; x<catchSt.size(); x++){
+					if(catchSt.get(x) instanceof TryStatement){
+						//尋找同質性的例外
+						newExType = findHomogeneousExType(ast,svd,catchSt.get(x));
+					}
+				}	
+			}
+			//假如沒有找到,表示可能第二層區塊沒有try-catch block,只需直接複製之前的捕捉的例外型態就可
+			if(newExType != null){				
+				sv.setType(ast.newSimpleType(ast.newSimpleName(newExType)));
+			}
 			CatchClause cc = ast.newCatchClause();		
 			cc.setException(sv);
 			catchStatement.add(cc);
+				
 		}
 		
 		//以下開始建立catch Statment中的內容
@@ -524,6 +543,60 @@ public class RetryRefactoring extends Refactoring{
 		}
 	}	
 	
+	/**
+	 * 當碰到第一層與第二層捕捉的例外不同時,尋找同質性例外
+	 * @param type : 第一層的例外型態變數
+	 * @param cc : 第二層的try statement
+	 */
+	private String findHomogeneousExType(AST ast,SingleVariableDeclaration type,Object node){	
+		TryStatement ts = (TryStatement)node;
+		//找第二層try block中所有的catch區塊
+		List catchSt = ts.catchClauses();		
+		if(catchSt != null){
+			//先尋找第一層try-catch的例外型態,並往上trace紀錄到List中
+			ArrayList<String> exList = new ArrayList<String>();
+			ITypeBinding iTB = type.resolveBinding().getType() ;
+			//將java.lang.Exception當作最上層例外
+			String topLevelEx = "Exception";
+			//當找到例外就存起來,若找到最上層則跳出迴圈
+			while(!(iTB.getName().equals(topLevelEx)) ){
+				exList.add(iTB.getName());	
+				iTB = iTB.getSuperclass();
+			}
+			exList.add(topLevelEx);
+			
+			//利用此List來紀錄
+			ArrayList<String> secList = new ArrayList<String>();
+			for(int i = 0; i<catchSt.size() ; i++){
+				CatchClause cc = (CatchClause)catchSt.get(i);
+				//取得第二層例外的變數型態
+				SingleVariableDeclaration svd = (SingleVariableDeclaration)cc.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
+				//TODO :多層catch時的同質性例外之後要想怎麼取
+				iTB = svd.resolveBinding().getType();
+				//從底層的例外型態往上找,找到最上層後紀錄下來
+				while(!(iTB.getName().equals(topLevelEx)) ){
+					secList.add(iTB.getName());	
+					iTB = iTB.getSuperclass();
+				}
+				secList.add(topLevelEx);
+				break;
+			}
+			
+			//兩個List進行比對,尋找兩個例外的共同父類別
+			if(secList != null){		
+				for(String ex : secList){
+					for(String exType : exList){
+						if(ex.equals(exType)){
+							//找到共同父類別就回傳
+							return ex;
+						}							
+					}
+				}
+			}			
+		}
+		return type.getType().toString();
+	}
+		
 	/**
 	 * 判斷是否有未加入的Library,但throw RuntimeException的情況要排除
 	 * 因為throw RuntimeException不需import Library

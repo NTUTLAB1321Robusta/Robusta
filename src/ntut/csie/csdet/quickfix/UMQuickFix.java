@@ -414,6 +414,7 @@ public class UMQuickFix implements IMarkerResolution{
 			cu.getBuffer().setContents(document.get());
 		}catch (Exception ex) {
 			logger.error("[UMQuickFix] EXCEPTION ",ex);
+			
 		}
 	}
 }
