@@ -1,7 +1,12 @@
 package ntut.csie.csdet.views;
 
 import java.io.File;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import ntut.csie.csdet.preference.JDomUtil;
 
 import org.eclipse.swt.SWT;
@@ -14,7 +19,9 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.jdom.Document;
+import org.jdom.Attribute;
 import org.jdom.Element;
 
 /**
@@ -47,6 +54,11 @@ public class DummyHandlerPage extends APropertyPage{
 	private String log4jText;
 	// java.util.logging的字串
 	private String javaUtillogText;
+	// 打開extraLibDialog的按鈕
+	private Button extraLibBtn;
+	
+//	private ArrayList<String> libName = new ArrayList<String>();
+	private TreeMap<String, Boolean> libMap = new TreeMap<String, Boolean>();
 	
 	public DummyHandlerPage(Composite composite,CSPropertyPage page){
 		super(composite,page);
@@ -62,6 +74,8 @@ public class DummyHandlerPage extends APropertyPage{
 						"    logger.info(e.getMessage()"+ ");\n";
 		javaUtillogText =		"    // using java.util.logging.Logger \n" +
 						"    java_logger.info(e.getMessage()"+ "); \n";
+
+		
 		//加入頁面的內容
 		addFirstSection(composite);
 	}
@@ -79,11 +93,34 @@ public class DummyHandlerPage extends APropertyPage{
 			setting = rule.getAttribute(JDomUtil.systemoutprint).getValue();
 			log4jSet = rule.getAttribute(JDomUtil.apache_log4j).getValue();
 			javaLogSet = rule.getAttribute(JDomUtil.java_Logger).getValue();
+
+			Element libRule = root.getChild(JDomUtil.DummyHandlerTag).getChild("librule");
+			List<Attribute> ruleList = libRule.getAttributes();
+			
+			//把使用者所儲存的Library設定存到Map資料裡
+			for (int i=0;i<ruleList.size();i++)
+				libMap.put(ruleList.get(i).getQualifiedName(),ruleList.get(i).getValue().equals("Y"));
 		}
-		
+
 		final Label detectSettingsLabel = new Label(dummyHandlerPage, SWT.NONE);
 		detectSettingsLabel.setText("偵測條件(打勾偵測,不打勾不偵測):");
 		detectSettingsLabel.setBounds(10, 10, 210, 12);
+		
+		final Label detectSettingsLabel2;
+		detectSettingsLabel2 = new Label(dummyHandlerPage, SWT.NONE);
+		detectSettingsLabel2.setText("偵測外部條件:");
+		detectSettingsLabel2.setBounds(251, 11, 210, 12);
+		
+		extraLibBtn = new Button(dummyHandlerPage, SWT.NONE);
+		extraLibBtn.setText("開啟");
+		extraLibBtn.setBounds(251, 29, 94, 22);
+		extraLibBtn.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(final SelectionEvent e) {
+				extraLibDialog dialog = new extraLibDialog(new Shell(),libMap);
+				dialog.open();
+				libMap = dialog.getLibMap();
+			}
+		});
 		
 		eprintBtn = new Button(dummyHandlerPage, SWT.CHECK);
 		eprintBtn.setText("e.printStackTrace();");
@@ -147,6 +184,10 @@ public class DummyHandlerPage extends APropertyPage{
 
 		final Label label1 = new Label(dummyHandlerPage,SWT.SEPARATOR| SWT.HORIZONTAL);
 		label1.setBounds(10, 116, 472, 12);
+		
+		final Label label2 = new Label(dummyHandlerPage, SWT.VERTICAL | SWT.SEPARATOR);
+		label2.setBounds(240, 5, 5, 111);
+		label2.setText("Label");
 
 		templateArea = new StyledText(dummyHandlerPage, SWT.BORDER);
 		Font font = new Font(dummyHandlerPage.getDisplay(),"Courier New",14,SWT.NORMAL);		
@@ -326,7 +367,7 @@ public class DummyHandlerPage extends APropertyPage{
 		}
 		//假如log4j有被勾選起來
 		if(log4jBtn.getSelection()){
-			rule.setAttribute(JDomUtil.apache_log4j,"Y");	
+			rule.setAttribute(JDomUtil.apache_log4j,"Y");
 		}else{
 			rule.setAttribute(JDomUtil.apache_log4j,"N");	
 		}
@@ -337,9 +378,18 @@ public class DummyHandlerPage extends APropertyPage{
 			rule.setAttribute(JDomUtil.java_Logger,"N");
 		}
 		//假如dummy handler有新的rule可以加在這裡
-		
+		Element libRule = new Element("librule");
+		Iterator<String> libIt = libMap.keySet().iterator();
+		while(libIt.hasNext()){
+			String temp = libIt.next();
+			if (libMap.get(temp))
+				libRule.setAttribute(temp,"Y");
+			else
+				libRule.setAttribute(temp,"N");
+		}
 		//將新建的tag加進去
 		dummyHandler.addContent(rule);
+		dummyHandler.addContent(libRule);
 		root.addContent(dummyHandler);
 		//將檔案寫回
 		String path = JDomUtil.getWorkspace()+File.separator+"CSPreference.xml";
