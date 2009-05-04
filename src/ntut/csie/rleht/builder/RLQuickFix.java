@@ -2,6 +2,7 @@ package ntut.csie.rleht.builder;
 
 import java.util.List;
 
+import ntut.csie.rleht.common.EditorUtils;
 import ntut.csie.rleht.common.ErrorLog;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLChecker;
@@ -16,6 +17,7 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IOpenable;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -27,9 +29,13 @@ import org.eclipse.jdt.core.dom.MemberValuePair;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.TypeLiteral;
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
+import org.eclipse.jface.text.IRegion;
 import org.eclipse.text.edits.TextEdit;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IMarkerResolution;
+import org.eclipse.ui.texteditor.ITextEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +61,11 @@ public class RLQuickFix implements IMarkerResolution {
 	private String label;
 
 	private int levelForUpdate;
-
+	
+	//是否已存在Robustness及RL的宣告
+	boolean isImportRobustnessClass = false;
+	boolean isImportRLClass = false;
+	
 	public RLQuickFix(String label) {
 		this.label = label;
 	}
@@ -71,7 +81,7 @@ public class RLQuickFix implements IMarkerResolution {
 
 	public void run(IMarker marker) {
 		try {
-
+	
 			String problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);			
 			if (problem != null && problem.equals(RLMarkerAttribute.ERR_RL_LEVEL)) {
 				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
@@ -148,8 +158,7 @@ public class RLQuickFix implements IMarkerResolution {
 	private void addImportDeclaration() {
 		// 判斷是否已經Import Robustness及RL的宣告
 		List<ImportDeclaration> importList = this.actRoot.imports();
-		boolean isImportRobustnessClass = false;
-		boolean isImportRLClass = false;
+
 		for (ImportDeclaration id : importList) {
 			if (RLData.CLASS_ROBUSTNESS.equals(id.getName().getFullyQualifiedName())) {
 				isImportRobustnessClass = true;
@@ -170,7 +179,6 @@ public class RLQuickFix implements IMarkerResolution {
 			imp.setName(rootAst.newName(RL.class.getName()));
 			this.actRoot.imports().add(imp);
 		}
-
 	}
 
 	/***************************************************************************
@@ -190,7 +198,6 @@ public class RLQuickFix implements IMarkerResolution {
 
 			AST ast = currentMethodNode.getAST();
 
-			
 			NormalAnnotation root = ast.newNormalAnnotation();
 			root.setTypeName(ast.newSimpleName("Robustness"));
 
@@ -244,20 +251,39 @@ public class RLQuickFix implements IMarkerResolution {
 				method.modifiers().add(0, root);
 			}
 
-			ICompilationUnit cu = (ICompilationUnit) actOpenable;
-			Document document = new Document(cu.getBuffer().getContents());
+			Document document = applyChange();
 
-			TextEdit edits = actRoot.rewrite(document, cu.getJavaProject().getOptions(true));
+			//取得目前的EditPart
+			IEditorPart editorPart = EditorUtils.getActiveEditor();
+			ITextEditor editor = (ITextEditor) editorPart;
 
-			edits.apply(document);
+			//取得Method的起點位置
+			int srcPos = currentMethodNode.getStartPosition();
+			//用Method起點位置取得Method位於第幾行數(起始行數從0開始，不是1，所以減1)
+			int numLine = this.actRoot.getLineNumber(srcPos)-1;
 
-			cu.getBuffer().setContents(document.get());
+			//如果有import Robustness或RL的宣告行數就加1
+			if(!isImportRobustnessClass)
+				numLine++;
+			if(!isImportRLClass)
+				numLine++;
 
+			//取得行數的資料
+			IRegion lineInfo = null;
+			try {
+				lineInfo = document.getLineInformation(numLine);
+			} catch (BadLocationException e) {
+				logger.error("[BadLocation] EXCEPTION ",e);
+			}
+			
+			//反白該行 在Quick fix完之後,可以將游標定位在Quick Fix那行
+			editor.selectAndReveal(lineInfo.getOffset(), lineInfo.getLength());
 		}
 		catch (Exception ex) {
 			logger.error("[addOrRemoveRLAnnotation] EXCEPTION ",ex);
 		}
 	}
+
 
 	@SuppressWarnings("unchecked")
 	private void updateRLAnnotation(int pos, int level) {
@@ -307,12 +333,7 @@ public class RLQuickFix implements IMarkerResolution {
 				method.modifiers().add(0, root);
 			}
 
-			ICompilationUnit cu = (ICompilationUnit) actOpenable;
-			Document document = new Document(cu.getBuffer().getContents());
-			TextEdit edits = actRoot.rewrite(document, cu.getJavaProject().getOptions(true));
-			edits.apply(document);
-			cu.getBuffer().setContents(document.get());
-
+			applyChange();
 		}
 		catch (Exception ex) {
 			logger.error("[updateRLAnnotation] EXCEPTION ",ex);
@@ -352,4 +373,23 @@ public class RLQuickFix implements IMarkerResolution {
 		return rl;
 	}
 
+	/**
+	 * 將要變更的資料寫回至Document中
+	 */
+	private Document applyChange()
+	{
+		//寫回Edit中
+		try{
+			ICompilationUnit cu = (ICompilationUnit) actOpenable;
+			Document document = new Document(cu.getBuffer().getContents());
+			TextEdit edits = actRoot.rewrite(document, cu.getJavaProject().getOptions(true));
+			edits.apply(document);
+			cu.getBuffer().setContents(document.get());
+			return document;
+		}
+		catch(Exception ex){
+			logger.error("[RLQuickFix] EXCEPTION ",ex);
+		}
+		return null;
+	}
 }

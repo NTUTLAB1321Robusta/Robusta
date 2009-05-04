@@ -4,6 +4,7 @@ import java.util.List;
 
 import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
+import ntut.csie.rleht.common.EditorUtils;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLData;
 import ntut.csie.rleht.views.RLMessage;
@@ -33,9 +34,13 @@ import org.eclipse.jdt.core.dom.TryStatement;
 import org.eclipse.jdt.core.dom.TypeLiteral;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
+import org.eclipse.jface.text.IRegion;
 import org.eclipse.text.edits.TextEdit;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IMarkerResolution;
+import org.eclipse.ui.texteditor.ITextEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,6 +65,10 @@ public class UMQuickFix implements IMarkerResolution{
 	private String exType = "Exception";
 	
 	private ASTRewrite rewrite;
+	
+	//是否已存在Robustness及RL的宣告
+	private	boolean isImportRobustnessClass = false;
+	private boolean isImportRLClass = false;
 	
 	public UMQuickFix(String label){
 		this.label = label;
@@ -177,7 +186,37 @@ public class UMQuickFix implements IMarkerResolution{
 			
 		}	
 		addAnnotationRoot(ast);
-		applyChange();
+		
+		Document document = applyChange();
+
+		//取得目前的EditPart
+		IEditorPart editorPart = EditorUtils.getActiveEditor();
+		ITextEditor editor = (ITextEditor) editorPart;
+
+		//取得Method的起點位置
+		int srcPos = currentMethodNode.getStartPosition();
+		//用Method起點位置取得Method位於第幾行數(起始行數從0開始，不是1，所以減1)
+		int numLine = this.actRoot.getLineNumber(srcPos)-1;
+
+		//如果有import Robustness或RL的宣告行數就加1
+		if(!isImportRobustnessClass)
+			numLine++;
+		if(!isImportRLClass)
+			numLine++;
+
+		//TODO 兩個都import時 會莫名多一行空行
+		if (!isImportRLClass && !isImportRobustnessClass)
+			numLine++;
+
+		//取得行數的資料
+		IRegion lineInfo = null;
+		try {
+			lineInfo = document.getLineInformation(numLine);
+		} catch (BadLocationException e) {
+			logger.error("[BadLocation] EXCEPTION ",e);
+		}
+		//反白該行 在Quick fix完之後,可以將游標定位在Quick Fix那行
+		editor.selectAndReveal(lineInfo.getOffset(), lineInfo.getLength());
 	}
 	
 	/**
@@ -377,8 +416,8 @@ public class UMQuickFix implements IMarkerResolution{
 		ListRewrite listRewrite = rewrite.getListRewrite(this.actRoot, this.actRoot.IMPORTS_PROPERTY);
 		List<ImportDeclaration> importList = listRewrite.getRewrittenList();
 		
-		boolean isImportRobustnessClass = false;
-		boolean isImportRLClass = false;
+//		boolean isImportRobustnessClass = false;
+//		boolean isImportRLClass = false;
 		for (ImportDeclaration id : importList) {
 			if (RLData.CLASS_ROBUSTNESS.equals(id.getName().getFullyQualifiedName())) {
 				isImportRobustnessClass = true;
@@ -404,7 +443,7 @@ public class UMQuickFix implements IMarkerResolution{
 	/**
 	 * 將要變更的資料寫回至Document中
 	 */
-	private void applyChange(){
+	private Document applyChange(){
 		//寫回Edit中
 		try {
 			ICompilationUnit cu = (ICompilationUnit) actOpenable;
@@ -412,9 +451,10 @@ public class UMQuickFix implements IMarkerResolution{
 			TextEdit edits = rewrite.rewriteAST(document,null);
 			edits.apply(document);
 			cu.getBuffer().setContents(document.get());
+			return document;
 		}catch (Exception ex) {
 			logger.error("[UMQuickFix] EXCEPTION ",ex);
-			
 		}
+		return null;
 	}
 }

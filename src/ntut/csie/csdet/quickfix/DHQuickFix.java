@@ -40,6 +40,7 @@ import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TypeLiteral;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
+import org.eclipse.jface.text.IRegion;
 import org.eclipse.text.edits.TextEdit;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IMarkerResolution;
@@ -76,6 +77,15 @@ public class DHQuickFix implements IMarkerResolution{
 	private String problem;
 	
 	private String exType = "RuntimeException";
+	
+	//是否已存在Robustness及RL的宣告
+	boolean isImportRobustnessClass = false;
+	boolean isImportRLClass = false;
+
+	//刪掉的Statement數目
+	private int delStatement = 0;
+	//是否要加RL Annotation，否則已存在
+	private boolean isAddAnnotation = true;
 	
 	public DHQuickFix(String label){
 		this.label = label;
@@ -167,7 +177,7 @@ public class DHQuickFix implements IMarkerResolution{
 			//準備在Catch Caluse中加入throw exception
 			//取得Code smell的資訊
 			CSMessage msg = currentExList.get(msgIdx);
-			System.out.println("【Msg Idx exception type】===>"+msg.getExceptionType());
+
 			//收集該method所有的catch clause
 			ASTCatchCollect catchCollector = new ASTCatchCollect();
 			currentMethodNode.accept(catchCollector);
@@ -175,18 +185,17 @@ public class DHQuickFix implements IMarkerResolution{
 			
 			//去比對startPosition,找出要修改的節點			
 			for (ASTNode cc : catchList){
-				System.out.println("【All Catch Line num】===>"+this.actRoot.getLineNumber(cc.getStartPosition()));
-				if(cc.getStartPosition() == msg.getPosition()){					
+					if(cc.getStartPosition() == msg.getPosition()){					
 					//建立RL Annotation
 					addAnnotationRoot(ast);					
 					//在catch clause中建立throw statement
 					addThrowStatement(cc, ast);
+					//寫回Edit中
+					applyChange(msg,cc);
 					break;
 				}
 			}
 
-			//寫回Edit中
-			applyChange(msg);
 		}catch (Exception ex) {
 			logger.error("[Rethrow Exception] EXCEPTION ",ex);
 		}
@@ -205,6 +214,7 @@ public class DHQuickFix implements IMarkerResolution{
 		CatchClause clause = (CatchClause)cc;
 		//自行建立一個throw statement加入
 		ThrowStatement ts = ast.newThrowStatement();
+		
 		//將throw的variable傳入
 		ClassInstanceCreation cic = ast.newClassInstanceCreation();
 		//throw new RuntimeException()
@@ -213,14 +223,17 @@ public class DHQuickFix implements IMarkerResolution{
 		cic.arguments().add(ast.newSimpleName(svd.resolveBinding().getName()));
 		
 		//取得CatchClause所有的statement,將相關print例外資訊的東西移除
-		List<Statement> statement = clause.getBody().statements();
+		List statement = clause.getBody().statements();
+
+		delStatement = statement.size();
 		if(problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)){	
 			//假如要fix的code smell是dummy handler,就要把catch中的列印資訊刪除
 			deleteStatement(statement);
 		}
+		delStatement -= statement.size();
 		//將新建立的節點寫回
 		ts.setExpression(cic);
-		statement.add(ts);	
+		statement.add(ts);
 	}
 	
 	
@@ -241,6 +254,7 @@ public class DHQuickFix implements IMarkerResolution{
 		if(currentMethodRLList.size() == 0){		
 			rlary.expressions().add(getRLAnnotation(ast,1,exType));
 		}else{
+			isAddAnnotation = false;
 			for (RLMessage rlmsg : currentMethodRLList) {
 				//把舊的annotation加進去
 				//判斷如果遇到重複的就不要加annotation
@@ -304,7 +318,7 @@ public class DHQuickFix implements IMarkerResolution{
 	 * 將所要變更的內容寫回Edit中
 	 * @param msg
 	 */
-	private void applyChange(CSMessage msg){
+	private void applyChange(CSMessage msg,ASTNode node){
 		try {
 			ICompilationUnit cu = (ICompilationUnit) actOpenable;
 			Document document = new Document(cu.getBuffer().getContents());
@@ -317,12 +331,53 @@ public class DHQuickFix implements IMarkerResolution{
 			//取得目前的EditPart
 			IEditorPart editorPart = EditorUtils.getActiveEditor();
 			ITextEditor editor = (ITextEditor) editorPart;
-	
-			//利用document取得定位點(要加1是因為取到的那行是標marker那行)
-			int offset = document.getLineOffset(msg.getLineNumber());
-			//在Quick fix完之後,可以將游標定位在Quick Fix那行
-			//TODO 可以將Fix的那行給highlight起來,但要先取得length,暫時先把長度固定
-			EditorUtils.selectInEditor(editor,offset,40);
+			
+			CatchClause cc = (CatchClause)node;
+			List catchSt = cc.getBody().statements();
+			if(catchSt != null){
+				int numLine=0;
+				//throw之前沒有statement表示ignore
+				if (catchSt.size()<2)
+					//加在catch之後一格
+					numLine = this.actRoot.getLineNumber(cc.getStartPosition());
+				else
+				{
+					//取得throw的前一筆Statement
+					ASTNode throwNode = (ASTNode)catchSt.get(catchSt.size()-2);
+
+//					System.out.println("[Pos]==>"+throwNode.getStartPosition());	
+//					for(int i=0;i<catchSt.size();i++)
+//						System.out.println("[ASTNode]===>"+catchSt.get(i).toString());
+
+					//TODO throw定位會抓不準，1.throw前有註解，2.throw前一筆到throw之間有要被刪除的statement
+					//用Method起點位置取得Method位於第幾行數(起始行數從0開始，不是1，所以減1)
+					numLine = this.actRoot.getLineNumber(throwNode.getStartPosition());
+
+//					System.out.println("[Counter]"+delStatement);
+				}
+
+				//如果有import Robustness或RL的宣告行數就加1
+				if(!isImportRobustnessClass)
+					numLine++;
+				if(!isImportRLClass)
+					numLine++;
+				//若有加Annotation則行數加1
+				if(isAddAnnotation)
+					numLine++;
+
+//				System.out.println("[line]==>"+numLine);
+				
+				//取得行數的資料
+				IRegion lineInfo = null;
+				try {
+					lineInfo = document.getLineInformation(numLine-delStatement);
+				} catch (BadLocationException e) {
+					logger.error("[BadLocation] EXCEPTION ",e);
+				}
+				//反白該行 在Quick fix完之後,可以將游標定位在Quick Fix那行
+				editor.selectAndReveal(lineInfo.getOffset(), lineInfo.getLength());
+			}
+
 		} catch (BadLocationException e) {
 			logger.error("[Rethrow Exception] EXCEPTION ",e);
 		} catch (JavaModelException ex) {
@@ -334,8 +389,7 @@ public class DHQuickFix implements IMarkerResolution{
 	private void addImportDeclaration() {
 		// 判斷是否已經Import Robustness及RL的宣告
 		List<ImportDeclaration> importList = this.actRoot.imports();
-		boolean isImportRobustnessClass = false;
-		boolean isImportRLClass = false;
+
 		for (ImportDeclaration id : importList) {
 			if (RLData.CLASS_ROBUSTNESS.equals(id.getName().getFullyQualifiedName())) {
 				isImportRobustnessClass = true;
