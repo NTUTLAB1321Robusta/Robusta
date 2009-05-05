@@ -197,12 +197,6 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 		statement.getExpression().accept(visitor);
 		if(visitor.getResult()){
 			//假如找到log4j or java.logger,就把之前找到的smell去掉
-			/*
-			int size = this.dummyList.size()-1;
-			for(int x=0;x<flag;x++){
-				this.dummyList.remove(size-x);
-			}
-			*/
 			return true;
 		}else{
 			return false;

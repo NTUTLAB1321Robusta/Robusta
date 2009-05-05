@@ -93,7 +93,6 @@ public class UMQuickFix implements IMarkerResolution{
 					addBigOuterTry(Integer.parseInt(msgIdx));
 			}
 		} catch (CoreException e) {		
-			e.printStackTrace();
 			logger.error("[UMQuickFix] EXCEPTION ",e);
 		}		
 	}
@@ -171,24 +170,34 @@ public class UMQuickFix implements IMarkerResolution{
 		ListRewrite listRewrite = rewrite.getListRewrite(mdBlock,Block.STATEMENTS_PROPERTY);
 		
 		if(isTryExist){
-			 /*------------------------------------------------------------------------*
+			/*------------------------------------------------------------------------*
 	        -  假如Main function中已經有try block了,那就要去確認try block是位於main的一開始
 	            還是中間,或者是在最後面,並依據這三種情況將程式碼都塞進去try block裡面  
 	        *-------------------------------------------------------------------------*/	
 			moveTryBlock(ast,statement,pos,listRewrite);
 			
 		}else{
-			 /*------------------------------------------------------------------------*
+			/*------------------------------------------------------------------------*
 	        -  假如Main function中沒有try block了,那就自己增加一個try block,再把main中所有的
 	            程式全部都塞進try block中
 	        *-------------------------------------------------------------------------*/
 			addNewTryBlock(ast,listRewrite);
 			
 		}	
-		addAnnotationRoot(ast);
-		
+		addAnnotationRoot(ast);		
 		Document document = applyChange();
 
+//		List temp = listRewrite.getRewrittenList();
+//		for(int i=0;i<temp.size();i++){
+//			System.out.println("【Content】===>"+temp.get(i).toString());
+//			if(temp.get(i) instanceof TryStatement){
+//				TryStatement tss = (TryStatement)temp.get(i);
+//				System.out.println("【StartPostion】==>"+tss.getStartPosition());
+//				System.out.println("【Length】==>"+tss.getLength());
+//				System.out.println("【Line number】==>"+this.actRoot.getLineNumber(tss.getStartPosition()));
+//			}				
+//		}
+		
 		//取得目前的EditPart
 		IEditorPart editorPart = EditorUtils.getActiveEditor();
 		ITextEditor editor = (ITextEditor) editorPart;
@@ -197,7 +206,7 @@ public class UMQuickFix implements IMarkerResolution{
 		int srcPos = currentMethodNode.getStartPosition();
 		//用Method起點位置取得Method位於第幾行數(起始行數從0開始，不是1，所以減1)
 		int numLine = this.actRoot.getLineNumber(srcPos)-1;
-
+		
 		//如果有import Robustness或RL的宣告行數就加1
 		if(!isImportRobustnessClass)
 			numLine++;
@@ -205,8 +214,8 @@ public class UMQuickFix implements IMarkerResolution{
 			numLine++;
 
 		//TODO 兩個都import時 會莫名多一行空行
-		if (!isImportRLClass && !isImportRobustnessClass)
-			numLine++;
+//		if (!isImportRLClass && !isImportRobustnessClass)
+//			numLine++;
 
 		//取得行數的資料
 		IRegion lineInfo = null;
@@ -249,7 +258,7 @@ public class UMQuickFix implements IMarkerResolution{
 		tryStatement.insertLast(listRewrite.createMoveTarget((ASTNode) listRewrite.getRewrittenList().get(0), 
 									(ASTNode) listRewrite.getRewrittenList().get(listSize-1)), null);
 		//將新增的try statement加進來
-		listRewrite.insertLast(ts, null);
+		listRewrite.insertLast(ts, null);		
 	}
 	
 	/**	
@@ -355,7 +364,9 @@ public class UMQuickFix implements IMarkerResolution{
 			for (RLMessage rlmsg : currentMethodRLList) {
 				//把舊的annotation加進去
 				//判斷如果遇到重複的就不要加annotation
-				if((!rlmsg.getRLData().getExceptionType().toString().contains(exType)) && (rlmsg.getRLData().getLevel() != 1)){	
+				System.out.println("【Ex type】"+rlmsg.getRLData().getExceptionType().toString());
+				System.out.println("【Ex level】"+rlmsg.getRLData().getLevel());
+				if((!rlmsg.getRLData().getExceptionType().toString().equals(exType)) && (rlmsg.getRLData().getLevel() == 1)){	
 					rlary.expressions().add(
 							getRLAnnotation(ast, rlmsg.getRLData().getLevel(), rlmsg.getRLData().getExceptionType()));	
 				}				
@@ -377,7 +388,6 @@ public class UMQuickFix implements IMarkerResolution{
 		}
 		//將RL的library加進來
 		addImportDeclaration();
-
 	}
 	
 	/**

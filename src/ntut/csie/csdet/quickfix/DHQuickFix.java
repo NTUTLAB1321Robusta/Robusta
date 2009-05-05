@@ -81,6 +81,8 @@ public class DHQuickFix implements IMarkerResolution{
 	//是否已存在Robustness及RL的宣告
 	boolean isImportRobustnessClass = false;
 	boolean isImportRLClass = false;
+	
+//	private ASTRewrite rewrite;
 
 	//刪掉的Statement數目
 	private int delStatement = 0;
@@ -173,6 +175,9 @@ public class DHQuickFix implements IMarkerResolution{
 		
 			actRoot.recordModifications();
 			AST ast = currentMethodNode.getAST();
+			
+//			AST ast = actRoot.getAST();
+//			rewrite = ASTRewrite.create(actRoot.getAST());
 		
 			//準備在Catch Caluse中加入throw exception
 			//取得Code smell的資訊
@@ -258,7 +263,8 @@ public class DHQuickFix implements IMarkerResolution{
 			for (RLMessage rlmsg : currentMethodRLList) {
 				//把舊的annotation加進去
 				//判斷如果遇到重複的就不要加annotation
-				if((!rlmsg.getRLData().getExceptionType().toString().contains(exType)) && (rlmsg.getRLData().getLevel() != 1)){					
+				
+				if((!rlmsg.getRLData().getExceptionType().toString().contains(exType)) && (rlmsg.getRLData().getLevel() == 1)){					
 					rlary.expressions().add(
 							getRLAnnotation(ast, rlmsg.getRLData().getLevel(), rlmsg.getRLData().getExceptionType()));	
 				}				
@@ -324,6 +330,7 @@ public class DHQuickFix implements IMarkerResolution{
 			Document document = new Document(cu.getBuffer().getContents());
 	
 			TextEdit edits = actRoot.rewrite(document, cu.getJavaProject().getOptions(true));
+//			TextEdit edits = rewrite.rewriteAST(document,null);
 			edits.apply(document);
 			
 			cu.getBuffer().setContents(document.get());
@@ -345,15 +352,9 @@ public class DHQuickFix implements IMarkerResolution{
 					//取得throw的前一筆Statement
 					ASTNode throwNode = (ASTNode)catchSt.get(catchSt.size()-2);
 
-//					System.out.println("[Pos]==>"+throwNode.getStartPosition());	
-//					for(int i=0;i<catchSt.size();i++)
-//						System.out.println("[ASTNode]===>"+catchSt.get(i).toString());
-
 					//TODO throw定位會抓不準，1.throw前有註解，2.throw前一筆到throw之間有要被刪除的statement
 					//用Method起點位置取得Method位於第幾行數(起始行數從0開始，不是1，所以減1)
 					numLine = this.actRoot.getLineNumber(throwNode.getStartPosition());
-
-//					System.out.println("[Counter]"+delStatement);
 				}
 
 				//如果有import Robustness或RL的宣告行數就加1
@@ -365,8 +366,6 @@ public class DHQuickFix implements IMarkerResolution{
 				if(isAddAnnotation)
 					numLine++;
 
-//				System.out.println("[line]==>"+numLine);
-				
 				//取得行數的資料
 				IRegion lineInfo = null;
 				try {
@@ -385,7 +384,6 @@ public class DHQuickFix implements IMarkerResolution{
 		}	
 	}
 	
-	@SuppressWarnings("unchecked")
 	private void addImportDeclaration() {
 		// 判斷是否已經Import Robustness及RL的宣告
 		List<ImportDeclaration> importList = this.actRoot.imports();
