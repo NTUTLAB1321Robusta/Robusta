@@ -1,6 +1,7 @@
 package ntut.csie.csdet.visitor;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -36,10 +37,9 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 	
 	//儲存偵測"Library的Name"和"是否Library"
 	private TreeMap<String, Boolean> libMap = new TreeMap<String, Boolean>();
-
-	//是否偵測e.printStackTrace和system.out.print
-	boolean isPrint = false;
-	boolean isSyso = false;
+	
+	//儲存偵測"Statement的Name"和"是否Library"
+	private TreeMap<String, Boolean> stMap = new TreeMap<String, Boolean>();
 	
 	public CodeSmellAnalyzer(CompilationUnit root){
 		super(true);
@@ -136,31 +136,35 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 			if(statementTemp.get(i) instanceof ExpressionStatement){
 				ExpressionStatement statement = (ExpressionStatement) statementTemp.get(i);
 
-				//偵測printStackTrace
-				if (isPrint){
-					if(statement.getExpression().toString().contains("printStackTrace")){					
-						//建立Dummy handler的type
-						CSMessage csmsg = getDummyMessage(cc, svd, statement);
-						this.dummyList.add(csmsg);
-						// 新增一筆dummy handler
-						flag++;
-						continue;
+				//偵測使用者輸入的Statement和printStackTrace及System.out.print
+				Iterator<String> stIt = stMap.keySet().iterator();
+				while(stIt.hasNext()){
+					String temp = stIt.next();
+					//判斷是否要偵測 且 此句也包含欲偵測Library
+					if(stMap.get(temp))
+					{
+						String st = statement.getExpression().toString();
+						//把" "內String給刪掉
+						if(st.indexOf("\"")!=-1)
+						{
+							int fistPos = st.indexOf("\"");
+							int lastPos = st.lastIndexOf("\"");
+							st = st.substring(0,fistPos) + st.substring(lastPos+1);
+						}
+						//判斷是否包含statement
+						if(st.contains(temp))
+						{
+							//建立Dummy handler訊息
+							addDummyMessage(cc, svd, statement);
+							// 新增一筆dummy handler
+							flag++;
+							continue;
+						}
 					}
 				}
-				//偵測System.out.print
-				if (isSyso){
-					if(statement.getExpression().toString().contains("System.out.print")){					
-						CSMessage csmsg = getDummyMessage(cc, svd, statement);
-						this.dummyList.add(csmsg);
-						// 新增一筆dummy handler
-						flag++;
-						continue;
-					}
-				}
-				//偵測外部Library
+				//偵測外部Library和org.apache.log4j.Logger及java.util.logging.Logger
 				if(findBindingLib(statement,flag)){
-					CSMessage csmsg = getDummyMessage(cc, svd, statement);
-					this.dummyList.add(csmsg);
+					addDummyMessage(cc, svd, statement);
 					// 新增一筆dummy handler
 					flag++;
 					continue;
@@ -180,12 +184,12 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 	/**
 	 * 得到Dummy Handler的訊息
 	 */	
-	private CSMessage getDummyMessage(CatchClause cc,
-			SingleVariableDeclaration svd, ExpressionStatement statement) {
+	private void addDummyMessage(CatchClause cc,SingleVariableDeclaration svd, ExpressionStatement statement)
+	{
 		CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_DUMMY_HANDLER,
 				svd.resolveBinding().getType(),cc.toString(),cc.getStartPosition(),
 				this.getLineNumber(statement.getStartPosition()),svd.getType().toString());
-		return csmsg;
+		this.dummyList.add(csmsg);
 	}
 
 	/**
@@ -220,24 +224,28 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 			String log4jSet = rule.getAttribute(JDomUtil.apache_log4j).getValue();
 			String javaLogger = rule.getAttribute(JDomUtil.java_Logger).getValue();
 			Element libRule = dummyHandler.getChild("librule");
-			// 把外部Library的名單儲存在List內
-			List<Attribute> ruleList = libRule.getAttributes();
+			Element stRule = dummyHandler.getChild("strule");
+			// 把外部Library和Statement儲存在List內
+			List<Attribute> libRuleList = libRule.getAttributes();
+			List<Attribute> stRuleList = stRule.getAttributes();
 
 			//把外部的Library加入偵測名單內
-			for (int i=0;i<ruleList.size();i++)
-				libMap.put(ruleList.get(i).getQualifiedName(),ruleList.get(i).getValue().equals("Y"));
+			for (int i=0;i<libRuleList.size();i++)
+				libMap.put(libRuleList.get(i).getQualifiedName(),libRuleList.get(i).getValue().equals("Y"));
+			//把使用者輸入的Statement加入偵測名單內
+			for (int i=0;i<stRuleList.size();i++)
+				stMap.put(stRuleList.get(i).getQualifiedName(),stRuleList.get(i).getValue().equals("Y"));
 
-			if (eprintSet.equals("Y"))
-				isPrint = true;
-			if (sysoSet.equals("Y"))
-				isSyso = true;
-			
+			//把內建偵測加入到名單內
+			//把e.print和system.out加入偵測內
+			stMap.put("printStackTrace", eprintSet.equals("Y"));
+			stMap.put("System.out.print", sysoSet.equals("Y"));
 			//把log4j和javaLog加入偵測內
 			libMap.put("org.apache.log4j.Logger",log4jSet.equals("Y"));
 			libMap.put("java.util.logging.Logger",javaLogger.equals("Y"));
 		}
 	}
-	
+
 	/**
 	 * 根據startPosition來取得行數
 	 */

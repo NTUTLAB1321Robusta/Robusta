@@ -198,34 +198,7 @@ public class UMQuickFix implements IMarkerResolution{
 //			}				
 //		}
 		
-		//眔ヘ玡EditPart
-		IEditorPart editorPart = EditorUtils.getActiveEditor();
-		ITextEditor editor = (ITextEditor) editorPart;
-
-		//眔Method癬翴竚
-		int srcPos = currentMethodNode.getStartPosition();
-		//ノMethod癬翴竚眔Method材碭︽计(癬﹍︽计眖0秨﹍ぃ琌1┮搭1)
-		int numLine = this.actRoot.getLineNumber(srcPos)-1;
-		
-		//狦Τimport Robustness┪RL︽计碞1
-		if(!isImportRobustnessClass)
-			numLine++;
-		if(!isImportRLClass)
-			numLine++;
-
-		//TODO ㄢ常import 穦馋︽︽
-//		if (!isImportRLClass && !isImportRobustnessClass)
-//			numLine++;
-
-		//眔︽计戈
-		IRegion lineInfo = null;
-		try {
-			lineInfo = document.getLineInformation(numLine);
-		} catch (BadLocationException e) {
-			logger.error("[BadLocation] EXCEPTION ",e);
-		}
-		//はフ赣︽ Quick fixЧぇ,盢村夹﹚Quick Fixê︽
-		editor.selectAndReveal(lineInfo.getOffset(), lineInfo.getLength());
+		selectLine(document);
 	}
 	
 	/**
@@ -466,5 +439,40 @@ public class UMQuickFix implements IMarkerResolution{
 			logger.error("[UMQuickFix] EXCEPTION ",ex);
 		}
 		return null;
+	}
+	
+	/**
+	 * はフAnnotationê︽
+	 * @param document
+	 */
+	private void selectLine(Document document) {
+		//眔ヘ玡EditPart
+		IEditorPart editorPart = EditorUtils.getActiveEditor();
+		ITextEditor editor = (ITextEditor) editorPart;
+
+		//眔Method癬翴竚
+		int srcPos = currentMethodNode.getStartPosition();
+		//ノMethod癬翴竚眔Method材碭︽计(癬﹍︽计眖0秨﹍ぃ琌1┮搭1)
+		int numLine = this.actRoot.getLineNumber(srcPos)-1;
+		
+		//狦Τimport Robustness┪RL︽计碞1
+		if(!isImportRobustnessClass)
+			numLine++;
+		if(!isImportRLClass)
+			numLine++;
+
+		//TODO ㄢ常import 穦馋︽︽
+//		if (!isImportRLClass && !isImportRobustnessClass)
+//			numLine++;
+
+		//眔︽计戈
+		IRegion lineInfo = null;
+		try {
+			lineInfo = document.getLineInformation(numLine);
+		} catch (BadLocationException e) {
+			logger.error("[BadLocation] EXCEPTION ",e);
+		}
+		//はフ赣︽ Quick fixЧぇ,盢村夹﹚Quick Fixê︽
+		editor.selectAndReveal(lineInfo.getOffset(), lineInfo.getLength());
 	}
 }

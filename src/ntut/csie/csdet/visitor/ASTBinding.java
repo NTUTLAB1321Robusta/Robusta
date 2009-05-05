@@ -35,8 +35,7 @@ public class ASTBinding extends RLBaseVisitor{
 					while(libIt.hasNext()){
 						String temp = libIt.next();
 						//判斷是否要偵測 且 此句也包含欲偵測Library
-						if(libMap.get(temp) && name.resolveTypeBinding().toString().contains(temp)
-							){
+						if(libMap.get(temp) && name.resolveTypeBinding().toString().contains(temp)){
 							result = true;
 							return false;
 						}

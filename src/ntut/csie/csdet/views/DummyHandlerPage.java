@@ -56,9 +56,13 @@ public class DummyHandlerPage extends APropertyPage{
 	private String javaUtillogText;
 	// 打開extraLibDialog的按鈕
 	private Button extraLibBtn;
-	
-//	private ArrayList<String> libName = new ArrayList<String>();
+	// 打開extraStDialog的按鈕
+	private Button extraStBtn;
+
+	// Library Data
 	private TreeMap<String, Boolean> libMap = new TreeMap<String, Boolean>();
+	// Statement Data
+	private TreeMap<String, Boolean> stMap = new TreeMap<String, Boolean>();
 	
 	public DummyHandlerPage(Composite composite,CSPropertyPage page){
 		super(composite,page);
@@ -75,7 +79,6 @@ public class DummyHandlerPage extends APropertyPage{
 		javaUtillogText =		"    // using java.util.logging.Logger \n" +
 						"    java_logger.info(e.getMessage()"+ "); \n";
 
-		
 		//加入頁面的內容
 		addFirstSection(composite);
 	}
@@ -87,6 +90,7 @@ public class DummyHandlerPage extends APropertyPage{
 		String log4jSet = "";
 		String javaLogSet = "";
 		if(docJDom != null){
+			//從XML裡讀出之前的設定
 			Element root = docJDom.getRootElement();
 			Element rule = root.getChild(JDomUtil.DummyHandlerTag).getChild("rule");
 			eprint = rule.getAttribute(JDomUtil.eprintstacktrace).getValue();
@@ -94,33 +98,55 @@ public class DummyHandlerPage extends APropertyPage{
 			log4jSet = rule.getAttribute(JDomUtil.apache_log4j).getValue();
 			javaLogSet = rule.getAttribute(JDomUtil.java_Logger).getValue();
 
+			//從XML取得外部Library
 			Element libRule = root.getChild(JDomUtil.DummyHandlerTag).getChild("librule");
-			List<Attribute> ruleList = libRule.getAttributes();
+			List<Attribute> libRuleList = libRule.getAttributes();
+			//從XML取得外部Statement
+			Element stRule = root.getChild(JDomUtil.DummyHandlerTag).getChild("strule");
+			List<Attribute> stRuleList = stRule.getAttributes();
 			
 			//把使用者所儲存的Library設定存到Map資料裡
-			for (int i=0;i<ruleList.size();i++)
-				libMap.put(ruleList.get(i).getQualifiedName(),ruleList.get(i).getValue().equals("Y"));
+			for (int i=0;i<libRuleList.size();i++)
+				libMap.put(libRuleList.get(i).getQualifiedName(),libRuleList.get(i).getValue().equals("Y"));
+			//把使用者所儲存的Statement設定存到Map資料裡
+			for (int i=0;i<stRuleList.size();i++)
+				stMap.put(stRuleList.get(i).getQualifiedName(),stRuleList.get(i).getValue().equals("Y"));
 		}
 
 		final Label detectSettingsLabel = new Label(dummyHandlerPage, SWT.NONE);
 		detectSettingsLabel.setText("偵測條件(打勾偵測,不打勾不偵測):");
 		detectSettingsLabel.setBounds(10, 10, 210, 12);
 		
-		final Label detectSettingsLabel2;
-		detectSettingsLabel2 = new Label(dummyHandlerPage, SWT.NONE);
-		detectSettingsLabel2.setText("偵測外部條件:");
+		final Label detectSettingsLabel2 = new Label(dummyHandlerPage, SWT.NONE);
+		detectSettingsLabel2.setText("偵測外部Statement條件:");
 		detectSettingsLabel2.setBounds(251, 11, 210, 12);
 		
 		extraLibBtn = new Button(dummyHandlerPage, SWT.NONE);
 		extraLibBtn.setText("開啟");
-		extraLibBtn.setBounds(251, 29, 94, 22);
+		extraLibBtn.setBounds(251, 80, 94, 22);
 		extraLibBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
-				extraLibDialog dialog = new extraLibDialog(new Shell(),libMap);
+				ExtraRuleDialog dialog = new ExtraRuleDialog(new Shell(),true,libMap);
 				dialog.open();
 				libMap = dialog.getLibMap();
 			}
 		});
+		
+		final Label detectSettingsLabel3 = new Label(dummyHandlerPage, SWT.NONE);
+		detectSettingsLabel3.setBounds(251, 62, 210, 12);
+		detectSettingsLabel3.setText("偵測外部Library條件:");
+		
+		extraStBtn = new Button(dummyHandlerPage, SWT.NONE);
+		extraStBtn.setText("開啟");
+		extraStBtn.setBounds(251, 29, 94, 22);
+		extraStBtn.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(final SelectionEvent e) {
+				ExtraRuleDialog dialog = new ExtraRuleDialog(new Shell(),false,stMap);
+				dialog.open();
+				stMap = dialog.getLibMap();
+			}
+		});
+		
 		
 		eprintBtn = new Button(dummyHandlerPage, SWT.CHECK);
 		eprintBtn.setText("e.printStackTrace();");
@@ -371,13 +397,14 @@ public class DummyHandlerPage extends APropertyPage{
 		}else{
 			rule.setAttribute(JDomUtil.apache_log4j,"N");	
 		}
-		// 假如java.util.logging.Logger有被勾選起來
+		//假如java.util.logging.Logger有被勾選起來
 		if(javaUtillogBtn.getSelection()){
 			rule.setAttribute(JDomUtil.java_Logger,"Y");	
 		}else{
 			rule.setAttribute(JDomUtil.java_Logger,"N");
 		}
 		//假如dummy handler有新的rule可以加在這裡
+		//假如有額外新增的Library rule
 		Element libRule = new Element("librule");
 		Iterator<String> libIt = libMap.keySet().iterator();
 		while(libIt.hasNext()){
@@ -387,9 +414,20 @@ public class DummyHandlerPage extends APropertyPage{
 			else
 				libRule.setAttribute(temp,"N");
 		}
+		//假如有額外新增的Library rule
+		Element stRule = new Element("strule");
+		Iterator<String> stIt = stMap.keySet().iterator();
+		while(stIt.hasNext()){
+			String temp = stIt.next();
+			if (stMap.get(temp))
+				stRule.setAttribute(temp,"Y");
+			else
+				stRule.setAttribute(temp,"N");
+		}
 		//將新建的tag加進去
 		dummyHandler.addContent(rule);
 		dummyHandler.addContent(libRule);
+		dummyHandler.addContent(stRule);
 		root.addContent(dummyHandler);
 		//將檔案寫回
 		String path = JDomUtil.getWorkspace()+File.separator+"CSPreference.xml";
