@@ -1,7 +1,6 @@
 package ntut.csie.csdet.visitor;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -23,7 +22,6 @@ import org.jdom.Element;
  * 找專案中的Ignore Exception and dummy handler
  * @author chewei
  */
-
 public class CodeSmellAnalyzer extends RLBaseVisitor {
 	
 	// AST tree的root(檔案名稱)
@@ -36,10 +34,10 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 	private List<CSMessage> dummyList;
 	
 	//儲存偵測"Library的Name"和"是否Library"
-	private TreeMap<String, Boolean> libMap = new TreeMap<String, Boolean>();
+	private TreeMap<String, String> libMap = new TreeMap<String, String>();
 	
-	//儲存偵測"Statement的Name"和"是否Library"
-	private TreeMap<String, Boolean> stMap = new TreeMap<String, Boolean>();
+	private boolean isSyso = false;
+	private boolean isPrint = false;
 	
 	public CodeSmellAnalyzer(CompilationUnit root){
 		super(true);
@@ -137,30 +135,30 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 				ExpressionStatement statement = (ExpressionStatement) statementTemp.get(i);
 
 				//偵測使用者輸入的Statement和printStackTrace及System.out.print
-				Iterator<String> stIt = stMap.keySet().iterator();
-				while(stIt.hasNext()){
-					String temp = stIt.next();
-					//判斷是否要偵測 且 此句也包含欲偵測Library
-					if(stMap.get(temp))
-					{
-						String st = statement.getExpression().toString();
-						//把" "內String給刪掉
-						if(st.indexOf("\"")!=-1)
-						{
-							int fistPos = st.indexOf("\"");
-							int lastPos = st.lastIndexOf("\"");
-							st = st.substring(0,fistPos) + st.substring(lastPos+1);
-						}
-						//判斷是否包含statement
-						if(st.contains(temp))
-						{
-							//建立Dummy handler訊息
-							addDummyMessage(cc, svd, statement);
-							// 新增一筆dummy handler
-							flag++;
-							continue;
-						}
-					}
+				String st = statement.getExpression().toString();
+				//把" "內String給刪掉
+				if(st.indexOf("\"")!=-1)
+				{
+					int fistPos = st.indexOf("\"");
+					int lastPos = st.lastIndexOf("\"");
+					st = st.substring(0,fistPos) + st.substring(lastPos+1);
+				}
+
+				if(isPrint && st.contains("printStackTrace"))
+				{
+					//建立Dummy handler訊息
+					addDummyMessage(cc, svd, statement);
+					// 新增一筆dummy handler
+					flag++;
+					continue;
+				}
+				if(isSyso && st.contains("System.out.print"))
+				{
+					//建立Dummy handler訊息
+					addDummyMessage(cc, svd, statement);
+					// 新增一筆dummy handler
+					flag++;
+					continue;
 				}
 				//偵測外部Library和org.apache.log4j.Logger及java.util.logging.Logger
 				if(findBindingLib(statement,flag)){
@@ -169,6 +167,58 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 					flag++;
 					continue;
 				}
+
+//				Iterator<String> stIt = stMap.keySet().iterator();
+//				while(stIt.hasNext()){
+//					String temp = stIt.next();
+//					//判斷是否要偵測 且 此句也包含欲偵測Library
+//					if(stMap.get(temp))
+//					{
+//						String st = statement.getExpression().toString();
+//						//把" "內String給刪掉
+//						if(st.indexOf("\"")!=-1)
+//						{
+//							int fistPos = st.indexOf("\"");
+//							int lastPos = st.lastIndexOf("\"");
+//							st = st.substring(0,fistPos) + st.substring(lastPos+1);
+//						}
+//						if (temp.lastIndexOf(".")!=-1)
+//						{
+//							int pos = temp.lastIndexOf(".");
+//							String newLibName = temp.substring(0,pos);
+//							String newMethod = temp.substring(pos+1);
+//
+//							if(st.contains(newMethod) && findBindingLib(statement,newLibName,flag))
+//							{
+//								//建立Dummy handler訊息
+//								addDummyMessage(cc, svd, statement);
+//								// 新增一筆dummy handler
+//								flag++;
+//								continue;
+//							}
+//						}
+//						//判斷是否包含statement
+//						if(st.contains(temp))
+//						{
+//							//建立Dummy handler訊息
+//							addDummyMessage(cc, svd, statement);
+//							// 新增一筆dummy handler
+//							flag++;
+//							continue;
+//						}
+//					}
+//				}
+//				Iterator<String> libIt = libMap.keySet().iterator();
+//				while(libIt.hasNext()){
+//					String temp = libIt.next();
+//					//偵測外部Library和org.apache.log4j.Logger及java.util.logging.Logger
+//					if(libMap.get(temp) && findBindingLib(statement,temp,flag)){
+//						addDummyMessage(cc, svd, statement);
+//						// 新增一筆dummy handler
+//						flag++;
+//						continue;
+//					}
+//				}
 			}else if(statementTemp.get(i) instanceof ThrowStatement){
 				// 碰到有throw 東西出來,就判定不是dummy handler
 				// 可能會碰到有e.printStackTrace(),但下一行又throw東西出來
@@ -200,13 +250,13 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 		ASTBinding visitor = new ASTBinding(libMap);
 		statement.getExpression().accept(visitor);
 		if(visitor.getResult()){
-			//假如找到log4j or java.logger,就把之前找到的smell去掉
+		//假如找到log4j or java.logger,就把之前找到的smell去掉
 			return true;
 		}else{
 			return false;
 		}
 	}
-	
+
 	/**
 	 * 將user對於dummy handler的設定存下來
 	 * @return
@@ -224,25 +274,44 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 			String log4jSet = rule.getAttribute(JDomUtil.apache_log4j).getValue();
 			String javaLogger = rule.getAttribute(JDomUtil.java_Logger).getValue();
 			Element libRule = dummyHandler.getChild("librule");
-			Element stRule = dummyHandler.getChild("strule");
 			// 把外部Library和Statement儲存在List內
 			List<Attribute> libRuleList = libRule.getAttributes();
-			List<Attribute> stRuleList = stRule.getAttributes();
 
 			//把外部的Library加入偵測名單內
 			for (int i=0;i<libRuleList.size();i++)
-				libMap.put(libRuleList.get(i).getQualifiedName(),libRuleList.get(i).getValue().equals("Y"));
-			//把使用者輸入的Statement加入偵測名單內
-			for (int i=0;i<stRuleList.size();i++)
-				stMap.put(stRuleList.get(i).getQualifiedName(),stRuleList.get(i).getValue().equals("Y"));
-
+			{
+				if (libRuleList.get(i).getValue().equals("Y"))
+				{
+					String temp = libRuleList.get(i).getQualifiedName();					
+					
+					if (temp.indexOf(".EH_STAR")!=-1){
+						int pos = temp.indexOf(".EH_STAR");
+						libMap.put(temp.substring(0,pos),null);
+						System.out.println("CASE:1 " + temp.substring(0,pos));
+					}else if (temp.indexOf("EH_STAR.") != -1){
+						libMap.put(temp.substring(8),null);
+						System.out.println("CASE:2 " + temp.substring(8));
+					}else if (temp.lastIndexOf(".")!=-1){
+						int pos = temp.lastIndexOf(".");
+						if(!libMap.containsKey(temp.substring(0,pos)))
+							libMap.put(temp.substring(0,pos),temp.substring(pos+1));
+						System.out.println("CASE:3 " + temp.substring(0,pos) + " " + temp.substring(pos+1));
+					}else{
+						libMap.put(temp,null);
+						System.out.println("CASE:2 " + temp.substring(0));
+					}
+				}
+			}
 			//把內建偵測加入到名單內
 			//把e.print和system.out加入偵測內
-			stMap.put("printStackTrace", eprintSet.equals("Y"));
-			stMap.put("System.out.print", sysoSet.equals("Y"));
+			isSyso = sysoSet.equals("Y");
+			isPrint = eprintSet.equals("Y");
+
 			//把log4j和javaLog加入偵測內
-			libMap.put("org.apache.log4j.Logger",log4jSet.equals("Y"));
-			libMap.put("java.util.logging.Logger",javaLogger.equals("Y"));
+			if (log4jSet.equals("Y"))
+				libMap.put("org.apache.log4j",null);
+			if (javaLogger.equals("Y"))
+				libMap.put("java.util.logging",null);
 		}
 	}
 
