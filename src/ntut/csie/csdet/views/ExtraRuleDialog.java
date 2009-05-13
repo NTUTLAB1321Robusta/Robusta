@@ -9,6 +9,8 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
@@ -64,7 +66,6 @@ public class ExtraRuleDialog extends Dialog{
 		final GridData gd_testList = new GridData(SWT.FILL, SWT.FILL, true, true);
 		displayTable.setBounds(10, 66, 243, 150);
 		displayTable.setLayoutData(gd_testList);
-
 		//如果選擇的displayTable的Item把其名稱顯示在Text上
 		displayTable.addListener(SWT.Selection, new Listener(){
 			public void handleEvent(Event e){
@@ -73,6 +74,20 @@ public class ExtraRuleDialog extends Dialog{
 				if(selectionIndex >= 0){
 					//把選擇的Item其Library名稱顯示在Text上
 					editBtn.setEnabled(true);
+					tempText.setText(displayTable.getItem(selectionIndex).getText());
+				}
+			}
+		});
+		//若在displayTable的Item上點選兩下，跳出修改視窗
+		displayTable.addMouseListener(new MouseAdapter() {
+			public void mouseDoubleClick(final MouseEvent e) {
+				int selectionIndex = displayTable.getSelectionIndex();
+				if (selectionIndex >= 0)
+				{
+					String temp = displayTable.getItem(selectionIndex).getText();
+					//呼叫修改Dialog
+					EditRuleDialog dialog = new EditRuleDialog(new Shell(),temp,displayTable);
+					dialog.open();
 					tempText.setText(displayTable.getItem(selectionIndex).getText());
 				}
 			}
@@ -122,8 +137,11 @@ public class ExtraRuleDialog extends Dialog{
 			public void widgetSelected(final SelectionEvent e)
 			{
 				//Table不為空的且有選到Library 就把選擇的Library給刪掉
-				if (displayTable.getItemCount() != 0 && displayTable.getSelectionIndex()!=-1)
+				if (displayTable.getItemCount() != 0 && displayTable.getSelectionIndex()!=-1){
 					displayTable.remove(displayTable.getSelectionIndex());
+					//刪除時把Text清除
+					tempText.setText("");
+				}
 			}
 		});
 		removeButton.setText("Remove");
@@ -176,6 +194,7 @@ public class ExtraRuleDialog extends Dialog{
 					//呼叫修改Dialog
 					EditRuleDialog dialog = new EditRuleDialog(new Shell(),temp,displayTable);
 					dialog.open();
+					tempText.setText(displayTable.getItem(selectionIndex).getText());
 				}
 			}
 		});
@@ -191,9 +210,13 @@ public class ExtraRuleDialog extends Dialog{
 				MessageDialog.openInformation(
 						new Shell(),
 						"說明",
-						"偵測方法: Library名稱 + . + Statement名稱 (eg. 'java.lang.String.toString')\n\n" +
-						"偵測Library: Library名稱 + .* (eg. 'java.lang.String.*')\n\n" +
-						"偵測Statement: *. + Statement名稱 (eg. '*.toString')\n");
+						"1.偵測Library: Library名稱 + .* \n" +
+						"   (eg. 'java.lang.String.*' -> 偵測所有使用到java.lang.String的Library)\n\n" +
+						"2.偵測Statement: *. + Statement名稱 \n" +
+						"   (eg. '*.toString' -> 偵測任意包含toString的Statement)\n\n" +
+						"3.偵測方法: Library名稱 + . + Statement名稱 \n" +
+						"   (eg. 'java.lang.String.toString' -> \n" +
+						"   偵測有使用java.lang.String的Library且有包含toString的Statement)");
 			}
 		});
 		explainBtn.setText("HELP");

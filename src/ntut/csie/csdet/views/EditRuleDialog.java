@@ -7,6 +7,7 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -60,14 +61,15 @@ public class EditRuleDialog  extends Dialog{
 			}
 		});
 		tempText.setBounds(10, 41, 317, 25);
+		tempText.setFont(new Font(this.getShell().getDisplay(),"Arial", 11,SWT.NONE));
 
 		final Label ruleLabel = new Label(container, SWT.NONE);
 		ruleLabel.setBounds(10, 10, 317, 25);
+		ruleLabel.setFont(new Font(this.getShell().getDisplay(),"Arial", 11,SWT.NONE));
 
 		warningLabel = new Label(container, SWT.NONE);
 		warningLabel.setBounds(32, 87, 85, 12);
 		warningLabel.setVisible(false);
-		warningLabel.setText("Library已存在");
 
 		picLabel = new Label(container, SWT.NONE);
 		picLabel.setBounds(10, 87, 16, 15);
@@ -78,7 +80,7 @@ public class EditRuleDialog  extends Dialog{
 		warningLabel.setVisible(false);
 		
 		tempText.setText(ruleName);
-		ruleLabel.setText("原Rule: " + ruleName);
+		ruleLabel.setText("修正前: " + ruleName);
 		return container;
 	}
 
@@ -98,23 +100,29 @@ public class EditRuleDialog  extends Dialog{
 		String temp = tempText.getText().trim();
 		if (temp.length() > 0)
 		{
+			//若沒有"."表示為Method，自行幫使用者加"*."
+			if (!temp.contains("."))
+				temp = "*." + temp;
+			
 			boolean isWarning = false;
 			//看Library的Name有沒有重複
 			for(int i=0;i<ruleTable.getItemCount();i++){
 				//若重複就顯示警告訊息
-				if(tempText.getText().equals(ruleTable.getItem(i).getText()))
+				if(temp.equals(ruleTable.getItem(i).getText()))
 					isWarning = true;
 			}
 			//若重複就出現警告訊息，否則修改Key
 			if (isWarning){
-				picLabel.setVisible(true);
-				warningLabel.setVisible(true);
+				tempText.setText(temp);
+				showWarningText("Rule已存在");
 			//沒有重複就修改
 			}else{
-				ruleTable.getItem(ruleTable.getSelectionIndex()).setText(tempText.getText());
+				ruleTable.getItem(ruleTable.getSelectionIndex()).setText(temp);
 				super.okPressed();
 			}
 		}
+		else
+			showWarningText("Rule不得為空");
 	}
 	@Override
 	protected void cancelPressed()
@@ -134,6 +142,15 @@ public class EditRuleDialog  extends Dialog{
 	{
 		super.configureShell(newShell);
 		newShell.setText("Edit Rules Dialog");
+	}
+	/**
+	 * 更改警告標語並顯示
+	 */
+	protected void showWarningText(String warningInf)
+	{
+		warningLabel.setText(warningInf);
+		picLabel.setVisible(true);
+		warningLabel.setVisible(true);
 	}
 
 }
