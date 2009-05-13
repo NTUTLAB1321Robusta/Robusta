@@ -49,26 +49,28 @@ public class ASTBinding extends RLBaseVisitor{
 								result = true;
 								return false;
 							}
-						//偵測Library.Method的形式
-						}else if (libMap.get(temp) != null){
-							if (libName.equals(temp) &&	methodName.equals(libMap.get(temp))){
+						//只偵測Library
+						}else if (libMap.get(temp) == "1"){
+							//若Library長度大於偵測長度，否則表不相同直接略過
+							if (libName.length() >= temp.length())
+							{
+								//比較前半段長度的名稱是否相同
+								if (libName.substring(0,temp.length()).equals(temp)){
+									result = true;
+									return false;
+								}
+							}
+						//只偵測Method
+						}else if (libMap.get(temp) == "2"){
+							if (methodName.equals(temp)){
 								result = true;
 								return false;
 							}
-						//若只偵測Library或Method，其Map的Value是空的
+						//偵測Library.Method的形式
 						}else{
-							//只偵測Library
-							if (temp.indexOf(".")!=-1){
-								if (libName.equals(temp)){
-									result = true;
-									return false;
-								}
-							//只偵測Method
-							}else{
-								if (methodName.equals(temp)){
-									result = true;
-									return false;
-								}
+							if (libName.equals(temp) &&	methodName.equals(libMap.get(temp))){
+								result = true;
+								return false;
 							}
 						}
 					}

@@ -167,58 +167,6 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 					flag++;
 					continue;
 				}
-
-//				Iterator<String> stIt = stMap.keySet().iterator();
-//				while(stIt.hasNext()){
-//					String temp = stIt.next();
-//					//判斷是否要偵測 且 此句也包含欲偵測Library
-//					if(stMap.get(temp))
-//					{
-//						String st = statement.getExpression().toString();
-//						//把" "內String給刪掉
-//						if(st.indexOf("\"")!=-1)
-//						{
-//							int fistPos = st.indexOf("\"");
-//							int lastPos = st.lastIndexOf("\"");
-//							st = st.substring(0,fistPos) + st.substring(lastPos+1);
-//						}
-//						if (temp.lastIndexOf(".")!=-1)
-//						{
-//							int pos = temp.lastIndexOf(".");
-//							String newLibName = temp.substring(0,pos);
-//							String newMethod = temp.substring(pos+1);
-//
-//							if(st.contains(newMethod) && findBindingLib(statement,newLibName,flag))
-//							{
-//								//建立Dummy handler訊息
-//								addDummyMessage(cc, svd, statement);
-//								// 新增一筆dummy handler
-//								flag++;
-//								continue;
-//							}
-//						}
-//						//判斷是否包含statement
-//						if(st.contains(temp))
-//						{
-//							//建立Dummy handler訊息
-//							addDummyMessage(cc, svd, statement);
-//							// 新增一筆dummy handler
-//							flag++;
-//							continue;
-//						}
-//					}
-//				}
-//				Iterator<String> libIt = libMap.keySet().iterator();
-//				while(libIt.hasNext()){
-//					String temp = libIt.next();
-//					//偵測外部Library和org.apache.log4j.Logger及java.util.logging.Logger
-//					if(libMap.get(temp) && findBindingLib(statement,temp,flag)){
-//						addDummyMessage(cc, svd, statement);
-//						// 新增一筆dummy handler
-//						flag++;
-//						continue;
-//					}
-//				}
 			}else if(statementTemp.get(i) instanceof ThrowStatement){
 				// 碰到有throw 東西出來,就判定不是dummy handler
 				// 可能會碰到有e.printStackTrace(),但下一行又throw東西出來
@@ -284,21 +232,22 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 				{
 					String temp = libRuleList.get(i).getQualifiedName();					
 					
+					//若有.*為只偵測Library，Value設成1
 					if (temp.indexOf(".EH_STAR")!=-1){
 						int pos = temp.indexOf(".EH_STAR");
-						libMap.put(temp.substring(0,pos),null);
-						System.out.println("CASE:1 " + temp.substring(0,pos));
+						libMap.put(temp.substring(0,pos),"1");
+					//若有*.為只偵測Method，Value設成2
 					}else if (temp.indexOf("EH_STAR.") != -1){
-						libMap.put(temp.substring(8),null);
-						System.out.println("CASE:2 " + temp.substring(8));
+						libMap.put(temp.substring(8),"2");
+					//都沒有為都偵測，Key設成Library，Value設成Method
 					}else if (temp.lastIndexOf(".")!=-1){
 						int pos = temp.lastIndexOf(".");
+						//若已經存在，則不加入
 						if(!libMap.containsKey(temp.substring(0,pos)))
 							libMap.put(temp.substring(0,pos),temp.substring(pos+1));
-						System.out.println("CASE:3 " + temp.substring(0,pos) + " " + temp.substring(pos+1));
+					//若有其它形況則設成Method
 					}else{
-						libMap.put(temp,null);
-						System.out.println("CASE:2 " + temp.substring(0));
+						libMap.put(temp,"2");
 					}
 				}
 			}
@@ -306,7 +255,6 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 			//把e.print和system.out加入偵測內
 			isSyso = sysoSet.equals("Y");
 			isPrint = eprintSet.equals("Y");
-
 			//把log4j和javaLog加入偵測內
 			if (log4jSet.equals("Y"))
 				libMap.put("org.apache.log4j",null);

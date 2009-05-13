@@ -55,11 +55,11 @@ public class ExtraRuleDialog extends Dialog{
 	@Override
 	protected Control createDialogArea(Composite parent)
 	{
-		Composite container = (Composite) super.createDialogArea(parent);
+		final Composite container = (Composite) super.createDialogArea(parent);
 		container.setLayout(null);
 		
 		//顯示Table
-		displayTable = new Table(container, SWT.FULL_SELECTION | SWT.BORDER | SWT.CHECK);
+		displayTable = new Table(container, SWT.FULL_SELECTION | SWT.CHECK | SWT.BORDER);
 		displayTable.setFont(new Font(this.getShell().getDisplay(),"Arial", 11,SWT.NONE));
 		final GridData gd_testList = new GridData(SWT.FILL, SWT.FILL, true, true);
 		displayTable.setBounds(10, 66, 243, 150);
@@ -172,20 +172,10 @@ public class ExtraRuleDialog extends Dialog{
 				int selectionIndex = displayTable.getSelectionIndex();
 				if (selectionIndex >= 0)
 				{
-					boolean isWarning = false;
-					//看Library的Name有沒有重複
-					for(int i=0;i<displayTable.getItemCount();i++){
-						//若重複就顯示警告訊息
-						if(tempText.getText().equals(displayTable.getItem(i).getText()))
-							isWarning = true;
-					}
-					//若重複就出現警告訊息，否則修改Key
-					if (isWarning){
-						picLabel.setVisible(true);
-						warningLabel.setVisible(true);
-					}
-					else
-						displayTable.getItem(selectionIndex).setText(tempText.getText());
+					String temp = displayTable.getItem(selectionIndex).getText();
+					//呼叫修改Dialog
+					EditRuleDialog dialog = new EditRuleDialog(new Shell(),temp,displayTable);
+					dialog.open();
 				}
 			}
 		});
@@ -206,9 +196,9 @@ public class ExtraRuleDialog extends Dialog{
 						"偵測Statement: *. + Statement名稱 (eg. '*.toString')\n");
 			}
 		});
-		explainBtn.setText("說明");
-		explainBtn.setImage(ImageManager.getInstance().get("processinginst"));
-		explainBtn.setBounds(259, 225, 68, 22);
+		explainBtn.setText("HELP");
+		explainBtn.setImage(ImageManager.getInstance().get("help"));
+		explainBtn.setBounds(259, 176, 68, 22);
 
 		//將該所有的偵測Library資料顯示在List
 		setInput();
