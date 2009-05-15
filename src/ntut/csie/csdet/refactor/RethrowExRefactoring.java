@@ -335,10 +335,10 @@ public class RethrowExRefactoring extends Refactoring {
 				String cut = rlmsg.getRLData().getExceptionType().toString().substring(pos+1);
 				
 				//如果有有RL annotation重複就不加進去
-				if((!cut.equals(exceptionType)) && (rlmsg.getRLData().getLevel() != 1)){	
+				if((!cut.equals(exceptionType)) && (rlmsg.getRLData().getLevel() == 1)){					
 					rlary.expressions().add(
-							getRLAnnotation(ast, rlmsg.getRLData().getLevel(), rlmsg.getRLData().getExceptionType()));					
-				}
+							getRLAnnotation(ast, rlmsg.getRLData().getLevel(), rlmsg.getRLData().getExceptionType()));	
+				}	
 			}
 			rlary.expressions().add(getRLAnnotation(ast,1,exceptionType));
 			
