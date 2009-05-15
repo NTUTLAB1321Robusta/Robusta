@@ -2,6 +2,7 @@ package ntut.csie.rleht.builder;
 
 import ntut.csie.csdet.quickfix.DHQuickFix;
 import ntut.csie.csdet.quickfix.NTQuickFix;
+import ntut.csie.csdet.quickfix.TEQuickFix;
 import ntut.csie.csdet.quickfix.UMQuickFix;
 import ntut.csie.csdet.refactor.RethrowUncheckExAction;
 import ntut.csie.rleht.common.RLUtils;
@@ -50,11 +51,13 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				// 碰到Ignore Exception的Quick fix and refactor方法
 			} else if(problem.equals(RLMarkerAttribute.CS_INGNORE_EXCEPTION)){
 				return new IMarkerResolution[] { new DHQuickFix("Quick Fix==>Rethrow Unhandled Exception"),
-						new RethrowUncheckExAction("Refactor==>Rethrow Unhandled Excetpion")};
+						new RethrowUncheckExAction("Refactor==>Rethrow Unhandled Excetpion"),
+						new TEQuickFix("Quick Fix==>Throw Checked Exception")};
 				// 碰到Dummy Handler的Quick fix and refactor方法
 			} else if(problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)){
 				return new IMarkerResolution[] { new DHQuickFix("Quick Fix==>Rethrow Unhandled Exception"),
-						new RethrowUncheckExAction("Refactor==>Rethrow Unhandled Excetpion")};
+						new RethrowUncheckExAction("Refactor==>Rethrow Unhandled Excetpion"),
+						new TEQuickFix("Quick Fix==>Throw Checked Exception")};
 				// 碰到Nested Try block的refactor
 			} else if(problem.equals(RLMarkerAttribute.CS_NESTED_TRY_BLOCK)){
 				return new IMarkerResolution[] { new NTQuickFix("Please use Eclipse refactor==>Extract Method") };
