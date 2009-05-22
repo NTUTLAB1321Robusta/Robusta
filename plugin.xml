@@ -23,6 +23,13 @@
             icon="icons/showwarn_tsk.gif"
             category="RLEHT"
             />
+      <view
+            name="≡ RL Smell View ≡"
+            icon="icons/showwarn_tsk.gif"
+            category="RLEHT"
+            class="ntut.csie.csdet.smell.ui.RLSmellView"
+            id="ntut.csie.rleht.views.RLSmell">
+      </view>
    </extension>
    
    <extension
