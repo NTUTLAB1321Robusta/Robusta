@@ -60,19 +60,15 @@ public class EditRuleDialog  extends Dialog{
 				warningLabel.setVisible(false);
 			}
 		});
-		tempText.setBounds(10, 41, 317, 25);
+		tempText.setBounds(10, 10, 317, 25);
 		tempText.setFont(new Font(this.getShell().getDisplay(),"Arial", 11,SWT.NONE));
 
-		final Label ruleLabel = new Label(container, SWT.NONE);
-		ruleLabel.setBounds(10, 10, 317, 25);
-		ruleLabel.setFont(new Font(this.getShell().getDisplay(),"Arial", 11,SWT.NONE));
-
 		warningLabel = new Label(container, SWT.NONE);
-		warningLabel.setBounds(32, 87, 85, 12);
+		warningLabel.setBounds(32, 41, 85, 12);
 		warningLabel.setVisible(false);
 
 		picLabel = new Label(container, SWT.NONE);
-		picLabel.setBounds(10, 87, 16, 15);
+		picLabel.setBounds(10, 41, 16, 15);
 		picLabel.setVisible(false);
 		picLabel.setImage(ImageManager.getInstance().get("warning"));
 		
@@ -80,7 +76,6 @@ public class EditRuleDialog  extends Dialog{
 		warningLabel.setVisible(false);
 		
 		tempText.setText(ruleName);
-		ruleLabel.setText("­×¥¿«e: " + ruleName);
 		return container;
 	}
 
@@ -136,7 +131,7 @@ public class EditRuleDialog  extends Dialog{
 	@Override
 	protected Point getInitialSize()
 	{
-		return new Point(345, 180);
+		return new Point(345, 130);
 	}
 	protected void configureShell(Shell newShell)
 	{

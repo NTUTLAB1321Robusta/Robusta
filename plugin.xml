@@ -24,11 +24,11 @@
             category="RLEHT"
             />
       <view
-            name="≡ RL Smell View ≡"
+            name="≡ EH Smell View ≡"
             icon="icons/showwarn_tsk.gif"
             category="RLEHT"
-            class="ntut.csie.csdet.smell.ui.RLSmellView"
-            id="ntut.csie.rleht.views.RLSmell">
+            class="ntut.csie.csdet.smell.ui.EHSmellView"
+            id="ntut.csie.rleht.views.EHSmell">
       </view>
    </extension>
    

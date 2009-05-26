@@ -1,10 +1,6 @@
 package ntut.csie.csdet.smell.ui;
 
 import ntut.csie.csdet.data.CSMessage;
-import ntut.csie.csdet.smell.actions.DHAction;
-import ntut.csie.csdet.smell.actions.NTAction;
-import ntut.csie.csdet.smell.actions.TEAction;
-import ntut.csie.csdet.smell.actions.UMAction;
 import ntut.csie.rleht.common.ConsoleLog;
 import ntut.csie.rleht.common.EditorUtils;
 import ntut.csie.rleht.common.ErrorLog;
@@ -13,11 +9,7 @@ import org.eclipse.core.filebuffers.FileBuffers;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IMember;
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
@@ -30,7 +22,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -48,8 +39,8 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RLSmellView extends ViewPart implements IShowInSource {
-	private static Logger logger = LoggerFactory.getLogger(RLSmellView.class);
+public class EHSmellView extends ViewPart implements IShowInSource {
+	private static Logger logger = LoggerFactory.getLogger(EHSmellView.class);
 	
 	private Table smellList;
 	
@@ -58,13 +49,13 @@ public class RLSmellView extends ViewPart implements IShowInSource {
 	// -------------------------------------------------------------------------
 	private TableEditor editor;
 
-	private RLSmellViewEventHandler eventHandler;
+	private EHSmellViewEventHandler eventHandler;
 
 	// -------------------------------------------------------------------------
 	// Business Object
 	// -------------------------------------------------------------------------
 
-	private RLSmellModel model = null;
+	private EHSmellModel model = null;
 
 	private ITextEditor actEditor;
 
@@ -76,15 +67,15 @@ public class RLSmellView extends ViewPart implements IShowInSource {
 	// initiation
 	// *************************************************************************
 	
-	public RLSmellView(){
-		model = new RLSmellModel();
+	public EHSmellView(){
+		model = new EHSmellModel();
 	}
 	
 	public void init(IViewSite site) throws PartInitException {
 		super.setSite(site);
 		//加入正在使用Edit的Listener
 		if (this.eventHandler == null) {
-			this.eventHandler = new RLSmellViewEventHandler(this);
+			this.eventHandler = new EHSmellViewEventHandler(this);
 			site.getWorkbenchWindow().getSelectionService().addPostSelectionListener(eventHandler);
 			site.getPage().addPartListener(eventHandler);
 			FileBuffers.getTextFileBufferManager().addFileBufferListener(eventHandler);

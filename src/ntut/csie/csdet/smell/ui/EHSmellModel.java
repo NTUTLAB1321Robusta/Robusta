@@ -25,8 +25,8 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RLSmellModel {
-	private static Logger logger = LoggerFactory.getLogger(RLSmellModel.class);
+public class EHSmellModel {
+	private static Logger logger = LoggerFactory.getLogger(EHSmellModel.class);
 
 	//紀錄找到的DummyHandler Smell
 	private List<CSMessage> dummyHandlerList = null;
@@ -50,7 +50,7 @@ public class RLSmellModel {
 	//記錄現在行數
 	private int currentLine = 0;
 	
-	public RLSmellModel() {
+	public EHSmellModel() {
 		astHandler = new ASTHandler();
 	}
 	

@@ -21,14 +21,14 @@ import org.eclipse.ui.IWorkbenchPartReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RLSmellViewEventHandler implements IDocumentListener, IFileBufferListener, ISelectionListener,
+public class EHSmellViewEventHandler implements IDocumentListener, IFileBufferListener, ISelectionListener,
 ISelectionChangedListener, IPartListener2, IDoubleClickListener {
-	private static Logger logger =LoggerFactory.getLogger(RLSmellViewEventHandler.class);
+	private static Logger logger =LoggerFactory.getLogger(EHSmellViewEventHandler.class);
 	private boolean visible = true;
 
-	private RLSmellView view;
+	private EHSmellView view;
 
-	public RLSmellViewEventHandler(RLSmellView view) {
+	public EHSmellViewEventHandler(EHSmellView view) {
 		this.view = view;
 	}
 	
@@ -47,7 +47,7 @@ ISelectionChangedListener, IPartListener2, IDoubleClickListener {
 	*      org.eclipse.jface.viewers.ISelection)
 	*/
 	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-		ConsoleLog.debug(RLSmellViewEventHandler.class + "==============>>>org.eclipse.ui.ISelectionListener#selectionChanged");
+		ConsoleLog.debug(EHSmellViewEventHandler.class + "==============>>>org.eclipse.ui.ISelectionListener#selectionChanged");
 		if (visible) {
 			view.handleSelectionChanged4Editor(part, selection);
 		}
@@ -63,7 +63,7 @@ ISelectionChangedListener, IPartListener2, IDoubleClickListener {
 	* @see org.eclipse.jface.text.IDocumentListener#documentAboutToBeChanged(org.eclipse.jface.text.DocumentEvent)
 	*/
 	public void documentAboutToBeChanged(DocumentEvent event) {
-		ConsoleLog.debug(RLSmellViewEventHandler.class + "==============>>>documentAboutToBeChanged");
+		ConsoleLog.debug(EHSmellViewEventHandler.class + "==============>>>documentAboutToBeChanged");
 	}
 	
 	/*
@@ -72,7 +72,7 @@ ISelectionChangedListener, IPartListener2, IDoubleClickListener {
 	* @see org.eclipse.jface.text.IDocumentListener#documentChanged(org.eclipse.jface.text.DocumentEvent)
 	*/
 	public void documentChanged(DocumentEvent event) {
-		ConsoleLog.debug(RLSmellViewEventHandler.class + "==============>>>documentChanged");
+		ConsoleLog.debug(EHSmellViewEventHandler.class + "==============>>>documentChanged");
 		view.handleDocumentChanged(event.getDocument());
 	}
 	
@@ -86,7 +86,7 @@ ISelectionChangedListener, IPartListener2, IDoubleClickListener {
 	* @see org.eclipse.jface.viewers.ISelectionChangedListener#selectionChanged(org.eclipse.jface.viewers.SelectionChangedEvent)
 	*/
 	public void selectionChanged(SelectionChangedEvent event) {
-		ConsoleLog.debug(RLSmellViewEventHandler.class + "==============>>>org.eclipse.jface.viewers.SelectionChangedEvent");
+		ConsoleLog.debug(EHSmellViewEventHandler.class + "==============>>>org.eclipse.jface.viewers.SelectionChangedEvent");
 		view.handleSelectionChanged4View(event.getSelection());
 	}
 	
@@ -183,7 +183,7 @@ ISelectionChangedListener, IPartListener2, IDoubleClickListener {
 	* @see org.eclipse.core.filebuffers.IFileBufferListener#bufferCreated(org.eclipse.core.filebuffers.IFileBuffer)
 	*/
 	public void bufferCreated(IFileBuffer buffer) {
-		ConsoleLog.debug(RLSmellViewEventHandler.class + "==============>>>bufferCreated");
+		ConsoleLog.debug(EHSmellViewEventHandler.class + "==============>>>bufferCreated");
 	}
 	
 	/*
@@ -192,7 +192,7 @@ ISelectionChangedListener, IPartListener2, IDoubleClickListener {
 	* @see org.eclipse.core.filebuffers.IFileBufferListener#bufferDisposed(org.eclipse.core.filebuffers.IFileBuffer)
 	*/
 	public void bufferDisposed(IFileBuffer buffer) {
-		ConsoleLog.debug(RLSmellViewEventHandler.class + "==============>>>bufferDisposed");
+		ConsoleLog.debug(EHSmellViewEventHandler.class + "==============>>>bufferDisposed");
 		if (buffer instanceof ITextFileBuffer) {
 			view.handleDocumentDisposed(((ITextFileBuffer) buffer).getDocument());
 		}
@@ -204,7 +204,7 @@ ISelectionChangedListener, IPartListener2, IDoubleClickListener {
 	* @see org.eclipse.core.filebuffers.IFileBufferListener#bufferContentAboutToBeReplaced(org.eclipse.core.filebuffers.IFileBuffer)
 	*/
 	public void bufferContentAboutToBeReplaced(IFileBuffer buffer) {
-		ConsoleLog.debug(RLSmellViewEventHandler.class + "==============>>>bufferContentAboutToBeReplaced");
+		ConsoleLog.debug(EHSmellViewEventHandler.class + "==============>>>bufferContentAboutToBeReplaced");
 	}
 	
 	/*
@@ -213,7 +213,7 @@ ISelectionChangedListener, IPartListener2, IDoubleClickListener {
 	* @see org.eclipse.core.filebuffers.IFileBufferListener#bufferContentReplaced(org.eclipse.core.filebuffers.IFileBuffer)
 	*/
 	public void bufferContentReplaced(IFileBuffer buffer) {
-		ConsoleLog.debug(RLSmellViewEventHandler.class + "==============>>>bufferContentReplaced");
+		ConsoleLog.debug(EHSmellViewEventHandler.class + "==============>>>bufferContentReplaced");
 	}
 	
 	/*
@@ -222,7 +222,7 @@ ISelectionChangedListener, IPartListener2, IDoubleClickListener {
 	* @see org.eclipse.core.filebuffers.IFileBufferListener#stateChanging(org.eclipse.core.filebuffers.IFileBuffer)
 	*/
 	public void stateChanging(IFileBuffer buffer) {
-		ConsoleLog.debug(RLSmellViewEventHandler.class + "==============>>>stateChanging");
+		ConsoleLog.debug(EHSmellViewEventHandler.class + "==============>>>stateChanging");
 	}
 	
 	/*
@@ -232,7 +232,7 @@ ISelectionChangedListener, IPartListener2, IDoubleClickListener {
 	*      boolean)
 	*/
 	public void dirtyStateChanged(IFileBuffer buffer, boolean isDirty) {
-		ConsoleLog.debug(RLSmellViewEventHandler.class + "==============>>>dirtyStateChanged");
+		ConsoleLog.debug(EHSmellViewEventHandler.class + "==============>>>dirtyStateChanged");
 	}
 	
 	/*
@@ -242,7 +242,7 @@ ISelectionChangedListener, IPartListener2, IDoubleClickListener {
 	*      boolean)
 	*/
 	public void stateValidationChanged(IFileBuffer buffer, boolean isStateValidated) {
-		ConsoleLog.debug(RLSmellViewEventHandler.class + "==============>>>stateValidationChanged");
+		ConsoleLog.debug(EHSmellViewEventHandler.class + "==============>>>stateValidationChanged");
 	}
 	
 	/*
@@ -252,7 +252,7 @@ ISelectionChangedListener, IPartListener2, IDoubleClickListener {
 	*      org.eclipse.core.runtime.IPath)
 	*/
 	public void underlyingFileMoved(IFileBuffer buffer, IPath path) {
-		ConsoleLog.debug(RLSmellViewEventHandler.class + "==============>>>underlyingFileMoved");
+		ConsoleLog.debug(EHSmellViewEventHandler.class + "==============>>>underlyingFileMoved");
 	}
 	
 	/*
@@ -261,7 +261,7 @@ ISelectionChangedListener, IPartListener2, IDoubleClickListener {
 	* @see org.eclipse.core.filebuffers.IFileBufferListener#underlyingFileDeleted(org.eclipse.core.filebuffers.IFileBuffer)
 	*/
 	public void underlyingFileDeleted(IFileBuffer buffer) {
-		ConsoleLog.debug(RLSmellViewEventHandler.class + "==============>>>underlyingFileDeleted");
+		ConsoleLog.debug(EHSmellViewEventHandler.class + "==============>>>underlyingFileDeleted");
 	}
 	
 	/*
@@ -270,7 +270,7 @@ ISelectionChangedListener, IPartListener2, IDoubleClickListener {
 	* @see org.eclipse.core.filebuffers.IFileBufferListener#stateChangeFailed(org.eclipse.core.filebuffers.IFileBuffer)
 	*/
 	public void stateChangeFailed(IFileBuffer buffer) {
-		ConsoleLog.debug(RLSmellViewEventHandler.class + "==============>>>stateChangeFailed");
+		ConsoleLog.debug(EHSmellViewEventHandler.class + "==============>>>stateChangeFailed");
 		// not interesting
 	}
 }
