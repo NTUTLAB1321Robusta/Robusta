@@ -13,6 +13,8 @@ Bundle-ClassPath: .,
  lib/slf4j-api-1.5.0.jar,
  lib/log4j-1.2.15.jar,
  lib/jdom.jar,
+ lib/jfreechart-1.0.8a.jar,
+ lib/jcommon-1.0.12.jar,
  lib/
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,

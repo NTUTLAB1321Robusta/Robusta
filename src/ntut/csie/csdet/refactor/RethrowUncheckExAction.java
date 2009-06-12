@@ -2,6 +2,7 @@ package ntut.csie.csdet.refactor;
 
 import ntut.csie.csdet.refactor.ui.RethrowExWizard;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
+import ntut.csie.rleht.builder.RLOrderFix;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
@@ -43,6 +44,12 @@ public class RethrowUncheckExAction implements IMarkerResolution{
 				RefactoringWizardOpenOperation operation = 
 					new RefactoringWizardOpenOperation(new RethrowExWizard(refactoring,0));
 				operation.run(new Shell(), "Rethrow Unhnadle Exception");
+				
+//				String msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
+//				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
+//				RLOrderFix orderFix = new RLOrderFix();
+//				//調整RL Annotation順序，順便反白指定行數(-1表示反白RL Annotation)
+//				orderFix.run(marker.getResource(), methodIdx, msgIdx, -1);
 			}
 		
 		} catch (InterruptedException e) {

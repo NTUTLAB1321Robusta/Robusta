@@ -83,22 +83,23 @@ public class DummyHandlerPage extends APropertyPage{
 		if(docJDom != null){
 			//從XML裡讀出之前的設定
 			Element root = docJDom.getRootElement();
-			Element rule = root.getChild(JDomUtil.DummyHandlerTag).getChild("rule");
-			eprint = rule.getAttribute(JDomUtil.eprintstacktrace).getValue();
-			setting = rule.getAttribute(JDomUtil.systemoutprint).getValue();
-			log4jSet = rule.getAttribute(JDomUtil.apache_log4j).getValue();
-			javaLogSet = rule.getAttribute(JDomUtil.java_Logger).getValue();
-
-			//從XML取得外部Library
-			Element libRule = root.getChild(JDomUtil.DummyHandlerTag).getChild("librule");
-			List<Attribute> libRuleList = libRule.getAttributes();
-			
-			//把使用者所儲存的Library設定存到Map資料裡
-			for (int i=0;i<libRuleList.size();i++)
-			{
-				//把EH_STAR取代為符號"*"
-				String temp = libRuleList.get(i).getQualifiedName().replace("EH_STAR", "*");
-				libMap.put(temp,libRuleList.get(i).getValue().equals("Y"));
+			if (root.getChild(JDomUtil.DummyHandlerTag) != null) {
+				Element rule = root.getChild(JDomUtil.DummyHandlerTag).getChild("rule");
+				eprint = rule.getAttribute(JDomUtil.eprintstacktrace).getValue();
+				setting = rule.getAttribute(JDomUtil.systemoutprint).getValue();
+				log4jSet = rule.getAttribute(JDomUtil.apache_log4j).getValue();
+				javaLogSet = rule.getAttribute(JDomUtil.java_Logger).getValue();
+				//從XML取得外部Library
+				Element libRule = root.getChild(JDomUtil.DummyHandlerTag).getChild("librule");
+				List<Attribute> libRuleList = libRule.getAttributes();
+				
+				//把使用者所儲存的Library設定存到Map資料裡
+				for (int i=0;i<libRuleList.size();i++)
+				{
+					//把EH_STAR取代為符號"*"
+					String temp = libRuleList.get(i).getQualifiedName().replace("EH_STAR", "*");
+					libMap.put(temp,libRuleList.get(i).getValue().equals("Y"));
+				}
 			}
 		}
 
@@ -346,9 +347,9 @@ public class DummyHandlerPage extends APropertyPage{
 
 	@Override
 	public boolean storeSettings() {
-
 		//取的xml的root
 		Element root = JDomUtil.createXMLContent();
+
 		//建立dummyhandler的tag
 		Element dummyHandler = new Element(JDomUtil.DummyHandlerTag);
 		Element rule = new Element("rule");
@@ -391,7 +392,12 @@ public class DummyHandlerPage extends APropertyPage{
 		//將新建的tag加進去
 		dummyHandler.addContent(rule);
 		dummyHandler.addContent(libRule);
+
+		if (root.getChild(JDomUtil.DummyHandlerTag) != null)
+			root.removeChild(JDomUtil.DummyHandlerTag);
+
 		root.addContent(dummyHandler);
+
 		//將檔案寫回
 		String path = JDomUtil.getWorkspace()+File.separator+"CSPreference.xml";
 		JDomUtil.OutputXMLFile(root.getDocument(), path);

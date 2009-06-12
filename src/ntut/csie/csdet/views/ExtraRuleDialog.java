@@ -321,8 +321,7 @@ public class ExtraRuleDialog extends Dialog{
 	/**
 	 * 取得設定偵測的Library資料
 	 */
-	public TreeMap<String, Boolean> getLibMap()
-	{
+	public TreeMap<String, Boolean> getLibMap() {
 		return ruleMap;
 	}
 	/**

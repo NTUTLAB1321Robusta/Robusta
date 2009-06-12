@@ -1,6 +1,7 @@
 package ntut.csie.csdet.preference;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -28,6 +29,7 @@ public class JDomUtil {
 	final static public String println = "systemoutprintln";
 	final static public String apache_log4j = "apache_log4j";
 	final static public String java_Logger = "java_Logger";
+	final static public String EHSmellFilterTaq = "EHSmellFilter";
 	
 	public static Element createXMLContent(){
 		Document docJDOM = readXMLFile();	
@@ -58,6 +60,7 @@ public class JDomUtil {
 			fout.close();
 		}catch(IOException e){
 			System.out.println("XML¿é¥X¥¢±Ñ¡I¡I¡I¡I");
+			
 		}
 	}
 	
@@ -78,10 +81,10 @@ public class JDomUtil {
 				e.printStackTrace();
 			}catch (Exception ex) {
 				ex.printStackTrace();
-			}		
-				return docJDOM;
+			}
+			return docJDOM;
 		}else{
-				return null;
+			return null;
 		}
 	}
 	

@@ -7,6 +7,7 @@ import ntut.csie.csdet.visitor.ASTCatchCollect;
 import ntut.csie.csdet.visitor.CodeSmellAnalyzer;
 import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
+import ntut.csie.rleht.builder.RLOrderFix;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLData;
 import ntut.csie.rleht.views.RLMessage;
@@ -91,6 +92,9 @@ public class RethrowExRefactoring extends Refactoring {
 	
 	private List<CSMessage> currentExList = null;
 	
+	String msgIdx;
+	String methodIdx;
+	
 	@Override
 	public RefactoringStatus checkFinalConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
@@ -158,7 +162,7 @@ public class RethrowExRefactoring extends Refactoring {
 				ASTMethodCollector methodCollector = new ASTMethodCollector();
 				actRoot.accept(methodCollector);
 				List<ASTNode> methodList = methodCollector.getMethodList();
-				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
+				methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
 				
 				//取得目前要被修改的method node
 				this.currentMethodNode = methodList.get(Integer.parseInt(methodIdx));
@@ -197,7 +201,7 @@ public class RethrowExRefactoring extends Refactoring {
 			
 			//準備在Catch Caluse中加入throw exception
 			//取得Code smell的資訊
-			String msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
+			msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
 			CSMessage msg = currentExList.get(Integer.parseInt(msgIdx));
 			//收集該method所有的catch clause
 			ASTCatchCollect catchCollector = new ASTCatchCollect();
@@ -221,7 +225,6 @@ public class RethrowExRefactoring extends Refactoring {
 			}
 			//寫回Edit中
 			applyChange(msg);
-			
 		}catch (Exception ex) {
 			logger.error("[Rethrow Exception] EXCEPTION ",ex);
 		}
@@ -387,7 +390,7 @@ public class RethrowExRefactoring extends Refactoring {
 		exclass.setType(ast.newSimpleType(ast.newName(excption)));
 		exception.setValue(exclass);
 		rl.values().add(exception);
-
+	
 		return rl;
 	}
 	

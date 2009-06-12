@@ -68,7 +68,7 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage{
 	 */
 	public boolean performOk() {
 		//每次都先將xml檔砍掉,這樣code寫起來比較少
-		deleteXMLFile();
+//		deleteXMLFile();
 		for(int i=0;i<tabPages.size();i++){
 			tabPages.get(i).storeSettings();
 		}		

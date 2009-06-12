@@ -30,6 +30,13 @@
             class="ntut.csie.csdet.smell.ui.EHSmellView"
             id="ntut.csie.rleht.views.EHSmell">
       </view>
+      <view
+            name="≡ EH Smell Report View ≡"
+            icon="icons/showwarn_tsk.gif"
+            category="RLEHT"
+            class="ntut.csie.csdet.report.ui.EHSmellReportView"
+            id="ntut.csie.csdet.report.ui.EHSmellReportView">
+      </view>
    </extension>
    
    <extension

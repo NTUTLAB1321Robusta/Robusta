@@ -92,7 +92,7 @@ public class EHSmellView extends ViewPart implements IShowInSource {
 		//建置smellList的Listener
 		smellListTableDoubleClick();
 		
-		//稍後再寫
+		//TODO Menu還未寫
 		//建置Menu
 		buildMenu();
 

@@ -62,13 +62,16 @@ public class UMQuickFix implements IMarkerResolution{
 	
 	private IOpenable actOpenable;
 	
-	private String exType = "Exception";
+//	private String exType = "Exception";
+	private String exType = "java.lang.Exception";
 	
 	private ASTRewrite rewrite;
 	
 	//琌RobustnessのRL
 	private	boolean isImportRobustnessClass = false;
 	private boolean isImportRLClass = false;
+	//はフ︽计
+	int selectLine = -1;
 	
 	public UMQuickFix(String label){
 		this.label = label;
@@ -453,13 +456,13 @@ public class UMQuickFix implements IMarkerResolution{
 		//眔Method癬翴竚
 		int srcPos = currentMethodNode.getStartPosition();
 		//ノMethod癬翴竚眔Method材碭︽计(癬﹍︽计眖0秨﹍ぃ琌1┮搭1)
-		int numLine = this.actRoot.getLineNumber(srcPos)-1;
+		selectLine = this.actRoot.getLineNumber(srcPos)-1;
 		
 		//狦Τimport Robustness┪RL︽计碞1
 		if(!isImportRobustnessClass)
-			numLine++;
+			selectLine++;
 		if(!isImportRLClass)
-			numLine++;
+			selectLine++;
 
 		//TODO ㄢ常import 穦馋︽︽
 //		if (!isImportRLClass && !isImportRobustnessClass)
@@ -468,7 +471,7 @@ public class UMQuickFix implements IMarkerResolution{
 		//眔︽计戈
 		IRegion lineInfo = null;
 		try {
-			lineInfo = document.getLineInformation(numLine);
+			lineInfo = document.getLineInformation(selectLine);
 		} catch (BadLocationException e) {
 			logger.error("[BadLocation] EXCEPTION ",e);
 		}

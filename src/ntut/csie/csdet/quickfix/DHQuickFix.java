@@ -7,6 +7,7 @@ import ntut.csie.csdet.visitor.ASTCatchCollect;
 import ntut.csie.csdet.visitor.CodeSmellAnalyzer;
 import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
+import ntut.csie.rleht.builder.RLOrderFix;
 import ntut.csie.rleht.common.EditorUtils;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLData;
@@ -40,7 +41,6 @@ import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TypeLiteral;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
-import org.eclipse.jface.text.IRegion;
 import org.eclipse.text.edits.TextEdit;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IMarkerResolution;
@@ -88,6 +88,8 @@ public class DHQuickFix implements IMarkerResolution{
 	private int delStatement = 0;
 	//是否要加RL Annotation，否則已存在
 	private boolean isAddAnnotation = true;
+	//反白的行數
+	int selectLine = -1;
 	
 	public DHQuickFix(String label){
 		this.label = label;
@@ -111,7 +113,13 @@ public class DHQuickFix implements IMarkerResolution{
 				String exception = marker.getAttribute(RLMarkerAttribute.RL_INFO_EXCEPTION).toString();
 				boolean isok = findDummyMethod(marker.getResource(), Integer.parseInt(methodIdx));
 				if(isok)
+				{
 					rethrowException(exception,Integer.parseInt(msgIdx));
+
+					RLOrderFix orderFix = new RLOrderFix();
+					//調整RL Annotation順序，順便反白指定行數
+					orderFix.run(marker.getResource(), methodIdx, msgIdx, selectLine);
+				}
 			}
 			
 		} catch (CoreException e) {
@@ -319,71 +327,6 @@ public class DHQuickFix implements IMarkerResolution{
 		return rl;
 	}
 	
-	
-	/**
-	 * 將所要變更的內容寫回Edit中
-	 * @param msg
-	 */
-	private void applyChange(CSMessage msg,ASTNode node){
-		try {
-			ICompilationUnit cu = (ICompilationUnit) actOpenable;
-			Document document = new Document(cu.getBuffer().getContents());
-	
-			TextEdit edits = actRoot.rewrite(document, cu.getJavaProject().getOptions(true));
-//			TextEdit edits = rewrite.rewriteAST(document,null);
-			edits.apply(document);
-			
-			cu.getBuffer().setContents(document.get());
-			
-			//取得目前的EditPart
-			IEditorPart editorPart = EditorUtils.getActiveEditor();
-			ITextEditor editor = (ITextEditor) editorPart;
-			
-			CatchClause cc = (CatchClause)node;
-			List catchSt = cc.getBody().statements();
-			if(catchSt != null){
-				int numLine=0;
-				//throw之前沒有statement表示ignore
-				if (catchSt.size()<2)
-					//加在catch之後一格
-					numLine = this.actRoot.getLineNumber(cc.getStartPosition());
-				else
-				{
-					//取得throw的前一筆Statement
-					ASTNode throwNode = (ASTNode)catchSt.get(catchSt.size()-2);
-
-					//TODO throw定位會抓不準，1.throw前有註解，2.throw前一筆到throw之間有要被刪除的statement
-					//用Method起點位置取得Method位於第幾行數(起始行數從0開始，不是1，所以減1)
-					numLine = this.actRoot.getLineNumber(throwNode.getStartPosition());
-				}
-
-				//如果有import Robustness或RL的宣告行數就加1
-				if(!isImportRobustnessClass)
-					numLine++;
-				if(!isImportRLClass)
-					numLine++;
-				//若有加Annotation則行數加1
-				if(isAddAnnotation)
-					numLine++;
-
-				//取得行數的資料
-				IRegion lineInfo = null;
-				try {
-					lineInfo = document.getLineInformation(numLine-delStatement);
-				} catch (BadLocationException e) {
-					logger.error("[BadLocation] EXCEPTION ",e);
-				}
-				//反白該行 在Quick fix完之後,可以將游標定位在Quick Fix那行
-				editor.selectAndReveal(lineInfo.getOffset(), lineInfo.getLength());
-			}
-
-		} catch (BadLocationException e) {
-			logger.error("[Rethrow Exception] EXCEPTION ",e);
-		} catch (JavaModelException ex) {
-			logger.error("[Rethrow Exception] EXCEPTION ",ex);
-		}	
-	}
-	
 	private void addImportDeclaration() {
 		// 判斷是否已經Import Robustness及RL的宣告
 		List<ImportDeclaration> importList = this.actRoot.imports();
@@ -429,6 +372,69 @@ public class DHQuickFix implements IMarkerResolution{
 					}	
 				}		
 			}
+		}
+	}
+	
+	
+	/**
+	 * 將所要變更的內容寫回Edit中
+	 * @param msg
+	 */
+	private void applyChange(CSMessage msg,ASTNode node){
+		try {
+			ICompilationUnit cu = (ICompilationUnit) actOpenable;
+			Document document = new Document(cu.getBuffer().getContents());
+	
+			TextEdit edits = actRoot.rewrite(document, cu.getJavaProject().getOptions(true));
+//			TextEdit edits = rewrite.rewriteAST(document,null);
+			edits.apply(document);
+			
+			cu.getBuffer().setContents(document.get());
+			
+			//取得目前的EditPart
+			IEditorPart editorPart = EditorUtils.getActiveEditor();
+			ITextEditor editor = (ITextEditor) editorPart;
+			
+			//設定要反白的行數
+			setSelectLine(node);
+		} catch (BadLocationException e) {
+			logger.error("[Rethrow Exception] EXCEPTION ",e);
+		} catch (JavaModelException ex) {
+			logger.error("[Rethrow Exception] EXCEPTION ",ex);
+		}	
+	}
+
+	/**
+	 * 設定要反白的行數
+	 * @param node
+	 */
+	private void setSelectLine(ASTNode node) {
+		CatchClause cc = (CatchClause)node;
+		List catchSt = cc.getBody().statements();
+		if(catchSt != null){
+			selectLine = -1;
+			//throw之前沒有statement表示ignore
+			if (catchSt.size()<2)
+				//加在catch之後一格
+				selectLine = this.actRoot.getLineNumber(cc.getStartPosition());
+			else
+			{
+				//取得throw的前一筆Statement
+				ASTNode throwNode = (ASTNode)catchSt.get(catchSt.size()-2);
+
+				//TODO throw定位會抓不準，1.throw前有註解，2.throw前一筆到throw之間有要被刪除的statement
+				//用Method起點位置取得Method位於第幾行數(起始行數從0開始，不是1，所以減1)
+				selectLine = this.actRoot.getLineNumber(throwNode.getStartPosition() - delStatement);
+			}
+
+			//如果有import Robustness或RL的宣告行數就加1
+			if(!isImportRobustnessClass)
+				selectLine++;
+			if(!isImportRLClass)
+				selectLine++;
+			//若有加Annotation則行數加1
+			if(isAddAnnotation)
+				selectLine++;
 		}
 	}
 }

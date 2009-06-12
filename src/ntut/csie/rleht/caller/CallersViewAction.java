@@ -200,15 +200,17 @@ public class CallersViewAction extends ActionGroup {
 	}
 
 	public void fillContextMenu(IMenuManager menuMgr) {
-		// TODO 在RLCallHierarchy視窗上按兩下右鍵會出現Null Point
 		menuMgr.appendToGroup(CallersViewAction.MENU_GROUP_ID, this.showCallerInfoAction);
 		menuMgr.appendToGroup(CallersViewAction.MENU_GROUP_ID, this.showCalleeInfoAction);
 
 		menuMgr.appendToGroup(CallersViewAction.MENU_GROUP_ID, this.refreshAction);
+		menuMgr.appendToGroup(CallersViewAction.MENU_GROUP_ID, this.genSeqDiagramSelectedAction);
 		menuMgr.appendToGroup(CallersViewAction.MENU_GROUP_ID, this.printSDAction);
 		//menuMgr.appendToGroup(CallersViewAction.MENU_GROUP_ID, this.saveSDAction);
 		menuMgr.appendToGroup(CallersViewAction.MENU_GROUP_ID, new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-		menuMgr.appendToGroup(CallersViewAction.MENU_GROUP_ID, this.addRLAnnotationAction);
+		if (showAddRLAnnotation) {
+			menuMgr.appendToGroup(CallersViewAction.MENU_GROUP_ID, this.addRLAnnotationAction);
+		}
 		super.fillContextMenu(menuMgr);
 	}
 
