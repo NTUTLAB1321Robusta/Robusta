@@ -24,6 +24,7 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.jdom.Attribute;
 import org.jdom.Element;
 import org.slf4j.Logger;
@@ -38,7 +39,6 @@ public class ReportBuilder {
 	private Boolean isAllPackage;
 	//儲存filter條件的List
 	private List<String> filterRuleList = new ArrayList<String>();
-
 	/**
 	 * 建立Report
 	 * @param project
@@ -47,7 +47,10 @@ public class ReportBuilder {
 	public ReportBuilder(IProject project,ReportModel model)
 	{
 		this.model = model;
+		//取得專案名稱
 		model.setProjectName(project.getName());
+		//取得建造時間
+		model.setBuildTime();
 		
 		//將User對於Filter的設定存下來
 		getFilterSettings();
@@ -77,7 +80,7 @@ public class ReportBuilder {
 			// 這裡表示之前使用者已經有設定過preference了,去取得相關偵測設定值
 			Element filter = root.getChild(JDomUtil.EHSmellFilterTaq).getChild("filter");
 			isAllPackage = Boolean.valueOf(filter.getAttribute("IsAllPackage").getValue());
-
+			model.setDerectAllproject(isAllPackage);
 			//若不是偵測全部的Project，則把Rule條件儲存
 			if (!isAllPackage) {
 				List<Attribute> filterList = filter.getAttributes();
@@ -87,9 +90,10 @@ public class ReportBuilder {
 					if (filterList.get(i).getQualifiedName() == "IsAllPackage")
 						continue;
 					//若Rule設成true才儲存
-					if (Boolean.valueOf(filterList.get(i).getValue()))
+					if (Boolean.valueOf(filterList.get(i).getValue())) 
 						filterRuleList.add(filterList.get(i).getQualifiedName());
 				}
+				model.setFilterList(filterRuleList);
 			}
 		}
 	}
@@ -104,15 +108,6 @@ public class ReportBuilder {
 		ExceptionAnalyzer visitor = null;
 		CodeSmellAnalyzer csVisitor = null;
 		MainAnalyzer mainVisitor = null;
-
-		//目前method內的ignore Exception資訊
-		List<CSMessage> ignoreExList = new ArrayList<CSMessage>();
-		//目前method內的dummy handler資訊
-		List<CSMessage> dummyList = new ArrayList<CSMessage>();
-		//目前method內的Nested Try Block資訊
-		List<CSMessage> nestedTryList = new ArrayList<CSMessage>(); 
-		//目前method內的Unprotected Main資訊
-		List<CSMessage> unprotectedMain = new ArrayList<CSMessage>();
 
 		// 目前method的Exception資訊
 		List<RLMessage> currentMethodExList = null;
@@ -132,6 +127,9 @@ public class ReportBuilder {
 		//取得專案中所有的method
 		List<ASTNode> methodList = methodCollector.getMethodList();
 
+		ClassModel newClassModel = new ClassModel();
+		newClassModel.setClassName(icu.getElementName());
+		
 		//目前的Method AST Node
 		ASTNode currentMethodNode = null;
 		int methodIdx = -1;
@@ -142,43 +140,32 @@ public class ReportBuilder {
 			method.accept(visitor);
 			currentMethodNode = visitor.getCurrentMethodNode();
 			currentMethodRLList = visitor.getMethodRLAnnotationList();
+			
+			MethodDeclaration methodName = (MethodDeclaration) currentMethodNode;
 
 			//找尋專案中所有的ignore Exception
 			csVisitor = new CodeSmellAnalyzer(root);
 			method.accept(csVisitor);
 			//取得專案中的ignore Exception
-			if(csVisitor.getIgnoreExList() != null)
-				ignoreExList.addAll(csVisitor.getIgnoreExList());
-
+			newClassModel.setIgnoreExList(csVisitor.getIgnoreExList(), methodName.getName().toString());
+			model.addIgnoreTotalSize(csVisitor.getIgnoreExList().size());
+				
 			//取得專案中dummy handler
-			if(csVisitor.getDummyList() != null)
-				dummyList.addAll(csVisitor.getDummyList());
-
+			newClassModel.setDummyList(csVisitor.getDummyList(), methodName.getName().toString());
+			model.addDummyTotalSize(csVisitor.getDummyList().size());
+				
 			//取得專案中的Nested Try Block
-			if(visitor.getNestedTryList() != null)
-				nestedTryList.addAll(visitor.getNestedTryList());
+			newClassModel.setUnprotectedMain(visitor.getNestedTryList(), methodName.getName().toString());
+			model.addUnMainTotalSize(visitor.getNestedTryList().size());
 
 			//尋找該method內的unprotected main program
 			mainVisitor = new MainAnalyzer(root);
 			method.accept(mainVisitor);
-			if(mainVisitor.getUnprotedMainList() != null)
-				unprotectedMain.addAll(mainVisitor.getUnprotedMainList());
+			newClassModel.setNestedTryList(mainVisitor.getUnprotedMainList(), methodName.getName().toString());
+			model.addNestedTotalTrySize(mainVisitor.getUnprotedMainList().size());
 		}
-
 		//記錄到ReportModel中
-//		if (isRecord)
-		ClassModel newClassModel = new ClassModel();
-		newClassModel.setClassName(icu.getElementName());
-		newClassModel.setIgnoreExList(ignoreExList);
-		newClassModel.setDummyList(dummyList);
-		newClassModel.setUnprotectedMain(unprotectedMain);
-		newClassModel.setNestedTryList(nestedTryList);
 		newPackageModel.addClassModel(newClassModel);
-
-		model.addIgnoreTotalSize(ignoreExList.size());
-		model.addDummyTotalSize(dummyList.size());
-		model.addUnMainTotalSize(unprotectedMain.size());
-		model.addNestedTotalTrySize(nestedTryList.size());
 	}
 
 	/**

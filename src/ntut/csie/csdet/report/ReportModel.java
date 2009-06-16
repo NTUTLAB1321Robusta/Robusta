@@ -1,18 +1,34 @@
 package ntut.csie.csdet.report;
 
+import java.io.File;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
+/**
+ * Report的相關資料
+ * @author Shiau
+ */
 public class ReportModel {
+	//Smell資訊
 	private List<PackageModel> smellList = new ArrayList<PackageModel>();
+	
+	//Filter條綿是否為全偵測
+	private boolean derectAllproject;
+	
+	private Date buildTime;
+	
+	//Filter條件
+	private List<String> filterRuleList = new ArrayList<String>();
+
 	//專案名稱
 	private String projectName = "";
+
 	//儲存路徑
 	private String projectPath = "";
+
 	//Smell總數
 	private int ignoreTotalSize = 0;
 	private int dummyTotalSize = 0;
@@ -20,19 +36,20 @@ public class ReportModel {
 	private int nestedTryTotalSize = 0;
 
 	/**
-	 * 取得建造時間
+	 * 設定、取得建造時間
 	 */
-	public String getDateTime()
-	{
-		Locale lo = Locale.TAIWAN;
-        Calendar cl= Calendar.getInstance();
-        Date d = cl.getTime();
-        DateFormat df1 = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.SHORT,lo);
-        
-        return df1.format(d).toString();
+	public void setBuildTime() {
+		Calendar calendar= Calendar.getInstance();
+		buildTime = calendar.getTime();
+	}
+	public String getBuildTime() {
+		//設定格式 顯示秒數
+        DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.LONG);
+
+        return df.format(buildTime);
 	}
 	
-	//增加Smell的總數
+	///增加Smell的總數///
 	public void addIgnoreTotalSize(int ignoreSize) {
 		this.ignoreTotalSize += ignoreSize;
 	}
@@ -46,7 +63,7 @@ public class ReportModel {
 		this.nestedTryTotalSize += nestedTrySize;
 	}
 	
-	//取得Smell的總數
+	///取得Smell的總數///
 	public int getIgnoreTotalSize() {
 			return ignoreTotalSize;
 	}
@@ -63,7 +80,7 @@ public class ReportModel {
 		return getIgnoreTotalSize() + getDummyTotalSize() + getUnMainTotalSize() + getNestedTryTotalSize();
 	}
 
-	//設定或取得Project的名稱
+	///設定或取得Project的名稱///
 	public void setProjectName(String projectName) {
 		this.projectName = projectName;
 	}
@@ -71,20 +88,47 @@ public class ReportModel {
 		return projectName;
 	}
 
-	//設定或取得Project的路徑
+	///設定或取得Project的路徑///
 	public String getProjectPath() {
 		return projectPath;
 	}
-	public void setProjectPath(String projectPath) {
-		this.projectPath = projectPath + "/" + getProjectName() + "_Report";
+	public void setProjectPath(String workspacePath) {
+		this.projectPath = workspacePath + "/" + getProjectName() + "_Report";
+
+		File metadataPath = new File(this.projectPath);
+
+		//若沒有路徑就建立路徑
+		if(!metadataPath.exists())
+			metadataPath.mkdir();
+	}
+	/**
+	 * 取得File的直實位置(有無加時間區隔)
+	 * @param fileName	(File的名稱)
+	 * @param isAddTime (是否有加時間)
+	 * @return
+	 */
+	public String getFilePath(String fileName, boolean isAddTime) {
+		if (isAddTime)
+			return (projectPath + "/" + buildTime.getTime() + "_" + fileName);
+		else
+			return (projectPath + "/" + fileName);
 	}
 
+	/**
+	 * 取得PackageModel
+	 * @param i PackageIndex
+	 * @return
+	 */
 	public PackageModel getPackage(int i) {
 		if (i >= smellList.size())
 			return null;
 		else
 			return smellList.get(i);
 	}
+	/**
+	 * 取得Package總數
+	 * @return
+	 */
 	public int getPackagesSize() {
 		return smellList.size();
 	}
@@ -95,15 +139,27 @@ public class ReportModel {
 	 * @return
 	 */
 	public PackageModel addSmellList(String packageName) {
-//		for (PackageModel pm : smellList) {
-//			if (pm.getPackageName().equals(packageName)) {
-//				System.out.println("[PackageName]===>"+pm.getPackageName());
-//				return pm;
-//			}
-//		}
 		PackageModel newPackageModel = new PackageModel();
+		//設置Package名稱
 		newPackageModel.setPackageName(packageName);
 		smellList.add(newPackageModel);
+
 		return newPackageModel;
+	}
+
+	///存取Filter條件是否為全偵測///
+	public boolean isDerectAllproject() {
+		return derectAllproject;
+	}
+	public void setDerectAllproject(boolean derectAllproject) {
+		this.derectAllproject = derectAllproject;
+	}
+	
+	///存取Filter條件///
+	public List<String> getFilterList() {
+		return filterRuleList;
+	}
+	public void setFilterList(List<String> filterRuleList) {
+		this.filterRuleList = filterRuleList;
 	}
 }

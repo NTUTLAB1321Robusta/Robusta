@@ -50,13 +50,13 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				return new IMarkerResolution[] { new RLQuickFix("@RL順序對調(" + marker.getAttribute(IMarker.MESSAGE) + ")") };
 				// 碰到Ignore Exception的Quick fix and refactor方法
 			} else if(problem.equals(RLMarkerAttribute.CS_INGNORE_EXCEPTION)){
-				return new IMarkerResolution[] { new DHQuickFix("Quick Fix==>Rethrow Unhandled Exception"),
-						new RethrowUncheckExAction("Refactor==>Rethrow Unhandled Excetpion"),
+				return new IMarkerResolution[] { new DHQuickFix("Quick Fix==>Rethrow Unchecked Exception"),
+						new RethrowUncheckExAction("Refactor==>Rethrow Unchecked Excetpion"),
 						new TEQuickFix("Quick Fix==>Throw Checked Exception")};
 				// 碰到Dummy Handler的Quick fix and refactor方法
 			} else if(problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)){
-				return new IMarkerResolution[] { new DHQuickFix("Quick Fix==>Rethrow Unhandled Exception"),
-						new RethrowUncheckExAction("Refactor==>Rethrow Unhandled Excetpion"),
+				return new IMarkerResolution[] { new DHQuickFix("Quick Fix==>Rethrow Unchecked Exception"),
+						new RethrowUncheckExAction("Refactor==>Rethrow Unchecked Excetpion"),
 						new TEQuickFix("Quick Fix==>Throw Checked Exception")};
 				// 碰到Nested Try block的refactor
 			} else if(problem.equals(RLMarkerAttribute.CS_NESTED_TRY_BLOCK)){

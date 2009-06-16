@@ -3,8 +3,10 @@ package ntut.csie.csdet.report;
 import java.util.ArrayList;
 import java.util.List;
 
-import ntut.csie.csdet.data.CSMessage;
-
+/**
+ * 存取Package內的Report相關資訊
+ * @author Shiau
+ */
 public class PackageModel {
 	//存取Package的名稱
 	private String packageName = "";
@@ -23,17 +25,18 @@ public class PackageModel {
 	public void addClassModel(ClassModel data) {
 		classModel.add(data);
 	}
-	public void addClassModel(String className, List<CSMessage> ignoreExList, List<CSMessage> dummyList,
-									List<CSMessage> unprotectedMain, List<CSMessage> nestedTryList) {
-		ClassModel temp = new ClassModel();
-		temp.setClassName(className);
-		temp.setIgnoreExList(ignoreExList);
-		temp.setDummyList(dummyList);
-		temp.setUnprotectedMain(unprotectedMain);
-		temp.setNestedTryList(nestedTryList);
-		classModel.add(temp);
-	}
 	
+	///取得Package內的ClassMethod///
+	public int getClassSize() {
+		return classModel.size();
+	}
+	public ClassModel getClass(int i) {
+		if (i >= classModel.size())
+			return null;
+		else
+			return classModel.get(i);
+	}
+		
 	///取得此Package的Smell數量///
 	public int getIgnoreSize() {
 		int ignoreSize = 0;

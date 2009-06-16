@@ -17,8 +17,6 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
@@ -38,7 +36,6 @@ public class EHSmellReportView extends ViewPart{
 
 		FormLayout layout = new FormLayout();
 		parent.setLayout(layout);
-		toolbar = new ToolBar(parent, SWT.NONE);
 
 //		final Label status = new Label(parent, SWT.NONE);
 //		final ProgressBar progressBar = new ProgressBar(parent, SWT.NONE);
@@ -53,19 +50,22 @@ public class EHSmellReportView extends ViewPart{
 //		processForm.bottom = new FormAttachment(100, -3);
 //		progressBar.setLayoutData(processForm);
 
-		createToolItem();
+		//建置View上的ToolBar
+		buildToolItem(parent);
 
-		FormData comboForm = new FormData();
-		comboForm.left = new FormAttachment(0, 97);
-		comboForm.right = new FormAttachment(0, 185);
-		comboForm.bottom = new FormAttachment(0, 30);
-		comboForm.top = new FormAttachment(0, 10);
-		projectCombo.setLayoutData(comboForm);
+		//建置View裡的Browser
+		buildBrowser(parent);
 		
-		FormData toolbarForm = new FormData();
-		toolbarForm.top = new FormAttachment(0, 5);
-		toolbar.setLayoutData(toolbarForm);
+		//建置View裡的ToolBar 
+		buildToolBar();
+	}
 
+	/**
+	 * 建置View裡的Browser
+	 * @param parent
+	 */
+	private void buildBrowser(Composite parent) {
+		///配置Browser位置///
 		FormData  browserForm = new FormData();
 		browserForm.bottom = new FormAttachment(100, -5);
 //		browserForm.bottom = new FormAttachment(status, -5, SWT.DEFAULT);
@@ -76,24 +76,34 @@ public class EHSmellReportView extends ViewPart{
 		browser = new Browser(parent, SWT.NONE);
 		browser.setLayoutData(browserForm);
 
+		//預設Browser開始時的訊息
 		browser.setText("There is no report now !");
-		
-		initializeToolBar();
 	}
 
 	/**
-	 * 
+	 * 建置View裡的ToolBar
 	 */
-	private void createToolItem() {
+	private void buildToolItem(Composite parent) {
+		toolbar = new ToolBar(parent, SWT.NONE);
+		///配置ToolBar位置///
+		FormData toolbarForm = new FormData();
+		toolbarForm.top = new FormAttachment(0, 5);
+		toolbar.setLayoutData(toolbarForm);
+		
+		///建置product ToolItem///
 		final ToolItem itemProduct = new ToolItem(toolbar, SWT.PUSH);
 		itemProduct.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
 				IProject[] projectList  = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 				ReportBuilder report;
+				//若有選擇Project就產生報表，並把Browser指向記頁
 				for (IProject project : projectList) {
 					if (project.getName().equals(projectCombo.getItem(projectCombo.getSelectionIndex()))) {
+						//重新配置新的Model資料
 						data = new ReportModel();
+						//建置Report
 						report = new ReportBuilder(project,data);
+						//Browser開啟預設位置HTML
 						if (browser != null)
 							openHTM();
 						break;
@@ -101,12 +111,14 @@ public class EHSmellReportView extends ViewPart{
 				}
 			}
 		});
-		itemProduct.setText("Product");
+		itemProduct.setText("Generate");
 		itemProduct.setImage(ImageManager.getInstance().get("unchecked"));
-		
+
+		///建置Refresh ToolItem///
 		final ToolItem itemRefresh = new ToolItem(toolbar, SWT.PUSH);
 		itemRefresh.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
+				//若按下Refresh鍵，重新抓取projectCombo內容
 				projectCombo.removeAll();
 				bindProjectCombo();
 				projectCombo.setFocus();
@@ -114,6 +126,31 @@ public class EHSmellReportView extends ViewPart{
 		});
 		itemRefresh.setText("Refresh");
 		itemRefresh.setImage(ImageManager.getInstance().get("refresh"));
+		
+		///建置projectCombo (與ToolBar沒有關係)///
+		FormData comboForm = new FormData();
+		comboForm.left = new FormAttachment(0, 97);
+		comboForm.right = new FormAttachment(0, 185);
+		comboForm.bottom = new FormAttachment(0, 30);
+		comboForm.top = new FormAttachment(0, 10);
+		projectCombo.setLayoutData(comboForm);
+	}
+	
+	/**
+	 * 建置View上的ToolBar
+	 */
+	private void buildToolBar() {		
+		IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
+		filterAction = new Action() {
+			public void run() {
+				//按下後跳出Filter Dialog
+				FilterDialog filter = new FilterDialog(new Shell());
+				filter.open();
+			}
+		};
+		filterAction.setText("Filter");		
+		filterAction.setImageDescriptor(ImageManager.getInstance().getDescriptor("showthrow"));
+		toolBarManager.add(filterAction);
 	}
 
 	/**
@@ -137,24 +174,7 @@ public class EHSmellReportView extends ViewPart{
 	 * 從預設路徑上打開HTM
 	 */
 	public void openHTM(){
-		String showPath = "file:///" + data.getProjectPath() + "/sample.html";
+		String showPath = "file:///" + data.getFilePath("sample.html", true);
 		browser.setUrl(showPath);
-	}
-	
-	private void initializeToolBar() {
-		IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
-
-		filterAction = new Action() {
-			public void run() {
-				String selectProjectName = "";
-				if (projectCombo.getSelectionIndex() != -1)
-					selectProjectName = projectCombo.getItem(projectCombo.getSelectionIndex());
-				FilterDialog filter = new FilterDialog(new Shell());
-				filter.open();
-			}
-		};
-		filterAction.setText("Filter");		
-		filterAction.setImageDescriptor(ImageManager.getInstance().getDescriptor("showthrow"));
-		toolBarManager.add(filterAction);
 	}
 }
