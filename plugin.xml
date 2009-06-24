@@ -32,6 +32,7 @@
       </view>
       <view
             name="EH Smell Report View"
+            icon="icons/reports.ico"
             category="RLEHT"
             class="ntut.csie.csdet.report.ui.EHSmellReportView"
             id="ntut.csie.csdet.report.ui.EHSmellReportView">
