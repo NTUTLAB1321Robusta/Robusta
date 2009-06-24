@@ -88,7 +88,7 @@ public class ReportBuilder {
 			// 這裡表示之前使用者已經有設定過preference了,去取得相關偵測設定值
 			Element filter = root.getChild(JDomUtil.EHSmellFilterTaq).getChild("filter");
 			isAllPackage = Boolean.valueOf(filter.getAttribute("IsAllPackage").getValue());
-			model.setDerectAllproject(isAllPackage);
+
 			//若不是偵測全部的Project，則把Rule條件儲存
 			if (!isAllPackage) {
 				List<Attribute> filterList = filter.getAttributes();
@@ -103,7 +103,10 @@ public class ReportBuilder {
 				}
 				model.setFilterList(filterRuleList);
 			}
-		}
+		} else
+			isAllPackage = true;
+
+		model.setDerectAllproject(isAllPackage);
 	}
 	
 	/**

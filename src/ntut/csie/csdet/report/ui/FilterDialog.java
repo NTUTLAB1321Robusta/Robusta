@@ -265,7 +265,11 @@ public class FilterDialog extends Dialog {
 					String temp = libRuleList.get(i).getQualifiedName().replace("EH_STAR", "*");
 					filterMap.put(temp,libRuleList.get(i).getValue().equals("true"));
 				}
+			} else {
+				isAllPackage = true;
 			}
+		} else {
+			isAllPackage = true;
 		}
 	}
 	
