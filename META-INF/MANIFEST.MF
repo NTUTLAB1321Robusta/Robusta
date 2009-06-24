@@ -15,6 +15,7 @@ Bundle-ClassPath: .,
  lib/jdom.jar,
  lib/jfreechart-1.0.8a.jar,
  lib/jcommon-1.0.12.jar,
+ lib/loc_counter.jar,
  lib/
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,

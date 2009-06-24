@@ -11,7 +11,9 @@ import ntut.csie.csdet.data.CSMessage;
  */
 public class ClassModel {	
 	//存取Class的名稱
-	private String className;
+	private String className = "";
+	//存取Class的路徑
+	private String classPath = "";
 	//全部Smell資訊
 	private List<CSMessage> smellList = new ArrayList<CSMessage>();
 	//Smell位於的Method名稱
@@ -96,5 +98,13 @@ public class ClassModel {
 	}
 	public int getTotalSmell() {
 		return getIgnoreSize() + getDummySize() + getUnMainSize() + getNestedTrySize();
+	}
+	
+	///存取Class的路徑///
+	public String getClassPath() {
+		return classPath;
+	}
+	public void setClassPath(String classPath) {
+		this.classPath = classPath + "/" + className;
 	}
 }

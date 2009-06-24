@@ -12,6 +12,8 @@ public class PackageModel {
 	private String packageName = "";
 	//存取ClassModel
 	private List<ClassModel> classModel = new ArrayList<ClassModel>();
+	//存取Package的目錄
+	private String dir = "";
 
 	///存取Package的名稱///
 	public String getPackageName() {
@@ -68,5 +70,13 @@ public class PackageModel {
 	}
 	public int getTotalSmellSize() {
 		return getIgnoreSize() + getDummySize() + getNestedTrySize() + getUnMainSize();
+	}
+	
+	//存取Package的目錄
+	public String getDir() {
+		return dir;
+	}
+	public void setDir(String dir) {
+		this.dir = dir;
 	}
 }

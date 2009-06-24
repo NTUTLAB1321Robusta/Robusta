@@ -1,15 +1,17 @@
 package ntut.csie.csdet.report;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-import ntut.csie.csdet.data.CSMessage;
 import ntut.csie.csdet.preference.JDomUtil;
 import ntut.csie.csdet.visitor.CodeSmellAnalyzer;
 import ntut.csie.csdet.visitor.MainAnalyzer;
+import ntut.csie.jcis.builder.core.internal.support.LOCCounter;
+import ntut.csie.jcis.builder.core.internal.support.LOCData;
 import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
-import ntut.csie.rleht.views.RLMessage;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -33,20 +35,26 @@ import org.slf4j.LoggerFactory;
 public class ReportBuilder {
 	private static Logger logger = LoggerFactory.getLogger(ReportBuilder.class);
 
+	private IProject project;
 	//Report的資料
 	private ReportModel model;
 	//是否偵測全部的Package
 	private Boolean isAllPackage;
 	//儲存filter條件的List
 	private List<String> filterRuleList = new ArrayList<String>();
+	private LOCCounter noFormatCounter = new LOCCounter();
+
 	/**
 	 * 建立Report
 	 * @param project
 	 * @param model
-	 */
-	public ReportBuilder(IProject project,ReportModel model)
-	{
+	 */	
+	public ReportBuilder(IProject project,ReportModel model) {
+		this.project = project;	
 		this.model = model;
+	}
+	
+	public void run() {		
 		//取得專案名稱
 		model.setProjectName(project.getName());
 		//取得建造時間
@@ -99,21 +107,23 @@ public class ReportBuilder {
 	}
 	
 	/**
-	 * 儲存Smell資訊
+	 * 儲存單一Class內所有Smell資訊
 	 * @param icu
 	 * @param isRecord
+	 * @param pkPath
 	 * @param newPackageModel
 	 */
-	private void setSmellInfo (ICompilationUnit icu, boolean isRecord, PackageModel newPackageModel) {
+	private void setSmellInfo (ICompilationUnit icu, boolean isRecord, PackageModel newPackageModel, String pkPath) {
+		
 		ExceptionAnalyzer visitor = null;
 		CodeSmellAnalyzer csVisitor = null;
 		MainAnalyzer mainVisitor = null;
 
 		// 目前method的Exception資訊
-		List<RLMessage> currentMethodExList = null;
+//		List<RLMessage> currentMethodExList = null;
 		// 目前method的RL Annotation資訊
-		List<RLMessage> currentMethodRLList = null;
-		List<CSMessage> spareHandler = null;
+//		List<RLMessage> currentMethodRLList = null;
+//		List<CSMessage> spareHandler = null;
 
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -129,6 +139,7 @@ public class ReportBuilder {
 
 		ClassModel newClassModel = new ClassModel();
 		newClassModel.setClassName(icu.getElementName());
+		newClassModel.setClassPath(pkPath);
 		
 		//目前的Method AST Node
 		ASTNode currentMethodNode = null;
@@ -139,8 +150,8 @@ public class ReportBuilder {
 			visitor = new ExceptionAnalyzer(root, method.getStartPosition(), 0);
 			method.accept(visitor);
 			currentMethodNode = visitor.getCurrentMethodNode();
-			currentMethodRLList = visitor.getMethodRLAnnotationList();
-			
+//			currentMethodRLList = visitor.getMethodRLAnnotationList();
+
 			MethodDeclaration methodName = (MethodDeclaration) currentMethodNode;
 
 			//找尋專案中所有的ignore Exception
@@ -153,7 +164,7 @@ public class ReportBuilder {
 			//取得專案中dummy handler
 			newClassModel.setDummyList(csVisitor.getDummyList(), methodName.getName().toString());
 			model.addDummyTotalSize(csVisitor.getDummyList().size());
-				
+
 			//取得專案中的Nested Try Block
 			newClassModel.setUnprotectedMain(visitor.getNestedTryList(), methodName.getName().toString());
 			model.addUnMainTotalSize(visitor.getNestedTryList().size());
@@ -163,13 +174,18 @@ public class ReportBuilder {
 			method.accept(mainVisitor);
 			newClassModel.setNestedTryList(mainVisitor.getUnprotedMainList(), methodName.getName().toString());
 			model.addNestedTotalTrySize(mainVisitor.getUnprotedMainList().size());
+	
+			///記錄Code Information///
+			model.addTryCounter(csVisitor.getTryCounter());
+			model.addCatchCounter(csVisitor.getCatchCounter());
+			model.addFinallyCounter(csVisitor.getFinallyCounter());
 		}
 		//記錄到ReportModel中
 		newPackageModel.addClassModel(newClassModel);
 	}
 
 	/**
-	 * 分析專案
+	 * 分析特定Project內的Semll資訊
 	 * @param project
 	 */
 	private void analysisProject(IProject project) {
@@ -183,7 +199,9 @@ public class ReportBuilder {
 			for (int i = 0 ; i < root.size() ; i++){
 				//取得Root底下的所有Package
 				IJavaElement[] packages = root.get(i).getChildren();
+
 				for (IJavaElement ije : packages) {
+					
 					if (ije.getElementType() == IJavaElement.PACKAGE_FRAGMENT) {
 						IPackageFragment pk = (IPackageFragment)ije;
 
@@ -198,10 +216,14 @@ public class ReportBuilder {
 						if (isRecord) {
 							if (compilationUnits.length != 0)
 								newPackageModel = model.addSmellList(pk.getElementName());
-
+							
 							//取得Package底下的所有class的smell資訊
 							for (int k = 0; k < compilationUnits.length; k++) {
-								setSmellInfo(compilationUnits[k], isRecord, newPackageModel);
+								setSmellInfo(compilationUnits[k], isRecord, newPackageModel, pk.getPath().toString());
+
+								//記錄LOC
+								int codeLines = countFileLOC(compilationUnits[k].getPath().toString());
+								model.addTotalLine(codeLines);
 							}
 						}
 					}
@@ -258,5 +280,31 @@ public class ReportBuilder {
 	    	}
 	    }
 	    return sourcePaths;
+	}
+
+	/**
+	 * 計算Class File的LOC
+	 * @param filePath		class的File Path
+	 * @return				class的LOC數
+	 */
+	private int countFileLOC(String filePath) {
+		//取得class路徑
+		String workspace = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
+		String path = workspace + filePath;
+
+		File file = new File(path);
+		
+		//若Class存在，計算Class
+		if (file.exists()) {
+			LOCData noFormatData = null;
+			try {
+				//計算LOC
+				noFormatData = noFormatCounter.countFileLOC(file);
+			} catch (FileNotFoundException e) {
+				logger.error("[File Not Found Exception] FileNotFoundException ",e);
+			}
+			return noFormatData.getTotalLine();
+		}
+		return 0;
 	}
 }

@@ -47,7 +47,6 @@ public class ToggleNatureAction implements IObjectActionDelegate {
 
 				if (project != null) {
 					toggleNature(project);
-//					ReportBuilder report = new ReportBuilder(project);
 				}
 			}
 		}

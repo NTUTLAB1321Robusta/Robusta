@@ -60,6 +60,9 @@ public class SmellReport {
 
 		//把Summary資料加至XML Root
 		printSummary(root);
+		
+		//把Code Information加至XML Root
+		printCodeInfo(root);
 
 		//把Packages總覽資料加至XML Root
 		printAllPackageList(root);
@@ -116,6 +119,20 @@ public class SmellReport {
 		smellList.addContent(new Element("NestedTryBlock").addContent(String.valueOf(model.getNestedTryTotalSize())));
 		smellList.addContent(new Element("Total").addContent(String.valueOf(model.getTotalSmellCount())));
 		root.addContent(smellList);
+	}
+	
+	/**
+	 * 把Code Information加至XML Root
+	 * @param root
+	 */
+	private void printCodeInfo(Element root) {
+		///Code Information List 資料輸出///
+		Element codeInfoList = new Element("CodeInfoList");
+		codeInfoList.addContent(new Element("LOC").addContent(String.valueOf(model.getTotalLine())));
+		codeInfoList.addContent(new Element("TryNumber").addContent(String.valueOf(model.getTryCounter())));
+		codeInfoList.addContent(new Element("CatchNumber").addContent(String.valueOf(model.getCatchCounter())));
+		codeInfoList.addContent(new Element("FinallyNumber").addContent(String.valueOf(model.getFinallyCounter())));
+		root.addContent(codeInfoList);
 	}
 	
 	/**
@@ -192,6 +209,12 @@ public class SmellReport {
 					for (int k = 0; k < clTemp.getSmellSize(); k++) {
 						Element smell = new Element("SmellData");
 						smell.addContent(new Element("ClassName").addContent(clTemp.getClassName()));
+						smell.addContent(new Element("State").addContent("0"));
+						
+						//欲連結的SourceCode資訊格式
+						String codeLine = "#" + clTemp.getClassPath() + "#" + clTemp.getSmellLine(k) + "#";
+						smell.addContent(new Element("LinkCode").addContent(codeLine));
+
 						smell.addContent(new Element("MethodName").addContent(clTemp.getMethodName(k)));
 						smell.addContent(new Element("SmellType").addContent(clTemp.getSmellType(k).replace("_", " ")));
 						smell.addContent(new Element("Line").addContent(String.valueOf(clTemp.getSmellLine(k))));
@@ -201,6 +224,7 @@ public class SmellReport {
 				} else {
 					Element smell = new Element("SmellData");
 					smell.addContent(new Element("ClassName").addContent(clTemp.getClassName()));
+					smell.addContent(new Element("State").addContent("1"));
 					smell.addContent(new Element("MethodName").addContent("None"));
 					smell.addContent(new Element("SmellType").addContent("None"));
 					smell.addContent(new Element("Line").addContent("None"));

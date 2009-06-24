@@ -118,13 +118,13 @@ public class RethrowExRefactoring extends Refactoring {
 			OperationCanceledException {
 		//把要變更的結果包成composite傳出去
 		Change[] changes = new Change[] {textFileChange};
-		CompositeChange change = new CompositeChange("Rethrow Unhandled Exception", changes);
+		CompositeChange change = new CompositeChange("Rethrow Unchecked Exception", changes);
 		return change;
 	}
 
 	@Override
 	public String getName() {		
-		return "Rethrow Unhandle Exception";
+		return "Rethrow Unchecked Exception";
 	}
 
 	/**

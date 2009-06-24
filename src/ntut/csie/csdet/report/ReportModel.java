@@ -34,6 +34,11 @@ public class ReportModel {
 	private int dummyTotalSize = 0;
 	private int unMainTotalSize = 0;
 	private int nestedTryTotalSize = 0;
+	
+	private int totalLine = 0;
+	private int tryCounter = 0;
+	private int catchCounter = 0;
+	private int finallyCounter = 0;
 
 	/**
 	 * 設定、取得建造時間
@@ -48,7 +53,7 @@ public class ReportModel {
 
         return df.format(buildTime);
 	}
-	
+
 	///增加Smell的總數///
 	public void addIgnoreTotalSize(int ignoreSize) {
 		this.ignoreTotalSize += ignoreSize;
@@ -161,5 +166,29 @@ public class ReportModel {
 	}
 	public void setFilterList(List<String> filterRuleList) {
 		this.filterRuleList = filterRuleList;
+	}
+	public int getTotalLine() {
+		return totalLine;
+	}
+	public void addTotalLine(int codeLine) {
+		this.totalLine += codeLine;
+	}
+	public int getTryCounter() {
+		return tryCounter;
+	}
+	public void addTryCounter(int tryCounter) {
+		this.tryCounter += tryCounter;
+	}
+	public int getCatchCounter() {
+		return catchCounter;
+	}
+	public void addCatchCounter(int catchCounter) {
+		this.catchCounter += catchCounter;
+	}
+	public int getFinallyCounter() {
+		return finallyCounter;
+	}
+	public void addFinallyCounter(int finallyCounter) {
+		this.finallyCounter += finallyCounter;
 	}
 }

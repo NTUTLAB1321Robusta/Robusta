@@ -10,11 +10,13 @@ import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.rleht.common.RLBaseVisitor;
 
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.ThrowStatement;
+import org.eclipse.jdt.core.dom.TryStatement;
 import org.jdom.Attribute;
 import org.jdom.Element;
 
@@ -36,8 +38,14 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 	//儲存偵測"Library的Name"和"是否Library"
 	private TreeMap<String, String> libMap = new TreeMap<String, String>();
 	
+	///Code Information Counter///
+	private int tryCounter = 0;
+	private int catchCounter = 0;
+	private int finallyCounter = 0;
+	
 	private boolean isSyso = false;
 	private boolean isPrint = false;
+
 	
 	public CodeSmellAnalyzer(CompilationUnit root){
 		super(true);
@@ -64,10 +72,18 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 	protected boolean visitNode(ASTNode node) {
 		switch (node.getNodeType()) {
 			case ASTNode.TRY_STATEMENT:
+				tryCounter++;
+				
+				///計算Finally個數///
+				TryStatement trystat = (TryStatement) node;
+				Block finallyBlock = trystat.getFinally();
+				if (finallyBlock != null)
+					finallyCounter++;
 
 				return true;
 			case ASTNode.CATCH_CLAUSE:
 				processCatchStatement(node);
+				catchCounter++;
 				return true;
 			default:
 				//return true則繼續訪問其node的子節點,false則不繼續
@@ -282,5 +298,19 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 	 */
 	public List<CSMessage> getDummyList(){
 		return dummyList;
+	}
+	
+	/**
+	 * 取得Code Information
+	 * @return
+	 */
+	public int getTryCounter() {
+		return tryCounter;
+	}
+	public int getCatchCounter() {
+		return catchCounter;
+	}
+	public int getFinallyCounter() {
+		return finallyCounter;
 	}
 }

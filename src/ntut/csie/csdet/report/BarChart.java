@@ -79,7 +79,7 @@ public class BarChart {
         final JFreeChart chart = ChartFactory.createBarChart(
             "EH Smells Chart",         	// chart title
             "",							// domain axis label
-            "EH Smells Numbers",		// range axis label
+            "Number of EH Smell",		// range axis label
             dataset,                    // data
             PlotOrientation.VERTICAL,   // the plot orientation
             false,                      // legend

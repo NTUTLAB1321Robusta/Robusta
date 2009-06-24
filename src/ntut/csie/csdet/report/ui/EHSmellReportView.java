@@ -1,11 +1,17 @@
 package ntut.csie.csdet.report.ui;
 
-import ntut.csie.csdet.report.ReportBuilder;
+import java.util.ArrayList;
+import java.util.List;
+
 import ntut.csie.csdet.report.ReportModel;
+import ntut.csie.rleht.RLEHTPlugin;
 import ntut.csie.rleht.common.ImageManager;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.SWT;
@@ -20,35 +26,33 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class EHSmellReportView extends ViewPart{
+public class EHSmellReportView extends ViewPart {
+	private static Logger logger = LoggerFactory.getLogger(EHSmellReportView.class);
+
+	//Report ToolBar
 	private ToolBar toolbar;
+	//Project選單
 	private Combo projectCombo;
+	//Report Browser
 	static Browser browser;
+	//Report的資料
 	private ReportModel data;
+	//Filter的按鍵動作
 	private Action filterAction;
-	
-	@Override
-	public void createPartControl(Composite parent) {		
-		projectCombo = new Combo(parent, SWT.NONE);
-		bindProjectCombo();
+	//Select Report的按鍵動作
+	private Action selectAction;
 
+	@Override
+	public void createPartControl(Composite parent) {
+		//Composite定位
 		FormLayout layout = new FormLayout();
 		parent.setLayout(layout);
-
-//		final Label status = new Label(parent, SWT.NONE);
-//		final ProgressBar progressBar = new ProgressBar(parent, SWT.NONE);
-//		
-//		FormData stateForm = new FormData();
-//		stateForm.left = new FormAttachment(0, 5);
-//		stateForm.right = new FormAttachment(progressBar, 0, SWT.DEFAULT);
-//		stateForm.bottom = new FormAttachment(100, -5);
-//		status.setLayoutData(stateForm);
-//		FormData processForm = new FormData();
-//		processForm.right = new FormAttachment(100, -5);
-//		processForm.bottom = new FormAttachment(100, -3);
-//		progressBar.setLayoutData(processForm);
 
 		//建置View上的ToolBar
 		buildToolItem(parent);
@@ -57,27 +61,27 @@ public class EHSmellReportView extends ViewPart{
 		buildBrowser(parent);
 		
 		//建置View裡的ToolBar 
-		buildToolBar();
+		buildToolBar(parent);
 	}
 
 	/**
 	 * 建置View裡的Browser
 	 * @param parent
+	 * @param status 
 	 */
 	private void buildBrowser(Composite parent) {
 		///配置Browser位置///
 		FormData  browserForm = new FormData();
 		browserForm.bottom = new FormAttachment(100, -5);
-//		browserForm.bottom = new FormAttachment(status, -5, SWT.DEFAULT);
 		browserForm.left = new FormAttachment(0, 0);
 		browserForm.right = new FormAttachment(100, 0);
 		browserForm.top = new FormAttachment(toolbar, 5, SWT.DEFAULT);
-		
+
 		browser = new Browser(parent, SWT.NONE);
 		browser.setLayoutData(browserForm);
-
 		//預設Browser開始時的訊息
 		browser.setText("There is no report now !");
+		browser.addLocationListener(new BrowserControl());
 	}
 
 	/**
@@ -91,28 +95,27 @@ public class EHSmellReportView extends ViewPart{
 		toolbar.setLayoutData(toolbarForm);
 		
 		///建置product ToolItem///
-		final ToolItem itemProduct = new ToolItem(toolbar, SWT.PUSH);
-		itemProduct.addSelectionListener(new SelectionAdapter() {
+		final ToolItem itemGenerate = new ToolItem(toolbar, SWT.PUSH);
+		itemGenerate.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
 				IProject[] projectList  = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-				ReportBuilder report;
+
 				//若有選擇Project就產生報表，並把Browser指向記頁
 				for (IProject project : projectList) {
 					if (project.getName().equals(projectCombo.getItem(projectCombo.getSelectionIndex()))) {
+
 						//重新配置新的Model資料
 						data = new ReportModel();
-						//建置Report
-						report = new ReportBuilder(project,data);
-						//Browser開啟預設位置HTML
-						if (browser != null)
-							openHTM();
+						//產生Report
+						buildReport(project);
+
 						break;
 					}
 				}
 			}
 		});
-		itemProduct.setText("Generate");
-		itemProduct.setImage(ImageManager.getInstance().get("unchecked"));
+		itemGenerate.setText("Generate");
+		itemGenerate.setImage(ImageManager.getInstance().get("unchecked"));
 
 		///建置Refresh ToolItem///
 		final ToolItem itemRefresh = new ToolItem(toolbar, SWT.PUSH);
@@ -127,19 +130,61 @@ public class EHSmellReportView extends ViewPart{
 		itemRefresh.setText("Refresh");
 		itemRefresh.setImage(ImageManager.getInstance().get("refresh"));
 		
+		projectCombo = new Combo(parent, SWT.NONE);
+		//把專案名稱顯示在Combo上
+		bindProjectCombo();
 		///建置projectCombo (與ToolBar沒有關係)///
 		FormData comboForm = new FormData();
-		comboForm.left = new FormAttachment(0, 97);
-		comboForm.right = new FormAttachment(0, 185);
 		comboForm.bottom = new FormAttachment(0, 30);
 		comboForm.top = new FormAttachment(0, 10);
+		comboForm.right = new FormAttachment(toolbar, 88, SWT.RIGHT);
+		comboForm.left = new FormAttachment(toolbar, 0, SWT.RIGHT);
 		projectCombo.setLayoutData(comboForm);
 	}
 	
 	/**
-	 * 建置View上的ToolBar
+	 * 產生Report
+	 * @param project
+	 * @return
 	 */
-	private void buildToolBar() {		
+	private void buildReport(IProject project) {
+		//先出現提示訊息給user,因為算coverage要花一段時間
+		//先讓job去跑builder,計算code coverage
+		final ProgressActionJob job = new ProgressActionJob("Generate EH Smell Report",project, data);
+		
+		//設定優先順序
+		job.setPriority(Job.SHORT);
+		
+		//與Plugin作結合
+		final IWorkbenchSiteProgressService progressService = 
+			(IWorkbenchSiteProgressService) RLEHTPlugin.getDefault().getWorkbench().
+			getActiveWorkbenchWindow().getActivePage().getActivePart().getSite()
+			.getAdapter(IWorkbenchSiteProgressService.class);
+		progressService.showInDialog(
+				RLEHTPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow()
+				.getActivePage().getActivePart().getSite().getShell(), job);
+
+		//在這邊用一個listenre去聽Job完成的事件
+		job.addJobChangeListener(new JobChangeAdapter() {
+			public void done(IJobChangeEvent event) {
+				if(event.getResult().isOK()) {
+					
+					//Browser開啟預設位置HTML
+					if (browser != null)
+						openHTM();
+				}
+			}
+		});
+
+		//job動作
+		job.schedule();
+	}
+	
+	/**
+	 * 建置View上的ToolBar
+	 * @param parent 
+	 */
+	private void buildToolBar(Composite parent) {		
 		IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
 		filterAction = new Action() {
 			public void run() {
@@ -149,32 +194,73 @@ public class EHSmellReportView extends ViewPart{
 			}
 		};
 		filterAction.setText("Filter");		
-		filterAction.setImageDescriptor(ImageManager.getInstance().getDescriptor("showthrow"));
+		filterAction.setImageDescriptor(ImageManager.getInstance().getDescriptor("filter"));
 		toolBarManager.add(filterAction);
+
+		selectAction = new Action() {
+			public void run() {
+				//按下後跳出Select Report Dialog
+				SelectReportDialog selectDialog = new SelectReportDialog(new Shell(), getProjectList());
+				selectDialog.open();
+				if(!selectDialog.getReportPath().equals("")){
+					browser.setUrl(selectDialog.getReportPath());
+				}
+			}
+		};
+		selectAction.setText("Open Report");
+		selectAction.setImageDescriptor(ImageManager.getInstance().getDescriptor("note_view"));		
+		toolBarManager.add(selectAction);
 	}
 
 	/**
-	 * 獲取全部Project的資料
+	 * 把專案名稱顯示在Combo上
 	 */
 	private void bindProjectCombo() {
-		IProject[] projectList  = ResourcesPlugin.getWorkspace().getRoot().getProjects();
-		for (int i=0; i < projectList.length; i++)
-			if (projectList[i].isOpen())
-				projectCombo.add(projectList[i].getName());
+		List<String> projectList = getProjectList();
+
+		for (String projectName : projectList)
+				projectCombo.add(projectName);
+
 		if (projectCombo.getItemCount() > 0)
 			projectCombo.select(0);
 	}
 
+	/**
+	 * 獲取全部專案名稱
+	 * @return
+	 */
+	private List<String> getProjectList() {
+		List<String> projectName = new ArrayList<String>();
+
+		IProject[] projectList  = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+		for (int i=0; i < projectList.length; i++)
+			if (projectList[i].isOpen())
+				projectName.add(projectList[i].getName());
+		
+		return projectName;
+	}
+
 	@Override
 	public void setFocus() {
-		
+
 	}
 	
 	/**
 	 * 從預設路徑上打開HTM
 	 */
-	public void openHTM(){
-		String showPath = "file:///" + data.getFilePath("sample.html", true);
-		browser.setUrl(showPath);
+	public void openHTM() {
+		try {			
+			//for different SWT Thread
+			PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable(){
+				public void run() {
+					//取得預設路徑
+					String showPath = "file:///" + data.getFilePath("sample.html", true);
+					//開啟網址
+					browser.setUrl(showPath);
+				}
+			});
+		} catch (Exception e) {
+			logger.error("[Exception] EXCEPTION ", e);
+		}
 	}
 }
