@@ -386,7 +386,6 @@ public class TEQuickFix implements IMarkerResolution{
 			Document document = new Document(cu.getBuffer().getContents());
 	
 			TextEdit edits = actRoot.rewrite(document, cu.getJavaProject().getOptions(true));
-//			TextEdit edits = rewrite.rewriteAST(document,null);
 			edits.apply(document);
 			
 			cu.getBuffer().setContents(document.get());
@@ -398,9 +397,9 @@ public class TEQuickFix implements IMarkerResolution{
 			//設定要反白的行數
 			setSelectLine(node);
 		} catch (BadLocationException e) {
-			logger.error("[Rethrow Exception] EXCEPTION ",e);
+			logger.error("[Rethrow checked Exception] EXCEPTION ",e);
 		} catch (JavaModelException ex) {
-			logger.error("[Rethrow Exception] EXCEPTION ",ex);
+			logger.error("[Rethrow checked Exception] EXCEPTION ",ex);
 		}
 	}
 

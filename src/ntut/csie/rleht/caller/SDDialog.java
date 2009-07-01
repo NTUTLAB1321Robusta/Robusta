@@ -16,8 +16,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 
 //產生Sequence Diagram的設定視窗
-public class SDDialog extends Dialog
-{
+public class SDDialog extends Dialog{
+	
 	//是否要顯示package的RadioButton
 	private Button packageRadBtn;
 	//只顯示class的RadioButton	

@@ -43,14 +43,14 @@ public class ASTBinding extends RLBaseVisitor{
 					while(libIt.hasNext()){
 						String temp = libIt.next();
 						//偵測預設Library和org.apache.log4j.Logger及java.util.logging.Logger
-						if (temp == "org.apache.log4j" ||temp == "java.util.logging"){
+						if (temp .equals("org.apache.log4j") ||temp.equals("java.util.logging") ){
 							//只要有包含就偵測
 							if (libName.contains(temp)){
 								result = true;
 								return false;
 							}
 						//只偵測Library
-						}else if (libMap.get(temp) == "1"){
+						}else if (libMap.get(temp).equals("1") ){
 							//若Library長度大於偵測長度，否則表不相同直接略過
 							if (libName.length() >= temp.length())
 							{
@@ -61,7 +61,7 @@ public class ASTBinding extends RLBaseVisitor{
 								}
 							}
 						//只偵測Method
-						}else if (libMap.get(temp) == "2"){
+						}else if (libMap.get(temp).equals("2") ){
 							if (methodName.equals(temp)){
 								result = true;
 								return false;

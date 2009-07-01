@@ -2,7 +2,6 @@ package ntut.csie.csdet.refactor;
 
 import ntut.csie.csdet.refactor.ui.RethrowExWizard;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
-import ntut.csie.rleht.builder.RLOrderFix;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
@@ -13,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 在Marker上面的Quick Fix中加入Refactoring(Rethrow Unhandled Exceptionb)的功能
+ * 在Marker上面的Quick Fix中加入Refactoring(Rethrow Unchecked Exception)的功能
  * @author chewei
  */
 
@@ -43,19 +42,14 @@ public class RethrowUncheckExAction implements IMarkerResolution{
 				//啟動Refactor dialog
 				RefactoringWizardOpenOperation operation = 
 					new RefactoringWizardOpenOperation(new RethrowExWizard(refactoring,0));
-				operation.run(new Shell(), "Rethrow Unhnadle Exception");
-				
-//				String msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
-//				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
-//				RLOrderFix orderFix = new RLOrderFix();
-//				//調整RL Annotation順序，順便反白指定行數(-1表示反白RL Annotation)
-//				orderFix.run(marker.getResource(), methodIdx, msgIdx, -1);
+				operation.run(new Shell(), "Rethrow Unchecked Exception");
+
 			}
 		
 		} catch (InterruptedException e) {
-			logger.error("[Refactor][Rethrow Exception] EXCEPTION ",e);
+			logger.error("[Refactor][Rethrow Unchecked Exception] EXCEPTION ",e);
 		} catch (CoreException e) {
-			logger.error("[Refactor][Rethrow Exception] EXCEPTION ",e);
+			logger.error("[Refactor][Rethrow Unchecked Exception] EXCEPTION ",e);
 		}
 	}
 }

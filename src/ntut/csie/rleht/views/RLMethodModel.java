@@ -185,20 +185,6 @@ public class RLMethodModel {
 
 		RLMessage msg = this.exceptionList.get(pos);
 
-		// 判斷是否重覆
-		// if (add) {
-		// for (RLMessage rlmsg : currentMethodRLList) {
-		// if (msg.getException().equals(rlmsg.getException())) {
-		// int style = SWT.ICON_ERROR;
-		// MessageBox messageBox = new MessageBox(null, style);
-		// messageBox.setMessage("要增加Robustness例外(" + msg.getException() +
-		// ")已經存在！");
-		// messageBox.open();
-		// return false;
-		// }
-		// }
-		// }
-
 		try {
 
 			actRoot.recordModifications();

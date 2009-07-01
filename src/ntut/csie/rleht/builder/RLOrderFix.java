@@ -36,6 +36,7 @@ public class RLOrderFix {
 	private static Logger logger = LoggerFactory.getLogger(RLOrderFix.class);
 
 	private CompilationUnit actRoot;
+	
 	private IOpenable actOpenable;
 	//目前method的RL Annotation資訊
 	private List<RLMessage> currentMethodRLList = null;
@@ -46,7 +47,6 @@ public class RLOrderFix {
 
 	/**
 	 * 進行調整RL Annotation順序
-	 * 
 	 * @param resource		
 	 * @param methodIdx		
 	 * @param msgIdx		
@@ -114,7 +114,6 @@ public class RLOrderFix {
 					method.accept(visitor);
 					currentMethodNode = visitor.getCurrentMethodNode();
 					currentMethodRLList = visitor.getMethodRLAnnotationList();
-					System.out.println("[Size]===>"+currentMethodRLList.size());
 				}
 			}
 			catch (Exception ex) {

@@ -7,7 +7,6 @@ import ntut.csie.csdet.visitor.ASTCatchCollect;
 import ntut.csie.csdet.visitor.CodeSmellAnalyzer;
 import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
-import ntut.csie.rleht.builder.RLOrderFix;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLData;
 import ntut.csie.rleht.views.RLMessage;
@@ -57,7 +56,7 @@ import agile.exception.RL;
 import agile.exception.Robustness;
 
 /**
- * Rethrow Unhandled exception的具體操作都在這個class中
+ * Rethrow Unchecked exception的具體操作都在這個class中
  * @author chewei
  */
 
@@ -199,8 +198,8 @@ public class RethrowExRefactoring extends Refactoring {
 			actRoot.recordModifications();
 			AST ast = currentMethodNode.getAST();
 			
-			//準備在Catch Caluse中加入throw exception
-			//取得Code smell的資訊
+			//準備在Catch Clause中加入throw exception
+			//取得EH smell的資訊
 			msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
 			CSMessage msg = currentExList.get(Integer.parseInt(msgIdx));
 			//收集該method所有的catch clause
@@ -226,7 +225,7 @@ public class RethrowExRefactoring extends Refactoring {
 			//寫回Edit中
 			applyChange(msg);
 		}catch (Exception ex) {
-			logger.error("[Rethrow Exception] EXCEPTION ",ex);
+			logger.error("[Rethrow Unchecked Exception] EXCEPTION ",ex);
 		}
 	}
 	
@@ -289,7 +288,7 @@ public class RethrowExRefactoring extends Refactoring {
 			textFileChange = new TextFileChange(cu.getElementName(), (IFile)cu.getResource());
 			textFileChange.setEdit(edits);
 		} catch (JavaModelException e) {
-			logger.error("[Apply Change Rethrow Exception] EXCEPTION ",e);
+			logger.error("[Apply Change Rethrow Unchecked Exception] EXCEPTION ",e);
 		}	
 	}
 	

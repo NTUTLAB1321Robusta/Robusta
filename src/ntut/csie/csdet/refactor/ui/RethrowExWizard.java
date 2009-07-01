@@ -13,13 +13,13 @@ public class RethrowExWizard extends RefactoringWizard {
 
 	public RethrowExWizard(Refactoring refactoring, int flags) {
 		super(refactoring, DIALOG_BASED_USER_INTERFACE | PREVIEW_EXPAND_FIRST_NODE);
-		setDefaultPageTitle("Rethrow Unhnadle Exception");
+		setDefaultPageTitle("Rethrow Unchecked Exception");
 	}
 
 	@Override
 	protected void addUserInputPages() {
 		//¥[¤JRethrow exceptionªºPage
-		addPage(new RethrowExInputPage("Rethrow Unhandle Exception"));
+		addPage(new RethrowExInputPage("Rethrow Unchecked Exception"));
 		
 	}
 

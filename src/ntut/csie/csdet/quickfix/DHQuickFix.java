@@ -52,7 +52,7 @@ import agile.exception.RL;
 import agile.exception.Robustness;
 
 /**
- * 提供給Ignore Ex與Dummy handler的解法
+ * 提供給Ignore checked Exception與Dummy handler的解法
  * @author chewei
  */
 
@@ -115,7 +115,6 @@ public class DHQuickFix implements IMarkerResolution{
 				if(isok)
 				{
 					rethrowException(exception,Integer.parseInt(msgIdx));
-
 					RLOrderFix orderFix = new RLOrderFix();
 					//調整RL Annotation順序，順便反白指定行數
 					orderFix.run(marker.getResource(), methodIdx, msgIdx, selectLine);
@@ -183,12 +182,9 @@ public class DHQuickFix implements IMarkerResolution{
 		
 			actRoot.recordModifications();
 			AST ast = currentMethodNode.getAST();
-			
-//			AST ast = actRoot.getAST();
-//			rewrite = ASTRewrite.create(actRoot.getAST());
 		
-			//準備在Catch Caluse中加入throw exception
-			//取得Code smell的資訊
+			//準備在Catch Clause中加入throw exception
+			//取得EH smell的資訊
 			CSMessage msg = currentExList.get(msgIdx);
 
 			//收集該method所有的catch clause
@@ -250,7 +246,7 @@ public class DHQuickFix implements IMarkerResolution{
 	}
 	
 	
-	@SuppressWarnings("unchecked")
+	
 	private void addAnnotationRoot(AST ast){
 		//要建立@Robustness(value={@RL(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
 		//建立Annotation root

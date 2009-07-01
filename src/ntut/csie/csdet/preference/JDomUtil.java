@@ -1,7 +1,6 @@
 package ntut.csie.csdet.preference;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -88,6 +87,10 @@ public class JDomUtil {
 		}
 	}
 	
+	/**
+	 * 取得workspace的位置
+	 * @return
+	 */
 	public static String getWorkspace(){
 		String workspace = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
 		return workspace;

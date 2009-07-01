@@ -200,10 +200,7 @@ public class RetryRefactoring extends Refactoring{
 		int replacePos = -1;
 		TryStatement original = null;
 		for(int i=0;i<parentRewrite.getRewrittenList().size();i++){
-//			System.out.println("【Content】===>"+catchRewrite.getRewrittenList().get(i).toString());
 			if(parentRewrite.getRewrittenList().get(i).equals(selectNode)){
-//				System.out.println("【Find Try Statement!!!!!!!】");
-//				System.out.println("【Position is】===>"+i);
 				original = (TryStatement)parentRewrite.getRewrittenList().get(i);
 				//找到Try Statement就把他的位置記錄下來
 				replacePos = i;

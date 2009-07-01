@@ -7,6 +7,11 @@ import org.eclipse.jdt.core.dom.ASTNode;
 
 import ntut.csie.rleht.common.RLBaseVisitor;
 
+/**
+ * 蒐集專案中所有的catch clause
+ * @author chewei
+ */
+
 public class ASTCatchCollect extends RLBaseVisitor{
 	private List<ASTNode> methodList;
 	

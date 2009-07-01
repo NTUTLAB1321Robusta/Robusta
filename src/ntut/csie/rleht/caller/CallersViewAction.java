@@ -1,10 +1,8 @@
 package ntut.csie.rleht.caller;
 
-import net.java.amateras.uml.action.SaveAsImageAction;
 import net.java.amateras.uml.sequencediagram.SequenceDiagramEditor;
 import ntut.csie.rleht.common.ImageManager;
 
-import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
@@ -19,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CallersViewAction extends ActionGroup {
-	private static Logger logger = LoggerFactory.getLogger(CallersViewAction.class);
+
 	private static final String TYPE_CALL_UP = "顯示上層呼叫者階層";
 	private static final String TYPE_CALL_DOWN = "顯示呼叫階層";
 

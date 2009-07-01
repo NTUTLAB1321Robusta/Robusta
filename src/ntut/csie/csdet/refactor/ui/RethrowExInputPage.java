@@ -2,7 +2,6 @@ package ntut.csie.csdet.refactor.ui;
 
 import ntut.csie.csdet.refactor.RethrowExRefactoring;
 
-import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
@@ -148,14 +147,13 @@ public class RethrowExInputPage extends UserInputWizardPage {
 //		IJavaElement[] elements = new IJavaElement[] {project};
 //		IJavaSearchScope scope = SearchEngine.createJavaSearchScope(elements);
 		//透過Eclipse 所提供的Dialog來找尋專案中所有的class or library......等等
-		try {
-			
-			//TODO 是否有辦法讓使用者只搜尋該專案的例外類別
+		try {	
+			//尋找所有可以拋出的例外類型
 			IType type = project.findType("java.lang.Exception");
 			IJavaSearchScope scope = SearchEngine.createHierarchyScope(type);
 			SelectionStatusDialog dialog = (SelectionStatusDialog) JavaUI.createTypeDialog(getShell(), getContainer(), scope, IJavaElementSearchConstants.CONSIDER_ALL_TYPES, false);
 			dialog.setTitle("Choose Exception type");
-			dialog.setMessage("Choose the Exception type  to Rethrow:");
+			dialog.setMessage("Choose the Exception type to Rethrow:");
 			if(dialog.open() == Window.OK){
 				//按下ok後回傳使用者所選擇的
 				return (IType)dialog.getFirstResult();

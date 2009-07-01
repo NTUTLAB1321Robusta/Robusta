@@ -6,7 +6,6 @@ import java.util.Map;
 import ntut.csie.csdet.data.CSMessage;
 import ntut.csie.csdet.visitor.CodeSmellAnalyzer;
 import ntut.csie.csdet.visitor.MainAnalyzer;
-import ntut.csie.csdet.visitor.SpareHandlerAnalyzer;
 import ntut.csie.rleht.common.ASTHandler;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLChecker;
@@ -90,7 +89,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 			}
 			
 			marker.setAttribute(IMarker.LINE_NUMBER, lineNumber);
-			//marker type =  code smell type
+			//marker type =  EH smell type
 			marker.setAttribute(RLMarkerAttribute.RL_MARKER_TYPE, mtype);
 			marker.setAttribute(RLMarkerAttribute.RL_INFO_EXCEPTION, msg.getExceptionType());
 			marker.setAttribute(RLMarkerAttribute.RL_INFO_SRC_POS, String.valueOf(msg.getPosition()));
@@ -266,15 +265,8 @@ public class RLBuilder extends IncrementalProjectBuilder {
 						if (msg.getRLData().getLevel() >= 0) {
 							if (!msg.isHandling()) {
 								String errmsg = "*例外[" + msg.getRLData().getExceptionType() + "] 未定義@RL！";
-
-								// int lineNumber =
-								// root.getLineNumber(msg.getPosition());
 								this.addMarker(file, errmsg.toString(), msg.getLineNumber(), IMarker.SEVERITY_WARNING,
 										RLMarkerAttribute.ERR_NO_RL, msg, msgIdx, methodIdx);
-								// logger.debug("@@===========>>Create
-								// Marker:line=" + lineNumber + " :"
-								// + msg.getPosition() + ":" +
-								// msg.getException());
 							}
 						}
 					}
@@ -294,10 +286,6 @@ public class RLBuilder extends IncrementalProjectBuilder {
 
 							this.addMarker(file, errmsg.toString(), lineNumber, IMarker.SEVERITY_ERROR,
 									RLMarkerAttribute.ERR_RL_LEVEL, msg, msgIdx, methodIdx);
-
-							// logger.debug("@@===========>>Create
-							// Marker:line=" + lineNumber + " :"
-							// + method.getStartPosition());
 						}
 
 						// 檢查@RL清單內的exception類別階層是否正確

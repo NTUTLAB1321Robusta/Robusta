@@ -189,18 +189,7 @@ public class UMQuickFix implements IMarkerResolution{
 		}	
 		addAnnotationRoot(ast);		
 		Document document = applyChange();
-
-//		List temp = listRewrite.getRewrittenList();
-//		for(int i=0;i<temp.size();i++){
-//			System.out.println("¡iContent¡j===>"+temp.get(i).toString());
-//			if(temp.get(i) instanceof TryStatement){
-//				TryStatement tss = (TryStatement)temp.get(i);
-//				System.out.println("¡iStartPostion¡j==>"+tss.getStartPosition());
-//				System.out.println("¡iLength¡j==>"+tss.getLength());
-//				System.out.println("¡iLine number¡j==>"+this.actRoot.getLineNumber(tss.getStartPosition()));
-//			}				
-//		}
-		
+	
 		selectLine(document);
 	}
 	

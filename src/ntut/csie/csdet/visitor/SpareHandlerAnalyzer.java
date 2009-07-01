@@ -61,23 +61,6 @@ public class SpareHandlerAnalyzer extends RLBaseVisitor{
 					result = true;
 				}				
 			}	
-//			for(int i=0; i< catchList.size(); i++){
-//				CatchClause cc = (CatchClause)catchList.get(i);
-//				List catchStat = cc.getBody().statements();
-//				if(catchStat != null){
-//					for(int x = 0 ; x< catchStat.size(); x++){
-//						if(catchStat.get(i) instanceof TryStatement){
-//							TryStatement temp = (TryStatement)catchStat.get(i);
-//							CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_SPARE_HANDLER,
-//									null,											
-//									ts.toString(),temp.getStartPosition(),
-//									this.getLineNumber(temp.getStartPosition()),null);
-//							spareHandlerList.add(csmsg);			
-//						}
-//					}
-//				}
-//			}
-		
 		}
 	}
 	

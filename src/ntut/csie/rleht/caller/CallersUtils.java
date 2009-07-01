@@ -14,7 +14,6 @@ public class CallersUtils {
 	private static Logger logger =LoggerFactory.getLogger(CallersLabelProvider.class);
 	
 	public static MethodWrapper[] sortCallers(MethodWrapper[] wrappers) {
-		//if(true) return wrappers;
 		
 		if (wrappers != null) {
 			Map<String, MethodWrapper> sortmap = new TreeMap<String, MethodWrapper>();

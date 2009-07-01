@@ -96,9 +96,6 @@ public class CallersLabelProvider extends LabelProvider implements
 				offset = offset + length - 10;
 				length = 0;
 
-				// logger.debug("[getRLMessage] offset="+offset + "
-				// length="+length);
-
 				if (!model.createAST(input, offset)) {
 					RLEHTPlugin.logError("AST could not be created." + input,
 							null);

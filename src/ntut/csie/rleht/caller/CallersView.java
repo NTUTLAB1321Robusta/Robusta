@@ -278,15 +278,12 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 			}
 
 			try {
-//				System.out.println("=====CU====="+cu.getElementName());
 				IType[] types = cu.getAllTypes();
 				for (int i = 0, size = types.length; i < size; i++) {
 					IType type = types[i];
-//					System.out.println("=====Type"+i+"====="+type.getElementName());
 					IMethod[] methods = type.getMethods();
 					
 					for (int j = 0; j < methods.length; j++) {
-//						System.out.println("=====Method"+j+"====="+methods[j].getElementName());
 						if (isWithinMethodRange(offset, methods[j])) {
 							return methods[j];
 						}
@@ -378,10 +375,8 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 
 	public void checkStateChanged(CheckStateChangedEvent event) {
 		logger.debug("[checkStateChanged] BEGIN --->");
-		// if (event.getChecked()) {
 		checkFlag = false;
 		 
-		System.out.println("¡iCheck flag¡j===>"+checkFlag);
 		Object obj = event.getElement();
 
 		if (obj instanceof MethodWrapper) {
@@ -439,7 +434,6 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 
 	
 	private void disableChildCheckData(TreeItem actitem) {
-//		 logger.debug("\t---->disableChildCheckData BEGIN");
 
 		actitem.setChecked(false);
 		TreeItem[] items = actitem.getItems();

@@ -8,7 +8,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("restriction")
+
 public class CallersContentProvider implements ITreeContentProvider {
 	// private TreeViewer tv;
 	private static Logger logger = LoggerFactory.getLogger(CallersContentProvider.class);

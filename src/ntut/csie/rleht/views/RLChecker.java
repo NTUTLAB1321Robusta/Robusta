@@ -106,16 +106,6 @@ public class RLChecker {
 		return this.exList;
 	}
 
-	// private void printExceptionList(List<RLMessage> exList) {
-	// if (exList.size() == 0) {
-	// return;
-	// }
-	//
-	// for (RLMessage msg : exList) {
-	// ConsoleLog.debug(msg);
-	// }
-	//
-	// }
 
 	private void checkRLHandling() {
 		if (this.rlList != null) {

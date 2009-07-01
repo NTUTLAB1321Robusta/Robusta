@@ -16,14 +16,18 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * 提供另一種沒有Alternative的Retry template在右鍵選單
- * No Alternative retry refactoring
+ * 提供另一種重試同一件事情的的Retry template在右鍵選單
+ * Retry with original values
  * @author chewei
  */
 
 public class NoAlternativeRetryAction implements IEditorActionDelegate{
+	private static Logger logger = LoggerFactory.getLogger(NoAlternativeRetryAction.class);
+	
 	private IEditorPart editor;
 	
 	private String retry_type = "Retry_with_original";
@@ -55,7 +59,7 @@ public class NoAlternativeRetryAction implements IEditorActionDelegate{
 						new RefactoringWizardOpenOperation(new RetryWizard(refactoring,0));
 					operation.run(new Shell(), "No Alternative Retry");
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					logger.error("[Retry with original values] EXCEPTION ",e);
 				}
 			}
 		}

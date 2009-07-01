@@ -2,7 +2,6 @@ package ntut.csie.csdet.refactor.ui;
 
 import ntut.csie.csdet.refactor.RetryRefactoring;
 
-import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
@@ -25,9 +24,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.SelectionStatusDialog;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RetryInputPage extends UserInputWizardPage {
-
+	private static Logger logger = LoggerFactory.getLogger(RetryInputPage.class);
+	
 	//retry跑计嘿
 	private Text retryText;
 	//程retryΩ计	
@@ -209,7 +211,6 @@ public class RetryInputPage extends UserInputWizardPage {
 			IJavaProject project = getRetryRefactoring().getProject();	
 
 			//硓筁Eclipse ┮矗ㄑDialogㄓт碝盡い┮Τclass or library......单单
-			//TODO 琌Τ快猭琵ㄏノ穓碝赣盡ㄒ摸
 			IType type = project.findType("java.lang.Exception");
 			IJavaSearchScope scope = SearchEngine.createHierarchyScope(type);
 			SelectionStatusDialog dialog = (SelectionStatusDialog) JavaUI.createTypeDialog(getShell(), getContainer(), scope, IJavaElementSearchConstants.CONSIDER_ALL_TYPES, false);
@@ -220,8 +221,7 @@ public class RetryInputPage extends UserInputWizardPage {
 				return (IType)dialog.getFirstResult();
 			}
 		} catch (JavaModelException e) {			
-			e.printStackTrace();
-//			logger.error("[Refactor][Get Selection Dialog Error] EXCEPTION ",e);
+			logger.error("[Refactor][Get Selection Dialog Error] EXCEPTION ",e);
 		}
 		return null;
 	}

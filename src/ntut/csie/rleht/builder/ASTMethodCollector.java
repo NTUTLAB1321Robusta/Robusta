@@ -9,6 +9,11 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 收集所有class中的method
+ * @author allen
+ */
+
 public class ASTMethodCollector extends RLBaseVisitor {
 	private static Logger logger = LoggerFactory.getLogger(ASTMethodCollector.class);
 	private List<ASTNode> methodList;

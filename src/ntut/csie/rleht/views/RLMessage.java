@@ -69,17 +69,6 @@ public class RLMessage {
 
 	}
 
-//	/**
-//	 * @return the exception
-//	 */
-//	public String getException() {
-//		return this.rlData.getExceptionType();
-//	}
-//
-//	public void setException(String ex) {
-//		this.rlData.setExceptionType(ex);
-//	}
-
 	public ITypeBinding getTypeBinding() {
 		return typeBinding;
 	}
@@ -90,21 +79,6 @@ public class RLMessage {
 			this.rlData.setExceptionType(typeBinding.getQualifiedName());
 		}
 	}
-
-//	/**
-//	 * @return the level
-//	 */
-//	public int getLevel() {
-//		return rlData.getLevel();
-//	}
-//
-//	/**
-//	 * @param level
-//	 *            the level to set
-//	 */
-//	public void setLevel(int level) {
-//		rlData.setLevel(level);
-//	}
 
 	/**
 	 * @return the statement

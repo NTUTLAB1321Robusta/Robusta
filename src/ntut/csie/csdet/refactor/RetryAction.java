@@ -16,14 +16,18 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 提供另一種有Alternative的Retry template在右鍵選單
- * Introduce resourceful retry
+ * Introduce resourceful try clause
  * @author chewei
  */
 
 public class RetryAction implements IEditorActionDelegate{
+	private static Logger logger = LoggerFactory.getLogger(RetryAction.class);
+	
 	private IEditorPart editor;
 	private String retry_type = "Alt_Retry";
 
@@ -56,7 +60,7 @@ public class RetryAction implements IEditorActionDelegate{
 						new RefactoringWizardOpenOperation(new RetryWizard(refactoring,0));
 					operation.run(new Shell(), "Introduce resourceful try clause");
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					logger.error("[Introduce resourceful try clause] EXCEPTION ",e);
 				}
 			}
 		}

@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
 
 public class CallersSeqDiagram {
 	private static Logger logger = LoggerFactory.getLogger(CallersSeqDiagram.class);
-	private IEditorPart editor = null;
 
 	
 	/**
@@ -213,8 +212,7 @@ public class CallersSeqDiagram {
 					}
 
 					try {
-						//TODO 刪除SD時會有ResourceExcpetion,原因是有東西鎖住檔案
-						//若採用沒有被版本控管的專案,則不會有此問題發生
+						//TODO 刪除SD時會有ResourceExcpetion,原因是Eclipse會鎖住檔案
 //						file.refreshLocal(IResource.DEPTH_INFINITE, null);
 						file.delete(true,null);
 					} catch (Exception ex) {
@@ -224,7 +222,6 @@ public class CallersSeqDiagram {
 				}
 
 				if (!file.exists()) {
-					// logger.debug("<seq diagram xml>="+builder.toXML());
 					byte[] bytes = builder.toXML().getBytes();
 					InputStream source = new ByteArrayInputStream(bytes);
 					file.create(source, IResource.NONE, null);
@@ -242,13 +239,10 @@ public class CallersSeqDiagram {
 
 	}
 
-	// private List<String> instanceMap=new ArrayList<String>();
-
 	private List<SeqDiagramData> seqdataList = new ArrayList<SeqDiagramData>();
 
 	@SuppressWarnings("restriction")
 	private void findSelectedItemPath(TreeItem[] items) {
-		//logger.debug("\t---->findSelectedItemPath BEGIN");
 		for (int i = 0, size = items.length; i < size; i++) {
 			TreeItem item = items[i];
 			if (item.getChecked()) {
