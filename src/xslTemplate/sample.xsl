@@ -58,7 +58,8 @@
 	
 	<table width="100%" border="0" cellpadding="2" cellspacing="1" class="forumline" id="table3"><thead>
 	<h></h>
-  	<tr bgcolor="#EAEADA" class="bigbluetext"><th class="forumline1" width="133">Package Name</th><th>Ignore Checked Exception</th><th>
+  	<tr bgcolor="#EAEADA" class="bigbluetext"><th class="forumline1" width="133">Package Name</th><th>
+		Lines Of Code (LOC)</th><th>Ignore Checked Exception</th><th>
 		Dummy Handler</th><th>Unprotected Main Program</th><th>
 		Nested Try Block</th><th>Total EH Smells</th></tr></thead>
 	<xsl:for-each select="AllPackageList/Package">
@@ -71,6 +72,7 @@
 					<xsl:value-of select="PackageName"></xsl:value-of>
 				</a>
 			</td>
+			<td><xsl:value-of select="LOC"></xsl:value-of></td>
 			<td><xsl:value-of select="IgnoreCheckedException"></xsl:value-of></td>
 			<td><xsl:value-of select="DummyHandler"></xsl:value-of></td>
 			<td><xsl:value-of select="UnprotectedMainProgram"></xsl:value-of></td>
@@ -79,7 +81,8 @@
 		</tr>
 	</xsl:for-each>
 	<tr bgcolor="#CCCCCC" class="text" align="right">
-		<td align="left" bgcolor="#E5E5E5" class="forumline1" width="133"><span class="text2"><strong>Total</strong></span></td>
+	<td align="left" bgcolor="#E5E5E5" class="forumline1" width="133"><span class="text2"><strong>Total</strong></span></td>
+	<td bgcolor="#E5E5E5" width="169"><span class="text2"><xsl:value-of select="AllPackageList/Total/LOC"></xsl:value-of></span></td>
 		<td bgcolor="#E5E5E5" width="169"><span class="text2"><xsl:value-of select="AllPackageList/Total/IgnoreTotal"></xsl:value-of></span></td>
 		<td bgcolor="#E5E5E5" width="169"><span class="text2"><xsl:value-of select="AllPackageList/Total/DummyTotal"></xsl:value-of></span></td>
 		<td bgcolor="#E5E5E5" width="169"><span class="text2"><xsl:value-of select="AllPackageList/Total/UnMainTotal"></xsl:value-of></span></td>
@@ -107,7 +110,7 @@
 				<tr style="text-align: center" bgcolor="#EAEADA" class="bigbluetext">
 					<th style="text-align: center" class="forumline1">Class Name</th>
 					<th style="text-align: center" class="forumline1" width="229">Method</th>
-					<th style="text-align: center" class="forumline1" width="237">Smell Type</th>
+					<th style="text-align: center" class="forumline1" width="237">EH Smell Type</th>
 					<th style="text-align: center" class="forumline1" width="267"> Line</th>
 				</tr>
 			</thead>
@@ -117,11 +120,13 @@
 						<a class="menulink">
 
 							<xsl:choose>
-							<xsl:when test="State='0'">
-								<xsl:attribute name="href">
-								<xsl:value-of select="LinkCode"></xsl:value-of>
-								</xsl:attribute>
-							</xsl:when>
+								<xsl:when test="State='0'">
+									<xsl:attribute name="title">點選跳至對應行數</xsl:attribute>
+
+									<xsl:attribute name="href">
+									<xsl:value-of select="LinkCode"></xsl:value-of>
+									</xsl:attribute>
+								</xsl:when>
 							</xsl:choose>
 
 							<xsl:value-of select="ClassName"></xsl:value-of>

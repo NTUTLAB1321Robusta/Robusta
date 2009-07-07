@@ -59,6 +59,9 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 						new RethrowUncheckExAction("Refactor==>Rethrow Unchecked Excetpion"),
 						new TEQuickFix("Quick Fix==>Throw Checked Exception")};
 				// 碰到Nested Try block的refactor
+			} else if(problem.equals(RLMarkerAttribute.CS_OVER_LOGGING)){
+				//TODO OverLogging的Quick Fix先暫時用Nested Try block代替
+				return new IMarkerResolution[] { new NTQuickFix("Please use Eclipse refactor==>Extract Method") };
 			} else if(problem.equals(RLMarkerAttribute.CS_NESTED_TRY_BLOCK)){
 				return new IMarkerResolution[] { new NTQuickFix("Please use Eclipse refactor==>Extract Method") };
 				// 碰到Unprotected Main program的Quick fix

@@ -92,7 +92,7 @@ public class SelectReportDialog  extends Dialog {
 			projectCombo.select(0);
 
 		///Report List Table///
-		reportTable = new Table(composite, SWT.BORDER | SWT.FULL_SELECTION);
+		reportTable = new Table(composite, SWT.FULL_SELECTION | SWT.MULTI | SWT.BORDER);
 		reportTable.setLinesVisible(true);
 	    reportTable.setHeaderVisible(true);
 
@@ -193,22 +193,28 @@ public class SelectReportDialog  extends Dialog {
 		super.buttonPressed(buttonId);
 		//若按下Delete
 		if(buttonId == DELETE_SELECTION){ //delete by selection
-			int index = reportTable.getSelectionIndex();
-
-			//取得Report位置
-			String deleteFile = pathList.get(index);
-			File reportPath = new File(deleteFile);
-
-			//取得圖片位置
-			String deletePhoto = deleteFile.replace("sample.html", "Report.jpg");
-			File photoPath = new File(deletePhoto);
-
-			//刪除Report
-			reportPath.delete();
-			//刪除圖片
-			photoPath.delete();
-
-			updateTable();
+			int[] selectIdx = reportTable.getSelectionIndices();
+			
+			//刪除所有選取的Report
+			if (selectIdx.length != 0)
+			{
+				for (int index : selectIdx)
+				{
+					//取得Report位置
+					String deleteFile = pathList.get(index);
+					File reportPath = new File(deleteFile);
+		
+					//取得圖片位置
+					String deletePhoto = deleteFile.replace("sample.html", "Report.jpg");
+					File photoPath = new File(deletePhoto);
+		
+					//刪除Report
+					reportPath.delete();
+					//刪除圖片
+					photoPath.delete();
+				}
+				updateTable();
+			}
 		}
 	}
 

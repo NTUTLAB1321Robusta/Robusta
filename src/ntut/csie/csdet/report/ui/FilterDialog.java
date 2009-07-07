@@ -10,6 +10,7 @@ import ntut.csie.csdet.views.EditRuleDialog;
 import ntut.csie.rleht.common.ImageManager;
 
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -114,7 +115,7 @@ public class FilterDialog extends Dialog {
 		});
 
 		///顯示Rule的Table///
-		displayTable = new Table(filterComposite, SWT.FULL_SELECTION | SWT.CHECK | SWT.BORDER);
+		displayTable = new Table(filterComposite, SWT.FULL_SELECTION | SWT.CHECK | SWT.MULTI | SWT.BORDER);
 		displayTable.setFont(new Font(this.getShell().getDisplay(),"Arial", 11,SWT.NONE));
 		displayTable.setBounds(10, 56, 243, 150);
 		final GridData gd_testList = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -171,7 +172,7 @@ public class FilterDialog extends Dialog {
 			public void widgetSelected(final SelectionEvent e) {
 				//Table不為空的且有選到Library 就把選擇的Library給刪掉
 				if (displayTable.getItemCount() != 0 && displayTable.getSelectionIndex()!=-1) {
-					displayTable.remove(displayTable.getSelectionIndex());
+					displayTable.remove(displayTable.getSelectionIndices());
 					//刪除時把Text清除
 					tempText.setText("");
 				}
@@ -223,11 +224,26 @@ public class FilterDialog extends Dialog {
 				}
 			}
 		});
-
-		///說明按鈕 Report完成再寫///
-//		final Button explainBtn = new Button(btnComposite, SWT.NONE);
-//		explainBtn.setBounds(0, 140, 68, 22);
-//		explainBtn.setText("HELP");
+		
+		///說明視窗///
+		final Button explainBtn = new Button(btnComposite, SWT.NONE);
+		explainBtn.setBounds(0, 140,68, 22);
+		explainBtn.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(final SelectionEvent e) {
+				//跳出說明的Dialog
+				MessageDialog.openInformation(
+						new Shell(),
+						"說明",
+						"1.Package \n" +
+						"   (eg. 'sample.test' -> 只偵測特定Package名稱的Package)\n\n" +
+						"2.Package + .* \n" +
+						"   (eg. 'sample.*' -> 偵測任意開頭有sampleg的Package \n" +
+						"                              如: 'sample.test' 、 'sample.test.example'... ) \n\n");
+			}
+		});
+		explainBtn.setText("HELP");
+		explainBtn.setImage(ImageManager.getInstance().get("help"));
+		
 
 		//從XML中取得之前User的設定
 		getFilterSettings();

@@ -169,14 +169,14 @@ public class ReportBuilder {
 			model.addDummyTotalSize(csVisitor.getDummyList().size());
 
 			//取得專案中的Nested Try Block
-			newClassModel.setUnprotectedMain(visitor.getNestedTryList(), methodName.getName().toString());
-			model.addUnMainTotalSize(visitor.getNestedTryList().size());
+			newClassModel.setNestedTryList(visitor.getNestedTryList(), methodName.getName().toString());
+			model.addNestedTotalTrySize(visitor.getNestedTryList().size());
 
 			//尋找該method內的unprotected main program
 			mainVisitor = new MainAnalyzer(root);
 			method.accept(mainVisitor);
-			newClassModel.setNestedTryList(mainVisitor.getUnprotedMainList(), methodName.getName().toString());
-			model.addNestedTotalTrySize(mainVisitor.getUnprotedMainList().size());
+			newClassModel.setUnprotectedMain(mainVisitor.getUnprotedMainList(), methodName.getName().toString());
+			model.addUnMainTotalSize(mainVisitor.getUnprotedMainList().size());
 	
 			///記錄Code Information///
 			model.addTryCounter(csVisitor.getTryCounter());
@@ -219,14 +219,15 @@ public class ReportBuilder {
 						if (isRecord) {
 							if (compilationUnits.length != 0)
 								newPackageModel = model.addSmellList(pk.getElementName());
-							
+
 							//取得Package底下的所有class的smell資訊
 							for (int k = 0; k < compilationUnits.length; k++) {
 								setSmellInfo(compilationUnits[k], isRecord, newPackageModel, pk.getPath().toString());
 
 								//記錄LOC
 								int codeLines = countFileLOC(compilationUnits[k].getPath().toString());
-								model.addTotalLine(codeLines);
+								//紀錄到Package中
+								newPackageModel.addTotalLine(codeLines);
 							}
 						}
 					}
@@ -296,7 +297,7 @@ public class ReportBuilder {
 		String path = workspace + filePath;
 
 		File file = new File(path);
-		
+
 		//若Class存在，計算Class
 		if (file.exists()) {
 			LOCData noFormatData = null;

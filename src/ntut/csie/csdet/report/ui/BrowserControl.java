@@ -73,6 +73,7 @@ public class BrowserControl extends LocationAdapter {
 			}
 		}
 	}
+
 	/**
 	 * 取得File的Document
 	 * @param javaFile		欲連結的.java檔
@@ -140,11 +141,12 @@ public class BrowserControl extends LocationAdapter {
 			RLEHTPlugin.logError("其它錯誤！", ex);
 		}
 	}
-		/**
-		 * 解析URL，取得程式碼行數必要資訊
-		 * @param info
-		 */
-		private void parseUrl(String info) {
+
+	/**
+	 * 解析URL，取得程式碼行數必要資訊
+	 * @param info
+	 */
+	private void parseUrl(String info) {
 		//URL網址規格：file:///..../#ProjectName/PackagePath.../ClassName.java#行數#
 		//去掉HTML位置
 		info = info.substring(info.indexOf("#") + 2, info.length() - 1);

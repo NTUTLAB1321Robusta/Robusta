@@ -14,6 +14,8 @@ public class PackageModel {
 	private List<ClassModel> classModel = new ArrayList<ClassModel>();
 	//存取Package的目錄
 	private String dir = "";
+	//存取LOC數目
+	private int totalLine = 0;
 
 	///存取Package的名稱///
 	public String getPackageName() {
@@ -78,5 +80,13 @@ public class PackageModel {
 	}
 	public void setDir(String dir) {
 		this.dir = dir;
+	}
+	
+	//存取程式的LOC
+	public int getTotalLine() {
+		return totalLine;
+	}
+	public void addTotalLine(int countLOC) {
+		this.totalLine += countLOC;
 	}
 }

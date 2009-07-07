@@ -154,6 +154,8 @@ public class SmellReport {
 				allPackage.addContent(new Element("HrefPackageName").addContent("#" + packageModel.getPackageName()));
 				allPackage.addContent(new Element("PackageName").addContent(packageModel.getPackageName()));
 			}
+			allPackage.addContent(new Element("LOC")
+								.addContent(String.valueOf(packageModel.getTotalLine())));
 			allPackage.addContent(new Element("IgnoreCheckedException")
 								.addContent(String.valueOf(packageModel.getIgnoreSize())));
 			allPackage.addContent(new Element("DummyHandler")
@@ -168,6 +170,7 @@ public class SmellReport {
 		}
 		///AllPackage List 總和資料輸出///
 		Element total = new Element("Total");
+		total.addContent(new Element("LOC").addContent(String.valueOf(model.getTotalLine())));
 		total.addContent(new Element("IgnoreTotal").addContent(String.valueOf(model.getIgnoreTotalSize())));
 		total.addContent(new Element("DummyTotal").addContent(String.valueOf(model.getDummyTotalSize())));
 		total.addContent(new Element("UnMainTotal").addContent(String.valueOf(model.getUnMainTotalSize())));

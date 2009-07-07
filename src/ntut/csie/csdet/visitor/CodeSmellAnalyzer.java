@@ -47,7 +47,7 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 	private boolean isPrint = false;
 
 	
-	public CodeSmellAnalyzer(CompilationUnit root){
+	public CodeSmellAnalyzer(CompilationUnit root) {
 		super(true);
 		this.root = root;
 		codeSmellList = new ArrayList<CSMessage>();
@@ -58,7 +58,7 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 	 * 先作兩個constructor,之後怕會有需要更多的資訊
 	 * 如果沒有可以將其註解掉
 	 */
-	public CodeSmellAnalyzer(CompilationUnit root,boolean currentMethod,int pos){
+	public CodeSmellAnalyzer(CompilationUnit root,boolean currentMethod,int pos) {
 		super(true);
 		this.root = root;
 		codeSmellList = new ArrayList<CSMessage>();
@@ -96,7 +96,7 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 	 * 去尋找catch的節點,並且判斷節點內的statement是否為空
 	 * @param node
 	 */
-	private void processCatchStatement(ASTNode node){
+	private void processCatchStatement(ASTNode node) {
 		//轉換成catch node
 		CatchClause cc = (CatchClause) node;
 		//取的catch(Exception e)其中的e
@@ -111,7 +111,7 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 	 * @param cc : catch block的資訊
 	 * @param svd : throw exception會用到
 	 */
-	private void judgeIgnoreEx(CatchClause cc,SingleVariableDeclaration svd ){
+	private void judgeIgnoreEx(CatchClause cc,SingleVariableDeclaration svd ) {
 		List statementTemp = cc.getBody().statements();
 		// 如果catch statement裡面是空的話,表示是ignore exception
 		if(statementTemp.size() == 0){	
@@ -135,7 +135,7 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 	 * @param cc
 	 * @param svd
 	 */
-	private void judgeDummyHandler(List statementTemp,CatchClause cc,SingleVariableDeclaration svd){
+	private void judgeDummyHandler(List statementTemp,CatchClause cc,SingleVariableDeclaration svd) {
         /*------------------------------------------------------------------------*
         -  假設這個catch裡面有throw東西 or 有使用Log的API,就判定不是dummy handler
              如果只要有一個e.printStackTrace或者符合user所設定的條件,就判定為dummy handler  
@@ -153,23 +153,20 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 				//偵測使用者輸入的Statement和printStackTrace及System.out.print
 				String st = statement.getExpression().toString();
 				//把" "內String給刪掉
-				if(st.indexOf("\"")!=-1)
-				{
+				if(st.indexOf("\"")!=-1) {
 					int fistPos = st.indexOf("\"");
 					int lastPos = st.lastIndexOf("\"");
 					st = st.substring(0,fistPos) + st.substring(lastPos+1);
 				}
 
-				if(isPrint && st.contains("printStackTrace"))
-				{
+				if(isPrint && st.contains("printStackTrace")) {
 					//建立Dummy handler訊息
 					addDummyMessage(cc, svd, statement);
 					// 新增一筆dummy handler
 					flag++;
 					continue;
 				}
-				if(isSyso && st.contains("System.out.print"))
-				{
+				if(isSyso && st.contains("System.out.print")) {
 					//建立Dummy handler訊息
 					addDummyMessage(cc, svd, statement);
 					// 新增一筆dummy handler
@@ -198,8 +195,7 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 	/**
 	 * 得到Dummy Handler的訊息
 	 */	
-	private void addDummyMessage(CatchClause cc,SingleVariableDeclaration svd, ExpressionStatement statement)
-	{
+	private void addDummyMessage(CatchClause cc,SingleVariableDeclaration svd, ExpressionStatement statement) {
 		CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_DUMMY_HANDLER,
 				svd.resolveBinding().getType(),cc.toString(),cc.getStartPosition(),
 				this.getLineNumber(statement.getStartPosition()),svd.getType().toString());
@@ -213,10 +209,10 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 	private Boolean findBindingLib(ExpressionStatement statement,int flag){
 		ASTBinding visitor = new ASTBinding(libMap);
 		statement.getExpression().accept(visitor);
-		if(visitor.getResult()){
+		if(visitor.getResult()) {
 		//假如找到log4j or java.logger,就把之前找到的smell去掉
 			return true;
-		}else{
+		} else {
 			return false;
 		}
 	}
@@ -229,7 +225,7 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 		Element root = JDomUtil.createXMLContent();
 		// 如果是null表示xml檔是剛建好的,還沒有dummy handler的tag,直接跳出去
 		
-		if(root.getChild(JDomUtil.DummyHandlerTag) != null){
+		if(root.getChild(JDomUtil.DummyHandlerTag) != null) {
 			// 這裡表示之前使用者已經有設定過preference了,去取得相關偵測設定值
 			Element dummyHandler = root.getChild(JDomUtil.DummyHandlerTag);
 			Element rule = dummyHandler.getChild("rule");
@@ -242,27 +238,25 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 			List<Attribute> libRuleList = libRule.getAttributes();
 
 			//把外部的Library加入偵測名單內
-			for (int i=0;i<libRuleList.size();i++)
-			{
-				if (libRuleList.get(i).getValue().equals("Y"))
-				{
+			for (int i=0;i<libRuleList.size();i++) {
+				if (libRuleList.get(i).getValue().equals("Y")) {
 					String temp = libRuleList.get(i).getQualifiedName();					
-					
+
 					//若有.*為只偵測Library，Value設成1
-					if (temp.indexOf(".EH_STAR")!=-1){
+					if (temp.indexOf(".EH_STAR")!=-1) {
 						int pos = temp.indexOf(".EH_STAR");
 						libMap.put(temp.substring(0,pos),"1");
 					//若有*.為只偵測Method，Value設成2
-					}else if (temp.indexOf("EH_STAR.") != -1){
+					} else if (temp.indexOf("EH_STAR.") != -1) {
 						libMap.put(temp.substring(8),"2");
 					//都沒有為都偵測，Key設成Library，Value設成Method
-					}else if (temp.lastIndexOf(".")!=-1){
+					} else if (temp.lastIndexOf(".")!=-1) {
 						int pos = temp.lastIndexOf(".");
 						//若已經存在，則不加入
 						if(!libMap.containsKey(temp.substring(0,pos)))
 							libMap.put(temp.substring(0,pos),temp.substring(pos+1));
 					//若有其它形況則設成Method
-					}else{
+					} else {
 						libMap.put(temp,"2");
 					}
 				}
@@ -289,14 +283,14 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 	/**
 	 * 取得dummy handler的List
 	 */
-	public List<CSMessage> getIgnoreExList(){
+	public List<CSMessage> getIgnoreExList() {
 		return codeSmellList;
 	}
 	
 	/**
 	 * 取得dummy handler的List
 	 */
-	public List<CSMessage> getDummyList(){
+	public List<CSMessage> getDummyList() {
 		return dummyList;
 	}
 	

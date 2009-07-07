@@ -34,8 +34,8 @@ public class ReportModel {
 	private int dummyTotalSize = 0;
 	private int unMainTotalSize = 0;
 	private int nestedTryTotalSize = 0;
-	
-	private int totalLine = 0;
+
+	//取得code counter
 	private int tryCounter = 0;
 	private int catchCounter = 0;
 	private int finallyCounter = 0;
@@ -167,12 +167,16 @@ public class ReportModel {
 	public void setFilterList(List<String> filterRuleList) {
 		this.filterRuleList = filterRuleList;
 	}
+	
+	///取得全部的行數///
 	public int getTotalLine() {
-		return totalLine;
+		int total = 0;
+		for (PackageModel pm : smellList)
+			total += pm.getTotalLine();
+		return total;
 	}
-	public void addTotalLine(int codeLine) {
-		this.totalLine += codeLine;
-	}
+	
+	///存取Code的資訊///
 	public int getTryCounter() {
 		return tryCounter;
 	}
@@ -187,7 +191,7 @@ public class ReportModel {
 	}
 	public int getFinallyCounter() {
 		return finallyCounter;
-	}
+	}	
 	public void addFinallyCounter(int finallyCounter) {
 		this.finallyCounter += finallyCounter;
 	}

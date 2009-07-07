@@ -129,7 +129,7 @@ public class EHSmellReportView extends ViewPart {
 		});
 		itemRefresh.setText("Refresh");
 		itemRefresh.setImage(ImageManager.getInstance().get("refresh"));
-		
+
 		projectCombo = new Combo(parent, SWT.NONE);
 		//把專案名稱顯示在Combo上
 		bindProjectCombo();
@@ -141,7 +141,7 @@ public class EHSmellReportView extends ViewPart {
 		comboForm.left = new FormAttachment(toolbar, 0, SWT.RIGHT);
 		projectCombo.setLayoutData(comboForm);
 	}
-	
+
 	/**
 	 * 產生Report
 	 * @param project

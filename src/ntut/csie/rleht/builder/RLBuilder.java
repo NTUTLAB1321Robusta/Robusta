@@ -6,6 +6,7 @@ import java.util.Map;
 import ntut.csie.csdet.data.CSMessage;
 import ntut.csie.csdet.visitor.CodeSmellAnalyzer;
 import ntut.csie.csdet.visitor.MainAnalyzer;
+import ntut.csie.csdet.visitor.OverLoggingDetector;
 import ntut.csie.rleht.common.ASTHandler;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLChecker;
@@ -110,8 +111,10 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	 *      java.util.Map, org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
+		long start = System.currentTimeMillis();
 		if (kind == FULL_BUILD) {
 			fullBuild(monitor);
+		
 		}
 		else {
 			IResourceDelta delta = getDelta(getProject());
@@ -122,6 +125,8 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				incrementalBuild(delta, monitor);
 			}
 		}
+		long end = System.currentTimeMillis();
+		System.out.println("RLBuild花費時間 "+(end - start) + " milli second.");
 		return null;
 	}
 
@@ -161,6 +166,8 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				
 				MainAnalyzer mainVisitor = null;
 
+				OverLoggingDetector loggingDetector = null;
+
 				// 目前method的Exception資訊
 				List<RLMessage> currentMethodExList = null;
 
@@ -172,7 +179,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				
 				// 目前method內的dummy handler資訊
 				List<CSMessage> dummyList = null;
-				
+
 				// 目前method內的Nested Try Block資訊
 				List<CSMessage> nestedTryList = null; 
 				
@@ -180,6 +187,8 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				List<CSMessage> unprotectedMain = null;
 				
 				List<CSMessage> spareHandler = null;
+
+				List<CSMessage> overLoggingList = null;
 				
 				// 目前的Method AST Node
 				ASTNode currentMethodNode = null;
@@ -251,8 +260,25 @@ public class RLBuilder extends IncrementalProjectBuilder {
 							this.addMarker(file, errmsg, msg.getLineNumber(), IMarker.SEVERITY_WARNING,
 									msg.getCodeSmellType(), msg, csIdx, methodIdx);	
 						}
-					}						
-									
+					}
+
+					//尋找該method內的OverLogging
+					loggingDetector = new OverLoggingDetector(root,method);
+					loggingDetector.detect();
+					overLoggingList = loggingDetector.getOverLoggingList();
+					
+					//依據所取得的code smell來貼Marker
+					csIdx = -1;
+					if(overLoggingList != null){
+						for(CSMessage msg : overLoggingList){
+							csIdx++;
+							String errmsg = "EH Smell Type:["+ msg.getCodeSmellType() + "]未處理!!!";
+							//貼marker
+							this.addMarker(file, errmsg, msg.getLineNumber(), IMarker.SEVERITY_WARNING,
+									msg.getCodeSmellType(), msg, csIdx, methodIdx);	
+						}
+					}
+					
 					if (currentMethodNode != null) {
 						RLChecker checker = new RLChecker();
 						currentMethodExList = checker.check(visitor);

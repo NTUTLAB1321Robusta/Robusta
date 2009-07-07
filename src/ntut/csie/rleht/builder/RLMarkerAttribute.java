@@ -33,4 +33,6 @@ public interface RLMarkerAttribute {
 	//Unprotected Main Program
 	public static final String CS_UNPROTECTED_MAIN = "Unprotected_Main_Program";
 	
+	//Over Logging
+	public static final String CS_OVER_LOGGING = "Over_Logging";
 }
