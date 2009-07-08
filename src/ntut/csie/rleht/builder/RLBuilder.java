@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import ntut.csie.csdet.data.CSMessage;
+import ntut.csie.csdet.visitor.CarelessCleanUpAnalyzer;
 import ntut.csie.csdet.visitor.CodeSmellAnalyzer;
 import ntut.csie.csdet.visitor.MainAnalyzer;
 import ntut.csie.csdet.visitor.OverLoggingDetector;
@@ -114,7 +115,6 @@ public class RLBuilder extends IncrementalProjectBuilder {
 		long start = System.currentTimeMillis();
 		if (kind == FULL_BUILD) {
 			fullBuild(monitor);
-		
 		}
 		else {
 			IResourceDelta delta = getDelta(getProject());
@@ -165,9 +165,10 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				CodeSmellAnalyzer csVisitor = null;
 				
 				MainAnalyzer mainVisitor = null;
-
+				
+				CarelessCleanUpAnalyzer ccVisitor=null;
+				
 				OverLoggingDetector loggingDetector = null;
-
 				// 目前method的Exception資訊
 				List<RLMessage> currentMethodExList = null;
 
@@ -179,15 +180,16 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				
 				// 目前method內的dummy handler資訊
 				List<CSMessage> dummyList = null;
-
+				
 				// 目前method內的Nested Try Block資訊
 				List<CSMessage> nestedTryList = null; 
 				
 				// 目前method內的Unprotected Main資訊
 				List<CSMessage> unprotectedMain = null;
 				
-				List<CSMessage> spareHandler = null;
-
+				//目前method內的Careless CleanUp資訊
+				List<CSMessage> ccList=null;
+				
 				List<CSMessage> overLoggingList = null;
 				
 				// 目前的Method AST Node
@@ -245,24 +247,23 @@ public class RLBuilder extends IncrementalProjectBuilder {
 						}
 					}
 					
-					//尋找該method內的unprotected main program
-					mainVisitor = new MainAnalyzer(root);
-					method.accept(mainVisitor);
-					unprotectedMain = mainVisitor.getUnprotedMainList();
-					
-					//依據所取得的code smell來貼Marker
+					//找尋專案中所有的Careless Cleanup
+					ccVisitor = new CarelessCleanUpAnalyzer(root);
+					method.accept(ccVisitor);
+					ccList = ccVisitor.getCarelessCleanUpList();
 					csIdx = -1;
-					if(unprotectedMain != null){
-						for(CSMessage msg : unprotectedMain){
+					if(ccList != null){
+						// 將每個Careless Cleanup都貼上marker
+						for(CSMessage msg : ccList){
 							csIdx++;
 							String errmsg = "EH Smell Type:["+ msg.getCodeSmellType() + "]未處理!!!";
 							//貼marker
 							this.addMarker(file, errmsg, msg.getLineNumber(), IMarker.SEVERITY_WARNING,
-									msg.getCodeSmellType(), msg, csIdx, methodIdx);	
+									msg.getCodeSmellType(), msg, csIdx, methodIdx);
 						}
 					}
-
-					//尋找該method內的OverLogging
+					
+										//尋找該method內的OverLogging
 					loggingDetector = new OverLoggingDetector(root,method);
 					loggingDetector.detect();
 					overLoggingList = loggingDetector.getOverLoggingList();
@@ -279,6 +280,23 @@ public class RLBuilder extends IncrementalProjectBuilder {
 						}
 					}
 					
+					//尋找該method內的unprotected main program
+					mainVisitor = new MainAnalyzer(root);
+					method.accept(mainVisitor);
+					unprotectedMain = mainVisitor.getUnprotedMainList();
+					
+					//依據所取得的code smell來貼Marker
+					csIdx = -1;
+					if(unprotectedMain != null){
+						for(CSMessage msg : unprotectedMain){
+							csIdx++;
+							String errmsg = "EH Smell Type:["+ msg.getCodeSmellType() + "]未處理!!!";
+							//貼marker
+							this.addMarker(file, errmsg, msg.getLineNumber(), IMarker.SEVERITY_WARNING,
+									msg.getCodeSmellType(), msg, csIdx, methodIdx);	
+						}
+					}						
+									
 					if (currentMethodNode != null) {
 						RLChecker checker = new RLChecker();
 						currentMethodExList = checker.check(visitor);
