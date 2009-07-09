@@ -188,7 +188,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				List<CSMessage> unprotectedMain = null;
 				
 				//目前method內的Careless CleanUp資訊
-				List<CSMessage> ccList=null;
+				List<CSMessage> carelessCleanUpList=null;
 				
 				List<CSMessage> overLoggingList = null;
 				
@@ -250,11 +250,11 @@ public class RLBuilder extends IncrementalProjectBuilder {
 					//找尋專案中所有的Careless Cleanup
 					ccVisitor = new CarelessCleanUpAnalyzer(root);
 					method.accept(ccVisitor);
-					ccList = ccVisitor.getCarelessCleanUpList();
+					carelessCleanUpList = ccVisitor.getCarelessCleanUpList();
 					csIdx = -1;
-					if(ccList != null){
+					if(carelessCleanUpList != null){
 						// 將每個Careless Cleanup都貼上marker
-						for(CSMessage msg : ccList){
+						for(CSMessage msg : carelessCleanUpList){
 							csIdx++;
 							String errmsg = "EH Smell Type:["+ msg.getCodeSmellType() + "]未處理!!!";
 							//貼marker

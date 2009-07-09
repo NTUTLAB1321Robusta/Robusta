@@ -72,10 +72,7 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 			if(statementTemp.get(i) instanceof Statement){
 				Statement expStatement = (Statement) statementTemp.get(i);
 				//找尋Method Invocation的node
-//				CarelessVisitor vistor = new CarelessVisitor(root);
-//				expStatement.accept(vistor);
-//				CarelessCleanUpList = vistor.getCarelessCleanUpList();
-				expStatement.accept(new ASTVisitor(true){
+				expStatement.accept(new ASTVisitor(){
 					public boolean visit(MethodInvocation node) {
 					
 						//判斷class來源是否為source code
