@@ -119,6 +119,8 @@ public class RetryRefactoring extends Refactoring{
 	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
 		RefactoringStatus status = new RefactoringStatus();		
+		System.out.println(iTSelection.getOffset() );
+		System.out.println(iTSelection.getLength() );
 		if(iTSelection.getOffset() < 0 || iTSelection.getLength() == 0){
 			status.addFatalError("Selection Error, please retry again!!!");
 		}

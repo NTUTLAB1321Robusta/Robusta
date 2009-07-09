@@ -371,7 +371,9 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 	// *************************************************************************
 
 	private void makeActions() {
+		//顯示方法內所有的例外
 		this.initActionShowAll();
+		//顯示方法內呼叫物件方法之定義強健度等級的例外
 		this.initActionShowRL();
 		this.initActionShowThrow();
 		this.initActionShowCatch();

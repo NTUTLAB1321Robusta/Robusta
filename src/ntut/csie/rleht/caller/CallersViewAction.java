@@ -13,8 +13,6 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionGroup;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CallersViewAction extends ActionGroup {
 

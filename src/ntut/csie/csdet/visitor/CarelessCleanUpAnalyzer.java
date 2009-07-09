@@ -4,9 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ntut.csie.csdet.data.CSMessage;
+import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.rleht.common.RLBaseVisitor;
-import ntut.csie.rleht.builder.*;
-import org.eclipse.jdt.core.dom.*;
+
+import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.CatchClause;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.Statement;
+import org.eclipse.jdt.core.dom.TryStatement;
 /**
  * 找專案中的Careless CleanUp
  * @author yimin
@@ -62,10 +69,13 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 	private void judgeCarelessCleanUp(List<?> statementTemp){
 		//對每個statementTemp找是否有符合的條件xxx.close()
 		for(int i=0;i<statementTemp.size();i++){
-			if(statementTemp.get(i) instanceof ExpressionStatement){
-				ExpressionStatement expStatement = (ExpressionStatement) statementTemp.get(i);
+			if(statementTemp.get(i) instanceof Statement){
+				Statement expStatement = (Statement) statementTemp.get(i);
 				//找尋Method Invocation的node
-				expStatement.accept(new ASTVisitor(){
+//				CarelessVisitor vistor = new CarelessVisitor(root);
+//				expStatement.accept(vistor);
+//				CarelessCleanUpList = vistor.getCarelessCleanUpList();
+				expStatement.accept(new ASTVisitor(true){
 					public boolean visit(MethodInvocation node) {
 					
 						//判斷class來源是否為source code

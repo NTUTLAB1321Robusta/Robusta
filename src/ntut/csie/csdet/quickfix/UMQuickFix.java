@@ -329,8 +329,6 @@ public class UMQuickFix implements IMarkerResolution{
 			for (RLMessage rlmsg : currentMethodRLList) {
 				//把舊的annotation加進去
 				//判斷如果遇到重複的就不要加annotation
-				System.out.println("【Ex type】"+rlmsg.getRLData().getExceptionType().toString());
-				System.out.println("【Ex level】"+rlmsg.getRLData().getLevel());
 				if((!rlmsg.getRLData().getExceptionType().toString().equals(exType)) && (rlmsg.getRLData().getLevel() == 1)){	
 					rlary.expressions().add(
 							getRLAnnotation(ast, rlmsg.getRLData().getLevel(), rlmsg.getRLData().getExceptionType()));	
