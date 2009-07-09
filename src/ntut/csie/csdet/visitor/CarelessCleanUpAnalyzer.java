@@ -14,14 +14,17 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.TryStatement;
+
 /**
  * 找專案中的Careless CleanUp
  * @author yimin
  */
 public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
+	
 	// AST tree的root(檔案名稱)
 	private CompilationUnit root;
-	// 儲存找到的Unguaranteed Cleanup
+	
+	// 儲存找到的Careless Cleanup
 	private List<CSMessage> CarelessCleanUpList;
 	
 	//Constructor
@@ -40,11 +43,7 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 			//Find the smell in the try node
 			case ASTNode.TRY_STATEMENT:
 				processTryStatement(node);
-				return true;
-			//Find the smell in the catch node
-			case ASTNode.CATCH_CLAUSE:
-				processCatchStatement(node);
-				return true;
+				return false;		
 			default:
 				return true;
 		}
@@ -57,9 +56,23 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 		TryStatement trystat=(TryStatement) node;
 		List<?> statementTemp=trystat.getBody().statements();
 
-		if(statementTemp.size()!=0){
+		if(statementTemp.size()!= 0){
 			//判斷是否有Careless CleanUp
 			judgeCarelessCleanUp(statementTemp);
+		}
+		//找完try節點之後,去找catch節點,直接忽略finally block
+		List<?> catchList = trystat.catchClauses();
+		CatchClause cc = null;
+		for (int i = 0, size = catchList.size(); i < size; i++) {
+			cc = (CatchClause) catchList.get(i);
+			//避免careless cleanup直接出現在catch區塊第一層,在這邊會先偵測
+			judgeCarelessCleanUp(cc.getBody().statements());
+			//若careless cleanup出現在catch中的try,則會繼續traversal下去
+			CarelessCleanUpAnalyzer visitor = new CarelessCleanUpAnalyzer(root);
+			cc.getBody().accept(visitor);	
+			//將catch區塊中找到的資訊做merge
+			this.mergeCS(visitor.getCarelessCleanUpList());
+			
 		}
 	}
 	
@@ -70,17 +83,14 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 		//對每個statementTemp找是否有符合的條件xxx.close()
 		for(int i=0;i<statementTemp.size();i++){
 			if(statementTemp.get(i) instanceof Statement){
-				Statement expStatement = (Statement) statementTemp.get(i);
+				Statement expStatement = (Statement) statementTemp.get(i);			
 				//找尋Method Invocation的node
 				expStatement.accept(new ASTVisitor(){
 					public boolean visit(MethodInvocation node) {
-					
 						//判斷class來源是否為source code
-						boolean isFromSource=node.resolveMethodBinding().getDeclaringClass().isFromSource();
-						
+						boolean isFromSource=node.resolveMethodBinding().getDeclaringClass().isFromSource();						
 						//取得Method的名稱
 						String methodName = node.resolveMethodBinding().getName();
-	
 						/*
 						 * 偵測條件須同時滿足兩個
 						 * 1.該class來源非使用者自訂
@@ -102,20 +112,6 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 	}
 	
 	/**
-	 * 判斷catch節點內的statement是否有XXX.close()
-	 */
-	private void processCatchStatement(ASTNode node){
-		//轉換成catch node
-		CatchClause cc=(CatchClause) node;
-		//取得catch node的statement
-		List<?> statementTemp=cc.getBody().statements();
-		if(statementTemp.size()!=0){
-			//判斷是否有Careless CleanUp type
-			judgeCarelessCleanUp(statementTemp);
-		}
-	}
-	
-	/**
 	 * 取得Careless CleanUp的list
 	 * @return list
 	 */
@@ -128,5 +124,25 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 	 */
 	private int getLineNumber(int pos) {
 		return root.getLineNumber(pos);
+	}
+	
+	/**
+	 * 將找到的smell資訊作merge
+	 * @param childInfo
+	 */
+	private void mergeCS(List<CSMessage> childInfo){
+		if (childInfo == null || childInfo.size() == 0) {
+			return;
+		}
+		
+		for(CSMessage msg : childInfo){
+			this.CarelessCleanUpList.add(msg);
+		}
+	}
+	
+	
+	public void clear(){
+		if(CarelessCleanUpList != null)
+			CarelessCleanUpList.clear();
 	}
 }
