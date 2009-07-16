@@ -169,6 +169,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				CarelessCleanUpAnalyzer ccVisitor=null;
 				
 				OverLoggingDetector loggingDetector = null;
+
 				// 目前method的Exception資訊
 				List<RLMessage> currentMethodExList = null;
 
@@ -188,8 +189,9 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				List<CSMessage> unprotectedMain = null;
 				
 				//目前method內的Careless CleanUp資訊
-				List<CSMessage> carelessCleanUpList=null;
+				List<CSMessage> carelessCleanUpList = null;
 				
+				// 目前method內的OverLogging資訊
 				List<CSMessage> overLoggingList = null;
 				
 				// 目前的Method AST Node
@@ -263,11 +265,12 @@ public class RLBuilder extends IncrementalProjectBuilder {
 						}
 					}
 					
-										//尋找該method內的OverLogging
-					loggingDetector = new OverLoggingDetector(root,method);
+					//尋找該method內的OverLogging
+					loggingDetector = new OverLoggingDetector(root, method);
 					loggingDetector.detect();
+					//取得專案中OverLogging
 					overLoggingList = loggingDetector.getOverLoggingList();
-					
+
 					//依據所取得的code smell來貼Marker
 					csIdx = -1;
 					if(overLoggingList != null){
@@ -296,7 +299,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 									msg.getCodeSmellType(), msg, csIdx, methodIdx);	
 						}
 					}						
-									
+							
 					if (currentMethodNode != null) {
 						RLChecker checker = new RLChecker();
 						currentMethodExList = checker.check(visitor);

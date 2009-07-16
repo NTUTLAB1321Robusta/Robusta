@@ -1,78 +1,58 @@
 package ntut.csie.csdet.visitor;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 
-import ntut.csie.csdet.data.CSMessage;
-import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.rleht.common.RLBaseVisitor;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
-import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
+import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.ThrowStatement;
+import org.eclipse.jdt.core.dom.TryStatement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 用AST判斷是否發生OverLogging，並記錄Logging的Message
+ * 判斷是否有Logging，以及判斷是否要繼續往上層Trace
  * @author Shiau
  *
  */
 public class LoggingAnalyzer extends RLBaseVisitor{
 	private static Logger logger = LoggerFactory.getLogger(LoggingAnalyzer.class);
-	
-	// 儲存所找到的ignore Exception 
-	private List<CSMessage> loggingList;
-	
-	//AST Tree的root(檔案名稱)
-	private CompilationUnit root;
-	
+
 	//最底層Throw的Exception的Type
 	String baseException;
-	
-	//判斷是不是偵測最底層的Method
-	boolean isBaseMethod = false;
+
 	//是否有Logging
 	boolean isLogging = false;
 	//是否要繼續偵測
 	boolean isKeepTrace = false;
 
-	public LoggingAnalyzer(CompilationUnit root, String baseException) {
-		this.root = root;
+	//Callee的Class和Method的資訊
+	private String classInfo = "";
+	private String methodInfo = "";
 
+	//使用者定義的Log條件(Key:library名稱,Value:Method名稱)
+	TreeMap<String, String> libMap = new TreeMap<String, String>();
+
+	//非最底層Method(只要找Logging)
+	public LoggingAnalyzer(String baseException, String classInfo, String methodInfo, TreeMap<String,String> libMap) {
 		this.baseException = baseException;
-
-		this.loggingList = new ArrayList<CSMessage>();
-		
-		//若沒有最底層的Exception，表示要偵測最底層Method
-		if (baseException == "")
-			isBaseMethod = true;
+		this.classInfo = classInfo;
+		this.methodInfo = methodInfo;
+		this.libMap = libMap;
 	}
 
 	protected boolean visitNode(ASTNode node){
 		try {
 			switch (node.getNodeType()) {
-				case ASTNode.CATCH_CLAUSE :
-					//轉換成catch node
-					CatchClause cc = (CatchClause) node;
-					//取的catch(Exception e)其中的e
-					SingleVariableDeclaration svd = (SingleVariableDeclaration) cc
-					.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
-
-					//若為第一層的Method
-					if (isBaseMethod) {
-						detectOverLogging(cc, svd);
-					} else {
-						String catchExcepiton = svd.getType().toString();
-						//若Catch到的Exception與上一層傳來的Exception不同，則不偵測
-						if (catchExcepiton.equals(baseException))
-							detectOverLogging(cc, svd);
-					}
-
+				case ASTNode.TRY_STATEMENT:
+					//判斷Method是否出現在這個Try之中
+					processTryStatement(node);
 					return true;
 				default:
 					return true;
@@ -84,111 +64,111 @@ public class LoggingAnalyzer extends RLBaseVisitor{
 	}
 
 	/**
-	 * 尋找catch的節點,並且判斷節點內的Statement是否有OverLogging的情況
-	 * @param statementTemp
-	 * @param catchExcepiton 
+	 * 判斷Callee的Method是否出現在這個Try之中
+	 * @param node
 	 */
-	private void detectOverLogging(CatchClause cc, SingleVariableDeclaration svd) {
-		List statementTemp = cc.getBody().statements();
-		
-		for (int i = 0; i < statementTemp.size(); i++) {
-			//取得Expression statement,因為e.printstackTrace
-			if(statementTemp.get(i) instanceof ExpressionStatement) {
-				ExpressionStatement statement = (ExpressionStatement) statementTemp.get(i);
+	private void processTryStatement(ASTNode node) {
+		TryStatement trystat = (TryStatement) node;
+		List trys = trystat.getBody().statements();
+			
+		for (int i = 0;i < trys.size(); i++) {
+			//若try中Statement為ExpressionStatement
+			if (trys.get(i) instanceof ExpressionStatement) {
+				ExpressionStatement expression = (ExpressionStatement) trys.get(i);
+				//若此ExpressionStatement為MethodInvocation
+				if (expression.getExpression() instanceof MethodInvocation) {
+					MethodInvocation mi = (MethodInvocation) expression.getExpression();
 
-				//判斷是否有Logging
-				judgeLogging(cc, svd, statement);
-			}
-			if(statementTemp.get(i) instanceof ThrowStatement) {
-				ThrowStatement throwState = (ThrowStatement) statementTemp.get(i);
-				//若為第一個偵測的Method
-				if (isBaseMethod) {
-					//若有Logging又有Throw Exception
-					//Call它的Method也可能會Logging，即發生OverLogging，所以繼續往下Trace
-					if (isLogging) {
-						//繼續Trace
-						isKeepTrace = true;
-						//紀錄最底層Method的Throw Exception Type
-						if (throwState.getExpression() instanceof ClassInstanceCreation) {
-							ClassInstanceCreation cic = (ClassInstanceCreation) throwState.getExpression();
-							//若是throw new Exception，則去取它的Type
-							baseException = cic.getType().toString();
-						} else							
-							//若是throw e，則去取catch的Exception
-							baseException = svd.getType().toString();
+					//取得此MethodInvocation的
+					String classInfo = mi.resolveMethodBinding().getDeclaringClass().getQualifiedName();
+					//若Try中有CalleeMethod(出現Class型態與Method名稱相同的Method)
+					if (mi.getName().toString().equals(methodInfo) && classInfo.equals(this.classInfo)) {
+						//確定Method在這個Try節點之中後，去找catch節點，直接忽略finally block
+						List catchList = trystat.catchClauses();
+						CatchClause cc = null;
+						for (int j = 0; j < catchList.size(); j++) {
+							cc = (CatchClause) catchList.get(i);
+							//處理CatchClause(判斷Exception是否有轉型，並偵測有沒有Logging)
+							processCatchStatement(cc);
+						}
+
 					}
-				} else {
-					//判斷是否Throw new Exception，有就不追蹤
-					if (throwState.getExpression() instanceof ClassInstanceCreation)
-						isKeepTrace = false;
-					else
-						isKeepTrace = true;
 				}
 			}
 		}
 	}
+	
+	/**
+	 * 判斷Exception是否有轉型，並偵測有沒有Logging
+	 * @param node
+	 */
+	private void processCatchStatement(ASTNode node) {
+		//轉換成catch node
+		CatchClause cc = (CatchClause) node;
+		//取的catch(Exception e)其中的e
+		SingleVariableDeclaration svd = (SingleVariableDeclaration) cc
+		.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
+
+		//若為第一層的Method
+		String catchExcepiton = svd.getType().toString();
+		
+		//若baseException為空白(表示使用者設定Exception轉態後仍偵測)
+		//或Catch到的Exception與上一層傳來的Exception不同，則不偵測
+		if (baseException.equals("") || catchExcepiton.equals(baseException))
+			detectOverLogging(cc);
+	}
 
 	/**
-	 * 判斷是否有Logging
-	 * @param statement
+	 * 尋找catch的節點並且判斷節點內的Statement，是否有Logging以及要不要繼續往上層Trace
+	 * @param cc
 	 */
-	private void judgeLogging(CatchClause cc, SingleVariableDeclaration svd, ExpressionStatement statement) {
-		//偵測Statement和printStackTrace是否有Logging
-		String st = statement.getExpression().toString();
-		if(st.contains("printStackTrace")) {
-			addLoggingMessage(cc, svd, statement);
-			isLogging = true;
+	private void detectOverLogging(CatchClause cc) {
+		List statementTemp = cc.getBody().statements();
+		
+		for (int i = 0; i < statementTemp.size(); i++) {
+			//取得Expression statement
+			if(statementTemp.get(i) instanceof ExpressionStatement) {
+				ExpressionStatement statement = (ExpressionStatement) statementTemp.get(i);
+
+				//判斷是否有Logging
+				judgeLogging(statement);
+			}
+			//判斷有沒有Throw，決定要不要繼繼Trace
+			if(statementTemp.get(i) instanceof ThrowStatement) {
+				ThrowStatement throwState = (ThrowStatement) statementTemp.get(i);
+				//判斷是否Throw new Exception，有就不追蹤
+				if (throwState.getExpression() instanceof ClassInstanceCreation)
+					isKeepTrace = false;
+				else
+					isKeepTrace = true;
+			}
 		}
 	}
-	
-	/**
-	 * 增加Logging的訊息
-	 * @param cc
-	 * @param svd
-	 * @param statement
-	 */
-	private void addLoggingMessage(CatchClause cc,SingleVariableDeclaration svd, ExpressionStatement statement) {
-		CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_OVER_LOGGING, svd.resolveBinding().getType(),											
-										cc.toString(), cc.getStartPosition(),
-										this.getLineNumber(statement.getStartPosition()), svd.getType().toString());
-		this.loggingList.add(csmsg);
-	}
 
 	/**
-	 * 根據startPosition來取得行數
+	 * 用來找尋這個Catch Clause中是否有logging
+	 * @param statement
 	 */
-	private int getLineNumber(int pos) {
-		if (root != null)
-			return root.getLineNumber(pos);
-		else
-			return 0;
+	private void judgeLogging(ExpressionStatement statement) {
+		ASTBinding visitor = new ASTBinding(libMap);
+		statement.getExpression().accept(visitor);
+
+		if (visitor.getResult())
+			isLogging = true;
 	}
-	
+
 	/**
 	 * 取得是否要繼續Trace
 	 */
 	public boolean getIsKeepTrace() {
 		return this.isKeepTrace;
 	}
+
 	/**
 	 * 回傳是否有Logging
 	 * @return
 	 */
 	public boolean getIsLogging() {
 		return isLogging;
-	}
-	/**
-	 * 取得OverLogging 行數的資訊
-	 * @return
-	 */
-	public List<CSMessage> getOverLoggingList() {
-		return loggingList;
-	}
-	/**
-	 * 取得最底層的Exception型態
-	 * @return
-	 */
-	public String getBaseException() {
-		return baseException;
 	}
 }

@@ -80,7 +80,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 	}
 
 	/**
-	 * 取得目前method內所有可能發生的excpetion及catch資訊
+	 * 取得目前method內所有可能發生的exception及catch資訊
 	 * 
 	 * @return
 	 */

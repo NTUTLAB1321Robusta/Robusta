@@ -13,7 +13,7 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 /**
- * 主要是用來建立xml檔的(存放在workspace的下面,所有專案共享一個config檔)
+ * 主要是用來建立XML檔的(存放在WorkSpace的下面,所有專案共享一個config檔)
  * @author chewei
  */
 
@@ -23,6 +23,8 @@ public class JDomUtil {
 	final static public String root = "CodeSmellDetect";
 	final static public String project = "ProjectName";
 	final static public String DummyHandlerTag = "DummyHandler";
+	final static public String OverLoggingTag = "OverLogging";
+	final static public String transException = "detectionTransException";
 	final static public String eprintstacktrace = "eprintstacktrace";
 	final static public String systemoutprint = "systemoutprint";
 	final static public String println = "systemoutprintln";

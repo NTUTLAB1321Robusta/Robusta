@@ -45,15 +45,22 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage{
 		//add Dummy Handler Page
 		final TabItem dummyHandlerTabItem = new TabItem(tabFolder, SWT.NONE);
 		dummyHandlerTabItem.setText("Dummy Handler");
-		final Composite dummyHandlerPage = new Composite(tabFolder, SWT.NONE);
-		APropertyPage page = new DummyHandlerPage(dummyHandlerPage,this);
-		dummyHandlerTabItem.setControl(dummyHandlerPage);
-		tabPages.add(page);
+		final Composite dummyHandlerComposite = new Composite(tabFolder, SWT.NONE);
+		APropertyPage dummyHandlerPage = new DummyHandlerPage(dummyHandlerComposite,this);
+		dummyHandlerTabItem.setControl(dummyHandlerComposite);
+		tabPages.add(dummyHandlerPage);
 
+		//add OverLogging Page
+		final TabItem overLoggingTabItem = new TabItem(tabFolder, SWT.NONE);
+		overLoggingTabItem.setText("OverLogging");
+		final Composite overLoggingComposite = new Composite(tabFolder, SWT.NONE);
+		APropertyPage overLoggingPage = new OverLoggingPage(overLoggingComposite,this);
+		overLoggingTabItem.setControl(overLoggingComposite);
+		tabPages.add(overLoggingPage);
 	}
 	
 	/**
-	 * 砍xml file
+	 * 砍掉XML file (目前不使用)
 	 */
 	private void deleteXMLFile(){
 		String path = JDomUtil.getWorkspace()+File.separator+"CSPreference.xml";
@@ -63,11 +70,11 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage{
 	}
 
 	/**
-	 * 按下ok的時候去抓取每個Tab Page的資料
+	 * 按下OK的時候去抓取每個Tab Page的資料
 	 * 然後將他儲存下來
 	 */
 	public boolean performOk() {
-		//每次都先將xml檔砍掉,這樣code寫起來比較少
+//		//每次都先將XML檔砍掉,這樣code寫起來比較少
 //		deleteXMLFile();
 		for(int i=0;i<tabPages.size();i++){
 			tabPages.get(i).storeSettings();
