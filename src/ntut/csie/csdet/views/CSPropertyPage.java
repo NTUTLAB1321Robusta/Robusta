@@ -49,7 +49,7 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage{
 		APropertyPage dummyHandlerPage = new DummyHandlerPage(dummyHandlerComposite,this);
 		dummyHandlerTabItem.setControl(dummyHandlerComposite);
 		tabPages.add(dummyHandlerPage);
-
+		
 		//add OverLogging Page
 		final TabItem overLoggingTabItem = new TabItem(tabFolder, SWT.NONE);
 		overLoggingTabItem.setText("OverLogging");
@@ -57,6 +57,14 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage{
 		APropertyPage overLoggingPage = new OverLoggingPage(overLoggingComposite,this);
 		overLoggingTabItem.setControl(overLoggingComposite);
 		tabPages.add(overLoggingPage);
+		
+		//add CarelessCleanUp Page
+		final TabItem carelessCleanUpTabItem=new TabItem(tabFolder,SWT.NONE);
+		carelessCleanUpTabItem.setText("Careless CleanUp");
+		final Composite carelessCleanUpPage=new Composite(tabFolder,SWT.NONE);
+		APropertyPage cleanUpPage = new CarelessCleanUpPage(carelessCleanUpPage,this);
+		carelessCleanUpTabItem.setControl(carelessCleanUpPage);
+		tabPages.add(cleanUpPage);
 	}
 	
 	/**
@@ -70,11 +78,11 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage{
 	}
 
 	/**
-	 * 按下OK的時候去抓取每個Tab Page的資料
+	 * 按下ok的時候去抓取每個Tab Page的資料
 	 * 然後將他儲存下來
 	 */
 	public boolean performOk() {
-//		//每次都先將XML檔砍掉,這樣code寫起來比較少
+//		//每次都先將xml檔砍掉,這樣code寫起來比較少
 //		deleteXMLFile();
 		for(int i=0;i<tabPages.size();i++){
 			tabPages.get(i).storeSettings();

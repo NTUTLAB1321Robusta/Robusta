@@ -11,6 +11,7 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.TryStatement;
@@ -83,26 +84,36 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 		//對每個statementTemp找是否有符合的條件xxx.close()
 		for(int i=0;i<statementTemp.size();i++){
 			if(statementTemp.get(i) instanceof Statement){
-				Statement expStatement = (Statement) statementTemp.get(i);			
+				Statement statement = (Statement) statementTemp.get(i);			
 				//找尋Method Invocation的node
-				expStatement.accept(new ASTVisitor(){
+				statement.accept(new ASTVisitor(){
 					public boolean visit(MethodInvocation node) {
 						//判斷class來源是否為source code
 						boolean isFromSource=node.resolveMethodBinding().getDeclaringClass().isFromSource();						
 						//取得Method的名稱
 						String methodName = node.resolveMethodBinding().getName();
+						//取得Expression
+						Expression exp=node.getExpression();
+						
 						/*
 						 * 偵測條件須同時滿足兩個
 						 * 1.該class來源非使用者自訂
 						 * 2.方法名稱為"close"
 						 */
-						if((!isFromSource)&& methodName.equals("close")){
+						if((exp!=null)&&(!isFromSource)&& methodName.equals("close")){
 							//建立一個Careless CleanUp type
 							CSMessage csmsg=new CSMessage(RLMarkerAttribute.CS_CARELESS_CLEANUP,null,											
 									node.toString(),node.getStartPosition(),
 									getLineNumber(node.getStartPosition()),null);
 							CarelessCleanUpList.add(csmsg);
-						}
+						}//else if((exp==null)&&(isFromSource)){
+//							if(visitMethodNode(node)){
+//								CSMessage csmsg=new CSMessage(RLMarkerAttribute.CS_CARELESS_CLEANUP,null,											
+//										node.toString(),node.getStartPosition(),
+//										getLineNumber(node.getStartPosition()),null);
+//								CarelessCleanUpList.add(csmsg);
+//							}
+//						}
 						return true;
 					}
 				}
@@ -111,6 +122,10 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 		}
 	}
 	
+	public boolean visitMethodNode(MethodInvocation node){
+		
+		return true;
+	}
 	/**
 	 * 取得Careless CleanUp的list
 	 * @return list

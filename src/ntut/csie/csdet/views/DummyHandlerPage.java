@@ -24,10 +24,9 @@ import org.jdom.Element;
  * 讓user定義一些簡單的detect rule
  * @author chewei
  */
-public class DummyHandlerPage extends APropertyPage {
+public class DummyHandlerPage extends APropertyPage{
 	// 放code template的區域
 	private StyledText templateArea;
-	// 放code template的區域
 	// 是否要捕捉System.out.println() and print()的按鈕
 	private Button sysoBtn;
 	// 是否要捕捉e.printStackTrace的button
