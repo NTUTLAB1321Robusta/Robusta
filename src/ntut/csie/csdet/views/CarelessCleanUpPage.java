@@ -12,7 +12,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
-import org.jdom.Document;
 import org.jdom.Element;
 
 public class CarelessCleanUpPage  extends APropertyPage {
@@ -23,10 +22,10 @@ public class CarelessCleanUpPage  extends APropertyPage {
 	private Button detUserMethodBtn;
 	
 	// 不偵測的template字型風格
-	StyleRange[] beforeSampleStyles = new StyleRange[4];
+	StyleRange[] beforeSampleStyles = new StyleRange[5];
 	
 	// 偵測的template的字型風格
-	StyleRange[] afterSampleStyles = new StyleRange[6];
+	StyleRange[] afterSampleStyles = new StyleRange[9];
 	
 	// code template Before detect的內容
 	private String beforeText;
@@ -37,21 +36,25 @@ public class CarelessCleanUpPage  extends APropertyPage {
 	public CarelessCleanUpPage(Composite composite,CSPropertyPage page){
 		super(composite,page);
 		
-		beforeText =	"try {   \n" +
-						"     FileOutputStream fos=new FileOutputStream(\"file.txt\");\n"+
+		beforeText =	"FileInputStream in = null;\n" +
+						"try {   \n" +
+						"     in = new FileInputStream(path);\n"+
 						"     // do something here\n"+
-		                "     fos.close(); //This is Careless CleanUp!!\n"+
+		                "     in.close(); //Careless CleanUp\n"+
 						"} catch (IOException e) { \n"+
 						"}";
-		afterText =		"try {   \n" +
-		                "     FileOutputStream fos=new FileOutputStream(\"file.txt\");\n"+
+		
+		afterText =		"FileInputStream in = null;\n" +
+						"try {   \n" +
+		                "     in = new FileInputStream(path);\n"+
 						"     // do something here\n" +
-						"     close(fos); //Parse this method to find Careless CleanUp!!\n"+
+						"     //check method content\n" +
+						"     close(in); //Careless CleanUp\n"+
 						"} catch (IOException e) { \n"+
 						"}\n\n"+
-						"public void close(FileOutputStream fos){\n"+
-			            "     // do something here\n"+
-			            "     fos.close(); //This is Careless CleanUp!!\n"+
+						"public void close(FileInputStream in){\n"+
+			            "     // close stream here\n"+
+			            "     in.close(); \n"+
 			            "}";
 
 		//加入頁面的內容
@@ -74,8 +77,8 @@ public class CarelessCleanUpPage  extends APropertyPage {
 		detectSettingsLabel.setBounds(10, 10, 210, 12);
 		
 		detUserMethodBtn=new Button(CarelessCleanUpPage,SWT.CHECK);
-		detUserMethodBtn.setText("偵測自訂方法中的close()");
-		detUserMethodBtn.setBounds(20, 28, 200, 16);
+		detUserMethodBtn.setText("另外偵測釋放資源的程式碼是否在函式中");
+		detUserMethodBtn.setBounds(20, 28, 230, 16);
 		detUserMethodBtn.addSelectionListener(new SelectionAdapter(){
 			public void widgetSelected(final SelectionEvent e1){
 				addText();
@@ -84,7 +87,7 @@ public class CarelessCleanUpPage  extends APropertyPage {
 		});
 		
 		final Label label1 = new Label(CarelessCleanUpPage,SWT.SEPARATOR| SWT.HORIZONTAL);
-		label1.setBounds(10, 50, 670, 10);
+		label1.setBounds(10, 50, 472, 12);
 		
 		final Label detBeforeLbl = new Label(CarelessCleanUpPage, SWT.NONE);
 		detBeforeLbl.setText("偵測範例:");
@@ -94,7 +97,7 @@ public class CarelessCleanUpPage  extends APropertyPage {
 		templateArea = new StyledText(CarelessCleanUpPage, SWT.BORDER);
 		Font font = new Font(CarelessCleanUpPage.getDisplay(),"Courier New",14,SWT.NORMAL);		
 		templateArea.setFont(font);
-		templateArea.setBounds(10, 80, 700, 250);
+		templateArea.setBounds(10, 80, 458, 300);
 		templateArea.setEditable(false);
 		templateArea.setText(beforeText);
 		
@@ -115,58 +118,74 @@ public class CarelessCleanUpPage  extends APropertyPage {
 	}
 	
 	private void addBeforeSampleStyle(Display display){
-		//Try
+		// null
 		beforeSampleStyles[0] = new StyleRange();
 		beforeSampleStyles[0].fontStyle = SWT.BOLD;
 		beforeSampleStyles[0].foreground = display.getSystemColor(SWT.COLOR_DARK_MAGENTA);
-		// 註解
+		// try
 		beforeSampleStyles[1] = new StyleRange();
-		beforeSampleStyles[1].fontStyle = SWT.ITALIC;
-		beforeSampleStyles[1].foreground = display.getSystemColor(SWT.COLOR_DARK_GREEN);
+		beforeSampleStyles[1].fontStyle = SWT.BOLD;
+		beforeSampleStyles[1].foreground = display.getSystemColor(SWT.COLOR_DARK_MAGENTA);
 		// 註解
 		beforeSampleStyles[2] = new StyleRange();
 		beforeSampleStyles[2].fontStyle = SWT.ITALIC;
 		beforeSampleStyles[2].foreground = display.getSystemColor(SWT.COLOR_DARK_GREEN);
-		//catch
+		// 註解
 		beforeSampleStyles[3] = new StyleRange();
-		beforeSampleStyles[3].fontStyle = SWT.BOLD;
-		beforeSampleStyles[3].foreground = display.getSystemColor(SWT.COLOR_DARK_MAGENTA);
+		beforeSampleStyles[3].fontStyle = SWT.ITALIC;
+		beforeSampleStyles[3].foreground = display.getSystemColor(SWT.COLOR_DARK_GREEN);
+		// catch
+		beforeSampleStyles[4] = new StyleRange();
+		beforeSampleStyles[4].fontStyle = SWT.BOLD;
+		beforeSampleStyles[4].foreground = display.getSystemColor(SWT.COLOR_DARK_MAGENTA);
 		
 	}
 	
 	private void addAfterSampleStyle(Display display){
-		//Try
+		// null
 		afterSampleStyles[0] = new StyleRange();
 		afterSampleStyles[0].fontStyle = SWT.BOLD;
 		afterSampleStyles[0].foreground = display.getSystemColor(SWT.COLOR_DARK_MAGENTA);
-		// 註解
+		// try
 		afterSampleStyles[1] = new StyleRange();
-		afterSampleStyles[1].fontStyle = SWT.ITALIC;
-		afterSampleStyles[1].foreground = display.getSystemColor(SWT.COLOR_DARK_GREEN);
-		
+		afterSampleStyles[1].fontStyle = SWT.BOLD;
+		afterSampleStyles[1].foreground = display.getSystemColor(SWT.COLOR_DARK_MAGENTA);		
 		// 註解
 		afterSampleStyles[2] = new StyleRange();
 		afterSampleStyles[2].fontStyle = SWT.ITALIC;
 		afterSampleStyles[2].foreground = display.getSystemColor(SWT.COLOR_DARK_GREEN);
-		//catch
+		// 註解
 		afterSampleStyles[3] = new StyleRange();
-		afterSampleStyles[3].fontStyle = SWT.BOLD;
-		afterSampleStyles[3].foreground = display.getSystemColor(SWT.COLOR_DARK_MAGENTA);
+		afterSampleStyles[3].fontStyle = SWT.ITALIC;
+		afterSampleStyles[3].foreground = display.getSystemColor(SWT.COLOR_DARK_GREEN);
 		// 註解
 		afterSampleStyles[4] = new StyleRange();
 		afterSampleStyles[4].fontStyle = SWT.ITALIC;
 		afterSampleStyles[4].foreground = display.getSystemColor(SWT.COLOR_DARK_GREEN);
-		// 註解
+		// catch
 		afterSampleStyles[5] = new StyleRange();
-		afterSampleStyles[5].fontStyle = SWT.ITALIC;
-		afterSampleStyles[5].foreground = display.getSystemColor(SWT.COLOR_DARK_GREEN);
+		afterSampleStyles[5].fontStyle = SWT.BOLD;
+		afterSampleStyles[5].foreground = display.getSystemColor(SWT.COLOR_DARK_MAGENTA);
+		// public
+		afterSampleStyles[6] = new StyleRange();
+		afterSampleStyles[6].fontStyle = SWT.BOLD;
+		afterSampleStyles[6].foreground = display.getSystemColor(SWT.COLOR_DARK_MAGENTA);
+		// void
+		afterSampleStyles[7] = new StyleRange();
+		afterSampleStyles[7].fontStyle = SWT.BOLD;
+		afterSampleStyles[7].foreground = display.getSystemColor(SWT.COLOR_DARK_MAGENTA);
+		// 註解
+		afterSampleStyles[8] = new StyleRange();
+		afterSampleStyles[8].fontStyle = SWT.ITALIC;
+		afterSampleStyles[8].foreground = display.getSystemColor(SWT.COLOR_DARK_GREEN);
+
 	}
 	private void adjustFont(){
 		
 		if(!detUserMethodBtn.getSelection()){
-			int[] beforeRange=new int[]{0,3,74,20,112,29,144,5};
+			int[] beforeRange=new int[]{21,4,27,3,75,23,115,19,137,5};
 			
-			StyleRange[] beforeStyles=new StyleRange[4];
+			StyleRange[] beforeStyles=new StyleRange[5];
 			
 			for(int i=0;i<beforeSampleStyles.length;i++){
 				beforeStyles[i]=beforeSampleStyles[i];
@@ -177,13 +196,13 @@ public class CarelessCleanUpPage  extends APropertyPage {
 		
 		if(detUserMethodBtn.getSelection()){
 			
-			int[] afterRange=new int[]{0,3,74,20,111,47,161,5,235,20,274,29};
-			StyleRange[] afterStyles=new StyleRange[6];
+			int[] afterRange=new int[]{21,4,27,3,75,23,104,22,143,18,164,5,192,6,199,4,236,20};
+			StyleRange[] afterStyles=new StyleRange[9];
 		
 			for(int i=0;i<afterSampleStyles.length;i++){
 				afterStyles[i]=afterSampleStyles[i];
 			}
-					templateArea.setStyleRanges(afterRange, afterStyles);
+			templateArea.setStyleRanges(afterRange, afterStyles);
 
 			
 		}

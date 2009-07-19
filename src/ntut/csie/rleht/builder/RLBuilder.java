@@ -156,7 +156,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				CompilationUnit root = (CompilationUnit) parser.createAST(null);
 				ASTMethodCollector methodCollector = new ASTMethodCollector();
 				root.accept(methodCollector);
-						
+				
 				//取得專案中所有的method
 				List<ASTNode> methodList = methodCollector.getMethodList();
 
