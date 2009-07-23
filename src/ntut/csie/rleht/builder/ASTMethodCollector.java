@@ -51,5 +51,5 @@ public class ASTMethodCollector extends RLBaseVisitor {
 	public List<ASTNode> getMethodList() {
 		return methodList;
 	}
-
+	
 }

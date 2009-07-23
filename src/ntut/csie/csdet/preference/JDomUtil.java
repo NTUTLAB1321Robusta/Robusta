@@ -31,8 +31,8 @@ public class JDomUtil {
 	final static public String apache_log4j = "apache_log4j";
 	final static public String java_Logger = "java_Logger";
 	final static public String EHSmellFilterTaq = "EHSmellFilter";
-	final static public String detUserMethod="detUserMethod";
-	
+	final static public String CarelessCleanUpTag="CarelessCleanUp";
+	final static public String detUserMethod="detusermethod";
 	public static Element createXMLContent(){
 		Document docJDOM = readXMLFile();	
 		Element elementRoot ;

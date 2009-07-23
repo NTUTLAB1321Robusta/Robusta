@@ -1,5 +1,7 @@
 package ntut.csie.csdet.views;
 
+import java.io.File;
+
 import ntut.csie.csdet.preference.JDomUtil;
 
 import org.eclipse.swt.SWT;
@@ -12,6 +14,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.jdom.Document;
 import org.jdom.Element;
 
 public class CarelessCleanUpPage  extends APropertyPage {
@@ -35,7 +38,7 @@ public class CarelessCleanUpPage  extends APropertyPage {
 	
 	public CarelessCleanUpPage(Composite composite,CSPropertyPage page){
 		super(composite,page);
-		
+		//不偵測時,TextBox的內容
 		beforeText =	"FileInputStream in = null;\n" +
 						"try {   \n" +
 						"     in = new FileInputStream(path);\n"+
@@ -44,6 +47,7 @@ public class CarelessCleanUpPage  extends APropertyPage {
 						"} catch (IOException e) { \n"+
 						"}";
 		
+		//偵測時,TextBox的內容
 		afterText =		"FileInputStream in = null;\n" +
 						"try {   \n" +
 		                "     in = new FileInputStream(path);\n"+
@@ -61,39 +65,48 @@ public class CarelessCleanUpPage  extends APropertyPage {
 		addFirstSection(composite);
 	}
 	
+	/**
+	 * 加入頁面的內容
+	 */
 	private void addFirstSection(final Composite CarelessCleanUpPage){
-//		Document docJDom = JDomUtil.readXMLFile();
-//		String xxxClose="";
-//		if(docJDom != null){
-//			//從XML裡讀出之前的設定
-//			Element root = docJDom.getRootElement();
-//			if (root.getChild(JDomUtil.detUserMethod) != null) {
-//				Element rule=root.getChild(JDomUtil.detUserMethod);
-//				xxxClose = rule.getAttribute(JDomUtil.detUserMethod).getValue();
-//			}
-//		}
+		Document docJDom = JDomUtil.readXMLFile();
+		String methodSet="";
+		if(docJDom != null){
+			//從XML裡讀出之前的設定
+			Element root = docJDom.getRootElement();
+			if (root.getChild(JDomUtil.CarelessCleanUpTag) != null) {
+				Element rule=root.getChild(JDomUtil.CarelessCleanUpTag).getChild("rule");
+				methodSet = rule.getAttribute(JDomUtil.detUserMethod).getValue();
+			}
+		}
+		
+		//Label
 		final Label detectSettingsLabel = new Label(CarelessCleanUpPage, SWT.NONE);
 		detectSettingsLabel.setText("偵測條件(打勾偵測,不打勾不偵測):");
 		detectSettingsLabel.setBounds(10, 10, 210, 12);
 		
+		//Botton
 		detUserMethodBtn=new Button(CarelessCleanUpPage,SWT.CHECK);
 		detUserMethodBtn.setText("另外偵測釋放資源的程式碼是否在函式中");
-		detUserMethodBtn.setBounds(20, 28, 230, 16);
+		detUserMethodBtn.setBounds(20, 28, 250, 16);
 		detUserMethodBtn.addSelectionListener(new SelectionAdapter(){
 			public void widgetSelected(final SelectionEvent e1){
-				addText();
+				//按下按鈕而改變Text文字和顏色
+				adjustText();
 				adjustFont();
 			}
 		});
 		
+		//分隔線
 		final Label label1 = new Label(CarelessCleanUpPage,SWT.SEPARATOR| SWT.HORIZONTAL);
 		label1.setBounds(10, 50, 472, 12);
 		
+		//Label
 		final Label detBeforeLbl = new Label(CarelessCleanUpPage, SWT.NONE);
 		detBeforeLbl.setText("偵測範例:");
 		detBeforeLbl.setBounds(10, 62, 96, 12);
 		
-		
+		//TextBox
 		templateArea = new StyledText(CarelessCleanUpPage, SWT.BORDER);
 		Font font = new Font(CarelessCleanUpPage.getDisplay(),"Courier New",14,SWT.NORMAL);		
 		templateArea.setFont(font);
@@ -105,10 +118,22 @@ public class CarelessCleanUpPage  extends APropertyPage {
 		addBeforeSampleStyle(CarelessCleanUpPage.getDisplay());	
 		addAfterSampleStyle(CarelessCleanUpPage.getDisplay());
 		
-		//調整程式碼的顏色
+		//調整TextBox的文字
 		adjustFont();
+		
+		//以下Line124~128必須寫在這裡,不然會出錯
+		//若要偵測,將botton打勾,並改變TextBox的文字和顏色
+		if(methodSet.equals("Y")){
+			detUserMethodBtn.setSelection(true);
+			adjustText();
+			adjustFont();
+		}
 	}
-	private void addText(){
+	
+	/**
+	 * 調整TextBox的文字
+	 */
+	private void adjustText(){
 		String temp=beforeText;
 		
 		if(detUserMethodBtn.getSelection())
@@ -117,6 +142,10 @@ public class CarelessCleanUpPage  extends APropertyPage {
 		templateArea.setText(temp);
 	}
 	
+	/**
+	 * 將程式碼中可能會用到的字型、顏色先行載入(不偵測)
+	 * @param display
+	 */
 	private void addBeforeSampleStyle(Display display){
 		// null
 		beforeSampleStyles[0] = new StyleRange();
@@ -138,9 +167,12 @@ public class CarelessCleanUpPage  extends APropertyPage {
 		beforeSampleStyles[4] = new StyleRange();
 		beforeSampleStyles[4].fontStyle = SWT.BOLD;
 		beforeSampleStyles[4].foreground = display.getSystemColor(SWT.COLOR_DARK_MAGENTA);
-		
 	}
 	
+	/**
+	 * 將程式碼中可能會用到的字型、顏色先行載入(要偵測)
+	 * @param display
+	 */
 	private void addAfterSampleStyle(Display display){
 		// null
 		afterSampleStyles[0] = new StyleRange();
@@ -178,42 +210,69 @@ public class CarelessCleanUpPage  extends APropertyPage {
 		afterSampleStyles[8] = new StyleRange();
 		afterSampleStyles[8].fontStyle = SWT.ITALIC;
 		afterSampleStyles[8].foreground = display.getSystemColor(SWT.COLOR_DARK_GREEN);
-
 	}
+	
+	/**
+	 * 調整TextBox的文字的字型和顏色
+	 */
 	private void adjustFont(){
-		
+		//若Botton沒有被勾選
 		if(!detUserMethodBtn.getSelection()){
+			//不偵測時,Template的字型風格的位置範圍
 			int[] beforeRange=new int[]{21,4,27,3,75,23,115,19,137,5};
-			
+			//取得不偵測的template字型風格
 			StyleRange[] beforeStyles=new StyleRange[5];
-			
 			for(int i=0;i<beforeSampleStyles.length;i++){
 				beforeStyles[i]=beforeSampleStyles[i];
 			}
+			//把字型的風格和風格的範圍套用在Template上
 			templateArea.setStyleRanges(beforeRange, beforeStyles);
 		}
 		
-		
+		//若Botton有被勾選
 		if(detUserMethodBtn.getSelection()){
-			
+			//偵測時,Template的字型風格的位置範圍
 			int[] afterRange=new int[]{21,4,27,3,75,23,104,22,143,18,164,5,192,6,199,4,236,20};
+			//取得要偵測的template字型風格
 			StyleRange[] afterStyles=new StyleRange[9];
-		
 			for(int i=0;i<afterSampleStyles.length;i++){
 				afterStyles[i]=afterSampleStyles[i];
 			}
+			//把字型的風格和風格的範圍套用在Template上
 			templateArea.setStyleRanges(afterRange, afterStyles);
-
-			
 		}
 	}
 	
+	/**
+	 * 儲存使用者設定
+	 */
+	@Override
 	public boolean storeSettings() {
+		//取得xml的root
 		Element root=JDomUtil.createXMLContent();
 		
 		//建立CarelessCleanUp的tag
-		Element carelessCleanUp = new Element(JDomUtil.detUserMethod);
+		Element CarelessCleanUp = new Element(JDomUtil.CarelessCleanUpTag);
 		Element rule = new Element("rule");
+		
+		//假如detUserMethod有被勾選起來
+		if(detUserMethodBtn.getSelection()){
+			rule.setAttribute(JDomUtil.detUserMethod,"Y");
+		}else{
+			rule.setAttribute(JDomUtil.detUserMethod,"N");
+		}
+		
+		//將新建的tag加進去
+		CarelessCleanUp.addContent(rule);
+		
+		//將Careless CleanUp的Tag加入至XML中
+		if(root.getChild(JDomUtil.CarelessCleanUpTag)!=null)
+			root.removeChild(JDomUtil.CarelessCleanUpTag);
+		root.addContent(CarelessCleanUp);
+		
+		//將檔案寫回
+		String path = JDomUtil.getWorkspace()+File.separator+"CSPreference.xml";
+		JDomUtil.OutputXMLFile(root.getDocument(), path);
 		return true;
 	}
 }
