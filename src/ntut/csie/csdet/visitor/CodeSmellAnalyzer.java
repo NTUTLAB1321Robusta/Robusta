@@ -34,11 +34,10 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 	
 	// 儲存所找到的dummy handler
 	private List<CSMessage> dummyList;
-	
-	
+
 	//儲存偵測"Library的Name"和"是否Library"
 	//store使用者要偵測的library名稱，和"是否要偵測此library"
-	private TreeMap<String, String> libMap = new TreeMap<String, String>();
+	private TreeMap<String, Integer> libMap = new TreeMap<String, Integer>();
 	
 	///Code Information Counter///
 	private int tryCounter = 0;
@@ -152,34 +151,7 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 			if(statementTemp.get(i) instanceof ExpressionStatement){
 				ExpressionStatement statement = (ExpressionStatement) statementTemp.get(i);
 
-				//偵測使用者輸入的Statement和printStackTrace及System.out.print
-				String st = statement.getExpression().toString();
-				//把" "內String給刪掉
-				//避免將Sysout.out.println("e.printStackTrace()")誤判為兩次codeSmell
-				if(st.indexOf("\"")!=-1)
-				{
-					int fistPos = st.indexOf("\"");
-					int lastPos = st.lastIndexOf("\"");
-					st = st.substring(0,fistPos) + st.substring(lastPos+1);
-				}
-
-				if(isPrint && st.contains("printStackTrace"))
-				{
-					//建立Dummy handler訊息
-					addDummyMessage(cc, svd, statement);
-					// 新增一筆dummy handler
-					flag++;
-					continue;
-				}
-				if(isSyso && st.contains("System.out.print"))
-				{
-					//建立Dummy handler訊息
-					addDummyMessage(cc, svd, statement);
-					// 新增一筆dummy handler
-					flag++;
-					continue;
-				}
-				//偵測外部Library和org.apache.log4j.Logger及java.util.logging.Logger
+				//偵測Rule
 				if(findBindingLib(statement,flag)){
 					addDummyMessage(cc, svd, statement);
 					// 新增一筆dummy handler
@@ -244,6 +216,20 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 			// 把外部Library和Statement儲存在List內
 			List<Attribute> libRuleList = libRule.getAttributes();
 
+			//把內建偵測加入到名單內
+			//把e.print和system.out加入偵測內
+			if (sysoSet.equals("Y")) {
+				libMap.put("java.io.PrintStream.println", ASTBinding.LIBRARY_METHOD);
+				libMap.put("java.io.PrintStream.print", ASTBinding.LIBRARY_METHOD);				
+			}
+			if (eprintSet.equals("Y"))
+				libMap.put("printStackTrace", ASTBinding.METHOD);				
+			//把log4j和javaLog加入偵測內
+			if (log4jSet.equals("Y"))
+				libMap.put("org.apache.log4j", ASTBinding.LIBRARY);
+			if (javaLogger.equals("Y"))
+				libMap.put("java.util.logging", ASTBinding.LIBRARY);
+			
 			//把外部的Library加入偵測名單內
 			for (int i=0;i<libRuleList.size();i++)
 			{
@@ -251,34 +237,22 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 				{
 					String temp = libRuleList.get(i).getQualifiedName();					
 					
-					//若有.*為只偵測Library，Value設成1
+					//若有.*為只偵測Library
 					if (temp.indexOf(".EH_STAR")!=-1){
 						int pos = temp.indexOf(".EH_STAR");
-						libMap.put(temp.substring(0,pos),"1");
-					//若有*.為只偵測Method，Value設成2
+						libMap.put(temp.substring(0,pos), ASTBinding.LIBRARY);
+					//若有*.為只偵測Method
 					}else if (temp.indexOf("EH_STAR.") != -1){
-						libMap.put(temp.substring(8),"2");
-					//都沒有為都偵測，Key設成Library，Value設成Method
-					}else if (temp.lastIndexOf(".")!=-1){
-						int pos = temp.lastIndexOf(".");
-						//若已經存在，則不加入
-						if(!libMap.containsKey(temp.substring(0,pos)))
-							libMap.put(temp.substring(0,pos),temp.substring(pos+1));
+						libMap.put(temp.substring(8), ASTBinding.METHOD);
+					//都沒有為都偵測，偵測Library+Method
+					}else if (temp.lastIndexOf(".") != -1){
+						libMap.put(temp, ASTBinding.LIBRARY_METHOD);
 					//若有其它形況則設成Method
 					}else{
-						libMap.put(temp,"2");
+						libMap.put(temp, ASTBinding.METHOD);
 					}
 				}
 			}
-			//把內建偵測加入到名單內
-			//把e.print和system.out加入偵測內
-			isSyso = sysoSet.equals("Y");
-			isPrint = eprintSet.equals("Y");
-			//把log4j和javaLog加入偵測內
-			if (log4jSet.equals("Y"))
-				libMap.put("org.apache.log4j",null);
-			if (javaLogger.equals("Y"))
-				libMap.put("java.util.logging",null);
 		}
 	}
 

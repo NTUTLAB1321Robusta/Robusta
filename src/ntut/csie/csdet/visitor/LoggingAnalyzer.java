@@ -37,10 +37,10 @@ public class LoggingAnalyzer extends RLBaseVisitor{
 	private String methodInfo = "";
 
 	//使用者定義的Log條件(Key:library名稱,Value:Method名稱)
-	TreeMap<String, String> libMap = new TreeMap<String, String>();
+	TreeMap<String, Integer> libMap = new TreeMap<String, Integer>();
 
 	//非最底層Method(只要找Logging)
-	public LoggingAnalyzer(String baseException, String classInfo, String methodInfo, TreeMap<String,String> libMap) {
+	public LoggingAnalyzer(String baseException, String classInfo, String methodInfo, TreeMap<String,Integer> libMap) {
 		this.baseException = baseException;
 		this.classInfo = classInfo;
 		this.methodInfo = methodInfo;

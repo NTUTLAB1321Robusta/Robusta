@@ -39,10 +39,10 @@ public class LoggingThrowAnalyzer extends RLBaseVisitor{
 	private List<CSMessage> loggingList = new ArrayList<CSMessage>();
 	
 	//Store使用者要偵測的library名稱和Method名稱
-	TreeMap<String, String> libMap = new TreeMap<String, String>();
+	TreeMap<String, Integer> libMap = new TreeMap<String, Integer>();
 	
 	//傳進來的是最底層的Method(即要找Logging和Throw)
-	public LoggingThrowAnalyzer(CompilationUnit root, TreeMap<String,String> libMap) {
+	public LoggingThrowAnalyzer(CompilationUnit root, TreeMap<String,Integer> libMap) {
 		this.root = root;
 		this.libMap = libMap;
 	}

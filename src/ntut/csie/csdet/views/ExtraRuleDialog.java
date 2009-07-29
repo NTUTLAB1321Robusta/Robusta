@@ -78,7 +78,7 @@ public class ExtraRuleDialog extends Dialog{
 		container.setLayout(null);
 		
 		//顯示Table
-		displayTable = new Table(container, SWT.FULL_SELECTION | SWT.CHECK | SWT.BORDER);
+		displayTable = new Table(container, SWT.FULL_SELECTION | SWT.CHECK | SWT.MULTI | SWT.BORDER);
 		displayTable.setFont(new Font(this.getShell().getDisplay(),"Arial", 11,SWT.NONE));
 		final GridData gd_testList = new GridData(SWT.FILL, SWT.FILL, true, true);
 		displayTable.setBounds(10, 66, 243, 150);
@@ -139,7 +139,7 @@ public class ExtraRuleDialog extends Dialog{
 		Label nameLabel = new Label(container, SWT.NONE);
 		nameLabel.setBounds(10, 10, 97, 22);
 		//依是否為library或statement來改變不同的範例
-		nameLabel.setText("偵測外部條件: ");
+		nameLabel.setText("偵測條件: ");
 		
 		//新增按鈕
 		Button addBtn = new Button(btnComposite, SWT.NONE);
@@ -163,8 +163,8 @@ public class ExtraRuleDialog extends Dialog{
 			public void widgetSelected(final SelectionEvent e)
 			{
 				//Table不為空的且有選到Library 就把選擇的Library給刪掉
-				if (displayTable.getItemCount() != 0 && displayTable.getSelectionIndex()!=-1){
-					displayTable.remove(displayTable.getSelectionIndex());
+				if (displayTable.getItemCount() != 0 && displayTable.getSelectionIndex()!=-1) {
+					displayTable.remove(displayTable.getSelectionIndices());
 					//刪除時把Text清除
 					tempText.setText("");
 				}

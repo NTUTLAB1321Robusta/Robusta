@@ -12,12 +12,16 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
  * @author chewei
  */
 public class ASTBinding extends RLBaseVisitor{
+	final static public int LIBRARY = 1;
+	final static public int METHOD = 2;
+	final static public int LIBRARY_METHOD = 3;
+	
 	//是否找到欲偵測的Library
 	private Boolean result;
 	//儲存偵測Library的Name和Method的名稱
-	private TreeMap<String, String> libMap;
+	private TreeMap<String, Integer> libMap;
 
-	public ASTBinding(TreeMap<String, String> libMap){
+	public ASTBinding(TreeMap<String, Integer> libMap){
 		this.libMap = libMap;
 		this.result = false;
 	}
@@ -42,15 +46,8 @@ public class ASTBinding extends RLBaseVisitor{
 					//判斷是否要偵測 且 此句也包含欲偵測Library
 					while(libIt.hasNext()){
 						String temp = libIt.next();
-						//偵測預設Library和org.apache.log4j.Logger及java.util.logging.Logger
-						if (temp .equals("org.apache.log4j") ||temp.equals("java.util.logging") ){
-							//只要有包含就偵測
-							if (libName.contains(temp)){
-								result = true;
-								return false;
-							}
 						//只偵測Library
-						}else if (libMap.get(temp).equals("1") ){
+						if (libMap.get(temp) == LIBRARY){
 							//若Library長度大於偵測長度，否則表不相同直接略過
 							if (libName.length() >= temp.length())
 							{
@@ -61,14 +58,17 @@ public class ASTBinding extends RLBaseVisitor{
 								}
 							}
 						//只偵測Method
-						}else if (libMap.get(temp).equals("2") ){
+						}else if (libMap.get(temp) == METHOD){
 							if (methodName.equals(temp)){
 								result = true;
 								return false;
 							}
 						//偵測Library.Method的形式
-						}else{
-							if (libName.equals(temp) &&	methodName.equals(libMap.get(temp))){
+						}else if (libMap.get(temp) == LIBRARY_METHOD){
+							int pos = temp.lastIndexOf(".");
+							System.out.println(temp.substring(0, pos) + "  " + temp.substring(pos+1));
+							if (libName.equals(temp.substring(0, pos))
+								&& methodName.equals(temp.substring(pos+1))){
 								result = true;
 								return false;
 							}

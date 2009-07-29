@@ -42,7 +42,7 @@ public class OverLoggingDetector {
 	private boolean detectTransExSet = false;
 	//纗盎代"LibraryName"㎝"琌Library"
 	//storeㄏノ璶盎代library嘿㎝"琌璶盎代library"
-	private TreeMap<String, String> libMap = new TreeMap<String, String>();
+	private TreeMap<String, Integer> libMap = new TreeMap<String, Integer>();
 
 	/**
 	 * Constructor
@@ -232,9 +232,9 @@ public class OverLoggingDetector {
 			/// рず盎代虫ず ///
 			//рlog4j㎝javaLog盎代ず
 			if (log4jSet.equals("Y"))
-				libMap.put("org.apache.log4j",null);
+				libMap.put("org.apache.log4j", ASTBinding.LIBRARY);
 			if (javaLogger.equals("Y"))
-				libMap.put("java.util.logging",null);
+				libMap.put("java.util.logging", ASTBinding.LIBRARY);
 
 			Element libRule = overLogging.getChild("librule");
 			// р场Library㎝Statement纗Listず
@@ -250,22 +250,19 @@ public class OverLoggingDetector {
 				if (libRuleList.get(i).getValue().equals("Y")) {
 					String temp = libRuleList.get(i).getQualifiedName();					
 
-					//璝Τ.*盎代LibraryValue砞Θ1
+					//璝Τ.*盎代Library
 					if (temp.indexOf(".EH_STAR")!=-1){
 						int pos = temp.indexOf(".EH_STAR");
-						libMap.put(temp.substring(0,pos),"1");
-					//璝Τ*.盎代MethodValue砞Θ2
+						libMap.put(temp.substring(0,pos), ASTBinding.LIBRARY);
+					//璝Τ*.盎代Method
 					}else if (temp.indexOf("EH_STAR.") != -1){
-						libMap.put(temp.substring(8),"2");
-					//常⊿Τ常盎代Key砞ΘLibraryValue砞ΘMethod
-					}else if (temp.lastIndexOf(".")!=-1){
-						int pos = temp.lastIndexOf(".");
-						//璝竒玥ぃ
-						if(!libMap.containsKey(temp.substring(0,pos)))
-							libMap.put(temp.substring(0,pos),temp.substring(pos+1));
+						libMap.put(temp.substring(8), ASTBinding.METHOD);
+					//常⊿Τ常盎代盎代Library+Method
+					}else if (temp.lastIndexOf(".") != -1){
+						libMap.put(temp, ASTBinding.LIBRARY_METHOD);
 					//璝Τㄤウ猵玥砞ΘMethod
 					}else{
-						libMap.put(temp,"2");
+						libMap.put(temp, ASTBinding.METHOD);
 					}
 				}
 			}
