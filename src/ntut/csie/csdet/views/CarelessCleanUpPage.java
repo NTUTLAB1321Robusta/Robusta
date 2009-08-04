@@ -1,6 +1,9 @@
 package ntut.csie.csdet.views;
 
 import java.io.File;
+import java.util.Iterator;
+import java.util.List;
+import java.util.TreeMap;
 
 import ntut.csie.csdet.preference.JDomUtil;
 
@@ -14,6 +17,8 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
+import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 
@@ -35,6 +40,12 @@ public class CarelessCleanUpPage  extends APropertyPage {
 	
 	// code template After detect的內容
 	private String afterText;
+	
+	// 打開extraRuleDialog的按鈕
+	private Button extraRuleBtn;
+	
+	// Library Data
+	private TreeMap<String, Boolean> libMap = new TreeMap<String, Boolean>();
 	
 	public CarelessCleanUpPage(Composite composite,CSPropertyPage page){
 		super(composite,page);
@@ -77,6 +88,18 @@ public class CarelessCleanUpPage  extends APropertyPage {
 			if (root.getChild(JDomUtil.CarelessCleanUpTag) != null) {
 				Element rule=root.getChild(JDomUtil.CarelessCleanUpTag).getChild("rule");
 				methodSet = rule.getAttribute(JDomUtil.detUserMethod).getValue();
+			
+				//從XML取得外部Library
+				Element libRule = root.getChild(JDomUtil.CarelessCleanUpTag).getChild("librule");
+				List<Attribute> libRuleList = libRule.getAttributes();
+				
+				//把使用者所儲存的Library設定存到Map資料裡
+				for (int i=0;i<libRuleList.size();i++)
+				{
+					//把EH_STAR取代為符號"*"
+					String temp = libRuleList.get(i).getQualifiedName().replace("EH_STAR", "*");
+					libMap.put(temp,libRuleList.get(i).getValue().equals("Y"));
+				}
 			}
 		}
 		
@@ -85,6 +108,22 @@ public class CarelessCleanUpPage  extends APropertyPage {
 		detectSettingsLabel.setText("偵測條件(打勾偵測,不打勾不偵測):");
 		detectSettingsLabel.setBounds(10, 10, 210, 12);
 		
+		//Label
+		final Label detectSettingsLabel2 = new Label(CarelessCleanUpPage, SWT.NONE);
+		detectSettingsLabel2.setText("自行定義偵測條件:");
+		detectSettingsLabel2.setBounds(290, 10, 210, 12);
+		
+		
+		extraRuleBtn = new Button(CarelessCleanUpPage, SWT.NONE);
+		extraRuleBtn.setText("開啟");
+		extraRuleBtn.setBounds(290, 29, 94, 22);
+		extraRuleBtn.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(final SelectionEvent e) {
+				ExtraRuleDialog dialog = new ExtraRuleDialog(new Shell(),libMap);
+				dialog.open();
+				libMap = dialog.getLibMap();
+			}
+		});
 		//Botton
 		detUserMethodBtn=new Button(CarelessCleanUpPage,SWT.CHECK);
 		detUserMethodBtn.setText("另外偵測釋放資源的程式碼是否在函式中");
@@ -99,18 +138,23 @@ public class CarelessCleanUpPage  extends APropertyPage {
 		
 		//分隔線
 		final Label label1 = new Label(CarelessCleanUpPage,SWT.SEPARATOR| SWT.HORIZONTAL);
-		label1.setBounds(10, 50, 472, 12);
+		label1.setBounds(10, 60, 472, 12);
+		
+		//分隔線
+		final Label label2 = new Label(CarelessCleanUpPage, SWT.VERTICAL | SWT.SEPARATOR);
+		label2.setBounds(270, 5, 5, 55);
+		label2.setText("Label");
 		
 		//Label
 		final Label detBeforeLbl = new Label(CarelessCleanUpPage, SWT.NONE);
 		detBeforeLbl.setText("偵測範例:");
-		detBeforeLbl.setBounds(10, 62, 96, 12);
+		detBeforeLbl.setBounds(10, 75, 96, 12);
 		
 		//TextBox
 		templateArea = new StyledText(CarelessCleanUpPage, SWT.BORDER);
 		Font font = new Font(CarelessCleanUpPage.getDisplay(),"Courier New",14,SWT.NORMAL);		
 		templateArea.setFont(font);
-		templateArea.setBounds(10, 80, 458, 300);
+		templateArea.setBounds(10, 95, 458, 300);
 		templateArea.setEditable(false);
 		templateArea.setText(beforeText);
 		
@@ -262,8 +306,22 @@ public class CarelessCleanUpPage  extends APropertyPage {
 			rule.setAttribute(JDomUtil.detUserMethod,"N");
 		}
 		
+		//把使用者自訂的Rule存入XML
+		Element libRule = new Element("librule");
+		Iterator<String> libIt = libMap.keySet().iterator();
+		while(libIt.hasNext()){
+			String temp = libIt.next();
+			//若有出現*取代為EH_STAR(jdom不能記"*"這個字元)
+			String libName = temp.replace("*", "EH_STAR");
+			if (libMap.get(temp))
+				libRule.setAttribute(libName,"Y");
+			else
+				libRule.setAttribute(libName,"N");
+		}
+		
 		//將新建的tag加進去
 		CarelessCleanUp.addContent(rule);
+		CarelessCleanUp.addContent(libRule);
 		
 		//將Careless CleanUp的Tag加入至XML中
 		if(root.getChild(JDomUtil.CarelessCleanUpTag)!=null)
