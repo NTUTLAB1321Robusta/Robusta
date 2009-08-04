@@ -46,6 +46,7 @@ public class ASTBinding extends RLBaseVisitor{
 					//判斷是否要偵測 且 此句也包含欲偵測Library
 					while(libIt.hasNext()){
 						String temp = libIt.next();
+						
 						//只偵測Library
 						if (libMap.get(temp) == LIBRARY){
 							//若Library長度大於偵測長度，否則表不相同直接略過
@@ -66,7 +67,6 @@ public class ASTBinding extends RLBaseVisitor{
 						//偵測Library.Method的形式
 						}else if (libMap.get(temp) == LIBRARY_METHOD){
 							int pos = temp.lastIndexOf(".");
-							System.out.println(temp.substring(0, pos) + "  " + temp.substring(pos+1));
 							if (libName.equals(temp.substring(0, pos))
 								&& methodName.equals(temp.substring(pos+1))){
 								result = true;

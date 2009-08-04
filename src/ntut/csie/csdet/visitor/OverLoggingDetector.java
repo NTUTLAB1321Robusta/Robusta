@@ -65,24 +65,15 @@ public class OverLoggingDetector {
 		getOverLoggingSettings();
 		
 		//解析AST看有沒有發生Logging又throw Exception (空白字串表示最底層Method)
-		LoggingThrowAnalyzer visitor = new LoggingThrowAnalyzer(root, libMap);
+		LoggingThrowAnalyzer visitor = new LoggingThrowAnalyzer(root, libMap, detectTransExSet);
 		startMethod.accept(visitor);
 		//是否繼續偵測
 		boolean isTrace = visitor.getIsKeepTrace();
-		//儲存最底層Exception
-		String baseException = visitor.getBaseException();
 
 		if (isTrace) {
-			//判斷Catch Throw的Exception是否與Method Throw的Exception相同
-			if (isCTEqualMT(startMethod,baseException)) {
-				//若使用者設定即使Exception轉型後仍設定，則把判斷Exception設成空白("")
-				if (detectTransExSet)
-					baseException = "";
-
-				//使用遞迴判斷是否發生OverLogging，若OverLogging則記錄其Message
-				if (detectOverLogging(method, baseException)) {
-					overLoggingList = visitor.getOverLoggingList();
-				}
+			//使用遞迴判斷是否發生OverLogging，若OverLogging則記錄其Message
+			if (detectOverLogging(method)) {
+				overLoggingList = visitor.getOverLoggingList();
 			}
 		}
 	}
@@ -93,7 +84,7 @@ public class OverLoggingDetector {
 	 * @param baseException	最底層的Exception
 	 * @return				是否OverLogging
 	 */
-	private boolean detectOverLogging(IMethod method,String baseException)
+	private boolean detectOverLogging(IMethod method)
 	{
 		//有沒有找到Logging動作
 		boolean isOverLogging;
@@ -125,8 +116,8 @@ public class OverLoggingDetector {
 					String classInfo = md.resolveBinding().getDeclaringClass().getQualifiedName();
 
 					//解析AST看使用此Method的Catch Block中有沒有發生Logging
-					LoggingAnalyzer visitor = new LoggingAnalyzer(baseException, classInfo,
-													method.getElementName(), libMap);
+					LoggingAnalyzer visitor = new LoggingAnalyzer(classInfo, method.getElementName(),
+															libMap, detectTransExSet);
 					methodNode.accept(visitor);
 
 					//是否有Logging
@@ -140,11 +131,8 @@ public class OverLoggingDetector {
 
 					//是否往上一層追蹤
 					if (isTrace) {
-						//判斷Method Throws的Exception與最底層的Throw Exception是否相同
-						if (!isCTEqualMT(methodNode,baseException))
-							continue;
-
-						isOverLogging = detectOverLogging(callerMethod, baseException);
+						//繼續偵測
+						isOverLogging = detectOverLogging(callerMethod);
 						
 						//若上一層結果為OverLoggin就回傳true，否則繼續
 						if (isOverLogging)
@@ -166,10 +154,6 @@ public class OverLoggingDetector {
 	 * @return
 	 */
 	private boolean isCTEqualMT(MethodDeclaration method, String catchThrowEx) {
-		//若使用者設定為轉換Exception後還繼續偵測，則不判斷
-		if (detectTransExSet)
-			return true;
-		
 		//取得Method的Throw Exception
 		ITypeBinding[] throwExList = method.resolveBinding().getExceptionTypes();
 		//TODO 先不考慮複數個

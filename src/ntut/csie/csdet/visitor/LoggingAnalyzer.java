@@ -23,28 +23,26 @@ import org.slf4j.LoggerFactory;
  */
 public class LoggingAnalyzer extends RLBaseVisitor{
 	private static Logger logger = LoggerFactory.getLogger(LoggingAnalyzer.class);
-
-	//最底層Throw的Exception的Type
-	String baseException;
-
 	//是否有Logging
-	boolean isLogging = false;
+	private boolean isLogging = false;
 	//是否要繼續偵測
-	boolean isKeepTrace = false;
+	private boolean isKeepTrace = false;
 
 	//Callee的Class和Method的資訊
 	private String classInfo = "";
 	private String methodInfo = "";
+	//
+	private boolean isDetTransEx = false;
 
 	//使用者定義的Log條件(Key:library名稱,Value:Method名稱)
 	TreeMap<String, Integer> libMap = new TreeMap<String, Integer>();
 
 	//非最底層Method(只要找Logging)
-	public LoggingAnalyzer(String baseException, String classInfo, String methodInfo, TreeMap<String,Integer> libMap) {
-		this.baseException = baseException;
+	public LoggingAnalyzer(String classInfo, String methodInfo, TreeMap<String,Integer> libMap, boolean isDetTransEx) {
 		this.classInfo = classInfo;
 		this.methodInfo = methodInfo;
 		this.libMap = libMap;
+		this.isDetTransEx = isDetTransEx;
 	}
 
 	protected boolean visitNode(ASTNode node){
@@ -111,11 +109,9 @@ public class LoggingAnalyzer extends RLBaseVisitor{
 
 		//若為第一層的Method
 		String catchExcepiton = svd.getType().toString();
-		
-		//若baseException為空白(表示使用者設定Exception轉態後仍偵測)
-		//或Catch到的Exception與上一層傳來的Exception不同，則不偵測
-		if (baseException.equals("") || catchExcepiton.equals(baseException))
-			detectOverLogging(cc);
+
+		//偵測Catch內容
+		detectOverLogging(cc);
 	}
 
 	/**
@@ -133,14 +129,24 @@ public class LoggingAnalyzer extends RLBaseVisitor{
 				//判斷是否有Logging
 				judgeLogging(statement);
 			}
+			
+			isKeepTrace = true;
+
 			//判斷有沒有Throw，決定要不要繼繼Trace
 			if(statementTemp.get(i) instanceof ThrowStatement) {
 				ThrowStatement throwState = (ThrowStatement) statementTemp.get(i);
-				//判斷是否Throw new Exception，有就不追蹤
-				if (throwState.getExpression() instanceof ClassInstanceCreation)
-					isKeepTrace = false;
-				else
-					isKeepTrace = true;
+				//判斷是否為Throw new Exception
+				if (throwState.getExpression() instanceof ClassInstanceCreation) {
+					ClassInstanceCreation cic = (ClassInstanceCreation) throwState.getExpression();
+					List argumentList = cic.arguments();
+
+					//若不偵測轉型 或 沒有將catch exception代入(eg:RuntimeException(e))
+					//則不繼續偵測
+					if (!isDetTransEx ||
+						argumentList.size() != 1 ||
+						!argumentList.get(0).toString().equals(cc.getException().getName().toString()))
+						isKeepTrace = false;
+				}
 			}
 		}
 	}

@@ -28,23 +28,21 @@ public class LoggingThrowAnalyzer extends RLBaseVisitor{
 
 	//AST Tree的root(檔案名稱)
 	private CompilationUnit root;
-
-	//是否要繼續偵測
-	boolean isKeepTrace = false;
-	
-	//最底層Throw的Exception的Type
-	private String baseException = "";
-	
-	//儲存所找到的ignore Exception 
-	private List<CSMessage> loggingList = new ArrayList<CSMessage>();
-	
 	//Store使用者要偵測的library名稱和Method名稱
 	TreeMap<String, Integer> libMap = new TreeMap<String, Integer>();
-	
+	//
+	private boolean isDetTransEx = false;
+
+	//是否要繼續偵測
+	private boolean isKeepTrace = false;
+	//儲存所找到的ignore Exception 
+	private List<CSMessage> loggingList = new ArrayList<CSMessage>();
+
 	//傳進來的是最底層的Method(即要找Logging和Throw)
-	public LoggingThrowAnalyzer(CompilationUnit root, TreeMap<String,Integer> libMap) {
+	public LoggingThrowAnalyzer(CompilationUnit root, TreeMap<String, Integer> libMap, boolean isDetTransEx) {
 		this.root = root;
 		this.libMap = libMap;
+		this.isDetTransEx = isDetTransEx;
 	}
 
 	protected boolean visitNode(ASTNode node){
@@ -88,7 +86,8 @@ public class LoggingThrowAnalyzer extends RLBaseVisitor{
 				ExpressionStatement statement = (ExpressionStatement) statementTemp.get(i);
 
 				//判斷是否有Logging
-				isLogging = judgeLogging(cc, svd, statement, tempList);
+				if (judgeLogging(cc, svd, statement, tempList))
+					isLogging = true;
 			}
 			//判斷是不是Throw Statement
 			if(statementTemp.get(i) instanceof ThrowStatement) {
@@ -98,17 +97,22 @@ public class LoggingThrowAnalyzer extends RLBaseVisitor{
 				if (isLogging) {
 					if (tempList != null)
 						this.loggingList.addAll(tempList);
-
 					//繼續Trace
 					isKeepTrace = true;
-					//紀錄最底層Method的Throw Exception Type
+
+					//若Method轉型(Throw New Exception)
 					if (throwState.getExpression() instanceof ClassInstanceCreation) {
 						ClassInstanceCreation cic = (ClassInstanceCreation) throwState.getExpression();
-						//若是throw new Exception，則去取它的Type
-						baseException = cic.getType().toString();
-					} else
-						//若是throw e，則去取catch的Exception
-						baseException = svd.getType().toString();
+
+						List argumentList = cic.arguments();
+
+						//若不偵測轉型 或 沒有將catch exception代入(eg:RuntimeException(e))
+						//則不繼續偵測
+						if (!isDetTransEx ||
+							argumentList.size() != 1 ||
+							!argumentList.get(0).toString().equals(cc.getException().getName().toString()))
+							isKeepTrace = false;
+					}
 				}
 			}
 		}
@@ -136,7 +140,6 @@ public class LoggingThrowAnalyzer extends RLBaseVisitor{
 		ASTBinding visitor = new ASTBinding(libMap);
 		statement.getExpression().accept(visitor);
 		if(visitor.getResult()){
-		//假如找到log4j or java.logger,就把之前找到的smell去掉
 			return true;
 		}else{
 			return false;
@@ -181,13 +184,5 @@ public class LoggingThrowAnalyzer extends RLBaseVisitor{
 	 */
 	public List<CSMessage> getOverLoggingList() {
 		return loggingList;
-	}
-
-	/**
-	 * 取得最底層的Exception型態
-	 * @return
-	 */
-	public String getBaseException() {
-		return baseException;
 	}
 }
