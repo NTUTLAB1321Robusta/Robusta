@@ -2,6 +2,8 @@ package ntut.csie.rleht.builder;
 
 import ntut.csie.csdet.quickfix.DHQuickFix;
 import ntut.csie.csdet.quickfix.NTQuickFix;
+import ntut.csie.csdet.quickfix.OLQuickFix;
+import ntut.csie.csdet.refactor.OLRefactoring;
 import ntut.csie.csdet.quickfix.TEQuickFix;
 import ntut.csie.csdet.quickfix.UMQuickFix;
 import ntut.csie.csdet.refactor.RethrowUncheckExAction;
@@ -66,11 +68,12 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				return new IMarkerResolution[] { new UMQuickFix("Quick Fix==>Add Big outer try block") };
 			} else if(problem.equals(RLMarkerAttribute.CS_CARELESS_CLEANUP)){
 				return new IMarkerResolution[] { new NTQuickFix("Careless CleanUp") };
+				// 碰到OverLogging的Quick fix and refactor方法
 			}else if(problem.equals(RLMarkerAttribute.CS_OVER_LOGGING)){
-				// OverLogging的Quick Fix先暫時用Nested Try block代替
-				return new IMarkerResolution[] { new NTQuickFix("Please use Eclipse refactor==>Extract Method") };
-			} 
-			
+				return new IMarkerResolution[] { new OLQuickFix("Quick Fix==>Remove Logging"),
+						new OLRefactoring("Refactor==>Remove Reference Logging")};
+			}
+
 			return null;
 		} catch (CoreException ex) {
 			logger.error("[getResolutions] EXCEPTION ",ex);

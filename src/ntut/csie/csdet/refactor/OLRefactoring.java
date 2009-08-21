@@ -1,0 +1,285 @@
+package ntut.csie.csdet.refactor;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeMap;
+
+import ntut.csie.csdet.preference.JDomUtil;
+import ntut.csie.csdet.visitor.ASTBinding;
+import ntut.csie.csdet.visitor.LoggingAnalyzer;
+import ntut.csie.rleht.builder.RLMarkerAttribute;
+import ntut.csie.rleht.common.EditorUtils;
+
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jdt.astview.NodeFinder;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IOpenable;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.internal.corext.callhierarchy.CallHierarchy;
+import org.eclipse.jdt.internal.corext.callhierarchy.MethodWrapper;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.Document;
+import org.eclipse.jface.text.IRegion;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IMarkerResolution;
+import org.eclipse.ui.texteditor.ITextEditor;
+import org.jdom.Attribute;
+import org.jdom.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * 在Marker上面的Refactor中，加入刪除與此Method有Reference關係的Logging
+ * @author Shiau
+ */
+public class OLRefactoring implements IMarkerResolution{
+	private static Logger logger = LoggerFactory.getLogger(OLRefactoring.class);
+
+	//紀錄code smell的type
+	private String problem;
+	//code smell的訊息
+	private String label;
+	//OverLogging設定 (是否要偵測Exception轉型)
+	private boolean detectTransExSet = false;
+	//OverLogging設定 (使用者要偵測的Logging規則)
+	private TreeMap<String, Integer> libMap = new TreeMap<String, Integer>();
+	//記錄要修改的List(一個CompilationUnit為單位)
+	private List<OLRefactorAction> fixList = new ArrayList<OLRefactorAction>();
+
+	public OLRefactoring(String label){
+		//取得訊息
+		this.label = label;
+	}
+
+	@Override
+	public String getLabel() {
+		return label;
+	}
+
+	@Override
+	public void run(IMarker marker) {
+		try {
+			//觸發Marker是否為OverLogging
+			problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
+			if(problem != null && (problem.equals(RLMarkerAttribute.CS_OVER_LOGGING))) {
+				//將User對於OverLogging的設定存下來
+				getOverLoggingSettings();
+
+				//取得Marker的資訊
+				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
+				String msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
+
+				//取得Class的相關資訊 (觸發的Method)
+				OLRefactorAction baseMethod = new OLRefactorAction();
+				boolean isok = baseMethod.obtainResource(marker.getResource());
+				if(isok) {
+					//取得Method相關資訊
+					baseMethod.bindMethod(Integer.parseInt(methodIdx));
+
+					//取得欲反白的行數
+					int selectLine = baseMethod.getCurrentLoggingList().get(Integer.parseInt(msgIdx)).getLineNumber();
+					//加入至刪除名單
+					fixList.add(baseMethod);
+					
+					//取得Caller的Logging資訊
+					traceCallerMethod(baseMethod.getCurrentMethodNode(0));
+
+					/// 若更動的CompilationUnit後再更動會出錯                   ///
+					/// 所以把所有要刪除的Logging都記錄起來，再一次刪除 ///
+					for (OLRefactorAction temp : fixList)
+						//刪除List中的OverLogging (一次以一個Class為單位刪除)
+						temp.deleteMessage();
+
+					//游標定位 
+					setSelectLine(baseMethod.getActOpenable(), selectLine -1);
+				}
+			}
+		} catch (CoreException e) {
+			logger.error("[OLQuickFix] EXCEPTION ",e);
+		}
+	}
+
+	/**
+	 * 往上一層Trace，找出Caller的OverLogging資訊
+	 * @param currentNode
+	 */
+	private void traceCallerMethod(ASTNode currentNode) {
+		//TODO caller中有兩種OverLogging(不同try catch的Marker)，會一併刪除
+		if (currentNode instanceof MethodDeclaration) {
+			//從MethodDeclaration取得IMthod
+			MethodDeclaration methodDeclaration = (MethodDeclaration) currentNode;
+			IMethod method = (IMethod) methodDeclaration.resolveBinding().getJavaElement();
+
+			//取得Method的Caller
+			MethodWrapper currentMW = new CallHierarchy().getCallerRoot(method);				
+			MethodWrapper[] calls = currentMW.getCalls(new NullProgressMonitor());
+
+			//若有Caller
+			if (calls.length != 0) {
+				for (MethodWrapper mw : calls) {
+					//取得caller的IMethod
+					IMethod callerMethod = (IMethod) mw.getMember();
+
+					OLRefactorAction tempAction = new OLRefactorAction();
+					boolean isOK = tempAction.obtainResource(callerMethod.getResource());
+					tempAction.bindMethod(callerMethod);
+
+					//是否有OverLogging，沒有就不處理 (即之後就不做刪除動作)
+					if (tempAction.isLoggingExist()) {
+						//此Class是否已經存在於List中
+						boolean isExist = false;
+						if (isOK) {
+							for (OLRefactorAction oldAction : fixList) {
+								//判斷CompilationUnit是否與List中的相同
+								if (oldAction.getActRoot().getJavaElement()
+									.equals(tempAction.getActRoot().getJavaElement())) {
+									//若已加入，則去取得新的Method資訊
+									oldAction.bindMethod(callerMethod);
+									isExist = true;
+									break;
+								}
+							}
+							//若CompilationUnit不存在，則新加入至List
+							if (!isExist)
+								fixList.add(tempAction);
+						}
+					}
+
+					/// 偵測是否繼續Trace(是否又將Exception傳到上一層) ///
+					//取得LoggingAnalyzer要的資訊
+					String classInfo = methodDeclaration.resolveBinding().getDeclaringClass().getQualifiedName();
+					MethodDeclaration methodNode = transMethodNode(callerMethod);
+					//偵測是否將Exception傳到上一層
+					LoggingAnalyzer visitor = new LoggingAnalyzer(classInfo, method.getElementName(),
+													libMap, detectTransExSet);				
+					methodNode.accept(visitor);
+					boolean isTrace = visitor.getIsKeepTrace();
+
+					//若Exception又傳到上一層，則繼續偵測
+					if (isTrace)
+						traceCallerMethod(tempAction.getCurrentMethodNode());
+				}
+			}
+		}
+	}
+	
+	/**
+	 * IMethod轉換成ASTNode MethodDeclaration
+	 * @param method	IMethod
+	 * @return			MethodDeclaration(ASTNode)
+	 */
+	private MethodDeclaration transMethodNode(IMethod method) {
+		MethodDeclaration md = null;
+
+		try {
+			//Parser Jar檔時，會取不到ICompilationUnit
+			if (method.getCompilationUnit() == null)
+				return null;
+
+			//產生AST
+			ASTParser parserAST = ASTParser.newParser(AST.JLS3);
+			parserAST.setKind(ASTParser.K_COMPILATION_UNIT);
+			parserAST.setSource(method.getCompilationUnit());
+			parserAST.setResolveBindings(true);
+			ASTNode ast = parserAST.createAST(null);
+
+			//取得AST的Method部份
+			ASTNode methodNode = NodeFinder.perform(ast, method.getSourceRange().getOffset(),
+														method.getSourceRange().getLength());
+
+			//若此ASTNode屬於MethodDeclaration，則轉型
+			if(methodNode instanceof MethodDeclaration) {
+				md = (MethodDeclaration) methodNode;
+			}
+		} catch (JavaModelException e) {
+			logger.error("[Java Model Exception] JavaModelException ", e);
+		}
+		return md;
+	}
+
+	/**
+	 * 游標定位
+	 * @param iopenable	資源
+	 * @param line		行數
+	 */
+	private void setSelectLine(IOpenable iopenable, int line) {
+		try {
+			ICompilationUnit icu = (ICompilationUnit) iopenable;
+			Document document = new Document(icu.getBuffer().getContents());
+
+			//取得目前的EditPart
+			IEditorPart editorPart = EditorUtils.getActiveEditor();
+			ITextEditor editor = (ITextEditor) editorPart;
+
+			//取得行數的資料
+			IRegion lineInfo = document.getLineInformation(line); 
+
+			//反白該行 在Quick fix完之後,可以將游標定位在Quick Fix那行
+			editor.selectAndReveal(lineInfo.getOffset(), 0);
+		} catch (JavaModelException jme) {
+			logger.error("[BadLocation] EXCEPTION ", jme);
+		} catch (BadLocationException ble) {
+			logger.error("[BadLocation] EXCEPTION ", ble);
+		}
+	}
+	
+	/**
+	 * 將User對於OverLogging的設定存下來
+	 */
+	public void getOverLoggingSettings(){		
+		Element root = JDomUtil.createXMLContent();
+		//如果是null表示XML檔是剛建好的,還沒有OverLogging的tag,直接跳出去
+		if(root.getChild(JDomUtil.OverLoggingTag) != null) {
+			//這裡表示之前使用者已經有設定過preference了,去取得相關偵測設定值
+			Element overLogging = root.getChild(JDomUtil.OverLoggingTag);
+			Element rule = overLogging.getChild("rule");
+			String log4jSet = rule.getAttribute(JDomUtil.apache_log4j).getValue();
+			String javaLogger = rule.getAttribute(JDomUtil.java_Logger).getValue();
+
+			/// 把內建偵測加入到名單內 ///
+			//把log4j和javaLog加入偵測內
+			if (log4jSet.equals("Y"))
+				libMap.put("org.apache.log4j", ASTBinding.LIBRARY);
+			if (javaLogger.equals("Y"))
+				libMap.put("java.util.logging", ASTBinding.LIBRARY);
+
+			Element libRule = overLogging.getChild("librule");
+			// 把外部Library和Statement儲存在List內
+			List<Attribute> libRuleList = libRule.getAttributes();
+
+			/// 把使用者所設定的Exception轉型偵不偵設定 ///
+			Element exrule = overLogging.getChild("exrule");
+			String exSet = exrule.getAttribute(JDomUtil.transException).getValue();
+			detectTransExSet = exSet.equals("Y");
+			
+			//把外部的Library加入偵測名單內
+			for (int i=0; i < libRuleList.size(); i++) {
+				if (libRuleList.get(i).getValue().equals("Y")) {
+					String temp = libRuleList.get(i).getQualifiedName();					
+
+					//若有.*為只偵測Library
+					if (temp.indexOf(".EH_STAR")!=-1){
+						int pos = temp.indexOf(".EH_STAR");
+						libMap.put(temp.substring(0,pos), ASTBinding.LIBRARY);
+					//若有*.為只偵測Method
+					}else if (temp.indexOf("EH_STAR.") != -1){
+						libMap.put(temp.substring(8), ASTBinding.METHOD);
+					//都沒有為都偵測，偵測Library+Method
+					}else if (temp.lastIndexOf(".") != -1){
+						libMap.put(temp, ASTBinding.LIBRARY_METHOD);
+					//若有其它形況則設成Method
+					}else{
+						libMap.put(temp, ASTBinding.METHOD);
+					}
+				}
+			}
+		}
+	}
+}

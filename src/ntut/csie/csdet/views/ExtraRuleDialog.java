@@ -232,11 +232,11 @@ public class ExtraRuleDialog extends Dialog{
 				MessageDialog.openInformation(
 						new Shell(),
 						"說明",
-						"1.偵測Library: Library名稱 + .* \n" +
-						"   (eg. 'java.lang.String.*' -> 偵測所有使用到java.lang.String的Library)\n\n" +
+						"1.偵測Class: Class名稱 + .* \n" +
+						"   (eg. 'java.lang.String.*' -> 偵測所有使用到java.lang.String的Class)\n\n" +
 						"2.偵測Statement: *. + Statement名稱 \n" +
 						"   (eg. '*.toString' -> 偵測任意包含toString的Statement)\n\n" +
-						"3.偵測方法: Library名稱 + . + Statement名稱 \n" +
+						"3.偵測方法: Class名稱 + . + Statement名稱 \n" +
 						"   (eg. 'java.lang.String.toString' -> \n" +
 						"   偵測有使用java.lang.String的Library且有包含toString的Statement)");
 			}

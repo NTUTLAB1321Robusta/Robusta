@@ -120,7 +120,7 @@ public class LoggingAnalyzer extends RLBaseVisitor{
 	 */
 	private void detectOverLogging(CatchClause cc) {
 		List statementTemp = cc.getBody().statements();
-		
+
 		for (int i = 0; i < statementTemp.size(); i++) {
 			//取得Expression statement
 			if(statementTemp.get(i) instanceof ExpressionStatement) {
@@ -129,11 +129,11 @@ public class LoggingAnalyzer extends RLBaseVisitor{
 				//判斷是否有Logging
 				judgeLogging(statement);
 			}
-			
-			isKeepTrace = true;
 
 			//判斷有沒有Throw，決定要不要繼繼Trace
 			if(statementTemp.get(i) instanceof ThrowStatement) {
+				isKeepTrace = true;
+
 				ThrowStatement throwState = (ThrowStatement) statementTemp.get(i);
 				//判斷是否為Throw new Exception
 				if (throwState.getExpression() instanceof ClassInstanceCreation) {

@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 /**
  * OverLogging的Code Smell
  * @author Shiau
- *
  */
 public class OverLoggingDetector {
 	private static Logger logger = LoggerFactory.getLogger(OverLoggingDetector.class);
@@ -84,8 +83,7 @@ public class OverLoggingDetector {
 	 * @param baseException	最底層的Exception
 	 * @return				是否OverLogging
 	 */
-	private boolean detectOverLogging(IMethod method)
-	{
+	public boolean detectOverLogging(IMethod method) {
 		//有沒有找到Logging動作
 		boolean isOverLogging;
 
@@ -203,7 +201,7 @@ public class OverLoggingDetector {
 	 * 將User對於OverLogging的設定存下來
 	 * @return
 	 */
-	private void getOverLoggingSettings(){		
+	public void getOverLoggingSettings(){		
 		Element root = JDomUtil.createXMLContent();
 		//如果是null表示XML檔是剛建好的,還沒有OverLogging的tag,直接跳出去
 		if(root.getChild(JDomUtil.OverLoggingTag) != null){
