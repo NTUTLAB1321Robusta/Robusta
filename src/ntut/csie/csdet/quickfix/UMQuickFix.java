@@ -200,16 +200,18 @@ public class UMQuickFix implements IMarkerResolution{
 	 */
 	private void addNewTryBlock(AST ast,ListRewrite listRewrite){
 		TryStatement ts = ast.newTryStatement();
-		//替try 加入一個Catch clause
 		
+		//替try 加入一個Catch clause
 		List catchStatement = ts.catchClauses();
 		CatchClause cc = ast.newCatchClause();
 		ListRewrite catchRewrite = rewrite.getListRewrite(cc.getBody(),Block.STATEMENTS_PROPERTY);
+		
 		//建立catch的type為 catch(Exception ex)
 		SingleVariableDeclaration sv = ast.newSingleVariableDeclaration();
 		sv.setType(ast.newSimpleType(ast.newSimpleName("Exception")));
 		sv.setName(ast.newSimpleName("ex"));
 		cc.setException(sv);
+		
 		//在Catch中加入todo的註解
 		StringBuffer comment = new StringBuffer();
 		comment.append("//TODO: handle exception");

@@ -1,9 +1,8 @@
 package ntut.csie.rleht.builder;
 
+import ntut.csie.csdet.quickfix.CCUQuickFix;
 import ntut.csie.csdet.quickfix.DHQuickFix;
 import ntut.csie.csdet.quickfix.NTQuickFix;
-import ntut.csie.csdet.quickfix.OLQuickFix;
-import ntut.csie.csdet.refactor.OLRefactoring;
 import ntut.csie.csdet.quickfix.TEQuickFix;
 import ntut.csie.csdet.quickfix.UMQuickFix;
 import ntut.csie.csdet.refactor.RethrowUncheckExAction;
@@ -66,14 +65,15 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				// 碰到Unprotected Main program的Quick fix
 			} else if(problem.equals(RLMarkerAttribute.CS_UNPROTECTED_MAIN)){
 				return new IMarkerResolution[] { new UMQuickFix("Quick Fix==>Add Big outer try block") };
+				// 碰到Careless CleanUp的Quick fix
 			} else if(problem.equals(RLMarkerAttribute.CS_CARELESS_CLEANUP)){
-				return new IMarkerResolution[] { new NTQuickFix("Careless CleanUp") };
+				return new IMarkerResolution[] { new CCUQuickFix("Quick Fix==>Move code to finally block") };
 				// 碰到OverLogging的Quick fix and refactor方法
 			}else if(problem.equals(RLMarkerAttribute.CS_OVER_LOGGING)){
-				return new IMarkerResolution[] { new OLQuickFix("Quick Fix==>Remove Logging"),
-						new OLRefactoring("Refactor==>Remove Reference Logging")};
-			}
-
+				// OverLogging的Quick Fix先暫時用Nested Try block代替
+				return new IMarkerResolution[] { new NTQuickFix("Please use Eclipse refactor==>Extract Method") };
+			} 
+			
 			return null;
 		} catch (CoreException ex) {
 			logger.error("[getResolutions] EXCEPTION ",ex);
