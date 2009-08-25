@@ -24,6 +24,7 @@ import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.TryStatement;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
@@ -224,7 +225,6 @@ public class CCUQuickFix implements IMarkerResolution{
 				List<?> ccList=ts.catchClauses();
 				for(int j=0;j<ccList.size();j++){
 					CatchClause cc=(CatchClause) ccList.get(j);
-					System.out.println(cc.getBody());
 					ListRewrite ccRewrite = rewrite.getListRewrite(cc.getBody(),Block.STATEMENTS_PROPERTY);
 					List<?> ccbody=ccRewrite.getOriginalList();
 					for(int k=0;k<ccbody.size();k++){
@@ -302,21 +302,23 @@ public class CCUQuickFix implements IMarkerResolution{
 		MethodDeclaration md = (MethodDeclaration)currentMethodNode;
 		Block mdBlock = md.getBody();
 		List<?> mdstatement = mdBlock.statements();
+		//比對Finally Block裡的程式碼,定位在被移動過來的那行程式碼
 		for(int i=0;i<mdstatement.size();i++){
 			if(mdstatement.get(i) instanceof TryStatement){
 				TryStatement ts = (TryStatement) mdstatement.get(i);
 				Block finallyBlock=ts.getFinally();
 				List<?> finallystat = finallyBlock.statements();
 				for(int j=0;j<finallystat.size();j++){
-					String temp=finallystat.get(j).toString();
-					temp=temp.substring(0,temp.length()-2);
+					Statement stat=(Statement)finallystat.get(j);
+					String temp=stat.toString();
 					if(temp.contains(moveLine)){
-						selectLine = this.actRoot.getLineNumber(finallyBlock.getStartPosition()-j);
+						//起始行數從0開始，不是1，所以減1
+						selectLine = this.actRoot.getLineNumber(stat.getStartPosition())-1;
 					}
 				}
 			}
 		}
-		//若反白行數為
+		
 		if (selectLine == -1) {
 			//取得Method的起點位置
 			int srcPos = currentMethodNode.getStartPosition();
