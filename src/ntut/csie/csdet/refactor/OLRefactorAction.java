@@ -36,12 +36,14 @@ import org.slf4j.LoggerFactory;
  */
 public class OLRefactorAction {
 	private static Logger logger = LoggerFactory.getLogger(OLRefactorAction.class);
-	
+
 	//Class(CompilationUnit)的相關資訊
 	private IOpenable actOpenable = null;
 	private CompilationUnit actRoot = null;
 	//存放目前所要fix的method node
 	private ASTNode currentMethodNode = null;
+	//存放目前要進入的CatchNode
+	private ASTNode currentCatchNode = null;
 	//存放同一個Class內要fix的method
 	private List<ASTNode> methodNodeList = new ArrayList<ASTNode>();
 	//目前Method內的OverLogging
@@ -81,7 +83,7 @@ public class OLRefactorAction {
 	 * 取得Method相關資訊(已知MethodIndex)
 	 * @param methodIdx
 	 */
-	public void bindMethod(int methodIdx){				
+	public void bindMethod(int methodIdx) {				
 		//取得該class所有的method
 		ASTMethodCollector methodCollector = new ASTMethodCollector();
 		actRoot.accept(methodCollector);
@@ -103,6 +105,21 @@ public class OLRefactorAction {
 			if (overLogggingTemp.size() != 0) {
 				this.methodNodeList.add(tempNode);
 				this.loggingList.add(overLogggingTemp);
+			}
+		}
+		
+		//收集該method所有的catch clause
+		ASTCatchCollect catchCollector = new ASTCatchCollect();
+		currentMethodNode.accept(catchCollector);
+		List<ASTNode> catchList = catchCollector.getMethodList();
+		//刪除該Method內的Catch中的Logging Statement
+		for (CSMessage msg : currentLoggingList) {
+			//去比對startPosition,找出要修改的節點
+			for (ASTNode cc : catchList) {
+				if (cc.getStartPosition() == msg.getPosition()) {
+					currentCatchNode = cc;
+					break;
+				}
 			}
 		}
 	}
@@ -285,17 +302,20 @@ public class OLRefactorAction {
 	public IOpenable getActOpenable() { return actOpenable; }
 	public CompilationUnit getActRoot() { return actRoot; }
 	//取得Method的相關資訊
+	public ASTNode getCurrentCatchNode() {
+		return currentCatchNode;
+	}
 	public ASTNode getCurrentMethodNode() {
 		return currentMethodNode;
 	}
-	public ASTNode getCurrentMethodNode(int index) {
+	public ASTNode getMethodNode(int index) {
 		return methodNodeList.get(index);
-	}
-	public List<CSMessage> getLoggingList(int index) {
-		return loggingList.get(index);
 	}
 	public List<CSMessage> getCurrentLoggingList() {
 		return currentLoggingList;
+	}
+	public List<CSMessage> getLoggingList(int index) {
+		return loggingList.get(index);
 	}
 	/**
 	 * 現在這個Method內是否有OverLogging

@@ -72,7 +72,7 @@ public class OLQuickFix implements IMarkerResolution{
 	public void run(IMarker marker) {
 		try {
 			problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
-			if(problem != null && (problem.equals(RLMarkerAttribute.CS_OVER_LOGGING))){
+			if(problem != null && (problem.equals(RLMarkerAttribute.CS_OVER_LOGGING))) {				
 				//取得Marker的資訊
 				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
 				String msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);

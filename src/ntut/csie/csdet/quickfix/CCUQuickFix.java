@@ -85,16 +85,16 @@ public class CCUQuickFix implements IMarkerResolution{
 				//取得目前要被修改的method node
 				findCurrentMethodNode(marker.getResource());
 				//取得要被修改的程式碼資訊
-				moveLine=getMoveLine();
+				moveLine = getMoveLine();
 				//若try Statement裡已經有Finally Block,就直接將該行程式碼移到Finally Block中
 				//否則先建立Finally Block後,再移到Finally Block
-				if(hasFinallyBlock()){
+				if (hasFinallyBlock()) {
 					moveToFinallyBlock();
-				}else{
+				} else {
 					addNewFinallyBlock();
 					findCurrentMethodNode(marker.getResource());
 					moveToFinallyBlock();
-					}
+				}
 				//將要變更的資料寫回
 				Document document = applyChange();
 				findCurrentMethodNode(marker.getResource());
@@ -131,7 +131,7 @@ public class CCUQuickFix implements IMarkerResolution{
 				List<ASTNode> methodList = methodCollector.getMethodList();
 				
 				//取得目前要被修改的method node
-				this.currentMethodNode = methodList.get(Integer.parseInt(methodIdx));	
+				this.currentMethodNode = methodList.get(Integer.parseInt(methodIdx));
 			}catch(Exception ex){
 				ex.printStackTrace();
 				logger.error("[CCUQuickFix] EXCEPTION ",ex);
@@ -211,12 +211,12 @@ public class CCUQuickFix implements IMarkerResolution{
 		for(int i=0;i<statement.size();i++){
 			if(statement.get(i) instanceof TryStatement){
 				TryStatement ts = (TryStatement)statement.get(i);
-				Block finallyBlock=ts.getFinally();
+				Block finallyBlock = ts.getFinally();
 				ListRewrite tsRewrite = rewrite.getListRewrite(ts.getBody(),Block.STATEMENTS_PROPERTY);
-				List<?> tsList=tsRewrite.getOriginalList();
+				List<?> tsList = tsRewrite.getOriginalList();
 				//比對Try Statement裡是否有欲移動的程式碼,若有則移除
-				for(int j=0;j<tsList.size();j++){
-					String temp=tsList.get(j).toString();
+				for(int j=0; j<tsList.size(); j++){
+					String temp = tsList.get(j).toString();
 					if(temp.contains(moveLine)){
 						tsRewrite.remove((ASTNode) tsRewrite.getRewrittenList().get(j), null);
 					}

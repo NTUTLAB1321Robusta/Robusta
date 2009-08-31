@@ -3,8 +3,10 @@ package ntut.csie.rleht.builder;
 import ntut.csie.csdet.quickfix.CCUQuickFix;
 import ntut.csie.csdet.quickfix.DHQuickFix;
 import ntut.csie.csdet.quickfix.NTQuickFix;
+import ntut.csie.csdet.quickfix.OLQuickFix;
 import ntut.csie.csdet.quickfix.TEQuickFix;
 import ntut.csie.csdet.quickfix.UMQuickFix;
+import ntut.csie.csdet.refactor.OLRefactoring;
 import ntut.csie.csdet.refactor.RethrowUncheckExAction;
 import ntut.csie.rleht.common.RLUtils;
 import ntut.csie.rleht.views.RLData;
@@ -71,7 +73,8 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				// 碰到OverLogging的Quick fix and refactor方法
 			}else if(problem.equals(RLMarkerAttribute.CS_OVER_LOGGING)){
 				// OverLogging的Quick Fix先暫時用Nested Try block代替
-				return new IMarkerResolution[] { new NTQuickFix("Please use Eclipse refactor==>Extract Method") };
+				return new IMarkerResolution[] { new OLQuickFix("Quick Fix==>Remove Logging"),
+						new OLRefactoring("Refactor==>Remove Reference Logging") };
 			} 
 			
 			return null;

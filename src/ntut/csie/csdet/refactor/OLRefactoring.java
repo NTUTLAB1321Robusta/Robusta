@@ -10,11 +10,17 @@ import ntut.csie.csdet.visitor.LoggingAnalyzer;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.rleht.common.EditorUtils;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.astview.NodeFinder;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IOpenable;
 import org.eclipse.jdt.core.JavaModelException;
@@ -27,8 +33,13 @@ import org.eclipse.jdt.internal.corext.callhierarchy.MethodWrapper;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IRegion;
+import org.eclipse.ui.IEditorDescriptor;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IMarkerResolution;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.jdom.Attribute;
 import org.jdom.Element;
@@ -50,7 +61,7 @@ public class OLRefactoring implements IMarkerResolution{
 	private boolean detectTransExSet = false;
 	//OverLogging設定 (使用者要偵測的Logging規則)
 	private TreeMap<String, Integer> libMap = new TreeMap<String, Integer>();
-	//記錄要修改的List(一個CompilationUnit為單位)
+	//要刪除OverLogging的List(一個CompilationUnit為單位)
 	private List<OLRefactorAction> fixList = new ArrayList<OLRefactorAction>();
 
 	public OLRefactoring(String label){
@@ -87,9 +98,11 @@ public class OLRefactoring implements IMarkerResolution{
 					int selectLine = baseMethod.getCurrentLoggingList().get(Integer.parseInt(msgIdx)).getLineNumber();
 					//加入至刪除名單
 					fixList.add(baseMethod);
-					
-					//取得Caller的Logging資訊
-					traceCallerMethod(baseMethod.getCurrentMethodNode(0));
+
+					//取得Caller Method的Logging資訊
+					traceCallerMethod(baseMethod.getMethodNode(0));
+					//取得Callee Method的Logging資訊
+					traceCalleeMethod(baseMethod.getMethodNode(0));
 
 					/// 若更動的CompilationUnit後再更動會出錯                   ///
 					/// 所以把所有要刪除的Logging都記錄起來，再一次刪除 ///
@@ -97,6 +110,9 @@ public class OLRefactoring implements IMarkerResolution{
 						//刪除List中的OverLogging (一次以一個Class為單位刪除)
 						temp.deleteMessage();
 
+					//開啟點選的java檔的Editor
+					//把頁面切回來，才能做定位功能
+					openEditor(marker.getResource());
 					//游標定位 
 					setSelectLine(baseMethod.getActOpenable(), selectLine -1);
 				}
@@ -132,35 +148,12 @@ public class OLRefactoring implements IMarkerResolution{
 					tempAction.bindMethod(callerMethod);
 
 					//是否有OverLogging，沒有就不處理 (即之後就不做刪除動作)
-					if (tempAction.isLoggingExist()) {
+					if (tempAction.isLoggingExist() && isOK)
 						//此Class是否已經存在於List中
-						boolean isExist = false;
-						if (isOK) {
-							for (OLRefactorAction oldAction : fixList) {
-								//判斷CompilationUnit是否與List中的相同
-								if (oldAction.getActRoot().getJavaElement()
-									.equals(tempAction.getActRoot().getJavaElement())) {
-									//若已加入，則去取得新的Method資訊
-									oldAction.bindMethod(callerMethod);
-									isExist = true;
-									break;
-								}
-							}
-							//若CompilationUnit不存在，則新加入至List
-							if (!isExist)
-								fixList.add(tempAction);
-						}
-					}
+						addFixList(callerMethod, tempAction);
 
-					/// 偵測是否繼續Trace(是否又將Exception傳到上一層) ///
-					//取得LoggingAnalyzer要的資訊
-					String classInfo = methodDeclaration.resolveBinding().getDeclaringClass().getQualifiedName();
-					MethodDeclaration methodNode = transMethodNode(callerMethod);
-					//偵測是否將Exception傳到上一層
-					LoggingAnalyzer visitor = new LoggingAnalyzer(classInfo, method.getElementName(),
-													libMap, detectTransExSet);				
-					methodNode.accept(visitor);
-					boolean isTrace = visitor.getIsKeepTrace();
+					//偵測是否繼續Trace上一層Caller
+					boolean isTrace = getIsKeepTrace(methodDeclaration, method, callerMethod);
 
 					//若Exception又傳到上一層，則繼續偵測
 					if (isTrace)
@@ -169,7 +162,81 @@ public class OLRefactoring implements IMarkerResolution{
 			}
 		}
 	}
+
+	/**
+	 * 偵測是否繼續Trace上一層Caller(Exception是否傳到上一層)
+	 * @param methodDeclaration
+	 * @param method
+	 * @param callerMethod
+	 * @return					是否繼續Trace
+	 */
+	private boolean getIsKeepTrace(MethodDeclaration methodDeclaration,	IMethod method, IMethod callerMethod) {
+		//取得LoggingAnalyzer要的資訊
+		String classInfo = methodDeclaration.resolveBinding().getDeclaringClass().getQualifiedName();
+		MethodDeclaration methodNode = transMethodNode(callerMethod);
+		//偵測是否將Exception傳到上一層
+		LoggingAnalyzer visitor = new LoggingAnalyzer(classInfo, method.getElementName(),
+										libMap, detectTransExSet);				
+		methodNode.accept(visitor);
+
+		return visitor.getIsKeepTrace();
+	}	
 	
+	/**
+	 * 往下一層Trace，找出Caller的OverLogging資訊
+	 * @param currentMethodNode
+	 */
+	private void traceCalleeMethod(ASTNode currentMethodNode) {
+		if (currentMethodNode instanceof MethodDeclaration) {
+			//從MethodDeclaration取得IMthod
+			MethodDeclaration methodDeclaration = (MethodDeclaration) currentMethodNode;
+			IMethod method = (IMethod) methodDeclaration.resolveBinding().getJavaElement();
+
+			//取得Method的Caller
+			MethodWrapper currentMW = new CallHierarchy().getCalleeRoot(method);				
+			MethodWrapper[] calls = currentMW.getCalls(new NullProgressMonitor());
+
+			//若有Callee
+			if (calls.length != 0) {
+				for (MethodWrapper mw : calls) {
+					IMember calleeMember = (IMember) mw.getMember();
+					if (calleeMember instanceof IMethod) {
+						IMethod calleeMethod = (IMethod) calleeMember;
+
+						//CalleeMethod不為NULL或 其資源副檔名不為java(濾掉jar檔之類)
+						if (calleeMethod.getResource() != null &&
+							calleeMethod.getResource().getName().endsWith(".java")) {
+							try {
+								String[] calleeType = calleeMethod.getExceptionTypes();
+								//若Callee有throws Exception
+								if (calleeType != null && calleeType.length != 0) {
+									for (String type : calleeType) {
+										//取得Exception(取得的資料為"QException;"刪除頭尾的Q和;)
+										type = type.substring(1, type.length()-1);
+	
+										OLRefactorAction tempAction = new OLRefactorAction();
+										boolean isOK = tempAction.obtainResource(calleeMethod.getResource());
+										tempAction.bindMethod(calleeMethod);
+		
+										//是否有OverLogging，沒有就不處理 (即之後就不做刪除動作)
+										if (tempAction.isLoggingExist() && isOK)
+											//此Class是否已經存在於List中
+											addFixList(calleeMethod, tempAction);
+										
+										//繼續下一層Trace
+										traceCalleeMethod(tempAction.getCurrentMethodNode());
+									}
+								}
+							} catch (JavaModelException e) {
+									logger.error("[Java Model Exception] JavaModelException ", e);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
 	/**
 	 * IMethod轉換成ASTNode MethodDeclaration
 	 * @param method	IMethod
@@ -205,6 +272,33 @@ public class OLRefactoring implements IMarkerResolution{
 	}
 
 	/**
+	 * 確認此Class是否已經存在於List中。
+	 * 若存在則在CompilationUnit中新增欲修改的Method；若不存在則新增CompilationUnit至List
+	 * @param callerMethod
+	 * @param refactorAction
+	 */
+	private void addFixList(IMethod callerMethod, OLRefactorAction refactorAction) {
+		boolean isExist = false;
+
+		//開啟此Method的java檔的Editor
+		openEditor(callerMethod.getResource());
+
+		for (OLRefactorAction oldAction : fixList) {
+			//判斷CompilationUnit是否與List中的相同
+			if (oldAction.getActRoot().getJavaElement()
+				.equals(refactorAction.getActRoot().getJavaElement())) {
+				//若已加入，則去取得新的Method資訊
+				oldAction.bindMethod(callerMethod);
+				isExist = true;
+				break;
+			}
+		}
+		//若沒加入，則新加入至List
+		if (!isExist)
+			fixList.add(refactorAction);
+	}
+
+	/**
 	 * 游標定位
 	 * @param iopenable	資源
 	 * @param line		行數
@@ -233,7 +327,7 @@ public class OLRefactoring implements IMarkerResolution{
 	/**
 	 * 將User對於OverLogging的設定存下來
 	 */
-	public void getOverLoggingSettings(){		
+	public void getOverLoggingSettings() {
 		Element root = JDomUtil.createXMLContent();
 		//如果是null表示XML檔是剛建好的,還沒有OverLogging的tag,直接跳出去
 		if(root.getChild(JDomUtil.OverLoggingTag) != null) {
@@ -265,20 +359,45 @@ public class OLRefactoring implements IMarkerResolution{
 					String temp = libRuleList.get(i).getQualifiedName();					
 
 					//若有.*為只偵測Library
-					if (temp.indexOf(".EH_STAR")!=-1){
+					if (temp.indexOf(".EH_STAR")!=-1) {
 						int pos = temp.indexOf(".EH_STAR");
 						libMap.put(temp.substring(0,pos), ASTBinding.LIBRARY);
 					//若有*.為只偵測Method
-					}else if (temp.indexOf("EH_STAR.") != -1){
+					} else if (temp.indexOf("EH_STAR.") != -1) {
 						libMap.put(temp.substring(8), ASTBinding.METHOD);
 					//都沒有為都偵測，偵測Library+Method
-					}else if (temp.lastIndexOf(".") != -1){
+					} else if (temp.lastIndexOf(".") != -1) {
 						libMap.put(temp, ASTBinding.LIBRARY_METHOD);
 					//若有其它形況則設成Method
-					}else{
+					} else {
 						libMap.put(temp, ASTBinding.METHOD);
 					}
 				}
+			}
+		}
+	}
+	
+	/**
+	 * 開啟Resource的Editor
+	 * @param resource	要被打開的資源
+	 */
+	private void openEditor(IResource resource) {
+		String projectName = resource.getProject().getName();
+		IPath javaPath = resource.getFullPath().removeFirstSegments(1);
+		
+		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+		IFile javaFile = project.getFile(javaPath);
+		
+		if (javaFile != null) {
+			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+	
+			IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(javaFile.getName());
+	
+			IEditorPart edit = null;
+			try {
+				edit = page.openEditor(new FileEditorInput(javaFile), desc.getId());
+			} catch (PartInitException e) {
+				logger.error("[PartInitException] EXCEPTION ",e);
 			}
 		}
 	}

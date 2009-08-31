@@ -107,7 +107,7 @@ public class BrowserControl extends LocationAdapter {
 		try {
 			edit = page.openEditor(new FileEditorInput(javaFile), desc.getId());
 		} catch (PartInitException e) {
-			e.printStackTrace();
+			logger.error("[PartInitException] EXCEPTION ",e);
 		}
 		return edit;
 	}
