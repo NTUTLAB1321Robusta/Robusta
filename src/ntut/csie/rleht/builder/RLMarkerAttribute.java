@@ -34,7 +34,7 @@ public interface RLMarkerAttribute {
 	public static final String CS_UNPROTECTED_MAIN = "Unprotected_Main_Program";
 	
 	//Careless CleanUp
-	public static final String CS_CARELESS_CLEANUP="Careless_CleanUp";
+	public static final String CS_CARELESS_CLEANUP = "Careless_CleanUp";
 	
 	//Over Logging
 	public static final String CS_OVER_LOGGING = "Over_Logging";

@@ -17,6 +17,7 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IOpenable;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -46,6 +47,8 @@ import org.slf4j.LoggerFactory;
 
 import agile.exception.RL;
 import agile.exception.Robustness;
+import agile.exception.Smell;
+import agile.exception.SuppressSmell;
 
 public class UMQuickFix implements IMarkerResolution{
 	private static Logger logger = LoggerFactory.getLogger(UMQuickFix.class);
@@ -67,12 +70,6 @@ public class UMQuickFix implements IMarkerResolution{
 	
 	private ASTRewrite rewrite;
 	
-	//是否已存在Robustness及RL的宣告
-	private	boolean isImportRobustnessClass = false;
-	private boolean isImportRLClass = false;
-	//反白的行數
-	int selectLine = -1;
-	
 	public UMQuickFix(String label){
 		this.label = label;
 	}
@@ -92,8 +89,11 @@ public class UMQuickFix implements IMarkerResolution{
 				//String exception = marker.getAttribute(RLMarkerAttribute.RL_INFO_EXCEPTION).toString();
 				boolean isok = unprotectedMain(marker.getResource(), Integer.parseInt(methodIdx));
 				//先找出要被修改的main function,如果存在就開始進行fix
-				if(isok)
+				if(isok) {
 					addBigOuterTry(Integer.parseInt(msgIdx));
+					//反白Annotation
+					selectSourceLine(marker, methodIdx);
+				}
 			}
 		} catch (CoreException e) {		
 			logger.error("[UMQuickFix] EXCEPTION ",e);
@@ -174,23 +174,21 @@ public class UMQuickFix implements IMarkerResolution{
 		
 		if(isTryExist){
 			/*------------------------------------------------------------------------*
-	        -  假如Main function中已經有try block了,那就要去確認try block是位於main的一開始
-	            還是中間,或者是在最後面,並依據這三種情況將程式碼都塞進去try block裡面  
+			-	假如Main function中已經有try block了,那就要去確認try block是位於main的一開始
+				還是中間,或者是在最後面,並依據這三種情況將程式碼都塞進去try block裡面  
 	        *-------------------------------------------------------------------------*/	
 			moveTryBlock(ast,statement,pos,listRewrite);
 			
 		}else{
 			/*------------------------------------------------------------------------*
-	        -  假如Main function中沒有try block了,那就自己增加一個try block,再把main中所有的
-	            程式全部都塞進try block中
+			-	假如Main function中沒有try block了,那就自己增加一個try block,再把main中所有的
+				程式全部都塞進try block中
 	        *-------------------------------------------------------------------------*/
 			addNewTryBlock(ast,listRewrite);
 			
 		}	
 		addAnnotationRoot(ast);		
-		Document document = applyChange();
-	
-		selectLine(document);
+		applyChange();
 	}
 	
 	/**
@@ -391,8 +389,8 @@ public class UMQuickFix implements IMarkerResolution{
 		ListRewrite listRewrite = rewrite.getListRewrite(this.actRoot, this.actRoot.IMPORTS_PROPERTY);
 		List<ImportDeclaration> importList = listRewrite.getRewrittenList();
 		
-//		boolean isImportRobustnessClass = false;
-//		boolean isImportRLClass = false;
+		boolean isImportRobustnessClass = false;
+		boolean isImportRLClass = false;
 		for (ImportDeclaration id : importList) {
 			if (RLData.CLASS_ROBUSTNESS.equals(id.getName().getFullyQualifiedName())) {
 				isImportRobustnessClass = true;
@@ -418,7 +416,7 @@ public class UMQuickFix implements IMarkerResolution{
 	/**
 	 * 將要變更的資料寫回至Document中
 	 */
-	private Document applyChange(){
+	private void applyChange(){
 		//寫回Edit中
 		try {
 			ICompilationUnit cu = (ICompilationUnit) actOpenable;
@@ -426,45 +424,42 @@ public class UMQuickFix implements IMarkerResolution{
 			TextEdit edits = rewrite.rewriteAST(document,null);
 			edits.apply(document);
 			cu.getBuffer().setContents(document.get());
-			return document;
 		}catch (Exception ex) {
 			logger.error("[UMQuickFix] EXCEPTION ",ex);
 		}
-		return null;
 	}
 	
 	/**
 	 * 反白Annotation那行
 	 * @param document
 	 */
-	private void selectLine(Document document) {
-		//取得目前的EditPart
-		IEditorPart editorPart = EditorUtils.getActiveEditor();
-		ITextEditor editor = (ITextEditor) editorPart;
-
-		//取得Method的起點位置
-		int srcPos = currentMethodNode.getStartPosition();
-		//用Method起點位置取得Method位於第幾行數(起始行數從0開始，不是1，所以減1)
-		selectLine = this.actRoot.getLineNumber(srcPos)-1;
+	private void selectSourceLine(IMarker marker, String methodIdx) {
+		//重新取得Method資訊
+		boolean isOK = unprotectedMain(marker.getResource(), Integer.parseInt(methodIdx));
+		if (isOK) {
+			try {
+				ICompilationUnit cu = (ICompilationUnit) actOpenable;
+				Document document = new Document(cu.getBuffer().getContents());
+				//取得目前的EditPart
+				IEditorPart editorPart = EditorUtils.getActiveEditor();
+				ITextEditor editor = (ITextEditor) editorPart;
 		
-		//如果有import Robustness或RL的宣告行數就加1
-		if(!isImportRobustnessClass)
-			selectLine++;
-		if(!isImportRLClass)
-			selectLine++;
+				//取得Method的起點位置
+				int srcPos = currentMethodNode.getStartPosition();
+				//用Method起點位置取得Method位於第幾行數，行數起始位置從0開始(不是1)，所以減1
+				//又第一行"必定"是Robustness，所以取下一行
+				int selectLine = this.actRoot.getLineNumber(srcPos);
 
-		//TODO 兩個都import時 會莫名多一行空行
-//		if (!isImportRLClass && !isImportRobustnessClass)
-//			numLine++;
-
-		//取得行數的資料
-		IRegion lineInfo = null;
-		try {
-			lineInfo = document.getLineInformation(selectLine);
-		} catch (BadLocationException e) {
-			logger.error("[BadLocation] EXCEPTION ",e);
+				//取得行數的資料
+				IRegion lineInfo = document.getLineInformation(selectLine);
+	
+				//反白該行 在Quick fix完之後,可以將游標定位在Quick Fix那行
+				editor.selectAndReveal(lineInfo.getOffset(), lineInfo.getLength());
+			} catch (JavaModelException e) {
+				logger.error("[Rethrow checked Exception] EXCEPTION ",e);
+			} catch (BadLocationException e) {
+				logger.error("[BadLocation] EXCEPTION ",e);
+			}
 		}
-		//反白該行 在Quick fix完之後,可以將游標定位在Quick Fix那行
-		editor.selectAndReveal(lineInfo.getOffset(), lineInfo.getLength());
 	}
 }

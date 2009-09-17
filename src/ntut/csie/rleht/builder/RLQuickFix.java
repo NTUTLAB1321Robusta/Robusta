@@ -18,6 +18,7 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IOpenable;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -62,10 +63,6 @@ public class RLQuickFix implements IMarkerResolution {
 
 	private int levelForUpdate;
 	
-	//是否已存在Robustness及RL的宣告
-	boolean isImportRobustnessClass = false;
-	boolean isImportRLClass = false;
-	
 	public RLQuickFix(String label) {
 		this.label = label;
 	}
@@ -82,7 +79,8 @@ public class RLQuickFix implements IMarkerResolution {
 	public void run(IMarker marker) {
 		try {
 	
-			String problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);			
+			String problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
+			//RL Level有問題(超出1~3範圍內)
 			if (problem != null && problem.equals(RLMarkerAttribute.ERR_RL_LEVEL)) {
 				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
 				String msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
@@ -90,18 +88,21 @@ public class RLQuickFix implements IMarkerResolution {
 				boolean isok = findMethod(marker.getResource(), Integer.parseInt(methodIdx));
 				if (isok) {
 					this.updateRLAnnotation(Integer.parseInt(msgIdx), levelForUpdate);
+					//定位到Annotation該行
+					selectLine(marker, methodIdx);
 				}
 			}
+			//無RL資訊
 			else if (problem != null && problem.equals(RLMarkerAttribute.ERR_NO_RL)) {
 				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
 				String msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
 
 				boolean isok = findMethod(marker.getResource(), Integer.parseInt(methodIdx));
-
 				if (isok) {
 					this.addOrRemoveRLAnnotation(true, Integer.parseInt(msgIdx));
+					//定位到Annotation該行
+					selectLine(marker, methodIdx);
 				}
-
 			}
 			//RL順序對調
 			else if (problem != null && problem.equals(RLMarkerAttribute.ERR_RL_INSTANCE))
@@ -109,9 +110,11 @@ public class RLQuickFix implements IMarkerResolution {
 				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
 				String msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
 				
-				RLOrderFix orderFix = new RLOrderFix();
-				//調整RL Annotation順序，順便反白指定行數(-1表示反白RL Annotation)
-				orderFix.run(marker.getResource(), methodIdx, msgIdx, -1);
+				//調整RL Annotation順序
+				new RLOrderFix().run(marker.getResource(), methodIdx, msgIdx);
+
+				//定位到Annotation該行
+				selectLine(marker, methodIdx);
 			}
 		}
 		catch (CoreException e) {
@@ -120,6 +123,12 @@ public class RLQuickFix implements IMarkerResolution {
 
 	}
 
+	/**
+	 * 取得Method的資訊
+	 * @param resource
+	 * @param methodIdx		method的Index
+	 * @return				是否成功
+	 */
 	private boolean findMethod(IResource resource, int methodIdx) {
 		if (resource instanceof IFile && resource.getName().endsWith(".java")) {
 
@@ -161,10 +170,17 @@ public class RLQuickFix implements IMarkerResolution {
 		return false;
 	}
 
+	/**
+	 * 若未import Robustness Library，則把它import
+	 */
 	@SuppressWarnings("unchecked")
 	private void addImportDeclaration() {
 		// 判斷是否已經Import Robustness及RL的宣告
 		List<ImportDeclaration> importList = this.actRoot.imports();
+
+		//是否已存在Robustness及RL的宣告
+		boolean isImportRobustnessClass = false;
+		boolean isImportRLClass = false;
 
 		for (ImportDeclaration id : importList) {
 			if (RLData.CLASS_ROBUSTNESS.equals(id.getName().getFullyQualifiedName())) {
@@ -188,11 +204,11 @@ public class RLQuickFix implements IMarkerResolution {
 		}
 	}
 
-	/***************************************************************************
+	/**
 	 * 將RL Annotation訊息增加到指定Method上
 	 * 
-	 * @param msg
-	 *            目前事件所在的RLMessage物件訊息
+	 * @param add
+	 * @param pos
 	 */
 	@SuppressWarnings("unchecked")
 	private void addOrRemoveRLAnnotation(boolean add, int pos) {
@@ -268,8 +284,7 @@ public class RLQuickFix implements IMarkerResolution {
 	/**
 	 * 更新RL Annotation
 	 * 
-	 * @param isAllUpdate
-	 * 		是否更新全部的Annotation
+	 * @param isAllUpdate	是否更新全部的Annotation
 	 * @param pos
 	 * @param level
 	 */
@@ -331,12 +346,9 @@ public class RLQuickFix implements IMarkerResolution {
 	/**
 	 * 產生RL Annotation之RL資料
 	 * 
-	 * @param ast
-	 *            AST Object
-	 * @param levelVal
-	 *            強健度等級
-	 * @param exClass
-	 *            例外類別
+	 * @param ast		AST Object
+	 * @param levelVal	強健度等級
+	 * @param exClass	例外類別
 	 * @return NormalAnnotation AST Node
 	 */
 	@SuppressWarnings("unchecked")
@@ -372,8 +384,6 @@ public class RLQuickFix implements IMarkerResolution {
 			TextEdit edits = actRoot.rewrite(document, cu.getJavaProject().getOptions(true));
 			edits.apply(document);
 			cu.getBuffer().setContents(document.get());
-			
-			selectLine(document);
 		}
 		catch(Exception ex){
 			logger.error("[RLQuickFix] EXCEPTION ",ex);
@@ -382,33 +392,37 @@ public class RLQuickFix implements IMarkerResolution {
 
 	/**
 	 * 游標定位(定位到RL Annotation那行)
-	 * @param document
+	 * @param marker
+	 * @param methodIdx
+	 * @throws JavaModelException
 	 */
-	private void selectLine(Document document) {
-		//取得目前的EditPart
-		IEditorPart editorPart = EditorUtils.getActiveEditor();
-		ITextEditor editor = (ITextEditor) editorPart;
+	private void selectLine(IMarker marker, String methodIdx) throws JavaModelException {
+		//重新取得新的Method資訊(因為資料已改變，method那些資訊是舊的)
+		boolean isok = findMethod(marker.getResource(), Integer.parseInt(methodIdx));
 
-		//取得Method的起點位置
-		int srcPos = currentMethodNode.getStartPosition();
-		//用Method起點位置取得Method位於第幾行數(起始行數從0開始，不是1，所以減1)
-		int numLine = this.actRoot.getLineNumber(srcPos)-1;
+		if (isok) {
+			ICompilationUnit cu = (ICompilationUnit) actOpenable;
+			Document document = new Document(cu.getBuffer().getContents());
 
-		//如果有import Robustness或RL的宣告行數就加1
-		if(!isImportRobustnessClass)
-			numLine++;
-		if(!isImportRLClass)
-			numLine++;
-
-		//取得行數的資料
-		IRegion lineInfo = null;
-		try {
-			lineInfo = document.getLineInformation(numLine);
-		} catch (BadLocationException e) {
-			logger.error("[BadLocation] EXCEPTION ",e);
+			//取得目前的EditPart
+			IEditorPart editorPart = EditorUtils.getActiveEditor();
+			ITextEditor editor = (ITextEditor) editorPart;
+	
+			//取得Method的起點位置
+			int srcPos = currentMethodNode.getStartPosition();
+			//用Method起點位置取得Method位於第幾行數(起始行數從0開始，不是1，所以減1)
+			int numLine = this.actRoot.getLineNumber(srcPos)-1;
+	
+			//取得行數的資料
+			IRegion lineInfo = null;
+			try {
+				lineInfo = document.getLineInformation(numLine);
+			} catch (BadLocationException e) {
+				logger.error("[BadLocation] EXCEPTION ",e);
+			}
+	
+			//反白該行 在Quick fix完之後,可以將游標定位在Quick Fix那行
+			editor.selectAndReveal(lineInfo.getOffset(), lineInfo.getLength());
 		}
-
-		//反白該行 在Quick fix完之後,可以將游標定位在Quick Fix那行
-		editor.selectAndReveal(lineInfo.getOffset(), lineInfo.getLength());
 	}
 }

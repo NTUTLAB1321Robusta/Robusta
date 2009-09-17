@@ -154,7 +154,7 @@ public class RetryRefactoring extends Refactoring{
 			status.addFatalError("Selection Error, please retry again!!!");
 		}else if(!(selectNode instanceof TryStatement)){
 			status.addFatalError("Selection Error, please retry again!!!");
-		}else{			
+		}else{
 			//取得class中所有的method
 			List<ASTNode> methodList = methodCollector.getMethodList();
 			int methodIdx = -1;
@@ -182,7 +182,7 @@ public class RetryRefactoring extends Refactoring{
 				currentMethodNode.accept(exVisitor);
 				currentMethodRLList = exVisitor.getMethodRLAnnotationList();
 				//進行Retry Refactoring
-				introduceTryClause(selectNode);				
+				introduceTryClause(selectNode);
 			}else{
 				status.addFatalError("Selection Error, please retry again!!!");
 			}

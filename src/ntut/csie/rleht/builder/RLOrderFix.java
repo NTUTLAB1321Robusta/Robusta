@@ -42,8 +42,6 @@ public class RLOrderFix {
 	private List<RLMessage> currentMethodRLList = null;
 	//目前的Method AST Node
 	private ASTNode currentMethodNode = null;
-	//反白的行數
-	private int selectLine = -1;
 
 	/**
 	 * 進行調整RL Annotation順序
@@ -52,10 +50,8 @@ public class RLOrderFix {
 	 * @param msgIdx		
 	 * @param selectLine	欲反白的行數
 	 */
-	public void run(IResource resource, String methodIdx, String msgIdx, int selectLine)
-	{
-		this.selectLine = selectLine;
-		
+	public void run(IResource resource, String methodIdx, String msgIdx)
+	{		
 		//取得currentMethodRLList
 		findMethod(resource, Integer.parseInt(methodIdx));
 
@@ -72,7 +68,7 @@ public class RLOrderFix {
 				newRLList[i] = currentMethodRLList.get(i);
 			//在新增調整空間放入資料，使它不為Null，才不會出錯
 			newRLList[currentMethodRLList.size()] = newRLList[0];
-			
+
 			//把RL List重新排序，若位置正確把結果存到currentMethodRLList中
 			permutation(newRLList,1);
 		}
@@ -132,7 +128,6 @@ public class RLOrderFix {
 		boolean isError = false;
 		int idx = -1;
 		for (RLMessage msg : currentMethodRLList) {
-			System.out.println(msg.getTypeBinding().getQualifiedName() + "    XXX");
 			idx++;
 			// 檢查@RL清單內的exception類別階層是否正確
 			int idx2 = 0;
@@ -346,44 +341,9 @@ public class RLOrderFix {
 			TextEdit edits = actRoot.rewrite(document, cu.getJavaProject().getOptions(true));
 			edits.apply(document);
 			cu.getBuffer().setContents(document.get());
-
-			//反白指定行數
-			selectLine(document);
 		}
 		catch(Exception ex){
 			logger.error("[RLQuickFix] EXCEPTION ",ex);
 		}
-	}
-	
-	/**
-	 * 反白指定行數
-	 * 
-	 * @param document
-	 */
-	private void selectLine(Document document) {
-		//取得目前的EditPart
-		IEditorPart editorPart = EditorUtils.getActiveEditor();
-		ITextEditor editor = (ITextEditor) editorPart;
-
-		//若反白行數為
-		if (selectLine == -1) {
-			//取得Method的起點位置
-			int srcPos = currentMethodNode.getStartPosition();
-
-			//用Method起點位置取得Method位於第幾行數(起始行數從0開始，不是1，所以減1)
-			selectLine = this.actRoot.getLineNumber(srcPos)-1;
-		}
-
-		//欲反白的行數資料
-		IRegion lineInfo = null;
-		try {
-			//取得行數的資料
-			lineInfo = document.getLineInformation(selectLine);
-		} catch (BadLocationException e) {
-			logger.error("[BadLocation] EXCEPTION ",e);
-		}
-
-		//反白該行 在Quick fix完之後,可以將游標定位在Quick Fix那行
-		editor.selectAndReveal(lineInfo.getOffset(), lineInfo.getLength());
 	}
 }

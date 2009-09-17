@@ -7,6 +7,8 @@ import ntut.csie.csdet.visitor.ASTCatchCollect;
 import ntut.csie.csdet.visitor.CodeSmellAnalyzer;
 import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
+import ntut.csie.rleht.builder.RLOrderFix;
+import ntut.csie.rleht.common.EditorUtils;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLData;
 import ntut.csie.rleht.views.RLMessage;
@@ -42,13 +44,17 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TypeLiteral;
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
+import org.eclipse.jface.text.IRegion;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.TextFileChange;
 import org.eclipse.text.edits.TextEdit;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.texteditor.ITextEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,6 +99,7 @@ public class RethrowExRefactoring extends Refactoring {
 	
 	String msgIdx;
 	String methodIdx;
+	int catchIdx = -1;
 	
 	@Override
 	public RefactoringStatus checkFinalConditions(IProgressMonitor pm)
@@ -139,12 +146,31 @@ public class RethrowExRefactoring extends Refactoring {
 	 * parse AST Tree並取得要修改的method node
 	 * @param resource
 	 */
-	private void collectChange(IResource resource){
+	private void collectChange(IResource resource) {
+		try {
+			problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
+			methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
+
+			//取得Method相關資訊
+			if (findMethod(resource))
+				//去修改AST Tree的內容
+				rethrowException();
+		} catch (CoreException e) {
+			logger.error("[Find CS Method] EXCEPTION ",e);
+		}
+	}
+	
+	/**
+	 * 取得Method相關資訊
+	 * @param resource		來源
+	 * @param methodIdx		Method的Index
+	 * @return				是否成功
+	 */
+	private boolean findMethod(IResource resource) {
 		//取得要修改的CompilationUnit
 		if (resource instanceof IFile && resource.getName().endsWith(".java")) {
 			try {
 				IJavaElement javaElement = JavaCore.create(resource);
-				
 				if (javaElement instanceof IOpenable) {
 					this.actOpenable = (IOpenable) javaElement;
 				}
@@ -161,7 +187,6 @@ public class RethrowExRefactoring extends Refactoring {
 				ASTMethodCollector methodCollector = new ASTMethodCollector();
 				actRoot.accept(methodCollector);
 				List<ASTNode> methodList = methodCollector.getMethodList();
-				methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
 				
 				//取得目前要被修改的method node
 				this.currentMethodNode = methodList.get(Integer.parseInt(methodIdx));
@@ -170,24 +195,22 @@ public class RethrowExRefactoring extends Refactoring {
 					ExceptionAnalyzer exVisitor = new ExceptionAnalyzer(this.actRoot, currentMethodNode.getStartPosition(), 0);
 					currentMethodNode.accept(exVisitor);
 					currentMethodRLList = exVisitor.getMethodRLAnnotationList();
-										
+
 					CodeSmellAnalyzer visitor = new CodeSmellAnalyzer(this.actRoot);
 					currentMethodNode.accept(visitor);
-					problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
 					//判斷是Ignore Ex or Dummy handler並取得code smell的List
 					if(problem.equals(RLMarkerAttribute.CS_INGNORE_EXCEPTION)){
 						currentExList = visitor.getIgnoreExList();	
 					}else{
 						currentExList = visitor.getDummyList();
 					}
-					//去修改AST Tree的內容
-					rethrowException();
 				}
-			
+				return true;
 			}catch (Exception ex) {
 				logger.error("[Find CS Method] EXCEPTION ",ex);
 			}
 		}
+		return false;
 	}
 	
 	/**
@@ -207,11 +230,12 @@ public class RethrowExRefactoring extends Refactoring {
 			currentMethodNode.accept(catchCollector);
 			List<ASTNode> catchList = catchCollector.getMethodList();
 			
-			//去比對startPosition,找出要修改的catch			
-			for (ASTNode cc : catchList){
-				if(cc.getStartPosition() == msg.getPosition()){	
+			//去比對startPosition,找出要修改的catch
+			for (int i =0; i<catchList.size(); i++) {
+				if(catchList.get(i).getStartPosition() == msg.getPosition()) {
+					catchIdx = i;
 					//在catch clause中建立throw statement
-					addThrowStatement(cc, ast);
+					addThrowStatement(catchList.get(i), ast);
 					//建立RL Annotation
 					addAnnotationRoot(ast);
 					//加入未import的Library(遇到RuntimeException就不用加Library)
@@ -477,5 +501,83 @@ public class RethrowExRefactoring extends Refactoring {
 	 */
 	public void setExType(IType type){		
 		this.exType = type;
+	}
+	
+	/**
+	 * 交換Annotation順序，再定位
+	 */
+	public void changeAnnotation() {
+		//交換Annotation的順序
+		new RLOrderFix().run(marker.getResource(), methodIdx, msgIdx);
+
+		//定位
+		selectSourceLine();
+	}
+	
+	/**
+	 * 取得Throw Statement行數
+	 * @param catchIdx	catch的index
+	 * @return			反白行數
+	 */
+	private int getThrowStatementSourceLine(int catchIdx) {
+		//反白行數
+		int selectLine = -1;
+
+		if (catchIdx != -1) {
+			ASTCatchCollect catchCollector = new ASTCatchCollect();
+			currentMethodNode.accept(catchCollector);
+			List<ASTNode> catchList = catchCollector.getMethodList();
+			//取得指定的Catch
+			CatchClause clause = (CatchClause) catchList.get(catchIdx);
+			//尋找Throw statement的行數
+			List catchStatements = clause.getBody().statements();
+			for (int i = 0; i < catchStatements.size(); i++) {
+				if (catchStatements.get(i) instanceof ThrowStatement) {
+					ThrowStatement statement = (ThrowStatement) catchStatements.get(i);
+					selectLine = this.actRoot.getLineNumber(statement.getStartPosition()) -1;
+					return selectLine;
+				}
+			}
+		}
+		return selectLine;
+	}
+	
+	/**
+	 * 反白指定行數
+	 * @param marker		欲反白Statement的Resource
+	 * @param methodIdx		欲反白Statement的Method Index
+	 * @param catchIdx		欲反白Statement的Catch Index
+	 */
+	private void selectSourceLine() {
+		//重新取得Method資訊
+		boolean isOK = findMethod(marker.getResource());
+		if (isOK) {
+			try {
+				ICompilationUnit cu = (ICompilationUnit) actOpenable;
+				Document document = new Document(cu.getBuffer().getContents());
+				//取得目前的EditPart
+				IEditorPart editorPart = EditorUtils.getActiveEditor();
+				ITextEditor editor = (ITextEditor) editorPart;
+	
+				//取得反白Statement的行數
+				int selectLine = getThrowStatementSourceLine(catchIdx);
+				//若反白行數為
+				if (selectLine == -1) {
+					//取得Method的起點位置
+					int srcPos = currentMethodNode.getStartPosition();
+					//用Method起點位置取得Method位於第幾行數(起始行數從0開始，不是1，所以減1)
+					selectLine = this.actRoot.getLineNumber(srcPos)-1;
+				}
+				//取得反白行數在SourceCode的行數資料
+				IRegion lineInfo = document.getLineInformation(selectLine);
+
+				//反白該行 在Quick fix完之後,可以將游標定位在Quick Fix那行
+				editor.selectAndReveal(lineInfo.getOffset(), lineInfo.getLength());
+			} catch (JavaModelException e) {
+				logger.error("[Rethrow checked Exception] EXCEPTION ",e);
+			} catch (BadLocationException e) {
+				logger.error("[BadLocation] EXCEPTION ",e);
+			}
+		}
 	}
 }

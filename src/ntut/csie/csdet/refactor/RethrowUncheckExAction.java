@@ -2,12 +2,21 @@ package ntut.csie.csdet.refactor;
 
 import ntut.csie.csdet.refactor.ui.RethrowExWizard;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
+import ntut.csie.rleht.builder.RLOrderFix;
+import ntut.csie.rleht.common.EditorUtils;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.Document;
+import org.eclipse.jface.text.IRegion;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizardOpenOperation;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IMarkerResolution;
+import org.eclipse.ui.texteditor.ITextEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +52,8 @@ public class RethrowUncheckExAction implements IMarkerResolution{
 				RefactoringWizardOpenOperation operation = 
 					new RefactoringWizardOpenOperation(new RethrowExWizard(refactoring,0));
 				operation.run(new Shell(), "Rethrow Unchecked Exception");
-
+				//若Annotation順序不對，則交換順序。最後再定位
+				refactoring.changeAnnotation();
 			}
 		
 		} catch (InterruptedException e) {
