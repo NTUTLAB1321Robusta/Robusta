@@ -25,7 +25,6 @@ import org.jdom.Element;
  * @author chewei
  */
 public class CodeSmellAnalyzer extends RLBaseVisitor {
-	
 	// AST tree的root(檔案名稱)
 	private CompilationUnit root;
     
@@ -43,9 +42,6 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 	private int tryCounter = 0;
 	private int catchCounter = 0;
 	private int finallyCounter = 0;
-	//System.out.println()與e.printStackTrace()的條件是否被偵測?
-	private boolean isSyso = false;
-	private boolean isPrint = false;
 
 	/**
 	 * 先作兩個constructor,之後怕會有需要更多的資訊
@@ -116,7 +112,7 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 		// 如果catch statement裡面是空的話,表示是ignore exception
 		if(statementTemp.size() == 0){	
 			//建立一個ignore exception type
-			CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_INGNORE_EXCEPTION,svd.resolveBinding().getType(),											
+			CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_INGNORE_EXCEPTION,svd.resolveBinding().getType(),
 									cc.toString(),cc.getStartPosition(),
 									this.getLineNumber(cc.getStartPosition()),svd.getType().toString());
 			this.codeSmellList.add(csmsg);

@@ -15,6 +15,6 @@ public @interface RL {
 	
 	int level() default 1;
 
-	Class<Throwable> exception() default Throwable.class;
-
+	//Class不會判斷是否繼承於Throwable，所以不能用Class<Throwable> exception()
+	Class exception() default Throwable.class;
 }

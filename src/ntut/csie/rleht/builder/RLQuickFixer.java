@@ -1,5 +1,8 @@
 package ntut.csie.rleht.builder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ntut.csie.csdet.quickfix.CCUQuickFix;
 import ntut.csie.csdet.quickfix.DHQuickFix;
 import ntut.csie.csdet.quickfix.NTQuickFix;
@@ -25,7 +28,6 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 
 	public IMarkerResolution[] getResolutions(IMarker marker) {
 		try {
-			
 			String problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
 			if (problem == null) {
 				return null;
@@ -33,56 +35,94 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 
 			String exception = (String) marker.getAttribute(RLMarkerAttribute.RL_INFO_EXCEPTION);
 			String level = (String) marker.getAttribute(RLMarkerAttribute.RL_INFO_LEVEL);
+			String errMsg = (String) marker.getAttribute(IMarker.MESSAGE);
+
+			List<IMarkerResolution> markerList = new ArrayList<IMarkerResolution>();
 
 			if (problem.equals(RLMarkerAttribute.ERR_RL_LEVEL)) {
-
-				IMarkerResolution[] markerFixer = new IMarkerResolution[RLData.levelSize()];
 				for (int i = RLData.LEVEL_MIN; i <= RLData.LEVEL_MAX; i++) {
-					markerFixer[i - RLData.LEVEL_MIN] = new RLQuickFix("變更成level=" + i + " (" + exception + ")", i);
+					markerList.add(new RLQuickFix("變更成level=" + i + " (" + exception + ")", i, errMsg));
 					logger.debug("變更成level=" + i + " (" + exception + ")");
 				}
-				return markerFixer;
 			} else if (problem.equals(RLMarkerAttribute.ERR_NO_RL)) {
 				if (!RLData.validLevel(RLUtils.str2int(level, -1))) {
 					level = String.valueOf(RL.LEVEL_1_ERR_REPORTING);
 				}
-				return new IMarkerResolution[] { new RLQuickFix("新增@RL (level=" + level + ",exception=" + exception + ")") };
+				markerList.add(new RLQuickFix("新增@RL (level=" + level + ",exception=" + exception + ")",errMsg));
 			} else if (problem.equals(RLMarkerAttribute.ERR_RL_DUPLICATE)) {
-				return new IMarkerResolution[] { new RLQuickFix("移除首次出現之@RL (" + exception + ")") };
+				markerList.add(new RLQuickFix("移除首次出現之@RL (" + exception + ")",errMsg));
 			} else if (problem.equals(RLMarkerAttribute.ERR_RL_INSTANCE)) {
-				return new IMarkerResolution[] { new RLQuickFix("@RL順序對調(" + marker.getAttribute(IMarker.MESSAGE) + ")") };
+				markerList.add(new RLQuickFix("@RL順序對調(" + marker.getAttribute(IMarker.MESSAGE) + ")",errMsg));
+				// SuppressSmell內沒有名稱
+			} else if (problem.equals(RLMarkerAttribute.ERR_SS_NO_SMELL)) {
+				boolean inCatch = Boolean.valueOf((String)marker.getAttribute(RLMarkerAttribute.SS_IN_CATCH));
+				String[] smellList;
+				if (inCatch)	//若Marker位於Catch內
+					smellList = RLMarkerAttribute.CS_CATCH_TYPE;
+				else			//若Marker位於Method上
+					smellList = RLMarkerAttribute.CS_TOTAL_TYPE;
+
+				for (int i= 0; i < smellList.length; i++) {
+					String type = smellList[i];
+					markerList.add(new CSQuickFix("新增 Smell Type:" + type, type, inCatch));
+				}
+				// SuppressSmell內Smell名稱錯誤
+			} else if (problem.equals(RLMarkerAttribute.ERR_SS_FAULT_NAME)) {
+				boolean inCatch = Boolean.valueOf((String)marker.getAttribute(RLMarkerAttribute.SS_IN_CATCH));
+				String faultName = (String) marker.getAttribute(RLMarkerAttribute.ERR_SS_FAULT_NAME);
+
+				String[] smellList;
+				if (inCatch)	//若Marker位於Catch內
+					smellList = RLMarkerAttribute.CS_CATCH_TYPE;
+				else			//若Marker位於Method上
+					smellList = RLMarkerAttribute.CS_TOTAL_TYPE;
+
+				for (String type : smellList) {
+					boolean isDetect  = Boolean.valueOf((String) marker.getAttribute(type));
+					if (!isDetect)
+						markerList.add(new CSQuickFix("修改" + faultName + "為" + type, type, inCatch));
+				}
 				// 碰到Ignore Exception的Quick fix and refactor方法
-			} else if(problem.equals(RLMarkerAttribute.CS_INGNORE_EXCEPTION)){
-				return new IMarkerResolution[] { new DHQuickFix("Quick Fix==>Rethrow Unchecked Exception"),
-						new RethrowUncheckExAction("Refactor==>Rethrow Unchecked Excetpion"),
-						new TEQuickFix("Quick Fix==>Throw Checked Exception")};
+			} else if(problem.equals(RLMarkerAttribute.CS_INGNORE_EXCEPTION)) {
+				markerList.add(new DHQuickFix("Quick Fix==>Rethrow Unchecked Exception"));
+				markerList.add(new RethrowUncheckExAction("Refactor==>Rethrow Unchecked Excetpion"));
+				markerList.add(new TEQuickFix("Quick Fix==>Throw Checked Exception"));
+				markerList.add(new CSQuickFix("新增 @SuppressSmell '" + problem + "' on Method", false));
+				markerList.add(new CSQuickFix("新增 @SuppressSmell '" + problem + "' on Catch", true));
 				// 碰到Dummy Handler的Quick fix and refactor方法
-			} else if(problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)){
-				return new IMarkerResolution[] { new DHQuickFix("Quick Fix==>Rethrow Unchecked Exception"),
-						new RethrowUncheckExAction("Refactor==>Rethrow Unchecked Excetpion"),
-						new TEQuickFix("Quick Fix==>Throw Checked Exception")};
+			} else if(problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)) {
+				markerList.add(new DHQuickFix("Quick Fix==>Rethrow Unchecked Exception"));
+				markerList.add(new RethrowUncheckExAction("Refactor==>Rethrow Unchecked Excetpion"));
+				markerList.add(new TEQuickFix("Quick Fix==>Throw Checked Exception"));
+				markerList.add(new CSQuickFix("新增 @SuppressSmell '" + problem + "' on Method", false));
+				markerList.add(new CSQuickFix("新增 @SuppressSmell '" + problem + "' on Catch", true));
 				// 碰到Nested Try block的refactor
-			} else if(problem.equals(RLMarkerAttribute.CS_NESTED_TRY_BLOCK)){
-				return new IMarkerResolution[] { new NTQuickFix("Please use Eclipse refactor==>Extract Method") };
+			} else if(problem.equals(RLMarkerAttribute.CS_NESTED_TRY_BLOCK)) {
+				markerList.add(new NTQuickFix("Please use Eclipse refactor==>Extract Method"));
+				markerList.add(new CSQuickFix("新增 @SuppressSmell '" + problem + "' on Method", false));
 				// 碰到Unprotected Main program的Quick fix
-			} else if(problem.equals(RLMarkerAttribute.CS_UNPROTECTED_MAIN)){
-				return new IMarkerResolution[] { new UMQuickFix("Quick Fix==>Add Big outer try block") };
+			} else if(problem.equals(RLMarkerAttribute.CS_UNPROTECTED_MAIN)) {
+				markerList.add(new UMQuickFix("Quick Fix==>Add Big outer try block"));
+				markerList.add(new CSQuickFix("新增 @SuppressSmell '" + problem + "' on Method", false));
 				// 碰到Careless CleanUp的Quick fix
-			} else if(problem.equals(RLMarkerAttribute.CS_CARELESS_CLEANUP)){
-				return new IMarkerResolution[] { new CCUQuickFix("Quick Fix==>Move code to finally block") };
+			} else if(problem.equals(RLMarkerAttribute.CS_CARELESS_CLEANUP)) {
+				markerList.add(new CCUQuickFix("Quick Fix==>Move code to finally block"));
+				markerList.add(new CSQuickFix("新增 @SuppressSmell '" + problem + "' on Method", false));
 				// 碰到OverLogging的Quick fix and refactor方法
 			}else if(problem.equals(RLMarkerAttribute.CS_OVER_LOGGING)){
-				// OverLogging的Quick Fix先暫時用Nested Try block代替
-				return new IMarkerResolution[] { new OLQuickFix("Quick Fix==>Remove Logging"),
-						new OLRefactoring("Refactor==>Remove Reference Logging") };
-			} 
+				markerList.add(new OLQuickFix("Quick Fix==>Remove Logging"));
+				markerList.add(new OLRefactoring("Refactor==>Remove Reference Logging"));
+				markerList.add(new CSQuickFix("新增 @SuppressSmell '" + problem + "' on Method", false));
+				markerList.add(new CSQuickFix("新增 @SuppressSmell '" + problem + "' on Catch", true));
+			}
+			//List轉Array
+			IMarkerResolution[] markerArray = markerList.toArray(new IMarkerResolution[markerList.size()]);
 			
-			return null;
+			return markerArray;
 		} catch (CoreException ex) {
 			logger.error("[getResolutions] EXCEPTION ",ex);
 			return new IMarkerResolution[0];
 		}
 
 	}
-
 }

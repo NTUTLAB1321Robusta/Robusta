@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ntut.csie.csdet.data.CSMessage;
+import ntut.csie.csdet.data.SSMessage;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.rleht.common.RLBaseVisitor;
 
 import org.apache.commons.lang.text.StrTokenizer;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
@@ -20,7 +22,9 @@ import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Name;
+import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.SimpleName;
+import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TryStatement;
@@ -28,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import agile.exception.Robustness;
+import agile.exception.SuppressSmell;
 
 public class ExceptionAnalyzer extends RLBaseVisitor {
 	private static Logger logger =LoggerFactory.getLogger(ExceptionAnalyzer.class);
@@ -57,6 +62,8 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 	private List<RLMessage> exceptionList;
 
 	private List<RLMessage> methodRLList;
+
+	private List<SSMessage> suppressList;
 	
 	// 紀錄Nested Try Block的位置
 	private List<CSMessage> nestedTryList;
@@ -96,6 +103,13 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 	public List<RLMessage> getMethodRLAnnotationList() {
 		return this.methodRLList;
 	}
+	/**
+	 * 取得SuppressSmell資訊(包含Method上與Catch內)
+	 * @return
+	 */
+	public List<SSMessage> getSuppressSemllAnnotationList() {
+		return suppressList;
+	}
 
 	/**
 	 * @param offset
@@ -113,6 +127,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		this.root = root;
 		exceptionList = new ArrayList<RLMessage>();
 		methodRLList = new ArrayList<RLMessage>();
+		suppressList = new ArrayList<SSMessage>();
 		nestedTryList = new ArrayList<CSMessage>();
 	}
 
@@ -124,21 +139,38 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		this.parentId = parentId;
 		this.root = root;
 		exceptionList = new ArrayList<RLMessage>();
+		suppressList = new ArrayList<SSMessage>();
 		nestedTryList = new ArrayList<CSMessage>();
 	}
 
 	private void getMethodAnnotation(ASTNode node) {
-		
-				
 		MethodDeclaration method = (MethodDeclaration) node;
-		
+
 		//logger.debug("#####===>method=" + method.getName());
 		
 		IAnnotationBinding[] annoBinding = method.resolveBinding().getAnnotations();
-
+		
 		for (int i = 0, size = annoBinding.length; i < size; i++) {
-			if (annoBinding[i].getAnnotationType().getQualifiedName().equals(Robustness.class.getName())) {
+			//取得Method上的SuppressSmell資訊
+			if (annoBinding[i].getAnnotationType().getQualifiedName().equals(SuppressSmell.class.getName())) {
+				IMemberValuePairBinding[] mvpb = annoBinding[i].getAllMemberValuePairs();
 
+				SSMessage ssmsg = new SSMessage(node.getStartPosition(),
+												this.getLineNumber(node.getStartPosition()));
+				//若SuppressSmell內為String
+				if (mvpb[0].getValue() instanceof String) {
+					ssmsg.addSmellList((String) mvpb[0].getValue());
+				//若SuppressSmell內為Array
+				} else if (mvpb[0].getValue() instanceof Object[]) {
+					Object[] values = (Object[]) mvpb[0].getValue();
+					for (Object obj : values)
+						if (obj instanceof String)
+							ssmsg.addSmellList((String) obj);
+				}
+				suppressList.add(ssmsg);
+			}			
+			//取得Method上的Robustness資訊
+			if (annoBinding[i].getAnnotationType().getQualifiedName().equals(Robustness.class.getName())) {
 				IMemberValuePairBinding[] mvpb = annoBinding[i].getAllMemberValuePairs();
 
 				for (int x = 0, xsize = mvpb.length; x < xsize; x++) {
@@ -147,13 +179,12 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 						Object[] values = (Object[]) mvpb[x].getValue();
 						for (int y = 0, ysize = values.length; y < ysize; y++) {
 							IAnnotationBinding binding = (IAnnotationBinding) values[y];
-
 							// 處理RL
 							IMemberValuePairBinding[] rlMvpb = binding.getAllMemberValuePairs();
 							if (rlMvpb.length == 2) {
 
 								int level = ((Integer) rlMvpb[0].getValue()).intValue();
-
+								
 								RLMessage rlmsg = new RLMessage(level, ((ITypeBinding) rlMvpb[1].getValue()),
 										node.toString(), node.getStartPosition(), this.getLineNumber(node
 												.getStartPosition()));
@@ -165,9 +196,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 							}
 						}
 					}
-
 				}
-
 			}
 		}
 		
@@ -292,7 +321,6 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 							// 取得Method的Throw Exception Type
 							this.findExceptionTypes(node, ci.resolveConstructorBinding().getExceptionTypes());
 						}
-
 					}
 					return true;
 				case ASTNode.METHOD_INVOCATION:
@@ -375,6 +403,33 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 			if (svd == null || cc == null) {
 				continue;
 			}
+			
+			//取得Catch內的SuppressSmell Annotation
+			List modifyList = svd.modifiers();
+			for (int j = 0; j < modifyList.size(); j++) {
+				if (modifyList.get(j) instanceof Annotation) {
+					Annotation annotation = (Annotation) modifyList.get(j);
+					IAnnotationBinding iab  = annotation.resolveAnnotationBinding();
+					//判斷Annotation Type是否為SuppressSmell
+					if (iab.getAnnotationType().getQualifiedName().equals(SuppressSmell.class.getName())) {
+						IMemberValuePairBinding[] mvpb = iab.getAllMemberValuePairs();
+
+						SSMessage ssmsg = new SSMessage(cc.getStartPosition(),
+								this.getLineNumber(cc.getStartPosition()), i);
+						//若Annotation內容為String
+						if (mvpb[0].getValue() instanceof String) {
+							ssmsg.addSmellList((String) mvpb[0].getValue());
+						//若Annotation內容為Array
+						} else if (mvpb[0].getValue() instanceof Object[]) {
+							Object[] values = (Object[]) mvpb[0].getValue();
+							for (Object obj : values)
+								if (obj instanceof String)
+									ssmsg.addSmellList((String) obj);
+						}
+						suppressList.add(ssmsg);
+					}
+				}
+			}
 
 			RLMessage rlmsg = new RLMessage(-1, svd.resolveBinding().getType(), cc.toString(), cc
 					.getStartPosition(), this.getLineNumber(cc.getStartPosition()));
@@ -409,7 +464,6 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 			this.mergeRL(visitor.getExceptionList());
 			this.mergeCS(visitor.getNestedTryList());
 			visitor.clear();
-			
 		}
 
 		idxCatch = 0;
@@ -473,9 +527,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 							}
 						}
 					}
-
 				}
-
 			}
 		}
 		return hasRLAnnoation;

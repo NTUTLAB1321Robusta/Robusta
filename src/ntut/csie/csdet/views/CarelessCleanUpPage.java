@@ -13,8 +13,10 @@ import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
@@ -75,7 +77,7 @@ public class CarelessCleanUpPage  extends APropertyPage {
 		//加入頁面的內容
 		addFirstSection(composite);
 	}
-	
+
 	/**
 	 * 加入頁面的內容
 	 */
@@ -94,8 +96,7 @@ public class CarelessCleanUpPage  extends APropertyPage {
 				List<Attribute> libRuleList = libRule.getAttributes();
 				
 				//把使用者所儲存的Library設定存到Map資料裡
-				for (int i=0;i<libRuleList.size();i++)
-				{
+				for (int i=0;i<libRuleList.size();i++) {
 					//把EH_STAR取代為符號"*"
 					String temp = libRuleList.get(i).getQualifiedName().replace("EH_STAR", "*");
 					libMap.put(temp,libRuleList.get(i).getValue().equals("Y"));
@@ -103,31 +104,16 @@ public class CarelessCleanUpPage  extends APropertyPage {
 			}
 		}
 		
-		//Label
+		/// 偵測條件 ///
 		final Label detectSettingsLabel = new Label(CarelessCleanUpPage, SWT.NONE);
 		detectSettingsLabel.setText("偵測條件(打勾偵測,不打勾不偵測):");
-		detectSettingsLabel.setBounds(10, 10, 210, 12);
-		
-		//Label
-		final Label detectSettingsLabel2 = new Label(CarelessCleanUpPage, SWT.NONE);
-		detectSettingsLabel2.setText("自行定義偵測條件:");
-		detectSettingsLabel2.setBounds(290, 10, 210, 12);
-		
-		
-		extraRuleBtn = new Button(CarelessCleanUpPage, SWT.NONE);
-		extraRuleBtn.setText("開啟");
-		extraRuleBtn.setBounds(290, 29, 94, 22);
-		extraRuleBtn.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(final SelectionEvent e) {
-				ExtraRuleDialog dialog = new ExtraRuleDialog(new Shell(),libMap);
-				dialog.open();
-				libMap = dialog.getLibMap();
-			}
-		});
-		//Botton
-		detUserMethodBtn=new Button(CarelessCleanUpPage,SWT.CHECK);
+		detectSettingsLabel.setLocation(10, 10);
+		detectSettingsLabel.pack();
+		//Release Method Button
+		detUserMethodBtn = new Button(CarelessCleanUpPage,SWT.CHECK);
 		detUserMethodBtn.setText("另外偵測釋放資源的程式碼是否在函式中");
-		detUserMethodBtn.setBounds(20, 28, 250, 16);
+		detUserMethodBtn.setLocation(detectSettingsLabel.getLocation().x+10, getBoundsPoint(detectSettingsLabel).y+5);
+		detUserMethodBtn.pack();
 		detUserMethodBtn.addSelectionListener(new SelectionAdapter(){
 			public void widgetSelected(final SelectionEvent e1){
 				//按下按鈕而改變Text文字和顏色
@@ -135,43 +121,76 @@ public class CarelessCleanUpPage  extends APropertyPage {
 				adjustFont();
 			}
 		});
+
+		/// Customize Rule ///
+		final Label detectSettingsLabel2 = new Label(CarelessCleanUpPage, SWT.NONE);
+		detectSettingsLabel2.setText("自行定義偵測條件:");
+		detectSettingsLabel2.setLocation(getBoundsPoint(detUserMethodBtn).x+25, 10);
+		detectSettingsLabel2.pack();
+		//Open Dialog Button
+		extraRuleBtn = new Button(CarelessCleanUpPage, SWT.NONE);
+		extraRuleBtn.setText("開啟");
+		extraRuleBtn.setLocation(detectSettingsLabel2.getLocation().x+5, getBoundsPoint(detectSettingsLabel2).y+5);
+		extraRuleBtn.pack();
+		extraRuleBtn.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(final SelectionEvent e) {
+				ExtraRuleDialog dialog = new ExtraRuleDialog(new Shell(),libMap);
+				dialog.open();
+				libMap = dialog.getLibMap();
+			}
+		});
+		//若要偵測,將button打勾,並改變TextBox的文字和顏色
+		if(methodSet.equals("Y"))
+			detUserMethodBtn.setSelection(true);
+
+		/// 分隔線 ///
+		final Label separateLabel1 = new Label(CarelessCleanUpPage, SWT.VERTICAL | SWT.SEPARATOR);
+		separateLabel1.setLocation(getBoundsPoint(detUserMethodBtn).x+10, 5);
+		separateLabel1.setSize(1, getBoundsPoint(detUserMethodBtn).y+5);
+		final Label separateLabel2 = new Label(CarelessCleanUpPage,SWT.SEPARATOR| SWT.HORIZONTAL);
+		separateLabel2.setLocation(10, getBoundsPoint(extraRuleBtn).y+10);
+		separateLabel2.setSize(getBoundsPoint(detectSettingsLabel2).x-10, 1);
 		
-		//分隔線
-		final Label label1 = new Label(CarelessCleanUpPage,SWT.SEPARATOR| SWT.HORIZONTAL);
-		label1.setBounds(10, 60, 472, 12);
-		
-		//分隔線
-		final Label label2 = new Label(CarelessCleanUpPage, SWT.VERTICAL | SWT.SEPARATOR);
-		label2.setBounds(270, 5, 5, 55);
-		label2.setText("Label");
-		
-		//Label
+		/// Template Label ///
 		final Label detBeforeLbl = new Label(CarelessCleanUpPage, SWT.NONE);
 		detBeforeLbl.setText("偵測範例:");
-		detBeforeLbl.setBounds(10, 75, 96, 12);
-		
+		detBeforeLbl.setLocation(10, getBoundsPoint(separateLabel2).y+10);
+		detBeforeLbl.pack();
 		//TextBox
 		templateArea = new StyledText(CarelessCleanUpPage, SWT.BORDER);
 		Font font = new Font(CarelessCleanUpPage.getDisplay(),"Courier New",14,SWT.NORMAL);		
 		templateArea.setFont(font);
-		templateArea.setBounds(10, 95, 458, 300);
+		templateArea.setLocation(10, getBoundsPoint(detBeforeLbl).y+5);
+		templateArea.setSize(458, 300);
 		templateArea.setEditable(false);
 		templateArea.setText(beforeText);
+		
+		//分隔線與Template等長(取最長的)
+		if (getBoundsPoint(separateLabel2).x < 458)
+			separateLabel2.setSize(458, 1);
+		else
+			templateArea.setSize(getBoundsPoint(separateLabel2).x, 300);
 		
 		//載入預定的字型、顏色
 		addBeforeSampleStyle(CarelessCleanUpPage.getDisplay());	
 		addAfterSampleStyle(CarelessCleanUpPage.getDisplay());
 		
 		//調整TextBox的文字
+		adjustText();
+
+		//調整程式碼的顏色
 		adjustFont();
-		
-		//以下Line124~128必須寫在這裡,不然會出錯
-		//若要偵測,將botton打勾,並改變TextBox的文字和顏色
-		if(methodSet.equals("Y")){
-			detUserMethodBtn.setSelection(true);
-			adjustText();
-			adjustFont();
-		}
+	}
+	
+	/**
+	 * 取得Control的右下角座標
+	 * @param control
+	 * @return			右下角座標
+	 */
+	private Point getBoundsPoint(Control control) {
+		if (control == null) return new Point(0,0);
+		return new Point(control.getBounds().x + control.getBounds().width ,
+						 control.getBounds().y + control.getBounds().height);
 	}
 	
 	/**

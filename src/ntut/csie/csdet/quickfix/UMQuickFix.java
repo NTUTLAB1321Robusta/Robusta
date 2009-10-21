@@ -47,8 +47,6 @@ import org.slf4j.LoggerFactory;
 
 import agile.exception.RL;
 import agile.exception.Robustness;
-import agile.exception.Smell;
-import agile.exception.SuppressSmell;
 
 public class UMQuickFix implements IMarkerResolution{
 	private static Logger logger = LoggerFactory.getLogger(UMQuickFix.class);

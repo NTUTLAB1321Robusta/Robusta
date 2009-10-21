@@ -1,5 +1,7 @@
 package ntut.csie.csdet.views;
 
+import java.awt.FontMetrics;
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -15,8 +17,11 @@ import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
@@ -27,7 +32,6 @@ import org.jdom.Element;
 /**
  * OverLogging Setting頁面
  * @author Shiau
- *
  */
 public class OverLoggingPage extends APropertyPage {	
 	//Detect Logging的Rule
@@ -88,8 +92,8 @@ public class OverLoggingPage extends APropertyPage {
 		/// CallerTemplate程式碼的內容 ///
 		//文字前段
 		String callerHead = "public void B() {\n" +
-						"\ttry {\n" +
-						"\t\tA();\t\t\t//call method A\n";
+							"\ttry {\n" +
+							"\t\tA();\t\t\t//call method A\n";
 		parserText(callerHead, callerHeadText, callerHeadType);
 		//文字中段(選項打勾前)
 		String callerOrg = "\t} catch (FileNotFoundException e) {\n";
@@ -116,14 +120,14 @@ public class OverLoggingPage extends APropertyPage {
 		String exSet = "";
 		String log4jSet = "";
 		String javaLogSet = "";
-		if(docJDom != null){
+		if (docJDom != null){
 			//從XML裡讀出之前的設定
 			Element root = docJDom.getRootElement();
 			if (root.getChild(JDomUtil.OverLoggingTag) != null) {
 				Element rule = root.getChild(JDomUtil.OverLoggingTag).getChild("rule");
 				log4jSet = rule.getAttribute(JDomUtil.apache_log4j).getValue();
 				javaLogSet = rule.getAttribute(JDomUtil.java_Logger).getValue();
-				
+
 				//從XML取得外部Library
 				Element libRule = root.getChild(JDomUtil.OverLoggingTag).getChild("librule");
 				List<Attribute> libRuleList = libRule.getAttributes();
@@ -132,8 +136,7 @@ public class OverLoggingPage extends APropertyPage {
 				exSet = exrule.getAttribute(JDomUtil.transException).getValue();
 				
 				//把使用者所儲存的Library設定存到Map資料裡
-				for (int i=0;i<libRuleList.size();i++)
-				{
+				for (int i=0; i < libRuleList.size(); i++) {
 					//把EH_STAR取代為符號"*"
 					String temp = libRuleList.get(i).getQualifiedName().replace("EH_STAR", "*");
 					libMap.put(temp,libRuleList.get(i).getValue().equals("Y"));
@@ -141,29 +144,16 @@ public class OverLoggingPage extends APropertyPage {
 			}
 		}
 
+		/// 偵測條件Label ///
 		final Label detectSettingsLabel = new Label(overLoggingPage, SWT.NONE);
-		detectSettingsLabel.setText("偵測條件:");
-		detectSettingsLabel.setBounds(10, 10, 210, 12);
-		
-		final Label detectSettingsLabel2 = new Label(overLoggingPage, SWT.NONE);
-		detectSettingsLabel2.setText("自行定義偵測條件:");
-		detectSettingsLabel2.setBounds(251, 11, 210, 12);
-		
-		extraRuleBtn = new Button(overLoggingPage, SWT.NONE);
-		extraRuleBtn.setText("開啟");
-		extraRuleBtn.setBounds(251, 73, 94, 22);
-		extraRuleBtn.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(final SelectionEvent e) {
-				ExtraRuleDialog dialog = new ExtraRuleDialog(new Shell(),libMap);
-				dialog.open();
-				libMap = dialog.getLibMap();
-			}
-		});
-
-		/// 是否即使轉型仍偵測的按鈕 ///
+		detectSettingsLabel.setText("偵測條件：");
+		detectSettingsLabel.setLocation(10, 10);
+		detectSettingsLabel.pack();
+		//是否即使轉型仍偵測的按鈕
 		detectTransExBtn = new Button(overLoggingPage, SWT.CHECK);
 		detectTransExBtn.setText("Excpetion轉型後繼續偵測");
-		detectTransExBtn.setBounds(10, 29, 159, 16);
+		detectTransExBtn.setLocation(detectSettingsLabel.getLocation().x+10, getBoundsPoint(detectSettingsLabel).y + 5);
+		detectTransExBtn.pack();
 		detectTransExBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
 				//按下按鈕而改變Text文字和顏色
@@ -174,49 +164,87 @@ public class OverLoggingPage extends APropertyPage {
 		if (exSet.equals("Y"))
 			detectTransExBtn.setSelection(true);
 
-		/// 是否偵測Log4j的按鈕 ///
+		/// Customize定義偵測條件 Label ///
+		final Label detectSettingsLabel2 = new Label(overLoggingPage, SWT.NONE);
+		detectSettingsLabel2.setText("自行定義偵測條件:");
+		detectSettingsLabel2.setLocation(getBoundsPoint(detectTransExBtn).x + 85, 11);
+		detectSettingsLabel2.pack();
+		//是否偵測Log4j的按鈕
 		log4jBtn = new Button(overLoggingPage, SWT.CHECK);
-		log4jBtn.setBounds(251, 29, 159, 16);
+		log4jBtn.setLocation(detectSettingsLabel2.getLocation().x+10, getBoundsPoint(detectSettingsLabel2).y + 5);
 		log4jBtn.setText("Detect using org.apache.log4j");
+		log4jBtn.pack();
 		if(log4jSet.equals("Y"))
 			log4jBtn.setSelection(true);
-
-		/// 是否偵測JavaUtillog的按鈕 ///
+		//是否偵測JavaUtillog的按鈕
 		javaUtillogBtn = new Button(overLoggingPage, SWT.CHECK);
 		javaUtillogBtn.setText("Detect using java.util.logging.Logger");
-		javaUtillogBtn.setBounds(251, 51, 194, 16);
-		if(javaLogSet.equals("Y")) {
+		javaUtillogBtn.setLocation(detectSettingsLabel2.getLocation().x+10, getBoundsPoint(log4jBtn).y + 5);
+		javaUtillogBtn.pack();
+		if(javaLogSet.equals("Y"))
 			javaUtillogBtn.setSelection(true);
-		}
+		//Customize Rule Button
+		extraRuleBtn = new Button(overLoggingPage, SWT.NONE);
+		extraRuleBtn.setText("開啟");
+		extraRuleBtn.setLocation(detectSettingsLabel2.getLocation().x+10, getBoundsPoint(javaUtillogBtn).y + 5);
+		extraRuleBtn.pack();
+		extraRuleBtn.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(final SelectionEvent e) {
+				ExtraRuleDialog dialog = new ExtraRuleDialog(new Shell(),libMap);
+				dialog.open();
+				libMap = dialog.getLibMap();
+			}
+		});
 
+		/// 分隔線 ///
+		final Label separateLabel1 = new Label(overLoggingPage, SWT.VERTICAL | SWT.SEPARATOR);
+		separateLabel1.setLocation(getBoundsPoint(detectTransExBtn).x+70, 5);
+		separateLabel1.setSize(1, getBoundsPoint(extraRuleBtn).y - 5);
+		final Label separateLabel2 = new Label(overLoggingPage,SWT.SEPARATOR| SWT.HORIZONTAL);
+		separateLabel2.setLocation(5, this.getBoundsPoint(extraRuleBtn).y+5);
+		separateLabel2.setSize(getBoundsPoint(javaUtillogBtn).x -5, 1);
+
+		/// Template ///
 		final Label callerLabel = new Label(overLoggingPage, SWT.NONE);
 		callerLabel.setText("Call Chain Example:");
-		callerLabel.setBounds(10, 119, 96, 12);
-		
-		final Label label1 = new Label(overLoggingPage,SWT.SEPARATOR| SWT.HORIZONTAL);
-		label1.setBounds(10, 101, 472, 12);
-		
-		final Label label2 = new Label(overLoggingPage, SWT.VERTICAL | SWT.SEPARATOR);
-		label2.setBounds(240, 5, 5, 92);
-		label2.setText("Label");
-
+		callerLabel.setLocation(detectSettingsLabel.getLocation().x, getBoundsPoint(separateLabel2).y + 5);
+		callerLabel.pack();
 		Font templateFont = new Font(overLoggingPage.getDisplay(),"Courier New",9,SWT.NORMAL);		
-		/// Callee Template ///
+		//Callee Template
 		calleeTemplate = new StyledText(overLoggingPage, SWT.BORDER);
 		calleeTemplate.setFont(templateFont);
-		calleeTemplate.setBounds(10, 137, 485, 132);
+		calleeTemplate.setBounds(detectSettingsLabel.getLocation().x, getBoundsPoint(callerLabel).y+5, 485, 132);
 		calleeTemplate.setEditable(false);
-		/// Caller Template ///
+		//Caller Template
 		callerTemplate = new StyledText(overLoggingPage, SWT.BORDER);
 		callerTemplate.setFont(templateFont);
-		callerTemplate.setBounds(10, 282, 485, 132);
+		callerTemplate.setBounds(detectSettingsLabel.getLocation().x, getBoundsPoint(calleeTemplate).y+10, 485, 132);
 		callerTemplate.setEditable(false);
+
+		//分隔線與Template等長(取最長的)
+		if (getBoundsPoint(separateLabel2).x < 485)
+			separateLabel2.setSize(485, 1);
+		else {
+			calleeTemplate.setSize(getBoundsPoint(separateLabel2).x, 132);
+			callerTemplate.setSize(getBoundsPoint(separateLabel2).x, 132);
+		}
 
 		//調整Text的文字
 		adjustText();
 
 		//調整程式碼的顏色
 		adjustFont(overLoggingPage.getDisplay());
+	}
+	
+	/**
+	 * 取得Control的右下角座標
+	 * @param control
+	 * @return			右下角座標
+	 */
+	private Point getBoundsPoint(Control control) {
+		if (control == null) return new Point(0,0);
+		return new Point(control.getBounds().x + control.getBounds().width ,
+						 control.getBounds().y + control.getBounds().height);
 	}
 	
 	/**

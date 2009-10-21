@@ -20,6 +20,16 @@ public interface RLMarkerAttribute {
 	public static final String RL_METHOD_INDEX = "RL_METHOD_INDEX";
 
 	public static final String RL_MSG_INDEX = "RL_MSG_INDEX";
+	
+	//Suppress Smell Error
+	public static final String ERR_SS_NO_SMELL = "ERR_SS_NO_SMELL";
+
+	public static final String ERR_SS_FAULT_NAME = "ERR_SS_FAULT_NAME";
+
+	public static final String ERR_SS_DUPLICATE = "ERR_SS_DUPLICATE";
+
+	//Suppress Smell In Catch
+	public static final String SS_IN_CATCH = "SS_IN_CATCH";
 
 	//ignore exceptionªºtype
 	public static final String CS_INGNORE_EXCEPTION = "Ignore_Checked_Exception";
@@ -39,4 +49,11 @@ public interface RLMarkerAttribute {
 	//Over Logging
 	public static final String CS_OVER_LOGGING = "Over_Logging";
 	
+	//Total Code Smell Type
+	public static final String[] CS_TOTAL_TYPE = new String[]{ CS_INGNORE_EXCEPTION,
+		CS_DUMMY_HANDLER, CS_NESTED_TRY_BLOCK, CS_UNPROTECTED_MAIN, CS_CARELESS_CLEANUP, CS_OVER_LOGGING};
+
+	//Total Smell Type In Catch
+	public static final String[] CS_CATCH_TYPE = new String[]{ CS_INGNORE_EXCEPTION,
+		CS_DUMMY_HANDLER, CS_OVER_LOGGING};
 }

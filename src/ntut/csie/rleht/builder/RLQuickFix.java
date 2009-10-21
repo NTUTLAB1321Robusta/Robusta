@@ -30,12 +30,17 @@ import org.eclipse.jdt.core.dom.MemberValuePair;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.TypeLiteral;
+import org.eclipse.jdt.internal.corext.util.Messages;
+import org.eclipse.jdt.internal.ui.JavaPluginImages;
+import org.eclipse.jdt.internal.ui.text.correction.CorrectionMessages;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IRegion;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.text.edits.TextEdit;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IMarkerResolution;
+import org.eclipse.ui.IMarkerResolution2;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +48,7 @@ import org.slf4j.LoggerFactory;
 import agile.exception.RL;
 import agile.exception.Robustness;
 
-public class RLQuickFix implements IMarkerResolution {
+public class RLQuickFix implements IMarkerResolution, IMarkerResolution2 {
 	private static Logger logger = LoggerFactory.getLogger(RLQuickFix.class);
 	
 	// 目前method的Exception資訊
@@ -60,16 +65,19 @@ public class RLQuickFix implements IMarkerResolution {
 	private IOpenable actOpenable;
 
 	private String label;
+	private String errMsg;
 
 	private int levelForUpdate;
 	
-	public RLQuickFix(String label) {
+	public RLQuickFix(String label,String errMsg) {
 		this.label = label;
+		this.errMsg = errMsg;
 	}
 
-	public RLQuickFix(String label, int level) {
+	public RLQuickFix(String label, int level, String errMsg) {
 		this.label = label;
 		this.levelForUpdate = level;
+		this.errMsg = errMsg;
 	}
 
 	public String getLabel() {
@@ -78,13 +86,11 @@ public class RLQuickFix implements IMarkerResolution {
 
 	public void run(IMarker marker) {
 		try {
-	
 			String problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
 			//RL Level有問題(超出1~3範圍內)
 			if (problem != null && problem.equals(RLMarkerAttribute.ERR_RL_LEVEL)) {
 				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
 				String msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
-
 				boolean isok = findMethod(marker.getResource(), Integer.parseInt(methodIdx));
 				if (isok) {
 					this.updateRLAnnotation(Integer.parseInt(msgIdx), levelForUpdate);
@@ -105,8 +111,7 @@ public class RLQuickFix implements IMarkerResolution {
 				}
 			}
 			//RL順序對調
-			else if (problem != null && problem.equals(RLMarkerAttribute.ERR_RL_INSTANCE))
-			{
+			else if (problem != null && problem.equals(RLMarkerAttribute.ERR_RL_INSTANCE)) {
 				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
 				String msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
 				
@@ -216,7 +221,6 @@ public class RLQuickFix implements IMarkerResolution {
 		RLMessage msg = this.currentMethodExList.get(pos);
 
 		try {
-
 			actRoot.recordModifications();
 
 			AST ast = currentMethodNode.getAST();
@@ -424,5 +428,19 @@ public class RLQuickFix implements IMarkerResolution {
 			//反白該行 在Quick fix完之後,可以將游標定位在Quick Fix那行
 			editor.selectAndReveal(lineInfo.getOffset(), lineInfo.getLength());
 		}
+	}
+
+	@Override
+	public String getDescription() {
+//		return Messages.format(CorrectionMessages.MarkerResolutionProposal_additionaldesc, "@RL");
+		return Messages.format(CorrectionMessages.MarkerResolutionProposal_additionaldesc, errMsg);
+	}
+
+	@Override
+	public Image getImage() {
+		//Resource Icons的Annotation圖示
+//		return ImageManager.getInstance().get("annotation");
+		//內建的
+		return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_ANNOTATION);
 	}
 }

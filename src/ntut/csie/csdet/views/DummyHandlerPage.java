@@ -11,8 +11,10 @@ import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
@@ -79,7 +81,7 @@ public class DummyHandlerPage extends APropertyPage{
 		String setting = "";
 		String log4jSet = "";
 		String javaLogSet = "";
-		if(docJDom != null){
+		if(docJDom != null) {
 			//從XML裡讀出之前的設定
 			Element root = docJDom.getRootElement();
 			if (root.getChild(JDomUtil.DummyHandlerTag) != null) {
@@ -93,8 +95,7 @@ public class DummyHandlerPage extends APropertyPage{
 				List<Attribute> libRuleList = libRule.getAttributes();
 				
 				//把使用者所儲存的Library設定存到Map資料裡
-				for (int i=0;i<libRuleList.size();i++)
-				{
+				for (int i=0;i<libRuleList.size();i++) {
 					//把EH_STAR取代為符號"*"
 					String temp = libRuleList.get(i).getQualifiedName().replace("EH_STAR", "*");
 					libMap.put(temp,libRuleList.get(i).getValue().equals("Y"));
@@ -102,28 +103,16 @@ public class DummyHandlerPage extends APropertyPage{
 			}
 		}
 
+		/// 預設偵測條件  ///
 		final Label detectSettingsLabel = new Label(dummyHandlerPage, SWT.NONE);
 		detectSettingsLabel.setText("偵測條件(打勾偵測,不打勾不偵測):");
-		detectSettingsLabel.setBounds(10, 10, 210, 12);
-		
-		final Label detectSettingsLabel2 = new Label(dummyHandlerPage, SWT.NONE);
-		detectSettingsLabel2.setText("自行定義偵測條件:");
-		detectSettingsLabel2.setBounds(251, 11, 210, 12);
-		
-		extraRuleBtn = new Button(dummyHandlerPage, SWT.NONE);
-		extraRuleBtn.setText("開啟");
-		extraRuleBtn.setBounds(251, 29, 94, 22);
-		extraRuleBtn.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(final SelectionEvent e) {
-				ExtraRuleDialog dialog = new ExtraRuleDialog(new Shell(),libMap);
-				dialog.open();
-				libMap = dialog.getLibMap();
-			}
-		});
-		
+		detectSettingsLabel.setLocation(10, 10);
+		detectSettingsLabel.pack();
+		//是否偵測e.printStackTrace的按鈕
 		eprintBtn = new Button(dummyHandlerPage, SWT.CHECK);
 		eprintBtn.setText("e.printStackTrace();");
-		eprintBtn.setBounds(20, 28, 123, 16);
+		eprintBtn.setLocation(detectSettingsLabel.getLocation().x+10, getBoundsPoint(detectSettingsLabel).y+5);
+		eprintBtn.pack();
 		eprintBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
 				//按下按鈕而改變Text文字和顏色
@@ -131,13 +120,11 @@ public class DummyHandlerPage extends APropertyPage{
 				adjustFont();
 			}
 		});
-		if(eprint.equals("Y")) {
-			eprintBtn.setSelection(true);
-		}
-		
+		//是否偵測System.out.print的按鈕
 		sysoBtn = new Button(dummyHandlerPage, SWT.CHECK);
 		sysoBtn.setText("System.out.print();");
-		sysoBtn.setBounds(20, 50, 123, 16);
+		sysoBtn.setLocation(detectSettingsLabel.getLocation().x+10, getBoundsPoint(eprintBtn).y+5);
+		sysoBtn.pack();
 		sysoBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
 				//按下按鈕而改變Text文字和顏色
@@ -145,13 +132,11 @@ public class DummyHandlerPage extends APropertyPage{
 				adjustFont();
 			}
 		});
-		if(setting.equals("Y")){
-			sysoBtn.setSelection(true);
-		}
-
+		//是否偵測Log4j的按鈕
 		log4jBtn = new Button(dummyHandlerPage, SWT.CHECK);
-		log4jBtn.setBounds(20, 72, 159, 16);
 		log4jBtn.setText("Detect using org.apache.log4j");
+		log4jBtn.setLocation(detectSettingsLabel.getLocation().x+10, getBoundsPoint(sysoBtn).y+5);
+		log4jBtn.pack();
 		log4jBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
 				//按下按鈕而改變Text文字和顏色
@@ -159,13 +144,11 @@ public class DummyHandlerPage extends APropertyPage{
 				adjustFont();
 			}
 		});
-		if(log4jSet.equals("Y")){
-			log4jBtn.setSelection(true);
-		}
-
+		//是否偵測JavaUtillog的按鈕
 		javaUtillogBtn = new Button(dummyHandlerPage, SWT.CHECK);
 		javaUtillogBtn.setText("Detect using java.util.logging.Logger");
-		javaUtillogBtn.setBounds(20, 94, 194, 16);
+		javaUtillogBtn.setLocation(detectSettingsLabel.getLocation().x+10, getBoundsPoint(log4jBtn).y+5);
+		javaUtillogBtn.pack();
 		javaUtillogBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
 				//按下按鈕而改變Text文字和顏色
@@ -173,27 +156,62 @@ public class DummyHandlerPage extends APropertyPage{
 				adjustFont();
 			}
 		});
-		if(javaLogSet.equals("Y")) {
-			javaUtillogBtn.setSelection(true);
-		}
-		
+
+		/// Customize Rule ///
+		final Label detectSettingsLabel2 = new Label(dummyHandlerPage, SWT.NONE);
+		detectSettingsLabel2.setText("自行定義偵測條件:");
+		detectSettingsLabel2.setLocation(getBoundsPoint(javaUtillogBtn).x+43, 10);
+		detectSettingsLabel2.pack();
+		//Customize Rule Button
+		extraRuleBtn = new Button(dummyHandlerPage, SWT.NONE);
+		extraRuleBtn.setText("開啟");
+		extraRuleBtn.setLocation(detectSettingsLabel2.getLocation().x+10, getBoundsPoint(detectSettingsLabel2).y+5);
+		extraRuleBtn.pack();
+		extraRuleBtn.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(final SelectionEvent e) {
+				ExtraRuleDialog dialog = new ExtraRuleDialog(new Shell(),libMap);
+				dialog.open();
+				libMap = dialog.getLibMap();
+			}
+		});
+
+		/// 分隔線 ///
+		final Label separateLabel1 = new Label(dummyHandlerPage, SWT.VERTICAL | SWT.SEPARATOR);
+		separateLabel1.setLocation(getBoundsPoint(javaUtillogBtn).x+28, 5);
+		separateLabel1.setSize(1, getBoundsPoint(javaUtillogBtn).y-5);
+		final Label separateLabel2 = new Label(dummyHandlerPage,SWT.SEPARATOR| SWT.HORIZONTAL);
+		separateLabel2.setLocation(10, getBoundsPoint(javaUtillogBtn).y+5);
+		separateLabel2.setSize(getBoundsPoint(detectSettingsLabel2).x, 1);
+
+		/// Template ///
 		final Label codeTemplateLabel = new Label(dummyHandlerPage, SWT.NONE);
 		codeTemplateLabel.setText("偵測範例:");
-		codeTemplateLabel.setBounds(10, 134, 96, 12);
-
-		final Label label1 = new Label(dummyHandlerPage,SWT.SEPARATOR| SWT.HORIZONTAL);
-		label1.setBounds(10, 116, 472, 12);
-		
-		final Label label2 = new Label(dummyHandlerPage, SWT.VERTICAL | SWT.SEPARATOR);
-		label2.setBounds(240, 5, 5, 111);
-		label2.setText("Label");
-
+		codeTemplateLabel.setLocation(10, getBoundsPoint(separateLabel2).y+10);
+		codeTemplateLabel.pack();
+		//Detect Template
 		templateArea = new StyledText(dummyHandlerPage, SWT.BORDER);
-		Font font = new Font(dummyHandlerPage.getDisplay(),"Courier New",14,SWT.NORMAL);		
+		Font font = new Font(dummyHandlerPage.getDisplay(),"Courier New", 14,SWT.NORMAL);		
 		templateArea.setFont(font);
-		templateArea.setBounds(10, 151, 458, 263);
+		templateArea.setLocation(10, getBoundsPoint(codeTemplateLabel).y+5);
+		templateArea.setSize(458, 263);
 		templateArea.setEditable(false);
 
+		//分隔線與Template等長(取最長的)
+		if (getBoundsPoint(separateLabel2).x < 458)
+			separateLabel2.setSize(458, 1);
+		else
+			templateArea.setSize(getBoundsPoint(separateLabel2).x, 263);
+
+		//調成使用者之前所設定
+		if(eprint.equals("Y"))
+			eprintBtn.setSelection(true);
+		if(setting.equals("Y"))
+			sysoBtn.setSelection(true);
+		if(log4jSet.equals("Y"))
+			log4jBtn.setSelection(true);
+		if(javaLogSet.equals("Y"))
+			javaUtillogBtn.setSelection(true);
+		
 		//載入預定的字型、顏色
 		addSampleStyle(dummyHandlerPage.getDisplay());
 
@@ -202,6 +220,17 @@ public class DummyHandlerPage extends APropertyPage{
 
 		//調整程式碼的顏色
 		adjustFont();
+	}
+	
+	/**
+	 * 取得Control的右下角座標
+	 * @param control
+	 * @return			右下角座標
+	 */
+	private Point getBoundsPoint(Control control) {
+		if (control == null) return new Point(0,0);
+		return new Point(control.getBounds().x + control.getBounds().width ,
+						 control.getBounds().y + control.getBounds().height);
 	}
 	
 	/**
