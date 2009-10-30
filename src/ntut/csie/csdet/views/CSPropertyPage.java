@@ -42,6 +42,14 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage{
 	}
 	
 	private void addPage(TabFolder tabFolder){
+		//add Main Page
+		final TabItem mainTabItem = new TabItem(tabFolder, SWT.NONE);
+		mainTabItem.setText("Setting Page");
+		final Composite mainComposite = new Composite(tabFolder, SWT.NONE);
+		APropertyPage mainPage = new SettingPage(mainComposite,this);
+		mainTabItem.setControl(mainComposite);
+		tabPages.add(mainPage);
+
 		//add Dummy Handler Page
 		final TabItem dummyHandlerTabItem = new TabItem(tabFolder, SWT.NONE);
 		dummyHandlerTabItem.setText("Dummy Handler");
@@ -49,7 +57,7 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage{
 		APropertyPage dummyHandlerPage = new DummyHandlerPage(dummyHandlerComposite,this);
 		dummyHandlerTabItem.setControl(dummyHandlerComposite);
 		tabPages.add(dummyHandlerPage);
-		
+
 		//add OverLogging Page
 		final TabItem overLoggingTabItem = new TabItem(tabFolder, SWT.NONE);
 		overLoggingTabItem.setText("OverLogging");

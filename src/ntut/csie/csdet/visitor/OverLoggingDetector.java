@@ -224,7 +224,7 @@ public class OverLoggingDetector {
 
 			/// 把使用者所設定的Exception轉型偵不偵設定 ///
 			Element exrule = overLogging.getChild("exrule");
-			String exSet = exrule.getAttribute(JDomUtil.transException).getValue();
+			String exSet = exrule.getAttribute(JDomUtil.trans_Exception).getValue();
 			detectTransExSet = exSet.equals("Y");
 			
 			//把外部的Library加入偵測名單內

@@ -316,7 +316,7 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 			// 這裡表示之前使用者已經有設定過preference了,去取得相關偵測設定值
 			Element CarelessCleanUp = root.getChild(JDomUtil.CarelessCleanUpTag);
 			Element rule = CarelessCleanUp.getChild("rule");
-			String methodSet=rule.getAttribute(JDomUtil.detUserMethod).getValue();
+			String methodSet=rule.getAttribute(JDomUtil.det_user_method).getValue();
 			
 			isDetUserMethod=methodSet.equals("Y");
 			

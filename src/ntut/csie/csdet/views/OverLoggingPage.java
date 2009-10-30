@@ -1,27 +1,19 @@
 package ntut.csie.csdet.views;
 
-import java.awt.FontMetrics;
-import java.awt.geom.Rectangle2D;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
 
 import ntut.csie.csdet.preference.JDomUtil;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
@@ -50,62 +42,53 @@ public class OverLoggingPage extends APropertyPage {
 	private StyledText callerTemplate;
 	//放code template的區域
 	private StyledText calleeTemplate;
-	//CalleeTamplate的內容 和 字型風格
-	private List<String> calleeText = new ArrayList<String>(),
-						 calleeOrgText = new ArrayList<String>(),
-						 calleeTransText = new ArrayList<String>();
-	private List<Integer> calleeType = new ArrayList<Integer>(),
-						  calleeOrgType = new ArrayList<Integer>(),
-						  calleeTransType = new ArrayList<Integer>();
-	//CallerTamplate的內容 和 字型風格
-	private List<String> callerHeadText = new ArrayList<String>(),
-						 callerTailText = new ArrayList<String>(),
-						 callerOrgText = new ArrayList<String>(),
-						 callerTransText = new ArrayList<String>();
-	private List<Integer> callerHeadType = new ArrayList<Integer>(),
-						  callerTailType = new ArrayList<Integer>(),
-						  callerOrgType = new ArrayList<Integer>(),
-						  callerTransType = new ArrayList<Integer>();
+
+	//CalleeTamplate和CallerTamplate的內容 和 字型風格
+	TemplateText calleeText = new TemplateText("", false);
+	TemplateText callerText = new TemplateText("", false);
+
+	//CalleeTamplate和CallerTamplate的內容
+	String callee, calleeOrg, calleeTrans;
+	String callerHead, callerOrg, callerTrans, callerTail;
 		
 	public OverLoggingPage(Composite composite, CSPropertyPage page) {
 		super(composite, page);
 
+		//TODO callee前半部throws RuntimeException，要改成Throw FileNotFoundException
 		/// CalleeTemplate程式碼的內容 ///
 		//文字前半段
-		String callee = "public void A() throws RuntimeException {\n" +
+		callee = "public void A() throws RuntimeException {\n" +
 				 		"\ttry {\n" +
 				 		"\t// Do Something\n" +
 				 		"\t} catch (FileNotFoundException e) {\n" +
 				 		"\t\tlogger.info(e);	//OverLogging\n";
-		parserText(callee, calleeText, calleeType);
+
 		//文字後半段(選項打勾前)
-		String calleeOrg = "\t\tthrow e;\n" +
+		calleeOrg = "\t\tthrow e;\n" +
 						   "\t}\n" +
 				 		   "}";
-		parserText(calleeOrg, calleeOrgText, calleeOrgType);
+
 		//文字後半段(選項打勾後)
-		String calleeTrans = "\t\tthrow new RuntimeException(e);	//Transform Exception Type\n" +
+		calleeTrans = "\t\tthrow new RuntimeException(e);	//Transform Exception Type\n" +
 				 			 "\t}\n" +
 				 			 "}";
-		parserText(calleeTrans, calleeTransText, calleeTransType);
 
 		/// CallerTemplate程式碼的內容 ///
 		//文字前段
-		String callerHead = "public void B() {\n" +
+		callerHead = "public void B() {\n" +
 							"\ttry {\n" +
 							"\t\tA();\t\t\t//call method A\n";
-		parserText(callerHead, callerHeadText, callerHeadType);
+
 		//文字中段(選項打勾前)
-		String callerOrg = "\t} catch (FileNotFoundException e) {\n";
-		parserText(callerOrg, callerOrgText, callerOrgType);
+		callerOrg = "\t} catch (FileNotFoundException e) {\n";
+
 		//文字中段(選項打勾後)
-		String callerTrans = "\t} catch (RuntimeException e) { //Catch Transform Exception Type\n";
-		parserText(callerTrans, callerTransText, callerTransType);
+		callerTrans = "\t} catch (RuntimeException e) { //Catch Transform Exception Type\n";
+
 		//文字後段
-		String callerTail = "\t\tlogger.info(e);\t//use log\n" +
+		callerTail = "\t\tlogger.info(e);\t//use log\n" +
 							"\t}\n" +
 							"}";
-		parserText(callerTail, callerTailText, callerTailType);
 
 		//加入頁面的內容
 		addFirstSection(composite);
@@ -133,7 +116,7 @@ public class OverLoggingPage extends APropertyPage {
 				List<Attribute> libRuleList = libRule.getAttributes();
 
 				Element exrule = root.getChild(JDomUtil.OverLoggingTag).getChild("exrule");
-				exSet = exrule.getAttribute(JDomUtil.transException).getValue();
+				exSet = exrule.getAttribute(JDomUtil.trans_Exception).getValue();
 				
 				//把使用者所儲存的Library設定存到Map資料裡
 				for (int i=0; i < libRuleList.size(); i++) {
@@ -231,20 +214,8 @@ public class OverLoggingPage extends APropertyPage {
 
 		//調整Text的文字
 		adjustText();
-
 		//調整程式碼的顏色
 		adjustFont(overLoggingPage.getDisplay());
-	}
-	
-	/**
-	 * 取得Control的右下角座標
-	 * @param control
-	 * @return			右下角座標
-	 */
-	private Point getBoundsPoint(Control control) {
-		if (control == null) return new Point(0,0);
-		return new Point(control.getBounds().x + control.getBounds().width ,
-						 control.getBounds().y + control.getBounds().height);
 	}
 	
 	/**
@@ -254,79 +225,45 @@ public class OverLoggingPage extends APropertyPage {
 	{
 		/// CalleeTemplate的字型風格的位置範圍 ///
 		String calleeTemp = "";
-		for (int i = 0; i < calleeText.size();i++)
-			calleeTemp += calleeText.get(i);
+
+		calleeTemp += callee;
 		if(!detectTransExBtn.getSelection())
-			for (int i = 0; i < calleeOrgText.size();i++)
-				calleeTemp += calleeOrgText.get(i);
+			calleeTemp += calleeOrg;
 		else
-			for (int i = 0; i < calleeTransText.size();i++)
-				calleeTemp += calleeTransText.get(i);
+			calleeTemp += calleeTrans;
+
 		//設定Template的內容
 		calleeTemplate.setText(calleeTemp);
+		calleeText.setTemplateText(calleeTemp, false);
 		
 		/// CallerTemplate的字型風格的位置範圍 ///
 		String callerTemp = "";
-		for (int i = 0; i < callerHeadText.size();i++)
-			callerTemp += callerHeadText.get(i);
+
+		callerTemp += callerHead;
 		if(!detectTransExBtn.getSelection())
-			for (int i = 0; i < callerOrgText.size();i++)
-				callerTemp += callerOrgText.get(i);
+			callerTemp += callerOrg;
 		else
-			for (int i = 0; i < callerTransText.size();i++)
-				callerTemp += callerTransText.get(i);
-		for (int i = 0; i < callerTailText.size();i++)
-			callerTemp += callerTailText.get(i);
+			callerTemp += callerTrans;
+		callerTemp += callerTail;
+
 		//設定Template的內容
 		callerTemplate.setText(callerTemp);
+		callerText.setTemplateText(callerTemp, false);
 	}
 	
 	/**
 	 * 將程式碼中的文字標上顏色
 	 */
 	private void adjustFont(Display display) {
-		int counter = 0;
-		List<StyleRange> styleList  = new ArrayList<StyleRange>();
-		List<Integer> rangeList = new ArrayList<Integer>();
 		/// 設置CalleeTemplate的字型風格的位置範圍 ///
-		counter = setTemplateStyle(display,styleList,rangeList,calleeText,calleeType,counter);
-		//若選項沒有勾選時
-		if(!detectTransExBtn.getSelection())
-			counter = setTemplateStyle(display,styleList,rangeList,calleeOrgText,calleeOrgType,counter);
-		else
-			counter = setTemplateStyle(display,styleList,rangeList,calleeTransText,calleeTransType,counter);
-
-		//將List轉成Array
-		StyleRange[] calleeStyles = styleList.toArray(new StyleRange[styleList.size()]);
-		Integer[] rangeInt = rangeList.toArray(new Integer[rangeList.size()]);
-		//將Integer Array 轉成 int Array
-		int[] calleeRanges = ArrayUtils.toPrimitive(rangeInt);
-
+		calleeText.setTemplateStyle(display, 0);
 		//把字型的風格和風格的範圍套用在CalleeTemplate上
-		calleeTemplate.setStyleRanges(calleeRanges, calleeStyles);
+		calleeTemplate.setStyleRanges(calleeText.getLocationArray(), calleeText.getStyleArrray());
 
-
-		counter = 0;
-		styleList.clear();
-		rangeList.clear();
 		/// 設置CalleeTemplate的字型風格的位置範圍 ///
-		counter = setTemplateStyle(display,styleList,rangeList,callerHeadText,callerHeadType,counter);
-		//若選項沒有勾選時
-		if(!detectTransExBtn.getSelection())
-			counter = setTemplateStyle(display,styleList,rangeList,callerOrgText,callerOrgType,counter);
-		else
-			counter = setTemplateStyle(display,styleList,rangeList,callerTransText,callerTransType,counter);
-
-		counter = setTemplateStyle(display,styleList,rangeList,callerTailText,callerTailType,counter);
-
-		//將List轉成Array
-		StyleRange[] callerStyles = styleList.toArray(new StyleRange[styleList.size()]);
-		Integer[] callerRangeInt = rangeList.toArray(new Integer[rangeList.size()]);
-		//將Integer Array 轉成 int Array
-		int[] callerRanges = ArrayUtils.toPrimitive(callerRangeInt);
-
+		callerText.setTemplateStyle(display, 0);
 		//把字型的風格和風格的範圍套用在CallerTemplate上
-		callerTemplate.setStyleRanges(callerRanges, callerStyles);
+		callerTemplate.setStyleRanges(callerText.getLocationArray(), callerText.getStyleArrray());
 	}
 
 	/**
@@ -342,22 +279,21 @@ public class OverLoggingPage extends APropertyPage {
 
 		Element rule = new Element("rule");
 		//假如log4j有被勾選起來
-		if(log4jBtn.getSelection()){
+		if (log4jBtn.getSelection())
 			rule.setAttribute(JDomUtil.apache_log4j,"Y");
-		}else{
+		else
 			rule.setAttribute(JDomUtil.apache_log4j,"N");	
-		}
+
 		//假如java.util.logging.Logger有被勾選起來
-		if(javaUtillogBtn.getSelection()){
+		if (javaUtillogBtn.getSelection())
 			rule.setAttribute(JDomUtil.java_Logger,"Y");	
-		}else{
+		else
 			rule.setAttribute(JDomUtil.java_Logger,"N");
-		}
 
 		//把使用者自訂的Rule存入XML
 		Element libRule = new Element("librule");
 		Iterator<String> libIt = libMap.keySet().iterator();
-		while(libIt.hasNext()){
+		while(libIt.hasNext()) {
 			String temp = libIt.next();
 			//若有出現*取代為EH_STAR(jdom不能記"*"這個字元)
 			String libName = temp.replace("*", "EH_STAR");
@@ -369,11 +305,10 @@ public class OverLoggingPage extends APropertyPage {
 
 		Element exRule = new Element("exrule");
 		//把使用者設定的
-		if(detectTransExBtn.getSelection()){
-			exRule.setAttribute(JDomUtil.transException,"Y");
-		}else{
-			exRule.setAttribute(JDomUtil.transException,"N");	
-		}
+		if (detectTransExBtn.getSelection())
+			exRule.setAttribute(JDomUtil.trans_Exception,"Y");
+		else
+			exRule.setAttribute(JDomUtil.trans_Exception,"N");	
 
 		//將新建的tag加進去
 		overLogging.addContent(rule);

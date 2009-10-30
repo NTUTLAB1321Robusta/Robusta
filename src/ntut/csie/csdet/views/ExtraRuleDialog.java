@@ -31,6 +31,8 @@ import org.eclipse.swt.widgets.Text;
 
 /**
  * 讓user設定要偵測試的Dummy Handler
+ * @author Shiau
+ *
  */
 public class ExtraRuleDialog extends Dialog{
 	//顯示Rule資訊的Table
@@ -199,8 +201,7 @@ public class ExtraRuleDialog extends Dialog{
 			public void widgetSelected(final SelectionEvent e)
 			{
 				//選擇全部的Item
-				for (int i=0;i<displayTable.getItemCount();i++)
-				{
+				for (int i=0;i<displayTable.getItemCount();i++) {
 					TableItem item = displayTable.getItem(i);
 					item.setChecked(true);
 				}
@@ -215,8 +216,7 @@ public class ExtraRuleDialog extends Dialog{
 			public void widgetSelected(final SelectionEvent e)
 			{
 				//取消全部的Item
-				for (int i=0;i<displayTable.getItemCount();i++)
-				{
+				for (int i=0;i<displayTable.getItemCount();i++) {
 					TableItem item = displayTable.getItem(i);
 					item.setChecked(false);
 				}

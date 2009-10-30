@@ -204,8 +204,8 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 			// 這裡表示之前使用者已經有設定過preference了,去取得相關偵測設定值
 			Element dummyHandler = root.getChild(JDomUtil.DummyHandlerTag);
 			Element rule = dummyHandler.getChild("rule");
-			String eprintSet = rule.getAttribute(JDomUtil.eprintstacktrace).getValue();
-			String sysoSet = rule.getAttribute(JDomUtil.systemoutprint).getValue();
+			String eprintSet = rule.getAttribute(JDomUtil.e_printstacktrace).getValue();
+			String sysoSet = rule.getAttribute(JDomUtil.systemout_print).getValue();
 			String log4jSet = rule.getAttribute(JDomUtil.apache_log4j).getValue();
 			String javaLogger = rule.getAttribute(JDomUtil.java_Logger).getValue();
 			Element libRule = dummyHandler.getChild("librule");

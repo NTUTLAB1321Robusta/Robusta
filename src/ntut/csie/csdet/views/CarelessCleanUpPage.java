@@ -13,10 +13,8 @@ import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
@@ -89,7 +87,7 @@ public class CarelessCleanUpPage  extends APropertyPage {
 			Element root = docJDom.getRootElement();
 			if (root.getChild(JDomUtil.CarelessCleanUpTag) != null) {
 				Element rule=root.getChild(JDomUtil.CarelessCleanUpTag).getChild("rule");
-				methodSet = rule.getAttribute(JDomUtil.detUserMethod).getValue();
+				methodSet = rule.getAttribute(JDomUtil.det_user_method).getValue();
 			
 				//從XML取得外部Library
 				Element libRule = root.getChild(JDomUtil.CarelessCleanUpTag).getChild("librule");
@@ -180,17 +178,6 @@ public class CarelessCleanUpPage  extends APropertyPage {
 
 		//調整程式碼的顏色
 		adjustFont();
-	}
-	
-	/**
-	 * 取得Control的右下角座標
-	 * @param control
-	 * @return			右下角座標
-	 */
-	private Point getBoundsPoint(Control control) {
-		if (control == null) return new Point(0,0);
-		return new Point(control.getBounds().x + control.getBounds().width ,
-						 control.getBounds().y + control.getBounds().height);
 	}
 	
 	/**
@@ -320,9 +307,9 @@ public class CarelessCleanUpPage  extends APropertyPage {
 		
 		//假如detUserMethod有被勾選起來
 		if(detUserMethodBtn.getSelection()){
-			rule.setAttribute(JDomUtil.detUserMethod,"Y");
+			rule.setAttribute(JDomUtil.det_user_method,"Y");
 		}else{
-			rule.setAttribute(JDomUtil.detUserMethod,"N");
+			rule.setAttribute(JDomUtil.det_user_method,"N");
 		}
 		
 		//把使用者自訂的Rule存入XML

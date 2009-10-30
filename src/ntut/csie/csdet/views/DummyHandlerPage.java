@@ -1,25 +1,25 @@
 package ntut.csie.csdet.views;
 
 import java.io.File;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
 import java.util.TreeMap;
+
 import ntut.csie.csdet.preference.JDomUtil;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.jdom.Document;
 import org.jdom.Attribute;
+import org.jdom.Document;
 import org.jdom.Element;
 
 /**
@@ -86,8 +86,8 @@ public class DummyHandlerPage extends APropertyPage{
 			Element root = docJDom.getRootElement();
 			if (root.getChild(JDomUtil.DummyHandlerTag) != null) {
 				Element rule = root.getChild(JDomUtil.DummyHandlerTag).getChild("rule");
-				eprint = rule.getAttribute(JDomUtil.eprintstacktrace).getValue();
-				setting = rule.getAttribute(JDomUtil.systemoutprint).getValue();
+				eprint = rule.getAttribute(JDomUtil.e_printstacktrace).getValue();
+				setting = rule.getAttribute(JDomUtil.systemout_print).getValue();
 				log4jSet = rule.getAttribute(JDomUtil.apache_log4j).getValue();
 				javaLogSet = rule.getAttribute(JDomUtil.java_Logger).getValue();
 				//從XML取得外部Library
@@ -223,17 +223,6 @@ public class DummyHandlerPage extends APropertyPage{
 	}
 	
 	/**
-	 * 取得Control的右下角座標
-	 * @param control
-	 * @return			右下角座標
-	 */
-	private Point getBoundsPoint(Control control) {
-		if (control == null) return new Point(0,0);
-		return new Point(control.getBounds().x + control.getBounds().width ,
-						 control.getBounds().y + control.getBounds().height);
-	}
-	
-	/**
 	 * 調整Text的文字
 	 */
 	private void adjustText()
@@ -333,8 +322,7 @@ public class DummyHandlerPage extends APropertyPage{
 		if (eprintBtn.getSelection())
 			textLength += eprintText.length();
 		//如果SystemOut選項被選中
-		if (sysoBtn.getSelection())
-		{
+		if (sysoBtn.getSelection()) {
 			//SystemOut文字的對應位置(相對位置+目前位章的長度)
 			int[] syso = new int[] {11 + textLength,3,38 + textLength,3};
 			//把本文SystemOut文字的字型風格和對應的位置存入
@@ -345,8 +333,7 @@ public class DummyHandlerPage extends APropertyPage{
 			textLength += sysoText.length();
 		}
 		//如果Log4j選項被選中
-		if (log4jBtn.getSelection())
-		{
+		if (log4jBtn.getSelection()) {
 			//Log4J文字的對應位置(相對位置+目前位章的長度)
 			int[] log4j = new int[] {4+textLength,14,23+textLength,6,};
 			//把本文Log4j文字的字型風格和對應的位置存入
@@ -357,8 +344,7 @@ public class DummyHandlerPage extends APropertyPage{
 			textLength += log4jText.length();
 		}
 		//如果JavaUtillog選項被選中
-		if (javaUtillogBtn.getSelection())
-		{
+		if (javaUtillogBtn.getSelection()) {
 			//javaUtillog文字的對應位置(相對位置+目前位章的長度)
 			int[] javaUtillog = new int[] {4 + textLength,33,43 + textLength,11};
 			//把本文JavaUtillog文字的字型風格和對應的位置存入
@@ -375,40 +361,40 @@ public class DummyHandlerPage extends APropertyPage{
 
 	@Override
 	public boolean storeSettings() {
-		//取的xml的root
+		//取的XML的root
 		Element root = JDomUtil.createXMLContent();
 
-		//建立dummyhandler的tag
+		//建立Dummy Handler的Tag
 		Element dummyHandler = new Element(JDomUtil.DummyHandlerTag);
 		Element rule = new Element("rule");
 		//假如e.printStackTrace有被勾選起來
-		if (eprintBtn.getSelection()){
-			rule.setAttribute(JDomUtil.eprintstacktrace,"Y");
-		}else{
-			rule.setAttribute(JDomUtil.eprintstacktrace,"N");		
-		}
+		if (eprintBtn.getSelection())
+			rule.setAttribute(JDomUtil.e_printstacktrace,"Y");
+		else
+			rule.setAttribute(JDomUtil.e_printstacktrace,"N");		
+
 		//假如system.out.println有被勾選起來
-		if(sysoBtn.getSelection()){
-			rule.setAttribute(JDomUtil.systemoutprint,"Y");	
-		}else{
-			rule.setAttribute(JDomUtil.systemoutprint,"N");
-		}
+		if(sysoBtn.getSelection())
+			rule.setAttribute(JDomUtil.systemout_print,"Y");	
+		else
+			rule.setAttribute(JDomUtil.systemout_print,"N");
+
 		//假如log4j有被勾選起來
-		if(log4jBtn.getSelection()){
+		if(log4jBtn.getSelection())
 			rule.setAttribute(JDomUtil.apache_log4j,"Y");
-		}else{
+		else
 			rule.setAttribute(JDomUtil.apache_log4j,"N");	
-		}
+
 		//假如java.util.logging.Logger有被勾選起來
-		if(javaUtillogBtn.getSelection()){
+		if(javaUtillogBtn.getSelection())
 			rule.setAttribute(JDomUtil.java_Logger,"Y");	
-		}else{
+		else
 			rule.setAttribute(JDomUtil.java_Logger,"N");
-		}
+
 		//把使用者自訂的Rule存入XML
 		Element libRule = new Element("librule");
 		Iterator<String> libIt = libMap.keySet().iterator();
-		while(libIt.hasNext()){
+		while(libIt.hasNext()) {
 			String temp = libIt.next();
 			//若有出現*取代為EH_STAR(jdom不能記"*"這個字元)
 			String libName = temp.replace("*", "EH_STAR");

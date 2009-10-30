@@ -7,6 +7,7 @@ import java.util.TreeMap;
 
 import ntut.csie.csdet.data.CSMessage;
 import ntut.csie.csdet.data.SSMessage;
+import ntut.csie.csdet.preference.JDomUtil;
 import ntut.csie.csdet.visitor.CarelessCleanUpAnalyzer;
 import ntut.csie.csdet.visitor.CodeSmellAnalyzer;
 import ntut.csie.csdet.visitor.MainAnalyzer;
@@ -34,6 +35,8 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.jdom.Document;
+import org.jdom.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +47,8 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	
 	//延伸problem view好讓自己的marker可以加進去view中
 	public static final String MARKER_TYPE = "ntut.csie.rleht.builder.RLProblem";
+	
+	TreeMap<String,Boolean> detSmellSetting = new TreeMap<String,Boolean>();
 	
 	/**
 	 * 將相關例外資訊貼上marker
@@ -156,6 +161,8 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	 *      java.util.Map, org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
+		getDetectSettings();
+		
 		long start = System.currentTimeMillis();
 		if (kind == FULL_BUILD) {
 			fullBuild(monitor);
@@ -180,7 +187,6 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	 */
 	void checkRLAnnotation(IResource resource) {
 		if (resource instanceof IFile && resource.getName().endsWith(".java")) {
-
 			logger.debug("[RLBuilder][checkRLAnnotation] START !!");
 
 			IFile file = (IFile) resource;
@@ -255,6 +261,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 					//SuppressSmell
 					TreeMap<String,Boolean> detMethodSmell = new TreeMap<String,Boolean>();
 					TreeMap<String, List<Integer>> detCatchSmell = new TreeMap<String, List<Integer>>();
+					detMethodSmell = detSmellSetting;
 					//儲存SuppressSmell設定
 					inputSuppressData(suppressSmellList, detMethodSmell, detCatchSmell);
 
@@ -468,8 +475,9 @@ public class RLBuilder extends IncrementalProjectBuilder {
 		TreeMap<String, Boolean> detMethodSmell, TreeMap<String, List<Integer>> detCatchSmell) {
 		/// 初始化設定 ///
 		//預設每個Smell都偵測
-		for (String smellType : RLMarkerAttribute.CS_TOTAL_TYPE)
-			detMethodSmell.put(smellType, true);
+//		for (String smellType : RLMarkerAttribute.CS_TOTAL_TYPE)
+//			detMethodSmell.put(smellType, true);
+
 		for (String smellType : RLMarkerAttribute.CS_CATCH_TYPE)
 			detCatchSmell.put(smellType, new ArrayList<Integer>());
 
@@ -560,6 +568,31 @@ public class RLBuilder extends IncrementalProjectBuilder {
 			checkRLAnnotation(resource);
 			// return true to continue visiting children.
 			return true;
+		}
+	}
+	
+	private void getDetectSettings(){
+		Document docJDom = JDomUtil.readXMLFile();
+
+		if(docJDom != null) {
+			//從XML裡讀出之前的設定
+			Element root = docJDom.getRootElement();
+			if (root.getChild(JDomUtil.DetectSmellTag) != null) {
+				Element rule = root.getChild(JDomUtil.DetectSmellTag).getChild("rule");
+				boolean isDetAll = rule.getAttribute(JDomUtil.detect_all).getValue().equals("Y");
+				if (isDetAll) {
+					for (String smellType : RLMarkerAttribute.CS_TOTAL_TYPE)
+						detSmellSetting.put(smellType, true);
+				} else {
+					for (String smellType : RLMarkerAttribute.CS_TOTAL_TYPE) {
+						boolean isDet = rule.getAttribute(smellType).getValue().equals("Y");
+						detSmellSetting.put(smellType, isDet);
+					}
+				}
+			}
+		} else {
+			for (String smellType : RLMarkerAttribute.CS_TOTAL_TYPE)
+				detSmellSetting.put(smellType, true);			
 		}
 	}
 
