@@ -3,7 +3,6 @@ package ntut.csie.csdet.report.ui;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -42,7 +41,7 @@ public class SelectReportDialog  extends Dialog {
 	//全部的Project
 	private List<String> projectList = new ArrayList<String>();
 	//特定專案底下內全部的Report Path
-	private List<String> pathList = new ArrayList<String>();
+	private List<File> fileList = new ArrayList<File>();
 	
 	public SelectReportDialog(Shell parentShell, List<String> projctList) {
 		super(parentShell);
@@ -126,12 +125,14 @@ public class SelectReportDialog  extends Dialog {
 		//clear old item
 		reportTable.clearAll();
 		reportTable.setItemCount(0);
-		pathList.clear();
+		fileList.clear();
 		
 		//set Report List
-		List<String> fileList = getReportFile();
+		getFileList();
 
-		for (String fileName : fileList) {
+		for (File file : fileList) {
+			String fileName = file.getName();
+
 			//在Table內加入新的Item
 			TableItem tableItem = new TableItem(reportTable, SWT.NONE);
 
@@ -147,34 +148,31 @@ public class SelectReportDialog  extends Dialog {
 	 * 取得Project內的Report資訊
 	 * @return
 	 */
-	public ArrayList<String> getReportFile() {
-		ArrayList<String> temp = new ArrayList<String>();
+	public void getFileList() {
 		//取得使用者使選擇的Project Name
 		String projectName = projectList.get(projectCombo.getSelectionIndex());
 		//取得WorkSpace
 		String workPath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toString();
 
 		//Report目錄
-		File folder = new File(workPath + "/" + projectName + "/" + projectName + "_Report/");
+		File directory = new File(workPath + "/" + projectName + "/" + projectName + "_Report/");
 		
-		//取得副檔名為.html的檔案
-		File[] files = folder.listFiles(new FilenameFilter() {
-			public boolean accept(File dir, String name) {				
-				return name.endsWith(".html");
-			}
-		});
+		//取得目錄內每一個資料夾路徑
+		File[] allFolder = directory.listFiles();
 
-		if (files != null) {
-			//按照Report建立日期排序
-			Arrays.sort(files);
-			//把Report資訊記錄
-			for(int i = 0; i < files.length; i++) {
-				temp.add(files[i].getName());
-				pathList.add(files[i].getAbsolutePath());
+		for (File folder: allFolder) {
+			if (folder.isDirectory()) {
+				//取得副檔名為.html的檔案
+				File[] files = folder.listFiles(new FilenameFilter() {
+					public boolean accept(File dir, String name) {
+						return name.endsWith(".html");
+					}
+				});
+				//把Report資訊記錄
+				for (File file : files)
+					fileList.add(file);
 			}
 		}
-
-		return temp;
 	}
 	
 	/**
@@ -196,22 +194,18 @@ public class SelectReportDialog  extends Dialog {
 			int[] selectIdx = reportTable.getSelectionIndices();
 			
 			//刪除所有選取的Report
-			if (selectIdx.length != 0)
-			{
-				for (int index : selectIdx)
-				{
-					//取得Report位置
-					String deleteFile = pathList.get(index);
-					File reportPath = new File(deleteFile);
-		
-					//取得圖片位置
-					String deletePhoto = deleteFile.replace("sample.html", "Report.jpg");
-					File photoPath = new File(deletePhoto);
-		
-					//刪除Report
-					reportPath.delete();
-					//刪除圖片
-					photoPath.delete();
+			if (selectIdx.length != 0) {
+				for (int index : selectIdx) {
+					//取得Report資料夾
+					File reportFolder = fileList.get(index).getParentFile();
+
+					//刪除資料夾內所有檔案
+					File[] allFile = reportFolder.listFiles();
+					for (File file: allFile)
+						file.delete();
+
+					//刪除資料夾
+					reportFolder.delete();
 				}
 				updateTable();
 			}
@@ -225,7 +219,7 @@ public class SelectReportDialog  extends Dialog {
 		int index = reportTable.getSelectionIndex();
 
 		if (index != -1)
-			filePath = pathList.get(index);
+			filePath = fileList.get(index).getAbsolutePath();
 
 		super.okPressed(); 
 	}

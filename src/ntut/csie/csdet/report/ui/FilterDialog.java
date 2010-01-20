@@ -72,8 +72,9 @@ public class FilterDialog extends Dialog {
 				setFilterRuleBtn(false);
 			}
 		});
-		AllRadBtn.setBounds(10, 10, 374, 16);
+		AllRadBtn.setLocation(10, 10);
 		AllRadBtn.setText("Detect All Project");
+		AllRadBtn.pack();
 
 		///選擇Package的Button///
 		selectRadBtn = new Button(container, SWT.RADIO);
@@ -82,8 +83,9 @@ public class FilterDialog extends Dialog {
 				setFilterRuleBtn(true);
 			}
 		});
-		selectRadBtn.setBounds(10, 32, 374, 16);
+		selectRadBtn.setLocation(10, 30);
 		selectRadBtn.setText("Detect Select Package");
+		selectRadBtn.pack();
 
 		///Filter相關的Composite///
 		filterComposite = new Composite(container, SWT.NONE);
@@ -91,18 +93,21 @@ public class FilterDialog extends Dialog {
 
 		///顯示文字的Label///
 		final Label nameLabel = new Label(filterComposite, SWT.NONE);
-		nameLabel.setBounds(7, 10, 97, 12);
+		nameLabel.setLocation(7, 10);
 		nameLabel.setText("Filter Rule: ");
+		nameLabel.pack();
 
 		///錯誤圖示與錯誤訊息///
 		final Label warningLabel = new Label(filterComposite, SWT.NONE);
-		warningLabel.setBounds(32, 212, 85, 12);
+		warningLabel.setLocation(32, 212);
 		warningLabel.setVisible(false);
 		warningLabel.setText("Filter Rule已存在");
+		warningLabel.pack();
 		final Label picLabel = new Label(filterComposite, SWT.NONE);
-		picLabel.setBounds(10, 212, 16, 15);
+		picLabel.setLocation(10, 212);
 		picLabel.setVisible(false);
 		picLabel.setImage(ImageManager.getInstance().get("warning"));
+		picLabel.pack();
 
 		///給予User輸入Rule的Text///
 		tempText = new Text(filterComposite, SWT.BORDER);
@@ -318,7 +323,7 @@ public class FilterDialog extends Dialog {
 		root.addContent(smellFilter);
 
 		//將檔案寫回
-		String path = JDomUtil.getWorkspace()+File.separator+"CSPreference.xml";
+		String path = JDomUtil.getWorkspace() +File.separator +"CSPreference.xml";
 		JDomUtil.OutputXMLFile(root.getDocument(), path);
 	}
 	

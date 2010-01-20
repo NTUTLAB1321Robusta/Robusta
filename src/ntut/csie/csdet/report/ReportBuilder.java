@@ -4,13 +4,19 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 
+import ntut.csie.csdet.data.CSMessage;
+import ntut.csie.csdet.data.SSMessage;
 import ntut.csie.csdet.preference.JDomUtil;
+import ntut.csie.csdet.visitor.CarelessCleanUpAnalyzer;
 import ntut.csie.csdet.visitor.CodeSmellAnalyzer;
 import ntut.csie.csdet.visitor.MainAnalyzer;
+import ntut.csie.csdet.visitor.OverLoggingDetector;
 import ntut.csie.jcis.builder.core.internal.support.LOCCounter;
 import ntut.csie.jcis.builder.core.internal.support.LOCData;
 import ntut.csie.rleht.builder.ASTMethodCollector;
+import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 
 import org.eclipse.core.resources.IProject;
@@ -49,7 +55,7 @@ public class ReportBuilder {
 	 * @param project
 	 * @param model
 	 */	
-	public ReportBuilder(IProject project,ReportModel model) {
+	public ReportBuilder(IProject project, ReportModel model) {
 		this.project = project;	
 		this.model = model;
 	}
@@ -117,17 +123,15 @@ public class ReportBuilder {
 	 * @param newPackageModel
 	 */
 	private void setSmellInfo (ICompilationUnit icu, boolean isRecord, PackageModel newPackageModel, String pkPath) {
+		List<SSMessage> suppressSmellList = null;
 		
 		ExceptionAnalyzer visitor = null;
 		CodeSmellAnalyzer csVisitor = null;
 		MainAnalyzer mainVisitor = null;
+		CarelessCleanUpAnalyzer ccVisitor=null;
+		OverLoggingDetector loggingDetector = null;
 
-		// 目前method的Exception資訊
-//		List<RLMessage> currentMethodExList = null;
-		// 目前method的RL Annotation資訊
-//		List<RLMessage> currentMethodRLList = null;
-//		List<CSMessage> spareHandler = null;
-
+		//建構AST
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		parser.setSource(icu);
@@ -153,31 +157,57 @@ public class ReportBuilder {
 			visitor = new ExceptionAnalyzer(root, method.getStartPosition(), 0);
 			method.accept(visitor);
 			currentMethodNode = visitor.getCurrentMethodNode();
-//			currentMethodRLList = visitor.getMethodRLAnnotationList();
+			suppressSmellList = visitor.getSuppressSemllAnnotationList();
 
 			MethodDeclaration methodName = (MethodDeclaration) currentMethodNode;
+			
+			//SuppressSmell
+			TreeMap<String,Boolean> detMethodSmell = new TreeMap<String,Boolean>();
+			TreeMap<String, List<Integer>> detCatchSmell = new TreeMap<String, List<Integer>>();
+			inputSuppressData(suppressSmellList, detMethodSmell, detCatchSmell);
 
 			//找尋專案中所有的ignore Exception
 			csVisitor = new CodeSmellAnalyzer(root);
 			method.accept(csVisitor);
 			//取得專案中的ignore Exception
-			newClassModel.setIgnoreExList(csVisitor.getIgnoreExList(), methodName.getName().toString());
-			model.addIgnoreTotalSize(csVisitor.getIgnoreExList().size());
-				
+			if (detMethodSmell.get(RLMarkerAttribute.CS_INGNORE_EXCEPTION)) {
+				List<CSMessage> ignoreExList = checkCatchSmell(csVisitor.getIgnoreExList(), detCatchSmell.get(RLMarkerAttribute.CS_INGNORE_EXCEPTION));
+				newClassModel.setIgnoreExList(ignoreExList, methodName.getName().toString());
+				model.addIgnoreTotalSize(ignoreExList.size());
+			}
 			//取得專案中dummy handler
-			newClassModel.setDummyList(csVisitor.getDummyList(), methodName.getName().toString());
-			model.addDummyTotalSize(csVisitor.getDummyList().size());
-
+			if (detMethodSmell.get(RLMarkerAttribute.CS_DUMMY_HANDLER)) {
+				List<CSMessage> dummyList = checkCatchSmell(csVisitor.getDummyList(), detCatchSmell.get(RLMarkerAttribute.CS_DUMMY_HANDLER));
+				newClassModel.setDummyList(dummyList, methodName.getName().toString());
+				model.addDummyTotalSize(dummyList.size());
+			}
 			//取得專案中的Nested Try Block
-			newClassModel.setNestedTryList(visitor.getNestedTryList(), methodName.getName().toString());
-			model.addNestedTotalTrySize(visitor.getNestedTryList().size());
-
+			if (detMethodSmell.get(RLMarkerAttribute.CS_NESTED_TRY_BLOCK)) {
+				newClassModel.setNestedTryList(visitor.getNestedTryList(), methodName.getName().toString());
+				model.addNestedTotalTrySize(visitor.getNestedTryList().size());
+			}
 			//尋找該method內的unprotected main program
 			mainVisitor = new MainAnalyzer(root);
 			method.accept(mainVisitor);
-			newClassModel.setUnprotectedMain(mainVisitor.getUnprotedMainList(), methodName.getName().toString());
-			model.addUnMainTotalSize(mainVisitor.getUnprotedMainList().size());
-	
+			if (detMethodSmell.get(RLMarkerAttribute.CS_UNPROTECTED_MAIN)) {
+				newClassModel.setUnprotectedMain(mainVisitor.getUnprotedMainList(), methodName.getName().toString());
+				model.addUnMainTotalSize(mainVisitor.getUnprotedMainList().size());
+			}
+			//找尋專案中所有的Careless Cleanup
+			ccVisitor = new CarelessCleanUpAnalyzer(root);
+			method.accept(ccVisitor);
+			if (detMethodSmell.get(RLMarkerAttribute.CS_CARELESS_CLEANUP)) {
+				newClassModel.setCarelessCleanUp(ccVisitor.getCarelessCleanUpList(), methodName.getName().toString());
+				model.addCarelessCleanUpSize(ccVisitor.getCarelessCleanUpList().size());
+			}
+			//尋找該method內的OverLogging
+			loggingDetector = new OverLoggingDetector(root, method);
+			loggingDetector.detect();
+			if (detMethodSmell.get(RLMarkerAttribute.CS_OVER_LOGGING)) {
+				List<CSMessage> olList = checkCatchSmell(loggingDetector.getOverLoggingList(), detCatchSmell.get(RLMarkerAttribute.CS_OVER_LOGGING));
+				newClassModel.setOverLogging(olList, methodName.getName().toString());
+				model.addOverLoggingSize(olList.size());
+			}
 			///記錄Code Information///
 			model.addTryCounter(csVisitor.getTryCounter());
 			model.addCatchCounter(csVisitor.getCatchCounter());
@@ -185,6 +215,74 @@ public class ReportBuilder {
 		}
 		//記錄到ReportModel中
 		newPackageModel.addClassModel(newClassModel);
+	}
+
+	/**
+	 * @param csVisitor
+	 * @param detCatchSmell
+	 * @param allSmellList
+	 * @return
+	 */
+	private List<CSMessage> checkCatchSmell(List<CSMessage> allSmellList, List<Integer> posList) {
+		List<CSMessage> smellList = new ArrayList<CSMessage>();
+		if (posList != null && posList.size() == 0)
+			smellList = allSmellList;
+		else {
+			for (CSMessage msg : allSmellList) {
+				if (!suppressMarker(posList, msg.getPosition()))
+					smellList.add(msg);
+			}
+		}
+		return smellList;
+	}
+	
+	/**
+	 * 判斷是否要不貼Marker
+	 * @param smellPosList
+	 * @param pos
+	 * @return
+	 */
+	private boolean suppressMarker(List<Integer> smellPosList, int pos) {
+		for (Integer index : smellPosList)
+			//若Catch位置相同，表示要抑制的Marker為同一個Marker
+			if (pos == index)
+				return true;
+
+		return false;
+	}
+	
+	/**
+	 * 儲存Suppress Smell的設定
+	 * @param suppressSmellList
+	 * @param detMethodSmell
+	 * @param detCatchSmell
+	 */
+	private void inputSuppressData(List<SSMessage> suppressSmellList,
+		TreeMap<String, Boolean> detMethodSmell, TreeMap<String, List<Integer>> detCatchSmell) {
+		/// 初始化設定 ///
+		//預設每個Smell都偵測
+		for (String smellType : RLMarkerAttribute.CS_TOTAL_TYPE)
+			detMethodSmell.put(smellType, true);
+
+		for (String smellType : RLMarkerAttribute.CS_CATCH_TYPE)
+			detCatchSmell.put(smellType, new ArrayList<Integer>());
+
+		for (SSMessage msg :suppressSmellList) {
+			//若為Method上的設定
+			if (!msg.isInCatch()) {
+				//若使用者偵測哪個Smell不偵測，就把該Smell偵測設定為false
+				for (String smellType :msg.getSmellList())
+					detMethodSmell.put(smellType, false);
+			//若為Catch內的設定
+			} else {
+				//若使用者設定Catch內Smell不偵測，記錄該Smell所在的Catch位置
+				for (String smellType : msg.getSmellList()) {
+					List<Integer> smellPosList = detCatchSmell.get(smellType);
+					if (smellPosList != null)
+						smellPosList.add(msg.getPosition());
+				}
+			}
+		}
 	}
 
 	/**
@@ -217,8 +315,12 @@ public class ReportBuilder {
 
 						//若要紀錄則新增Package
 						if (isRecord) {
-							if (compilationUnits.length != 0)
+							if (compilationUnits.length != 0) {
+								//建立PackageModel
 								newPackageModel = model.addSmellList(pk.getElementName());
+								//記錄Package的Folder名稱
+								newPackageModel.setFolderName(root.get(i).getElementName());
+							}
 
 							//取得Package底下的所有class的smell資訊
 							for (int k = 0; k < compilationUnits.length; k++) {
@@ -272,18 +374,16 @@ public class ReportBuilder {
 	 * 取得PackageFragmentRoot List (過濾jar)
 	 */
 	public List<IPackageFragmentRoot> getSourcePaths(IJavaProject project)throws JavaModelException {
-        
-	    List<IPackageFragmentRoot> sourcePaths =
-	            new ArrayList<IPackageFragmentRoot>();
+		List<IPackageFragmentRoot> sourcePaths = new ArrayList<IPackageFragmentRoot>();
+		
+		IPackageFragmentRoot[] roots = project.getAllPackageFragmentRoots();
 
-	    IPackageFragmentRoot[] roots = project.getAllPackageFragmentRoots();
-
-	    for (IPackageFragmentRoot r : roots) {
-	    	if (!r.getPath().toString().endsWith(".jar")) {
-	    		sourcePaths.add(r);
-	    	}
-	    }
-	    return sourcePaths;
+		for (IPackageFragmentRoot r : roots) {
+			if (!r.getPath().toString().endsWith(".jar")) {
+				sourcePaths.add(r);
+			}
+		}
+		return sourcePaths;
 	}
 
 	/**

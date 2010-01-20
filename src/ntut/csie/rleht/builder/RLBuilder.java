@@ -261,7 +261,8 @@ public class RLBuilder extends IncrementalProjectBuilder {
 					//SuppressSmell
 					TreeMap<String,Boolean> detMethodSmell = new TreeMap<String,Boolean>();
 					TreeMap<String, List<Integer>> detCatchSmell = new TreeMap<String, List<Integer>>();
-					detMethodSmell = detSmellSetting;
+					//將使用者設定複製過來
+					detMethodSmell = (TreeMap<String,Boolean>) detSmellSetting.clone();
 					//儲存SuppressSmell設定
 					inputSuppressData(suppressSmellList, detMethodSmell, detCatchSmell);
 

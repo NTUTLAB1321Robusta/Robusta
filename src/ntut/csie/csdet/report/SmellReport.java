@@ -1,6 +1,8 @@
 package ntut.csie.csdet.report;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -10,6 +12,7 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
 
+import javax.imageio.ImageIO;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -41,12 +44,18 @@ public class SmellReport {
 	 */
 	void build() {
 		if (model != null) {
-			//產生XML
-			String xmlString = createXML();
-			//利用XML把XSL內的欄位填上，並產生HTM檔
-			createHTM(xmlString);
-			//輸出HTM檔的Styles.css
-			createStyles();
+			try {
+				//產生XML
+				String xmlString = createXML();
+				//利用XML把XSL內的欄位填上，並產生HTM檔
+				createHTM(xmlString);
+				//輸出HTM檔的Styles.css
+				createStyles();
+				//輸出HTM檔的GIF圖片
+				createImageFile();
+			} catch (IOException e) {
+				logger.error("[IOException] EXCEPTION ", e);
+			}
 		}
 	}
 
@@ -66,7 +75,7 @@ public class SmellReport {
 
 		//把Packages總覽資料加至XML Root
 		printAllPackageList(root);
-		
+
 		//把Package資料加至XML Root
 		printPackageList(root);
 
@@ -76,13 +85,13 @@ public class SmellReport {
        	try {
        		//輸出XML
 			xmlOut.output(myDocument, writer);
-//			//印出XML至C糟 (Debug用)
+			//印出XML至C糟 (Debug用)
 //			FileWriter writeXML = new FileWriter("/myFile.xml");
 //			xmlOut.output(myDocument, writeXML);
 		} catch (IOException e) {
 			logger.error("[IOException] EXCEPTION ", e);
 		} finally {
-			closeStingWriter(writer);
+			closeStream(writer);
 		}
 		//把XML轉成字串
        	return writer.getBuffer().toString();
@@ -117,6 +126,8 @@ public class SmellReport {
 		smellList.addContent(new Element("DummyHandler").addContent(String.valueOf(model.getDummyTotalSize())));
 		smellList.addContent(new Element("UnprotectedMainProgram").addContent(String.valueOf(model.getUnMainTotalSize())));
 		smellList.addContent(new Element("NestedTryBlock").addContent(String.valueOf(model.getNestedTryTotalSize())));
+		smellList.addContent(new Element("CarelessCleanUp").addContent(String.valueOf(model.getCarelessCleanUpTotalSize())));
+		smellList.addContent(new Element("OverLogging").addContent(String.valueOf(model.getOverLoggingTotalSize())));
 		smellList.addContent(new Element("Total").addContent(String.valueOf(model.getTotalSmellCount())));
 		root.addContent(smellList);
 	}
@@ -142,31 +153,37 @@ public class SmellReport {
 	private void printAllPackageList(Element root) {
 		///AllPackage List資料輸出///
 		Element allPackageList = new Element("AllPackageList");
+		allPackageList.addContent(new Element("JPGPath").addContent("file:///" + model.getFilePath("PackageReport.jpg", true)));
 		for (int i=0; i < model.getPackagesSize(); i++) {
 			PackageModel packageModel = model.getPackage(i);
 
-			Element allPackage = new Element("Package");
+			Element packages = new Element("Package");
+			packages.addContent(new Element("ID").addContent(String.valueOf(i)));
 			//第一欄書籤連結和Package名稱
 			if (packageModel.getPackageName() == "") {
-				allPackage.addContent(new Element("HrefPackageName").addContent("#" + "(default_package)"));
-				allPackage.addContent(new Element("PackageName").addContent("(default package)"));
+				packages.addContent(new Element("HrefPackageName").addContent("#" + "(default_package)"));
+				packages.addContent(new Element("PackageName").addContent("(default package)"));
 			} else {
-				allPackage.addContent(new Element("HrefPackageName").addContent("#" + packageModel.getPackageName()));
-				allPackage.addContent(new Element("PackageName").addContent(packageModel.getPackageName()));
+				packages.addContent(new Element("HrefPackageName").addContent("#" + packageModel.getPackageName()));
+				packages.addContent(new Element("PackageName").addContent(packageModel.getPackageName()));
 			}
-			allPackage.addContent(new Element("LOC")
+			packages.addContent(new Element("LOC")
 								.addContent(String.valueOf(packageModel.getTotalLine())));
-			allPackage.addContent(new Element("IgnoreCheckedException")
+			packages.addContent(new Element("IgnoreCheckedException")
 								.addContent(String.valueOf(packageModel.getIgnoreSize())));
-			allPackage.addContent(new Element("DummyHandler")
+			packages.addContent(new Element("DummyHandler")
 								.addContent(String.valueOf(packageModel.getDummySize())));
-			allPackage.addContent(new Element("UnprotectedMainProgram")
+			packages.addContent(new Element("UnprotectedMainProgram")
 								.addContent(String.valueOf(packageModel.getUnMainSize())));
-			allPackage.addContent(new Element("NestedTryBlock")
+			packages.addContent(new Element("NestedTryBlock")
 								.addContent(String.valueOf(packageModel.getNestedTrySize())));
-			allPackage.addContent(new Element("PackageTotal")
+			packages.addContent(new Element("CarelessCleanUp")
+								.addContent(String.valueOf(packageModel.getCarelessCleanUpSize())));
+			packages.addContent(new Element("OverLogging")
+								.addContent(String.valueOf(packageModel.getOverLoggingSize())));
+			packages.addContent(new Element("PackageTotal")
 								.addContent(String.valueOf(packageModel.getTotalSmellSize())));
-			allPackageList.addContent(allPackage);
+			allPackageList.addContent(packages);
 		}
 		///AllPackage List 總和資料輸出///
 		Element total = new Element("Total");
@@ -175,6 +192,8 @@ public class SmellReport {
 		total.addContent(new Element("DummyTotal").addContent(String.valueOf(model.getDummyTotalSize())));
 		total.addContent(new Element("UnMainTotal").addContent(String.valueOf(model.getUnMainTotalSize())));
 		total.addContent(new Element("NestedTrTotal").addContent(String.valueOf(model.getNestedTryTotalSize())));
+		total.addContent(new Element("CCUpTotal").addContent(String.valueOf(model.getCarelessCleanUpTotalSize())));
+		total.addContent(new Element("OLTotal").addContent(String.valueOf(model.getOverLoggingTotalSize())));
 		total.addContent(new Element("AllTotal").addContent(String.valueOf(model.getTotalSmellCount())));
 		allPackageList.addContent(total);
 		root.addContent(allPackageList);
@@ -188,6 +207,7 @@ public class SmellReport {
 		//關係圖：
 		//	PackageList
 		//		- Package
+		//			- PHOTO ID
 		//			- PackageName
 		//			- ClassList
 		//				-SmellData(多個)
@@ -204,6 +224,11 @@ public class SmellReport {
 
 			PackageModel pkTemp = model.getPackage(i);
 			packages.addContent(new Element("PackageName").addContent(pkTemp.getPackageName()));
+			packages.addContent(new Element("OpenID").addContent(pkTemp.getPackageName() + "Open"));
+			packages.addContent(new Element("CloseID").addContent(pkTemp.getPackageName() + "Close"));
+			packages.addContent(new Element("TableID").addContent("Table" + pkTemp.getPackageName()));
+			packages.addContent(new Element("ImageID").addContent("Image" + pkTemp.getPackageName()));
+			packages.addContent(new Element("JPGPath").addContent("file:///" + model.getFilePath("ClassReport_" + i + ".jpg", true)));
 			Element classList = new Element("ClassList");
 			for (int j=0; j<pkTemp.getClassSize(); j++) {
 				ClassModel clTemp = pkTemp.getClass(j);
@@ -243,68 +268,100 @@ public class SmellReport {
 	}
 
 	/**
-	 * Close StringWriter
-	 * @param writer
-	 */
-	private void closeStingWriter(StringWriter writer) {
-		try {
-			writer.close();
-		} catch (IOException e) {
-			logger.error("[IOException] EXCEPTION ", e);
-		}
-	}
-
-	/**
 	 * 輸出HTM檔的Styles.css
+	 * @throws IOException 
 	 */
-	void createStyles()
-	{
+	void createStyles() throws IOException {
+		InputStream inputStyle = null;
+		BufferedReader bReader = null;
 		FileWriter fw = null;
 		try {
-			InputStream inputStyle = this.getClass().getResourceAsStream("/xslTemplate/styles.css");
+			inputStyle = this.getClass().getResourceAsStream("/xslTemplate/styles.css");
 
-			BufferedReader bReader = new BufferedReader(new InputStreamReader(inputStyle, "UTF-8"));
+			bReader = new BufferedReader(new InputStreamReader(inputStyle, "UTF-8"));
 			
 			File stylePath = new File(model.getFilePath("styles.css", false));
-			
+
 			//若沒有路徑就建立路徑
 			if(!stylePath.exists()) {
 				fw = new FileWriter(model.getFilePath("styles.css", false));
-	
+
 				//把讀取到的資料輸出
 				String thisLine = null;
 				while ((thisLine = bReader.readLine()) != null) {
 					fw.write(thisLine);
 				}
 			}
-
 		} catch (IOException ex) {
 			logger.error("[IOException] EXCEPTION ",ex);
 		} finally {
-			if (fw != null)
-				closeFileWriter(fw);
+			closeStream(inputStyle);
+			closeStream(bReader);
+			closeStream(fw);
 		}
 	}
-
+	
 	/**
-	 * Close FileWriter
-	 * @param fw
+	 * HTML裡會用到的Gif 圖片
+	 * @throws IOException 
+	 * @throws IOException
 	 */
-	private void closeFileWriter(FileWriter fw) {
+	private void createImageFile() throws IOException {
+		InputStream input = null;
+		FileWriter fw = null;
+		FileOutputStream out = null;
 		try {
-			fw.close();
+			//Open.gif
+			input = this.getClass().getResourceAsStream("/xslTemplate/open.gif");
+			BufferedImage image = ImageIO.read(input);
+			File path = new File(model.getFilePath("open.gif", false));
+			//若檔案不存在就建立
+			if(!path.exists()) {
+				out = new FileOutputStream(model.getFilePath("open.gif", false));
+				ImageIO.write(image, "gif", out);
+			}
+
+			//Close.gif
+			input = this.getClass().getResourceAsStream("/xslTemplate/close.gif");
+			image = ImageIO.read(input);
+			path = new File(model.getFilePath("close.gif", false));
+			//若檔案不存在就建立
+			if(!path.exists()) {
+				out = new FileOutputStream(model.getFilePath("close.gif", false));
+				ImageIO.write(image, "gif", out);
+			}
 		} catch (IOException e) {
-			logger.error("[IOException] EXCEPTION ", e);
+			logger.error("[IOException] EXCEPTION ", e);;
+		} finally {
+			closeStream(input);
+			closeStream(fw);
+			closeStream(out);
+		}
+	}
+	
+	/**
+	 * 關閉IOStream
+	 * @param io
+	 */
+	void closeStream(Closeable io) {
+		try {
+			if (io != null)
+				io.close();
+		} catch (IOException e) {
+			logger.error("[IOException] EXCEPTION ", e);;
 		}
 	}
 	
 	/**
 	 * 利用XML把XSL內的欄位填上，並產生HTM檔
 	 * @param xmlString
+	 * @throws IOException
 	 */
-	void createHTM(String xmlString) {
+	void createHTM(String xmlString) throws IOException {
+		InputStream inputStream = null;
+		FileOutputStream outputSteam = null;
 		try {
-			InputStream inputStream = this.getClass().getResourceAsStream("/xslTemplate/sample.xsl");
+			inputStream = this.getClass().getResourceAsStream("/xslTemplate/sample.xsl");
 
 			Source xslSource = new StreamSource(inputStream);
 
@@ -313,18 +370,17 @@ public class SmellReport {
 			transformer = tf.newTransformer(xslSource);
 			Source xmlSource = new StreamSource(new StringReader(xmlString));
 
-			FileOutputStream outputSteam = new FileOutputStream(model.getFilePath("sample.html", true));
+			outputSteam = new FileOutputStream(model.getFilePath("sample.html", true));
 
 			Result htmlResult = new StreamResult(outputSteam);
 			transformer.transform(xmlSource, htmlResult);
-
-			outputSteam.close();
-		} catch (IOException ex) {
-			logger.error("[IOException] EXCEPTION ",ex);
 		} catch (TransformerConfigurationException ex) {
 			logger.error("[Transformer Configuration Exception] EXCEPTION ",ex);
 		} catch (TransformerException ex) {
 			logger.error("[Transformer Exception] EXCEPTION ",ex);
+		} finally {
+			inputStream.close();
+			outputSteam.close();			
 		}
 	}
 }

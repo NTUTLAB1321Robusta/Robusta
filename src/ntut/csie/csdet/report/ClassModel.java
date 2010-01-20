@@ -9,7 +9,7 @@ import ntut.csie.csdet.data.CSMessage;
  * 儲存Class內Smell資訊
  * @author Shiau
  */
-public class ClassModel {	
+public class ClassModel {
 	//存取Class的名稱
 	private String className = "";
 	//存取Class的路徑
@@ -23,6 +23,8 @@ public class ClassModel {
 	private int dummySize = 0;
 	private int nestedTrySize = 0;
 	private int unMainSize = 0;
+	private int overLoggingSize = 0;
+	private int carelessSize = 0;
 
 	///存取Class的名稱///
 	public String getClassName() {
@@ -39,6 +41,7 @@ public class ClassModel {
 	public void setIgnoreExList(List<CSMessage> ignoreExList, String MethodName) {
 		if(ignoreExList != null) {
 			ignoreExSize += ignoreExList.size();
+			//將Smell與其所在的Method名稱存起來
 			smellList.addAll(ignoreExList);
 			for (int i=0; i<ignoreExList.size(); i++)
 				methodList.add(MethodName);
@@ -68,7 +71,23 @@ public class ClassModel {
 				methodList.add(MethodName);
 		}
 	}
-	
+	public void setOverLogging(List<CSMessage> overLoggingList, String MethodName) {
+		if (overLoggingList != null) {
+			overLoggingSize += overLoggingList.size();
+			smellList.addAll(overLoggingList);
+			for (int i=0; i<overLoggingList.size(); i++)
+				methodList.add(MethodName);
+		}
+	}
+	public void setCarelessCleanUp(List<CSMessage> carelessList, String MethodName) {
+		if (carelessList != null) {
+			carelessSize += carelessList.size();
+			smellList.addAll(carelessList);
+			for (int i=0; i<carelessList.size(); i++)
+				methodList.add(MethodName);
+		}
+	}
+
 	///取得Class內的Smell資訊///
 	public int getSmellSize() {
 		return smellList.size();
@@ -82,7 +101,7 @@ public class ClassModel {
 	public String getMethodName(int i) {
 		return methodList.get(i);
 	}
-	
+
 	///取得此Class的Smell數量///
 	public int getIgnoreSize() {
 		return ignoreExSize;
@@ -96,8 +115,15 @@ public class ClassModel {
 	public int getNestedTrySize() {
 		return nestedTrySize;
 	}
+	public int getCarelessCleanUpSize() {
+		return carelessSize;
+	}
+	public int getOverLoggingSize() {
+		return overLoggingSize;
+	}
 	public int getTotalSmell() {
-		return getIgnoreSize() + getDummySize() + getUnMainSize() + getNestedTrySize();
+		return getIgnoreSize() + getDummySize() + getUnMainSize() + getNestedTrySize() +
+			   getCarelessCleanUpSize() + getOverLoggingSize();
 	}
 	
 	///存取Class的路徑///

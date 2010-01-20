@@ -34,6 +34,8 @@ public class ReportModel {
 	private int dummyTotalSize = 0;
 	private int unMainTotalSize = 0;
 	private int nestedTryTotalSize = 0;
+	private int carelessCleanUpSize = 0;
+	private int overLoggingSize = 0;
 
 	//取得code counter
 	private int tryCounter = 0;
@@ -67,6 +69,12 @@ public class ReportModel {
 	public void addNestedTotalTrySize(int nestedTrySize) {
 		this.nestedTryTotalSize += nestedTrySize;
 	}
+	public void addOverLoggingSize(int overLoggingSize) {
+		this.overLoggingSize += overLoggingSize;
+	}
+	public void addCarelessCleanUpSize(int carelessCleanUpSize) {
+		this.carelessCleanUpSize += carelessCleanUpSize;
+	}
 	
 	///取得Smell的總數///
 	public int getIgnoreTotalSize() {
@@ -81,8 +89,15 @@ public class ReportModel {
 	public int getNestedTryTotalSize() {
 			return nestedTryTotalSize;
 	}
+	public int getOverLoggingTotalSize() {
+		return overLoggingSize;
+	}
+	public int getCarelessCleanUpTotalSize() {
+		return carelessCleanUpSize;
+	}
 	public int getTotalSmellCount() {
-		return getIgnoreTotalSize() + getDummyTotalSize() + getUnMainTotalSize() + getNestedTryTotalSize();
+		return getIgnoreTotalSize() + getDummyTotalSize() + getUnMainTotalSize() + getNestedTryTotalSize()
+				+ getCarelessCleanUpTotalSize() + getOverLoggingTotalSize();
 	}
 
 	///設定或取得Project的名稱///
@@ -100,11 +115,14 @@ public class ReportModel {
 	public void setProjectPath(String workspacePath) {
 		this.projectPath = workspacePath + "/" + getProjectName() + "_Report";
 
-		File metadataPath = new File(this.projectPath);
+		File metadataPath = new File(projectPath);
 
 		//若沒有路徑就建立路徑
 		if(!metadataPath.exists())
 			metadataPath.mkdir();
+
+		File htmlPath = new File(projectPath + "/" + buildTime.getTime());
+		htmlPath.mkdir();
 	}
 	/**
 	 * 取得File的直實位置(有無加時間區隔)
@@ -114,7 +132,7 @@ public class ReportModel {
 	 */
 	public String getFilePath(String fileName, boolean isAddTime) {
 		if (isAddTime)
-			return (projectPath + "/" + buildTime.getTime() + "_" + fileName);
+			return (projectPath + "/" + buildTime.getTime() + "/" + buildTime.getTime() + "_" + fileName);
 		else
 			return (projectPath + "/" + fileName);
 	}

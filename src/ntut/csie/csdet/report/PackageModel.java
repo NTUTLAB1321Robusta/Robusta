@@ -8,21 +8,32 @@ import java.util.List;
  * @author Shiau
  */
 public class PackageModel {
+	//存取Package上一層的資料夾名稱(ex:src、test)
+	private String folderName = "";
 	//存取Package的名稱
 	private String packageName = "";
 	//存取ClassModel
 	private List<ClassModel> classModel = new ArrayList<ClassModel>();
-	//存取Package的目錄
-	private String dir = "";
 	//存取LOC數目
 	private int totalLine = 0;
 
 	///存取Package的名稱///
 	public String getPackageName() {
-		return packageName;
+		//若沒有資料夾名稱，則直接顯示Package名稱
+		if (folderName != "")
+			return folderName + "/" + packageName;
+		else
+			return packageName;
 	}
 	public void setPackageName(String packageName) {
 		this.packageName = packageName;
+	}
+	///存取Folder的名稱///
+	public String getFolderName() {
+		return folderName;
+	}
+	public void setFolderName(String folderName) {
+		this.folderName = folderName;
 	}
 	
 	///新增Class資料///
@@ -70,16 +81,23 @@ public class PackageModel {
 
 		return nestedTrySize;
 	}
+	public int getCarelessCleanUpSize() {
+		int carelessCleanUpSize = 0;
+		for (ClassModel cm : classModel)
+			carelessCleanUpSize += cm.getCarelessCleanUpSize();
+
+		return carelessCleanUpSize;
+	}
+	public int getOverLoggingSize() {
+		int overLoggingSize = 0;
+		for (ClassModel cm : classModel)
+			overLoggingSize += cm.getOverLoggingSize();
+
+		return overLoggingSize;
+	}
 	public int getTotalSmellSize() {
-		return getIgnoreSize() + getDummySize() + getNestedTrySize() + getUnMainSize();
-	}
-	
-	//存取Package的目錄
-	public String getDir() {
-		return dir;
-	}
-	public void setDir(String dir) {
-		this.dir = dir;
+		return getIgnoreSize() + getDummySize() + getNestedTrySize() + getUnMainSize() +
+			   getCarelessCleanUpSize() + getOverLoggingSize();
 	}
 	
 	//存取程式的LOC

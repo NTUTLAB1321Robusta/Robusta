@@ -249,7 +249,7 @@ public class EHSmellReportView extends ViewPart {
 	 * 從預設路徑上打開HTM
 	 */
 	public void openHTM() {
-		try {			
+		try {
 			//for different SWT Thread
 			PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable(){
 				public void run() {
