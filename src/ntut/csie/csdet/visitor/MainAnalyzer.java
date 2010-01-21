@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 public class MainAnalyzer extends RLBaseVisitor{
 	private static Logger logger = LoggerFactory.getLogger(MainAnalyzer.class);
-	// 儲存所找到的ignore Exception 
+	// 儲存所找到的Unprotected main Program 
 	private List<CSMessage> unprotectedMainList;	
 	
 	// AST tree的root(檔案名稱)

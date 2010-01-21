@@ -23,6 +23,7 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.TryStatement;
@@ -68,13 +69,17 @@ public class CCUQuickFix implements IMarkerResolution{
 	//欲修改的程式碼資訊
 	private String moveLine;
 	
+	private ExpressionStatement moveLineEs;
+	
+	public CCUQuickFix(String label){
+		this.label = label;
+	}
+	
 	@Override
 	public String getLabel() {
 		return label;
 	}
-	public CCUQuickFix(String label){
-		this.label = label;
-	}
+	
 	@Override
 	public void run(IMarker marker) {
 		try{
@@ -84,8 +89,8 @@ public class CCUQuickFix implements IMarkerResolution{
 				msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
 				//取得目前要被修改的method node
 				findCurrentMethodNode(marker.getResource());
-				//取得要被修改的程式碼資訊
-				moveLine = getMoveLine();
+				//找到要被修改的程式碼資訊
+				moveLine = findMoveLine();
 				//若try Statement裡已經有Finally Block,就直接將該行程式碼移到Finally Block中
 				//否則先建立Finally Block後,再移到Finally Block
 				if (hasFinallyBlock()) {
@@ -106,6 +111,7 @@ public class CCUQuickFix implements IMarkerResolution{
 		}finally{
 		}
 	}
+	
 	/**
 	 * 取得目前要被修改的method node
 	 * @param resource
@@ -132,23 +138,26 @@ public class CCUQuickFix implements IMarkerResolution{
 				
 				//取得目前要被修改的method node
 				this.currentMethodNode = methodList.get(Integer.parseInt(methodIdx));
+				
 			}catch(Exception ex){
 				ex.printStackTrace();
 				logger.error("[CCUQuickFix] EXCEPTION ",ex);
 			}
 		}
 	}
+	
 	/**
-	 * 取得欲修改的程式碼資訊
+	 * 找到欲修改的程式碼資訊
 	 * @return String
 	 */
-	private String getMoveLine(){
+	private String findMoveLine(){
 		CarelessCleanUpAnalyzer ccVisitor=new CarelessCleanUpAnalyzer(this.actRoot); 
 		currentMethodNode.accept(ccVisitor);
 		List<CSMessage> ccList=ccVisitor.getCarelessCleanUpList();
 		CSMessage csMsg=ccList.get(Integer.parseInt(msgIdx));
 		return csMsg.getStatement();
 	}
+	
 	/**
 	 * 判斷Try Statment是否有Finally Block
 	 * @return boolean
@@ -174,6 +183,7 @@ public class CCUQuickFix implements IMarkerResolution{
 		}
 		return isFinallyExist;
 	}
+	
 	/**
 	 * 在Try Statement裡建立Finally Block
 	 */
@@ -197,6 +207,7 @@ public class CCUQuickFix implements IMarkerResolution{
 		}
 
 	}
+	
 	/**
 	 * 將欲修改的程式碼移到Finally Block中
 	 */
@@ -218,6 +229,7 @@ public class CCUQuickFix implements IMarkerResolution{
 				for(int j=0; j<tsList.size(); j++){
 					String temp = tsList.get(j).toString();
 					if(temp.contains(moveLine)){
+						moveLineEs=(ExpressionStatement) tsList.get(j);
 						tsRewrite.remove((ASTNode) tsRewrite.getRewrittenList().get(j), null);
 					}
 				}
@@ -230,6 +242,7 @@ public class CCUQuickFix implements IMarkerResolution{
 					for(int k=0;k<ccbody.size();k++){
 						String ccStat=ccbody.get(k).toString();
 						if(ccStat.contains(moveLine)){
+							moveLineEs=(ExpressionStatement) ccbody.get(k);							
 							ccRewrite.remove((ASTNode) ccRewrite.getRewrittenList().get(k), null);
 						}
 					}
@@ -250,6 +263,7 @@ public class CCUQuickFix implements IMarkerResolution{
 		
 			
 	}
+	
 	/**
 	 * 將要變更的內容寫回Edit中
 	 * @param ASTNode
@@ -289,6 +303,7 @@ public class CCUQuickFix implements IMarkerResolution{
 		}
 		return null;
 	}
+	
 	/**
 	 * 反白被變更的程式碼
 	 * @param Document 
@@ -338,5 +353,25 @@ public class CCUQuickFix implements IMarkerResolution{
 
 		//反白該行,在Quick fix完之後,可以將游標定位在Quick Fix那行
 		editor.selectAndReveal(lineInfo.getOffset(), lineInfo.getLength());
+	}
+	
+	/**
+	 * 取得欲修改的程式碼資訊
+	 * @return String
+	 */
+	public String getMoveLine(){
+		return this.moveLine;
+	}
+	
+	/**
+	 * 取得目前要被修改的method node
+	 * @return ASTNode
+	 */
+	public ASTNode getcurrentMethodNode(){
+		return this.currentMethodNode;
+	}
+	
+	public ExpressionStatement getMoveLineEs(){
+		return this.moveLineEs;
 	}
 }

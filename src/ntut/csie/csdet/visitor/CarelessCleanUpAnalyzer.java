@@ -16,6 +16,7 @@ import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Statement;
@@ -92,7 +93,6 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 		if(statementTemp.size()>1){
 			//判斷try節點內的statement是否有Careless CleanUp
 			judgeCarelessCleanUp(statementTemp);
-			
 		}
 	}
 	
@@ -107,6 +107,7 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 				//若該statement包含使用者自訂的Rule,則為smell
 				//否則找statement內是否有Method Invocation
 				if(findBindingLib(statement)){
+					//findExceptionInfo((ASTNode) statement);
 					addMarker(statement);
 				}else{
 					statement.accept(new ASTVisitor(){
@@ -123,6 +124,7 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 								 */
 								boolean isFromSource=node.resolveMethodBinding().getDeclaringClass().isFromSource();
 								String methodName=node.resolveMethodBinding().getName();
+								
 								if((!isFromSource)&&(methodName.equals("close"))){
 									addMarker(node);
 								}
@@ -348,5 +350,8 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 				}
 			}
 		}
+	}
+	public void findExceptionInfo(ASTNode node){
+		//this.iType=node.resolveMethodBinding().getExceptionTypes();
 	}
 }

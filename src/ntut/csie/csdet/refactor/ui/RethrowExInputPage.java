@@ -28,10 +28,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 提供一個介面給user,讓user可以選擇要Rethrow什麼樣的Excpetion type
+ * 提供一個介面給user,讓user可以選擇要Rethrow什麼樣的Exception type
  * @author chewei
  */
-
 public class RethrowExInputPage extends UserInputWizardPage {
 	private static Logger logger = LoggerFactory.getLogger(RethrowExInputPage.class);
 	
@@ -95,6 +94,7 @@ public class RethrowExInputPage extends UserInputWizardPage {
 		exNameField.setFocus();
 		exNameField.selectAll();
 		
+		//使用者未更改Text內容，而直接按確定，會執行此行。否則Text內容會抓不到。
 		handleInputChange();		
 	}
 	

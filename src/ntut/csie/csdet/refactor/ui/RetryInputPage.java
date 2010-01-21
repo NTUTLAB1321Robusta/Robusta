@@ -209,7 +209,7 @@ public class RetryInputPage extends UserInputWizardPage {
 		try {
 			//取得存在getRethrowExRefactoring中的project
 			IJavaProject project = getRetryRefactoring().getProject();	
-
+			//TODO 需要用到的部分
 			//透過Eclipse 所提供的Dialog來找尋專案中所有的class or library......等等
 			IType type = project.findType("java.lang.Exception");
 			IJavaSearchScope scope = SearchEngine.createHierarchyScope(type);

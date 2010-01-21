@@ -9,6 +9,7 @@ import ntut.csie.csdet.quickfix.NTQuickFix;
 import ntut.csie.csdet.quickfix.OLQuickFix;
 import ntut.csie.csdet.quickfix.TEQuickFix;
 import ntut.csie.csdet.quickfix.UMQuickFix;
+import ntut.csie.csdet.refactor.CarelessCleanUpAction;
 import ntut.csie.csdet.refactor.OLRefactoring;
 import ntut.csie.csdet.refactor.RethrowUncheckExAction;
 import ntut.csie.rleht.common.RLUtils;
@@ -104,9 +105,10 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 			} else if(problem.equals(RLMarkerAttribute.CS_UNPROTECTED_MAIN)) {
 				markerList.add(new UMQuickFix("Quick Fix==>Add Big outer try block"));
 				markerList.add(new CSQuickFix("新增 @SuppressSmell '" + problem + "' on Method", false));
-				// 碰到Careless CleanUp的Quick fix
-			} else if(problem.equals(RLMarkerAttribute.CS_CARELESS_CLEANUP)) {
+				// 碰到Careless CleanUp的Quick fix and refactor方法
+			} else if(problem.equals(RLMarkerAttribute.CS_CARELESS_CLEANUP)){
 				markerList.add(new CCUQuickFix("Quick Fix==>Move code to finally block"));
+				markerList.add(new CarelessCleanUpAction("Refactor==>Use Extract Method"));
 				markerList.add(new CSQuickFix("新增 @SuppressSmell '" + problem + "' on Method", false));
 				// 碰到OverLogging的Quick fix and refactor方法
 			}else if(problem.equals(RLMarkerAttribute.CS_OVER_LOGGING)){
