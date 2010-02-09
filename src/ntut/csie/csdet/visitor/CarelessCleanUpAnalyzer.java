@@ -327,24 +327,22 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 			List<Attribute> libRuleList = libRule.getAttributes();
 			
 			//р场Library盎代虫ず
-			for (int i=0;i<libRuleList.size();i++)
-			{
-				if (libRuleList.get(i).getValue().equals("Y"))
-				{
+			for (int i=0;i<libRuleList.size();i++) {
+				if (libRuleList.get(i).getValue().equals("Y")) {
 					String temp = libRuleList.get(i).getQualifiedName();					
 					
 					//璝Τ.*盎代Library
-					if (temp.indexOf(".EH_STAR")!=-1){
+					if (temp.indexOf(".EH_STAR") != -1) {
 						int pos = temp.indexOf(".EH_STAR");
 						libMap.put(temp.substring(0,pos), ASTBinding.LIBRARY);
 					//璝Τ*.盎代Method
-					}else if (temp.indexOf("EH_STAR.") != -1){
+					} else if (temp.indexOf("EH_STAR.") != -1) {
 						libMap.put(temp.substring(8), ASTBinding.METHOD);
 					//常⊿Τ常盎代盎代Library+Method
-					}else if (temp.lastIndexOf(".") != -1){
+					} else if (temp.lastIndexOf(".") != -1) {
 						libMap.put(temp, ASTBinding.LIBRARY_METHOD);
 					//璝Τㄤウ猵玥砞ΘMethod
-					}else{
+					} else {
 						libMap.put(temp, ASTBinding.METHOD);
 					}
 				}

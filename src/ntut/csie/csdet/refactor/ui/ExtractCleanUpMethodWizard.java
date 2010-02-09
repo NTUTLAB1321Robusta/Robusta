@@ -4,20 +4,20 @@ import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
 
 /**
- * Careless CleanUp Refactoring的wizard,wizard之下會有page
+ * Careless CleanUp Refactoring的Wizard,wizard之下會有page
  * @author Min
  */
-public class MyExtractMethodWizard  extends RefactoringWizard{
+public class ExtractCleanUpMethodWizard  extends RefactoringWizard{
 	
-	public MyExtractMethodWizard(Refactoring refactoring, int flags) {
+	public ExtractCleanUpMethodWizard(Refactoring refactoring, int flags) {
 		super(refactoring, DIALOG_BASED_USER_INTERFACE | PREVIEW_EXPAND_FIRST_NODE);
-		setDefaultPageTitle("My Extract Method");
+		setDefaultPageTitle("Extract CleanUp Method");
 	}
 	
 	@Override
 	protected void addUserInputPages() {
 		//加入My Extract Method的Page
-		addPage(new MyExtractMethodInputPage("My Extract Method"));
+		addPage(new ExtractCleanUpMethodInputPage("Extract CleanUp Method"));
 		
 	}
 }

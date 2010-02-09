@@ -2,8 +2,10 @@ package ntut.csie.csdet.refactor.ui;
 
 import ntut.csie.csdet.refactor.RethrowExRefactoring;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.ITypeHierarchy;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.search.IJavaSearchScope;
 import org.eclipse.jdt.core.search.SearchEngine;
@@ -150,8 +152,19 @@ public class RethrowExInputPage extends UserInputWizardPage {
 		try {	
 			//尋找所有可以拋出的例外類型
 			IType type = project.findType("java.lang.Exception");
-			IJavaSearchScope scope = SearchEngine.createHierarchyScope(type);
-			SelectionStatusDialog dialog = (SelectionStatusDialog) JavaUI.createTypeDialog(getShell(), getContainer(), scope, IJavaElementSearchConstants.CONSIDER_ALL_TYPES, false);
+			
+			//會找到全WorkSpace的java.lang.Exception
+//			IJavaSearchScope scope = SearchEngine.createHierarchyScope(type);
+
+			ITypeHierarchy hierarchy = type.newTypeHierarchy(project, new NullProgressMonitor());
+			IType[] types = hierarchy.getAllTypes();
+
+			IJavaSearchScope scope = SearchEngine.createJavaSearchScope(types , false);
+
+			SelectionStatusDialog dialog = (SelectionStatusDialog) 
+					JavaUI.createTypeDialog (getShell(), getContainer(), scope,
+					IJavaElementSearchConstants.CONSIDER_ALL_TYPES, false);
+			
 			dialog.setTitle("Choose Exception type");
 			dialog.setMessage("Choose the Exception type to Rethrow:");
 			if(dialog.open() == Window.OK){

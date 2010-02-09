@@ -159,6 +159,10 @@ public class SelectReportDialog  extends Dialog {
 		
 		//取得目錄內每一個資料夾路徑
 		File[] allFolder = directory.listFiles();
+		
+		//若Project未建立Report路徑
+		if (allFolder == null)
+			return;
 
 		for (File folder: allFolder) {
 			if (folder.isDirectory()) {

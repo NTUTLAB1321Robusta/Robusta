@@ -136,12 +136,12 @@ public class SettingPage extends APropertyPage {
 		tempText[5] = new TemplateText(temp, isShowWarning);
 		
 		descText = new String[RLMarkerAttribute.CS_TOTAL_TYPE.length];
-		descText[0] = "Ignroe Checked Exception Description";
-		descText[1] = "Dummy Handler Decsription";
-		descText[2] = "Nested Try Block Description";
-		descText[3] = "Unprotected Main Program Description";
-		descText[4] = "Careless CleanUp Description";
-		descText[5] = "OverLogging Description";
+		descText[0] = "捕捉到例外後，Catch Block沒有做任何處理";
+		descText[1] = "捕捉到例外後，僅只是將例外資訊列印或紀錄下來";
+		descText[2] = "Try Block中出巢狀區塊";
+		descText[3] = "Main Program中沒有補捉最上層的例外";
+		descText[4] = "釋放資源的程式不是放在Finally Blcok";
+		descText[5] = "一條Call Chain中出現重複的Logging動作";
 	}
 
 	/**

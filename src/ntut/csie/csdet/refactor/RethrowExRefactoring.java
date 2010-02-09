@@ -190,7 +190,7 @@ public class RethrowExRefactoring extends Refactoring {
 				
 				//取得目前要被修改的method node
 				this.currentMethodNode = methodList.get(Integer.parseInt(methodIdx));
-				if(currentMethodNode != null){
+				if (currentMethodNode != null) {
 					//取得這個method的RL資訊
 					ExceptionAnalyzer exVisitor = new ExceptionAnalyzer(this.actRoot, currentMethodNode.getStartPosition(), 0);
 					currentMethodNode.accept(exVisitor);
@@ -201,12 +201,12 @@ public class RethrowExRefactoring extends Refactoring {
 					//判斷是Ignore Ex or Dummy handler並取得code smell的List
 					if(problem.equals(RLMarkerAttribute.CS_INGNORE_EXCEPTION)){
 						currentExList = visitor.getIgnoreExList();	
-					}else{
+					} else {
 						currentExList = visitor.getDummyList();
 					}
 				}
 				return true;
-			}catch (Exception ex) {
+			} catch (Exception ex) {
 				logger.error("[Find CS Method] EXCEPTION ",ex);
 			}
 		}
@@ -216,7 +216,7 @@ public class RethrowExRefactoring extends Refactoring {
 	/**
 	 *建立Throw Exception的資訊 
 	 */
-	private void rethrowException(){
+	private void rethrowException() {
 		try {
 			actRoot.recordModifications();
 			AST ast = currentMethodNode.getAST();
@@ -231,7 +231,7 @@ public class RethrowExRefactoring extends Refactoring {
 			List<ASTNode> catchList = catchCollector.getMethodList();
 			
 			//去比對startPosition,找出要修改的catch
-			for (int i =0; i<catchList.size(); i++) {
+			for (int i =0; i < catchList.size(); i++) {
 				if(catchList.get(i).getStartPosition() == msg.getPosition()) {
 					catchIdx = i;
 					//在catch clause中建立throw statement
@@ -239,7 +239,7 @@ public class RethrowExRefactoring extends Refactoring {
 					//建立RL Annotation
 					addAnnotationRoot(ast);
 					//加入未import的Library(遇到RuntimeException就不用加Library)
-					if(!exceptionType.equals("RuntimeException")){
+					if (!exceptionType.equals("RuntimeException")){
 						addImportDeclaration();
 						checkMethodThrow(ast);
 						break;
@@ -257,11 +257,11 @@ public class RethrowExRefactoring extends Refactoring {
 	 * 檢查在method前面有沒有throw exception
 	 * @param ast
 	 */
-	private void checkMethodThrow(AST ast){
+	private void checkMethodThrow(AST ast) {
 		MethodDeclaration md = (MethodDeclaration)currentMethodNode;
 		List thStat = md.thrownExceptions();
 		boolean isExist = false;
-		for(int i=0;i<thStat.size();i++){
+		for(int i=0;i<thStat.size();i++) {
 			if(thStat.get(i) instanceof SimpleName){
 				SimpleName sn = (SimpleName)thStat.get(i);
 				if(sn.getIdentifier().equals(exceptionType)){
@@ -279,7 +279,7 @@ public class RethrowExRefactoring extends Refactoring {
 	 * @param cc
 	 * @param ast
 	 */
-	private void addThrowStatement(ASTNode cc,AST ast){
+	private void addThrowStatement(ASTNode cc,AST ast) {
 		//取得該catch()中的exception variable
 		SingleVariableDeclaration svd = (SingleVariableDeclaration) cc
 		.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
@@ -295,7 +295,7 @@ public class RethrowExRefactoring extends Refactoring {
 		
 		//取得CatchClause所有的statement,將相關print例外資訊的東西移除
 		List<Statement> statement = clause.getBody().statements();
-		if(problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)){	
+		if(problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)) {
 			//假如要fix的code smell是dummy handler,就要把catch中的列印資訊刪除
 			deleteStatement(statement);
 		}
@@ -313,7 +313,7 @@ public class RethrowExRefactoring extends Refactoring {
 			textFileChange.setEdit(edits);
 		} catch (JavaModelException e) {
 			logger.error("[Apply Change Rethrow Unchecked Exception] EXCEPTION ",e);
-		}	
+		}
 	}
 	
 	/**
@@ -507,11 +507,13 @@ public class RethrowExRefactoring extends Refactoring {
 	 * 交換Annotation順序，再定位
 	 */
 	public void changeAnnotation() {
-		//交換Annotation的順序
-		new RLOrderFix().run(marker.getResource(), methodIdx, msgIdx);
-
-		//定位
-		selectSourceLine();
+		if (methodIdx != null && msgIdx != null) {
+			//交換Annotation的順序
+			new RLOrderFix().run(marker.getResource(), methodIdx, msgIdx);
+	
+			//定位
+			selectSourceLine();
+		}
 	}
 	
 	/**

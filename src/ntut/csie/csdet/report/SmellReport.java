@@ -300,7 +300,7 @@ public class SmellReport {
 			closeStream(fw);
 		}
 	}
-	
+
 	/**
 	 * HTML裡會用到的Gif 圖片
 	 * @throws IOException 

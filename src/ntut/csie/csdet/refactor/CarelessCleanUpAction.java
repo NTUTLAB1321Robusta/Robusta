@@ -1,7 +1,7 @@
 package ntut.csie.csdet.refactor;
 
 
-import ntut.csie.csdet.refactor.ui.MyExtractMethodWizard;
+import ntut.csie.csdet.refactor.ui.ExtractCleanUpMethodWizard;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 
 import org.eclipse.core.resources.IMarker;
@@ -39,7 +39,7 @@ public class CarelessCleanUpAction implements IMarkerResolution{
 				refactoring.setMarker(marker);
 				//±Ò°ÊRefactor dialog
 				RefactoringWizardOpenOperation operation = 
-					new RefactoringWizardOpenOperation(new MyExtractMethodWizard(refactoring,0));
+					new RefactoringWizardOpenOperation(new ExtractCleanUpMethodWizard(refactoring,0));
 				operation.run(new Shell(), "My Extract Method");
 			}
 		} catch (InterruptedException e) {
