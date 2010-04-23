@@ -154,7 +154,6 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 
 		treeviewer.addDoubleClickListener(this);
 		treeviewer.addCheckStateListener(this);
-
 	}
 
 	private void createActions() {
@@ -250,7 +249,9 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 		if (method != null) {
 			//依據showCaller來決定是往上或往下做Call Hierarchy
 			//getCallerRoot:由下往上call,getCalleeRoot:由上往下call
-			MethodWrapper mw = showCaller ? new CallHierarchy().getCallerRoot(method) : new CallHierarchy().getCalleeRoot(method);
+//			MethodWrapper mw = showCaller ? new CallHierarchy().getCallerRoot(method) : new CallHierarchy().getCalleeRoot(method);
+			MethodWrapper mw = showCaller ? CallHierarchy.getDefault().getCallerRoot(method) : CallHierarchy.getDefault().getCalleeRoot(method);
+
 			//不論是由上往下或由下往上的Call Hierarchy最多都先只展開兩層而已
 			//防止memory一次用太多,容易memory leak
 			int expand = showCaller ? 2 : 2;
@@ -366,7 +367,6 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 
 	public void doubleClick(DoubleClickEvent event) {
 		this.gotoSelection(event.getSelection());
-
 	}
 
 	// *************************************************************************

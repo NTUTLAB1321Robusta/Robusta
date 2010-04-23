@@ -402,13 +402,13 @@ public class RLBuilder extends IncrementalProjectBuilder {
 						ssIdx++;
 						//Smell名稱錯誤
 						if (msg.isFaultName()) {
-							String errmsg = "名稱錯誤";
+							String errmsg = "Error EH Smell Name!";
 							this.addMarker(file, errmsg, msg.getLineNumber(),
 									IMarker.SEVERITY_ERROR, RLMarkerAttribute.ERR_SS_FAULT_NAME, msg, ssIdx,
 									methodIdx);
 						//沒有任何Smell
 						} else if (msg.getSmellList().size() == 0) {
-							String errmsg = "空的Smell";
+							String errmsg = "Null EH Smell Name!";
 							this.addMarker(file, errmsg, msg.getLineNumber(),
 									IMarker.SEVERITY_ERROR, RLMarkerAttribute.ERR_SS_NO_SMELL, msg, ssIdx,
 									methodIdx);

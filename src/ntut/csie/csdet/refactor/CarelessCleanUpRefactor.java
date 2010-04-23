@@ -34,7 +34,9 @@ import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
+import org.eclipse.jdt.core.dom.InfixExpression;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Modifier;
@@ -52,6 +54,7 @@ import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.TextFileChange;
+import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.TextEdit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -186,7 +189,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 				//Create AST to parse
 				ASTParser parser = ASTParser.newParser(AST.JLS3);
 				parser.setKind(ASTParser.K_COMPILATION_UNIT);
-				
+
 				parser.setSource((ICompilationUnit) javaElement);
 				parser.setResolveBindings(true);
 				this.actRoot = (CompilationUnit) parser.createAST(null);
@@ -254,7 +257,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 		List<?> statement = mdBlock.statements();
 
 		//TODO 未考慮Nested Try block的形況
-		for (int i=0; i < statement.size(); i++){
+		for (int i=0; i < statement.size(); i++) {
 			if (statement.get(i) instanceof TryStatement) {
 				TryStatement aTryStatement = (TryStatement) statement.get(i);
 				if (aTryStatement.getStartPosition() <= smellMessage.getPosition() &&
@@ -297,8 +300,6 @@ public class CarelessCleanUpRefactor extends Refactoring {
 		List<?> statments = block.statements();
 		//比對Try Statement裡是否有欲移動的程式碼,若有則移除
 		for(int i=0; i < statments.size(); i++) {
-			String temp = statments.get(i).toString();
-
 			if (statments.get(i) instanceof ExpressionStatement) {
 				ExpressionStatement aStatement = (ExpressionStatement) statments.get(i);
 				if (aStatement.getStartPosition() == smellMessage.getPosition()) {
@@ -315,14 +316,15 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	 * Add New Method
 	 * @param ast
 	 */
+	@SuppressWarnings("unchecked")
 	private void addExtractMethod(AST ast) {
 		//取得資訊
 		MethodInvocation delLineMI = (MethodInvocation) cleanUpExpressionStatement.getExpression();
 		Expression exp = delLineMI.getExpression();
 		SimpleName sn = (SimpleName) exp;
-		
+
 		//新增Method Declaration
-		MethodDeclaration newMD=ast.newMethodDeclaration();
+		MethodDeclaration newMD = ast.newMethodDeclaration();
 
 		//設定存取型別(public)
 		if (modifierType == "public")
@@ -337,13 +339,13 @@ public class CarelessCleanUpRefactor extends Refactoring {
 		//設定MD的名稱
 		newMD.setName(ast.newSimpleName(methodName));
 		//設定參數
-		SingleVariableDeclaration svd=ast.newSingleVariableDeclaration();
+		SingleVariableDeclaration svd = ast.newSingleVariableDeclaration();
 		svd.setType(ast.newSimpleType(ast.newSimpleName(exp.resolveTypeBinding().getName().toString())));
 		svd.setName(ast.newSimpleName(sn.getIdentifier()));
 		newMD.parameters().add(svd);
 
 		//設定body
-		Block block=ast.newBlock();
+		Block block = ast.newBlock();
 		newMD.setBody(block);
 		
 		TryStatement ts = addTryStatement(ast, delLineMI);
@@ -398,7 +400,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 						variableDeclaration.setType(ast.newSimpleType(ast.newSimpleName(classType.getElementName())));
 
 						finallyBlock.statements().add(variableDeclaration);
-	
+
 						newMI.setExpression(ast.newSimpleName("method"));
 					}
 				}
@@ -409,7 +411,6 @@ public class CarelessCleanUpRefactor extends Refactoring {
 				newMI.setName(ast.newSimpleName(existingMethod.getElementName()));
 				//設定MI的參數
 				newMI.arguments().add(ast.newSimpleName(simpleName.getIdentifier()));
-
 			} catch (JavaModelException e) {
 				logger.error("[Java Method] EXCEPTION", e);
 			}
@@ -452,8 +453,23 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	private TryStatement addTryStatement(AST ast, MethodInvocation delLineMI) {
 		TryStatement ts = ast.newTryStatement();
 		Block tsBody = ts.getBody();
-		tsBody.statements().add(cleanUpExpressionStatement);
-		
+
+		/* if (obj != null)
+		 * 		obj.close();
+		 */
+		//建立 obj != null
+		InfixExpression in = ast.newInfixExpression();
+		in.setOperator(InfixExpression.Operator.NOT_EQUALS);
+		in.setLeftOperand(ast.newSimpleName(delLineMI.getExpression().toString()));
+		in.setRightOperand(ast.newNullLiteral());
+		//建立 if Satement
+		IfStatement ifStatement = ast.newIfStatement();
+		ifStatement.setExpression(in);
+		//加入Release Source Code
+		ifStatement.setThenStatement(cleanUpExpressionStatement);
+		//加到Try Block之中
+		tsBody.statements().add(ifStatement);
+
 		//替try 加入一個Catch clause
 		List<CatchClause> catchStatement = ts.catchClauses();
 		CatchClause cc = ast.newCatchClause();
@@ -495,7 +511,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	}
 
 	/**
-	 * 加入logger.info(e.getMessage());
+	 * 加入logger.warning(e.getMessage());
 	 * @param ast
 	 * @param cc
 	 */
@@ -505,18 +521,11 @@ public class CarelessCleanUpRefactor extends Refactoring {
 		
 		//private Logger logger = Logger.getLogger(CarelessCleanUpTest.class.getName());
 		addLoggerField(ast);
-
-		//新增的Method Invocation
-		MethodInvocation catchMI=ast.newMethodInvocation();
-		//設定MI的name
-		catchMI.setName(ast.newSimpleName("info"));
-		//設定MI的Expression
-		catchMI.setExpression(ast.newSimpleName("logger"));
 		
 		//設定catch的body的Method Invocation
 		MethodInvocation cbMI = ast.newMethodInvocation();
 		//設定cbMI的Name
-		cbMI.setName(ast.newSimpleName("info"));
+		cbMI.setName(ast.newSimpleName("warning"));
 		//設定cbMI的Expression
 		cbMI.setExpression(ast.newSimpleName("logger"));
 		
@@ -558,6 +567,20 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	 * @param ast
 	 */
 	private void addLoggerField(AST ast) {
+		List<AbstractTypeDeclaration> typeList = actRoot.types();
+		TypeDeclaration td = (TypeDeclaration) typeList.get(0);
+		
+		//若已經加入java logger則不加入
+		List<ASTNode> bodyList = td.bodyDeclarations();
+		String result = "private Logger logger=Logger.getLogger";
+		for (ASTNode node: bodyList) {
+			if (node instanceof FieldDeclaration) {
+				FieldDeclaration test = (FieldDeclaration) node;
+				if(test.toString().contains(result))
+					return;
+			}
+		}
+		
 		//加入private Logger logger = Logger.getLogger(LoggerTest.class.getName());
 		VariableDeclarationFragment vdf = ast.newVariableDeclarationFragment();
 		//設定logger
@@ -596,8 +619,6 @@ public class CarelessCleanUpRefactor extends Refactoring {
 		fd.setType(ast.newSimpleType(ast.newName("Logger")));
 
 		//將Filed寫入TypeTypeDeclaration中，直接放入第一個TypeDeclaration
-		List<AbstractTypeDeclaration> typeList = actRoot.types();
-		TypeDeclaration td = (TypeDeclaration) typeList.get(0);
 		td.bodyDeclarations().add(0, fd);
 	}
 
@@ -609,10 +630,12 @@ public class CarelessCleanUpRefactor extends Refactoring {
 		try {
 			ICompilationUnit cu = (ICompilationUnit) actOpenable;
 			Document document = new Document(cu.getBuffer().getContents());
-			TextEdit edits = actRoot.rewrite(document, cu.getJavaProject().getOptions(true));
+			TextEdit edits = actRoot.rewrite(document, cu.getJavaProject().getOptions(true));			
 			textFileChange = new TextFileChange(cu.getElementName(), (IFile)cu.getResource());
 			textFileChange.setEdit(edits);
 		}catch (JavaModelException e) {
+			logger.error("[Apply Change My Extract Method] EXCEPTION",e);
+		} catch (MalformedTreeException e) {
 			logger.error("[Apply Change My Extract Method] EXCEPTION",e);
 		}
 	}

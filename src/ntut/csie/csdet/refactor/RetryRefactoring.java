@@ -9,8 +9,12 @@ import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLData;
 import ntut.csie.rleht.views.RLMessage;
 
+import org.eclipse.core.filebuffers.FileBuffers;
+import org.eclipse.core.filebuffers.ITextFileBufferManager;
+import org.eclipse.core.filebuffers.LocationKind;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jdt.astview.NodeFinder;
@@ -48,7 +52,10 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
+import org.eclipse.jdt.internal.corext.refactoring.util.SelectionAwareSourceRangeComputer;
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
@@ -150,11 +157,11 @@ public class RetryRefactoring extends Refactoring{
 		//利用ITextSelection資訊來取得使用者所選擇要變更的AST Node
 		//要使用這個method需在xml檔import org.eclipse.jdt.astview
 		ASTNode selectNode = NodeFinder.perform(actRoot, iTSelection.getOffset(), iTSelection.getLength());
-		if(selectNode == null){
+		if (selectNode == null) {
 			status.addFatalError("Selection Error, please retry again!!!");
-		}else if(!(selectNode instanceof TryStatement)){
+		} else if(!(selectNode instanceof TryStatement)) {
 			status.addFatalError("Selection Error, please retry again!!!");
-		}else{
+		} else {
 			//取得class中所有的method
 			List<ASTNode> methodList = methodCollector.getMethodList();
 			int methodIdx = -1;
@@ -175,7 +182,7 @@ public class RetryRefactoring extends Refactoring{
 			}
 			
 			//取得目前要被修改的method node
-			if(methodIdx != -1){
+			if (methodIdx != -1) {
 				//取得這個method的RL資訊
 				currentMethodNode = methodList.get(methodIdx);
 				ExceptionAnalyzer exVisitor = new ExceptionAnalyzer(this.actRoot, currentMethodNode.getStartPosition(), 0);
@@ -183,7 +190,7 @@ public class RetryRefactoring extends Refactoring{
 				currentMethodRLList = exVisitor.getMethodRLAnnotationList();
 				//進行Retry Refactoring
 				introduceTryClause(selectNode);
-			}else{
+			} else {
 				status.addFatalError("Selection Error, please retry again!!!");
 			}
 		}
@@ -196,13 +203,14 @@ public class RetryRefactoring extends Refactoring{
 	private void introduceTryClause(ASTNode selectNode){
 		AST ast = actRoot.getAST();
 		rewrite = ASTRewrite.create(actRoot.getAST());
+
 		//去取得selectNode的parent節點,並尋找selectNode在parent block中的位置
 		ListRewrite parentRewrite = rewrite.getListRewrite(selectNode.getParent(),Block.STATEMENTS_PROPERTY );
 		//利用此變數來紀錄Try Statement位置
 		int replacePos = -1;
 		TryStatement original = null;
-		for(int i=0;i<parentRewrite.getRewrittenList().size();i++){
-			if(parentRewrite.getRewrittenList().get(i).equals(selectNode)){
+		for (int i=0;i<parentRewrite.getRewrittenList().size();i++) {
+			if (parentRewrite.getRewrittenList().get(i).equals(selectNode)) {
 				original = (TryStatement)parentRewrite.getRewrittenList().get(i);
 				//找到Try Statement就把他的位置記錄下來
 				replacePos = i;
@@ -219,11 +227,11 @@ public class RetryRefactoring extends Refactoring{
 			//在do-while新增try
 			TryStatement ts = null;
 			//利用傳入參數來判斷是哪一種Retry
-			if(RETRY_TYPE.equals("Alt_Retry")){
+			if (RETRY_TYPE.equals("Alt_Retry")) {
 				ts = addTryClause(ast, doWhile, original);
-			}else if(RETRY_TYPE.equals("Retry_with_original")){
+			} else if(RETRY_TYPE.equals("Retry_with_original")) {
 				ts = addNoAltTryBlock(ast, doWhile, original);
-			}else{
+			} else {
 				System.out.println("【No Retry Action!!!!Exception Occur!!!】");
 			}
 		
@@ -335,26 +343,32 @@ public class RetryRefactoring extends Refactoring{
 		List thenStat = thenBlock.statements();
 		List originalStat = original.getBody().statements();
 		ifStat.setThenStatement(thenBlock);
+
 		for(int i=0;i<originalStat.size();i++){
 			//將原本try的內容複製進來
-			thenStat.add(ASTNode.copySubtree(ast, (ASTNode) originalStat.get(i)));
+			//thenStat.add(ASTNode.copySubtree(ast, (ASTNode) originalStat.get(i)));
+
+			//用移動的方式，才不會刪除註解
+			ASTNode placeHolder = rewrite.createMoveTarget((ASTNode) originalStat.get(i));
+			ListRewrite moveRewrite = rewrite.getListRewrite(thenBlock, Block.STATEMENTS_PROPERTY);
+			moveRewrite.insertLast(placeHolder, null);
 		}
 		
 		//建立else statement
 		Block elseBlock = ast.newBlock();
 		List elseStat = elseBlock.statements();
 		ifStat.setElseStatement(elseBlock);
-		
+
 		//找出第二層try的位置
 		List originalCatch = original.catchClauses();
 		boolean isTryExist = false;
 		TryStatement secTs = null;
-		for(int i=0;i<originalCatch.size();i++){
-			CatchClause temp = (CatchClause)originalCatch.get(i);
+		for (int i =0; i < originalCatch.size(); i++) {
+			CatchClause temp = (CatchClause) originalCatch.get(i);
 			List tempSt = temp.getBody().statements();
 			if(tempSt != null){
-				for(int x=0;x<tempSt.size();x++){
-					if(tempSt.get(x) instanceof TryStatement){
+				for (int x =0; x < tempSt.size(); x++) {
+					if (tempSt.get(x) instanceof TryStatement) {
 						secTs = (TryStatement)tempSt.get(x);
 						isTryExist = true;
 						break;
@@ -366,19 +380,25 @@ public class RetryRefactoring extends Refactoring{
 		if(isTryExist){
 			//開始複製second try statement的內容到else statement
 			List secStat = secTs.getBody().statements();
-			for(int i=0;i<secStat.size();i++){
-				elseStat.add(ASTNode.copySubtree(ast, (ASTNode) secStat.get(i)));
-			}	
-		}else{
+			for (int i =0;i < secStat.size(); i++) {
+				//elseStat.add(ASTNode.copySubtree(ast, (ASTNode) secStat.get(i)));
+				ASTNode placeHolder = rewrite.createMoveTarget((ASTNode) secStat.get(i));
+				ListRewrite moveRewrite = rewrite.getListRewrite(elseBlock, Block.STATEMENTS_PROPERTY);
+				moveRewrite.insertLast(placeHolder, null);
+			}
+		} else {
 			//若catch statement中並沒有第二個try,則把catch中的結果當作alternative
 			if(originalCatch != null){
 				//將catch的內容copy進去
 				CatchClause temp = (CatchClause)originalCatch.get(0);
 				List tempSt = temp.getBody().statements();
-				if(tempSt != null){
-					for(int x=0;x<tempSt.size();x++){
-						elseStat.add(ASTNode.copySubtree(ast, (ASTNode) tempSt.get(x)));
-					}	
+				if (tempSt != null) {
+					for (int x =0; x < tempSt.size(); x++) {
+						//elseStat.add(ASTNode.copySubtree(ast, (ASTNode) tempSt.get(x)));
+						ASTNode placeHolder = rewrite.createMoveTarget((ASTNode) tempSt.get(x));
+						ListRewrite moveRewrite = rewrite.getListRewrite(elseBlock, Block.STATEMENTS_PROPERTY);
+						moveRewrite.insertLast(placeHolder, null);
+					}
 				}
 			}
 		}
@@ -405,9 +425,15 @@ public class RetryRefactoring extends Refactoring{
 		Block block = ts.getBody();
 		List tryStatement = block.statements();
 		List originalStat = original.getBody().statements();
+		
 		for(int i=0;i<originalStat.size();i++){
 			//將原本try的內容複製進來
-			tryStatement.add(ASTNode.copySubtree(ast, (ASTNode) originalStat.get(i)));
+			//tryStatement.add(ASTNode.copySubtree(ast, (ASTNode) originalStat.get(i)));
+
+			//用移動的方式，才不會刪除註解
+			ASTNode placeHolder = rewrite.createMoveTarget((ASTNode) originalStat.get(i));
+			ListRewrite moveRewrite = rewrite.getListRewrite(block, Block.STATEMENTS_PROPERTY);
+			moveRewrite.insertLast(placeHolder, null);
 		}
 		
 		//建立retry = true
