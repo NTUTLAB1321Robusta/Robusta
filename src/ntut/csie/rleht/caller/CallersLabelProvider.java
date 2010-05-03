@@ -19,10 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("restriction")
-public class CallersLabelProvider extends LabelProvider implements
-		ITableLabelProvider {
-	private static Logger logger = LoggerFactory
-			.getLogger(CallersLabelProvider.class);
+public class CallersLabelProvider extends LabelProvider implements ITableLabelProvider {
+	private static Logger logger = LoggerFactory.getLogger(CallersLabelProvider.class);
 
 	private JavaElementLabelProvider javaElementLabelProvider = createJavaLabelProvider();
 
@@ -81,7 +79,6 @@ public class CallersLabelProvider extends LabelProvider implements
 	}
 
 	private void getRLMessage(MethodWrapper wrapper) {
-
 		this.colExInfo = "";
 		this.colRLInfo = "";
 		if (wrapper != null) {

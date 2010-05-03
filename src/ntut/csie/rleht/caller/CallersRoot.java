@@ -4,7 +4,7 @@ import org.eclipse.jdt.internal.ui.callhierarchy.TreeRoot;
 
 @SuppressWarnings("restriction")
 public class CallersRoot {
-	public static final Object EMPTY_ROOT = new Integer(-1);
+	public static final Object EMPTY_ROOT = new Object();
 
 	public static final TreeRoot EMPTY_TREE = new TreeRoot(EMPTY_ROOT);
 

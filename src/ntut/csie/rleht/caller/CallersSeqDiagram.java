@@ -139,9 +139,9 @@ public class CallersSeqDiagram {
 
 				MessageModel mm = null;
 				if (imLast != null && imLast.getName().equals(im.getName())) {
-					mm = builder.createSelfCallMessage(sdd.getMethodName(), sdd.getRLAnnotations());
+					mm = builder.createSelfCallMessage(sdd.getMethodName(), sdd.getRLAnnotations(), sdd.getRobustnessLevel());
 				} else {
-					mm = builder.createMessage(sdd.getMethodName(), sdd.getRLAnnotations(), im);					
+					mm = builder.createMessage(sdd.getMethodName(), sdd.getRLAnnotations(), im, sdd.getRobustnessLevel());
 				}
 				
 				stackMsgModel.push(mm);
@@ -191,13 +191,12 @@ public class CallersSeqDiagram {
 		IEditorInput input = editor.getEditorInput();
 		try {
 			if (input instanceof IFileEditorInput) {
-				String fn = "seq.sqd";
+				String headName = "seq";
+				String tailName = ".sqd";
 				IFile file = ((IFileEditorInput) input).getFile();
 
 				IProject project = file.getProject();
-
 				IFolder folder = project.getFolder("SEQ_DIAGRAM");
-				file = folder.getFile(fn);
 				// at this point, no resources have been created
 				if (!project.exists())
 					project.create(null);
@@ -206,19 +205,29 @@ public class CallersSeqDiagram {
 				if (!folder.exists())
 					folder.create(IResource.NONE, true, null);
 
-				if (file.exists()) {
-					if (editor.getTitle().equals(fn)) {
-						site.getPage().closeEditor(editor, true);
-					}
-
-					try {
-						//TODO 刪除SD時會有ResourceExcpetion,原因是Eclipse會鎖住檔案
-//						file.refreshLocal(IResource.DEPTH_INFINITE, null);
-						file.delete(true,null);
-					} catch (Exception ex) {
-						ex.printStackTrace();
-					}
-					
+				/* 
+				 * 原本的做法：刪除舊檔案，產生新的檔案
+				 * 但舊檔案有時會被系統鎖住，刪不掉。
+				 */
+//				String fn = "seq.sqd";
+//				file = folder.getFile(fn);
+//				if (file.exists()) {
+//					if (editor.getTitle().equals(fn)) {
+//						site.getPage().closeEditor(editor, true);
+//					}
+//					try {
+//						//TODO 刪除SD時會有ResourceExcpetion,原因是Eclipse會鎖住檔案
+////						file.refreshLocal(IResource.DEPTH_INFINITE, null);
+//						file.delete(true,null);
+//					} catch (Exception ex) {
+//						ex.printStackTrace();
+//					}
+//				}
+				//檔案不重複
+				for (int i=1; true; i++) {
+					file = folder.getFile(headName + i + tailName);
+					if (!file.exists())
+						break;
 				}
 
 				if (!file.exists()) {
@@ -230,7 +239,6 @@ public class CallersSeqDiagram {
 				// Open Editor
 				IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(file.getName());
 				editor = site.getPage().openEditor(new FileEditorInput(file), desc.getId());
-
 			}
 		} catch (CoreException ex) {
 			logger.error("[handleGenSeqDiagram]", ex);
@@ -345,6 +353,37 @@ public class CallersSeqDiagram {
 
 		public void setRLAnnotations(String annotations) {
 			RLAnnotations = annotations;
+		}
+		
+		/**
+		 * 取得RobustnessLevel(若為複數取最小的Level)
+		 * @return
+		 */
+		public int getRobustnessLevel() {
+			if (RLAnnotations==null || RLAnnotations=="")
+				return 0;
+
+			//最小的Robustness Level
+			int minLevel = 99;
+			//Robustness Level開始的位置
+			int index = 0;
+			//剩下的字串
+			String remainder = RLAnnotations;
+			for (index = remainder.indexOf("{ "); index != -1; index = remainder.indexOf("{ ")) {
+				//調整到RL數字的地方
+				index += 2;
+				String number = String.valueOf(remainder.substring(index).charAt(0));
+				int level = Integer.valueOf(number);
+				
+				//比較最小的Robustness Level
+				if (level < minLevel)
+					minLevel = level;
+				
+				//分析其餘字串
+				remainder = remainder.substring(index +1);
+			}
+
+			return minLevel;
 		}
 
 	}

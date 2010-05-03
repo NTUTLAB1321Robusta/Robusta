@@ -5,8 +5,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
+import net.java.amateras.uml.model.NoteModel;
 import net.java.amateras.xstream.XStreamSerializer;
 
 import org.eclipse.draw2d.geometry.Dimension;
@@ -26,19 +28,36 @@ public class RLSequenceModelBuilder {
 	private Stack<MessageModel> messageStack = new Stack<MessageModel>();
 
 	private Map<String, MessageModel> messageMap = new HashMap<String, MessageModel>();
-
+	//記錄Note Message
+	private Stack<NoteModel> noteStack = new Stack<NoteModel>();
+	//記錄Note Message與跟它配對的Instance
+	private Map<NoteModel, InstanceModel > noteMap = new HashMap<NoteModel, InstanceModel>();
+	//現在的Y軸位置
 	private int currentY = 0;
-
-	private int MAX_WIDTH = 150;
+	//Instance的最小寬度
+	private int MIN_WIDTH = 150;
+	//文字的寬度
+	private int FONT_WIDTH = 7;
 	
-	public int picPostion = MAX_WIDTH + 20;
+	public int picPostion = MIN_WIDTH + 20;
+
 	ArrayList<Integer> picsWidth = new ArrayList<Integer>();
-	int count = 0;
+
+	int picCounter = 0;
 
 	public RLSequenceModelBuilder() {
 		root.setShowIcon(true);
 	}
 
+	/**
+	 * 產生Instance
+	 * @param instanceName	Instance名稱
+	 * @param isPackage		是否顯示Package
+	 * @param isShowAll		是否顯示全部的Package
+	 * @param isTopDown		true:由上到下數	false:由下往上數
+	 * @param packageCount	欲顯示Package個數
+	 * @return
+	 */
 	public InstanceModel createInstance(String instanceName, boolean isPackage, boolean isShowAll, boolean isTopDown, int packageCount)
 	{
 		//class名稱的方塊寬度
@@ -46,7 +65,7 @@ public class RLSequenceModelBuilder {
 		InstanceModel model = new InstanceModel();
 		//在package+class字串裡找到class名稱的起始位置
 		int pos = instanceName.lastIndexOf(".");
-		
+
 		//若不顯示package或是顯示0層的package或package無"."
 		if (!isPackage || (!isShowAll && packageCount == 0) || pos == -1)
 		{
@@ -56,10 +75,10 @@ public class RLSequenceModelBuilder {
 			model.setName(instanceName);
 			
 			//過小就把它調為預設
-			if (instanceName.length()*6 <MAX_WIDTH)
-				width = 150;
+			if (instanceName.length()*FONT_WIDTH <MIN_WIDTH)
+				width = MIN_WIDTH;
 			else
-				width = pos*6;
+				width = pos*FONT_WIDTH;
 		}
 		//顯示package時
 		else
@@ -102,15 +121,14 @@ public class RLSequenceModelBuilder {
 			model.setName(instanceName);
 			
 			//判斷是上半部名比較大還是下半部
-			if (instanceName.length()/2<=pos)			//上半部較大
-				width = pos*6;
+			if (instanceName.length()/2 <= pos)			//上半部較大
+				width = pos*FONT_WIDTH;
 			else
-				width = (instanceName.length()-pos)*6;	//下半部較大
+				width = (instanceName.length()-pos)*7;	//下半部較大
 			//過小就把它調為預設
-			if (width<MAX_WIDTH)
-				width = 150;
+			if (width < MIN_WIDTH)
+				width = MIN_WIDTH;
 		}
-		
 		// root.getInstances().get(root).getConstraint().getRight().getPosition(root.getConstraint().getRight());
 
 		//Debugger到第一個method的位置
@@ -133,8 +151,12 @@ public class RLSequenceModelBuilder {
 		return model;
 	}
 
+	/**
+	 * 產生Actor
+	 * @param instanceName
+	 * @return
+	 */
 	public ActorModel createActor(String instanceName) {
-		
 		ActorModel model = new ActorModel();
 		model.setName(instanceName);
 		model.setConstraint(new Rectangle(120 * root.getInstances().size() + 20, InstanceModel.DEFAULT_LOCATION, 100, -1));
@@ -176,8 +198,7 @@ public class RLSequenceModelBuilder {
 		if (model != null) {
 			MessageAcceptableModel target = (MessageAcceptableModel) model.getTarget();
 			ActivationModel source = (ActivationModel) model.getSource();
-			current = source;			
-			
+			current = source;
 			if (target instanceof ActivationModel) {
 				currentY = target.getConstraint().y + target.getConstraint().height + 20;
 			} else {
@@ -186,57 +207,15 @@ public class RLSequenceModelBuilder {
 		}
 	}
 
-	public void endMessage() {
-		if (!messageStack.isEmpty()) {
-			MessageModel model = (MessageModel) messageStack.pop();
-			back(model);
-		}
-	}
-
-//	沒用到(沒人call它)註解掉
-//	public MessageModel createMessage(String message, String instanceName) {
-//		InstanceModel model = createInstance(instanceName);
-//		return createMessage(message, model);
-//	}
-
-	public MessageModel createMessage(String message, InstanceModel target) {
-		ActivationModel model = new ActivationModel();
-		current.copyPresentation(model);
-		ActivationModel targetModel = getTargetModel(currentY, target);
-		if (targetModel == null) {
-			model.setConstraint(new Rectangle(target.getConstraint().x + 45, currentY, ActivationModel.DEFAULT_WIDTH, ActivationModel.DEFAULT_HEIGHT));
-			target.getModel().addActivation(model);
-		} else {
-			model.setConstraint(new Rectangle(target.getConstraint().x + 45 + current.getNestLevel() * 5, current.getConstraint().y + 30, ActivationModel.DEFAULT_WIDTH, ActivationModel.DEFAULT_HEIGHT));
-			targetModel.addActivation(model);
-		}
-
-		message = this.setNewLine(message);
-		int newlineCount = this.getNewLineCount(message);
-		SyncMessageModel messageModel = new SyncMessageModel();
-		messageModel.setName(message);
-		messageModel.setSource(current);
-		messageModel.setTarget(model);
-		messageModel.attachSource();
-		messageModel.attachTarget();
-		current.copyPresentation(messageModel);
-		messageStack.push(messageModel);
-
-		ReturnMessageModel returnMessageModel = new ReturnMessageModel();
-		returnMessageModel.setSource(model);
-		returnMessageModel.setTarget(current);
-		returnMessageModel.attachSource();
-		returnMessageModel.attachTarget();
-		current.copyPresentation(returnMessageModel);
-
-		messageMap.put(current.getOwnerLine().getOwner().getName() + "-" + message + "-" + target.getName(), messageModel);
-		model.computeCaller();
-		current = model;
-		currentY += 20 * newlineCount;
-		return messageModel;
-	}
-
-	public MessageModel createMessage(String message, String backMessage, InstanceModel target) {
+	/**
+	 * 產生Message(呼叫其它Instance的Method)
+	 * @param message
+	 * @param backMessage
+	 * @param target
+	 * @param level
+	 * @return
+	 */
+	public MessageModel createMessage(String message, String backMessage, InstanceModel target, int level) {	
 		ActivationModel model = new ActivationModel();
 		current.copyPresentation(model);
 		
@@ -256,7 +235,7 @@ public class RLSequenceModelBuilder {
 			model.setConstraint(					
 					new Rectangle(
 							//畫到下一個class的方塊的中間
-							target.getConstraint().x + picsWidth.get(count++),
+							target.getConstraint().x + picsWidth.get(picCounter++),
 							currentY, 
 							ActivationModel.DEFAULT_WIDTH, 
 							ActivationModel.DEFAULT_HEIGHT));
@@ -277,6 +256,7 @@ public class RLSequenceModelBuilder {
 		SyncMessageModel messageModel = new SyncMessageModel();
 
 		messageModel.setName(message);
+		setMessageModelColor(messageModel, level);
 		messageModel.setSource(current);
 		messageModel.setTarget(model);
 		messageModel.attachSource();
@@ -287,32 +267,36 @@ public class RLSequenceModelBuilder {
 		// ----------------------------------------------------------------------
 		ReturnMessageModel returnMessageModel = new ReturnMessageModel();
 
-		returnMessageModel.setName(backMessage);
 		returnMessageModel.setSource(model);
-		
-//		Rectangle srcR= model.getConstraint();
-//		//srcR.y=srcR.y+20;
-//		srcR.height=srcR.height+50;
-//		model.setConstraint(srcR);
-		
+
+		Rectangle srcR= model.getConstraint();
+		//srcR.y=srcR.y+20;
+		srcR.height=srcR.height+50;
+		model.setConstraint(srcR);
+
 		returnMessageModel.setTarget(current);
 		returnMessageModel.attachSource();
 		returnMessageModel.attachTarget();
-		
-		current.copyPresentation(returnMessageModel);
-		if(backMessage!=null && !"".equals(backMessage.trim())){
-			returnMessageModel.setForegroundColor(new RGB(255,0,0));
-		}
-		else{
-			returnMessageModel.setForegroundColor(new RGB(0,0,0));
-		}
+
+//		returnMessageModel.setName(backMessage);
+//		current.copyPresentation(returnMessageModel);
+//		if(backMessage!=null && !"".equals(backMessage.trim())){
+//			returnMessageModel.setForegroundColor(new RGB(255,0,0));
+//		}
+//		else{
+//			returnMessageModel.setForegroundColor(new RGB(0,0,0));
+//		}
 		
 		// ----------------------------------------------------------------------
 
+		//將Robustness Level的資訊使用Note顯示
+		createNoteMessage(message, backMessage);
+		
 		messageMap.put(current.getOwnerLine().getOwner().getName() + "-" + message + "-" + target.getName(), messageModel);
 		model.computeCaller();
 		current = model;
 		currentY += (20 * 1);
+		
 		return messageModel;
 	}
 
@@ -335,29 +319,14 @@ public class RLSequenceModelBuilder {
 		return newlineCount;
 	}
 
-	public MessageModel createSelfCallMessage(String message) {
-		ActivationModel model = new ActivationModel();
-		current.copyPresentation(model);
-		currentY += 20;
-		model.setConstraint(new Rectangle(current.getConstraint().x + 5, currentY, ActivationModel.DEFAULT_WIDTH, ActivationModel.DEFAULT_HEIGHT));
-		current.addActivation(model);
-		SyncMessageModel messageModel = new SyncMessageModel();
-		messageModel.setName(message);
-		messageModel.setSource(current);
-		messageModel.setTarget(model);
-		messageModel.attachSource();
-		messageModel.attachTarget();
-		current.copyPresentation(messageModel);
-		messageStack.push(messageModel);
-		model.computeCaller();
-		current = model;
-		currentY += 20;
-		return messageModel;
-	}
-	
-	
-
-	public MessageModel createSelfCallMessage(String message,String backMessage) {
+	/**
+	 * 產生Message(Call自己)
+	 * @param message
+	 * @param backMessage
+	 * @param level
+	 * @return
+	 */
+	public MessageModel createSelfCallMessage(String message,String backMessage, int level) {
 		ActivationModel model = new ActivationModel();
 		current.copyPresentation(model);
 		currentY += 25;
@@ -369,41 +338,40 @@ public class RLSequenceModelBuilder {
 		messageModel.setTarget(model);
 		messageModel.attachSource();
 		messageModel.attachTarget();
+		setMessageModelColor(messageModel, level);
 		current.copyPresentation(messageModel);
-		
-		// ----------------------------------------------------------------------
-		ReturnMessageModel returnMessageModel = new ReturnMessageModel();
 
-		returnMessageModel.setName(backMessage);
-		returnMessageModel.setSource(model);	
-		
-		returnMessageModel.setTarget(current);
-		returnMessageModel.attachSource();
-		returnMessageModel.attachTarget();
-		
-		current.copyPresentation(returnMessageModel);
-		if(backMessage!=null && !"".equals(backMessage.trim())){
-			returnMessageModel.setForegroundColor(new RGB(255,0,0));
-			returnMessageModel.setShowIcon(true);
-		}
-		else{
-			returnMessageModel.setForegroundColor(new RGB(0,0,0));
-		}
-		
 		// ----------------------------------------------------------------------
-		
+//		ReturnMessageModel returnMessageModel = new ReturnMessageModel();
+//
+//		returnMessageModel.setName(backMessage);
+//		returnMessageModel.setSource(model);	
+//		
+//		returnMessageModel.setTarget(current);
+//		returnMessageModel.attachSource();
+//		returnMessageModel.attachTarget();
+//		
+//		current.copyPresentation(returnMessageModel);
+//		if(backMessage!=null && !"".equals(backMessage.trim())){
+//			returnMessageModel.setForegroundColor(new RGB(255,0,0));
+//			returnMessageModel.setShowIcon(true);
+//		}
+//		else{
+//			returnMessageModel.setForegroundColor(new RGB(0,0,0));
+//		}
+
+		// ----------------------------------------------------------------------
+
+		//將Robustness Level的資訊使用Note顯示
+		createNoteMessage(message, backMessage);
+	
 		messageStack.push(messageModel);
 		model.computeCaller();
 		current = model;
 		currentY += 20;
+
 		return messageModel;
 	}
-	
-//	沒用到(沒人call它)註解掉
-//	public MessageModel createCreationMessage(String message, String instanceName) {
-//		InstanceModel model = createInstance(instanceName);
-//		return createCreationMessage(message, model);
-//	}
 
 	public MessageModel createCreationMessage(String message, InstanceModel target) {
 		Rectangle rectangle = target.getConstraint().getCopy();
@@ -441,18 +409,258 @@ public class RLSequenceModelBuilder {
 		return null;
 	}
 
+	/**
+	 * 產生註解訊息(Robustness Level訊息)
+	 * @param noteMessage
+	 * @param current2 
+	 */
+	private void createNoteMessage(String methodName, String noteMessage) {
+		//若有
+		if(noteMessage != null && !"".equals(noteMessage.trim())) {
+			NoteModel aNote = new NoteModel();
+
+			//RobustnessLevel Message個數
+			int rlCounter =1;
+			//NoteMessage內單行最長字數
+			int maxLength =0;
+			//Robustness Level End Index
+			int endIdx = noteMessage.indexOf("} {");
+
+			//若只有一個RobustnessLevel Message
+			if (endIdx == -1) {
+				maxLength = noteMessage.length();
+				aNote.setContent(noteMessage);
+			}
+			//若超過一個以上的RobustnessLevel Message
+			else {
+				String remainder = noteMessage;
+				maxLength = endIdx +1;
+				while (remainder.indexOf("} {") != -1) {
+					rlCounter++;
+					endIdx = remainder.indexOf("} {");
+
+					remainder = remainder.substring(endIdx+2);
+				}
+				//取得最長的單行字數
+				if (maxLength < remainder.length()-1)
+					maxLength = remainder.length()-1;
+
+				//插入換行符號
+				aNote.setContent(noteMessage.replace("} ", "}\n"));
+			}
+			//加入Method名稱
+			aNote.setContent(methodName + "\n" + aNote.getContent());
+			aNote.setConstraint(new Rectangle(current.getConstraint().x, 0,
+											  maxLength*6, 30 + 14*rlCounter));
+
+			aNote.setShowIcon(true);
+
+			//記錄Note
+			noteStack.push(aNote);
+			//記錄Note與跟Note搭配的Instance
+			noteMap.put(aNote, current.getOwnerLine().getOwner());
+
+			root.addUMLModel(aNote);
+		}
+	}
+
+	/**
+	 * 將Message因不同Robustness Level使用不同顏色
+	 * @param messageModel
+	 * @param level
+	 */
+	private void setMessageModelColor(SyncMessageModel messageModel, int level) {
+		String message = messageModel.getName();
+		message = "RL " + level + "\t" + message;
+		messageModel.setName(message);
+
+		//依不同Level給予不同顏色
+		switch (level) {
+			//RL1:紅
+			case 1:
+				//深紅 RGB(142,27,27)
+				//紅
+				messageModel.setForegroundColor(new RGB(255,0,0));
+				break;
+			//RL2:黃
+			case 2:
+				//深黃 RGB(174,174,33)
+				//橘色
+				messageModel.setForegroundColor(new RGB(229,109,29));
+				break;
+			//RL3:綠
+			case 3:
+				//深綠
+				messageModel.setForegroundColor(new RGB(54,157,54));
+				break;
+			//RL0
+			default:
+				//黑色
+				messageModel.setForegroundColor(new RGB(0, 0, 0));
+		}
+	}
+	
+	/**
+	 * 產生XML檔
+	 * @return
+	 */
 	public String toXML() {
 		MessageOrderUtil.computeMessageOrders(root);
 		root.adjustLifeLine();
+		
+		//將Note做排序
+		arrangeNote();
+
 		return XStreamSerializer.serialize(root, getClass().getClassLoader());
 	}
-	// public ActivationModel createInstanciateMessage(String message,
-	// ActivationModel source, InstanceModel target) {
-	//		
-	// }
+
+	/**
+	 * 將Note與Instance做排序
+	 */
+	private void arrangeNote() {
+		//記錄Instance與此Instance的下一個Instance的位置
+		Map<InstanceModel, Integer> widthMap = new HashMap<InstanceModel, Integer>();
+		
+		/*	Note Y軸排列	*/
+		for (int i=0; i < noteStack.size(); i++) {
+			NoteModel aNote = noteStack.get(i);
+			//取得Note的Instance
+			InstanceModel instance = noteMap.get(aNote);
+			Rectangle rect = instance.getModel().getConstraint();
+
+			//記錄Instance到下一個Instance最大距離(找最大的Note寬度)
+			Integer width = widthMap.get(instance);
+			if (width == null || width < aNote.getConstraint().width)
+				widthMap.put(instance, aNote.getConstraint().right());
+
+			//若單一Instance中有重複的Note，將它放置此Note下方
+			int axisY = rect.y + rect.height;
+			for (int j=i-1; j >= 0; j--) {
+				NoteModel lastNote = noteStack.get(j);
+				InstanceModel lastInstance = noteMap.get(lastNote);
+				//前面是否有相同Instance的Note
+				if (instance == lastInstance) {
+					axisY = lastNote.getConstraint().bottom();
+					break;
+				}
+			}
+			aNote.getConstraint().y = axisY +10;
+		}
+
+		/*	將下一個Instance增加到可容下Note的寬度	*/
+		List<InstanceModel> instanceList = root.getInstances();
+		for (int i=0; i < instanceList.size(); i++) {
+			//取得該Instance預計調整下一個Instance的位置
+			Integer nextAxisX = widthMap.get(instanceList.get(i));
+			//若沒有表示不需要調整
+			if (nextAxisX == null)
+				continue;
+
+			//原Instance與調整過後的Instance的相差值
+			int diff = 0;
+			if (i+1 < instanceList.size()) {
+				InstanceModel model = instanceList.get(i+1);
+				diff = nextAxisX - model.getConstraint().x - model.getConstraint().width/2 +10;
+			}
+			//差值必須要大於0
+			if (diff > 0) {
+				//將之後的Instance都調整位置
+				for (int j = i+1; j < instanceList.size(); j++) {
+					InstanceModel nextInstance = instanceList.get(j);
+					Rectangle rect = nextInstance.getConstraint();
+					nextInstance.setConstraint(
+							new Rectangle(rect.x + diff, rect.y, rect.width, rect.height));
+					
+					//將之後的計算的NoteWidth也調整位置
+					Integer nextWidth = widthMap.get(nextInstance);
+					if (nextWidth != null)
+						widthMap.put(nextInstance, nextWidth +diff);
+				}
+			}
+		}
+		/*	Note X軸排列	*/
+		Set<NoteModel> keySet = noteMap.keySet();
+		Iterator<NoteModel> iterator = keySet.iterator();
+		while(iterator.hasNext()) {
+			NoteModel aNote = (NoteModel) iterator.next();
+			InstanceModel instance = noteMap.get(aNote);
+			//將Note的x軸位置移到Instance的X軸
+			aNote.getConstraint().x = instance.getConstraint().x + instance.getConstraint().width/2;
+		}
+	}
+
+	//沒用到(沒人call它)註解掉
+	//public MessageModel createMessage(String message, InstanceModel target) {
+	//	ActivationModel model = new ActivationModel();
+	//	current.copyPresentation(model);
+	//	ActivationModel targetModel = getTargetModel(currentY, target);
+	//	if (targetModel == null) {
+	//		model.setConstraint(new Rectangle(target.getConstraint().x + 45, currentY, ActivationModel.DEFAULT_WIDTH, ActivationModel.DEFAULT_HEIGHT));
+	//		target.getModel().addActivation(model);
+	//	} else {
+	//		model.setConstraint(new Rectangle(target.getConstraint().x + 45 + current.getNestLevel() * 5, current.getConstraint().y + 30, ActivationModel.DEFAULT_WIDTH, ActivationModel.DEFAULT_HEIGHT));
+	//		targetModel.addActivation(model);
+	//	}
 	//
-	// public ActivationWrapper createRecursiveMessage(String message,
-	// ActivationWrapper source, InstanceWrapper target) {
+	//	message = this.setNewLine(message);
+	//	int newlineCount = this.getNewLineCount(message);
+	//	SyncMessageModel messageModel = new SyncMessageModel();
+	//	messageModel.setName(message);
+	//	messageModel.setSource(current);
+	//	messageModel.setTarget(model);
+	//	messageModel.attachSource();
+	//	messageModel.attachTarget();
+	//	current.copyPresentation(messageModel);
+	//	messageStack.push(messageModel);
+	//
+	//	ReturnMessageModel returnMessageModel = new ReturnMessageModel();
+	//	returnMessageModel.setSource(model);
+	//	returnMessageModel.setTarget(current);
+	//	returnMessageModel.attachSource();
+	//	returnMessageModel.attachTarget();
+	//	current.copyPresentation(returnMessageModel);
+	//
+	//	messageMap.put(current.getOwnerLine().getOwner().getName() + "-" + message + "-" + target.getName(), messageModel);
+	//	model.computeCaller();
+	//	current = model;
+	//	currentY += 20 * newlineCount;
+	//	return messageModel;
+	//}
+	//public MessageModel createSelfCallMessage(String message) {
+	//	ActivationModel model = new ActivationModel();
+	//	current.copyPresentation(model);
+	//	currentY += 20;
+	//	model.setConstraint(new Rectangle(current.getConstraint().x + 5, currentY, ActivationModel.DEFAULT_WIDTH, ActivationModel.DEFAULT_HEIGHT));
+	//	current.addActivation(model);
+	//	SyncMessageModel messageModel = new SyncMessageModel();
+	//	messageModel.setName(message);
+	//	messageModel.setSource(current);
+	//	messageModel.setTarget(model);
+	//	messageModel.attachSource();
+	//	messageModel.attachTarget();
+	//	current.copyPresentation(messageModel);
+	//	messageStack.push(messageModel);
+	//	model.computeCaller();
+	//	current = model;
+	//	currentY += 20;
+	//	return messageModel;
+	//}
+	//public void endMessage() {
+	//	if (!messageStack.isEmpty()) {
+	//		MessageModel model = (MessageModel) messageStack.pop();
+	//		back(model);
+	//	}
+	//}
+	//public MessageModel createCreationMessage(String message, String instanceName) {
+	//InstanceModel model = createInstance(instanceName);
+	//	return createCreationMessage(message, model);
+	//}
+	//public ActivationModel createInstanciateMessage(String message,
+	//ActivationModel source, InstanceModel target) {
 	//		
-	// }
+	//}
+	//public ActivationWrapper createRecursiveMessage(String message,
+	//ActivationWrapper source, InstanceWrapper target) {
+	//		
+	//}
 }
