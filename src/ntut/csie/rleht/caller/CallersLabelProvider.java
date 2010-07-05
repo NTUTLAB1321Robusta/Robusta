@@ -123,18 +123,13 @@ public class CallersLabelProvider extends LabelProvider implements ITableLabelPr
 							if (rlmsg.isHandleByCatch()) {
 								continue;
 							}
-							
-
-								if (this.colExInfo.indexOf(rlmsg.getRLData()
-										.getExceptionType()) == -1) {
-									this.colExInfo += (rlmsg.getRLData()
-											.getExceptionType() + ", ");
-								}
-
-
+							if (this.colExInfo.indexOf(rlmsg.getRLData()
+									.getExceptionType()) == -1) {
+								this.colExInfo += (rlmsg.getRLData()
+										.getExceptionType() + ", ");
+							}
 						}
 						rlmsgs.clear();
-
 					} else {
 						this.colExInfo = "NULL";
 					}
@@ -151,7 +146,6 @@ public class CallersLabelProvider extends LabelProvider implements ITableLabelPr
 				}
 
 			}
-
 		}
 		// logger.debug("[getRLMessage] wrapper="+wrapper +" --->"+text +"\n");
 		// return this.colRLInfo;

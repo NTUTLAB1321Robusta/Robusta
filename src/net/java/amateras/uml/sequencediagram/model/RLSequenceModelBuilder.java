@@ -28,6 +28,7 @@ public class RLSequenceModelBuilder {
 	private Stack<MessageModel> messageStack = new Stack<MessageModel>();
 
 	private Map<String, MessageModel> messageMap = new HashMap<String, MessageModel>();
+
 	//記錄Note Message
 	private Stack<NoteModel> noteStack = new Stack<NoteModel>();
 	//記錄Note Message與跟它配對的Instance
@@ -45,7 +46,10 @@ public class RLSequenceModelBuilder {
 
 	int picCounter = 0;
 
-	public RLSequenceModelBuilder() {
+	private boolean isShowRL;
+
+	public RLSequenceModelBuilder(boolean isShowRL) {
+		this.isShowRL = isShowRL;
 		root.setShowIcon(true);
 	}
 
@@ -359,7 +363,6 @@ public class RLSequenceModelBuilder {
 //		else{
 //			returnMessageModel.setForegroundColor(new RGB(0,0,0));
 //		}
-
 		// ----------------------------------------------------------------------
 
 		//將Robustness Level的資訊使用Note顯示
@@ -471,9 +474,12 @@ public class RLSequenceModelBuilder {
 	 */
 	private void setMessageModelColor(SyncMessageModel messageModel, int level) {
 		String message = messageModel.getName();
-		message = "RL " + level + "\t" + message;
-		messageModel.setName(message);
+		//如果顯示RL資訊，才將名稱增加RL
+		if (isShowRL)
+			message = "RL " + level + "\t" + message;
 
+		messageModel.setName(message);
+		
 		//依不同Level給予不同顏色
 		switch (level) {
 			//RL1:紅

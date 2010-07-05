@@ -11,6 +11,9 @@ import java.util.Stack;
 import net.java.amateras.uml.sequencediagram.model.InstanceModel;
 import net.java.amateras.uml.sequencediagram.model.MessageModel;
 import net.java.amateras.uml.sequencediagram.model.RLSequenceModelBuilder;
+import ntut.csie.rleht.RLEHTPlugin;
+import ntut.csie.rleht.views.RLMessage;
+import ntut.csie.rleht.views.RLMethodModel;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -18,6 +21,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IOpenable;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.internal.corext.callhierarchy.MethodWrapper;
 import org.eclipse.swt.widgets.TreeItem;
@@ -33,7 +37,8 @@ import org.slf4j.LoggerFactory;
 
 public class CallersSeqDiagram {
 	private static Logger logger = LoggerFactory.getLogger(CallersSeqDiagram.class);
-
+	
+	private List<SeqDiagramData> seqdataList = new ArrayList<SeqDiagramData>();
 	
 	/**
 	 * 用來copy舊的sdd資料
@@ -41,7 +46,7 @@ public class CallersSeqDiagram {
 	 * @return
 	 */
 	private SeqDiagramData copySeqData(SeqDiagramData sdd){
-		SeqDiagramData copy = new SeqDiagramData(); 
+		SeqDiagramData copy = new SeqDiagramData(sdd.isShowPath); 
 		copy.setClassName(sdd.getClassName());
 		copy.setExceptions(sdd.getExceptions());
 		copy.setMethodName(sdd.getMethodName());
@@ -49,21 +54,35 @@ public class CallersSeqDiagram {
 		return copy;
 	}
 	
+	/**
+	 * 畫Sequence Diagram
+	 * @param site				WorkPart
+	 * @param items				Tree Item
+	 * @param isShowCallerType	Caller / Callee
+	 * @param isShowPackage		是否顯示Package
+	 * @param isShowAllPackage	是否顯示所有的Package
+	 * @param isTopDown			是否從上往下數
+	 * @param packageCount		顯示的Package個數
+	 * @param isShowRL			是否顯示RL資訊
+	 * @param isShowPath		是否顯示Exception的名稱
+	 * @param isTraced			是否已Trace RL資訊
+	 */
 	public void draw(IWorkbenchPartSite site, TreeItem[] items,boolean isShowCallerType,
-					 boolean isPackage, boolean isShowAll, boolean isTopDown, int packageCount) {
+					 boolean isShowPackage, boolean isShowAllPackage, boolean isTopDown,
+					 int packageCount, boolean isShowRL, boolean isShowPath, boolean isTraced) {
 		// instanciate builder.
-		RLSequenceModelBuilder builder = new RLSequenceModelBuilder();
+		RLSequenceModelBuilder builder = new RLSequenceModelBuilder(isShowRL);
 	    List<SeqDiagramData> copyList = new ArrayList<SeqDiagramData>();
 	    
-		this.findSelectedItemPath(items);
+		this.findSelectedItemPath(items, isTraced, isShowRL, isShowPath);
 
         /*------------------------------------------------------------------------*
         -  透過isShowCallerType來判斷是由下往上call hierarchy
 		        如果遇到這種情形,則將順序反過來,並且把Level對調
         *-------------------------------------------------------------------------*/
-		if(isShowCallerType){
+		if (isShowCallerType) {
 			int count = 0;
-			for(int i=seqdataList.size()-1;i>=0;i--){
+			for (int i=seqdataList.size()-1; i >= 0; i--) {
 				//先從Array最後面把物件copy進去
 				SeqDiagramData sdd = copySeqData(seqdataList.get(i)); 
 				//設定要反轉的Level
@@ -84,7 +103,7 @@ public class CallersSeqDiagram {
 				//指的是要被create的class(sequence diagram上的class方塊)
 				
 				//把SeqDiagram設定視窗得到的參數傳到畫圖的那一層
-				InstanceModel obj = builder.createInstance(sdd.getClassName(),isPackage,isShowAll,isTopDown,packageCount);
+				InstanceModel obj = builder.createInstance(sdd.getClassName(),isShowPackage,isShowAllPackage,isTopDown,packageCount);
 				
 				if (start == null) {
 					start = obj;
@@ -205,24 +224,6 @@ public class CallersSeqDiagram {
 				if (!folder.exists())
 					folder.create(IResource.NONE, true, null);
 
-				/* 
-				 * 原本的做法：刪除舊檔案，產生新的檔案
-				 * 但舊檔案有時會被系統鎖住，刪不掉。
-				 */
-//				String fn = "seq.sqd";
-//				file = folder.getFile(fn);
-//				if (file.exists()) {
-//					if (editor.getTitle().equals(fn)) {
-//						site.getPage().closeEditor(editor, true);
-//					}
-//					try {
-//						//TODO 刪除SD時會有ResourceExcpetion,原因是Eclipse會鎖住檔案
-////						file.refreshLocal(IResource.DEPTH_INFINITE, null);
-//						file.delete(true,null);
-//					} catch (Exception ex) {
-//						ex.printStackTrace();
-//					}
-//				}
 				//檔案不重複
 				for (int i=1; true; i++) {
 					file = folder.getFile(headName + i + tailName);
@@ -247,34 +248,124 @@ public class CallersSeqDiagram {
 
 	}
 
-	private List<SeqDiagramData> seqdataList = new ArrayList<SeqDiagramData>();
-
+	/**
+	 * 尋找Hierarchy Tree中所有選擇的Node
+	 * @param items	   Hierarchy Tree Item
+	 * @param isTraced 是否已查過RL資訊
+	 * @param isShowRL 
+	 * @param isShowPath 
+	 */
 	@SuppressWarnings("restriction")
-	private void findSelectedItemPath(TreeItem[] items) {
+	private void findSelectedItemPath(TreeItem[] items, boolean isTraced, boolean isShowRL, boolean isShowPath) {
 		for (int i = 0, size = items.length; i < size; i++) {
 			TreeItem item = items[i];
 			if (item.getChecked()) {
 				MethodWrapper wrapper = (MethodWrapper) item.getData();
 
 				if (wrapper.getMember() instanceof IMethod) {
+					
 					IMethod method = (IMethod) wrapper.getMember();
 					IType type = method.getDeclaringType();
 
-					SeqDiagramData sdd = new SeqDiagramData();
+					SeqDiagramData sdd = new SeqDiagramData(isShowPath);
 					sdd.setClassName(type.getFullyQualifiedName());
 					sdd.setMethodName(method.getElementName());
 					sdd.setLevel(wrapper.getLevel());
-					sdd.setRLAnnotations(item.getText(1));
-					sdd.setExceptions(item.getText(2));
+					
+					//是否顯示RL資訊
+					if (isShowRL) {
+						//是否已經Trace過RL資訊
+						if (isTraced) {
+							sdd.setRLAnnotations(item.getText(1));
+							sdd.setExceptions(item.getText(2));
+						//若還未就去取得RL資訊。
+						} else {
+							getRLMessage(wrapper);
+							sdd.setRLAnnotations(colRLInfo);
+							sdd.setExceptions(colExInfo);
+						}
+					}
 					seqdataList.add(sdd);
 				}
 			}
-			
+
+			//若有Child，則繼續Trace
 			if (item.getItemCount() >= 1) {
-				findSelectedItemPath(item.getItems());
+				findSelectedItemPath(item.getItems(), isTraced, isShowRL, isShowPath);
 			}
 		}
+	}
+	
+	private String colRLInfo = "";
+	private String colExInfo = "";
+	private void getRLMessage(MethodWrapper wrapper) {
+		this.colExInfo = "";
+		this.colRLInfo = "";
+		if (wrapper != null) {
+			RLMethodModel model = new RLMethodModel();
+			try {
+				IOpenable input = wrapper.getMember().getOpenable();
+				int offset = wrapper.getMember().getSourceRange().getOffset();
+				int length = wrapper.getMember().getSourceRange().getLength();
 
+				// 將offset取到該method的最後面，是因為若有註解，則RL會取不出來，則需要指到method內
+				offset = offset + length - 10;
+				length = 0;
+
+				if (!model.createAST(input, offset)) {
+					RLEHTPlugin.logError("AST could not be created." + input,
+							null);
+				} else {
+
+					model.parseDocument(offset, length);
+
+					List<RLMessage> rlmsgs = model.getRLAnnotationList();
+
+					if (rlmsgs != null) {
+						for (RLMessage rlmsg : rlmsgs) {
+							this.colRLInfo += ("{ "
+									+ rlmsg.getRLData().getLevel() + " , "
+									+ rlmsg.getRLData().getExceptionType() + " } ");
+						}
+						rlmsgs.clear();
+
+					} else {
+						this.colRLInfo = "NULL";
+					}
+
+					rlmsgs = model.getExceptionList();
+					if (rlmsgs != null) {
+						for (RLMessage rlmsg : rlmsgs) {
+							if (rlmsg.getRLData().getLevel() < 0) {
+								continue;
+							}
+							if (rlmsg.isHandleByCatch()) {
+								continue;
+							}
+							if (this.colExInfo.indexOf(rlmsg.getRLData()
+									.getExceptionType()) == -1) {
+								this.colExInfo += (rlmsg.getRLData()
+										.getExceptionType() + ", ");
+							}
+						}
+						rlmsgs.clear();
+					} else {
+						this.colExInfo = "NULL";
+					}
+
+				}
+			} catch (Exception ex) {
+				logger.error("[getRLMessage] Error!", ex);
+				RLEHTPlugin.logError(
+						"[CallersLabelProvider][getRLMessage] Error!", null);
+				this.colRLInfo = "ERROR";
+			} finally {
+				if (model != null) {
+					model.clear();
+				}
+
+			}
+		}
 	}
 
 	private class SeqMessageModelData {
@@ -309,50 +400,102 @@ public class CallersSeqDiagram {
 	}
 
 	private class SeqDiagramData {
+		private boolean isShowPath;
+		
 		private int level;
 		private String methodName;
 		private String className;
 		private String exceptions;
-		private String RLAnnotations;
+		private String RLAnnotations = "";
 
+		public SeqDiagramData(boolean isShowPath) {
+			this.isShowPath = isShowPath;
+		}
+		
+		/**
+		 * 是否顯示路徑
+		 */
+		public boolean isShowPath() {
+			return isShowPath;
+		}
+		/**
+		 * Robustness Level
+		 */
 		public int getLevel() {
 			return level;
 		}
-
 		public void setLevel(int level) {
 			this.level = level;
 		}
-
+		/**
+		 * Method Name
+		 */
 		public String getMethodName() {
 			return methodName;
 		}
-
 		public void setMethodName(String methodName) {
 			this.methodName = methodName;
 		}
-
+		/**
+		 * Class Name
+		 */
 		public String getClassName() {
 			return className;
 		}
-
 		public void setClassName(String className) {
 			this.className = className;
 		}
-
+		/**
+		 * Exception Names
+		 */
 		public String getExceptions() {
 			return exceptions;
 		}
-
 		public void setExceptions(String exceptions) {
 			this.exceptions = exceptions;
 		}
-
+		/**
+		 * RL Annotation
+		 */
 		public String getRLAnnotations() {
 			return RLAnnotations;
 		}
-
 		public void setRLAnnotations(String annotations) {
-			RLAnnotations = annotations;
+			//若顯示Path或無RL Annotation
+			if (isShowPath || annotations == "") {
+				RLAnnotations = annotations;
+			//若不顯示path
+			} else {
+				//剩下的字串
+				String remainder = annotations;
+
+				int index = remainder.indexOf("}");
+				for (; index != -1; index = remainder.indexOf("}")) {
+					//從"{"到"}"與"\n"
+					RLAnnotations += removePath(remainder.substring(0, index+2));
+
+					//分析其餘字串
+					remainder = remainder.substring(index +2);
+				}
+			}
+		}
+
+		/**
+		 * 刪掉Exception Name的Path
+		 * @param rlInfo
+		 */
+		private String removePath(String rlInfo) {			
+			int startIndex = -1;
+			int endIndex = rlInfo.lastIndexOf(".");
+
+			for (int i = endIndex; i >= 0; i--) {
+				if (rlInfo.charAt(i) == ' ') {
+					startIndex = i;
+					return rlInfo.substring(0, startIndex) + " " + rlInfo.substring(endIndex +1);
+				}
+			}
+
+			return rlInfo;
 		}
 		
 		/**
@@ -385,7 +528,5 @@ public class CallersSeqDiagram {
 
 			return minLevel;
 		}
-
 	}
-
 }

@@ -86,6 +86,8 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 
 	private boolean checkFlag = false;
 	
+	private boolean isShowRLInfo = false;
+	
 	/**
 	 * The constructor.
 	 */
@@ -114,7 +116,7 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 	@Override
 	public void createPartControl(Composite parent) {
 
-		this.createTreeViewer(parent);
+		this.createTreeViewer(parent, false);
 
 		this.createActions();
 
@@ -123,7 +125,7 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 		this.contributeToActionBars();
 	}
 
-	private void createTreeViewer(Composite parent) {
+	private void createTreeViewer(Composite parent, boolean isShow) {	
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(new FillLayout());
 
@@ -133,17 +135,29 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 
 		treeviewer.setContentProvider(new CallersContentProvider());
 		treeviewer.setLabelProvider(new CallersLabelProvider());
-		
+
 		Tree tree = treeviewer.getTree();
 		tree.setHeaderVisible(true);
 		tree.setLinesVisible(true);
-		
+
+        treeviewer.setUseHashlookup(true);
+        treeviewer.setAutoExpandLevel(2);
 
 		TreeColumn column1 = new TreeColumn(tree, SWT.LEFT);
 		column1.setText("呼叫階層");
 		column1.setWidth(400);
 		treeviewer.addFilter(new CallersViewerFilter());
 
+		//createRLColumn(tree);
+
+		treeviewer.addDoubleClickListener(this);
+		treeviewer.addCheckStateListener(this);
+	}
+
+	/**
+	 * @param tree
+	 */
+	private void createRLColumn(Tree tree) {
 		TreeColumn column2 = new TreeColumn(tree, SWT.LEFT);
 		column2.setText("@RL{Level,Exception}");
 		column2.setWidth(250);
@@ -151,9 +165,6 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 		TreeColumn column3 = new TreeColumn(tree, SWT.LEFT);
 		column3.setText("例外");
 		column3.setWidth(350);
-
-		treeviewer.addDoubleClickListener(this);
-		treeviewer.addCheckStateListener(this);
 	}
 
 	private void createActions() {
@@ -404,7 +415,6 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 					//假設call chain 為A->B->C,使用者將B取消掉的話,要將C同時取消掉
 					disableChildCheckData(item);
 				}
-				
 			}
 		}
 
@@ -431,7 +441,6 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 		}
 		return null;
 	}
-
 	
 	private void disableChildCheckData(TreeItem actitem) {
 
@@ -459,8 +468,8 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 	 * @param activeItem
 	 */
 	private void showCheckData(TreeItem[] items,TreeItem activeItem) {
-		for (int xxx = 0, xsize = items.length; xxx < xsize; xxx++) {
-			TreeItem item = items[xxx];
+		for (int i = 0, xsize = items.length; i < xsize; i++) {
+			TreeItem item = items[i];
 			
 			if (item.getData() instanceof MethodWrapper) {
 				MethodWrapper mwobj = (MethodWrapper) item.getData();
@@ -499,16 +508,21 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 	// *************************************************************************
 	// ICheckStateListener 事件處理 END
 	// *************************************************************************
-
 	public void handleGenSeqDiagram(boolean isShowCallerType) {
+		
+		
 		//在畫循序圖前先顯示設定視窗
 		SDDialog dialog = new SDDialog(new Shell());
 		dialog.open();
 
+//		TreeItem[] items = treeviewer.getTree().getItems();
+//		test(items);
 		//若取消則不畫循序圖
-		if (!dialog.getIsCancel())
-			new CallersSeqDiagram().draw(this.getSite(), this.treeviewer.getTree().getItems(),isShowCallerType,
-					dialog.getIsPackage(),dialog.getIsShowAll(),dialog.getIsTopDown(),dialog.getPackageCount());
+		if (!dialog.isCancel())
+			new CallersSeqDiagram().draw(this.getSite(), this.treeviewer.getTree().getItems(),
+										isShowCallerType, dialog.isShowPackage(), dialog.isShowAllPackage(),
+										dialog.isTopDown(),dialog.getPackageCount(),
+										dialog.isShowRL(), dialog.isShowPath(), isShowRLInfo);
 	}
 
 	public void handleAddRLAnnotation() {
@@ -549,4 +563,19 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 		return this.showCaller;
 	}
 
+	public void showRLInfo(boolean isShow) {
+		Tree tree= treeviewer.getTree();
+		this.isShowRLInfo = isShow;
+
+		if (isShow) {
+			createRLColumn(tree);
+		} else {
+			//取得Column
+			TreeColumn column1 = tree.getColumn(1);
+			TreeColumn column2 = tree.getColumn(2);
+			//刪除Column
+			column1.dispose();
+			column2.dispose();
+		}
+	}
 }

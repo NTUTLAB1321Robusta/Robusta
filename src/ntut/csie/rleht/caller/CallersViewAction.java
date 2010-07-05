@@ -34,6 +34,9 @@ public class CallersViewAction extends ActionGroup {
 	private ChangeCallerTypeAction showCallerInfoAction;
 
 	private ChangeCallerTypeAction showCalleeInfoAction;
+
+	//顯示Robustness Level與例外資訊
+	private ShowRobustnessInfoAction showRLInfoAction;
 	
 	//列印產生的Sequence Diagram的動作
 	private PrintSDAction printSDAction; 
@@ -51,17 +54,44 @@ public class CallersViewAction extends ActionGroup {
 	 */
 	private void createActions() {
 
+		this.showRLInfoAction = new ShowRobustnessInfoAction();
+
 		this.refreshAction = new RefreshAction();
 		if (showAddRLAnnotation) {
 			this.addRLAnnotationAction = new AddRLAnnotationAction();
-
 		}
 		this.genSeqDiagramSelectedAction = new GenSeqDiagramSelectedAction();
 		this.showCallerInfoAction = new ChangeCallerTypeAction(TYPE_CALL_UP, TYPE_CALL_UP, ImageManager.getInstance().getDescriptor("CallUp"), this.getView().isShowCallerType());
 		this.showCalleeInfoAction = new ChangeCallerTypeAction(TYPE_CALL_DOWN, TYPE_CALL_DOWN, ImageManager.getInstance().getDescriptor("CallDown"), !this.getView().isShowCallerType());
-		
+
 		this.printSDAction = new PrintSDAction();
 //		this.saveSDAction = new SaveSDAction();
+	}
+	
+	/**
+	 * 顯示例外與強健度資訊
+	 * @author Shiau
+	 */
+	private class ShowRobustnessInfoAction extends Action {
+		public ShowRobustnessInfoAction() {
+			super("&顯示例外資訊", ImageManager.getInstance().getDescriptor("annotation"));
+			setToolTipText("&顯示例外資訊");
+			this.setChecked(false);
+		}
+
+		/**
+		 * @see org.eclipse.jface.action.Action#run()
+		 */
+		public void run() {
+			//設置是否顯示Exception資訊
+			if (showRLInfoAction.isChecked())
+				getView().showRLInfo(true);
+			else
+				getView().showRLInfo(false);
+			
+			//更新
+			getView().updateView();
+		}
 	}
 	
 	private class RefreshAction extends Action {
@@ -75,11 +105,9 @@ public class CallersViewAction extends ActionGroup {
 		 */
 		public void run() {
 			getView().updateView();
-
 		}
 	}
 
-	
 	/**
 	 * print the Sequence Diagram 
 	 */
@@ -164,6 +192,10 @@ public class CallersViewAction extends ActionGroup {
 
 	void fillToolBar(IToolBarManager toolBar) {
 		toolBar.removeAll();
+		toolBar.add(showRLInfoAction);
+		
+		toolBar.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+		
 		toolBar.add(showCallerInfoAction);
 		toolBar.add(showCalleeInfoAction);
 
@@ -176,10 +208,12 @@ public class CallersViewAction extends ActionGroup {
 		if (showAddRLAnnotation) {
 			toolBar.add(addRLAnnotationAction);
 		}
-
 	}
 
 	void fillViewMenu(IMenuManager menu) {
+		menu.add(this.showRLInfoAction);
+		
+		menu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 		menu.add(this.showCallerInfoAction);
 		menu.add(this.showCalleeInfoAction);
 
@@ -196,6 +230,10 @@ public class CallersViewAction extends ActionGroup {
 	}
 
 	public void fillContextMenu(IMenuManager menuMgr) {
+		menuMgr.appendToGroup(CallersViewAction.MENU_GROUP_ID, this.showRLInfoAction);
+		
+		menuMgr.appendToGroup(CallersViewAction.MENU_GROUP_ID, new Separator());
+
 		menuMgr.appendToGroup(CallersViewAction.MENU_GROUP_ID, this.showCallerInfoAction);
 		menuMgr.appendToGroup(CallersViewAction.MENU_GROUP_ID, this.showCalleeInfoAction);
 
