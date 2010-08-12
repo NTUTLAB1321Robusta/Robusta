@@ -156,7 +156,7 @@ public class LoggingAnalyzer extends RLBaseVisitor{
 	 * @param statement
 	 */
 	private void judgeLogging(ExpressionStatement statement) {
-		ASTBinding visitor = new ASTBinding(libMap);
+		LogAnalyzer visitor = new LogAnalyzer(libMap);
 		statement.getExpression().accept(visitor);
 
 		if (visitor.getResult())

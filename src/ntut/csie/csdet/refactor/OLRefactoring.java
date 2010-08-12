@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.TreeMap;
 
 import ntut.csie.csdet.preference.JDomUtil;
-import ntut.csie.csdet.visitor.ASTBinding;
+import ntut.csie.csdet.visitor.LogAnalyzer;
 import ntut.csie.csdet.visitor.LoggingAnalyzer;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.rleht.common.EditorUtils;
@@ -340,9 +340,9 @@ public class OLRefactoring implements IMarkerResolution{
 			/// рず盎代虫ず ///
 			//рlog4j㎝javaLog盎代ず
 			if (log4jSet.equals("Y"))
-				libMap.put("org.apache.log4j", ASTBinding.LIBRARY);
+				libMap.put("org.apache.log4j", LogAnalyzer.LIBRARY);
 			if (javaLogger.equals("Y"))
-				libMap.put("java.util.logging", ASTBinding.LIBRARY);
+				libMap.put("java.util.logging", LogAnalyzer.LIBRARY);
 
 			Element libRule = overLogging.getChild("librule");
 			// р场Library㎝Statement纗Listず
@@ -361,16 +361,16 @@ public class OLRefactoring implements IMarkerResolution{
 					//璝Τ.*盎代Library
 					if (temp.indexOf(".EH_STAR")!=-1) {
 						int pos = temp.indexOf(".EH_STAR");
-						libMap.put(temp.substring(0,pos), ASTBinding.LIBRARY);
+						libMap.put(temp.substring(0,pos), LogAnalyzer.LIBRARY);
 					//璝Τ*.盎代Method
 					} else if (temp.indexOf("EH_STAR.") != -1) {
-						libMap.put(temp.substring(8), ASTBinding.METHOD);
+						libMap.put(temp.substring(8), LogAnalyzer.METHOD);
 					//常⊿Τ常盎代盎代Library+Method
 					} else if (temp.lastIndexOf(".") != -1) {
-						libMap.put(temp, ASTBinding.LIBRARY_METHOD);
+						libMap.put(temp, LogAnalyzer.LIBRARY_METHOD);
 					//璝Τㄤウ猵玥砞ΘMethod
 					} else {
-						libMap.put(temp, ASTBinding.METHOD);
+						libMap.put(temp, LogAnalyzer.METHOD);
 					}
 				}
 			}
