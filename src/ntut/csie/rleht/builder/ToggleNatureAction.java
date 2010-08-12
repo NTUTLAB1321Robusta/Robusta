@@ -86,6 +86,7 @@ public class ToggleNatureAction implements IObjectActionDelegate {
 					description.setNatureIds(newNatures);
 					project.setDescription(description, null);
 					
+					// §R°£Maker
 					project.accept(new RLResourceVisitor());
 					return;
 				}

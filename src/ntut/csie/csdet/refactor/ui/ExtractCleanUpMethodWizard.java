@@ -12,6 +12,7 @@ public class ExtractCleanUpMethodWizard  extends RefactoringWizard{
 	public ExtractCleanUpMethodWizard(Refactoring refactoring, int flags) {
 		super(refactoring, DIALOG_BASED_USER_INTERFACE | PREVIEW_EXPAND_FIRST_NODE);
 		setDefaultPageTitle("Extract CleanUp Method");
+		//setDialogSettings(JavaPlugin.getDefault().getDialogSettings());
 	}
 	
 	@Override

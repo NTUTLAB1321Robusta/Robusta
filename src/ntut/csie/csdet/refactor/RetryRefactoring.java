@@ -9,12 +9,8 @@ import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLData;
 import ntut.csie.rleht.views.RLMessage;
 
-import org.eclipse.core.filebuffers.FileBuffers;
-import org.eclipse.core.filebuffers.ITextFileBufferManager;
-import org.eclipse.core.filebuffers.LocationKind;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jdt.astview.NodeFinder;
@@ -52,10 +48,8 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
-import org.eclipse.jdt.internal.corext.refactoring.util.SelectionAwareSourceRangeComputer;
-import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jdt.internal.corext.refactoring.changes.CompilationUnitChange;
 import org.eclipse.jface.text.Document;
-import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
@@ -63,13 +57,14 @@ import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.TextFileChange;
 import org.eclipse.text.edits.TextEdit;
+import org.eclipse.text.edits.TextEditGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import agile.exception.RL;
 import agile.exception.Robustness;
 
-public class RetryRefactoring extends Refactoring{
+public class RetryRefactoring extends Refactoring {
 	private static Logger logger = LoggerFactory.getLogger(RetryRefactoring.class);
 	
 	//使用者所選擇的Exception Type
@@ -135,11 +130,25 @@ public class RetryRefactoring extends Refactoring{
 	}
 
 	@Override
-	public Change createChange(IProgressMonitor pm) throws CoreException,
-			OperationCanceledException {
-		Change[] changes = new Change[] {textFileChange};
-		CompositeChange change = new CompositeChange("Introduce resourceful try clause", changes);
-		return change;
+	public Change createChange(IProgressMonitor pm)
+								throws CoreException, OperationCanceledException {
+		// 2010.07.20 之前的寫法，Preview的Token不會變色
+//		Change[] changes = new Change[] {textFileChange};
+//		CompositeChange change = new CompositeChange("Introduce resourceful try clause", changes);
+
+		String name = "Introduce resourceful try clause";
+		ICompilationUnit unit = (ICompilationUnit) element;
+		CompilationUnitChange result = new CompilationUnitChange(name, unit);
+		result.setSaveMode(TextFileChange.KEEP_SAVE_STATE);
+
+		// 將修改結果設置在CompilationUnitChange
+		TextEdit edits = textFileChange.getEdit();
+		result.setEdit(edits);
+		// 將修改結果設成Group，會顯示在Preview上方節點。
+		result.addTextEditGroup(new TextEditGroup("Introduce resourceful try clause", 
+								new TextEdit[] {edits} ));
+
+		return result;
 	}
 
 	private void collectChange(RefactoringStatus status){

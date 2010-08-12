@@ -68,7 +68,7 @@ public class ReportBuilder {
 		
 		//將User對於Filter的設定存下來
 		getFilterSettings();
-		
+
 		//解析專案
 		analysisProject(project);
 
@@ -286,7 +286,7 @@ public class ReportBuilder {
 	}
 
 	/**
-	 * 分析特定Project內的Semll資訊
+	 * 分析特定Project內的Smell資訊
 	 * @param project
 	 */
 	private void analysisProject(IProject project) {
@@ -298,6 +298,9 @@ public class ReportBuilder {
 		try {
 			List<IPackageFragmentRoot> root = getSourcePaths(javaP);
 			for (int i = 0 ; i < root.size() ; i++){
+				// 取得Folder的名稱
+				String folderName = root.get(i).getElementName();
+
 				//取得Root底下的所有Package
 				IJavaElement[] packages = root.get(i).getChildren();
 
@@ -307,7 +310,7 @@ public class ReportBuilder {
 						IPackageFragment pk = (IPackageFragment)ije;
 
 						//判斷是否要記錄
-						boolean isRecord = determineRecod(pk);
+						boolean isRecord = determineRecod(folderName, pk);
 
 						//取得Package底下的class
 						ICompilationUnit[] compilationUnits = pk.getCompilationUnits();
@@ -342,10 +345,11 @@ public class ReportBuilder {
 
 	/**
 	 * 判斷是否要紀錄這個Package的Smell資訊
+	 * @param folderName 
 	 * @param pk
 	 * @return
 	 */
-	private boolean determineRecod(IPackageFragment pk) {
+	private boolean determineRecod(String folderName, IPackageFragment pk) {
 		//若偵測全部Package 則全部紀錄
 		if (isAllPackage) {
 			return true;
@@ -364,6 +368,16 @@ public class ReportBuilder {
 				//若Package與FilterRule一樣則紀錄
 				} else if (pk.getElementName().equals(filterRule)) {
 					return true;
+				//若Folder Name相等則記錄
+				} else {
+					int left = filterRule.indexOf("EH_LEFT");
+					int right = filterRule.indexOf("EH_RIGHT");
+					if (left != -1 && right != -1 && left < right) {
+						String pkFolder = filterRule.substring(left + 7, right);
+						if (pkFolder.equals(folderName)) {
+							return true;
+						}
+					}
 				}
 			}
 		}

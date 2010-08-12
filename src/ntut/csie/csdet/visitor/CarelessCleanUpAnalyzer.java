@@ -16,7 +16,6 @@ import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
-import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Statement;
@@ -128,7 +127,7 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 								if((!isFromSource)&&(methodName.equals("close"))){
 									addMarker(node);
 								}
-							}else{
+							} else {
 								//使用者是否要另外偵測釋放資源的程式碼是否在函式中
 								if(isDetUserMethod){
 									//處理被呼叫的函式
@@ -191,14 +190,14 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 	 * 判斷被呼叫的函式是否有Careless CleanUp
 	 * @param MethodDeclaration
 	 */
-	private void judgeCalledMethod(MethodDeclaration md){
+	private void judgeCalledMethod(MethodDeclaration md) {
 		//取得該Method Declaration的所有statement
-		List<?> mdStatement=md.getBody().statements();
+		List<?> mdStatement = md.getBody().statements();
 		//取得該Method Declaration的thrown exception name
 		List<?> thrown=md.thrownExceptions();
 		//TODO 整理Code
-		if(mdStatement.size()!=0){
-			for(int j=0;j<mdStatement.size();j++){
+		if (mdStatement.size() != 0) {
+			for (int j = 0; j < mdStatement.size(); j++) {
 				//找函式內的try節點
 				if(mdStatement.get(j) instanceof TryStatement){
 					//取得try Block內的Statement
@@ -233,7 +232,12 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 							}
 						}
 				}
-				//若不為空，代表有丟出例外
+
+				/* 若不為空，代表有丟出例外
+				 * private void closeFile(FileOutputStream fos) throws IOException {
+				 * 	fos.close();
+				 * }
+				 */
 				if(thrown.size()!=0){
 					//object.close 皆為Expression Statement
 					if(mdStatement.get(j) instanceof ExpressionStatement){
@@ -280,9 +284,9 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 	 * 將找到的smell加入List中
 	 */
 	private void addMarker(ASTNode node){
-		CSMessage csmsg=new CSMessage(RLMarkerAttribute.CS_CARELESS_CLEANUP,null,											
-				node.toString(),node.getStartPosition(),
-				getLineNumber(node.getStartPosition()),null);
+		CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_CARELESS_CLEANUP,
+				null, node.toString(), node.getStartPosition(),
+				getLineNumber(node.getStartPosition()), null);
 		CarelessCleanUpList.add(csmsg);
 	}
 	

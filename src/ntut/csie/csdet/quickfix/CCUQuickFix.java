@@ -89,7 +89,7 @@ public class CCUQuickFix implements IMarkerResolution{
 
 				//找到要被修改的程式碼資訊
 				moveLine = findMoveLine();
-				
+
 				findTryStatement();
 
 				//若try Statement裡已經有Finally Block,就直接將該行程式碼移到Finally Block中
@@ -132,7 +132,7 @@ public class CCUQuickFix implements IMarkerResolution{
 				parser.setSource((ICompilationUnit) javaElement);
 				parser.setResolveBindings(true);
 				this.actRoot = (CompilationUnit) parser.createAST(null);
-				
+
 				//取得該class所有的method
 				ASTMethodCollector methodCollector = new ASTMethodCollector();
 				actRoot.accept(methodCollector);

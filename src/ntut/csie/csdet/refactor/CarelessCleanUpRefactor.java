@@ -26,6 +26,7 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
+import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
@@ -43,19 +44,21 @@ import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.PrimitiveType;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.TryStatement;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.TypeLiteral;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
+import org.eclipse.jdt.internal.corext.refactoring.changes.CompilationUnitChange;
 import org.eclipse.jface.text.Document;
 import org.eclipse.ltk.core.refactoring.Change;
-import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.TextFileChange;
 import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.TextEdit;
+import org.eclipse.text.edits.TextEditGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,38 +78,38 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	
 	private TextFileChange textFileChange;
 	
-	//存放目前要修改的.java檔
+	// 存放目前要修改的.java檔
 	private CompilationUnit actRoot;
 	
-	//存放目前所要fix的method node
+	// 存放目前所要fix的method node
 	private ASTNode currentMethodNode = null;
 	
+	// 收集Method內所有的Careless CleanUp
 	private List<CSMessage> CarelessCleanUpList = null;
 	
+	// Method是否存在，是：新增Caller Method ，否：新增Release Method
 	private boolean isMethodExist = false;
 	
-	//methodName的變數名稱,預設是close
+	// methodName的變數名稱,預設是close
 	private String methodName;
-	
-	//modifier的Type，預設是private
+
+	// modifier的Type，預設是private
 	private String modifierType;
-	
-	//log的type,預設是e.printStackTrace
+
+	// log的type,預設是e.printStackTrace
 	private String logType;
 	
-	//使用者若選擇Existing Method，要呼叫的Method資訊
+	// 使用者若選擇Existing Method，要呼叫的Method資訊
 	private IMethod existingMethod;
 	
-	//Careless CleanUp的Smell Message
+	// Careless CleanUp的Smell Message
 	private CSMessage smellMessage = null;
 	
-	//釋放資源的Statement
+	// 釋放資源的Statement
 	private ExpressionStatement cleanUpExpressionStatement;
 	
-	//原程式的Try Statement
-	private TryStatement tryStatement = null;
-	//原程式的Finally Statement
-	private Block finallyBlock;
+	// Try Block在Method裡的位置
+	private int tryIndex = -1;
 
 	/**
 	 * 結束動作
@@ -123,27 +126,106 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	
 	/**
 	 * 初始動作
+	 * 確認初始狀態是否符合
 	 */
 	@Override
 	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
 		//不需check initial condition
-		RefactoringStatus status = new RefactoringStatus();		
+		RefactoringStatus status;
+
+		boolean isOK = findMethod(marker.getResource());
+		if(isOK && currentMethodNode != null){
+			CarelessCleanUpAnalyzer visitor = new CarelessCleanUpAnalyzer(this.actRoot);
+			currentMethodNode.accept(visitor);
+			//取得code smell的List
+			CarelessCleanUpList = visitor.getCarelessCleanUpList();
+		}
+
+		//取得EH Smell的資訊
+		findSmellMessage();
+
+		// 取得Smell所在的Try Block中
+		TryStatement tryStatement = findTryStatement();
+		
+		// 判斷Smell是否位於If之中，若是其If內的Statement數不能過超1行
+		boolean isSizeSafe = detectIfStatementSize(tryStatement.getBody());
+
+		if (isSizeSafe)
+			status = new RefactoringStatus();
+		else
+			status = RefactoringStatus.createFatalErrorStatus("判斷式內有其它的程式碼");
+		
 		return status;
+	}
+	
+	/**
+	 * 刪除Block內Smell Statement
+	 * @param block
+	 */
+	private boolean detectIfStatementSize(Block block) {
+		List<?> statements = block.statements();
+		//比對Try Statement裡是否有欲移動的程式碼,若有則移除
+		for(int i=0; i < statements.size(); i++) {
+			if (statements.get(i) instanceof IfStatement) {
+				IfStatement aStatement = (IfStatement) statements.get(i);
+				// 若為If判斷式，且包含Smell資訊
+				if (aStatement.getStartPosition() <= smellMessage.getPosition() &&
+					aStatement.getStartPosition() + aStatement.getLength()
+												  >= smellMessage.getPosition()) {
+
+					IfStatement ifStatement = (IfStatement) statements.remove(i);
+					Statement thenStatement = ifStatement.getThenStatement();
+					// 如果為Block ( if有加"{" "}" )
+					if (thenStatement instanceof Block) {
+						Block ifBlock = (Block) ifStatement.getThenStatement();
+						int ifSize = ifBlock.statements().size();
+						if (ifSize == 1)
+							return true;
+						else
+							return false;
+					// 不為Block (if 後直接接Statement)
+					} else {
+						return true;
+					}
+				}
+			}
+		}
+		return true;
 	}
 
 	@Override
-	public Change createChange(IProgressMonitor pm) throws CoreException,
-			OperationCanceledException {
-		//把要變更的結果包成composite傳出去
-		Change[] changes = new Change[] {textFileChange};
-		CompositeChange change = new CompositeChange("My Extract Method", changes);
-		return change;
+	public Change createChange(IProgressMonitor pm) 
+								throws CoreException, OperationCanceledException {
+		// 2010.07.20 之前的寫法，Preview的Token不會變色
+		// 把要變更的結果包成composite傳出去
+		//Change[] changes = new Change[] {textFileChange};
+		//CompositeChange change = new CompositeChange("My Extract Method", changes);
+
+		/* 參考Eclipse Code
+		 * org.eclipse.jdt.internal.corext.refactoring.code.ExtractMethodRefactoring
+		 * createChange method的寫法 */
+		String name = "Extract CleanUp Method";
+		ICompilationUnit unit = (ICompilationUnit) this.actOpenable;
+		CompilationUnitChange result = new CompilationUnitChange(name, unit);
+		result.setSaveMode(TextFileChange.KEEP_SAVE_STATE);
+
+		//MultiTextEdit root= new MultiTextEdit();
+		//root.addChild(edits);
+
+		// 將修改結果設置在CompilationUnitChange
+		TextEdit edits = textFileChange.getEdit();
+		result.setEdit(edits);
+		// 將修改結果設成Group，會顯示在Preview上方節點。
+		result.addTextEditGroup(new TextEditGroup("Careless Clean Up Method", 
+								new TextEdit[] {edits} ));
+
+		return result;
 	}
 
 	@Override
 	public String getName() {		
-		return "My Extract Method";
+		return "Extract CleanUp Method";
 	}
 	
 	/**
@@ -162,11 +244,11 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	private void collectChange(IResource resource){
 		//取得要修改的CompilationUnit
 		boolean isOK = findMethod(resource);
-		if(isOK && currentMethodNode != null){
-			CarelessCleanUpAnalyzer visitor = new CarelessCleanUpAnalyzer(this.actRoot);
-			currentMethodNode.accept(visitor);
-			//取得code smell的List
-			CarelessCleanUpList = visitor.getCarelessCleanUpList();	
+		if (isOK && currentMethodNode != null) {
+//			CarelessCleanUpAnalyzer visitor = new CarelessCleanUpAnalyzer(this.actRoot);
+//			currentMethodNode.accept(visitor);
+//			//取得code smell的List
+//			CarelessCleanUpList = visitor.getCarelessCleanUpList();	
 
 			extractMethod();
 		}
@@ -215,24 +297,77 @@ public class CarelessCleanUpRefactor extends Refactoring {
 		actRoot.recordModifications();
 		AST ast = currentMethodNode.getAST();
 
-		//取得EH Smell的資訊
+		// 取得EH Smell的資訊
 		findSmellMessage();
-		
-		//若try Statement裡沒有Finally Block,則建立Finally Block
-		judgeFinallyBlock(ast);
 
-		//刪除fos.close();
-		deleteCleanUpLine();
+		// 取得Smell所在的Try Block中
+		TryStatement tryStatement = findTryStatement();
 
-		//在finally中加入closeStream(fos)
-		addMethodInFinally(ast);
+		// 若try Statement裡沒有Finally Block,則建立Finally Block
+		Block finallyBlock = addFinallyBlock(ast, tryStatement);
 
-		//若Method不存在，建立新Method
-		if (!isMethodExist)
-			addExtractMethod(ast);
+		// 刪除fos.close();
+		deleteCleanUpLine(ast, tryStatement);
 
-		//寫回Edit中
+		// 若fos是在Try Block宣告，將它移至Try Block外
+		moveInstance(ast, tryStatement);
+
+		// 在finally中加入closeStream(fos)
+		addMethodInFinally(ast, finallyBlock);
+
+		// 寫回Edit中
 		applyChange();
+	}
+
+	/**
+	 * 將Instance移至Try Catch外
+	 * @param ast
+	 * @param tryStatement
+	 */
+	private void moveInstance(AST ast, TryStatement tryStatement) {		
+		// e.g. fos.close();
+		MethodInvocation delLineMI = (MethodInvocation) cleanUpExpressionStatement.getExpression();
+		// e.g. fos
+		Expression expression = delLineMI.getExpression();
+
+		// traverse try statements
+		List<?> tryList = tryStatement.getBody().statements();
+		for (int i=0; i < tryList.size(); i++) {
+
+			if (tryList.get(i) instanceof VariableDeclarationStatement) {
+				VariableDeclarationStatement variable = (VariableDeclarationStatement) tryList.get(i);
+				List fragmentsList = variable.fragments();
+				if (fragmentsList.size() == 1) {
+					VariableDeclarationFragment fragment = (VariableDeclarationFragment) fragmentsList.get(0);
+					// 若參數建在Try Block內
+					if (fragment.getName().toString().equals(expression.toString())) {
+						/* 將   InputStream fos = new ImputStream();
+						 * 改為 fos = new InputStream();
+						 * */
+						Assignment assignment = ast.newAssignment();
+						assignment.setOperator(Assignment.Operator.ASSIGN);
+						// fos
+						assignment.setLeftHandSide(ast.newSimpleName(fragment.getName().toString()));
+						// new InputStream
+						Expression init = fragment.getInitializer();
+						ASTNode copyNode = ASTNode.copySubtree(init.getAST(), init);
+						assignment.setRightHandSide((Expression) copyNode);
+
+						// 將fos = new ImputStream(); 替換到原本的程式裡
+						ExpressionStatement expressionStatement = ast.newExpressionStatement(assignment);
+						tryStatement.getBody().statements().set(i, expressionStatement);
+
+						// InputStream fos = null
+						// 將new動作替換成null
+						fragment.setInitializer(ast.newNullLiteral());
+						// 加至原本程式碼之前
+						MethodDeclaration md = (MethodDeclaration) currentMethodNode;
+						md.getBody().statements().add(tryIndex, variable);
+						break;
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -248,9 +383,10 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	}
 	
 	/**
-	 * 判斷Try Statment是否有Finally Block，若無則建立Finally Block
+	 * 取得Smell所在的Try Statement
+	 * @return	尋找得到：Try Statement 找不到：Null
 	 */
-	private void judgeFinallyBlock(AST ast) {
+	private TryStatement findTryStatement() {
 		//取得方法中所有的statement
 		MethodDeclaration md = (MethodDeclaration) currentMethodNode;
 		Block mdBlock = md.getBody();
@@ -260,52 +396,86 @@ public class CarelessCleanUpRefactor extends Refactoring {
 		for (int i=0; i < statement.size(); i++) {
 			if (statement.get(i) instanceof TryStatement) {
 				TryStatement aTryStatement = (TryStatement) statement.get(i);
+				// 如果Smell位於Try內
 				if (aTryStatement.getStartPosition() <= smellMessage.getPosition() &&
-					aTryStatement.getStartPosition() + aTryStatement.getLength() >= smellMessage.getPosition()) {
-					tryStatement = aTryStatement;
-					break;
+					aTryStatement.getStartPosition()+ aTryStatement.getLength()
+					                                 >= smellMessage.getPosition()) {					
+					tryIndex = i;
+					return aTryStatement;
 				}
 			}
 		}
+		return null;
+	}
 
+	/**
+	 * 判斷Try Statement是否有Finally Block，若無則建立Finally Block
+	 * @param tryStatement 
+	 */
+	private Block addFinallyBlock(AST ast, TryStatement tryStatement) {
 		assert tryStatement != null;
 		if (tryStatement.getFinally() == null) {
 			Block block = ast.newBlock();
 			tryStatement.setFinally(block);
 		}
-		finallyBlock = tryStatement.getFinally();
+		return tryStatement.getFinally();
 	}
-	
+
 	/**
 	 * 刪除Careless CleanUp Smell 該行
+	 * @param ast 
+	 * @param tryStatement 
 	 */
-	private void deleteCleanUpLine() {
+	private void deleteCleanUpLine(AST ast, TryStatement tryStatement) {
 		boolean isDeleted = false;
 		//尋找Try Block
-		isDeleted = deleteBlockStatement(tryStatement.getBody());
+		isDeleted = deleteBlockStatement(tryStatement.getBody(), ast);
 
 		List<CatchClause> catchs = tryStatement.catchClauses();
 		for (int j=0; j < catchs.size() && !isDeleted; j++) {
 			CatchClause catchClause = catchs.get(j);
 			//尋找Catch Clause
-			isDeleted = deleteBlockStatement(catchClause.getBody());
+			isDeleted = deleteBlockStatement(catchClause.getBody(), ast);
 		}
 	}
 
 	/**
 	 * 刪除Block內Smell Statement
-	 * @param block
+	 * @param block 要被刪除的Block
+	 * @param ast
+	 * @return		是否刪除
 	 */
-	private boolean deleteBlockStatement(Block block) {
-		List<?> statments = block.statements();
+	private boolean deleteBlockStatement(Block block, AST ast) {
+		List<?> statements = block.statements();
 		//比對Try Statement裡是否有欲移動的程式碼,若有則移除
-		for(int i=0; i < statments.size(); i++) {
-			if (statments.get(i) instanceof ExpressionStatement) {
-				ExpressionStatement aStatement = (ExpressionStatement) statments.get(i);
+		for(int i=0; i < statements.size(); i++) {
+			if (statements.get(i) instanceof ExpressionStatement) {
+				ExpressionStatement aStatement = (ExpressionStatement) statements.get(i);
+				// 如果一個Try Catch內有多個Careless CleanUp Smell
+				// 用位置判斷才能正確判斷出是哪一個
 				if (aStatement.getStartPosition() == smellMessage.getPosition()) {
-					cleanUpExpressionStatement = (ExpressionStatement) statments.get(i);
-					statments.remove(i);
+					cleanUpExpressionStatement = (ExpressionStatement) statements.remove(i);
 					return true;
+				}
+			} else if (statements.get(i) instanceof IfStatement) {
+				IfStatement aStatement = (IfStatement) statements.get(i);
+				// 若為If判斷式，且包含Smell資訊
+				if (aStatement.getStartPosition() <= smellMessage.getPosition() &&
+					aStatement.getStartPosition() + aStatement.getLength()
+												  >= smellMessage.getPosition()) {
+
+					IfStatement ifStatement = (IfStatement) statements.remove(i);
+					Statement thenStatement = ifStatement.getThenStatement();
+					// 如果為Block ( if有加"{" "}" )
+					if (thenStatement instanceof Block) {
+						Block ifBlock = (Block) ifStatement.getThenStatement();
+						return deleteBlockStatement(ifBlock, ast);
+					// 不為Block (if 後直接接Statement)
+					} else {
+						ifStatement.setThenStatement(ast.newBlock());
+						cleanUpExpressionStatement = (ExpressionStatement) thenStatement;
+						return true;
+					}
 				}
 			}
 		}
@@ -359,65 +529,109 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	}
 
 	/**
-	 * @param ast
-	 * @param sn
+	 * 將Release的Method加入至Finally Block中
+	 * @param ast	MethodNode
+	 * @param finallyBlock 
 	 */
-	private void addMethodInFinally(AST ast) {
+	private void addMethodInFinally(AST ast, Block finallyBlock) {
+		// e.g. fos.close();
 		MethodInvocation delLineMI = (MethodInvocation) cleanUpExpressionStatement.getExpression();
-		SimpleName simpleName = (SimpleName) delLineMI.getExpression();
+		// e.g. fos
+		Expression expression = delLineMI.getExpression();
 
-		//新增的Method Invocation
-		MethodInvocation newMI = ast.newMethodInvocation();
+		// 若該行為Method (e.g. closeFile(fos)) 則直直接此行移至Finally Block中
+		if (expression == null) {
+			finallyBlock.statements().add(cleanUpExpressionStatement);
+			return;
+		}
 
+		MethodInvocation newMI = null;
+		// 若Method不存在
 		if (!isMethodExist) {
-			//設定MI的name
-			newMI.setName(ast.newSimpleName(methodName));
-			//設定MI的參數
-			newMI.arguments().add(ast.newSimpleName(simpleName.getIdentifier()));
+			newMI = createNewMethod(ast, expression, methodName);
+
+			// 若Method不存在，建立新Method
+			addExtractMethod(ast);
+
+		// 若Method已存在
 		} else {
-			try {
-				//Private時不特別動作
-				//if ((existingMethod.getFlags() & Flags.AccPrivate) != 0)
+			//新增的Method Invocation
+			newMI = createNewMethod(ast, expression, existingMethod.getElementName());
 
-				IType classType = (IType) existingMethod.getParent();
-				//若為Public
-				if ((existingMethod.getFlags() & Flags.AccPublic) != 0) {
-
-					if ((existingMethod.getFlags() & Flags.AccStatic) != 0) {
-						newMI.setExpression(ast.newSimpleName(classType.getElementName()));
-					} else {
-						//new Method();
-						ClassInstanceCreation classInstance = ast.newClassInstanceCreation();
-						classInstance.setType(ast.newSimpleType(ast.newSimpleName(classType.getElementName())));
-						
-						//method = new Method();
-						VariableDeclarationFragment variableDeclarationFragment = ast.newVariableDeclarationFragment();
-						variableDeclarationFragment.setName(ast.newSimpleName("method"));
-						variableDeclarationFragment.setInitializer(classInstance);
-	
-						//Method method = new Method;
-						VariableDeclarationStatement variableDeclaration = ast.newVariableDeclarationStatement(variableDeclarationFragment);
-						variableDeclaration.setType(ast.newSimpleType(ast.newSimpleName(classType.getElementName())));
-
-						finallyBlock.statements().add(variableDeclaration);
-
-						newMI.setExpression(ast.newSimpleName("method"));
-					}
-				}
-				
-				addImportPackage(classType);
-				
-				//設定MI的name
-				newMI.setName(ast.newSimpleName(existingMethod.getElementName()));
-				//設定MI的參數
-				newMI.arguments().add(ast.newSimpleName(simpleName.getIdentifier()));
-			} catch (JavaModelException e) {
-				logger.error("[Java Method] EXCEPTION", e);
-			}
+			// 設置呼叫Method的名稱
+			createCallerMethod(ast, newMI, finallyBlock);
 		}
 
 		ExpressionStatement es = ast.newExpressionStatement((Expression) newMI);
 		finallyBlock.statements().add(es);
+	}
+
+	/**
+	 * 新增Method
+	 * @param ast
+	 * @param expression
+	 * @return
+	 */
+	private MethodInvocation createNewMethod(AST ast, Expression expression, String methodName) {
+		SimpleName simpleName = (SimpleName) expression;
+
+		//新增的Method Invocation
+		MethodInvocation newMI = ast.newMethodInvocation();
+
+		// 設定MI的name
+		newMI.setName(ast.newSimpleName(methodName));
+
+		// 設定MI的參數
+		newMI.arguments().add(ast.newSimpleName(simpleName.getIdentifier()));
+
+		return newMI;
+	}
+
+	/**
+	 * 新增Caller Method
+	 * @param ast
+	 * @param newMI
+	 * @param finallyBlock 
+	 */
+	private void createCallerMethod(AST ast, MethodInvocation newMI, Block finallyBlock) {
+		try {
+			//Private時不特別動作
+			//if ((existingMethod.getFlags() & Flags.AccPrivate) != 0)
+
+			IType classType = (IType) existingMethod.getParent();
+			//若為Public
+			if ((existingMethod.getFlags() & Flags.AccPublic) != 0) {
+				// 若Method為Static: 直接呼叫
+				if ((existingMethod.getFlags() & Flags.AccStatic) != 0) {
+					newMI.setExpression(ast.newSimpleName(classType.getElementName()));
+
+				// 若非Static Method: 先New再呼叫
+				} else {
+					//new Method();
+					ClassInstanceCreation classInstance = ast.newClassInstanceCreation();
+					classInstance.setType(ast.newSimpleType(ast.newSimpleName(classType.getElementName())));
+
+					//method = new Method();
+					VariableDeclarationFragment variableDeclarationFragment = ast.newVariableDeclarationFragment();
+					variableDeclarationFragment.setName(ast.newSimpleName("method"));
+					variableDeclarationFragment.setInitializer(classInstance);
+
+					//Method method = new Method;
+					VariableDeclarationStatement variableDeclaration = ast.newVariableDeclarationStatement(variableDeclarationFragment);
+					variableDeclaration.setType(ast.newSimpleType(ast.newSimpleName(classType.getElementName())));
+
+					finallyBlock.statements().add(variableDeclaration);
+
+					newMI.setExpression(ast.newSimpleName("method"));
+				}
+			}
+
+			// 新增Import資訊
+			addImportPackage(classType);
+
+		} catch (JavaModelException e) {
+			logger.error("[Java Method] EXCEPTION", e);
+		}
 	}
 
 	/**
@@ -462,6 +676,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 		in.setOperator(InfixExpression.Operator.NOT_EQUALS);
 		in.setLeftOperand(ast.newSimpleName(delLineMI.getExpression().toString()));
 		in.setRightOperand(ast.newNullLiteral());
+
 		//建立 if Satement
 		IfStatement ifStatement = ast.newIfStatement();
 		ifStatement.setExpression(in);

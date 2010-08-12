@@ -31,6 +31,9 @@ public interface RLMarkerAttribute {
 	//Suppress Smell In Catch
 	public static final String SS_IN_CATCH = "SS_IN_CATCH";
 
+	
+
+
 	//ignore exceptionªºtype
 	public static final String CS_INGNORE_EXCEPTION = "Ignore_Checked_Exception";
 	
@@ -48,6 +51,9 @@ public interface RLMarkerAttribute {
 	
 	//Over Logging
 	public static final String CS_OVER_LOGGING = "Over_Logging";
+
+
+	
 	
 	//Total Code Smell Type
 	public static final String[] CS_TOTAL_TYPE = new String[]{ CS_INGNORE_EXCEPTION,

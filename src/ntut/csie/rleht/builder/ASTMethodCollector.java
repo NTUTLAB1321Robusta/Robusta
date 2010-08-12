@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
  * 收集所有class中的method
  * @author allen
  */
-
 public class ASTMethodCollector extends RLBaseVisitor {
 	private static Logger logger = LoggerFactory.getLogger(ASTMethodCollector.class);
 	private List<ASTNode> methodList;
@@ -32,14 +31,12 @@ public class ASTMethodCollector extends RLBaseVisitor {
 	protected boolean visitNode(ASTNode node) {
 
 		try {
-
 			switch (node.getNodeType()) {
 				case ASTNode.METHOD_DECLARATION:
 					this.methodList.add(node);
 					return true;
 				default:
 					return true;
-
 			}
 		}
 		catch (Exception ex) {

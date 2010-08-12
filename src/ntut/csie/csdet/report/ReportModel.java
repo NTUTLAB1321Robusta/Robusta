@@ -182,8 +182,14 @@ public class ReportModel {
 	public List<String> getFilterList() {
 		return filterRuleList;
 	}
-	public void setFilterList(List<String> filterRuleList) {
-		this.filterRuleList = filterRuleList;
+	public void setFilterList(List<String> ruleList) {
+		for (String temp: ruleList) {
+			temp = temp.replace("EH_STAR", "*");
+			temp = temp.replace("EH_LEFT", "");
+			temp = temp.replace("EH_RIGHT", "");
+
+			filterRuleList.add(temp);
+		}
 	}
 	
 	///取得全部的行數///

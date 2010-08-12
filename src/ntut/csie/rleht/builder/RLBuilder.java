@@ -155,7 +155,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	}
 	
 	/*
-	 * (non-Javadoc)每次有build的時候,都會invoke這個method
+	 * 每次有build的時候,都會invoke這個method
 	 * 
 	 * @see org.eclipse.core.internal.events.InternalBuilder#build(int,
 	 *      java.util.Map, org.eclipse.core.runtime.IProgressMonitor)

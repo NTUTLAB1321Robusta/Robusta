@@ -26,9 +26,6 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.internal.corext.callhierarchy.MethodWrapper;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IEditorDescriptor;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
@@ -56,6 +53,7 @@ public class CallersSeqDiagram {
 	
 	/**
 	 * 畫Sequence Diagram
+	 * @param selectProject		位於的專案
 	 * @param site				WorkPart
 	 * @param items				Tree Item
 	 * @param isShowCallerType	Caller / Callee
@@ -67,7 +65,7 @@ public class CallersSeqDiagram {
 	 * @param isShowPath		是否顯示Exception的名稱
 	 * @param isTraced			是否已Trace RL資訊
 	 */
-	public void draw(IWorkbenchPartSite site, TreeItem[] items,boolean isShowCallerType,
+	public void draw(IProject selectProject, IWorkbenchPartSite site, TreeItem[] items,boolean isShowCallerType,
 					 boolean isShowPackage, boolean isShowAllPackage, boolean isTopDown,
 					 int packageCount, boolean isShowRL, boolean isShowPath, boolean isTraced) {
 		// instanciate builder.
@@ -205,42 +203,39 @@ public class CallersSeqDiagram {
 		// convert to xml
 		// logger.debug("[handleGenSeqDiagram]" + builder.toXML());
 
-		IEditorPart editor = site.getPage().getActiveEditor();
-		//TODO editor可能為null point
-		IEditorInput input = editor.getEditorInput();
+		//原本Editor可能為null point
+		//IEditorPart editor = site.getPage().getActiveEditor();
+		//IEditorInput input = editor.getEditorInput();
 		try {
-			if (input instanceof IFileEditorInput) {
-				String headName = "seq";
-				String tailName = ".sqd";
-				IFile file = ((IFileEditorInput) input).getFile();
+			String headName = "seq";
+			String tailName = ".sqd";
 
-				IProject project = file.getProject();
-				IFolder folder = project.getFolder("SEQ_DIAGRAM");
-				// at this point, no resources have been created
-				if (!project.exists())
-					project.create(null);
-				if (!project.isOpen())
-					project.open(null);
-				if (!folder.exists())
-					folder.create(IResource.NONE, true, null);
+			IFolder folder = selectProject.getFolder("SEQ_DIAGRAM");
+			// at this point, no resources have been created
+			if (!selectProject.exists())
+				selectProject.create(null);
+			if (!selectProject.isOpen())
+				selectProject.open(null);
+			if (!folder.exists())
+				folder.create(IResource.NONE, true, null);
 
-				//檔案不重複
-				for (int i=1; true; i++) {
-					file = folder.getFile(headName + i + tailName);
-					if (!file.exists())
-						break;
-				}
-
-				if (!file.exists()) {
-					byte[] bytes = builder.toXML().getBytes();
-					InputStream source = new ByteArrayInputStream(bytes);
-					file.create(source, IResource.NONE, null);
-				}
-
-				// Open Editor
-				IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(file.getName());
-				editor = site.getPage().openEditor(new FileEditorInput(file), desc.getId());
+			//檔案不重複
+			IFile file;
+			for (int i=1; true; i++) {
+				file = folder.getFile(headName + i + tailName);
+				if (!file.exists())
+					break;
 			}
+
+			if (!file.exists()) {
+				byte[] bytes = builder.toXML().getBytes();
+				InputStream source = new ByteArrayInputStream(bytes);
+				file.create(source, IResource.NONE, null);
+			}
+
+			// Open Editor
+			IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(file.getName());
+			site.getPage().openEditor(new FileEditorInput(file), desc.getId());
 		} catch (CoreException ex) {
 			logger.error("[handleGenSeqDiagram]", ex);
 			ex.printStackTrace();

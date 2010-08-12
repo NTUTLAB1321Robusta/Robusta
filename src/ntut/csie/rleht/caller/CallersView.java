@@ -6,6 +6,7 @@ import ntut.csie.rleht.common.ConsoleLog;
 import ntut.csie.rleht.common.EditorUtils;
 import ntut.csie.rleht.common.RLUtils;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.ui.actions.PrintAction;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -83,6 +84,8 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 	private boolean showCaller = false;
 
 	private IMethod lastMethod = null;
+
+	private IProject lastProject = null;
 
 	private boolean checkFlag = false;
 	
@@ -242,6 +245,8 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 						// lastMethodName = method.toString();
 						//取得使用者所選擇要Call Hierarchy的method
 						lastMethod = method;
+						// 取得使用者位於的Project
+						lastProject = method.getJavaProject().getProject();
 						
 						this.updateView(method);
 					}
@@ -519,7 +524,7 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 //		test(items);
 		//若取消則不畫循序圖
 		if (!dialog.isCancel())
-			new CallersSeqDiagram().draw(this.getSite(), this.treeviewer.getTree().getItems(),
+			new CallersSeqDiagram().draw(lastProject, this.getSite(), this.treeviewer.getTree().getItems(),
 										isShowCallerType, dialog.isShowPackage(), dialog.isShowAllPackage(),
 										dialog.isTopDown(),dialog.getPackageCount(),
 										dialog.isShowRL(), dialog.isShowPath(), isShowRLInfo);

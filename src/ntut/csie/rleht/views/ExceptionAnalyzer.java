@@ -143,6 +143,10 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		nestedTryList = new ArrayList<CSMessage>();
 	}
 
+	/**
+	 * 取得Method上的Annotation資訊
+	 * @param node
+	 */
 	private void getMethodAnnotation(ASTNode node) {
 		MethodDeclaration method = (MethodDeclaration) node;
 
@@ -206,6 +210,10 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		return this.parentId + this.idxTry + "." + this.idxCatch + "-";
 	}
 
+	/**
+	 * 取得Method所宣告的throws Exception Type Name
+	 * @param node	MethodDeclaration
+	 */
 	@SuppressWarnings("unchecked")
 	private void getMethodThrowsList(ASTNode node) {
 		MethodDeclaration method = (MethodDeclaration) node;
@@ -349,6 +357,13 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		}
 	}
 
+	/**
+	 * 1. 偵測Nested Try Block的EH Smell，對其Try、Catch與Finally再使用Visitor偵測。
+	 * 2. 記錄Catch Clause所宣告的Exception Type
+	 * 3. 取得Catch內的Suppress Smell的資訊
+	 * 
+	 * @param node	TryStatement
+	 */
 	private void processTryStatement(ASTNode node) {
 		
 		//logger.debug("#####===>TRY_STATEMENT " );

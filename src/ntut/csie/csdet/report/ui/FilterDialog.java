@@ -275,7 +275,7 @@ public class FilterDialog extends Dialog {
 			{
 				Element filter = root.getChild(JDomUtil.EHSmellFilterTaq).getChild("filter");
 				isAllPackage = Boolean.valueOf(filter.getAttribute("IsAllPackage").getValue());
-				
+
 				List<Attribute> libRuleList = filter.getAttributes();
 				//把使用者所儲存的Filter規則設定存到Map資料裡
 				for (int i=0;i<libRuleList.size();i++) {
@@ -283,8 +283,8 @@ public class FilterDialog extends Dialog {
 						continue;
 
 					//把EH_STAR取代為符號"*"
-					String temp = libRuleList.get(i).getQualifiedName().replace("EH_STAR", "*");
-					filterMap.put(temp,libRuleList.get(i).getValue().equals("true"));
+					String temp = toUnNormalize(libRuleList.get(i).getQualifiedName());
+					filterMap.put(temp, libRuleList.get(i).getValue().equals("true"));
 				}
 			} else {
 				isAllPackage = true;
@@ -316,7 +316,7 @@ public class FilterDialog extends Dialog {
 		TableItem[] temp = displayTable.getItems();
 		//去traverse整個table看item的Text和是否被勾選到
 		for(int i=0;i<temp.length;i++) {
-			String libName = temp[i].getText().replace("*", "EH_STAR");
+			String libName = toNormalize(temp[i].getText());
 			filter.setAttribute(libName, String.valueOf(temp[i].getChecked()));
 		}
 
@@ -325,6 +325,30 @@ public class FilterDialog extends Dialog {
 		//將檔案寫回
 		String path = JDomUtil.getWorkspace() +File.separator +"CSPreference.xml";
 		JDomUtil.OutputXMLFile(root.getDocument(), path);
+	}
+
+	/**
+	 * 將特殊文字正規化
+	 * @param libName
+	 * @return
+	 */
+	private String toNormalize(String libName) {
+		libName = libName.replace("*", "EH_STAR");
+		libName = libName.replace("[", "EH_LEFT");
+		libName = libName.replace("]", "EH_RIGHT");
+		return libName;
+	}
+	
+	/**
+	 * 將正規化的文字反譯回來
+	 * @param libName
+	 * @return
+	 */
+	private String toUnNormalize(String libName) {
+		libName = libName.replace("EH_STAR", "*");
+		libName = libName.replace("EH_LEFT", "[");
+		libName = libName.replace("EH_RIGHT", "]");
+		return libName;
 	}
 	
 	/**

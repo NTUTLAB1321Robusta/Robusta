@@ -38,8 +38,9 @@ public class ASTBinding extends RLBaseVisitor{
 					//取得Method的名稱
 					String methodName = mi.resolveMethodBinding().getName();
 
-					//如果該行有Array(如java.util.ArrayList<java.lang.Boolean>)，把<>內容拿掉
-					if (libName.indexOf("<")!=-1)
+					// 特殊例子：
+					// 如果該行有Array(如java.util.ArrayList<java.lang.Boolean>)，把<>內容拿掉
+					if (libName.indexOf("<") != -1)
 						libName = libName.substring(0,libName.indexOf("<"));
 
 					Iterator<String> libIt = libMap.keySet().iterator();

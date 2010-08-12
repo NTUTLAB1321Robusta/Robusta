@@ -113,7 +113,7 @@ public class SmellReport {
 		} else {
 			//若有條件印出條件
 			if (model.getFilterList().size() != 0)
-				summary.addContent(new Element("Filter").addContent(model.getFilterList().toString().replace("EH_STAR", "*")));
+				summary.addContent(new Element("Filter").addContent(model.getFilterList().toString()));
 			//若沒有條件則印出沒有條件
 			else
 				summary.addContent(new Element("Filter").addContent("[No Package Select]"));			

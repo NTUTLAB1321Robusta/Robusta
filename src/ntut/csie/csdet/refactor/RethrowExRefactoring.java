@@ -44,15 +44,16 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TypeLiteral;
+import org.eclipse.jdt.internal.corext.refactoring.changes.CompilationUnitChange;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.ltk.core.refactoring.Change;
-import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.TextFileChange;
 import org.eclipse.text.edits.TextEdit;
+import org.eclipse.text.edits.TextEditGroup;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.texteditor.ITextEditor;
 import org.slf4j.Logger;
@@ -120,12 +121,26 @@ public class RethrowExRefactoring extends Refactoring {
 	}
 
 	@Override
-	public Change createChange(IProgressMonitor pm) throws CoreException,
-			OperationCanceledException {
-		//把要變更的結果包成composite傳出去
-		Change[] changes = new Change[] {textFileChange};
-		CompositeChange change = new CompositeChange("Rethrow Unchecked Exception", changes);
-		return change;
+	public Change createChange(IProgressMonitor pm)
+								throws CoreException, OperationCanceledException {
+		// 2010.07.20 之前的寫法，Preview的Token不會變色
+		// 把要變更的結果包成composite傳出去
+		//Change[] changes = new Change[] {textFileChange};
+		//CompositeChange change = new CompositeChange("Rethrow Unchecked Exception", changes);
+
+		String name = "Rethrow Unchecked Exception";
+		ICompilationUnit unit = (ICompilationUnit) this.actOpenable;
+		CompilationUnitChange result = new CompilationUnitChange(name, unit);
+		result.setSaveMode(TextFileChange.KEEP_SAVE_STATE);
+
+		// 將修改結果設置在CompilationUnitChange
+		TextEdit edits = textFileChange.getEdit();
+		result.setEdit(edits);
+		// 將修改結果設成Group，會顯示在Preview上方節點。
+		result.addTextEditGroup(new TextEditGroup("Rethrow Unchecked Exception", 
+								new TextEdit[] {edits} ));
+
+		return result;
 	}
 
 	@Override

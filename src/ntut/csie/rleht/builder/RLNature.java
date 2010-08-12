@@ -17,20 +17,22 @@ public class RLNature implements IProjectNature {
 	public static IProject project;
 
 	/*
-	 * (non-Javadoc)
+	 * 將RLBuilder加入專案中，使與專案產生關聯性
 	 * 
 	 * @see org.eclipse.core.resources.IProjectNature#configure()
 	 */
 	public void configure() throws CoreException {
 		IProjectDescription desc = project.getDescription();
 		ICommand[] commands = desc.getBuildSpec();
-		
+
+		// 若RLBuilder已在專案裡則不做事
 		for (int i = 0; i < commands.length; ++i) {
 			if (commands[i].getBuilderName().equals(RLBuilder.BUILDER_ID)) {
 				return;
 			}
 		}
 
+		// 將RLBuilder加入專案中
 		ICommand[] newCommands = new ICommand[commands.length + 1];
 		System.arraycopy(commands, 0, newCommands, 0, commands.length);
 		ICommand command = desc.newCommand();
@@ -41,7 +43,7 @@ public class RLNature implements IProjectNature {
 	}
 
 	/*
-	 * (non-Javadoc)
+	 * 將專案解除RLBuilder關聯
 	 * 
 	 * @see org.eclipse.core.resources.IProjectNature#deconfigure()
 	 */
