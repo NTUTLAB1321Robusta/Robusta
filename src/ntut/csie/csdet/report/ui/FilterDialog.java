@@ -242,8 +242,13 @@ public class FilterDialog extends Dialog {
 						"1.Package \n" +
 						"   (eg. 'sample.test' -> 只偵測特定Package名稱的Package)\n\n" +
 						"2.Package + .* \n" +
-						"   (eg. 'sample.*' -> 偵測任意開頭有sampleg的Package \n" +
-						"                              如: 'sample.test' 、 'sample.test.example'... ) \n\n");
+						"   (eg. 'sample.*' -> 偵測任意開頭有sample的Package \n" +
+						"                              如: 'sample.test' 、 'sample.test.example'... ) \n\n" +
+						"3.[Folder] + Package \n" +
+						"   (eg. '[src]sample' -> Detect 'sample' package that 'src' folder contains. \n\n " +
+						"4.[Folder] + Package + .* \n"+
+						"   (eg. '[src]sample.*' -> Detect all packages in 'sample' that 'src' folder contains. \n\n" +
+						"");
 			}
 		});
 		explainBtn.setText("HELP");
@@ -298,9 +303,9 @@ public class FilterDialog extends Dialog {
 	 * 儲存設定至XML
 	 */
 	private void storeSettings() {
-		//取的xml的root
+		//取的XML的root
 		Element root = JDomUtil.createXMLContent();
-		//建立dummyhandler的tag		
+		//建立DummyHandler的tag		
 		Element smellFilter = new Element(JDomUtil.EHSmellFilterTaq);
 		Element filter = new Element("filter");
 
@@ -333,9 +338,9 @@ public class FilterDialog extends Dialog {
 	 * @return
 	 */
 	private String toNormalize(String libName) {
-		libName = libName.replace("*", "EH_STAR");
-		libName = libName.replace("[", "EH_LEFT");
-		libName = libName.replace("]", "EH_RIGHT");
+		libName = libName.replace("*", JDomUtil.EH_Star);
+		libName = libName.replace("[", JDomUtil.EH_Left);
+		libName = libName.replace("]", JDomUtil.EH_Right);
 		return libName;
 	}
 	
@@ -345,9 +350,9 @@ public class FilterDialog extends Dialog {
 	 * @return
 	 */
 	private String toUnNormalize(String libName) {
-		libName = libName.replace("EH_STAR", "*");
-		libName = libName.replace("EH_LEFT", "[");
-		libName = libName.replace("EH_RIGHT", "]");
+		libName = libName.replace(JDomUtil.EH_Star, "*");
+		libName = libName.replace(JDomUtil.EH_Left, "[");
+		libName = libName.replace(JDomUtil.EH_Right, "]");
 		return libName;
 	}
 	

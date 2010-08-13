@@ -156,7 +156,7 @@ public class LoggingAnalyzer extends RLBaseVisitor{
 	 * @param statement
 	 */
 	private void judgeLogging(ExpressionStatement statement) {
-		LogAnalyzer visitor = new LogAnalyzer(libMap);
+		ExpressionStatementAnalyzer visitor = new ExpressionStatementAnalyzer(libMap);
 		statement.getExpression().accept(visitor);
 
 		if (visitor.getResult())

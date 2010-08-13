@@ -137,7 +137,7 @@ public class LoggingThrowAnalyzer extends RLBaseVisitor{
 	 * 用來找尋這個Catch Clause中，是否有使用者所設定Logging動作
 	 */
 	private Boolean findBindingLib(ExpressionStatement statement){
-		LogAnalyzer visitor = new LogAnalyzer(libMap);
+		ExpressionStatementAnalyzer visitor = new ExpressionStatementAnalyzer(libMap);
 		statement.getExpression().accept(visitor);
 		if(visitor.getResult()){
 			return true;

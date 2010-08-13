@@ -143,7 +143,7 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 		 *-------------------------------------------------------------------------*/	
 		getDummySettings();	
 		//Use LogAnalyzer to detect if there is any statements may cause dummy handler. 
-		LogAnalyzer logAnalyzer = new LogAnalyzer(libMap);
+		ExpressionStatementAnalyzer logAnalyzer = new ExpressionStatementAnalyzer(libMap);
 		cc.accept(logAnalyzer);
 
 		if(logAnalyzer.getDummyHandlerList() != null){
@@ -194,17 +194,17 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 			// рe.print㎝system.out盎代ず
 			if (sysoSet.equals("Y")) {
 				libMap.put("java.io.PrintStream.println",
-						LogAnalyzer.LIBRARY_METHOD);
+						ExpressionStatementAnalyzer.LIBRARY_METHOD);
 				libMap.put("java.io.PrintStream.print",
-						LogAnalyzer.LIBRARY_METHOD);
+						ExpressionStatementAnalyzer.LIBRARY_METHOD);
 			}
 			if (eprintSet.equals("Y"))
-				libMap.put("printStackTrace", LogAnalyzer.METHOD);
+				libMap.put("printStackTrace", ExpressionStatementAnalyzer.METHOD);
 			// рlog4j㎝javaLog盎代ず
 			if (log4jSet.equals("Y"))
-				libMap.put("org.apache.log4j", LogAnalyzer.LIBRARY);
+				libMap.put("org.apache.log4j", ExpressionStatementAnalyzer.LIBRARY);
 			if (javaLogger.equals("Y"))
-				libMap.put("java.util.logging", LogAnalyzer.LIBRARY);
+				libMap.put("java.util.logging", ExpressionStatementAnalyzer.LIBRARY);
 
 			// р场Library盎代虫ず
 			for (int i = 0; i < libRuleList.size(); i++) {
@@ -214,16 +214,16 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 					// 璝Τ.*盎代Library
 					if (temp.indexOf(".EH_STAR") != -1) {
 						int pos = temp.indexOf(".EH_STAR");
-						libMap.put(temp.substring(0, pos), LogAnalyzer.LIBRARY);
+						libMap.put(temp.substring(0, pos), ExpressionStatementAnalyzer.LIBRARY);
 						// 璝Τ*.盎代Method
 					} else if (temp.indexOf("EH_STAR.") != -1) {
-						libMap.put(temp.substring(8), LogAnalyzer.METHOD);
+						libMap.put(temp.substring(8), ExpressionStatementAnalyzer.METHOD);
 						// 常⊿Τ常盎代盎代Library+Method
 					} else if (temp.lastIndexOf(".") != -1) {
-						libMap.put(temp, LogAnalyzer.LIBRARY_METHOD);
+						libMap.put(temp, ExpressionStatementAnalyzer.LIBRARY_METHOD);
 						// 璝Τㄤウ猵玥砞ΘMethod
 					} else {
-						libMap.put(temp, LogAnalyzer.METHOD);
+						libMap.put(temp, ExpressionStatementAnalyzer.METHOD);
 					}
 				}
 			}

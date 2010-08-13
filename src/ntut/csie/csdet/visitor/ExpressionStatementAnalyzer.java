@@ -21,7 +21,7 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
  * 2. Detect if ThrowStatement is not exist, it can return a list of dummy ExpressionStatement  
  * @author chewei
  */
-public class LogAnalyzer extends RLBaseVisitor{
+public class ExpressionStatementAnalyzer extends RLBaseVisitor{
 	final static public int LIBRARY = 1;
 	final static public int METHOD = 2;
 	final static public int LIBRARY_METHOD = 3;
@@ -38,7 +38,7 @@ public class LogAnalyzer extends RLBaseVisitor{
 	//儲存偵測Library的Name和Method的名稱
 	private TreeMap<String, Integer> libMap;
 	
-	public LogAnalyzer(TreeMap<String, Integer> libMap){
+	public ExpressionStatementAnalyzer(TreeMap<String, Integer> libMap){
 		this.libMap = libMap;
 		this.isFound = false;
 		this._isFoundThrow = false;

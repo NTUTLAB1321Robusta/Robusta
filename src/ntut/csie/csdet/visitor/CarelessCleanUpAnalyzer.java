@@ -271,7 +271,7 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 	 * @return boolean
 	 */
 	private boolean findBindingLib(Statement statement){
-		LogAnalyzer visitor = new LogAnalyzer(libMap);
+		ExpressionStatementAnalyzer visitor = new ExpressionStatementAnalyzer(libMap);
 		statement.accept(visitor);
 		if(visitor.getResult()){
 			return true;
@@ -338,16 +338,16 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 					//璝Τ.*盎代Library
 					if (temp.indexOf(".EH_STAR") != -1) {
 						int pos = temp.indexOf(".EH_STAR");
-						libMap.put(temp.substring(0,pos), LogAnalyzer.LIBRARY);
+						libMap.put(temp.substring(0,pos), ExpressionStatementAnalyzer.LIBRARY);
 					//璝Τ*.盎代Method
 					} else if (temp.indexOf("EH_STAR.") != -1) {
-						libMap.put(temp.substring(8), LogAnalyzer.METHOD);
+						libMap.put(temp.substring(8), ExpressionStatementAnalyzer.METHOD);
 					//常⊿Τ常盎代盎代Library+Method
 					} else if (temp.lastIndexOf(".") != -1) {
-						libMap.put(temp, LogAnalyzer.LIBRARY_METHOD);
+						libMap.put(temp, ExpressionStatementAnalyzer.LIBRARY_METHOD);
 					//璝Τㄤウ猵玥砞ΘMethod
 					} else {
-						libMap.put(temp, LogAnalyzer.METHOD);
+						libMap.put(temp, ExpressionStatementAnalyzer.METHOD);
 					}
 				}
 			}

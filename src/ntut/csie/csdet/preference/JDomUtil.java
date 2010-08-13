@@ -41,6 +41,19 @@ public class JDomUtil {
 	final static public String EHSmellFilterTaq = "EHSmellFilter";
 	final static public String project_name = "ProjectName";
 
+	/** Packet_Punctuation_SquareBracket_Left<br />
+	 *  &quot;EH_LEFT&quot;
+	 */
+	final static public String EH_Left = "EH_LEFT";
+	/** Packet_Punctuation_SquareBracket_Right<br /> 
+	 *  &quot;EH_RIGHT&quot;
+	 */
+	final static public String EH_Right = "EH_RIGHT";
+	/** Punctuation_Star<br />
+	 *  &quot;EH_STAR&quot;
+	 */
+	final static public String EH_Star = "EH_STAR";
+
 	public static Element createXMLContent(){
 		Document docJDOM = readXMLFile();	
 		Element elementRoot ;
