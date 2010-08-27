@@ -8,11 +8,8 @@ import java.util.TreeMap;
 import ntut.csie.rleht.common.RLBaseVisitor;
 
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.CatchClause;
-import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.MethodInvocation;
-import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 
 /**
  * 1. 用來找尋ExpressionStatement中的
@@ -30,19 +27,19 @@ public class ExpressionStatementAnalyzer extends RLBaseVisitor{
 	private Boolean isFound;
 	
 	//是否存在DummyHandler現象
-	private Boolean _isFoundThrow;
+	private Boolean isFoundThrow;
 	
 	//Collect all the ExpressionStatements might turn to be DummyHandler
-	private List<ExpressionStatement> _lstDummys;
+	private List<ExpressionStatement> dummyList;
 	
 	//儲存偵測Library的Name和Method的名稱
 	private TreeMap<String, Integer> libMap;
-	
-	public ExpressionStatementAnalyzer(TreeMap<String, Integer> libMap){
+
+	public ExpressionStatementAnalyzer(TreeMap<String, Integer> libMap) {
 		this.libMap = libMap;
 		this.isFound = false;
-		this._isFoundThrow = false;
-		this._lstDummys = new ArrayList<ExpressionStatement>();
+		this.isFoundThrow = false;
+		this.dummyList = new ArrayList<ExpressionStatement>();
 	}
 
 	/**
@@ -51,13 +48,16 @@ public class ExpressionStatementAnalyzer extends RLBaseVisitor{
 	protected boolean visitNode(ASTNode node){
 		try {
 			switch (node.getNodeType()) {
+				case ASTNode.TRY_STATEMENT:
+					return false;
+			
 				//偵測Method
 				case ASTNode.METHOD_INVOCATION:
 					// DummyHandler就不繼續往下trace
 					return judgeMethodInvocation(node);
 
 				case ASTNode.THROW_STATEMENT:	
-					this._isFoundThrow = true;
+					this.isFoundThrow = true;
 					return false;
 
 				default:
@@ -82,36 +82,36 @@ public class ExpressionStatementAnalyzer extends RLBaseVisitor{
 		String methodName = mi.resolveMethodBinding().getName();
 
 		//如果該行有Array(如java.util.ArrayList<java.lang.Boolean>)，把<>內容拿掉
-		if (libName.indexOf("<")!=-1)
-			libName = libName.substring(0,libName.indexOf("<"));
+		if (libName.indexOf("<") != -1)
+			libName = libName.substring(0, libName.indexOf("<"));
 
 		Iterator<String> libIt = libMap.keySet().iterator();
 		//判斷是否要偵測 且 此句也包含欲偵測Library
 		while(libIt.hasNext()){
 			String temp = libIt.next();
-			
+
 			//只偵測Library
 			if (libMap.get(temp) == LIBRARY){
 				//若Library長度大於偵測長度，否則表不相同直接略過
 				if (libName.length() >= temp.length())
 				{
 					//比較前半段長度的名稱是否相同
-					if (libName.substring(0,temp.length()).equals(temp)){
+					if (libName.substring(0, temp.length()).equals(temp)) {
 						addDummyWarning(node);
 						return false;
 					}
 				}
 			//只偵測Method
-			}else if (libMap.get(temp) == METHOD){
-				if (methodName.equals(temp)){
+			} else if (libMap.get(temp) == METHOD) {
+				if (methodName.equals(temp)) {
 					addDummyWarning(node);
 					return false;
 				}
 			//偵測Library.Method的形式
-			}else if (libMap.get(temp) == LIBRARY_METHOD){
+			} else if (libMap.get(temp) == LIBRARY_METHOD) {
 				int pos = temp.lastIndexOf(".");
-				if (libName.equals(temp.substring(0, pos))
-					&& methodName.equals(temp.substring(pos+1))){
+				if (libName.equals(temp.substring(0, pos)) &&
+					methodName.equals(temp.substring(pos + 1))) {
 					addDummyWarning(node);
 					return false;
 				}
@@ -129,7 +129,7 @@ public class ExpressionStatementAnalyzer extends RLBaseVisitor{
 		if (node.getParent() instanceof ExpressionStatement) {
 			ExpressionStatement statement = (ExpressionStatement) node.getParent();
 			isFound = true;
-			this._lstDummys.add(statement);
+			this.dummyList.add(statement);
 		}
 	}
 	
@@ -146,11 +146,10 @@ public class ExpressionStatementAnalyzer extends RLBaseVisitor{
 	 * 		   Null, if ThrowStatement is found.
 	 */
 	public List<ExpressionStatement> getDummyHandlerList(){
-		if(this._isFoundThrow){
+		if (this.isFoundThrow) {
 			return null;
-		}
-		else{
-			return _lstDummys;
+		} else{
+			return dummyList;
 		}
 	}
 }

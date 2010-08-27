@@ -270,12 +270,12 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 	 * @param statement
 	 * @return boolean
 	 */
-	private boolean findBindingLib(Statement statement){
+	private boolean findBindingLib(Statement statement) {
 		ExpressionStatementAnalyzer visitor = new ExpressionStatementAnalyzer(libMap);
 		statement.accept(visitor);
-		if(visitor.getResult()){
+		if (visitor.getResult()) {
 			return true;
-		}else{
+		} else {
 			return false;
 		}
 	}

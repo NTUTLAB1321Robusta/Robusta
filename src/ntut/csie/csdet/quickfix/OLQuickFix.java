@@ -92,11 +92,10 @@ public class OLQuickFix implements IMarkerResolution{
 	 * @param methodIdx
 	 * @return
 	 */
-	private boolean findLoggingMethod(IResource resource, int methodIdx){
+	private boolean findLoggingMethod(IResource resource, int methodIdx) {
 		if (resource instanceof IFile && resource.getName().endsWith(".java")) {
 			try {
 				IJavaElement javaElement = JavaCore.create(resource);
-
 				if (javaElement instanceof IOpenable) {
 					this.actOpenable = (IOpenable) javaElement;
 				}
@@ -116,7 +115,7 @@ public class OLQuickFix implements IMarkerResolution{
 				
 				//取得目前要被修改的method node
 				this.currentMethodNode = methodList.get(methodIdx);
-				if(currentMethodNode != null){					
+				if (currentMethodNode != null) {
 					//尋找該method內的OverLogging
 					OverLoggingDetector loggingDetector = new OverLoggingDetector(this.actRoot, currentMethodNode);
 					loggingDetector.detect();
@@ -135,7 +134,7 @@ public class OLQuickFix implements IMarkerResolution{
 	 * 刪除Message
 	 * @param exception
 	 */
-	private void deleteMessage(int msgIdx){
+	private void deleteMessage(int msgIdx) {
 		try {
 			actRoot.recordModifications();
 			AST ast = currentMethodNode.getAST();
@@ -149,7 +148,7 @@ public class OLQuickFix implements IMarkerResolution{
 
 			//去比對startPosition,找出要修改的節點
 			for (ASTNode cc : catchList){
-					if(cc.getStartPosition() == msg.getPosition()){
+				if (cc.getStartPosition() == msg.getPosition()) {
 					//刪除Logging Statement
 					deleteCatchStatement(cc, msg);
 					//寫回Edit中
@@ -168,14 +167,14 @@ public class OLQuickFix implements IMarkerResolution{
 	 * @param cc
 	 * @param msg 
 	 */
-	private void deleteCatchStatement(ASTNode cc, CSMessage msg){
+	private void deleteCatchStatement(ASTNode cc, CSMessage msg) {
 		CatchClause clause = (CatchClause)cc;
 		//取得CatchClause所有的statement,將相關print例外資訊的東西移除
 		List statementList = clause.getBody().statements();
 
 		if(statementList.size() != 0){
-			for(int i=0;i<statementList.size();i++){			
-				if(statementList.get(i) instanceof ExpressionStatement ){
+			for (int i = 0; i < statementList.size(); i++) {
+				if (statementList.get(i) instanceof ExpressionStatement) {
 					ExpressionStatement statement = (ExpressionStatement) statementList.get(i);
 
 					int tempLine = this.actRoot.getLineNumber(statement.getStartPosition());
