@@ -29,47 +29,67 @@ import org.jdom.Element;
  */
 public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 	
-	// AST tree的root(檔案名稱)
+	/**
+	 * AST tree的root(檔案名稱)
+	 */
 	private CompilationUnit root;
 	
-	// 儲存找到的Careless Cleanup
+	/**
+	 * 儲存找到的Careless Cleanup
+	 */
 	private List<CSMessage> CarelessCleanUpList;
 	
+	/**
+	 * 收集class中的method
+	 */
 	ASTMethodCollector methodCollector;
 	
-	//儲存找到的Method List
+	/**
+	 * 儲存找到的Method List
+	 */
 	List<ASTNode> methodList;
 	
-	//是否找到Careless CleanUp
+	/**
+	 * 是否找到Careless CleanUp
+	 */
 	private boolean flag = false;
 	
-	//是否要偵測"使用者釋放資源的程式碼在函式中"
-	private boolean isDetUserMethod=false;
+	/**
+	 * 是否要偵測"使用者釋放資源的程式碼在函式中"
+	 */
+	private boolean isDetUserMethod = false;
 	
-	//儲存"使用者要偵測的library名稱"和"是否要偵測此library"
+	/**
+	 * 儲存"使用者要偵測的library名稱"和"是否要偵測此library"
+	 */
 	private TreeMap<String, Integer> libMap = new TreeMap<String, Integer>();
 	
-	//建構子
 	public CarelessCleanUpAnalyzer(CompilationUnit root){
 		super(true);
-		this.root=root;
-		
-		CarelessCleanUpList=new ArrayList<CSMessage>();
-		
-		//收集class中的method
-		methodCollector=new ASTMethodCollector();
+		this.root = root;
+		CarelessCleanUpList = new ArrayList<CSMessage>();
+		methodCollector = new ASTMethodCollector();
 		this.root.accept(methodCollector);
 		methodList = methodCollector.getMethodList();
-		
-		//取得user對於Careless CleanUp的設定
 		getCarelessCleanUp();
 	}
-	/*
+
+	/**
 	 * (non-Javadoc) 
 	 * @see ntut.csie.rleht.views.ASTBaseVisitor#visitNode(org.eclipse.jdt.core.dom.ASTNode)
 	 */
 	protected boolean visitNode(ASTNode node){
 		switch(node.getNodeType()){
+			//檢查有拋出例外的Method
+			case ASTNode.METHOD_DECLARATION:
+				MethodDeclaration md = (MethodDeclaration) node;
+				//thrownExceptions的數量，大於等於1，表示這個方法有拋出例外
+				if(md.thrownExceptions().size()>=1){
+					processMethodDeclaration(md);
+					return false;
+				}else{
+					return true;
+				}
 			case ASTNode.TRY_STATEMENT:
 				//Find the smell in the try Block
 				processTryStatement(node);
@@ -78,6 +98,56 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 				return false;		
 			default:
 				return true;
+		}
+	}
+	
+	/**
+	 * 偵測有拋出例外的Method中，是否有close的動作
+	 * @param md
+	 */
+	private void processMethodDeclaration(MethodDeclaration md) {
+		List<?> mdStatements = md.getBody().statements();
+		
+		//Method裡面只有一行close的情況，就不mark
+		if (mdStatements.size() <= 1)
+			//確定這個Statement是MethodInvocation(避免這一個Statement是IfStatement/WhileStatement/....)
+			if(mdStatements.size() == 1)
+				if(mdStatements.get(0) instanceof MethodInvocation)
+					return;
+
+		for (int i = 0; i < mdStatements.size(); i++) {
+			//node是Try Statement(new出自己，再用一次visitNode這個Method)
+			if(mdStatements.get(i) instanceof TryStatement){
+				TryStatement ts = (TryStatement)mdStatements.get(i);
+				CarelessCleanUpAnalyzer ccuaVisitor = new CarelessCleanUpAnalyzer(this.root);
+				ts.accept(ccuaVisitor);
+				List<CSMessage> ccuList = ccuaVisitor.getCarelessCleanUpList();
+				//合併本來的instance與new出來instance的CSMessage
+				this.mergeCSMessage(ccuList);
+			}
+			//node不是Try Statement
+			else if(mdStatements.get(i) instanceof Statement){				
+				carelessCleanupInTryBlock = false;
+				markCarelessCleanUpStatement((Statement)mdStatements.get(i));
+			}
+		}
+	}
+	
+	/**
+	 * flag, 區分這個careless cleanup是不是在try block裡面
+	 */
+	private boolean carelessCleanupInTryBlock = true;
+	
+	/**
+	 * 結合此instance和另外new出來instance的CSMessage
+	 * @param childInfo
+	 */
+	private void mergeCSMessage(List<CSMessage> childInfo){
+		if (childInfo == null || childInfo.size() == 0) {
+			return;
+		}
+		for(CSMessage msg : childInfo){
+			this.CarelessCleanUpList.add(msg);
 		}
 	}
 	
@@ -94,6 +164,51 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 			judgeCarelessCleanUp(statementTemp);
 		}
 	}
+
+	/**
+	 * 判斷單一statement是不是Careless Clean Up
+	 * @param st
+	 */
+	private void markCarelessCleanUpStatement(Statement st){
+		if(findBindingLib(st)){
+			//findExceptionInfo((ASTNode) statement);
+			addMarker(st);
+		}else{
+			st.accept(new ASTVisitor(){
+				public boolean visit(MethodInvocation node){
+					//取得Method Invocation的Expression
+					Expression expression=node.getExpression();
+					//1.Expression為null,則該method invocation為object.close()的類型
+					//2.Expression不為null,則為close(object)的類型
+					if(expression!=null){
+						/*
+						 * 若同時滿足以下兩個條件,則為object.close(),視為smell
+						 * 1.class非使用者自訂
+						 * 2.方法名稱為"close"
+						 */
+						boolean isFromSource=node.resolveMethodBinding().getDeclaringClass().isFromSource();
+						String methodName=node.resolveMethodBinding().getName();
+						
+						if((!isFromSource)&&(methodName.equals("close"))){
+							addMarker(node);
+						}
+					} else {
+						//使用者是否要另外偵測釋放資源的程式碼是否在函式中
+						if(isDetUserMethod){
+							//處理被呼叫的函式
+							processCalledMethod(node);
+							//若flag為true,則該函式為smell
+							if(flag){				
+								addMarker(node);
+								flag = false;									
+							}
+						}
+					}
+					return true;
+				}
+			});
+		}
+	}
 	
 	/**
 	 * 判斷try節點內的statement是否有Careless CleanUp
@@ -105,44 +220,7 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 				statement = (Statement) statementTemp.get(i);
 				//若該statement包含使用者自訂的Rule,則為smell
 				//否則找statement內是否有Method Invocation
-				if(findBindingLib(statement)){
-					//findExceptionInfo((ASTNode) statement);
-					addMarker(statement);
-				}else{
-					statement.accept(new ASTVisitor(){
-						public boolean visit(MethodInvocation node){
-							//取得Method Invocation的Expression
-							Expression expression=node.getExpression();
-							//1.Expression為null,則該method invocation為object.close()的類型
-							//2.Expression不為null,則為close(object)的類型
-							if(expression!=null){
-								/*
-								 * 若同時滿足以下兩個條件,則為object.close(),視為smell
-								 * 1.class非使用者自訂
-								 * 2.方法名稱為"close"
-								 */
-								boolean isFromSource=node.resolveMethodBinding().getDeclaringClass().isFromSource();
-								String methodName=node.resolveMethodBinding().getName();
-								
-								if((!isFromSource)&&(methodName.equals("close"))){
-									addMarker(node);
-								}
-							} else {
-								//使用者是否要另外偵測釋放資源的程式碼是否在函式中
-								if(isDetUserMethod){
-									//處理被呼叫的函式
-									processCalledMethod(node);
-									//若flag為true,則該函式為smell
-									if(flag){				
-										addMarker(node);
-										flag = false;									
-									}
-								}
-							}
-							return true;
-						}
-					});
-				}
+				markCarelessCleanUpStatement(statement);
 			}
 		}
 	}
@@ -195,7 +273,7 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 		List<?> mdStatement = md.getBody().statements();
 		//取得該Method Declaration的thrown exception name
 		List<?> thrown=md.thrownExceptions();
-		//TODO 整理Code
+
 		if (mdStatement.size() != 0) {
 			for (int j = 0; j < mdStatement.size(); j++) {
 				//找函式內的try節點
@@ -209,25 +287,7 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 							for(int k=0;k<statementTemp.size();k++){
 								if(statementTemp.get(k) instanceof Statement){
 									statement = (Statement) statementTemp.get(k);
-										statement.accept(new ASTVisitor(){
-											public boolean visit(MethodInvocation node){
-												/*
-												 * 若被呼叫的函式有Careless CleanUp,則其釋放資源的程式碼須滿足以下三個條件
-												 * 1.expression不為空
-												 * 2.class非使用者自訂
-												 * 3.方法名稱為"close"
-												 */
-												Expression expression=node.getExpression();
-												boolean isFromSource=node.resolveMethodBinding().getDeclaringClass().isFromSource();
-												String methodName=node.resolveMethodBinding().getName();
-												if(expression!=null&&(!isFromSource)&&(methodName.equals("close"))){											
-													flag = true;
-													//若已經找到有CarelessCleanUp,就不再往下一層找
-													return false;
-												}
-												return true;
-											}
-										});
+										acceptStatement2ASTVisitor(statement);
 								}
 							}
 						}
@@ -242,28 +302,37 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 					//object.close 皆為Expression Statement
 					if(mdStatement.get(j) instanceof ExpressionStatement){
 						ExpressionStatement es=(ExpressionStatement) mdStatement.get(j);
-						es.accept(new ASTVisitor(){
-							public boolean visit(MethodInvocation node){
-								/*
-								 * 若該method有smell,則其釋放資源的程式碼須滿足以下三個條件
-								 * 1.expression不為空
-								 * 2.該class來源非使用者自訂
-								 * 3.方法名稱為"close"
-								 */
-								Expression expression=node.getExpression();
-								boolean isFromSource=node.resolveMethodBinding().getDeclaringClass().isFromSource();
-								String methodName=node.resolveMethodBinding().getName();
-								if(expression!=null&&(!isFromSource)&&(methodName.equals("close"))){											
-									flag = true;
-									return false;
-								}
-								return true;
-							}
-						});
+						acceptStatement2ASTVisitor(es);
 					}
 				}
 			}
 		}
+	}
+	
+	/**
+	 * 判斷此呼叫的函式中，指定的statement是不是有careless cleanup的情形
+	 * @param statement
+	 */
+	private void acceptStatement2ASTVisitor(Statement statement) {
+		statement.accept(new ASTVisitor(){
+			public boolean visit(MethodInvocation node){
+				/*
+				 * 若被呼叫的函式有Careless CleanUp,則其釋放資源的程式碼須滿足以下三個條件
+				 * 1.expression不為空
+				 * 2.class非使用者自訂
+				 * 3.方法名稱為"close"
+				 */
+				Expression expression=node.getExpression();
+				boolean isFromSource=node.resolveMethodBinding().getDeclaringClass().isFromSource();
+				String methodName=node.resolveMethodBinding().getName();
+				if(expression!=null&&(!isFromSource)&&(methodName.equals("close"))){											
+					flag = true;
+					//若已經找到有CarelessCleanUp,就不再往下一層找
+					return false;
+				}
+				return true;
+			}
+		});
 	}
 	/**
 	 * 偵測使用者自訂的Rule
@@ -281,17 +350,28 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 	}
 	
 	/**
-	 * 將找到的smell加入List中
+	 * 將找到的smell加入List中(本工具預設的smell)
 	 */
 	private void addMarker(ASTNode node){
-		CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_CARELESS_CLEANUP,
+		String rlMarkerAttribute = RLMarkerAttribute.CS_CARELESS_CLEANUP;
+		//區分careless cleanup是否在try block中
+		if (!carelessCleanupInTryBlock)
+			rlMarkerAttribute = RLMarkerAttribute.CS_CARELESS_CLEANUP;
+		CSMessage csmsg = new CSMessage(rlMarkerAttribute,
 				null, node.toString(), node.getStartPosition(),
 				getLineNumber(node.getStartPosition()), null);
 		CarelessCleanUpList.add(csmsg);
 	}
 	
+	/**
+	 * 將找到的smell加入List中(使用者定義的smell)
+	 */
 	private void addMarker(Statement statement){
-		CSMessage csmsg=new CSMessage(RLMarkerAttribute.CS_CARELESS_CLEANUP,null,											
+		String test = RLMarkerAttribute.CS_CARELESS_CLEANUP;
+		//區分careless cleanup是否在try block中
+		if (!carelessCleanupInTryBlock)
+			test = RLMarkerAttribute.CS_CARELESS_CLEANUP;
+		CSMessage csmsg=new CSMessage(test ,null,											
 				statement.toString(),statement.getStartPosition(),
 				getLineNumber(statement.getStartPosition()),null);
 		CarelessCleanUpList.add(csmsg);
@@ -312,7 +392,7 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 	}
 	
 	/**
-	 * 取得User對Careless CleanUp的設定
+	 * 取得User對Careless CleanUp的設定(From xml)
 	 */
 	private void getCarelessCleanUp(){
 		Element root = JDomUtil.createXMLContent();
@@ -322,9 +402,9 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 			// 這裡表示之前使用者已經有設定過preference了,去取得相關偵測設定值
 			Element CarelessCleanUp = root.getChild(JDomUtil.CarelessCleanUpTag);
 			Element rule = CarelessCleanUp.getChild("rule");
-			String methodSet=rule.getAttribute(JDomUtil.det_user_method).getValue();
+			String methodSet = rule.getAttribute(JDomUtil.det_user_method).getValue();
 			
-			isDetUserMethod=methodSet.equals("Y");
+			isDetUserMethod = methodSet.equals("Y");
 			
 			Element libRule = CarelessCleanUp.getChild("librule");
 			// 把外部Library和Statement儲存在List內
@@ -353,7 +433,9 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 			}
 		}
 	}
-	public void findExceptionInfo(ASTNode node){
-		//this.iType=node.resolveMethodBinding().getExceptionTypes();
-	}
+	
+	
+//	public void findExceptionInfo(ASTNode node){
+//		//this.iType=node.resolveMethodBinding().getExceptionTypes();
+//	}
 }

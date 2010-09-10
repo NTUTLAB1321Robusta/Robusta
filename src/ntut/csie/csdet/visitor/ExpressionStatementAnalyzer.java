@@ -48,6 +48,8 @@ public class ExpressionStatementAnalyzer extends RLBaseVisitor{
 	protected boolean visitNode(ASTNode node){
 		try {
 			switch (node.getNodeType()) {
+				//最外面的try block遇到Dummy已經會加mark一次，
+				//所以try block裡面的try block就不要再次偵測
 				case ASTNode.TRY_STATEMENT:
 					return false;
 			
