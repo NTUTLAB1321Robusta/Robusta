@@ -3,29 +3,17 @@ package ntut.csie.csdet.quickfix;
 import java.util.List;
 
 import ntut.csie.csdet.visitor.ASTCatchCollect;
-import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
-import ntut.csie.rleht.builder.RLOrderFix;
-import ntut.csie.rleht.common.EditorUtils;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLData;
 import ntut.csie.rleht.views.RLMessage;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IOpenable;
-import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ArrayInitializer;
 import org.eclipse.jdt.core.dom.CatchClause;
-import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
@@ -37,13 +25,7 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TypeLiteral;
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.Document;
-import org.eclipse.jface.text.IRegion;
-import org.eclipse.text.edits.TextEdit;
-import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IMarkerResolution;
-import org.eclipse.ui.texteditor.ITextEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,21 +37,15 @@ import agile.exception.Robustness;
  * 在Marker上面的Quick Fix中加入直接Throw Checked Exception的功能
  * @author Shiau
  */
-public class TEQuickFix implements IMarkerResolution{
+public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 	private static Logger logger = LoggerFactory.getLogger(TEQuickFix.class);
 
 	private String label;
 	//紀錄code smell的type
 	private String problem;
 
-	//存放目前要修改的.java檔
-	private CompilationUnit actRoot;
-	//存放目前所要fix的method node
-	private ASTNode currentMethodNode = null;
 	// 目前method的RL Annotation資訊
 	private List<RLMessage> currentMethodRLList = null;
-
-	private IOpenable actOpenable;
 
 	//按下QuickFix該行的程式起始位置(Catch位置)
 	private String srcPos;
@@ -99,14 +75,17 @@ public class TEQuickFix implements IMarkerResolution{
 				//儲存按下QuickFix該行的程式起始位置
 				this.srcPos = marker.getAttribute(RLMarkerAttribute.RL_INFO_SRC_POS).toString();
 
-				boolean isok = findDummyMethod(marker.getResource(), Integer.parseInt(methodIdx));
+				boolean isok = this.findCurrentMethod(marker.getResource(), Integer.parseInt(methodIdx));
 				if(isok) {
+					currentMethodRLList = findRLList();
+					
 					//將Method加入Throw Exception，並回傳Catch的Index
 					int catchIdx = rethrowException(exception,Integer.parseInt(msgIdx));
-					//調整RL Annotation順序
-					new RLOrderFix().run(marker.getResource(), methodIdx, msgIdx);
-					//反白指定行數
-					selectSourceLine(marker, methodIdx, catchIdx);
+
+					//調整RL Annotation順序 TODO 待修正
+					//new RLOrderFix().run(marker.getResource(), methodIdx, msgIdx);
+					//反白指定行數 (暫時不需要反白行數)
+					//selectSourceLine(marker, methodIdx, catchIdx);
 				}
 			}
 		} catch (CoreException e) {
@@ -115,73 +94,19 @@ public class TEQuickFix implements IMarkerResolution{
 	}
 
 	/**
-	 * 取得Method相關資訊
+	 * 取得RL Annotation List
 	 * @param resource		來源
 	 * @param methodIdx		Method的Index
 	 * @return				是否成功
 	 */
-	private boolean findDummyMethod(IResource resource, int methodIdx) {
-		if (resource instanceof IFile && resource.getName().endsWith(".java")) {
-			try {
-				IJavaElement javaElement = JavaCore.create(resource);
-	
-				if (javaElement instanceof IOpenable) {
-					this.actOpenable = (IOpenable) javaElement;
-				}
-				//Create AST to parse
-				ASTParser parser = ASTParser.newParser(AST.JLS3);
-				parser.setKind(ASTParser.K_COMPILATION_UNIT);
-	
-				parser.setSource((ICompilationUnit) javaElement);
-				parser.setResolveBindings(true);
-				this.actRoot = (CompilationUnit) parser.createAST(null);
-
-				//取得該class所有的method
-				ASTMethodCollector methodCollector = new ASTMethodCollector();
-				actRoot.accept(methodCollector);
-				List<ASTNode> methodList = methodCollector.getMethodList();
-				
-				//取得目前要被修改的method node
-				this.currentMethodNode = methodList.get(methodIdx);
-				if(currentMethodNode != null){
-					//取得這個method的RL資訊
-					ExceptionAnalyzer exVisitor = new ExceptionAnalyzer(this.actRoot, currentMethodNode.getStartPosition(), 0);
-					currentMethodNode.accept(exVisitor);
-					currentMethodRLList = exVisitor.getMethodRLAnnotationList();
-				}
-				return true;
-			}catch (Exception ex) {
-				logger.error("[Find DH Method] EXCEPTION ",ex);
-			}
+	private List<RLMessage> findRLList() {
+		if (currentMethodNode != null) {
+			//取得這個method的RL資訊
+			ExceptionAnalyzer exVisitor = new ExceptionAnalyzer(this.actRoot, currentMethodNode.getStartPosition(), 0);
+			currentMethodNode.accept(exVisitor);
+			return exVisitor.getMethodRLAnnotationList();
 		}
-		return false;
-	}
-
-	/**
-	 * 取得Throw Statement行數
-	 * @param catchIdx	catch的index
-	 * @return			反白行數
-	 */
-	private int getThrowStatementSourceLine(int catchIdx) {
-		//反白行數
-		int selectLine = -1;
-
-		if (catchIdx != -1) {
-			ASTCatchCollect catchCollector = new ASTCatchCollect();
-			currentMethodNode.accept(catchCollector);
-			List<ASTNode> catchList = catchCollector.getMethodList();
-			//取得指定的Catch
-			CatchClause clause = (CatchClause) catchList.get(catchIdx);
-			//尋找Throw statement的行數
-			List catchStatements = clause.getBody().statements();
-			for (int i = 0; i < catchStatements.size(); i++) {
-				if (catchStatements.get(i) instanceof ThrowStatement) {
-					ThrowStatement statement = (ThrowStatement) catchStatements.get(i);
-					selectLine = this.actRoot.getLineNumber(statement.getStartPosition()) -1;
-				}
-			}
-		}
-		return selectLine;
+		return null;
 	}
 	
 	/**
@@ -211,7 +136,7 @@ public class TEQuickFix implements IMarkerResolution{
 				//檢查在method前面有沒有throw exception
 				checkMethodThrow(ast,exception);
 				//寫回Edit中
-				applyChange();
+				this.applyChange(null);
 				return i;
 			}
 		}
@@ -371,11 +296,12 @@ public class TEQuickFix implements IMarkerResolution{
 				if(statementTemp.get(i) instanceof ExpressionStatement ){
 					ExpressionStatement statement = (ExpressionStatement) statementTemp.get(i);
 					// 遇到System.out.print or printStackTrace就把他remove掉
-					if(statement.getExpression().toString().contains("System.out.print")||
-							statement.getExpression().toString().contains("printStackTrace")){
-							statementTemp.remove(i);
-							//移除完之後ArrayList的位置會重新調整過,所以利用遞回來繼續往下找符合的條件並移除
-							deleteStatement(statementTemp);
+					if (statement.getExpression().toString().contains("System.out.print") ||
+						statement.getExpression().toString().contains("printStackTrace")) {
+
+						statementTemp.remove(i);
+						//移除完之後ArrayList的位置會重新調整過,所以利用遞回來繼續往下找符合的條件並移除
+						deleteStatement(statementTemp);
 					}
 				}
 			}
@@ -401,65 +327,74 @@ public class TEQuickFix implements IMarkerResolution{
 				}
 			}
 		}
-		if(!isExist)
+		if (!isExist) {
 			thStat.add(ast.newSimpleName(exception));
-	}
-
-	/**
-	 * 將所要變更的內容寫回Edit中
-	 */
-	private void applyChange() {
-		try {
-			ICompilationUnit cu = (ICompilationUnit) actOpenable;
-			Document document = new Document(cu.getBuffer().getContents());
-
-			TextEdit edits = actRoot.rewrite(document, cu.getJavaProject().getOptions(true));
-			edits.apply(document);
-
-			cu.getBuffer().setContents(document.get());
-		} catch (BadLocationException e) {
-			logger.error("[Rethrow checked Exception] EXCEPTION ",e);
-		} catch (JavaModelException ex) {
-			logger.error("[Rethrow checked Exception] EXCEPTION ",ex);
 		}
 	}
 
-	/**
-	 * 反白指定行數
-	 * @param marker		欲反白Statement的Resource
-	 * @param methodIdx		欲反白Statement的Method Index
-	 * @param catchIdx		欲反白Statement的Catch Index
-	 */
-	private void selectSourceLine(IMarker marker, String methodIdx, int catchIdx) {
-		//重新取得Method資訊
-		boolean isOK = findDummyMethod(marker.getResource(),Integer.parseInt(methodIdx));
-		if (isOK) {
-			try {
-				ICompilationUnit cu = (ICompilationUnit) actOpenable;
-				Document document = new Document(cu.getBuffer().getContents());
-				//取得目前的EditPart
-				IEditorPart editorPart = EditorUtils.getActiveEditor();
-				ITextEditor editor = (ITextEditor) editorPart;
-
-				//取得反白Statement的行數
-				int selectLine = getThrowStatementSourceLine(catchIdx);
-				//若反白行數為
-				if (selectLine == -1) {
-					//取得Method的起點位置
-					int srcPos = currentMethodNode.getStartPosition();
-					//用Method起點位置取得Method位於第幾行數(起始行數從0開始，不是1，所以減1)
-					selectLine = this.actRoot.getLineNumber(srcPos)-1;
-				}
-				//取得反白行數在SourceCode的行數資料
-				IRegion lineInfo = document.getLineInformation(selectLine);
-
-				//反白該行 在Quick fix完之後,可以將游標定位在Quick Fix那行
-				editor.selectAndReveal(lineInfo.getOffset(), lineInfo.getLength());
-			} catch (JavaModelException e) {
-				logger.error("[Rethrow checked Exception] EXCEPTION ",e);
-			} catch (BadLocationException e) {
-				logger.error("[BadLocation] EXCEPTION ",e);
-			}
-		}
-	}
+//	/**
+//	 * 反白指定行數
+//	 * @param marker		欲反白Statement的Resource
+//	 * @param methodIdx		欲反白Statement的Method Index
+//	 * @param catchIdx		欲反白Statement的Catch Index
+//	 */
+//	private void selectSourceLine(IMarker marker, String methodIdx, int catchIdx) {
+//		//重新取得Method資訊
+//		boolean isOK = this.findCurrentMethod(marker.getResource(),Integer.parseInt(methodIdx));
+//		if (isOK) {
+//			try {
+//				ICompilationUnit cu = (ICompilationUnit) actOpenable;
+//				Document document = new Document(cu.getBuffer().getContents());
+//				//取得目前的EditPart
+//				IEditorPart editorPart = EditorUtils.getActiveEditor();
+//				ITextEditor editor = (ITextEditor) editorPart;
+//
+//				//取得反白Statement的行數
+//				int selectLine = getThrowStatementSourceLine(catchIdx);
+//				//若反白行數為
+//				if (selectLine == -1) {
+//					//取得Method的起點位置
+//					int srcPos = currentMethodNode.getStartPosition();
+//					//用Method起點位置取得Method位於第幾行數(起始行數從0開始，不是1，所以減1)
+//					selectLine = this.actRoot.getLineNumber(srcPos)-1;
+//				}
+//				//取得反白行數在SourceCode的行數資料
+//				IRegion lineInfo = document.getLineInformation(selectLine);
+//
+//				//反白該行 在Quick fix完之後,可以將游標定位在Quick Fix那行
+//				editor.selectAndReveal(lineInfo.getOffset(), lineInfo.getLength());
+//			} catch (JavaModelException e) {
+//				logger.error("[Rethrow checked Exception] EXCEPTION ",e);
+//			} catch (BadLocationException e) {
+//				logger.error("[BadLocation] EXCEPTION ",e);
+//			}
+//		}
+//	}
+	
+//	/**
+//	 * 取得Throw Statement行數
+//	 * @param catchIdx	catch的index
+//	 * @return			反白行數
+//	 */
+//	private int getThrowStatementSourceLine(int catchIdx) {
+//		//反白行數
+//		int selectLine = -1;
+//
+//		if (catchIdx != -1) {
+//			ASTCatchCollect catchCollector = new ASTCatchCollect();
+//			currentMethodNode.accept(catchCollector);
+//			List<ASTNode> catchList = catchCollector.getMethodList();
+//			//取得指定的Catch
+//			CatchClause clause = (CatchClause) catchList.get(catchIdx);
+//			//尋找Throw statement的行數
+//			List catchStatements = clause.getBody().statements();
+//			for (int i = 0; i < catchStatements.size(); i++) {
+//				if (catchStatements.get(i) instanceof ThrowStatement) {
+//					ThrowStatement statement = (ThrowStatement) catchStatements.get(i);
+//					selectLine = this.actRoot.getLineNumber(statement.getStartPosition()) -1;
+//				}
+//			}
+//		}
+//		return selectLine;
+//	}
 }
