@@ -48,11 +48,10 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
-import org.eclipse.jdt.internal.corext.refactoring.changes.CompilationUnitChange;
+import org.eclipse.jdt.core.refactoring.CompilationUnitChange;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.ltk.core.refactoring.Change;
-import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.TextFileChange;
@@ -132,10 +131,10 @@ public class RetryRefactoring extends Refactoring {
 	@Override
 	public Change createChange(IProgressMonitor pm)
 								throws CoreException, OperationCanceledException {
-		// 2010.07.20 之前的寫法，Preview的Token不會變色
-//		Change[] changes = new Change[] {textFileChange};
-//		CompositeChange change = new CompositeChange("Introduce resourceful try clause", changes);
-
+		/* 2010.07.20 之前的寫法，Preview的Token不會變色
+		 * Change[] changes = new Change[] {textFileChange};
+		 * CompositeChange change = new CompositeChange("Introduce resourceful try clause", changes);
+		 */
 		String name = "Introduce resourceful try clause";
 		ICompilationUnit unit = (ICompilationUnit) element;
 		CompilationUnitChange result = new CompilationUnitChange(name, unit);

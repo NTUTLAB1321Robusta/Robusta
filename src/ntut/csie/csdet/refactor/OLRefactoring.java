@@ -133,14 +133,20 @@ public class OLRefactoring implements IMarkerResolution{
 			MethodDeclaration methodDeclaration = (MethodDeclaration) currentNode;
 			IMethod method = (IMethod) methodDeclaration.resolveBinding().getJavaElement();
 
-			//取得Method的Caller
-			MethodWrapper currentMW = new CallHierarchy().getCallerRoot(method);				
-			MethodWrapper[] calls = currentMW.getCalls(new NullProgressMonitor());
+			// 取得Method的Caller
+			IMember[] methodArray = new IMember[] {method};
+			MethodWrapper[] currentMW = CallHierarchy.getDefault().getCallerRoots(methodArray);
+			if (currentMW.length != 1)	return;
+			MethodWrapper[] calls = currentMW[0].getCalls(new NullProgressMonitor());
+			/* Eclipse3.3:
+			 * MethodWrapper currentMW = new CallHierarchy().getCallerRoot(method);
+			 * MethodWrapper[] calls = currentMW.getCalls(new NullProgressMonitor());
+			 */
 
-			//若有Caller
+			// 若有Caller
 			if (calls.length != 0) {
 				for (MethodWrapper mw : calls) {
-					//取得caller的IMethod
+					// 取得caller的IMethod
 					IMethod callerMethod = (IMethod) mw.getMember();
 
 					OLRefactorAction tempAction = new OLRefactorAction();
@@ -192,11 +198,17 @@ public class OLRefactoring implements IMarkerResolution{
 			MethodDeclaration methodDeclaration = (MethodDeclaration) currentMethodNode;
 			IMethod method = (IMethod) methodDeclaration.resolveBinding().getJavaElement();
 
-			//取得Method的Caller
-			MethodWrapper currentMW = new CallHierarchy().getCalleeRoot(method);				
-			MethodWrapper[] calls = currentMW.getCalls(new NullProgressMonitor());
+			// 取得Method的Caller
+			IMember[] methodArray = new IMember[] {method};
+			MethodWrapper[] currentMW = CallHierarchy.getDefault().getCalleeRoots(methodArray);
+			if (currentMW.length != 1)	return;
+			MethodWrapper[] calls = currentMW[0].getCalls(new NullProgressMonitor());
+			/* Eclipse3.3:
+			 * MethodWrapper currentMW = new CallHierarchy().getCalleeRoot(method);
+			 * MethodWrapper[] calls = currentMW.getCalls(new NullProgressMonitor());
+			 */
 
-			//若有Callee
+			// 若有Callee
 			if (calls.length != 0) {
 				for (MethodWrapper mw : calls) {
 					IMember calleeMember = (IMember) mw.getMember();
@@ -222,7 +234,7 @@ public class OLRefactoring implements IMarkerResolution{
 										if (tempAction.isLoggingExist() && isOK)
 											//此Class是否已經存在於List中
 											addFixList(calleeMethod, tempAction);
-										
+
 										//繼續下一層Trace
 										traceCalleeMethod(tempAction.getCurrentMethodNode());
 									}
@@ -387,12 +399,12 @@ public class OLRefactoring implements IMarkerResolution{
 		
 		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 		IFile javaFile = project.getFile(javaPath);
-		
+
 		if (javaFile != null) {
 			IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 	
 			IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(javaFile.getName());
-	
+
 			IEditorPart edit = null;
 			try {
 				edit = page.openEditor(new FileEditorInput(javaFile), desc.getId());

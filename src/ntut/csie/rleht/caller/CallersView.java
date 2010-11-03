@@ -11,6 +11,7 @@ import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.ui.actions.PrintAction;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.ISourceRange;
 import org.eclipse.jdt.core.IType;
@@ -263,21 +264,27 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 
 	protected void updateView(IMethod method) {
 		if (method != null) {
-			//依據showCaller來決定是往上或往下做Call Hierarchy
-			//getCallerRoot:由下往上call,getCalleeRoot:由上往下call
-//			MethodWrapper mw = showCaller ? new CallHierarchy().getCallerRoot(method) : new CallHierarchy().getCalleeRoot(method);
-			MethodWrapper mw = showCaller ? CallHierarchy.getDefault().getCallerRoot(method) : CallHierarchy.getDefault().getCalleeRoot(method);
+			// 依據showCaller來決定是往上或往下做Call Hierarchy
+			// getCallerRoot:由下往上call,getCalleeRoot:由上往下call
+			IMember[] methodArray = new IMember[] {method};
+			MethodWrapper[] mw = showCaller ? CallHierarchy.getDefault().getCallerRoots(methodArray)
+											: CallHierarchy.getDefault().getCalleeRoots(methodArray);
+			/* Eclipse3.3:
+			 * MethodWrapper mw = showCaller ? CallHierarchy.getDefault().getCallerRoot(method)
+			 * 								 : CallHierarchy.getDefault().getCalleeRoot(method);
+			 */
+			if (mw.length == 1) {
+				// 不論是由上往下或由下往上的Call Hierarchy最多都先只展開兩層而已
+				// 防止memory一次用太多,容易memory leak
+				int expand = showCaller ? 2 : 2;
 
-			//不論是由上往下或由下往上的Call Hierarchy最多都先只展開兩層而已
-			//防止memory一次用太多,容易memory leak
-			int expand = showCaller ? 2 : 2;
-
-			CallersRoot root = new CallersRoot(mw);
-			treeviewer.setInput(root);
-			if (root != null) {
-				treeviewer.expandToLevel(expand);
-				treeviewer.getTree().setFocus();
-				treeviewer.getTree().setSelection(new TreeItem[] { treeviewer.getTree().getItems()[0] });
+				CallersRoot root = new CallersRoot(mw[0]);
+				treeviewer.setInput(root);
+				if (root != null) {
+					treeviewer.expandToLevel(expand);
+					treeviewer.getTree().setFocus();
+					treeviewer.getTree().setSelection(new TreeItem[] {treeviewer.getTree().getItems()[0]});
+				}
 			}
 		}
 	}

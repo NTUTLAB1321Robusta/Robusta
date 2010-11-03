@@ -243,7 +243,7 @@ public class UMQuickFix extends BaseQuickFix implements IMarkerResolution{
 		}
 
 		if (!isException) {
-			//建立新的catch(Exception ex)	
+			// 建立新的catch(Exception ex)
 			ListRewrite catchRewrite = rewrite.getListRewrite(original, TryStatement.CATCH_CLAUSES_PROPERTY);
 			CatchClause cc = ast.newCatchClause();		
 			SingleVariableDeclaration sv = ast.newSingleVariableDeclaration();

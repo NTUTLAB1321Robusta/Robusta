@@ -9,6 +9,7 @@ import ntut.csie.csdet.preference.JDomUtil;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.astview.NodeFinder;
+import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
@@ -88,9 +89,15 @@ public class OverLoggingDetector {
 		boolean isOverLogging;
 
 		//TODO 曾發生Internal Error
-		//往下一層邁進
-		MethodWrapper currentMW = new CallHierarchy().getCallerRoot(method);				
-		MethodWrapper[] calls = currentMW.getCalls(new NullProgressMonitor());
+		//往下一層邁進		
+		IMember[] methodArray = new IMember[] {method};
+		MethodWrapper[] currentMW = CallHierarchy.getDefault().getCallerRoots(methodArray);
+		if (currentMW.length != 1)	return false;
+		MethodWrapper[] calls = currentMW[0].getCalls(new NullProgressMonitor());
+		/* Eclipse3.3:
+		 * MethodWrapper currentMW = new CallHierarchy().getCallerRoot(method);
+		 * MethodWrapper[] calls = currentMW.getCalls(new NullProgressMonitor());
+		 */
 
 		//若有Caller
 		if (calls.length != 0) {

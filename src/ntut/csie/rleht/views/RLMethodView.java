@@ -952,10 +952,10 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 	}
 
 	public ShowInContext getShowInContext() {
-		//移到Eclipse 3.4這邊會發生null point exception,所以這邊改成這樣 
-		IEditorPart editor = PlatformUI.getWorkbench()
-        .getActiveWorkbenchWindow().getActivePage().getActiveEditor();
-                                                                                
+		// 移到Eclipse 3.4這邊會發生null point exception,所以這邊改成這樣
+		IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+		if (editor == null)	return null;
+
 		IEditorInput input = editor.getEditorInput();
 		IFile file = (IFile) input.getAdapter(IFile.class);
 

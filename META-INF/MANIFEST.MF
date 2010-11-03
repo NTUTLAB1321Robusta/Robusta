@@ -41,3 +41,4 @@ Require-Bundle: org.eclipse.ui,
  org.junit,
  org.eclipse.jdt.astview
 Eclipse-LazyStart: true
+Import-Package: org.eclipse.jdt.core.refactoring
