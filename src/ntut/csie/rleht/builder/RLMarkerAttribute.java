@@ -21,45 +21,49 @@ public interface RLMarkerAttribute {
 
 	public static final String RL_MSG_INDEX = "RL_MSG_INDEX";
 	
-	//Suppress Smell Error
+	/** Suppress Smell Error */
 	public static final String ERR_SS_NO_SMELL = "ERR_SS_NO_SMELL";
 
 	public static final String ERR_SS_FAULT_NAME = "ERR_SS_FAULT_NAME";
 
 	public static final String ERR_SS_DUPLICATE = "ERR_SS_DUPLICATE";
 
-	//Suppress Smell In Catch
+	/** Suppress Smell In Catch */
 	public static final String SS_IN_CATCH = "SS_IN_CATCH";
 
 	
 
 
-	//ignore exception的type
+	/** ignore exception的type */
 	public static final String CS_INGNORE_EXCEPTION = "Ignore_Checked_Exception";
 	
-	//Dummy Handler的type
+	/** Dummy Handler的type */
 	public static final String CS_DUMMY_HANDLER = "Dummy_Handler";
 	
-	//Nested Try Block的type
+	/** Nested Try Block的type */
 	public static final String CS_NESTED_TRY_BLOCK = "Nested_Try_Block";
 	
-	//Unprotected Main Program
+	/** Unprotected Main Program */
 	public static final String CS_UNPROTECTED_MAIN = "Unprotected_Main_Program";
 	
-	//Careless CleanUp
+	/** Careless CleanUp */
 	public static final String CS_CARELESS_CLEANUP = "Careless_CleanUp";
 	
-	//Over Logging
+	/** Over Logging */
 	public static final String CS_OVER_LOGGING = "Over_Logging";
 
-
+	/** Careless cleanup with try block */
+	public static final String CCU_WITH_TRY = "Careless_Cleanup_With_Try_Block";
+	
+	/** MethodInvocation with exceptions */
+	public static final String MI_WITH_Ex = "MethodInvocation_With_Exceptions";
 	
 	
-	//Total Code Smell Type
+	/** Total Code Smell Type */
 	public static final String[] CS_TOTAL_TYPE = new String[]{ CS_INGNORE_EXCEPTION,
 		CS_DUMMY_HANDLER, CS_NESTED_TRY_BLOCK, CS_UNPROTECTED_MAIN, CS_CARELESS_CLEANUP, CS_OVER_LOGGING};
 
-	//Total Smell Type In Catch
+	/** Total Smell Type In Catch */
 	public static final String[] CS_CATCH_TYPE = new String[]{ CS_INGNORE_EXCEPTION,
 		CS_DUMMY_HANDLER, CS_OVER_LOGGING};
 }

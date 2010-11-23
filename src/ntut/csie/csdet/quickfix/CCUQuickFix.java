@@ -91,7 +91,8 @@ public class CCUQuickFix extends BaseQuickFix implements IMarkerResolution{
 	private String findMoveLine(String msgIdx) {
 		CarelessCleanUpAnalyzer ccVisitor = new CarelessCleanUpAnalyzer(this.actRoot); 
 		currentMethodNode.accept(ccVisitor);
-		List<CSMessage> ccList = ccVisitor.getCarelessCleanUpList();
+		//有try block的，才有機會提供quick fix
+		List<CSMessage> ccList = ccVisitor.getCarelessCleanUpList(true);
 		CSMessage csMsg = ccList.get(Integer.parseInt(msgIdx));
 		return csMsg.getStatement();
 	}

@@ -11,14 +11,16 @@ import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.rleht.common.RLBaseVisitor;
 
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.Expression;
+//import org.eclipse.jdt.core.dom.ForStatement;
+//import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
+import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Statement;
+import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.TryStatement;
 import org.jdom.Attribute;
 import org.jdom.Element;
@@ -29,50 +31,52 @@ import org.jdom.Element;
  */
 public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 	
-	/**
-	 * AST tree的root(檔案名稱)
-	 */
-	private CompilationUnit root;
+	/** AST tree的root(檔案名稱) */
+	private CompilationUnit _root;
 	
-	/**
-	 * 儲存找到的Careless Cleanup
-	 */
-	private List<CSMessage> CarelessCleanUpList;
+	/** 儲存找到的Careless Cleanup */
+	private List<CSMessage> _lstCarelessCleanupInsideOfTryBlock;
 	
-	/**
-	 * 收集class中的method
-	 */
-	ASTMethodCollector methodCollector;
+	/** 儲存在try block外面找到的Careless Cleanup */
+	private List<CSMessage> _lstCarelessCleanupOutsideOfTryBlock;
 	
-	/**
-	 * 儲存找到的Method List
-	 */
-	List<ASTNode> methodList;
+	/** 收集class中的method */
+	private ASTMethodCollector _methodCollector;
 	
-	/**
-	 * 是否找到Careless CleanUp
-	 */
-	private boolean flag = false;
+	/** 儲存找到的Method List */
+	private List<ASTNode> _methodList;
 	
-	/**
-	 * 是否要偵測"使用者釋放資源的程式碼在函式中"
-	 */
+	/** 是否要偵測"使用者釋放資源的程式碼在函式中" */
 	private boolean isDetUserMethod = false;
 	
-	/**
-	 * 儲存"使用者要偵測的library名稱"和"是否要偵測此library"
-	 */
+	/** 儲存"使用者要偵測的library名稱"和"是否要偵測此library" */
 	private TreeMap<String, Integer> libMap = new TreeMap<String, Integer>();
+	
+	/** 檢查程式裡面closeMethod的visitor */
+	private CloseMethodAnalyzer _closeMethodAnalyzer;
+	
+//	/** 蒐集所有careless cleanup的ExpressionStatement */
+//	private List<ExpressionStatement> _lstCarelessCleanupStatement;
 	
 	public CarelessCleanUpAnalyzer(CompilationUnit root){
 		super(true);
-		this.root = root;
-		CarelessCleanUpList = new ArrayList<CSMessage>();
-		methodCollector = new ASTMethodCollector();
-		this.root.accept(methodCollector);
-		methodList = methodCollector.getMethodList();
+		_root = root;
+		_lstCarelessCleanupInsideOfTryBlock = new ArrayList<CSMessage>();
+		_lstCarelessCleanupOutsideOfTryBlock = new ArrayList<CSMessage>();
+		_methodCollector = new ASTMethodCollector();
+		_root.accept(_methodCollector);
+		_methodList = _methodCollector.getMethodList();
+//		this._lstCarelessCleanupStatement = new ArrayList<ExpressionStatement>();
 		getCarelessCleanUp();
 	}
+	
+//	/** 將Careless Cleanup　statement的所屬Node記錄起來 */
+//	private void addCarelessCleanupWarning(ASTNode node){
+//		if (node.getParent() instanceof ExpressionStatement) {
+//			ExpressionStatement statement = (ExpressionStatement) node.getParent();
+//			this._lstCarelessCleanupStatement.add(statement);
+//		}
+//	}
 
 	/**
 	 * (non-Javadoc) 
@@ -95,14 +99,14 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 				processTryStatement(node);
 				//Find the smell in the catch Block
 				processCatchStatement(node);
-				return false;		
+				return false;
 			default:
 				return true;
 		}
 	}
 	
 	/**
-	 * 偵測有拋出例外的Method中，是否有close的動作
+	 * 偵測有拋出例外的Method中，是否有close的動作(dna2me)
 	 * @param md
 	 */
 	private void processMethodDeclaration(MethodDeclaration md) {
@@ -119,94 +123,115 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 			//node是Try Statement(new出自己，再用一次visitNode這個Method)
 			if(mdStatements.get(i) instanceof TryStatement){
 				TryStatement ts = (TryStatement)mdStatements.get(i);
-				CarelessCleanUpAnalyzer ccuaVisitor = new CarelessCleanUpAnalyzer(this.root);
+				CarelessCleanUpAnalyzer ccuaVisitor = new CarelessCleanUpAnalyzer(this._root);
 				ts.accept(ccuaVisitor);
-				List<CSMessage> ccuList = ccuaVisitor.getCarelessCleanUpList();
+				
 				//合併本來的instance與new出來instance的CSMessage
-				this.mergeCSMessage(ccuList);
+					//in try block
+				List<CSMessage> ccuInTryBlockList = ccuaVisitor.getCarelessCleanUpList(true);
+				this.mergeCSMessage(ccuInTryBlockList, true);
+					//not in try block
+				ccuInTryBlockList = ccuaVisitor.getCarelessCleanUpList(false);
+				this.mergeCSMessage(ccuInTryBlockList, false);
 			}
 			//node不是Try Statement
-			else if(mdStatements.get(i) instanceof Statement){				
-				carelessCleanupInTryBlock = false;
-				markCarelessCleanUpStatement((Statement)mdStatements.get(i));
+			else if(mdStatements.get(i) instanceof Statement){
+//				this._isCarelessCleanupInTryBlock = false;
+				markCarelessCleanUpStatement((Statement)mdStatements.get(i), false);
 			}
 		}
 	}
 	
-	/**
-	 * flag, 區分這個careless cleanup是不是在try block裡面
-	 */
-	private boolean carelessCleanupInTryBlock = true;
-	
+//	/** flag, 區分這個careless cleanup是不是在try block裡面 */
+//	private boolean _isCarelessCleanupInTryBlock;
+//	
 	/**
 	 * 結合此instance和另外new出來instance的CSMessage
 	 * @param childInfo
 	 */
-	private void mergeCSMessage(List<CSMessage> childInfo){
+	private void mergeCSMessage(List<CSMessage> childInfo, boolean isInTryBlock){
 		if (childInfo == null || childInfo.size() == 0) {
 			return;
 		}
-		for(CSMessage msg : childInfo){
-			this.CarelessCleanUpList.add(msg);
+		if(isInTryBlock){
+			for(CSMessage msg : childInfo){
+				this._lstCarelessCleanupInsideOfTryBlock.add(msg);
+			}
+		}else{
+			for(CSMessage msg: childInfo){
+				this._lstCarelessCleanupOutsideOfTryBlock.add(msg);
+			}
 		}
 	}
 	
 	/**
 	 * 處理try節點內的statement
+	 * 1. 如果try裡面只做close的動作，不能算是bad smell
+	 * 2. 如果try裡面只有if，if又只做close的動作，也不能算是bad smell
 	 */
 	private void processTryStatement(ASTNode node){
 		//取得try Block內的Statement
 		TryStatement trystat=(TryStatement) node;
 		List<?> statementTemp=trystat.getBody().statements();
 		//避免該try節點為Nested try block重構後的結果,故判斷try節點內的statement數量須大於1
-		if(statementTemp.size()>1){
-			//判斷try節點內的statement是否有Careless CleanUp
-			judgeCarelessCleanUp(statementTemp);
+		//statementTemp沒東西，當然不判斷
+		if(statementTemp.size() <= 0){
+			return;
 		}
+		//如果size == 1，而且是MethodInvocation，就statementTemp只有一行程式碼，所以不判斷
+		else if(statementTemp.size() == 1){
+			if(statementTemp.get(0) instanceof ExpressionStatement){
+				return;
+			}
+			//p.s.如果以後Catch也要用，記得要Extract出來
+			//如果是IfStatement，沒有Else，在Then裡面又只有一行，那也是不判斷
+			else if (statementTemp.get(0) instanceof IfStatement){
+				IfStatement ifst = (IfStatement)statementTemp.get(0);
+				//沒有ElseStatement
+				if (ifst.getElseStatement() == null) {
+					if(ifst.getThenStatement() instanceof ExpressionStatement){
+//						System.out.println("if沒括號");
+						return;
+					}else{
+//						System.out.println("if有括號");
+						Block bk = (Block)ifst.getThenStatement();
+						if(bk.statements().size() == 1){
+//							System.out.println("if有括號，而且只有一行");
+							return;
+						}
+					}
+				}
+			}
+		}
+		judgeCarelessCleanUp(statementTemp);
 	}
 
 	/**
 	 * 判斷單一statement是不是Careless Clean Up
 	 * @param st
+	 * @param isInTryBlock
 	 */
-	private void markCarelessCleanUpStatement(Statement st){
-		if(findBindingLib(st)){
+	private void markCarelessCleanUpStatement(Statement st, boolean isInTryBlock){
+		//標記符合使用者自訂的Careless Cleanup規則的Statement
+		if(visitBindingLib(st)){
 			//findExceptionInfo((ASTNode) statement);
-			addMarker(st);
-		}else{
-			st.accept(new ASTVisitor(){
-				public boolean visit(MethodInvocation node){
-					//取得Method Invocation的Expression
-					Expression expression=node.getExpression();
-					//1.Expression為null,則該method invocation為object.close()的類型
-					//2.Expression不為null,則為close(object)的類型
-					if(expression!=null){
-						/*
-						 * 若同時滿足以下兩個條件,則為object.close(),視為smell
-						 * 1.class非使用者自訂
-						 * 2.方法名稱為"close"
-						 */
-						boolean isFromSource=node.resolveMethodBinding().getDeclaringClass().isFromSource();
-						String methodName=node.resolveMethodBinding().getName();
-						
-						if((!isFromSource)&&(methodName.equals("close"))){
-							addMarker(node);
-						}
-					} else {
-						//使用者是否要另外偵測釋放資源的程式碼是否在函式中
-						if(isDetUserMethod){
-							//處理被呼叫的函式
-							processCalledMethod(node);
-							//若flag為true,則該函式為smell
-							if(flag){				
-								addMarker(node);
-								flag = false;									
-							}
-						}
+			addMarker(st, isInTryBlock);
+		}
+		//標記Careless Cleanup的Statement
+		else{
+			_closeMethodAnalyzer = new CloseMethodAnalyzer(false, _methodList);
+			st.accept(_closeMethodAnalyzer);
+			if(_closeMethodAnalyzer.isFoundCarelessCleanup()){
+				addMarker(_closeMethodAnalyzer.getMethodInvocation(), isInTryBlock);
+			}else{
+				if(isDetUserMethod){
+					_closeMethodAnalyzer = new CloseMethodAnalyzer(true, _methodList);
+					st.accept(_closeMethodAnalyzer);
+					if(_closeMethodAnalyzer.isFoundCarelessCleanup()){
+						addMarker(_closeMethodAnalyzer.getMethodInvocation(), isInTryBlock);
 					}
-					return true;
 				}
-			});
+			}
 		}
 	}
 	
@@ -220,7 +245,7 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 				statement = (Statement) statementTemp.get(i);
 				//若該statement包含使用者自訂的Rule,則為smell
 				//否則找statement內是否有Method Invocation
-				markCarelessCleanUpStatement(statement);
+				markCarelessCleanUpStatement(statement, true);
 			}
 		}
 	}
@@ -239,107 +264,14 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 				//若careless cleanup出現在catch中的try,則會繼續traversal下去
 				visitNode(catchclause);
 			}
-		
-	}
-
-	/**
-	 * 處理被呼叫的函式
-	 * @param node
-	 */
-	private void processCalledMethod(MethodInvocation node){
-		//取得該Method Invocation的名稱
-		String methodInvName=node.resolveMethodBinding().getName();
-		String methodDecName;
-		MethodDeclaration md;
-		//是否有Method Declaration的Name與Method Invocation的Name相同
-		for(int i=0;i<methodList.size();i++){
-			//取得Method Declaration的名稱
-			md=(MethodDeclaration) methodList.get(i);
-			methodDecName=md.resolveBinding().getName();
-			//若名稱相同,則處理該Method Invocation
-			if(methodDecName.equals(methodInvName)){
-				judgeCalledMethod(md);	
-			}
-				
-		}
 	}
 	
-	/**
-	 * 判斷被呼叫的函式是否有Careless CleanUp
-	 * @param MethodDeclaration
-	 */
-	private void judgeCalledMethod(MethodDeclaration md) {
-		//取得該Method Declaration的所有statement
-		List<?> mdStatement = md.getBody().statements();
-		//取得該Method Declaration的thrown exception name
-		List<?> thrown=md.thrownExceptions();
-
-		if (mdStatement.size() != 0) {
-			for (int j = 0; j < mdStatement.size(); j++) {
-				//找函式內的try節點
-				if(mdStatement.get(j) instanceof TryStatement){
-					//取得try Block內的Statement
-					TryStatement trystat=(TryStatement) mdStatement.get(j);
-					List<?> statementTemp=trystat.getBody().statements();
-					//找statement內是否有Method Invocation
-						if(!statementTemp.isEmpty()){
-							Statement statement;
-							for(int k=0;k<statementTemp.size();k++){
-								if(statementTemp.get(k) instanceof Statement){
-									statement = (Statement) statementTemp.get(k);
-										acceptStatement2ASTVisitor(statement);
-								}
-							}
-						}
-				}
-
-				/* 若不為空，代表有丟出例外
-				 * private void closeFile(FileOutputStream fos) throws IOException {
-				 * 	fos.close();
-				 * }
-				 */
-				if(thrown.size()!=0){
-					//object.close 皆為Expression Statement
-					if(mdStatement.get(j) instanceof ExpressionStatement){
-						ExpressionStatement es=(ExpressionStatement) mdStatement.get(j);
-						acceptStatement2ASTVisitor(es);
-					}
-				}
-			}
-		}
-	}
-	
-	/**
-	 * 判斷此呼叫的函式中，指定的statement是不是有careless cleanup的情形
-	 * @param statement
-	 */
-	private void acceptStatement2ASTVisitor(Statement statement) {
-		statement.accept(new ASTVisitor(){
-			public boolean visit(MethodInvocation node){
-				/*
-				 * 若被呼叫的函式有Careless CleanUp,則其釋放資源的程式碼須滿足以下三個條件
-				 * 1.expression不為空
-				 * 2.class非使用者自訂
-				 * 3.方法名稱為"close"
-				 */
-				Expression expression=node.getExpression();
-				boolean isFromSource=node.resolveMethodBinding().getDeclaringClass().isFromSource();
-				String methodName=node.resolveMethodBinding().getName();
-				if(expression!=null&&(!isFromSource)&&(methodName.equals("close"))){											
-					flag = true;
-					//若已經找到有CarelessCleanUp,就不再往下一層找
-					return false;
-				}
-				return true;
-			}
-		});
-	}
 	/**
 	 * 偵測使用者自訂的Rule
 	 * @param statement
 	 * @return boolean
 	 */
-	private boolean findBindingLib(Statement statement) {
+	private boolean visitBindingLib(Statement statement) {
 		ExpressionStatementAnalyzer visitor = new ExpressionStatementAnalyzer(libMap);
 		statement.accept(visitor);
 		if (visitor.getResult()) {
@@ -351,45 +283,84 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 	
 	/**
 	 * 將找到的smell加入List中(本工具預設的smell)
+	 * @param isInTryBlock
 	 */
-	private void addMarker(ASTNode node){
-		String rlMarkerAttribute = RLMarkerAttribute.CS_CARELESS_CLEANUP;
-		//區分careless cleanup是否在try block中
-		if (!carelessCleanupInTryBlock)
-			rlMarkerAttribute = RLMarkerAttribute.CS_CARELESS_CLEANUP;
-		CSMessage csmsg = new CSMessage(rlMarkerAttribute,
+	private void addMarker(ASTNode node, boolean isInTryBlock){
+		MethodInvocation mi = (MethodInvocation)node;
+		String exceptionType = null; 
+		if(mi.resolveMethodBinding().getExceptionTypes().length == 1){
+			exceptionType = mi.resolveMethodBinding().getExceptionTypes().toString();
+		}else if (mi.resolveMethodBinding().getExceptionTypes().length > 1){
+			exceptionType = "Exceptions";
+		}
+		CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_CARELESS_CLEANUP,
 				null, node.toString(), node.getStartPosition(),
-				getLineNumber(node.getStartPosition()), null);
-		CarelessCleanUpList.add(csmsg);
+				getLineNumber(node.getStartPosition()), exceptionType);
+
+		//區分careless cleanup是否在try block中
+		if (isInTryBlock){
+			_lstCarelessCleanupInsideOfTryBlock.add(csmsg);
+		}else{
+			_lstCarelessCleanupOutsideOfTryBlock.add(csmsg);
+		}	
 	}
 	
 	/**
 	 * 將找到的smell加入List中(使用者定義的smell)
+	 * @param isInTryBlock TODO
 	 */
-	private void addMarker(Statement statement){
-		String test = RLMarkerAttribute.CS_CARELESS_CLEANUP;
-		//區分careless cleanup是否在try block中
-		if (!carelessCleanupInTryBlock)
-			test = RLMarkerAttribute.CS_CARELESS_CLEANUP;
-		CSMessage csmsg=new CSMessage(test ,null,											
+	private void addMarker(Statement statement, boolean isInTryBlock){
+		CSMessage csmsg=new CSMessage(RLMarkerAttribute.CS_CARELESS_CLEANUP ,null,											
 				statement.toString(),statement.getStartPosition(),
 				getLineNumber(statement.getStartPosition()),null);
-		CarelessCleanUpList.add(csmsg);
+
+		//區分careless cleanup是否在try block中
+		if (isInTryBlock){
+			_lstCarelessCleanupInsideOfTryBlock.add(csmsg);
+		}else{
+			_lstCarelessCleanupOutsideOfTryBlock.add(csmsg);
+		}
 	}
+	
 	/**
 	 * 根據startPosition來取得行數
 	 */
 	private int getLineNumber(int pos) {
-		return root.getLineNumber(pos);
+		return _root.getLineNumber(pos);
 	}
 	
 	/**
-	 * 取得Careless CleanUp的list
+	 * 選擇取得try block內/外的Careless CleanUp的list
+	 * @param isGettingFromTryBlock (true: 取得TryBlock裡面的； false: 取得TryBlock外面的)
 	 * @return list
 	 */
-	public List<CSMessage> getCarelessCleanUpList(){
-		return CarelessCleanUpList;
+	public List<CSMessage> getCarelessCleanUpList(boolean isGettingFromTryBlock){
+		if(isGettingFromTryBlock){
+			return _lstCarelessCleanupInsideOfTryBlock;
+		}else{
+			return _lstCarelessCleanupOutsideOfTryBlock;
+		}
 	}
+	
+	/**
+	 * 取得所有的Careless Cleanup list
+	 * @return
+	 */
+	public List<CSMessage> getCarelessCleanUpList(){
+		List<CSMessage> csmsg = _lstCarelessCleanupInsideOfTryBlock;
+		for(CSMessage msg : _lstCarelessCleanupOutsideOfTryBlock){
+			csmsg.add(msg);
+		}
+		return csmsg;
+	}
+	
+//	/**
+//	 * 取得try block外，Careless Cleanup的CSMessage List
+//	 * @return
+//	 */
+//	public List<CSMessage> getCarelessCleanUpList(){
+//		return this._lstCarelessCleanupInsideOfTryBlock;
+//	}
 	
 	/**
 	 * 取得User對Careless CleanUp的設定(From xml)
@@ -433,9 +404,4 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 			}
 		}
 	}
-	
-	
-//	public void findExceptionInfo(ASTNode node){
-//		//this.iType=node.resolveMethodBinding().getExceptionTypes();
-//	}
 }

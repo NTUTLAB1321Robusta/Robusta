@@ -37,6 +37,9 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 			String exception = (String) marker.getAttribute(RLMarkerAttribute.RL_INFO_EXCEPTION);
 			String level = (String) marker.getAttribute(RLMarkerAttribute.RL_INFO_LEVEL);
 			String errMsg = (String) marker.getAttribute(IMarker.MESSAGE);
+			String exceptionType = (String) marker.getAttribute(RLMarkerAttribute.MI_WITH_Ex);
+//			System.out.print("Smell類型： " + errMsg);
+//			System.out.println("\t RLException行數: " + marker.getAttribute(RLMarkerAttribute.CCU_WITH_TRY));
 
 			List<IMarkerResolution> markerList = new ArrayList<IMarkerResolution>();
 
@@ -107,8 +110,24 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				markerList.add(new CSQuickFix("新增 @SuppressSmell '" + problem + "' on Method", false));
 				// 碰到Careless CleanUp的Quick fix and refactor方法
 			} else if(problem.equals(RLMarkerAttribute.CS_CARELESS_CLEANUP)){
-				markerList.add(new CCUQuickFix("Quick Fix==>Move code to finally block"));
-				markerList.add(new CarelessCleanUpAction("Refactor==>Use Extract Method"));
+				//只有CCMessage才會有這個，所以只能在這邊get
+				int withTryBlock = 0;
+				if(marker.getAttribute(RLMarkerAttribute.CCU_WITH_TRY) != null){
+					withTryBlock = (Integer) marker.getAttribute(RLMarkerAttribute.CCU_WITH_TRY);
+				}
+				
+				//MethodInv. won't throw exceptions will only offer "quick fix"
+				if(exceptionType == null){
+					markerList.add(new CCUQuickFix("Quick Fix==>Move code to finally block"));
+				}
+				//MethodInv. not in try block, should use "Three steps to refactor"
+				if(withTryBlock == 0){
+					markerList.add(new CarelessCleanUpAction("Refactor==>Use Three Steps"));
+				
+				//MethodInv. will throw exceptions and in try block
+				}else if(exceptionType != null && withTryBlock != 0){
+					markerList.add(new CarelessCleanUpAction("Refactor==>Use Extract Method"));
+				}
 				markerList.add(new CSQuickFix("新增 @SuppressSmell '" + problem + "' on Method", false));
 				// 碰到OverLogging的Quick fix and refactor方法
 			}else if(problem.equals(RLMarkerAttribute.CS_OVER_LOGGING)){
