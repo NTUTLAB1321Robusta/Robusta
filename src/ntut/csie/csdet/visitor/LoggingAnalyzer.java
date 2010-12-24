@@ -85,11 +85,10 @@ public class LoggingAnalyzer extends RLBaseVisitor{
 						List catchList = trystat.catchClauses();
 						CatchClause cc = null;
 						for (int j = 0; j < catchList.size(); j++) {
-							cc = (CatchClause) catchList.get(i);
+							cc = (CatchClause) catchList.get(j);
 							//處理CatchClause(判斷Exception是否有轉型，並偵測有沒有Logging)
 							processCatchStatement(cc);
 						}
-
 					}
 				}
 			}
