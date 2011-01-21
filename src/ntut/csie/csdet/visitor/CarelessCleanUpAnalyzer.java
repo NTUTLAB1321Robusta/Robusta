@@ -13,8 +13,6 @@ import ntut.csie.rleht.common.RLBaseVisitor;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-//import org.eclipse.jdt.core.dom.ForStatement;
-//import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
@@ -165,45 +163,31 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 	}
 	
 	/**
-	 * 處理try節點內的statement
-	 * 1. 如果try裡面只做close的動作，不能算是bad smell
-	 * 2. 如果try裡面只有if，if又只做close的動作，也不能算是bad smell
+	 * 判斷IfStatement裡面是不是只有一行敘述。
+	 * 此Method旨在遇到IfStatement裡面只有一個close動作時，我們就不mark他為CCU。
+	 * (前提是這個IfStatement在try裡面，這個try也只有這個IfStatement)
+	 * @param ifst
+	 * @return
 	 */
-	private void processTryStatement(ASTNode node){
-		//取得try Block內的Statement
-		TryStatement trystat=(TryStatement) node;
-		List<?> statementTemp=trystat.getBody().statements();
-		//避免該try節點為Nested try block重構後的結果,故判斷try節點內的statement數量須大於1
-		//statementTemp沒東西，當然不判斷
-		if(statementTemp.size() <= 0){
-			return;
-		}
-		//如果size == 1，而且是MethodInvocation，就statementTemp只有一行程式碼，所以不判斷
-		else if(statementTemp.size() == 1){
-			if(statementTemp.get(0) instanceof ExpressionStatement){
-				return;
+	private boolean isIfStatementHasOnlyOneStatement(IfStatement ifst){
+		//如果有ElseStatement，就不符合我們的目的了
+		if (ifst.getElseStatement() == null) {
+			//if沒有括號
+			if(ifst.getThenStatement() instanceof ExpressionStatement){
+//				System.out.println("if沒括號");
+				return true;
 			}
-			//p.s.如果以後Catch也要用，記得要Extract出來
-			//如果是IfStatement，沒有Else，在Then裡面又只有一行，那也是不判斷
-			else if (statementTemp.get(0) instanceof IfStatement){
-				IfStatement ifst = (IfStatement)statementTemp.get(0);
-				//沒有ElseStatement
-				if (ifst.getElseStatement() == null) {
-					if(ifst.getThenStatement() instanceof ExpressionStatement){
-//						System.out.println("if沒括號");
-						return;
-					}else{
-//						System.out.println("if有括號");
-						Block bk = (Block)ifst.getThenStatement();
-						if(bk.statements().size() == 1){
-//							System.out.println("if有括號，而且只有一行");
-							return;
-						}
-					}
+			//if有括號
+			else{
+//				System.out.println("if有括號");
+				Block bk = (Block)ifst.getThenStatement();
+				if(bk.statements().size() == 1){
+//					System.out.println("if有括號，而且只有一行");
+					return true;
 				}
 			}
 		}
-		judgeCarelessCleanUp(statementTemp);
+		return false;
 	}
 
 	/**
@@ -237,6 +221,7 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 	
 	/**
 	 * 判斷try節點內的statement是否有Careless CleanUp
+	 * @param statementTemp 節點內的statements
 	 */
 	private void judgeCarelessCleanUp(List<?> statementTemp){
 		Statement statement;
@@ -250,6 +235,36 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 		}
 	}
 	
+	/**
+	 * 處理try節點內的statement
+	 * 1. 如果try裡面只做close的動作，不能算是bad smell
+	 * 2. 如果try裡面只有if，if又只做close的動作，也不能算是bad smell
+	 */
+	private void processTryStatement(ASTNode node){
+		//取得try Block內的Statement
+		TryStatement trystat=(TryStatement) node;
+		List<?> statementTemp=trystat.getBody().statements();
+		//避免該try節點為Nested try block重構後的結果,故判斷try節點內的statement數量須大於1
+		//statementTemp沒東西，當然不判斷
+		if(statementTemp.size() <= 0){
+			return;
+		}
+		//如果size == 1，而且是MethodInvocation，就statementTemp只有一行程式碼，所以不判斷
+		else if(statementTemp.size() == 1){
+			if(statementTemp.get(0) instanceof ExpressionStatement){
+				return;
+			}
+			//如果是IfStatement，沒有Else，在Then裡面又只有一行，那也是不判斷
+			else if (statementTemp.get(0) instanceof IfStatement){
+				IfStatement ifst = (IfStatement)statementTemp.get(0);
+				if(isIfStatementHasOnlyOneStatement(ifst)){
+					return;
+				}
+			}
+		}
+		judgeCarelessCleanUp(statementTemp);
+	}
+
 	/**
 	 * 處理catch節點內的statement
 	 */

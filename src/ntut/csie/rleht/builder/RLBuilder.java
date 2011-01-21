@@ -65,7 +65,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 			if (lineNumber == -1) {
 				lineNumber = 1;
 			}else{
-				System.out.println("RLBuilder, Line 68, lineNumber" + lineNumber);
+				System.out.println("RLBuilder, Line 68, objCodeLine:" + lineNumber);
 			}
 			marker.setAttribute(IMarker.LINE_NUMBER, lineNumber);
 
@@ -105,6 +105,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 			marker = file.createMarker(MARKER_TYPE);
 			marker.setAttribute(IMarker.MESSAGE, message);
 			marker.setAttribute(IMarker.SEVERITY, severity);
+			System.out.println("RLBuilder, line 108, thisLineWillBeMarked:" + lineNumber);		
 			if (lineNumber == -1) {
 				lineNumber = 1;
 			}
@@ -139,34 +140,6 @@ public class RLBuilder extends IncrementalProjectBuilder {
 			String mtype, CSMessage msg, int msgIdx, int methodIdx){
 		addMarker(file, message, lineNumber, severity, mtype, msg, msgIdx, methodIdx, -1);
 	}
-//	/**
-//	 * 加code smell type的marker到problem view 中
-//	 */
-//	private void addMarker(IFile file, String message, int lineNumber, int severity, String mtype, CSMessage msg,
-//			int msgIdx, int methodIdx) {
-//		logger.debug("[RLBuilder][addCSMarker] START! ");
-//		IMarker marker;
-//		try {
-//			marker = file.createMarker(MARKER_TYPE);
-//			marker.setAttribute(IMarker.MESSAGE, message);
-//			marker.setAttribute(IMarker.SEVERITY, severity);
-//			if (lineNumber == -1) {
-//				lineNumber = 1;
-//			}
-//			
-//			marker.setAttribute(IMarker.LINE_NUMBER, lineNumber);
-//			//marker type =  EH smell type
-//			marker.setAttribute(RLMarkerAttribute.RL_MARKER_TYPE, mtype);
-//			marker.setAttribute(RLMarkerAttribute.RL_INFO_EXCEPTION, msg.getExceptionType());
-//			marker.setAttribute(RLMarkerAttribute.RL_INFO_SRC_POS, String.valueOf(msg.getPosition()));
-//			marker.setAttribute(RLMarkerAttribute.RL_METHOD_INDEX, String.valueOf(methodIdx));
-//			marker.setAttribute(RLMarkerAttribute.RL_MSG_INDEX, String.valueOf(msgIdx));
-//			
-//		} catch (CoreException e) {
-//			logger.error("[addCSMarker] EXCEPTION ",e);
-//		}
-//		logger.debug("[RLBuilder][addCSMarker] END ! ");
-//	}
 	
 	/**
 	 * 將相關例外資訊貼上marker(SSMessage)

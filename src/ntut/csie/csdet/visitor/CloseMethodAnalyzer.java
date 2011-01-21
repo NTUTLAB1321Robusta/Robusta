@@ -1,16 +1,16 @@
 package ntut.csie.csdet.visitor;
 
+import java.util.List;
+
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
-import org.eclipse.jdt.core.dom.IfStatement;
+import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
-import org.eclipse.jdt.core.dom.Expression;
-import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.TryStatement;
-
-import java.util.List;
 
 public class CloseMethodAnalyzer extends ASTVisitor {
 
@@ -35,6 +35,7 @@ public class CloseMethodAnalyzer extends ASTVisitor {
 	public CloseMethodAnalyzer(boolean isDetectOutterMethodWithCarelessCleanup, List<ASTNode> lstMethods){
 		_isDetectOutterMethodWithCarelessCleanup = isDetectOutterMethodWithCarelessCleanup;
 		_lstMethods = lstMethods;
+		_isFoundCarelessCleanup = false;	//初始化時，假定什麼都沒找到
 	}
 	
 	/**
@@ -59,7 +60,10 @@ public class CloseMethodAnalyzer extends ASTVisitor {
 	
 	public boolean visit(MethodInvocation miNode){
 		this._expression = miNode.getExpression();
-		boolean isFromSource = miNode.resolveMethodBinding().getDeclaringClass().isFromSource();
+		IMethodBinding methodBinding = miNode.resolveMethodBinding();
+		if (methodBinding == null)	return false;
+
+		boolean isFromSource = methodBinding.getDeclaringClass().isFromSource();
 		String methodName = miNode.resolveMethodBinding().getName();
 		//1. expression != null --> 為close(object)的類型
 		//2. !isFromSource --> class不是使用者在此次開發的程式中，所定義的class

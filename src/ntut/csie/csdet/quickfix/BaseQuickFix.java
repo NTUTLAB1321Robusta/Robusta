@@ -86,7 +86,13 @@ public class BaseQuickFix {
 	}
 
 	/**
-	 * 將所要變更的內容寫回Edit中
+	 * 將所要變更的內容寫回Edit中 (Old)
+	 */
+	protected void applyChange() {
+		applyChange(null);
+	}
+	/**
+	 * 將所要變更的內容寫回Edit中  (New)
 	 * @param msg
 	 */
 	protected void applyChange(ASTRewrite rewrite) {

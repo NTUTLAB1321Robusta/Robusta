@@ -38,8 +38,6 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 			String level = (String) marker.getAttribute(RLMarkerAttribute.RL_INFO_LEVEL);
 			String errMsg = (String) marker.getAttribute(IMarker.MESSAGE);
 			String exceptionType = (String) marker.getAttribute(RLMarkerAttribute.MI_WITH_Ex);
-//			System.out.print("Smell類型： " + errMsg);
-//			System.out.println("\t RLException行數: " + marker.getAttribute(RLMarkerAttribute.CCU_WITH_TRY));
 
 			List<IMarkerResolution> markerList = new ArrayList<IMarkerResolution>();
 

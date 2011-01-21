@@ -354,8 +354,13 @@ public class CarelessCleanUpRefactor extends Refactoring {
 						assignment.setRightHandSide((Expression) copyNode);
 
 						// 將fos = new ImputStream(); 替換到原本的程式裡
-						ExpressionStatement expressionStatement = ast.newExpressionStatement(assignment);
-						tryStatement.getBody().statements().set(i, expressionStatement);
+						if(assignment.getRightHandSide().getNodeType() != ASTNode.NULL_LITERAL){
+							ExpressionStatement expressionStatement = ast.newExpressionStatement(assignment);
+							tryStatement.getBody().statements().set(i, expressionStatement);
+						}else{
+							//如果本來的程式碼是設定instance初始為null，那就直接移除掉
+							tryStatement.getBody().statements().remove(i);
+						}
 
 						// InputStream fos = null
 						// 將new動作替換成null

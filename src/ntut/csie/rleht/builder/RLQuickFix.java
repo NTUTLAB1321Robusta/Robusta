@@ -275,7 +275,7 @@ public class RLQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 				method.modifiers().add(0, root);
 			}
 
-			this.applyChange(null);
+			this.applyChange();
 		}
 		catch (Exception ex) {
 			logger.error("[addOrRemoveRLAnnotation] EXCEPTION ",ex);
@@ -337,7 +337,7 @@ public class RLQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 				method.modifiers().add(0, root);
 			}
 
-			this.applyChange(null);
+			this.applyChange();
 		}
 		catch (Exception ex) {
 			logger.error("[updateRLAnnotation] EXCEPTION ",ex);

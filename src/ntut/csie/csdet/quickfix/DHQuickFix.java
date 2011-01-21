@@ -151,7 +151,7 @@ public class DHQuickFix extends BaseQuickFix implements IMarkerResolution{
 					// 在catch clause中建立throw statement
 					addThrowStatement(catchList.get(i), ast);
 					// 寫回Edit中
-					this.applyChange(null);
+					this.applyChange();
 
 					return i;
 				}

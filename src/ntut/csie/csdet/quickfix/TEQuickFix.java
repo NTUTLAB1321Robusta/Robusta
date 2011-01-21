@@ -136,7 +136,7 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 				//檢查在method前面有沒有throw exception
 				checkMethodThrow(ast,exception);
 				//寫回Edit中
-				this.applyChange(null);
+				this.applyChange();
 				return i;
 			}
 		}
