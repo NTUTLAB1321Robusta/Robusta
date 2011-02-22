@@ -51,6 +51,9 @@ public interface RLMarkerAttribute {
 	
 	/** Over Logging */
 	public static final String CS_OVER_LOGGING = "Over_Logging";
+	
+	/** Exception Robustness Level Advice */
+	public static final String CS_EXCEPTION_RLADVICE  = "Exception_RL_Advice";
 
 	/** Careless cleanup with try block */
 	public static final String CCU_WITH_TRY = "Careless_Cleanup_With_Try_Block";

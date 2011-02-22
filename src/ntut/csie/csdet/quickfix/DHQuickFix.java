@@ -38,7 +38,6 @@ import agile.exception.Robustness;
  * 提供給Ignore checked Exception與Dummy handler的解法
  * @author chewei
  */
-
 public class DHQuickFix extends BaseQuickFix implements IMarkerResolution{
 	private static Logger logger = LoggerFactory.getLogger(DHQuickFix.class);
 	

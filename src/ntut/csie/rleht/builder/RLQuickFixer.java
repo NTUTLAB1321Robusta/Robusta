@@ -13,6 +13,7 @@ import ntut.csie.csdet.refactor.CarelessCleanUpAction;
 import ntut.csie.csdet.refactor.OLRefactoring;
 import ntut.csie.csdet.refactor.RethrowUncheckExAction;
 import ntut.csie.rleht.common.RLUtils;
+import ntut.csie.rleht.rlAdvice.AchieveRL1QuickFix;
 import ntut.csie.rleht.views.RLData;
 
 import org.eclipse.core.resources.IMarker;
@@ -133,10 +134,16 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				markerList.add(new OLRefactoring("Refactor==>Remove Reference Logging"));
 				markerList.add(new CSQuickFix("新增 @SuppressSmell '" + problem + "' on Method", false));
 				markerList.add(new CSQuickFix("新增 @SuppressSmell '" + problem + "' on Catch", true));
+				//遇到可以建議的方法
+			}else if(problem.equals(RLMarkerAttribute.CS_EXCEPTION_RLADVICE)){
+				String advice = (String) marker.getAttribute(IMarker.MESSAGE);
+				//有RL annotation，才是有拋出這個例外(我有偷偷幫throw e的都硬上RL)
+				if(advice.contains("RL")){
+					markerList.add(new AchieveRL1QuickFix("RL1 quick gene ==> Rethrow Unckecked Exception"));
+				}
 			}
 			//List轉Array
 			IMarkerResolution[] markerArray = markerList.toArray(new IMarkerResolution[markerList.size()]);
-			
 			return markerArray;
 		} catch (CoreException ex) {
 			logger.error("[getResolutions] EXCEPTION ",ex);

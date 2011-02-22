@@ -13,6 +13,8 @@ import ntut.csie.csdet.visitor.CodeSmellAnalyzer;
 import ntut.csie.csdet.visitor.MainAnalyzer;
 import ntut.csie.csdet.visitor.OverLoggingDetector;
 import ntut.csie.rleht.common.ASTHandler;
+import ntut.csie.rleht.rlAdvice.RLAnalyzer;
+import ntut.csie.rleht.rlAdvice.RLAdviceMessage;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLChecker;
 import ntut.csie.rleht.views.RLData;
@@ -84,6 +86,27 @@ public class RLBuilder extends IncrementalProjectBuilder {
 		}
 		logger.debug("[RLBuilder][addMarker] END ! ");
 	}
+	
+	private void addMarker(IFile file, String message, int severity, 
+			RLAdviceMessage msg, int msgIdx, int methodIdx){
+		logger.debug("[RLBuilder][addRLAdviceMarker] START! ");
+		IMarker marker;
+		try{
+			marker = file.createMarker(MARKER_TYPE);
+			marker.setAttribute(IMarker.MESSAGE, message);
+			marker.setAttribute(IMarker.SEVERITY, severity);
+			marker.setAttribute(IMarker.LINE_NUMBER, msg.getCatchClauseLineNumber());	//mark會在哪行出現
+			marker.setAttribute(RLMarkerAttribute.RL_MARKER_TYPE, msg.getCodeSmellType());
+			marker.setAttribute(RLMarkerAttribute.RL_INFO_EXCEPTION, msg.getExceptionType());
+			marker.setAttribute(RLMarkerAttribute.RL_INFO_SRC_POS, String.valueOf(msg.getMethodInvocationStartPosition()));
+			marker.setAttribute(RLMarkerAttribute.RL_METHOD_INDEX, String.valueOf(methodIdx));
+			marker.setAttribute(RLMarkerAttribute.RL_MSG_INDEX, String.valueOf(msgIdx));
+			marker.setAttribute(RLMarkerAttribute.MI_WITH_Ex, msg.getExceptionType());
+		}catch(CoreException e){
+			logger.error("[addRLAdviceMarker] EXCEPTION ", e);
+		}
+		logger.debug("[RLBuilder][addRLAdviceMarker] END! ");
+	}
 
 	/**
 	 * 將相關例外資訊貼上marker(CSMessage)
@@ -105,7 +128,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 			marker = file.createMarker(MARKER_TYPE);
 			marker.setAttribute(IMarker.MESSAGE, message);
 			marker.setAttribute(IMarker.SEVERITY, severity);
-			System.out.println("RLBuilder, line 108, thisLineWillBeMarked:" + lineNumber);		
+			System.out.println("RLBuilder, line 131, thisLineWillBeMarked:" + lineNumber);		
 			if (lineNumber == -1) {
 				lineNumber = 1;
 			}
@@ -246,6 +269,8 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				
 				CarelessCleanUpAnalyzer ccVisitor=null;
 				
+				RLAnalyzer eaVisitor = null;
+				
 				OverLoggingDetector loggingDetector = null;
 
 				// 目前method的Exception資訊
@@ -270,6 +295,9 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				
 				//目前method內的Careless CleanUp資訊(in try block)
 				List<CSMessage> ccuListInTry = null;
+				
+				//目前method內，關於RLAdvice的資訊
+				List<RLAdviceMessage> eRLAdviceList = null;
 				
 				//目前method內的Careless CleanUp資訊(without try block)
 				List<CSMessage> ccuListNoTry = null;
@@ -365,6 +393,29 @@ public class RLBuilder extends IncrementalProjectBuilder {
 					ccuAddMarkerActoin(file, ccuListNoTry, methodIdx, detMethodSmell, csIdx, 0);
 					/* CarelessCleanUp List不為Null，且使用者沒有抑制Method內所有的Careless CleanUp Marker */
 
+					//尋找專案中所有可以給予RL建議的statements
+					eaVisitor = new RLAnalyzer(root);
+					method.accept(eaVisitor);
+					csIdx = -1;
+					eRLAdviceList = eaVisitor.getExceptionRLAdviceList();
+					for(RLAdviceMessage msg: eRLAdviceList){
+						csIdx++;
+						StringBuilder errmsg = new StringBuilder();
+						if(msg.getRobustnessLevel() != null){
+							for(int i = 0; i<msg.getRobustnessLevel().length; i++){
+								if(msg.getRobustnessLevel()[i].getExString().contains(msg.getExceptionType())){
+									errmsg.append(msg.getStatement());
+									errmsg.append("對例外").append(msg.getRobustnessLevel()[i].getExString());
+									errmsg.append("處理等級，");
+									errmsg.append("達到RL").append(msg.getRobustnessLevel()[i].getLevel());
+								}
+							}
+							this.addMarker(file, errmsg.toString(), IMarker.SEVERITY_INFO,
+									msg, csIdx, methodIdx);
+						}
+					}
+					
+					
 					//尋找該method內的OverLogging
 					loggingDetector = new OverLoggingDetector(root, method);
 					loggingDetector.detect();
