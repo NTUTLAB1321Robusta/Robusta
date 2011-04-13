@@ -113,7 +113,10 @@ public class CloseMethodAnalyzer extends ASTVisitor {
 			md = (MethodDeclaration) methodList.get(i);
 			methodDecName = md.resolveBinding().getName();
 			//若名稱相同,則處理該Method Invocation
-			if(methodDecName.equals(methodInvName)){
+			if (methodDecName.equals(methodInvName)) {
+				// 防止Interface之類的Method Declaration出錯
+				if (md.getBody() == null)
+					continue;
 				//取得該Method Declaration的所有statement
 				List<?> mdStatement = md.getBody().statements();
 				//取得該Method Declaration的thrown exception name

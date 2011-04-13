@@ -114,8 +114,7 @@ public class ExtraRuleDialog extends Dialog{
 
 		//放置Button的composite
 		btnComposite = new Composite(container, SWT.NONE);
-		btnComposite.setBounds(259, 38, 68, 199);
-		
+
 		//警告圖示和文字
 		final Label picLabel = new Label(container, SWT.NONE);
 		picLabel.setBounds(10, 222, 16, 15);
@@ -142,10 +141,42 @@ public class ExtraRuleDialog extends Dialog{
 		nameLabel.setBounds(10, 10, 97, 22);
 		//依是否為library或statement來改變不同的範例
 		nameLabel.setText("偵測條件: ");
+
+		//全取消按鈕
+		final Button clearBtn = new Button(btnComposite, SWT.NONE);
+		clearBtn.setBounds(0, 112, 68, 22);
+		clearBtn.setText("Deselect All");
+		clearBtn.pack();
+		clearBtn.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(final SelectionEvent e)
+			{
+				//取消全部的Item
+				for (int i=0;i<displayTable.getItemCount();i++) {
+					TableItem item = displayTable.getItem(i);
+					item.setChecked(false);
+				}
+			}
+		});
+		int maxButtonWidth = clearBtn.getBounds().width;
+
+		//全選按鈕
+		final Button selectBtn = new Button(btnComposite, SWT.NONE);
+		selectBtn.setBounds(0, 84, maxButtonWidth, 22);
+		selectBtn.setText("Select All");
+		selectBtn.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(final SelectionEvent e)
+			{
+				//選擇全部的Item
+				for (int i=0;i<displayTable.getItemCount();i++) {
+					TableItem item = displayTable.getItem(i);
+					item.setChecked(true);
+				}
+			}
+		});
 		
 		//新增按鈕
 		Button addBtn = new Button(btnComposite, SWT.NONE);
-		addBtn.setBounds(0, 0,68, 22);
+		addBtn.setBounds(0, 0, maxButtonWidth, 22);
 		addBtn.setText("Add");
 		addBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
@@ -160,7 +191,7 @@ public class ExtraRuleDialog extends Dialog{
 
 		//刪除按鈕
 		final Button removeButton = new Button(btnComposite, SWT.NONE);
-		removeButton.setBounds(0, 28,68, 22);
+		removeButton.setBounds(0, 28, maxButtonWidth, 22);
 		removeButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e)
 			{
@@ -176,7 +207,7 @@ public class ExtraRuleDialog extends Dialog{
 
 		//修改的按鈕
 		editBtn = new Button(btnComposite, SWT.NONE);
-		editBtn.setBounds(0, 56,68, 22);
+		editBtn.setBounds(0, 56, maxButtonWidth, 22);
 		editBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
 				int selectionIndex = displayTable.getSelectionIndex();
@@ -193,39 +224,9 @@ public class ExtraRuleDialog extends Dialog{
 		editBtn.setText("Edit");
 		editBtn.setEnabled(false);
 
-		//全選按鈕
-		final Button selectBtn = new Button(btnComposite, SWT.NONE);
-		selectBtn.setBounds(0, 84,68, 22);
-		selectBtn.setText("Select All");
-		selectBtn.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(final SelectionEvent e)
-			{
-				//選擇全部的Item
-				for (int i=0;i<displayTable.getItemCount();i++) {
-					TableItem item = displayTable.getItem(i);
-					item.setChecked(true);
-				}
-			}
-		});
-		
-		//全取消按鈕
-		final Button clearBtn = new Button(btnComposite, SWT.NONE);
-		clearBtn.setBounds(0, 112,68, 22);
-		clearBtn.setText("Deselect All");
-		clearBtn.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(final SelectionEvent e)
-			{
-				//取消全部的Item
-				for (int i=0;i<displayTable.getItemCount();i++) {
-					TableItem item = displayTable.getItem(i);
-					item.setChecked(false);
-				}
-			}
-		});
-
 		//說明視窗
 		final Button explainBtn = new Button(btnComposite, SWT.NONE);
-		explainBtn.setBounds(0, 140,68, 22);
+		explainBtn.setBounds(0, 140, maxButtonWidth, 22);
 		explainBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
 				//跳出說明的Dialog
@@ -243,6 +244,8 @@ public class ExtraRuleDialog extends Dialog{
 		});
 		explainBtn.setText("HELP");
 		explainBtn.setImage(ImageManager.getInstance().get("help"));
+		
+		btnComposite.setBounds(259, 38, maxButtonWidth, 199);
 
 		//將該所有的偵測Library資料顯示在List
 		setInput();

@@ -333,7 +333,6 @@ public class ReportBuilder {
 				IJavaElement[] packages = root.get(i).getChildren();
 
 				for (IJavaElement iJavaElement : packages) {
-//					System.out.println(iJavaElement.getElementName());
 
 					if (iJavaElement.getElementType() == IJavaElement.PACKAGE_FRAGMENT) {
 						IPackageFragment iPackageFgt = (IPackageFragment) iJavaElement;

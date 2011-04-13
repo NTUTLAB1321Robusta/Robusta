@@ -96,16 +96,12 @@ public class RLChecker {
 				ConsoleLog.debug(idx + " END \n\n");
 			}
 		}
-
 		this.checkRLHandling();
 
-		// this.printExceptionList(this.exList);
-
-		ConsoleLog.debug("[check]花費時間：" + (System.currentTimeMillis() - t1) + " ms");
+		//ConsoleLog.debug("[check]花費時間：" + (System.currentTimeMillis() - t1) + " ms");
 
 		return this.exList;
 	}
-
 
 	private void checkRLHandling() {
 		if (this.rlList != null) {

@@ -44,7 +44,7 @@ public class UMQuickFix extends BaseQuickFix implements IMarkerResolution{
 	
 	private ASTRewrite rewrite;
 
-	public UMQuickFix(String label){
+	public UMQuickFix(String label) {
 		this.label = label;
 	}
 
@@ -61,16 +61,13 @@ public class UMQuickFix extends BaseQuickFix implements IMarkerResolution{
 			if (problem != null && problem.equals(RLMarkerAttribute.CS_UNPROTECTED_MAIN)) {
 				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
 				String msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
-				//String exception = marker.getAttribute(RLMarkerAttribute.RL_INFO_EXCEPTION).toString();
+				// String exception = marker.getAttribute(RLMarkerAttribute.RL_INFO_EXCEPTION).toString();
 				boolean isok = this.findCurrentMethod(marker.getResource(), Integer.parseInt(methodIdx));
-				//先找出要被修改的main function,如果存在就開始進行fix
+				// 先找出要被修改的main function,如果存在就開始進行fix
 				if(isok) {
 					currentMethodRLList = findRLAnnotationList();
 
 					addBigOuterTry(Integer.parseInt(msgIdx));
-
-					//反白Annotation (暫時不需要反白行數)
-					//selectSourceLine(marker, methodIdx);
 				}
 			}
 		} catch (CoreException e) {		
@@ -106,38 +103,38 @@ public class UMQuickFix extends BaseQuickFix implements IMarkerResolution{
 		//取得main function block中所有的statement
 		MethodDeclaration md = (MethodDeclaration)currentMethodNode;
 		Block mdBlock = md.getBody();
-		List statement = mdBlock.statements();
+		List<?> statement = mdBlock.statements();
 
 		boolean isTryExist = false;
 		int pos = -1;
 
-		for(int i=0;i<statement.size();i++){
-			if(statement.get(i) instanceof TryStatement){
-				//假如Main function中有try就標示為true
-				pos = i; //try block的位置
+		for (int i = 0; i < statement.size(); i++) {
+			if (statement.get(i) instanceof TryStatement) {
+				// 假如Main function中有try就標示為true
+				pos = i; // try block的位置
 				isTryExist = true;
 				break;
 			}
 		}
+
+		ListRewrite listRewrite = rewrite.getListRewrite(mdBlock, Block.STATEMENTS_PROPERTY);
 		
-		ListRewrite listRewrite = rewrite.getListRewrite(mdBlock,Block.STATEMENTS_PROPERTY);
-		
-		if(isTryExist){
+		if (isTryExist) {
 			/*------------------------------------------------------------------------*
 			-	假如Main function中已經有try block了,那就要去確認try block是位於main的一開始
 				還是中間,或者是在最後面,並依據這三種情況將程式碼都塞進去try block裡面  
 	        *-------------------------------------------------------------------------*/	
 			moveTryBlock(ast,statement,pos,listRewrite);
-			
-		}else{
+
+		} else {
 			/*------------------------------------------------------------------------*
 			-	假如Main function中沒有try block了,那就自己增加一個try block,再把main中所有的
 				程式全部都塞進try block中
 	        *-------------------------------------------------------------------------*/
 			addNewTryBlock(ast,listRewrite);
 			
-		}	
-		addAnnotationRoot(ast);		
+		}
+		// addAnnotationRoot(ast);	Shiau: 未拋出例外不應該標示Annotation
 		this.applyChange(rewrite);
 	}
 	
@@ -160,9 +157,9 @@ public class UMQuickFix extends BaseQuickFix implements IMarkerResolution{
 		sv.setName(ast.newSimpleName("ex"));
 		cc.setException(sv);
 		
-		//在Catch中加入todo的註解
+		// 在Catch中加入TODO的註解
 		StringBuffer comment = new StringBuffer();
-		comment.append("//TODO: handle exception");
+		comment.append("// TODO: handle exception");
 		ASTNode placeHolder = rewrite.createStringPlaceholder(comment.toString(), ASTNode.EMPTY_STATEMENT);
 		catchRewrite.insertLast(placeHolder, null);
 		catchStatement.add(cc);
@@ -175,15 +172,16 @@ public class UMQuickFix extends BaseQuickFix implements IMarkerResolution{
 		//將新增的try statement加進來
 		listRewrite.insertLast(ts, null);		
 	}
-	
-	/**	
+
+	/**
 	 * 新增一個Try block區塊,並將在try之外的程式加入至Try block中
+	 * 
 	 * @param ast
 	 * @param statement
-	 * @param pos : try的位置
+	 * @param pos			: try的位置
 	 * @param listRewrite
 	 */
-	private void moveTryBlock(AST ast,List statement,int pos,ListRewrite listRewrite){
+	private void moveTryBlock(AST ast, List statement, int pos, ListRewrite listRewrite) {
 		TryStatement original = (TryStatement)statement.get(pos);
 		ListRewrite originalRewrite = rewrite.getListRewrite(original.getBody(),Block.STATEMENTS_PROPERTY);
 	
@@ -227,15 +225,15 @@ public class UMQuickFix extends BaseQuickFix implements IMarkerResolution{
 		boolean isException = false;
 		List catchStatement = original.catchClauses();
 		for (int i = 0; i < catchStatement.size(); i++) {
-			CatchClause temp = (CatchClause)catchStatement.get(i);
+			CatchClause temp = (CatchClause) catchStatement.get(i);
 			SingleVariableDeclaration svd = (SingleVariableDeclaration) temp
 			.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
-			if(svd.getType().toString().equals("Exception")){
-				//假如有找到符合的型態,就把變數設成true
-				isException = true;			
-				//在Catch中加入todo的註解
+			if (svd.getType().toString().equals("Exception")) {
+				// 假如有找到符合的型態,就把變數設成true
+				isException = true;
+				// 在Catch中加入TODO的註解
 				StringBuffer comment = new StringBuffer();
-				comment.append("//TODO: handle exception");
+				comment.append("// TODO: handle exception");
 				ASTNode placeHolder = rewrite.createStringPlaceholder(comment.toString(), ASTNode.RETURN_STATEMENT);
 				ListRewrite todoRewrite = rewrite.getListRewrite(temp.getBody(),Block.STATEMENTS_PROPERTY);
 				todoRewrite.insertLast(placeHolder, null);
@@ -253,7 +251,7 @@ public class UMQuickFix extends BaseQuickFix implements IMarkerResolution{
 			catchRewrite.insertLast(cc, null);
 			//在Catch中加入todo的註解
 			StringBuffer comment = new StringBuffer();
-			comment.append("//TODO: handle exception");
+			comment.append("// TODO: handle exception");
 			ASTNode placeHolder = rewrite.createStringPlaceholder(comment.toString(), ASTNode.RETURN_STATEMENT);
 			ListRewrite todoRewrite = rewrite.getListRewrite(cc.getBody(),Block.STATEMENTS_PROPERTY);
 			todoRewrite.insertLast(placeHolder, null);
@@ -261,8 +259,8 @@ public class UMQuickFix extends BaseQuickFix implements IMarkerResolution{
 	}
 
 	private void addAnnotationRoot(AST ast) {
-		//要建立@Robustness(value={@RL(level=1, exception=java.lang.Exception.class)})這樣的Annotation
-		//建立Annotation root
+		// 要建立@Robustness(value={@RL(level=1, exception=java.lang.Exception.class)})這樣的Annotation
+		// 建立Annotation root
 		NormalAnnotation root = ast.newNormalAnnotation();
 		root.setTypeName(ast.newSimpleName("Robustness"));
 
@@ -277,15 +275,15 @@ public class UMQuickFix extends BaseQuickFix implements IMarkerResolution{
 			rlary.expressions().add(getRLAnnotation(ast,1,exType));
 		}else{
 			for (RLMessage rlmsg : currentMethodRLList) {
-				//把舊的annotation加進去
-				//判斷如果遇到重複的就不要加annotation
-				if((!rlmsg.getRLData().getExceptionType().toString().equals(exType)) && (rlmsg.getRLData().getLevel() == 1)){	
+				// 把舊的annotation加進去
+				// 判斷如果遇到重複的就不要加annotation
+				if((!rlmsg.getRLData().getExceptionType().toString().equals(exType)) && (rlmsg.getRLData().getLevel() == 1)) {
 					rlary.expressions().add(
 							getRLAnnotation(ast, rlmsg.getRLData().getLevel(), rlmsg.getRLData().getExceptionType()));	
-				}				
+				}
 			}
-			rlary.expressions().add(getRLAnnotation(ast,1,exType));
-			
+			rlary.expressions().add(getRLAnnotation(ast, 1, exType));
+
 			ListRewrite listRewrite = rewrite.getListRewrite(method, method.getModifiersProperty());
 			List<IExtendedModifier> modifiers = listRewrite.getRewrittenList();
 			for(IExtendedModifier mdf : modifiers){
@@ -362,38 +360,4 @@ public class UMQuickFix extends BaseQuickFix implements IMarkerResolution{
 			listRewrite.insertLast(imp, null);
 		}
 	}
-
-//	/**
-//	 * 反白Annotation那行
-//	 * @param document
-//	 */
-//	private void selectSourceLine(IMarker marker, String methodIdx) {
-//		//重新取得Method資訊
-//		boolean isOK = this.findCurrentMethod(marker.getResource(), Integer.parseInt(methodIdx));
-//		if (isOK) {
-//			try {
-//				ICompilationUnit cu = (ICompilationUnit) actOpenable;
-//				Document document = new Document(cu.getBuffer().getContents());
-//				//取得目前的EditPart
-//				IEditorPart editorPart = EditorUtils.getActiveEditor();
-//				ITextEditor editor = (ITextEditor) editorPart;
-//		
-//				//取得Method的起點位置
-//				int srcPos = currentMethodNode.getStartPosition();
-//				//用Method起點位置取得Method位於第幾行數，行數起始位置從0開始(不是1)，所以減1
-//				//又第一行"必定"是Robustness，所以取下一行
-//				int selectLine = this.actRoot.getLineNumber(srcPos);
-//
-//				//取得行數的資料
-//				IRegion lineInfo = document.getLineInformation(selectLine);
-//	
-//				//反白該行 在Quick fix完之後,可以將游標定位在Quick Fix那行
-//				editor.selectAndReveal(lineInfo.getOffset(), lineInfo.getLength());
-//			} catch (JavaModelException e) {
-//				logger.error("[Rethrow checked Exception] EXCEPTION ",e);
-//			} catch (BadLocationException e) {
-//				logger.error("[BadLocation] EXCEPTION ",e);
-//			}
-//		}
-//	}
 }

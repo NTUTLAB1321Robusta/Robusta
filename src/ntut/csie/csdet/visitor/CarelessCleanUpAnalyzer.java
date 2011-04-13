@@ -108,6 +108,9 @@ public class CarelessCleanUpAnalyzer extends RLBaseVisitor{
 	 * @param md
 	 */
 	private void processMethodDeclaration(MethodDeclaration md) {
+		// 防止Interface之類的Method Declaration出錯
+		if (md.getBody() == null)
+			return;
 		List<?> mdStatements = md.getBody().statements();
 		
 		//Method裡面只有一行close的情況，就不mark

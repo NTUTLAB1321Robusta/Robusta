@@ -1,6 +1,7 @@
 package ntut.csie.csdet.visitor;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -8,16 +9,19 @@ import ntut.csie.csdet.data.CSMessage;
 import ntut.csie.csdet.preference.JDomUtil;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.jdt.astview.NodeFinder;
 import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.ISourceRange;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.internal.corext.callhierarchy.CallHierarchy;
 import org.eclipse.jdt.internal.corext.callhierarchy.MethodWrapper;
 import org.jdom.Attribute;
@@ -138,7 +142,7 @@ public class OverLoggingDetector {
 					if (isTrace) {
 						//繼續偵測
 						isOverLogging = detectOverLogging(callerMethod);
-						
+
 						//若上一層結果為OverLoggin就回傳true，否則繼續
 						if (isOverLogging)
 							return true;
@@ -177,31 +181,63 @@ public class OverLoggingDetector {
 	 */
 	private MethodDeclaration transMethodNode(IMethod method) {
 		MethodDeclaration md = null;
-		
-		try {
-			//Parser Jar檔時，會取不到ICompilationUnit
-			if (method.getCompilationUnit() == null)
+		// Parser Jar檔時，會取不到ICompilationUnit
+		if (method.getCompilationUnit() == null) {
+			return null;
+		}
+		// 產生AST
+		ASTParser parserAST = ASTParser.newParser(AST.JLS3);
+		parserAST.setKind(ASTParser.K_COMPILATION_UNIT);
+		parserAST.setSource(method.getCompilationUnit());
+		parserAST.setResolveBindings(true);
+		CompilationUnit root = (CompilationUnit) parserAST.createAST(null);
+
+		// 取得MethodDeclaration
+		if (method.getParent() instanceof IType) {
+			TypeDeclaration td = findTypeDeclaration(root, (IType) method.getParent());
+			try {
+				md = findMethodDeclaration(td, method);
+			} catch (JavaModelException e) {
 				return null;
-
-			//產生AST
-			ASTParser parserAST = ASTParser.newParser(AST.JLS3);
-			parserAST.setKind(ASTParser.K_COMPILATION_UNIT);
-			parserAST.setSource(method.getCompilationUnit());
-			parserAST.setResolveBindings(true);
-			ASTNode ast = parserAST.createAST(null);
-
-			//取得AST的Method部份
-			ASTNode methodNode = NodeFinder.perform(ast, method.getSourceRange().getOffset(), method.getSourceRange().getLength());
-
-			//若此ASTNode屬於MethodDeclaration，則轉型
-			if(methodNode instanceof MethodDeclaration) {
-				md = (MethodDeclaration) methodNode;
 			}
-		} catch (JavaModelException e) {
-			logger.error("[Java Model Exception] JavaModelException ", e);
 		}
 
 		return md;
+	}
+
+	/**
+	 * 尋找Type Declaration
+	 * @param root	要尋找的Type Declaration所在的ComplilationUnit
+	 * @param type	要尋找的Type Declaration的ITypeDeclaration
+	 * @return
+	 */
+	private TypeDeclaration findTypeDeclaration(CompilationUnit root, IType type) {
+		for (Iterator<?> I = root.types().iterator(); I.hasNext();) {
+			TypeDeclaration typeDeclaration = (TypeDeclaration) I.next();
+			if (typeDeclaration.getName().toString().equals(type.getElementName()))
+				return typeDeclaration;
+		}
+		return null;
+	}
+
+	/**
+	 * 尋找Method Declaration
+	 * @param type		要尋找的Method Declaration所在的Type Declaration
+	 * @param method	要尋找的Method Declaration的IMethod
+	 * @return			null:沒有找到
+	 */
+	private MethodDeclaration findMethodDeclaration(TypeDeclaration type, IMethod method) throws JavaModelException {
+		ISourceRange sourceRange = method.getSourceRange();
+		for (Iterator<?> I = type.bodyDeclarations().iterator(); I.hasNext();) {
+			BodyDeclaration declaration = (BodyDeclaration) I.next();
+			if (!(declaration instanceof MethodDeclaration))
+				continue;
+			MethodDeclaration methodDeclaration = (MethodDeclaration) declaration;
+			if ((sourceRange.getOffset() <= methodDeclaration.getStartPosition()) &&
+				(sourceRange.getLength() >= methodDeclaration.getLength()))
+				return methodDeclaration;
+		}
+		return null;
 	}
 
 	/**

@@ -100,14 +100,14 @@ public class LoggingThrowAnalyzer extends RLBaseVisitor{
 					//繼續Trace
 					isKeepTrace = true;
 
-					//若Method轉型(Throw New Exception)
+					// 若Method轉型(Throw New Exception)
 					if (throwState.getExpression() instanceof ClassInstanceCreation) {
 						ClassInstanceCreation cic = (ClassInstanceCreation) throwState.getExpression();
 
 						List argumentList = cic.arguments();
 
-						//若不偵測轉型 或 沒有將catch exception代入(eg:RuntimeException(e))
-						//則不繼續偵測
+						// 若不偵測轉型 或 沒有將catch exception代入(eg:RuntimeException(e))
+						// 則不繼續偵測
 						if (!isDetTransEx ||
 							argumentList.size() != 1 ||
 							!argumentList.get(0).toString().equals(cc.getException().getName().toString()))

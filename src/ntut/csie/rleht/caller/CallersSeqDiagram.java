@@ -69,7 +69,7 @@ public class CallersSeqDiagram {
 					 boolean isShowPackage, boolean isShowAllPackage, boolean isTopDown,
 					 int packageCount, boolean isShowRL, boolean isShowPath, boolean isTraced) {
 		// instanciate builder.
-		RLSequenceModelBuilder builder = new RLSequenceModelBuilder(isShowRL);
+		RLSequenceModelBuilder builder = new RLSequenceModelBuilder();
 	    List<SeqDiagramData> copyList = new ArrayList<SeqDiagramData>();
 	    
 		this.findSelectedItemPath(items, isTraced, isShowRL, isShowPath);
@@ -124,10 +124,10 @@ public class CallersSeqDiagram {
 			InstanceModel imLast = null;
 			for (int i = 0, size = seqdataList.size(); i < size; i++) {
 				SeqDiagramData sdd = (SeqDiagramData) seqdataList.get(i);
-			
+
 				InstanceModel im = instanceModelMap.get(sdd.getClassName());
 				if (i > 0 && sdd.getLevel() <= stackLevel.peek().intValue()) {
-				
+
 					while (stackLevel.size() > 0) {
 						if (sdd.getLevel() >= stackLevel.peek().intValue()) {
 							if (stackMsgModel.size() > 1) {

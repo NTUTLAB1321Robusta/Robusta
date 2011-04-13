@@ -46,10 +46,10 @@ public class RLSequenceModelBuilder {
 
 	int picCounter = 0;
 
-	private boolean isShowRL;
+	// 註解的文字大小
+	private final float FONT_SIZE = 6.5f;
 
-	public RLSequenceModelBuilder(boolean isShowRL) {
-		this.isShowRL = isShowRL;
+	public RLSequenceModelBuilder() {
 		root.setShowIcon(true);
 	}
 
@@ -222,8 +222,8 @@ public class RLSequenceModelBuilder {
 	public MessageModel createMessage(String message, String backMessage, InstanceModel target, int level) {	
 		ActivationModel model = new ActivationModel();
 		current.copyPresentation(model);
-		
-		currentY+=5;
+
+		currentY += 5;
 		ActivationModel targetModel = getTargetModel(currentY, target);
 
 		//message = this.setNewLine(message);
@@ -424,17 +424,17 @@ public class RLSequenceModelBuilder {
 
 			//RobustnessLevel Message個數
 			int rlCounter =1;
-			//NoteMessage內單行最長字數
+			// NoteMessage內單行最長字數
 			int maxLength =0;
-			//Robustness Level End Index
+			// Robustness Level End Index
 			int endIdx = noteMessage.indexOf("} {");
 
-			//若只有一個RobustnessLevel Message
+			// 若只有一個RobustnessLevel Message
 			if (endIdx == -1) {
 				maxLength = noteMessage.length();
 				aNote.setContent(noteMessage);
 			}
-			//若超過一個以上的RobustnessLevel Message
+			// 若超過一個以上的RobustnessLevel Message
 			else {
 				String remainder = noteMessage;
 				maxLength = endIdx +1;
@@ -442,7 +442,7 @@ public class RLSequenceModelBuilder {
 					rlCounter++;
 					endIdx = remainder.indexOf("} {");
 
-					remainder = remainder.substring(endIdx+2);
+					remainder = remainder.substring(endIdx + 2);
 				}
 				//取得最長的單行字數
 				if (maxLength < remainder.length()-1)
@@ -454,7 +454,7 @@ public class RLSequenceModelBuilder {
 			//加入Method名稱
 			aNote.setContent(methodName + "\n" + aNote.getContent());
 			aNote.setConstraint(new Rectangle(current.getConstraint().x, 0,
-											  maxLength*6, 30 + 14*rlCounter));
+											  (int)((float)maxLength * FONT_SIZE), 30 + 14 * rlCounter));
 
 			aNote.setShowIcon(true);
 
@@ -473,35 +473,26 @@ public class RLSequenceModelBuilder {
 	 * @param level
 	 */
 	private void setMessageModelColor(SyncMessageModel messageModel, int level) {
-		String message = messageModel.getName();
-		//如果顯示RL資訊，才將名稱增加RL
+/*		Shiau: RL的訊息應依照Exception為單位而非Method,所以刪除。
+		// 如果顯示RL資訊，才將名稱增加RL
 		if (isShowRL)
 			message = "RL " + level + "\t" + message;
-
-		messageModel.setName(message);
+*/
+		String message = messageModel.getName();
+		messageModel.setName(" " + message);
 		
-		//依不同Level給予不同顏色
+		// 依不同Level給予不同顏色
 		switch (level) {
-			//RL1:紅
-			case 1:
-				//深紅 RGB(142,27,27)
-				//紅
-				messageModel.setForegroundColor(new RGB(255,0,0));
+			case 1:		// RL1:紅
+				messageModel.setForegroundColor(new RGB(255, 0, 0));
 				break;
-			//RL2:黃
-			case 2:
-				//深黃 RGB(174,174,33)
-				//橘色
-				messageModel.setForegroundColor(new RGB(229,109,29));
+			case 2:		// RL2:黃
+				messageModel.setForegroundColor(new RGB(229, 109, 29));
 				break;
-			//RL3:綠
-			case 3:
-				//深綠
-				messageModel.setForegroundColor(new RGB(54,157,54));
+			case 3:		// RL3:綠
+				messageModel.setForegroundColor(new RGB(54, 157, 54));
 				break;
-			//RL0
-			default:
-				//黑色
+			default:	// RL0:黑
 				messageModel.setForegroundColor(new RGB(0, 0, 0));
 		}
 	}

@@ -220,9 +220,12 @@ public class EHSmellReportView extends ViewPart {
 
 		for (String projectName : projectList)
 				projectCombo.add(projectName);
+		// Auto Size
+		projectCombo.pack();
 
 		if (projectCombo.getItemCount() > 0)
 			projectCombo.select(0);
+
 	}
 
 	/**
