@@ -2,6 +2,7 @@ package ntut.csie.rleht.builder;
 
 import java.util.List;
 
+import ntut.csie.csdet.quickfix.BaseQuickFix;
 import ntut.csie.csdet.visitor.ASTCatchCollect;
 import ntut.csie.rleht.common.EditorUtils;
 import ntut.csie.rleht.common.ErrorLog;
@@ -40,7 +41,6 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.text.edits.TextEdit;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IMarkerResolution;
 import org.eclipse.ui.IMarkerResolution2;
@@ -58,7 +58,7 @@ import agile.exception.SuppressSmell;
  * org.eclipse.jdt.internal.ui.text.correction.SuppressWarningsSubProcessor
  * org.eclipse.jdt.internal.ui.text.correction.QuickFixProcessor
  */
-public class CSQuickFix implements IMarkerResolution, IMarkerResolution2 {
+public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMarkerResolution2 {
 	private static Logger logger = LoggerFactory.getLogger(CSQuickFix.class);
 
 	/** 工具欄按鈕標籤的名稱 */
@@ -67,8 +67,6 @@ public class CSQuickFix implements IMarkerResolution, IMarkerResolution2 {
 	private boolean inCatch;
 	/** 存放目前要修改的.java檔 */
 	private CompilationUnit actRoot;
-	/** Action Open object */
-	private IOpenable actOpenable;
 	/** 目前的Method AST Node */
 	private ASTNode currentMethodNode = null;
 	/** Smell的Type */
@@ -79,9 +77,8 @@ public class CSQuickFix implements IMarkerResolution, IMarkerResolution2 {
 	private String markerStartPos;
 	/** marker所在的Catch Index */
 	private int catchIdx = -1;
-	/** Annotation是否存在 */
-	private boolean isAnnotationExist = true;
-	
+//	/** Annotation是否存在 */
+//	private boolean isAnnotationExist = true;
 	public CSQuickFix(String label, boolean inCatch) {
 		this.label = label;
 		this.inCatch = inCatch;
@@ -140,7 +137,7 @@ public class CSQuickFix implements IMarkerResolution, IMarkerResolution2 {
 						SingleVariableDeclaration svd = cc.getException();
 						
 						//將Annotation訊息增加到指定Catch中
-						addSuppressSmellAnnotation(svd, svd.modifiers(), svd.MODIFIERS2_PROPERTY);
+						addSuppressSmellAnnotation(svd, svd.modifiers(), SingleVariableDeclaration.MODIFIERS2_PROPERTY);
 					} else {
 						//取得欲修改的ASTNode
 						MethodDeclaration method = (MethodDeclaration) currentMethodNode;
@@ -228,7 +225,7 @@ public class CSQuickFix implements IMarkerResolution, IMarkerResolution2 {
 	 * @param modifiers
 	 * @param property
 	 */
-	private void addSuppressSmellAnnotation(ASTNode node, List modifiers, ChildListPropertyDescriptor property) {
+	private void addSuppressSmellAnnotation(ASTNode node, List<?> modifiers, ChildListPropertyDescriptor property) {
 		AST ast = currentMethodNode.getAST();
 		rewrite = ASTRewrite.create(ast);
 
@@ -243,7 +240,7 @@ public class CSQuickFix implements IMarkerResolution, IMarkerResolution2 {
 
 		//SuppressSmell Annotation不存在
 		if (existing == null) {
-			isAnnotationExist = false;
+//			isAnnotationExist = false;
 			
 			ListRewrite listRewrite = rewrite.getListRewrite(node, property);
 			
@@ -277,7 +274,7 @@ public class CSQuickFix implements IMarkerResolution, IMarkerResolution2 {
 			}
 		}
 		//將要變更的資料寫回至Document中 
-		applyChange();
+		applyChange(rewrite);
 	}
 
 	/**
@@ -307,7 +304,7 @@ public class CSQuickFix implements IMarkerResolution, IMarkerResolution2 {
 	 * @param list 
 	 * @param faultName 
 	 */
-	private void replaceSuppressSmellAnnotation(List modifiers, String faultName) {
+	private void replaceSuppressSmellAnnotation(List<?> modifiers, String faultName) {
 		//取得欲修改的ASTNode
 		AST ast = currentMethodNode.getAST();
 		rewrite = ASTRewrite.create(ast);
@@ -346,9 +343,9 @@ public class CSQuickFix implements IMarkerResolution, IMarkerResolution2 {
 		//若Annotation裡有Array，尋找Fault Name再取代
 		} else if (value instanceof ArrayInitializer) {
 			ArrayInitializer ai = (ArrayInitializer) value;
-			List<StringLiteral> stringList = ai.expressions();
 			//尋找fault name並修改為使用者所選擇的Smell Type
-			for (StringLiteral sl : stringList) {
+			for(Object obj: ai.expressions()) {
+				StringLiteral sl = (StringLiteral)obj;
 				if (sl.getLiteralValue().equals(faultName)) {
 					rewrite.replace(sl, newStringLiteral, null);
 					break;
@@ -363,7 +360,7 @@ public class CSQuickFix implements IMarkerResolution, IMarkerResolution2 {
 	 * @param keyValues
 	 * @return
 	 */
-	private Expression findValue(List keyValues) {
+	private Expression findValue(List<?> keyValues) {
 		for (int i = 0; i < keyValues.size(); i++) {
 			MemberValuePair curr= (MemberValuePair) keyValues.get(i);
 			if ("value".equals(curr.getName().getIdentifier())) {
@@ -378,7 +375,7 @@ public class CSQuickFix implements IMarkerResolution, IMarkerResolution2 {
 	 * @param modifiers
 	 * @return
 	 */
-	public static Annotation findExistingAnnotation(List modifiers) {
+	public static Annotation findExistingAnnotation(List<?> modifiers) {
 		for (int i= 0; i < modifiers.size(); i++) {
 			Object curr = modifiers.get(i);
 			if (curr instanceof NormalAnnotation || curr instanceof SingleMemberAnnotation) {
@@ -406,14 +403,14 @@ public class CSQuickFix implements IMarkerResolution, IMarkerResolution2 {
 	 */
 	private void addImportDeclaration() {
 		// 判斷是否已經Import Robustness及RL的宣告
-		ListRewrite listRewrite = rewrite.getListRewrite(this.actRoot, this.actRoot.IMPORTS_PROPERTY);
-		List<ImportDeclaration> importList = listRewrite.getRewrittenList();
+		ListRewrite listRewrite = rewrite.getListRewrite(this.actRoot, CompilationUnit.IMPORTS_PROPERTY);
 		//尋找有沒有import agile.exception.SuppressSmell;
 		boolean isSuppressSmellClass = false;
-		for (ImportDeclaration id : importList) {
+		for (Object obj : listRewrite.getRewrittenList()) {
+			ImportDeclaration id = (ImportDeclaration)obj;
 			if (SuppressSmell.class.getName().equals(id.getName().getFullyQualifiedName())) {
 				isSuppressSmellClass = true;
-			}
+			}			
 		}
 		//若未加入SuppressSmell Class，則加入import
 		AST rootAst = this.actRoot.getAST();
@@ -423,47 +420,47 @@ public class CSQuickFix implements IMarkerResolution, IMarkerResolution2 {
 			listRewrite.insertLast(imp, null);
 		}
 	}
-
-	/**
-	 * 將要變更的資料寫回至Document中
-	 */
-	private void applyChange(){
-		//寫回Edit中
-		try {
-			ICompilationUnit cu = (ICompilationUnit) actOpenable;
-			Document document = new Document(cu.getBuffer().getContents());
-
-			TextEdit edits = rewrite.rewriteAST(document,null);
-			edits.apply(document);
-
-			cu.getBuffer().setContents(document.get());
-		}catch (Exception ex) {
-			logger.error("[UMQuickFix] EXCEPTION ",ex);
-		}
-	}
-
-	/**
-	 * Catch經AST加入Annotation後，Exception會換到第二行
-	 * @param cu
-	 * @param document
-	 * @param anno
-	 * @throws BadLocationException
-	 * @throws JavaModelException
-	 */
-	private void deleteCatchClauseSpace(ICompilationUnit cu, Document document,	Annotation anno)
-			throws BadLocationException, JavaModelException {
-		//尋找Annotation後的換行、空格、'\t'長度
-		int length = 2;
-		while (true) {
-			char inp = document.getChar(anno.getStartPosition()+ anno.getLength() + length);
-			if (inp != '\t' && inp != ' ')
-				break;
-			length++;
-		}
-		//將Annotation後的換行、空格、'\t'用" "取代
-		document.replace(anno.getStartPosition()+ anno.getLength(), length, " ");
-		cu.getBuffer().setContents(document.get());
-	}
+	
+//	/**
+//	 * 將要變更的資料寫回至Document中
+//	 */
+//	private void applyChange(){
+//		//寫回Edit中
+//		try {
+//			ICompilationUnit cu = (ICompilationUnit) actOpenable;
+//			Document document = new Document(cu.getBuffer().getContents());
+//
+//			TextEdit edits = rewrite.rewriteAST(document,null);
+//			edits.apply(document);
+//
+//			cu.getBuffer().setContents(document.get());
+//		}catch (Exception ex) {
+//			logger.error("[UMQuickFix] EXCEPTION ",ex);
+//		}
+//	}
+//
+//	/**
+//	 * Catch經AST加入Annotation後，Exception會換到第二行
+//	 * @param cu
+//	 * @param document
+//	 * @param anno
+//	 * @throws BadLocationException
+//	 * @throws JavaModelException
+//	 */
+//	private void deleteCatchClauseSpace(ICompilationUnit cu, Document document,	Annotation anno)
+//			throws BadLocationException, JavaModelException {
+//		//尋找Annotation後的換行、空格、'\t'長度
+//		int length = 2;
+//		while (true) {
+//			char inp = document.getChar(anno.getStartPosition()+ anno.getLength() + length);
+//			if (inp != '\t' && inp != ' ')
+//				break;
+//			length++;
+//		}
+//		//將Annotation後的換行、空格、'\t'用" "取代
+//		document.replace(anno.getStartPosition()+ anno.getLength(), length, " ");
+//		cu.getBuffer().setContents(document.get());
+//	}
 	
 	/**
 	 * 游標定位(定位到RL Annotation那行)
@@ -489,10 +486,10 @@ public class CSQuickFix implements IMarkerResolution, IMarkerResolution2 {
 					//取得Annotation
 					Annotation anno  = findExistingAnnotation(cc.getException().modifiers());
 
-					//若Catch中的Annotation原本不存在，刪除Annotation後的換行
-					if (!isAnnotationExist)
-						deleteCatchClauseSpace(cu, document, anno);
-
+//					//若Catch中的Annotation原本不存在，刪除Annotation後的換行
+//					if (!isAnnotationExist)
+//						deleteCatchClauseSpace(cu, document, anno);
+					
 					//反白該行 在Quick fix完之後,可以將游標定位在Quick Fix那行
 					editor.selectAndReveal(anno.getStartPosition(), anno.getLength());
 				} else {
