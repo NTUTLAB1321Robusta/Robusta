@@ -1,0 +1,401 @@
+package ntut.csie.csdet.quickfix;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.File;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.List;
+
+import ntut.csie.csdet.data.MarkerInfo;
+import ntut.csie.csdet.preference.JDomUtil;
+import ntut.csie.csdet.visitor.ASTCatchCollect;
+import ntut.csie.csdet.visitor.CodeSmellAnalyzer;
+import ntut.csie.filemaker.JavaFileToString;
+import ntut.csie.filemaker.JavaProjectMaker;
+import ntut.csie.filemaker.RuntimeEnvironmentProjectReader;
+import ntut.csie.filemaker.exceptionBadSmells.DummyAndIgnoreExample;
+import ntut.csie.rleht.views.ExceptionAnalyzer;
+import ntut.csie.rleht.views.RLMessage;
+
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.jdt.core.IOpenable;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.CatchClause;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.ExpressionStatement;
+import org.eclipse.jdt.core.dom.IExtendedModifier;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.NormalAnnotation;
+import org.eclipse.jdt.core.dom.Statement;
+import org.jdom.Element;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+public class DHQuickFixTest {
+	JavaFileToString jfs;
+	JavaProjectMaker jpm;
+	CompilationUnit unit;
+
+	@Before
+	public void setUp() throws Exception {
+		// 讀取測試檔案樣本內容
+		jfs = new JavaFileToString();
+		jfs.read(DummyAndIgnoreExample.class, "test");
+		
+		jpm = new JavaProjectMaker("DummyHandlerTest");
+		jpm.setJREDefaultContainer();
+		// 新增欲載入的library
+		jpm.addJarToBuildPath("lib\\log4j-1.2.15.jar");
+		jpm.addJarToBuildPath("..\\SingleSharedLibrary\\common\\agile.rl.jar");
+		// 根據測試檔案樣本內容建立新的檔案
+		jpm.createJavaFile("ntut.csie.exceptionBadSmells", "DummyHandlerExample.java", "package ntut.csie.exceptionBadSmells;\n" + jfs.getFileContent());
+		// 建立XML
+		CreateDummyHandlerXML();
+		
+		Path path = new Path("DummyHandlerTest\\src\\ntut\\csie\\exceptionBadSmells\\DummyHandlerExample.java");
+		//Create AST to parse
+		ASTParser parser = ASTParser.newParser(AST.JLS3);
+		parser.setKind(ASTParser.K_COMPILATION_UNIT);
+		// 設定要被建立AST的檔案
+		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
+		parser.setResolveBindings(true);
+		// 取得AST
+		unit = (CompilationUnit) parser.createAST(null); 
+		unit.recordModifications();
+	}
+
+	@After
+	public void tearDown() throws Exception {
+		File xmlFile = new File(JDomUtil.getWorkspace() + File.separator + "CSPreference.xml");
+		// 如果xml檔案存在，則刪除之
+		if(xmlFile.exists())
+			assertTrue(xmlFile.delete());
+		// 刪除專案
+		jpm.deleteProject();
+	}
+	
+	@Test
+	public void testDeleteStatement() throws Exception {
+		DHQuickFix dhQF = new DHQuickFix("??"); 
+		ASTCatchCollect catchCollector = new ASTCatchCollect();
+		unit.accept(catchCollector);
+		List<ASTNode> catchList = catchCollector.getMethodList();
+		
+		Method deleteStatement = DHQuickFix.class.getDeclaredMethod("deleteStatement", List.class);
+		deleteStatement.setAccessible(true);
+		
+		for(int i = 0; i < catchList.size(); i++) {
+			List<Statement> statements = ((CatchClause)catchList.get(i)).getBody().statements();
+			deleteStatement.invoke(dhQF, statements);
+			// 經過deleteStatement method之後，如果還有剩下statement的話，可能是一些其他邏輯
+			if(statements.size() > 0) {
+				for(int j = 0; j < statements.size(); j++) {
+					// 判斷ExpressionStatement不應該為System.out.print、printStackTrace、System.err.print
+					if(statements.get(j).getNodeType() == ASTNode.EXPRESSION_STATEMENT) {
+						assertFalse(((ExpressionStatement)statements.get(j)).getExpression().toString().contains("System.out.print"));
+						assertFalse(((ExpressionStatement)statements.get(j)).getExpression().toString().contains("printStackTrace"));
+						assertFalse(((ExpressionStatement)statements.get(j)).getExpression().toString().contains("System.err.print"));
+					}
+				}
+			}
+		}
+	}
+	
+	@Test
+	public void testAddImportDeclaration() throws Exception {
+		DHQuickFix dhQF = new DHQuickFix("??");
+		/* 設定actRoot成員變數，此為BaseQuickFix的成員變數
+		 * 設定actRoot內容的地點是在BaseQuickFix中的method
+		 * 故需要自行設定
+		 */
+		Field actRoot = BaseQuickFix.class.getDeclaredField("actRoot");
+		assertNull(actRoot.get(dhQF));
+		actRoot.setAccessible(true);
+		actRoot.set(dhQF, unit);
+		assertNotNull(actRoot.get(dhQF));
+		// 檢查原本import的classes
+		List<?> imports = unit.imports();
+		assertEquals(5, imports.size());
+		assertEquals("import java.io.FileInputStream;\n", imports.get(0).toString());
+		assertEquals("import java.io.FileNotFoundException;\n", imports.get(1).toString());
+		assertEquals("import java.io.IOException;\n", imports.get(2).toString());
+		assertEquals("import java.util.logging.Level;\n", imports.get(3).toString());
+		assertEquals("import org.apache.log4j.Logger;\n", imports.get(4).toString());
+		// Import Robustness及RL的宣告
+		Method addImportDeclaration = DHQuickFix.class.getDeclaredMethod("addImportDeclaration");
+		addImportDeclaration.setAccessible(true);
+		addImportDeclaration.invoke(dhQF);
+		// 驗證是否有import Robustness及RL的宣告
+		imports = unit.imports();
+		assertEquals(7, imports.size());
+		assertEquals("import java.io.FileInputStream;\n", imports.get(0).toString());
+		assertEquals("import java.io.FileNotFoundException;\n", imports.get(1).toString());
+		assertEquals("import java.io.IOException;\n", imports.get(2).toString());
+		assertEquals("import java.util.logging.Level;\n", imports.get(3).toString());
+		assertEquals("import org.apache.log4j.Logger;\n", imports.get(4).toString());
+		assertEquals("import agile.exception.Robustness;\n", imports.get(5).toString());
+		assertEquals("import agile.exception.RL;\n", imports.get(6).toString());
+	}
+	
+	@Test
+	public void testGetRLAnnotation() throws Exception {
+		DHQuickFix dhQF = new DHQuickFix("??");
+		Method getRLAnnotation = DHQuickFix.class.getDeclaredMethod("getRLAnnotation", AST.class, int.class, String.class);
+		getRLAnnotation.setAccessible(true);
+		NormalAnnotation annotation = (NormalAnnotation)getRLAnnotation.invoke(dhQF, unit.getAST(), 1, "RuntimeException");
+		assertEquals("@RL(level=1,exception=RuntimeException.class)", annotation.toString());
+	}
+	
+	@Test
+	public void testAddAnnotationRoot() throws Exception {
+		DHQuickFix dhQF = new DHQuickFix("??");
+		/* 選定要quick fix的method */
+		dhQF.findCurrentMethod(RuntimeEnvironmentProjectReader.getType(jpm.getProjectName(), "ntut.csie.exceptionBadSmells", "DummyHandlerExample").getResource(), 6);
+		Field currentMethodNodeField = BaseQuickFix.class.getDeclaredField("currentMethodNode");
+		ASTNode currentMethodNode = (ASTNode)currentMethodNodeField.get(dhQF);
+		// 驗證是否抓到預想中的method FIXME - 抓出來的method除了程式碼外，空格應該也要相同
+		assertEquals(	"public void true_systemErrPrint(){\n" +
+						"  FileInputStream fis=null;\n" +
+						"  try {\n" +
+						"    fis=new FileInputStream(\"\");\n" +
+						"    fis.read();\n" +
+						"  }\n" +
+						" catch (  IOException e) {\n" +
+						"    System.err.println(e);\n" +
+						"  }\n" +
+						"}\n", currentMethodNode.toString());
+		
+		/* 建立空的RL list，測試RL是否會加上去 */
+		ExceptionAnalyzer exVisitor = new ExceptionAnalyzer(unit, currentMethodNode.getStartPosition(), 0);
+		currentMethodNode.accept(exVisitor);
+		List<RLMessage> currentMethodRLList = exVisitor.getMethodRLAnnotationList();
+		Field currentMethodRLListField = DHQuickFix.class.getDeclaredField("currentMethodRLList");
+		currentMethodRLListField.setAccessible(true);
+		currentMethodRLListField.set(dhQF, currentMethodRLList);
+		// 驗證一開始沒有任何RL
+		assertEquals(0, currentMethodRLList.size());
+		// 新增RuntimeException RL
+		Method addAnnotationRoot = DHQuickFix.class.getDeclaredMethod("addAnnotationRoot", AST.class);
+		addAnnotationRoot.setAccessible(true);
+		addAnnotationRoot.invoke(dhQF, currentMethodNode.getAST());
+		List<IExtendedModifier> modifiers = ((MethodDeclaration)currentMethodNodeField.get(dhQF)).modifiers();
+		assertEquals(2, modifiers.size());
+		assertEquals("@Robustness(value={@RL(level=1,exception=RuntimeException.class)})", modifiers.get(0).toString());
+		assertEquals("public", modifiers.get(1).toString());
+//		Field actOpenable = BaseQuickFix.class.getDeclaredField("actOpenable");
+//		actOpenable.setAccessible(true);
+//		IOpenable act = (IOpenable)actOpenable.get(dhQF);
+//		act.open(null);
+//		dhQF.applyChange();
+		/* FIXME -  問題在於我們建立出來的Compilation Unit對他修改了現在抓取到的Method，
+		 * 			可是ExceptionAnalyzer還是只能對原來的cu做visitor的動作
+		 */
+		/* 建立有內容的RL list，測試RL加上去時，是否會出現重複的RL annotation */
+		// 上面已加入RuntimeException RL，再讓它加一次
+		currentMethodNode.accept(exVisitor);
+		currentMethodRLList = exVisitor.getMethodRLAnnotationList();
+		currentMethodRLListField.set(dhQF, currentMethodRLList);
+		// 驗證已經存在的RL
+		assertEquals(1, currentMethodRLList.size());
+		// 新增RuntimeException RL
+		addAnnotationRoot.invoke(dhQF, currentMethodNode.getAST());
+		modifiers = ((MethodDeclaration)currentMethodNodeField.get(dhQF)).modifiers();
+		assertEquals(2, modifiers.size());
+		assertEquals("@Robustness(value={@RL(level=1,exception=RuntimeException.class)})", modifiers.get(0).toString());
+		assertEquals("public", modifiers.get(1).toString());
+	}
+	
+	@Test
+	public void testAddThrowStatement() throws Exception {
+		DHQuickFix dhQF = new DHQuickFix("??");
+		/* 選定要quick fix的method */
+		dhQF.findCurrentMethod(RuntimeEnvironmentProjectReader.getType(jpm.getProjectName(), "ntut.csie.exceptionBadSmells", "DummyHandlerExample").getResource(), 6);
+		Field currentMethodNodeField = BaseQuickFix.class.getDeclaredField("currentMethodNode");
+		ASTNode currentMethodNode = (ASTNode)currentMethodNodeField.get(dhQF);
+		// 驗證是否抓到預想中的method
+		assertEquals(	"public void true_systemErrPrint(){\n" +
+						"  FileInputStream fis=null;\n" +
+						"  try {\n" +
+						"    fis=new FileInputStream(\"\");\n" +
+						"    fis.read();\n" +
+						"  }\n" +
+						" catch (  IOException e) {\n" +
+						"    System.err.println(e);\n" +
+						"  }\n" +
+						"}\n", currentMethodNode.toString());
+		/* 設定此quick fix的method問題為Dummy handler*/
+		Field problem = DHQuickFix.class.getDeclaredField("problem");
+		problem.setAccessible(true);
+		problem.set(dhQF, "Dummy_Handler");
+		
+		/* add throw statement */
+		Method addThrowStatement = DHQuickFix.class.getDeclaredMethod("addThrowStatement", ASTNode.class, AST.class);
+		addThrowStatement.setAccessible(true);
+		// 取得該method的catch clause
+		ASTCatchCollect catchCollector = new ASTCatchCollect();
+		currentMethodNode.accept(catchCollector);
+		addThrowStatement.invoke(dhQF, catchCollector.getMethodList().get(0), currentMethodNode.getAST());
+		// 驗證是否加入throw statement以及刪除System.err.println(e)
+		assertEquals(	"public void true_systemErrPrint(){\n" +
+				"  FileInputStream fis=null;\n" +
+				"  try {\n" +
+				"    fis=new FileInputStream(\"\");\n" +
+				"    fis.read();\n" +
+				"  }\n" +
+				" catch (  IOException e) {\n" +
+				"    throw new RuntimeException(e);\n" +
+				"  }\n" +
+				"}\n", currentMethodNode.toString());
+	}
+	
+	@Test
+	public void testFindEHSmellList() throws Exception {
+		DHQuickFix dhQF = new DHQuickFix("??");
+		Field actRoot = BaseQuickFix.class.getDeclaredField("actRoot");
+		assertNull(actRoot.get(dhQF));
+		actRoot.setAccessible(true);
+		actRoot.set(dhQF, unit);
+		assertNotNull(actRoot.get(dhQF));
+		
+		/* 測試尚未抓取current method node時的情況 */
+		Method findEHSmellList = DHQuickFix.class.getDeclaredMethod("findEHSmellList", String.class);
+		findEHSmellList.setAccessible(true);
+		assertNull(findEHSmellList.invoke(dhQF, "Dummy_Handler"));
+		
+		/* 選定要quick fix的method */
+		dhQF.findCurrentMethod(RuntimeEnvironmentProjectReader.getType(jpm.getProjectName(), "ntut.csie.exceptionBadSmells", "DummyHandlerExample").getResource(), 6);
+		Field currentMethodNodeField = BaseQuickFix.class.getDeclaredField("currentMethodNode");
+		ASTNode currentMethodNode = (ASTNode)currentMethodNodeField.get(dhQF);
+		// 驗證是否抓到預想中的method
+		assertEquals(	"public void true_systemErrPrint(){\n" +
+						"  FileInputStream fis=null;\n" +
+						"  try {\n" +
+						"    fis=new FileInputStream(\"\");\n" +
+						"    fis.read();\n" +
+						"  }\n" +
+						" catch (  IOException e) {\n" +
+						"    System.err.println(e);\n" +
+						"  }\n" +
+						"}\n", currentMethodNode.toString());
+		
+		/* 測試proglem為dummy handler的情況 */
+		List<MarkerInfo> dummyList = (List)findEHSmellList.invoke(dhQF, "Dummy_Handler");
+		assertEquals(1, dummyList.size());
+		assertEquals("Dummy_Handler", dummyList.get(0).getCodeSmellType());
+		
+		/* 測試proglem為ignore checked exception的情況 */
+		List<MarkerInfo> ignoreList = (List)findEHSmellList.invoke(dhQF, "Ignore_Checked_Exception");
+		assertEquals(0, ignoreList.size());
+	}
+	
+	@Test
+	public void testRethrowException() throws Exception {
+		DHQuickFix dhQF = new DHQuickFix("??");
+		/* 設定必要參數 */
+		Field actOpenable = BaseQuickFix.class.getDeclaredField("actOpenable");
+		actOpenable.setAccessible(true);
+		IOpenable actO = (IOpenable)JavaCore.create(RuntimeEnvironmentProjectReader.getType(jpm.getProjectName(), "ntut.csie.exceptionBadSmells", "DummyHandlerExample").getResource());
+		actO.open(null);
+		actOpenable.set(dhQF, actO);
+		
+		Field actRoot = BaseQuickFix.class.getDeclaredField("actRoot");
+		assertNull(actRoot.get(dhQF));
+		actRoot.setAccessible(true);
+		actRoot.set(dhQF, unit);
+		assertNotNull(actRoot.get(dhQF));
+		// 選定要quick fix的method
+		dhQF.findCurrentMethod(RuntimeEnvironmentProjectReader.getType(jpm.getProjectName(), "ntut.csie.exceptionBadSmells", "DummyHandlerExample").getResource(), 6);
+		Field currentMethodNodeField = BaseQuickFix.class.getDeclaredField("currentMethodNode");
+		ASTNode currentMethodNode = (ASTNode)currentMethodNodeField.get(dhQF);
+		// 驗證是否抓到預想中的method
+		assertEquals(	"public void true_systemErrPrint(){\n" +
+						"  FileInputStream fis=null;\n" +
+						"  try {\n" +
+						"    fis=new FileInputStream(\"\");\n" +
+						"    fis.read();\n" +
+						"  }\n" +
+						" catch (  IOException e) {\n" +
+						"    System.err.println(e);\n" +
+						"  }\n" +
+						"}\n", currentMethodNode.toString());
+		// 設定此quick fix的method問題為Dummy handler
+		Field problem = DHQuickFix.class.getDeclaredField("problem");
+		problem.setAccessible(true);
+		problem.set(dhQF, "Dummy_Handler");
+		
+		Field currentMethodRLList = DHQuickFix.class.getDeclaredField("currentMethodRLList");
+		currentMethodRLList.setAccessible(true);
+		ExceptionAnalyzer exVisitor = new ExceptionAnalyzer(unit, currentMethodNode.getStartPosition(), 0);
+		currentMethodNode.accept(exVisitor);
+		currentMethodRLList.set(dhQF, exVisitor.getMethodRLAnnotationList());
+		
+//		DummyHandlerVisitor dhVisitor = new DummyHandlerVisitor(unit);
+		CodeSmellAnalyzer dhVisitor = new CodeSmellAnalyzer(unit);
+		currentMethodNode.accept(dhVisitor);
+		Field currentExList = DHQuickFix.class.getDeclaredField("currentExList");
+		currentExList.setAccessible(true);
+		currentExList.set(dhQF, dhVisitor.getDummyList());
+		/* FIXME - how to focus editor */
+//		IDE.openEditor(JavaPlugin.getActivePage(), (IFile)((ICompilationUnit)actO).getResource());
+		Method rethrowException = DHQuickFix.class.getDeclaredMethod("rethrowException", int.class);
+		rethrowException.setAccessible(true);
+		assertEquals(0, rethrowException.invoke(dhQF, 0));
+	}
+
+	@Test
+	public void testQucikFix_RethrowUncheckedException() {
+		fail("not implement");
+	}
+	
+	@Test
+	public void testQucikFix_ThrowCheckedException() {
+		fail("not implement");
+	}
+	
+	/**
+	 * 建立CSPreference.xml檔案
+	 */
+	private void CreateDummyHandlerXML() {
+		//取的XML的root
+		Element root = JDomUtil.createXMLContent();
+
+		//建立Dummy Handler的Tag
+		Element dummyHandler = new Element(JDomUtil.DummyHandlerTag);
+		Element rule = new Element("rule");
+		//假如e.printStackTrace有被勾選起來
+		rule.setAttribute(JDomUtil.e_printstacktrace,"Y");
+
+		//假如system.out.println有被勾選起來
+		rule.setAttribute(JDomUtil.systemout_print,"Y");
+		
+		rule.setAttribute(JDomUtil.apache_log4j,"Y");
+		rule.setAttribute(JDomUtil.java_Logger,"Y");
+
+		//把使用者自訂的Rule存入XML
+		Element libRule = new Element("librule");
+		
+		//將新建的tag加進去
+		dummyHandler.addContent(rule);
+		dummyHandler.addContent(libRule);
+
+		if (root.getChild(JDomUtil.DummyHandlerTag) != null)
+			root.removeChild(JDomUtil.DummyHandlerTag);
+
+		root.addContent(dummyHandler);
+
+		//將檔案寫回
+		String path = JDomUtil.getWorkspace() + File.separator + "CSPreference.xml";
+		JDomUtil.OutputXMLFile(root.getDocument(), path);
+	}
+}

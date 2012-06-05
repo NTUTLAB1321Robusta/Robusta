@@ -41,6 +41,7 @@ import org.eclipse.jdt.core.dom.PostfixExpression;
 import org.eclipse.jdt.core.dom.PrimitiveType;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TryStatement;
 import org.eclipse.jdt.core.dom.TypeLiteral;
@@ -164,10 +165,12 @@ public class RetryRefactoring extends Refactoring {
 		actRoot.accept(methodCollector);
 		//利用ITextSelection資訊來取得使用者所選擇要變更的AST Node
 		//要使用這個method需在xml檔import org.eclipse.jdt.astview
-		ASTNode selectNode = NodeFinder.perform(actRoot, iTSelection.getOffset(), iTSelection.getLength());
+		NodeFinder nodeFinder = new NodeFinder(iTSelection.getOffset(), iTSelection.getLength());
+		actRoot.accept(nodeFinder);
+		ASTNode selectNode = nodeFinder.getCoveredNode();
 		if (selectNode == null) {
 			status.addFatalError("Selection Error, please retry again!!!");
-		} else if(!(selectNode instanceof TryStatement)) {
+		} else if(selectNode.getNodeType() != ASTNode.TRY_STATEMENT) {
 			status.addFatalError("Selection Error, please retry again!!!");
 		} else {
 			//取得class中所有的method
@@ -176,10 +179,10 @@ public class RetryRefactoring extends Refactoring {
 			SpareHandlerAnalyzer visitor = null;
 			for(ASTNode method : methodList){
 				methodIdx++;
-				visitor = new SpareHandlerAnalyzer(selectNode,actRoot);
+				visitor = new SpareHandlerAnalyzer(selectNode);
 				method.accept(visitor);
 				//檢查是否有框選到try statement
-				if(visitor.getResult()){				
+				if(visitor.getResult()){
 					break;
 				}
 			}
@@ -326,7 +329,7 @@ public class RetryRefactoring extends Refactoring {
 	private TryStatement addTryClause(AST ast,DoStatement doWhile,TryStatement original){
 		TryStatement ts = ast.newTryStatement();
 		Block block = ts.getBody();
-		List tryStatement = block.statements();
+		List<Statement> tryStatement = block.statements();
 		
 		//建立retry = false
 		Assignment as = ast.newAssignment();
@@ -348,8 +351,8 @@ public class RetryRefactoring extends Refactoring {
 
 		//建立then statement
 		Block thenBlock = ast.newBlock();
-		List thenStat = thenBlock.statements();
-		List originalStat = original.getBody().statements();
+//		List<Statement> thenStat = thenBlock.statements();
+		List<?> originalStat = original.getBody().statements();
 		ifStat.setThenStatement(thenBlock);
 
 		for(int i=0;i<originalStat.size();i++){
@@ -364,16 +367,16 @@ public class RetryRefactoring extends Refactoring {
 		
 		//建立else statement
 		Block elseBlock = ast.newBlock();
-		List elseStat = elseBlock.statements();
+//		List<Statement> elseStat = elseBlock.statements();
 		ifStat.setElseStatement(elseBlock);
 
 		//找出第二層try的位置
-		List originalCatch = original.catchClauses();
+		List<?> originalCatch = original.catchClauses();
 		boolean isTryExist = false;
 		TryStatement secTs = null;
 		for (int i =0; i < originalCatch.size(); i++) {
 			CatchClause temp = (CatchClause) originalCatch.get(i);
-			List tempSt = temp.getBody().statements();
+			List<?> tempSt = temp.getBody().statements();
 			if(tempSt != null){
 				for (int x =0; x < tempSt.size(); x++) {
 					if (tempSt.get(x) instanceof TryStatement) {
@@ -387,7 +390,7 @@ public class RetryRefactoring extends Refactoring {
 		
 		if(isTryExist){
 			//開始複製second try statement的內容到else statement
-			List secStat = secTs.getBody().statements();
+			List<?> secStat = secTs.getBody().statements();
 			for (int i =0;i < secStat.size(); i++) {
 				//elseStat.add(ASTNode.copySubtree(ast, (ASTNode) secStat.get(i)));
 				ASTNode placeHolder = rewrite.createMoveTarget((ASTNode) secStat.get(i));
@@ -399,7 +402,7 @@ public class RetryRefactoring extends Refactoring {
 			if(originalCatch != null){
 				//將catch的內容copy進去
 				CatchClause temp = (CatchClause)originalCatch.get(0);
-				List tempSt = temp.getBody().statements();
+				List<?> tempSt = temp.getBody().statements();
 				if (tempSt != null) {
 					for (int x =0; x < tempSt.size(); x++) {
 						//elseStat.add(ASTNode.copySubtree(ast, (ASTNode) tempSt.get(x)));
@@ -416,7 +419,7 @@ public class RetryRefactoring extends Refactoring {
 		//替do while新建一個Block,並將Try加進去
 		Block doBlock = doWhile.getAST().newBlock();
 		doWhile.setBody(doBlock);
-		List doStat = doBlock.statements();
+		List<Statement> doStat = doBlock.statements();
 		doStat.add(ts);		
 		return ts;
 	}
@@ -431,8 +434,8 @@ public class RetryRefactoring extends Refactoring {
 	private TryStatement addNoAltTryBlock(AST ast,DoStatement doWhile,TryStatement original){
 		TryStatement ts = ast.newTryStatement();
 		Block block = ts.getBody();
-		List tryStatement = block.statements();
-		List originalStat = original.getBody().statements();
+		List<Statement> tryStatement = block.statements();
+		List<?> originalStat = original.getBody().statements();
 		
 		for(int i=0;i<originalStat.size();i++){
 			//將原本try的內容複製進來
@@ -455,10 +458,9 @@ public class RetryRefactoring extends Refactoring {
 		//替do while新建一個Block,並將Try加進去
 		Block doBlock = doWhile.getAST().newBlock();
 		doWhile.setBody(doBlock);
-		List doStat = doBlock.statements();
+		List<Statement> doStat = doBlock.statements();
 		doStat.add(ts);		
 		return ts;
-		
 	}
 		
 	/**
@@ -468,15 +470,14 @@ public class RetryRefactoring extends Refactoring {
 	 * @param ts
 	 */
 	private void addCatchBlock(AST ast,TryStatement original,TryStatement ts){
-		Block block = ts.getBody();
-		List catchStatement = ts.catchClauses();
-		List originalCatch = original.catchClauses();
+		List<CatchClause> catchStatement = ts.catchClauses();
+		List<?> originalCatch = original.catchClauses();
 	
 		//建立新的catch
 		for(int i=0;i<originalCatch.size();i++){
 			//第一層的catch,但可能有捕捉不只一種型態的例外,所以需要用迴圈
 			CatchClause temp = (CatchClause)originalCatch.get(i);
-			List catchSt = temp.getBody().statements();
+			List<?> catchSt = temp.getBody().statements();
 			//取得catch()括號中的例外型態
 			SingleVariableDeclaration svd = (SingleVariableDeclaration)temp.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
 			SingleVariableDeclaration sv = (SingleVariableDeclaration) ASTNode.copySubtree(ast, temp.getException());
@@ -498,7 +499,6 @@ public class RetryRefactoring extends Refactoring {
 			CatchClause cc = ast.newCatchClause();		
 			cc.setException(sv);
 			catchStatement.add(cc);
-				
 		}
 		
 		//以下開始建立catch Statment中的內容
@@ -532,7 +532,7 @@ public class RetryRefactoring extends Refactoring {
 	
 			//建立then statement
 			Block thenBlock = ast.newBlock();
-			List thenStat = thenBlock.statements();
+			List<Statement> thenStat = thenBlock.statements();
 			ifStat.setThenStatement(thenBlock);
 			//自行建立一個throw statement加入
 			ThrowStatement tst = ast.newThrowStatement();
@@ -549,7 +549,7 @@ public class RetryRefactoring extends Refactoring {
 			thenStat.add(tst);
 			
 			//將剩下的statement加進去catch之中
-			List ccStat = cc.getBody().statements();
+			List<Statement> ccStat = cc.getBody().statements();
 			ccStat.add(epfe);
 			ccStat.add(es);
 			ccStat.add(ifStat);
@@ -584,11 +584,11 @@ public class RetryRefactoring extends Refactoring {
 	private String findHomogeneousExType(AST ast,SingleVariableDeclaration type,Object node){	
 		TryStatement ts = (TryStatement)node;
 		//找第二層try block中所有的catch區塊
-		List catchSt = ts.catchClauses();		
+		List<?> catchSt = ts.catchClauses();		
 		if(catchSt != null){
 			//先尋找第一層try-catch的例外型態,並往上trace紀錄到List中
 			ArrayList<String> exList = new ArrayList<String>();
-			ITypeBinding iTB = type.resolveBinding().getType() ;
+			ITypeBinding iTB = type.resolveBinding().getType();
 			//將java.lang.Exception當作最上層例外
 			String topLevelEx = "Exception";
 			//當找到例外就存起來,若找到最上層則跳出迴圈
@@ -636,12 +636,13 @@ public class RetryRefactoring extends Refactoring {
 	 */
 	private void addImportDeclaration(){
 		//判斷是否有import library
-		ListRewrite listRewrite = rewrite.getListRewrite(this.actRoot, this.actRoot.IMPORTS_PROPERTY);
+		ListRewrite listRewrite = rewrite.getListRewrite(this.actRoot,  CompilationUnit.IMPORTS_PROPERTY);
 		List<ImportDeclaration> importList = listRewrite.getRewrittenList();
 		boolean isImportLibrary = false;
 		for(ImportDeclaration id : importList){
 			if(exType.getFullyQualifiedName().equals(id.getName().getFullyQualifiedName())){
 				isImportLibrary = true;
+				break;
 			}
 		}
 		
@@ -736,7 +737,7 @@ public class RetryRefactoring extends Refactoring {
 
 	private void addImportRLDeclaration() {
 		// 判斷是否已經Import Robustness及RL的宣告
-		ListRewrite listRewrite = rewrite.getListRewrite(this.actRoot, this.actRoot.IMPORTS_PROPERTY);
+		ListRewrite listRewrite = rewrite.getListRewrite(this.actRoot,  CompilationUnit.IMPORTS_PROPERTY);
 		List<ImportDeclaration> importList = listRewrite.getRewrittenList();
 		boolean isImportRobustnessClass = false;
 		boolean isImportRLClass = false;

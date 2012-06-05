@@ -22,9 +22,7 @@ import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Name;
-import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.SimpleName;
-import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TryStatement;
@@ -149,7 +147,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 	 */
 	private void getMethodAnnotation(ASTNode node) {
 		MethodDeclaration method = (MethodDeclaration) node;
-
+		
 		//logger.debug("#####===>method=" + method.getName());
 		
 		IAnnotationBinding[] annoBinding = method.resolveBinding().getAnnotations();
@@ -214,7 +212,6 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 	 * 取得Method所宣告的throws Exception Type Name
 	 * @param node	MethodDeclaration
 	 */
-	@SuppressWarnings("unchecked")
 	private void getMethodThrowsList(ASTNode node) {
 		MethodDeclaration method = (MethodDeclaration) node;
 		List<Name> throwsList = method.thrownExceptions();
@@ -409,7 +406,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 //		 ConsoleLog.debug("TRY===>" + idxTry + ":" + idxCatch + "\t[END]"+
 //		 trystat.getBody().getStartPosition());
 		
-		List catchList = trystat.catchClauses();
+		List<?> catchList = trystat.catchClauses();
 		CatchClause cc = null;
 		
 		for (int i = 0, size = catchList.size(); i < size; i++) {
@@ -427,7 +424,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 			}
 			
 			//取得Catch內的SuppressSmell Annotation
-			List modifyList = svd.modifiers();
+			List<?> modifyList = svd.modifiers();
 			for (int j = 0; j < modifyList.size(); j++) {
 				if (modifyList.get(j) instanceof Annotation) {
 					Annotation annotation = (Annotation) modifyList.get(j);

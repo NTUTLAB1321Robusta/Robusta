@@ -46,9 +46,9 @@ public class ExpressionStatementAnalyzer extends RLBaseVisitor{
 	}
 
 	/**
-	 * Override the RLBAseVisitor
+	 * Override the RLBaseVisitor
 	 */
-	protected boolean visitNode(ASTNode node){
+	protected boolean visitNode(ASTNode node) {
 		try {
 			switch (node.getNodeType()) {
 				// 最外面的try block遇到Dummy已經會加mark一次，
@@ -137,7 +137,7 @@ public class ExpressionStatementAnalyzer extends RLBaseVisitor{
 	 */
 	private void addDummyWarning(ASTNode node) {
 		ExpressionStatement statement = null;
-		if (node.getParent() instanceof ExpressionStatement) {
+		if (node.getParent().getNodeType() == ASTNode.EXPRESSION_STATEMENT) {
 			statement = (ExpressionStatement) node.getParent();
 		} else {
 			// 如果此行不屬於Expression Statement

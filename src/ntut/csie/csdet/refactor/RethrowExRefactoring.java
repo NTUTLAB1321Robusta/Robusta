@@ -2,9 +2,10 @@ package ntut.csie.csdet.refactor;
 
 import java.util.List;
 
-import ntut.csie.csdet.data.CSMessage;
+import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.visitor.ASTCatchCollect;
-import ntut.csie.csdet.visitor.CodeSmellAnalyzer;
+import ntut.csie.csdet.visitor.DummyHandlerVisitor;
+import ntut.csie.csdet.visitor.IgnoreExceptionVisitor;
 import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.rleht.builder.RLOrderFix;
@@ -96,7 +97,7 @@ public class RethrowExRefactoring extends Refactoring {
 	//存放目前所要fix的method node
 	private ASTNode currentMethodNode = null;
 	
-	private List<CSMessage> currentExList = null;
+	private List<MarkerInfo> currentExList = null;
 	
 	String msgIdx;
 	String methodIdx;
@@ -211,12 +212,14 @@ public class RethrowExRefactoring extends Refactoring {
 					currentMethodNode.accept(exVisitor);
 					currentMethodRLList = exVisitor.getMethodRLAnnotationList();
 
-					CodeSmellAnalyzer visitor = new CodeSmellAnalyzer(this.actRoot);
-					currentMethodNode.accept(visitor);
 					//判斷是Ignore Ex or Dummy handler並取得code smell的List
 					if(problem.equals(RLMarkerAttribute.CS_INGNORE_EXCEPTION)){
-						currentExList = visitor.getIgnoreExList();	
+						IgnoreExceptionVisitor visitor = new IgnoreExceptionVisitor(this.actRoot);
+						currentMethodNode.accept(visitor);
+						currentExList = visitor.getIgnoreList();
 					} else {
+						DummyHandlerVisitor visitor = new DummyHandlerVisitor(this.actRoot);
+						currentMethodNode.accept(visitor);
 						currentExList = visitor.getDummyList();
 					}
 				}
@@ -239,7 +242,7 @@ public class RethrowExRefactoring extends Refactoring {
 			//準備在Catch Clause中加入throw exception
 			//取得EH smell的資訊
 			msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
-			CSMessage msg = currentExList.get(Integer.parseInt(msgIdx));
+			MarkerInfo markerInfo = currentExList.get(Integer.parseInt(msgIdx));
 			//收集該method所有的catch clause
 			ASTCatchCollect catchCollector = new ASTCatchCollect();
 			currentMethodNode.accept(catchCollector);
@@ -247,7 +250,7 @@ public class RethrowExRefactoring extends Refactoring {
 			
 			//去比對startPosition,找出要修改的catch
 			for (int i =0; i < catchList.size(); i++) {
-				if(catchList.get(i).getStartPosition() == msg.getPosition()) {
+				if(catchList.get(i).getStartPosition() == markerInfo.getPosition()) {
 					catchIdx = i;
 					//在catch clause中建立throw statement
 					addThrowStatement(catchList.get(i), ast);
@@ -262,7 +265,7 @@ public class RethrowExRefactoring extends Refactoring {
 				}
 			}
 			//寫回Edit中
-			applyChange(msg);
+			applyChange(markerInfo);
 		}catch (Exception ex) {
 			logger.error("[Rethrow Unchecked Exception] EXCEPTION ",ex);
 		}
@@ -274,7 +277,7 @@ public class RethrowExRefactoring extends Refactoring {
 	 */
 	private void checkMethodThrow(AST ast) {
 		MethodDeclaration md = (MethodDeclaration)currentMethodNode;
-		List thStat = md.thrownExceptions();
+		List<SimpleName> thStat = md.thrownExceptions();
 		boolean isExist = false;
 		for(int i=0;i<thStat.size();i++) {
 			if(thStat.get(i) instanceof SimpleName){
@@ -319,7 +322,11 @@ public class RethrowExRefactoring extends Refactoring {
 		statement.add(ts);	
 	}
 	
-	private void applyChange(CSMessage msg){		
+	/**
+	 * FIXME - 參數沒使用到 2012.3.30
+	 * @param markerInfo
+	 */
+	private void applyChange(MarkerInfo markerInfo){		
 		try {
 			ICompilationUnit cu = (ICompilationUnit) actOpenable;
 			Document document = new Document(cu.getBuffer().getContents());
@@ -334,25 +341,25 @@ public class RethrowExRefactoring extends Refactoring {
 	/**
 	 * 在Rethrow之前,先將相關的print字串都清除掉
 	 */
-	private void deleteStatement(List<Statement> statementTemp){
+	private void deleteStatement(List<Statement> statementTemp) {
 		// 從Catch Clause裡面剖析兩種情形
-		if(statementTemp.size() != 0){
-			for(int i=0;i<statementTemp.size();i++){		
-				if(statementTemp.get(i) instanceof ExpressionStatement ){
+		if(statementTemp.size() != 0) {
+			for(int i=0;i<statementTemp.size();i++) {		
+				if(statementTemp.get(i) instanceof ExpressionStatement ) {
 					ExpressionStatement statement = (ExpressionStatement) statementTemp.get(i);
 					// 遇到System.out.print or printStackTrace就把他remove掉
 					if(statement.getExpression().toString().contains("System.out.print")||
-							statement.getExpression().toString().contains("printStackTrace")){	
+							statement.getExpression().toString().contains("printStackTrace")) {	
 							statementTemp.remove(i);
 							//移除完之後ArrayList的位置會重新調整過,所以利用遞回來繼續往下找符合的條件並移除
-							deleteStatement(statementTemp);						
+//							deleteStatement(statementTemp);
+							i--;
 					}
 				}			
 			}
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	private void addAnnotationRoot(AST ast){
 		//要建立@Robustness(value={@RL(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
 		//建立Annotation root
@@ -407,7 +414,6 @@ public class RethrowExRefactoring extends Refactoring {
 	 * @param exClass:例外類別
 	 * @return NormalAnnotation AST Node
 	 */
-	@SuppressWarnings("unchecked")
 	private NormalAnnotation getRLAnnotation(AST ast, int levelVal,String excption) {
 		//要建立@Robustness(value={@RL(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
 		NormalAnnotation rl = ast.newNormalAnnotation();
@@ -432,13 +438,10 @@ public class RethrowExRefactoring extends Refactoring {
 		return rl;
 	}
 	
-	
-	
 	/**
 	 * 判斷是否有未加入的Library,但throw RuntimeException的情況要排除
 	 * 因為throw RuntimeException不需import Library
 	 */
-	@SuppressWarnings("unchecked")
 	private void addImportDeclaration(){
 		//判斷是否有import library
 		boolean isImportLibrary = false;
@@ -456,10 +459,8 @@ public class RethrowExRefactoring extends Refactoring {
 			imp.setName(rootAst.newName(exType.getFullyQualifiedName()));
 			this.actRoot.imports().add(imp);
 		}
-		
 	}
 	
-	@SuppressWarnings("unchecked")
 	private void addImportRLDeclaration() {
 		// 判斷是否已經Import Robustness及RL的宣告
 		List<ImportDeclaration> importList = this.actRoot.imports();
@@ -486,7 +487,6 @@ public class RethrowExRefactoring extends Refactoring {
 			this.actRoot.imports().add(imp);
 		}
 	}
-	
 	
 	/**
 	 * 紀錄user所要throw的exception type

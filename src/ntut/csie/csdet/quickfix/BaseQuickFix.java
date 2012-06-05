@@ -100,8 +100,8 @@ public class BaseQuickFix {
 			// °Ñ¦Òorg.eclipse.jdt.internal.ui.text.correction.CorrectionMarkerResolutionGenerator run
 			// org.eclipse.jdt.internal.ui.text.correction.ChangeCorrectionProposal apply»PperformChange
 			ICompilationUnit cu = (ICompilationUnit) actOpenable;
-			IEditorPart part= EditorUtility.isOpenInEditor(cu);
-			IEditorInput input= part.getEditorInput();
+			IEditorPart part = EditorUtility.isOpenInEditor(cu);
+			IEditorInput input = part.getEditorInput();
 			IDocument doc = JavaPlugin.getDefault().getCompilationUnitDocumentProvider().getDocument(input);
 
 			performChange(JavaPlugin.getActivePage().getActiveEditor(), doc, rewrite);

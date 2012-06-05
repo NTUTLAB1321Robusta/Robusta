@@ -6,14 +6,16 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import ntut.csie.csdet.data.CSMessage;
+import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.data.SSMessage;
 import ntut.csie.csdet.preference.JDomUtil;
 import ntut.csie.csdet.visitor.CarelessCleanUpAnalyzer;
 import ntut.csie.csdet.visitor.CodeSmellAnalyzer;
+import ntut.csie.csdet.visitor.DummyHandlerVisitor;
+import ntut.csie.csdet.visitor.IgnoreExceptionVisitor;
 import ntut.csie.csdet.visitor.MainAnalyzer;
 import ntut.csie.csdet.visitor.OverLoggingDetector;
 import ntut.csie.rleht.common.ASTHandler;
-import ntut.csie.rleht.rlAdvice.RLAnalyzer;
 import ntut.csie.rleht.rlAdvice.RLAdviceMessage;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLChecker;
@@ -80,22 +82,37 @@ public class RLBuilder extends IncrementalProjectBuilder {
 		}
 	}
 	
-	private void addMarker(IFile file, String message, int severity, RLAdviceMessage msg,
-						   int msgIdx, int methodIdx) {
+	/**
+	 * Made by Crimson 
+	 * @param file
+	 * @param errmsg
+	 * @param severityWarning
+	 * @param markerInfo
+	 * @param csIdx
+	 * @param methodIdx
+	 */
+	private void addMarker(IFile file, String errmsg, int severityWarning,
+			MarkerInfo markerInfo, int csIdx, int methodIdx) {
 		IMarker marker;
 		try{
 			marker = file.createMarker(MARKER_TYPE);
-			marker.setAttribute(IMarker.MESSAGE, message);
-			marker.setAttribute(IMarker.SEVERITY, severity);
-			marker.setAttribute(IMarker.LINE_NUMBER, msg.getCatchClauseLineNumber());	//mark會在哪行出現
-			marker.setAttribute(RLMarkerAttribute.RL_MARKER_TYPE, msg.getCodeSmellType());
-			marker.setAttribute(RLMarkerAttribute.RL_INFO_EXCEPTION, msg.getExceptionType());
-			marker.setAttribute(RLMarkerAttribute.RL_INFO_SRC_POS, String.valueOf(msg.getMethodInvocationStartPosition()));
+			marker.setAttribute(IMarker.MESSAGE, errmsg);
+			marker.setAttribute(IMarker.SEVERITY, severityWarning);
+			if (markerInfo.getLineNumber() == -1) {
+				markerInfo.setLineNumber(1);
+			}
+			marker.setAttribute(IMarker.LINE_NUMBER, markerInfo.getLineNumber());
+			//marker type =  EH smell type
+			marker.setAttribute(RLMarkerAttribute.RL_MARKER_TYPE, markerInfo.getCodeSmellType());
+			marker.setAttribute(RLMarkerAttribute.RL_INFO_EXCEPTION, markerInfo.getExceptionType());
+			marker.setAttribute(RLMarkerAttribute.RL_INFO_SRC_POS, String.valueOf(markerInfo.getPosition()));
 			marker.setAttribute(RLMarkerAttribute.RL_METHOD_INDEX, String.valueOf(methodIdx));
-			marker.setAttribute(RLMarkerAttribute.RL_MSG_INDEX, String.valueOf(msgIdx));
-			marker.setAttribute(RLMarkerAttribute.MI_WITH_Ex, msg.getExceptionType());
+			marker.setAttribute(RLMarkerAttribute.RL_MSG_INDEX, String.valueOf(csIdx));
+			marker.setAttribute(RLMarkerAttribute.CCU_WITH_TRY, -1);
+			marker.setAttribute(RLMarkerAttribute.MI_WITH_Ex, markerInfo.getExceptionType());
+
 		} catch (CoreException e) {
-			logger.error("[addRLAdviceMarker] EXCEPTION ", e);
+			logger.error("[addCSMarker] Exception ",e);
 		}
 	}
 
@@ -249,8 +266,6 @@ public class RLBuilder extends IncrementalProjectBuilder {
 
 				ExceptionAnalyzer visitor = null;
 				
-				CodeSmellAnalyzer csVisitor = null;
-				
 				MainAnalyzer mainVisitor = null;
 				
 				CarelessCleanUpAnalyzer ccVisitor=null;
@@ -267,12 +282,6 @@ public class RLBuilder extends IncrementalProjectBuilder {
 
 				List<SSMessage> suppressSmellList = null;
 				
-				// 目前method內的ignore Exception資訊
-				List<CSMessage> ignoreExList = null;
-				
-				// 目前method內的dummy handler資訊
-				List<CSMessage> dummyList = null;
-				
 				// 目前method內的Nested Try Block資訊
 				List<CSMessage> nestedTryList = null; 
 				
@@ -281,9 +290,6 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				
 				//目前method內的Careless CleanUp資訊(in try block)
 				List<CSMessage> ccuListInTry = null;
-				
-				//目前method內，關於RLAdvice的資訊
-				List<RLAdviceMessage> eRLAdviceList = null;
 				
 				//目前method內的Careless CleanUp資訊(without try block)
 				List<CSMessage> ccuListNoTry = null;
@@ -312,43 +318,39 @@ public class RLBuilder extends IncrementalProjectBuilder {
 					inputSuppressData(suppressSmellList, detMethodSmell, detCatchSmell);
 
 					// 找尋專案中所有的ignore Exception
-					csVisitor = new CodeSmellAnalyzer(root);
-					method.accept(csVisitor);
-					//取得專案中的ignore Exception
-					ignoreExList = csVisitor.getIgnoreExList();
+					IgnoreExceptionVisitor ieVisitor = new IgnoreExceptionVisitor(root);
+					method.accept(ieVisitor);
+					List<MarkerInfo> ignoreList = ieVisitor.getIgnoreList();
 					int csIdx = -1;
-					//Ignore List不為Null，且使用者沒有抑制Method內所有的Ignore Marker
-					if(ignoreExList != null && detMethodSmell.get(RLMarkerAttribute.CS_INGNORE_EXCEPTION)) {
+					if(ignoreList != null && detMethodSmell.get(RLMarkerAttribute.CS_INGNORE_EXCEPTION)) {
 						List<Integer> posList = detCatchSmell.get(RLMarkerAttribute.CS_INGNORE_EXCEPTION);
-						//將每個ignore exception都貼上marker
-						for(CSMessage msg : ignoreExList) {
+						for(MarkerInfo markerInfo : ignoreList) {
 							csIdx++;
 							//判斷使用者有沒有在Catch內貼Annotation，抑制Smell Marker
-							if (suppressMarker(posList, msg.getPosition()))
+							if (suppressMarker(posList, markerInfo.getPosition()))
 								continue;
-							String errmsg = "EH Smell Type:["+ msg.getCodeSmellType() + "]未處理!!!";
-							//貼marker
-							this.addMarker(file, errmsg, msg.getLineNumber(), IMarker.SEVERITY_WARNING,
-									msg.getCodeSmellType(), msg, csIdx, methodIdx);
+							String errmsg = "EH Smell Type:["+ markerInfo.getCodeSmellType() + "]未處理!!!";
+							this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, markerInfo, csIdx, methodIdx);
 						}
 					}
 					
 					//取得專案中dummy handler
-					dummyList = csVisitor.getDummyList();
+					DummyHandlerVisitor dhVisitor = new DummyHandlerVisitor(root);
+					method.accept(dhVisitor);
+					List<MarkerInfo> dummyList = dhVisitor.getDummyList();
 					csIdx = -1;
 					//Dummy List不為Null，且使用者沒有抑制Method內所有的Dummy Handler Marker
 					if(dummyList != null && detMethodSmell.get(RLMarkerAttribute.CS_DUMMY_HANDLER)) {
 						List<Integer> posList = detCatchSmell.get(RLMarkerAttribute.CS_DUMMY_HANDLER);
 						// 將每個dummy handler都貼上marker
-						for (CSMessage msg : dummyList) {
+						for (MarkerInfo markerInfo : dummyList) {
 							csIdx++;
 							//判斷使用者有沒有在Catch內貼Annotation，抑制Smell Marker
-							if (suppressMarker(posList, msg.getPosition()))
+							if (suppressMarker(posList, markerInfo.getPosition()))
 								continue;
-							String errmsg = "EH Smell Type:["+ msg.getCodeSmellType() + "]未處理!!!";
+							String errmsg = "EH Smell Type:["+ markerInfo.getCodeSmellType() + "]未處理!!!";
 							//貼marker
-							this.addMarker(file, errmsg, msg.getLineNumber(), IMarker.SEVERITY_WARNING,
-									msg.getCodeSmellType(), msg, csIdx, methodIdx);
+							this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, markerInfo, csIdx, methodIdx);
 						}
 					}
 					

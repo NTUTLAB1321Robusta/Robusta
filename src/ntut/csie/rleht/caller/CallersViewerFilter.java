@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 public class CallersViewerFilter extends ViewerFilter {
 	private static Logger logger = LoggerFactory.getLogger(CallersView.class);
 
-	@SuppressWarnings("restriction")
 	@Override
 	public boolean select(Viewer viewer, Object parentElement, Object element) {
 		logger.debug(">>>>>>====>" + element);

@@ -6,7 +6,9 @@ import java.util.Comparator;
 import java.util.List;
 
 import ntut.csie.csdet.data.CSMessage;
-import ntut.csie.csdet.visitor.CodeSmellAnalyzer;
+import ntut.csie.csdet.data.MarkerInfo;
+import ntut.csie.csdet.visitor.DummyHandlerVisitor;
+import ntut.csie.csdet.visitor.IgnoreExceptionVisitor;
 import ntut.csie.csdet.visitor.MainAnalyzer;
 import ntut.csie.rleht.RLEHTPlugin;
 import ntut.csie.rleht.common.ASTHandler;
@@ -29,9 +31,9 @@ public class EHSmellModel {
 	private static Logger logger = LoggerFactory.getLogger(EHSmellModel.class);
 
 	//紀錄找到的DummyHandler Smell
-	private List<CSMessage> dummyHandlerList = null;
+	private List<MarkerInfo> dummyHandlerList = null;
 	//紀錄找到的IgnoreCheckedException Smell
-	private List<CSMessage> ignoreExList = null;
+	private List<MarkerInfo> ignoreExList = null;
 	//紀錄找到的NestedTryBlock Smell
 	private List<CSMessage> nestedTryList = null;
 	//紀錄找到的UnprotectedMain Smell
@@ -115,10 +117,13 @@ public class EHSmellModel {
 		//防止沒點method出現NullPoint錯誤
 		if (methodNode != null) {
 			//找出這個method的code smell
-			CodeSmellAnalyzer visitor = new CodeSmellAnalyzer(this.actRoot);
-			this.methodNode.accept(visitor);
-			ignoreExList = visitor.getIgnoreExList();
-			dummyHandlerList = visitor.getDummyList();
+//			CodeSmellAnalyzer visitor = new CodeSmellAnalyzer(this.actRoot);
+			DummyHandlerVisitor dhVisitor = new DummyHandlerVisitor(actRoot);
+			IgnoreExceptionVisitor ieVisitor = new IgnoreExceptionVisitor(actRoot);
+			this.methodNode.accept(dhVisitor);
+			this.methodNode.accept(ieVisitor);
+			dummyHandlerList = dhVisitor.getDummyList();
+			ignoreExList = ieVisitor.getIgnoreList();
 	
 			//取得專案中的Nested Try Block
 			nestedTryList = exVisitor.getNestedTryList();
@@ -132,10 +137,24 @@ public class EHSmellModel {
 		//清除Smell
 		smellList.clear();
 		//把所有Smell的List加在一起
-		if (dummyHandlerList != null)
-			smellList.addAll(dummyHandlerList);
-		if (ignoreExList != null)
-			smellList.addAll(ignoreExList);
+		if (dummyHandlerList != null) {
+			/* FIXME - 暫時轉換用，等全部都換成MarkerInfo就不需要這個LOOP */
+			List<CSMessage> tempList = new ArrayList<CSMessage>();
+			for(int i = 0; i < dummyHandlerList.size(); i++) {
+				CSMessage message = new CSMessage(dummyHandlerList.get(i).getCodeSmellType(), dummyHandlerList.get(i).getTypeBinding(), dummyHandlerList.get(i).getStatement(), dummyHandlerList.get(i).getPosition(), dummyHandlerList.get(i).getLineNumber(), dummyHandlerList.get(i).getExceptionType());
+				tempList.add(message);
+			}
+			smellList.addAll(tempList);
+		}
+		if (ignoreExList != null) {
+			/* FIXME - 暫時轉換用，等全部都換成MarkerInfo就不需要這個LOOP */
+			List<CSMessage> tempList = new ArrayList<CSMessage>();
+			for(int i = 0; i < ignoreExList.size(); i++) {
+				CSMessage message = new CSMessage(ignoreExList.get(i).getCodeSmellType(), ignoreExList.get(i).getTypeBinding(), ignoreExList.get(i).getStatement(), ignoreExList.get(i).getPosition(), ignoreExList.get(i).getLineNumber(), ignoreExList.get(i).getExceptionType());
+				tempList.add(message);
+			}
+			smellList.addAll(tempList); 
+		}
 		if (unprotectedMainList != null)
 			smellList.addAll(unprotectedMainList);
 		if (nestedTryList != null)
@@ -207,10 +226,10 @@ public class EHSmellModel {
 	 * 取得各個Smell的List
 	 * @return
 	 */
-	public List<CSMessage> getDummyList() {
+	public List<MarkerInfo> getDummyList() {
 		return dummyHandlerList;
 	}
-	public List<CSMessage> getIgnoreList() {
+	public List<MarkerInfo> getIgnoreList() {
 		return ignoreExList;
 	}
 	public List<CSMessage> getnestedTryList() {

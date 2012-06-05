@@ -19,7 +19,7 @@ public class DHFixture {
 	buffer.append("import java.io.IOException;\n");
 	buffer.append("\n");
 	
-	buffer.append("public class MM2 {\n");
+	buffer.append("public class DHFixture {\n");
 	
 	buffer.append("	public void dummy(){\n");
 	buffer.append("     String num = \"1\";\n");

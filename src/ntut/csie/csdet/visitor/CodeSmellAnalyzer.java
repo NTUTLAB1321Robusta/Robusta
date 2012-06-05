@@ -78,7 +78,7 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 
 			return true;
 		case ASTNode.CATCH_CLAUSE:
-			processCatchStatement(node);
+			judgeIgnoreEx((CatchClause)node);
 			catchCounter++;
 			return true;
 		default:
@@ -88,30 +88,11 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 	}
 
 	/**
-	 * 去尋找catch的節點,並且判斷節點內的statement是否為空
-	 * 
-	 * @param node
-	 */
-	private void processCatchStatement(ASTNode node) {
-		// 轉換成catch node
-		CatchClause cc = (CatchClause) node;
-		// 取得catch(Exception e)其中的e
-		SingleVariableDeclaration svd = (SingleVariableDeclaration) cc
-				.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
-		// 判斷這個catch是否有ignore exception or dummy handler
-		judgeIgnoreEx(cc, svd);
-	}
-
-	/**
 	 * 判斷這個catch block是不是ignore EX
-	 * 
-	 * @param cc :
-	 *            catch block的資訊
-	 * @param svd :
-	 *            throw exception會用到
 	 */
-	private void judgeIgnoreEx(CatchClause cc, SingleVariableDeclaration svd ){
-		List statementList = cc.getBody().statements();
+	private void judgeIgnoreEx(CatchClause cc){
+		SingleVariableDeclaration svd = cc.getException();
+		List<?> statementList = cc.getBody().statements();
 		// 如果catch statement裡面是空的話,表示是ignore exception
 		if (statementList.size() == 0) {
 			// 建立一個ignore exception type
@@ -123,20 +104,18 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 			this.codeSmellList.add(csmsg);
 		} else {
 			/*------------------------------------------------------------------------*
-			-  假如statement不是空的,表示有可能存在dummy handler,不另外寫一個class來偵測,
+			     假如statement不是空的,表示有可能存在dummy handler,不另外寫一個class來偵測,
 			     原因是不希望在RLBilder要parse每個method很多次,code部分也會增加,所以就寫在這邊
-			 *-------------------------------------------------------------------------*/
-			judgeDummyHandler(statementList, cc, svd);
+			 *------------------------------------------------------------------------*/
+			judgeDummyHandler(cc);
 		}
 	}
 
 	/**
 	 * 判斷這個catch內是否有dummy handler
-	 * @param catchStatementList
-	 * @param cc
-	 * @param svd
 	 */
-	private void judgeDummyHandler(List catchStatementList, CatchClause cc, SingleVariableDeclaration svd){
+	private void judgeDummyHandler(CatchClause cc){
+		
 		/*------------------------------------------------------------------------*
 		-  假設這個catch裡面有throw東西 or 有使用Log的API,就判定不是dummy handler
 		     如果只要有一個e.printStackTrace或者符合user所設定的條件,就判定為dummy handler  
@@ -148,7 +127,7 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 
 		if(logAnalyzer.getDummyHandlerList() != null){
 			for (int i = 0; i < logAnalyzer.getDummyHandlerList().size(); i++) {
-				addDummyMessage(cc, svd, logAnalyzer.getDummyHandlerList().get(i));
+				addDummyMessage(cc, logAnalyzer.getDummyHandlerList().get(i));
 			}
 		}
 	}
@@ -156,8 +135,8 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 	/**
 	 * 得到Dummy Handler的訊息
 	 */
-	private void addDummyMessage(CatchClause cc, SingleVariableDeclaration svd,
-			ExpressionStatement statement) {
+	private void addDummyMessage(CatchClause cc, ExpressionStatement statement) {
+		SingleVariableDeclaration svd = cc.getException();
 		CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_DUMMY_HANDLER, svd
 				.resolveBinding().getType(), cc.toString(), cc
 				.getStartPosition(), this.getLineNumber(statement
@@ -167,8 +146,6 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 
 	/**
 	 * 將user對於dummy handler的設定存下來
-	 * 
-	 * @return
 	 */
 	private void getDummySettings() {
 		Element root = JDomUtil.createXMLContent();

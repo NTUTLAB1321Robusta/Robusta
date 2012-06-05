@@ -7,10 +7,12 @@ import java.util.List;
 import java.util.TreeMap;
 
 import ntut.csie.csdet.data.CSMessage;
+import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.data.SSMessage;
 import ntut.csie.csdet.preference.JDomUtil;
 import ntut.csie.csdet.visitor.CarelessCleanUpAnalyzer;
-import ntut.csie.csdet.visitor.CodeSmellAnalyzer;
+import ntut.csie.csdet.visitor.DummyHandlerVisitor;
+import ntut.csie.csdet.visitor.IgnoreExceptionVisitor;
 import ntut.csie.csdet.visitor.MainAnalyzer;
 import ntut.csie.csdet.visitor.OverLoggingDetector;
 import ntut.csie.jcis.builder.core.internal.support.LOCCounter;
@@ -133,7 +135,9 @@ public class ReportBuilder {
 		List<SSMessage> suppressSmellList = null;
 
 		ExceptionAnalyzer visitor = null;
-		CodeSmellAnalyzer csVisitor = null;
+//		CodeSmellAnalyzer csVisitor = null;
+		IgnoreExceptionVisitor ieVisitor = null;
+		DummyHandlerVisitor dhVisitor = null;
 		MainAnalyzer mainVisitor = null;
 		CarelessCleanUpAnalyzer ccVisitor = null;
 		OverLoggingDetector loggingDetector = null;
@@ -174,12 +178,20 @@ public class ReportBuilder {
 			inputSuppressData(suppressSmellList, detMethodSmell, detCatchSmell);
 
 			// т碝盡い┮Τignore Exception
-			csVisitor = new CodeSmellAnalyzer(root);
-			method.accept(csVisitor);
+//			csVisitor = new CodeSmellAnalyzer(root);
 			// 眔盡いignore Exception
 			if (detMethodSmell.get(RLMarkerAttribute.CS_INGNORE_EXCEPTION)) {
-				List<CSMessage> ignoreExList = checkCatchSmell(csVisitor
-						.getIgnoreExList(), detCatchSmell
+				ieVisitor = new IgnoreExceptionVisitor(root);
+				method.accept(ieVisitor);
+				/* FIXME - 既锣传ノ单场常传ΘMarkerInfo碞ぃ惠璶硂LOOP */
+				List<MarkerInfo> ignoreList = ieVisitor.getIgnoreList();
+				List<CSMessage> tempList = new ArrayList<CSMessage>();
+				for(int i = 0; i < ignoreList.size(); i++) {
+					CSMessage message = new CSMessage(ignoreList.get(i).getCodeSmellType(), ignoreList.get(i).getTypeBinding(), ignoreList.get(i).getStatement(), ignoreList.get(i).getPosition(), ignoreList.get(i).getLineNumber(), ignoreList.get(i).getExceptionType());
+					tempList.add(message);
+				}
+				List<CSMessage> ignoreExList = checkCatchSmell(tempList
+						, detCatchSmell
 						.get(RLMarkerAttribute.CS_INGNORE_EXCEPTION));
 				newClassModel.setIgnoreExList(ignoreExList, methodName
 						.getName().toString());
@@ -187,8 +199,17 @@ public class ReportBuilder {
 			}
 			// 眔盡いdummy handler
 			if (detMethodSmell.get(RLMarkerAttribute.CS_DUMMY_HANDLER)) {
-				List<CSMessage> dummyList = checkCatchSmell(csVisitor
-						.getDummyList(), detCatchSmell
+				dhVisitor = new DummyHandlerVisitor(root);
+				method.accept(dhVisitor);
+				/* FIXME - 既锣传ノ单场常传ΘMarkerInfo碞ぃ惠璶硂LOOP */
+				List<MarkerInfo> dhList = dhVisitor.getDummyList();
+				List<CSMessage> tempList = new ArrayList<CSMessage>();
+				for(int i = 0; i < dhList.size(); i++) {
+					CSMessage message = new CSMessage(dhList.get(i).getCodeSmellType(), dhList.get(i).getTypeBinding(), dhList.get(i).getStatement(), dhList.get(i).getPosition(), dhList.get(i).getLineNumber(), dhList.get(i).getExceptionType());
+					tempList.add(message);
+				}
+				List<CSMessage> dummyList = checkCatchSmell(tempList
+						, detCatchSmell
 						.get(RLMarkerAttribute.CS_DUMMY_HANDLER));
 				newClassModel.setDummyList(dummyList, methodName.getName()
 						.toString());
@@ -231,10 +252,10 @@ public class ReportBuilder {
 						.toString());
 				model.addOverLoggingSize(olList.size());
 			}
-			// /癘魁Code Information///
-			model.addTryCounter(csVisitor.getTryCounter());
-			model.addCatchCounter(csVisitor.getCatchCounter());
-			model.addFinallyCounter(csVisitor.getFinallyCounter());
+			// 癘魁Code Information //
+			model.addTryCounter(dhVisitor.getTryCounter());
+			model.addCatchCounter(dhVisitor.getCatchCounter());
+			model.addFinallyCounter(dhVisitor.getFinallyCounter());
 		}
 		// 癘魁ReportModelい
 		newPackageModel.addClassModel(newClassModel);
@@ -268,11 +289,12 @@ public class ReportBuilder {
 	 * @return
 	 */
 	private boolean suppressMarker(List<Integer> smellPosList, int pos) {
-		for (Integer index : smellPosList)
-			// 璝Catch竚ボ璶ыMarkerMarker
-			if (pos == index)
-				return true;
-
+		if(smellPosList != null) {
+			for (Integer index : smellPosList)
+				// 璝Catch竚ボ璶ыMarkerMarker
+				if (pos == index)
+					return true;
+		}
 		return false;
 	}
 
@@ -286,8 +308,7 @@ public class ReportBuilder {
 	private void inputSuppressData(List<SSMessage> suppressSmellList,
 			TreeMap<String, Boolean> detMethodSmell,
 			TreeMap<String, List<Integer>> detCatchSmell) {
-		// / ﹍て砞﹚ ///
-		// 箇砞–Smell常盎代
+		// ﹍て砞﹚箇砞–Smell常盎代
 		for (String smellType : RLMarkerAttribute.CS_TOTAL_TYPE)
 			detMethodSmell.put(smellType, true);
 
@@ -396,20 +417,20 @@ public class ReportBuilder {
 				if (isConformFolderFormat(filterRule)) {
 					//[Folder]家Α狦程玡籔程常琌square bracketㄏノ璶俱戈Ж
 					if(filterRule.indexOf(JDomUtil.EH_Left) == 0 && (filterRule.indexOf(JDomUtil.EH_Right)+JDomUtil.EH_Right.length()) == filterRule.length()){
-						if(getFolderName(filterRule, folderName).equals(folderName)){
+						if(getFolderName(filterRule).equals(folderName)){
 							return true;
 						}
 					}
 					//[Folder]+Package.*家Α
 					else if(filterRule.contains("."+JDomUtil.EH_Star)){
-						if(getFolderName(filterRule, folderName).equals(folderName) &&
+						if(getFolderName(filterRule).equals(folderName) &&
 							isConformMultiPackageFormat(pk, filterRule)){
 							return true;
 						}
 					}
 					//[Folder]+Package
 					else{
-						if(getFolderName(filterRule, folderName).equals(folderName) && pk.getElementName().equals(getTrimFolderName(filterRule))){
+						if(getFolderName(filterRule).equals(folderName) && pk.getElementName().equals(getTrimFolderName(filterRule))){
 							return true;
 						}
 					}
@@ -461,7 +482,7 @@ public class ReportBuilder {
 	 * @param folderName
 	 * @return String , the name of folder
 	 */
-	private String getFolderName(String filterRule, String folderName) {
+	private String getFolderName(String filterRule) {
 		int left = filterRule.indexOf(JDomUtil.EH_Left);
 		int right = filterRule.indexOf(JDomUtil.EH_Right);
 		// ㄏノ穦块[FolderName]矪璽砫Ι奔オ[]眔Folder
