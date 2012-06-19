@@ -182,14 +182,14 @@ public class RethrowExRefactoring extends Refactoring {
 	 * @param methodIdx		Method的Index
 	 * @return				是否成功
 	 */
-	private boolean findMethod(IResource resource) {
+	private boolean findMethod(IResource resource) { 
 		//取得要修改的CompilationUnit
 		if (resource instanceof IFile && resource.getName().endsWith(".java")) {
 			try {
 				IJavaElement javaElement = JavaCore.create(resource);
 				if (javaElement instanceof IOpenable) {
 					this.actOpenable = (IOpenable) javaElement;
-				}
+				} 
 				
 				//Create AST to parse
 				ASTParser parser = ASTParser.newParser(AST.JLS3);
@@ -265,7 +265,7 @@ public class RethrowExRefactoring extends Refactoring {
 				}
 			}
 			//寫回Edit中
-			applyChange(markerInfo);
+			applyChange();
 		}catch (Exception ex) {
 			logger.error("[Rethrow Unchecked Exception] EXCEPTION ",ex);
 		}
@@ -280,7 +280,7 @@ public class RethrowExRefactoring extends Refactoring {
 		List<SimpleName> thStat = md.thrownExceptions();
 		boolean isExist = false;
 		for(int i=0;i<thStat.size();i++) {
-			if(thStat.get(i) instanceof SimpleName){
+			if(thStat.get(i).getNodeType() ==  ASTNode.SIMPLE_NAME){
 				SimpleName sn = (SimpleName)thStat.get(i);
 				if(sn.getIdentifier().equals(exceptionType)){
 					isExist = true;
@@ -326,7 +326,7 @@ public class RethrowExRefactoring extends Refactoring {
 	 * FIXME - 參數沒使用到 2012.3.30
 	 * @param markerInfo
 	 */
-	private void applyChange(MarkerInfo markerInfo){		
+	private void applyChange() {		
 		try {
 			ICompilationUnit cu = (ICompilationUnit) actOpenable;
 			Document document = new Document(cu.getBuffer().getContents());
@@ -348,12 +348,13 @@ public class RethrowExRefactoring extends Refactoring {
 				if(statementTemp.get(i) instanceof ExpressionStatement ) {
 					ExpressionStatement statement = (ExpressionStatement) statementTemp.get(i);
 					// 遇到System.out.print or printStackTrace就把他remove掉
-					if(statement.getExpression().toString().contains("System.out.print")||
-							statement.getExpression().toString().contains("printStackTrace")) {	
-							statementTemp.remove(i);
+					if (statement.getExpression().toString().contains("System.out.print") ||
+						statement.getExpression().toString().contains("printStackTrace") ||
+						statement.getExpression().toString().contains("System.err.print")) {	
+						statementTemp.remove(i);
 							//移除完之後ArrayList的位置會重新調整過,所以利用遞回來繼續往下找符合的條件並移除
 //							deleteStatement(statementTemp);
-							i--;
+						i--;
 					}
 				}			
 			}
@@ -414,7 +415,7 @@ public class RethrowExRefactoring extends Refactoring {
 	 * @param exClass:例外類別
 	 * @return NormalAnnotation AST Node
 	 */
-	private NormalAnnotation getRLAnnotation(AST ast, int levelVal,String excption) {
+	private NormalAnnotation getRLAnnotation(AST ast, int levelVal, String excption) {
 		//要建立@Robustness(value={@RL(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
 		NormalAnnotation rl = ast.newNormalAnnotation();
 		rl.setTypeName(ast.newSimpleName("RL"));

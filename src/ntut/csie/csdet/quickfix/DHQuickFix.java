@@ -172,14 +172,12 @@ public class DHQuickFix extends BaseQuickFix implements IMarkerResolution {
 		CatchClause clause = (CatchClause) cc;
 		// 自行建立一個throw statement加入
 		ThrowStatement ts = ast.newThrowStatement();
-		
 		// 將throw的variable傳入
 		ClassInstanceCreation cic = ast.newClassInstanceCreation();
 		// throw new RuntimeException()
 		cic.setType(ast.newSimpleType(ast.newSimpleName(exType)));
 		// 將throw new RuntimeException(ex)括號中加入參數
 		cic.arguments().add(ast.newSimpleName(svd.resolveBinding().getName()));
-
 		// 取得CatchClause所有的statement,將相關print例外資訊的東西移除
 		List<Statement> statement = clause.getBody().statements();
 

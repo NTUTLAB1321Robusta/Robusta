@@ -3,7 +3,7 @@ package ntut.csie.csdet.refactor;
 import java.util.ArrayList;
 import java.util.List;
 
-import ntut.csie.csdet.visitor.SpareHandlerAnalyzer;
+import ntut.csie.csdet.visitor.SpareHandlerVisitor;
 import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLData;
@@ -176,10 +176,10 @@ public class RetryRefactoring extends Refactoring {
 			//取得class中所有的method
 			List<ASTNode> methodList = methodCollector.getMethodList();
 			int methodIdx = -1;
-			SpareHandlerAnalyzer visitor = null;
+			SpareHandlerVisitor visitor = null;
 			for(ASTNode method : methodList){
 				methodIdx++;
-				visitor = new SpareHandlerAnalyzer(selectNode);
+				visitor = new SpareHandlerVisitor(selectNode);
 				method.accept(visitor);
 				//檢查是否有框選到try statement
 				if(visitor.getResult()){

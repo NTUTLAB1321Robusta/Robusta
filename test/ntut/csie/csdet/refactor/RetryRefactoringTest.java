@@ -1,6 +1,7 @@
 package ntut.csie.csdet.refactor;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import java.lang.reflect.Field;
@@ -98,6 +99,126 @@ public class RetryRefactoringTest {
 	public void tearDown() throws Exception {
 		// 刪除專案
 		jpm.deleteProject();
+	}
+	
+	@Test
+	public void testSetExceptionName() throws Exception {
+		RetryRefactoring refactoring = new RetryRefactoring(null, null, null, null);
+		Field exceptionType = RetryRefactoring.class.getDeclaredField("exceptionType");
+		exceptionType.setAccessible(true);
+		assertNull(exceptionType.get(refactoring));
+		/** 若輸入為空字串時，要回傳錯誤的狀態資訊 */
+		String name = "";
+		RefactoringStatus result = refactoring.setExceptionName(name);
+		assertEquals(	"<FATALERROR\n" +
+						"\t\n" + 
+						"FATALERROR: Some Field is empty\n" +
+						"Context: <Unspecified context>\n" +
+						"code: none\n" +
+						"Data: null\n" +
+						">", result.toString());
+		assertNull(exceptionType.get(refactoring));
+		/** 若輸入正確，則狀態為OK */
+		name = "test";
+		result = refactoring.setExceptionName(name);
+		assertEquals("<OK\n>", result.toString());
+		assertEquals("test", exceptionType.get(refactoring));
+	}
+	
+	@Test
+	public void testSetRetryVariable() throws Exception {
+		RetryRefactoring refactoring = new RetryRefactoring(null, null, null, null);
+		Field retry = RetryRefactoring.class.getDeclaredField("retry");
+		retry.setAccessible(true);
+		assertNull(retry.get(refactoring));
+		/** 若輸入為空字串時，要回傳錯誤的狀態資訊 */
+		String name = "";
+		RefactoringStatus result = refactoring.setRetryVariable(name);
+		assertEquals(	"<FATALERROR\n" +
+						"\t\n" + 
+						"FATALERROR: Some Field is empty\n" +
+						"Context: <Unspecified context>\n" +
+						"code: none\n" +
+						"Data: null\n" +
+						">", result.toString());
+		assertNull(retry.get(refactoring));
+		/** 若輸入正確，則狀態為OK */
+		name = "test";
+		result = refactoring.setRetryVariable(name);
+		assertEquals("<OK\n>", result.toString());
+		assertEquals("test", retry.get(refactoring));
+	}
+	
+	@Test
+	public void testSetMaxAttemptNum() throws Exception {
+		RetryRefactoring refactoring = new RetryRefactoring(null, null, null, null);
+		Field maxNum = RetryRefactoring.class.getDeclaredField("maxNum");
+		maxNum.setAccessible(true);
+		assertNull(maxNum.get(refactoring));
+		/** 若輸入為空字串時，要回傳錯誤的狀態資訊 */
+		String num = "";
+		RefactoringStatus result = refactoring.setMaxAttemptNum(num);
+		assertEquals(	"<FATALERROR\n" +
+						"\t\n" + 
+						"FATALERROR: Some Field is empty\n" +
+						"Context: <Unspecified context>\n" +
+						"code: none\n" +
+						"Data: null\n" +
+						">", result.toString());
+		assertNull(maxNum.get(refactoring));
+		/** 若輸入正確，則狀態為OK */
+		num = "3";
+		result = refactoring.setMaxAttemptNum(num);
+		assertEquals("<OK\n>", result.toString());
+		assertEquals("3", maxNum.get(refactoring));
+	}
+	
+	@Test
+	public void testSetMaxAttemptVariable() throws Exception {
+		RetryRefactoring refactoring = new RetryRefactoring(null, null, null, null);
+		Field maxAttempt = RetryRefactoring.class.getDeclaredField("maxAttempt");
+		maxAttempt.setAccessible(true);
+		assertNull(maxAttempt.get(refactoring));
+		/** 若輸入為空字串時，要回傳錯誤的狀態資訊 */
+		String attempt = "";
+		RefactoringStatus result = refactoring.setMaxAttemptVariable(attempt);
+		assertEquals(	"<FATALERROR\n" +
+						"\t\n" + 
+						"FATALERROR: Some Field is empty\n" +
+						"Context: <Unspecified context>\n" +
+						"code: none\n" +
+						"Data: null\n" +
+						">", result.toString());
+		assertNull(maxAttempt.get(refactoring));
+		/** 若輸入正確，則狀態為OK */
+		attempt = "3";
+		result = refactoring.setMaxAttemptVariable(attempt);
+		assertEquals("<OK\n>", result.toString());
+		assertEquals("3", maxAttempt.get(refactoring));
+	}
+	
+	@Test
+	public void testSetAttemptVariable() throws Exception {
+		RetryRefactoring refactoring = new RetryRefactoring(null, null, null, null);
+		Field attempt = RetryRefactoring.class.getDeclaredField("attempt");
+		attempt.setAccessible(true);
+		assertNull(attempt.get(refactoring));
+		/** 若輸入為空字串時，要回傳錯誤的狀態資訊 */
+		String string = "";
+		RefactoringStatus result = refactoring.setAttemptVariable(string);
+		assertEquals(	"<FATALERROR\n" +
+						"\t\n" + 
+						"FATALERROR: Some Field is empty\n" +
+						"Context: <Unspecified context>\n" +
+						"code: none\n" +
+						"Data: null\n" +
+						">", result.toString());
+		assertNull(attempt.get(refactoring));
+		/** 若輸入正確，則狀態為OK */
+		string = "3";
+		result = refactoring.setAttemptVariable(string);
+		assertEquals("<OK\n>", result.toString());
+		assertEquals("3", attempt.get(refactoring));
 	}
 	
 	@Test
@@ -551,7 +672,23 @@ public class RetryRefactoringTest {
 		
 		Field exceptionType = RetryRefactoring.class.getDeclaredField("exceptionType");
 		exceptionType.setAccessible(true);
-		exceptionType.set(retryRefactoring, "RuntimeException");
+		exceptionType.set(retryRefactoring, "PropertyVetoException");
+		
+		Field actRoot = RetryRefactoring.class.getDeclaredField("actRoot");
+		actRoot.setAccessible(true);
+		actRoot.set(retryRefactoring, unit2);
+		
+		ASTMethodCollector methodCollector = new ASTMethodCollector();
+		unit2.accept(methodCollector);
+		
+		Field currentMethodNode = RetryRefactoring.class.getDeclaredField("currentMethodNode");
+		currentMethodNode.setAccessible(true);
+		List<ASTNode> methodList = methodCollector.getMethodList();
+		currentMethodNode.set(retryRefactoring, methodList.get(0));
+		
+		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject("DummyHandlerTest");
+		IType exType = JavaCore.create(project).findType("java.beans.PropertyVetoException");
+		retryRefactoring.setExType(exType);
 		
 		Document document = new Document(
 				"try {\n" + 
@@ -589,8 +726,8 @@ public class RetryRefactoringTest {
 		TryStatement tryStatement = (TryStatement)addNoAltTryBlock.invoke(retryRefactoring, unit2.getAST(), doWhile, original);
 		// 檢查初始狀態
 		assertEquals(	"try {\n" +
-				"  retry=false;\n" +
-				"}\n ", tryStatement.toString());
+						"  retry=false;\n" +
+						"}\n ", tryStatement.toString());
 		// 執行測試對象
 		Method addCatchBlock = RetryRefactoring.class.getDeclaredMethod("addCatchBlock", AST.class, TryStatement.class, TryStatement.class);
 		addCatchBlock.setAccessible(true);
@@ -603,7 +740,7 @@ public class RetryRefactoringTest {
 						"  attempt++;\n" +
 						"  retry=true;\n" +
 						"  if (attempt > maxAttempt) {\n" +
-						"    throw new RuntimeException(e);\n" +
+						"    throw new PropertyVetoException(e);\n" +
 						"  }\n" +
 						"}\n", tryStatement.toString());
 	}

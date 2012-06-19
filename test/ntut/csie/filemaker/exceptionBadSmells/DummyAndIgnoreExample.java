@@ -29,7 +29,7 @@ public class DummyAndIgnoreExample {
 	
 	public void test() {
 		log4j.getClass();
-		log4j.getRootLogger();
+		Logger.getRootLogger();
 	}
 	
 	protected void true_printStackTrace_protected() {
@@ -42,7 +42,7 @@ public class DummyAndIgnoreExample {
 		}
 	}
 	
-	private void true_printStackTrace_private() {
+	public void true_printStackTrace_private() {
 		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream("");

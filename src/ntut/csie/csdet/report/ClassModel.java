@@ -27,7 +27,7 @@ public class ClassModel {
 	private int carelessSize = 0;
 
 	///存取Class的名稱///
-	public String getClassName() {
+	public String getClassName() { 
 		return className;
 	}
 	public void setClassName(String className) {
