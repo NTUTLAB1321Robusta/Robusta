@@ -310,7 +310,10 @@ public class UnprotectedMainProgramVisitorTest {
 		assertFalse(mainVisitor.visit(md));
 		
 		// case 2 : give the other function
-		md = (MethodDeclaration)list.get(1);
+		methodCollector = new ASTMethodCollector();
+		unit1.accept(methodCollector);
+		list = methodCollector.getMethodList();
+		md = (MethodDeclaration)list.get(0);
 		// test target & check postcondition
 		assertTrue(mainVisitor.visit(md));
 	}
