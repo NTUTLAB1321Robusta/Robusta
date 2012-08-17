@@ -67,7 +67,7 @@ public class RetryRefactoringTest {
 		jpm = new JavaProjectMaker("DummyHandlerTest");
 		jpm.setJREDefaultContainer();
 		// 新增欲載入的library
-		jpm.addJarToBuildPath("lib\\log4j-1.2.15.jar");
+		jpm.addJarFromProjectToBuildPath("lib\\log4j-1.2.15.jar");
 		// 根據測試檔案樣本內容建立新的檔案
 		jpm.createJavaFile("ntut.csie.exceptionBadSmells", "DummyAndIgnoreExample.java", "package ntut.csie.exceptionBadSmells;\n" + jfs.getFileContent());
 		// 建立Nested try block example file

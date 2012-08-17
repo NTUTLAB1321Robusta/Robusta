@@ -1,5 +1,6 @@
 package ntut.csie.filemaker;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
@@ -43,19 +44,24 @@ public class JavaProjectMaker {
 	String testCodeFolderName;
 	/** 專案名稱 */
 	String projectName;
+	/** 儲存RL.jar的路徑 */
+	String libraryPath;
 	
 	/** 存放functional code的資料夾*/
 	public static final int FUNTIONAL_CODE_FOLDER = 16;
 	/** 存放unit test code的資料夾 */
 	public static final int UNITTEST_CODE_FOLDER = 17;
-
+	/** 取得RL.jar的路徑 */
+	public static final String LIBRARY_PATH = "lib/RL.jar";
+	
 	/**
 	 * 產生一個Java專案。
 	 * 用法：<br />
 	 * 1. new JavaProjectMaker(String)建構<br />
 	 * 2. setJREDefaultContainer()設定JRE<br />
-	 * 3. addJarToBuildPath(String)將指定的jar檔加入至Referenced Libraries<br />
-	 * 4. createJavaFile(String, String, String)產生java檔<br />
+	 * 3. addAgileExceptionClasses() 產生RL.jar<br />
+	 * 4. addJarFromXXXToBuildPath(String)將指定的jar檔加入至Referenced Libraries<br />
+	 * 5. createJavaFile(String, String, String)產生java檔<br />
 	 * 其他關於產生資料夾，產生package的方法，都可以不用呼叫。
 	 * @param projectName
 	 * @throws CoreException
@@ -81,6 +87,7 @@ public class JavaProjectMaker {
 		/* 預設資料夾是src & test */
 		sourceCodeFolderName = "src";
 		testCodeFolderName = "test";
+		libraryPath = _project.getLocation().toFile().getAbsolutePath() + "/lib/RL.jar";
 	}
 	
 	/**
@@ -254,7 +261,7 @@ public class JavaProjectMaker {
 	 * @throws IOException 
 	 * @throws JavaModelException 
 	 */
-	public void addJarToBuildPath(String jarFilePath) throws IOException, JavaModelException {
+	public void addJarFromProjectToBuildPath(String jarFilePath) throws IOException, JavaModelException {
 		// jar檔的路徑
 		Path jarPath = null;
 		
@@ -270,6 +277,39 @@ public class JavaProjectMaker {
 		System.arraycopy(existedEntries, 0, extendedEntries, 0, existedEntries.length);
 		extendedEntries[existedEntries.length] = JavaCore.newLibraryEntry(jarPath, null, null);
 		_javaproject.setRawClasspath(extendedEntries, null);
+	}
+	
+	/**
+	 * 從測試專案中的jar檔，加入為測試專案的Referenced Libraries
+	 * @param jarFilePath jar檔在專案下的相對路徑
+	 * @throws IOException 
+	 * @throws JavaModelException 
+	 */
+	public void addJarFromTestProjectToBuildPath(String jarFilePath) throws IOException, JavaModelException {
+		File libFile = new File(_project.getLocation().toFile().getAbsolutePath() + jarFilePath);
+		// jar檔的路徑
+		Path jarPath = new Path(libFile.getPath());
+		
+		/* 將找出來的jar檔路徑，寫入.classpath */
+		IClasspathEntry[] existedEntries = _javaproject.getRawClasspath();
+		IClasspathEntry[] extendedEntries = new IClasspathEntry[existedEntries.length + 1];
+		System.arraycopy(existedEntries, 0, extendedEntries, 0, existedEntries.length);
+		extendedEntries[existedEntries.length] = JavaCore.newLibraryEntry(jarPath, null, null);
+		_javaproject.setRawClasspath(extendedEntries, null);
+		
+	}
+	
+	/**
+	 * 在測試專案中產生定義強健度等級註記的類別
+	 * @param libPath 欲加入的lib的儲存位置
+	 * @throws CoreException
+	 * @throws IOException 
+	 */
+	public void addAgileExceptionClasses() throws CoreException {
+		createFolder("lib");
+		File libFile = new File(libraryPath);
+		JarFileMaker jarFileMaker = new JarFileMaker();
+		jarFileMaker.createJarFile(libFile, new File("bin").listFiles());
 	}
 	
 	/**

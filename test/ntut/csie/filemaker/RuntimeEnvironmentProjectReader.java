@@ -1,6 +1,7 @@
 package ntut.csie.filemaker;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -52,5 +53,17 @@ public class RuntimeEnvironmentProjectReader {
 		parser.setResolveBindings(true);
 		CompilationUnit unit = (CompilationUnit) parser.createAST(null); 
 		return unit;
+	}
+	
+	/**
+	 * @see org.eclipse.core.resources.IResource
+	 * @param projectName The project name that in your runtime eclipse you want to test.
+	 * @param packageName The full qualified package name that in you runtime eclipse you want to test.
+	 * @param className The class name that in your runtime eclipse you want to test.
+	 * @return IResource
+	 * @throws JavaModelException
+	 */
+	public static IResource getIResource(String projectName, String packageName, String className) throws JavaModelException {
+		return RuntimeEnvironmentProjectReader.getType(projectName, packageName, className).getResource();
 	}
 }

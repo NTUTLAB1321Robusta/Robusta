@@ -1,11 +1,10 @@
 package ntut.csie.csdet.views;
 
-import java.io.File;
 import java.util.Iterator;
-import java.util.List;
 import java.util.TreeMap;
 
-import ntut.csie.csdet.preference.JDomUtil;
+import ntut.csie.csdet.preference.SmellSettings;
+import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
@@ -18,9 +17,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.jdom.Attribute;
-import org.jdom.Document;
-import org.jdom.Element;
 
 /**
  * 讓user定義一些簡單的detect rule
@@ -55,53 +51,31 @@ public class DummyHandlerPage extends APropertyPage{
 	private Button extraRuleBtn;
 	// Library Data
 	private TreeMap<String, Boolean> libMap = new TreeMap<String, Boolean>();
+	// 負責處理讀寫XML
+	SmellSettings smellSettings;
 	
-	public DummyHandlerPage(Composite composite,CSPropertyPage page){
+	public DummyHandlerPage(Composite composite, CSPropertyPage page, SmellSettings smellSettings) {
 		super(composite,page);
 		//程式碼的內容
-		mainText =		"try {   \n" +
-						"    // code in here\n" +
-						"} catch (Exception e) { \n";
-		eprintText = 	"    e.printStackTrace();\n";
-		endText =		"}";
-		sysoText =		"    System.out.println(e);\n" +
-						"    System.out.print(e);\n";
-		log4jText =		"    // using log4j\n" +
-						"    logger.info(e.getMessage()"+ ");\n";
-		javaUtillogText =		"    // using java.util.logging.Logger \n" +
-						"    java_logger.info(e.getMessage()"+ "); \n";
+		mainText =			"try {   \n" +
+							"    // code in here\n" +
+							"} catch (Exception e) { \n";
+		eprintText = 		"    e.printStackTrace();\n";
+		endText =			"}";
+		sysoText =			"    System.out.println(e);\n" +
+							"    System.out.print(e);\n";
+		log4jText =			"    // using log4j\n" +
+							"    logger.info(e.getMessage()"+ ");\n";
+		javaUtillogText =	"    // using java.util.logging.Logger \n" +
+							"    java_logger.info(e.getMessage()"+ "); \n";
 
+		this.smellSettings = smellSettings;
 		//加入頁面的內容
 		addFirstSection(composite);
 	}
 	
-	private void addFirstSection(final Composite dummyHandlerPage){
-		Document docJDom = JDomUtil.readXMLFile();
-		String eprint = "";
-		String setting = "";
-		String log4jSet = "";
-		String javaLogSet = "";
-		if(docJDom != null) {
-			//從XML裡讀出之前的設定
-			Element root = docJDom.getRootElement();
-			if (root.getChild(JDomUtil.DummyHandlerTag) != null) {
-				Element rule = root.getChild(JDomUtil.DummyHandlerTag).getChild("rule");
-				eprint = rule.getAttribute(JDomUtil.e_printstacktrace).getValue();
-				setting = rule.getAttribute(JDomUtil.systemout_print).getValue();
-				log4jSet = rule.getAttribute(JDomUtil.apache_log4j).getValue();
-				javaLogSet = rule.getAttribute(JDomUtil.java_Logger).getValue();
-				//從XML取得外部Library
-				Element libRule = root.getChild(JDomUtil.DummyHandlerTag).getChild("librule");
-				List<Attribute> libRuleList = libRule.getAttributes();
-				
-				//把使用者所儲存的Library設定存到Map資料裡
-				for (int i=0;i<libRuleList.size();i++) {
-					//把EH_STAR取代為符號"*"
-					String temp = libRuleList.get(i).getQualifiedName().replace("EH_STAR", "*");
-					libMap.put(temp,libRuleList.get(i).getValue().equals("Y"));
-				}
-			}
-		}
+	private void addFirstSection(final Composite dummyHandlerPage) {
+		libMap = smellSettings.getSemllPatterns(SmellSettings.SMELL_DUMMYHANDLER);
 
 		/// 預設偵測條件  ///
 		final Label detectSettingsLabel = new Label(dummyHandlerPage, SWT.NONE);
@@ -120,6 +94,8 @@ public class DummyHandlerPage extends APropertyPage{
 				adjustFont();
 			}
 		});
+		eprintBtn.setSelection(smellSettings.isExtraRuleExist(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_ePrintStackTrace));
+		
 		//是否偵測System.out.print的按鈕
 		sysoBtn = new Button(dummyHandlerPage, SWT.CHECK);
 		sysoBtn.setText("System.out.print();");
@@ -132,6 +108,8 @@ public class DummyHandlerPage extends APropertyPage{
 				adjustFont();
 			}
 		});
+		sysoBtn.setSelection(smellSettings.isExtraRuleExist(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_SystemOutPrint));
+		
 		//是否偵測Log4j的按鈕
 		log4jBtn = new Button(dummyHandlerPage, SWT.CHECK);
 		log4jBtn.setText("Detect using org.apache.log4j");
@@ -144,6 +122,8 @@ public class DummyHandlerPage extends APropertyPage{
 				adjustFont();
 			}
 		});
+		log4jBtn.setSelection(smellSettings.isExtraRuleExist(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_OrgApacheLog4j));
+		
 		//是否偵測JavaUtillog的按鈕
 		javaUtillogBtn = new Button(dummyHandlerPage, SWT.CHECK);
 		javaUtillogBtn.setText("Detect using java.util.logging.Logger");
@@ -156,6 +136,7 @@ public class DummyHandlerPage extends APropertyPage{
 				adjustFont();
 			}
 		});
+		javaUtillogBtn.setSelection(smellSettings.isExtraRuleExist(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_JavaUtilLoggingLogger));
 
 		/// Customize Rule ///
 		final Label detectSettingsLabel2 = new Label(dummyHandlerPage, SWT.NONE);
@@ -202,16 +183,6 @@ public class DummyHandlerPage extends APropertyPage{
 		else
 			templateArea.setSize(getBoundsPoint(separateLabel2).x, 263);
 
-		//調成使用者之前所設定
-		if(eprint.equals("Y"))
-			eprintBtn.setSelection(true);
-		if(setting.equals("Y"))
-			sysoBtn.setSelection(true);
-		if(log4jSet.equals("Y"))
-			log4jBtn.setSelection(true);
-		if(javaLogSet.equals("Y"))
-			javaUtillogBtn.setSelection(true);
-		
 		//載入預定的字型、顏色
 		addSampleStyle(dummyHandlerPage.getDisplay());
 
@@ -225,8 +196,7 @@ public class DummyHandlerPage extends APropertyPage{
 	/**
 	 * 調整Text的文字
 	 */
-	private void adjustText()
-	{
+	private void adjustText() {
 		String temp = mainText;
 		
 		if (eprintBtn.getSelection())
@@ -255,11 +225,11 @@ public class DummyHandlerPage extends APropertyPage{
 		sampleStyles[1] = new StyleRange();
 		sampleStyles[1].fontStyle = SWT.ITALIC;
 		sampleStyles[1].foreground = display.getSystemColor(SWT.COLOR_DARK_GREEN);
-		//catch
+		// catch
 		sampleStyles[2] = new StyleRange();
 		sampleStyles[2].fontStyle = SWT.BOLD;
 		sampleStyles[2].foreground = display.getSystemColor(SWT.COLOR_DARK_MAGENTA);
-		//out
+		// out
 		sampleStyles[3] = new StyleRange();
 		sampleStyles[3].fontStyle = SWT.ITALIC;
 		sampleStyles[3].foreground = display.getSystemColor(SWT.COLOR_BLUE);
@@ -288,7 +258,7 @@ public class DummyHandlerPage extends APropertyPage{
 	/**
 	 * 將程式碼中的Try ,catch,out標上顏色
 	 */
-	private void adjustFont(){
+	private void adjustFont() {
 		//目前文字長度
 		int textLength = mainText.length();
 
@@ -361,60 +331,35 @@ public class DummyHandlerPage extends APropertyPage{
 
 	@Override
 	public boolean storeSettings() {
-		//取的XML的root
-		Element root = JDomUtil.createXMLContent();
-
-		//建立Dummy Handler的Tag
-		Element dummyHandler = new Element(JDomUtil.DummyHandlerTag);
-		Element rule = new Element("rule");
-		//假如e.printStackTrace有被勾選起來
-		if (eprintBtn.getSelection())
-			rule.setAttribute(JDomUtil.e_printstacktrace,"Y");
-		else
-			rule.setAttribute(JDomUtil.e_printstacktrace,"N");		
-
-		//假如system.out.println有被勾選起來
-		if(sysoBtn.getSelection())
-			rule.setAttribute(JDomUtil.systemout_print,"Y");	
-		else
-			rule.setAttribute(JDomUtil.systemout_print,"N");
-
-		//假如log4j有被勾選起來
-		if(log4jBtn.getSelection())
-			rule.setAttribute(JDomUtil.apache_log4j,"Y");
-		else
-			rule.setAttribute(JDomUtil.apache_log4j,"N");	
-
-		//假如java.util.logging.Logger有被勾選起來
-		if(javaUtillogBtn.getSelection())
-			rule.setAttribute(JDomUtil.java_Logger,"Y");	
-		else
-			rule.setAttribute(JDomUtil.java_Logger,"N");
-
-		//把使用者自訂的Rule存入XML
-		Element libRule = new Element("librule");
-		Iterator<String> libIt = libMap.keySet().iterator();
-		while(libIt.hasNext()) {
-			String temp = libIt.next();
-			//若有出現*取代為EH_STAR(jdom不能記"*"這個字元)
-			String libName = temp.replace("*", "EH_STAR");
-			if (libMap.get(temp))
-				libRule.setAttribute(libName,"Y");
-			else
-				libRule.setAttribute(libName,"N");
+		smellSettings.removePatterns(SmellSettings.SMELL_DUMMYHANDLER);
+		smellSettings.removeExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_ePrintStackTrace);
+		smellSettings.removeExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_SystemOutPrint);
+		smellSettings.removeExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_SystemOutPrintln);
+		smellSettings.removeExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_SystemErrPrint);
+		smellSettings.removeExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_SystemErrPrintln);
+		smellSettings.removeExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_OrgApacheLog4j);
+		smellSettings.removeExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_JavaUtilLoggingLogger);
+		
+		if(eprintBtn.getSelection())
+			smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_ePrintStackTrace);
+		if(sysoBtn.getSelection()) {
+			smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_SystemOutPrint);
+			smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_SystemOutPrintln);
 		}
-		//將新建的tag加進去
-		dummyHandler.addContent(rule);
-		dummyHandler.addContent(libRule);
+		if(log4jBtn.getSelection())
+			smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_OrgApacheLog4j);
+		if(javaUtillogBtn.getSelection())
+			smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_JavaUtilLoggingLogger);
+		
+		// 存入使用者自訂Rule
+		Iterator<String> userDefinedCodeIterator = libMap.keySet().iterator();
+		while(userDefinedCodeIterator.hasNext()) {
+			String key = userDefinedCodeIterator.next();
+			smellSettings.addDummyHandlerPattern(key, libMap.get(key));
+		}
 
-		if (root.getChild(JDomUtil.DummyHandlerTag) != null)
-			root.removeChild(JDomUtil.DummyHandlerTag);
-
-		root.addContent(dummyHandler);
-
-		//將檔案寫回
-		String path = JDomUtil.getWorkspace()+File.separator+"CSPreference.xml";
-		JDomUtil.OutputXMLFile(root.getDocument(), path);
+		// 將檔案寫回
+		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		return true;
 	}
 }

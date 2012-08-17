@@ -2,7 +2,7 @@ package ntut.csie.csdet.quickfix;
 
 import java.util.List;
 
-import ntut.csie.csdet.data.CSMessage;
+import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.visitor.ASTCatchCollect;
 import ntut.csie.csdet.visitor.OverLoggingDetector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
@@ -24,7 +24,7 @@ public class OLQuickFix extends BaseQuickFix implements IMarkerResolution{
 	private static Logger logger = LoggerFactory.getLogger(OLQuickFix.class);
 
 	// 記錄所找到的code smell list
-	private List<CSMessage> overLoggingList = null;
+	private List<MarkerInfo> overLoggingList = null;
 
 	// 記錄Code Smell的Type
 	private String problem;
@@ -63,7 +63,7 @@ public class OLQuickFix extends BaseQuickFix implements IMarkerResolution{
 	}
 
 	/** 取得OverLogging List */
-	private List<CSMessage> findLoggingList() {
+	private List<MarkerInfo> findLoggingList() {
 		if (currentMethodNode != null) {
 			//尋找該method內的OverLogging
 			OverLoggingDetector loggingDetector = new OverLoggingDetector(this.actRoot, currentMethodNode);
@@ -82,7 +82,7 @@ public class OLQuickFix extends BaseQuickFix implements IMarkerResolution{
 		try {
 			actRoot.recordModifications();
 			//取得EH smell的資訊
-			CSMessage msg = overLoggingList.get(msgIdx);
+			MarkerInfo msg = overLoggingList.get(msgIdx);
 
 			//收集該method所有的catch clause
 			ASTCatchCollect catchCollector = new ASTCatchCollect();
@@ -109,7 +109,7 @@ public class OLQuickFix extends BaseQuickFix implements IMarkerResolution{
 	 * @param cc
 	 * @param msg 
 	 */
-	private void deleteCatchStatement(ASTNode cc, CSMessage msg) {
+	private void deleteCatchStatement(ASTNode cc, MarkerInfo msg) {
 		CatchClause clause = (CatchClause)cc;
 		//取得CatchClause所有的statement,將相關print例外資訊的東西移除
 		List statementList = clause.getBody().statements();

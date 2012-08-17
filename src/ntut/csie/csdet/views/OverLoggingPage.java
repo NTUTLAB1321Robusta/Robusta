@@ -1,11 +1,10 @@
 package ntut.csie.csdet.views;
 
-import java.io.File;
 import java.util.Iterator;
-import java.util.List;
 import java.util.TreeMap;
 
-import ntut.csie.csdet.preference.JDomUtil;
+import ntut.csie.csdet.preference.SmellSettings;
+import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -17,9 +16,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.jdom.Attribute;
-import org.jdom.Document;
-import org.jdom.Element;
 
 /**
  * OverLogging Setting頁面
@@ -50,34 +46,45 @@ public class OverLoggingPage extends APropertyPage {
 	//CalleeTamplate和CallerTamplate的內容
 	String callee, calleeOrg, calleeTrans;
 	String callerHead, callerOrg, callerTrans, callerTail;
+	// 負責處理讀寫XML
+	SmellSettings smellSettings;
 		
-	public OverLoggingPage(Composite composite, CSPropertyPage page) {
+	public OverLoggingPage(Composite composite, CSPropertyPage page, SmellSettings smellSettings) {
 		super(composite, page);
 
+		initailState();
+
+		this.smellSettings = smellSettings;
+		
+		//加入頁面的內容
+		addFirstSection(composite);
+	}
+
+	private void initailState() {
 		//TODO callee前半部throws RuntimeException，要改成Throw FileNotFoundException
 		/// CalleeTemplate程式碼的內容 ///
 		//文字前半段
-		callee = "public void A() throws RuntimeException {\n" +
-				 		"\ttry {\n" +
-				 		"\t// Do Something\n" +
-				 		"\t} catch (FileNotFoundException e) {\n" +
-				 		"\t\tlogger.info(e);	//OverLogging\n";
+		callee = 	"public void A() throws RuntimeException {\n" +
+				 	"\ttry {\n" +
+				 	"\t// Do Something\n" +
+				 	"\t} catch (FileNotFoundException e) {\n" +
+				 	"\t\tlogger.info(e);	//OverLogging\n";
 
 		//文字後半段(選項打勾前)
 		calleeOrg = "\t\tthrow e;\n" +
-						   "\t}\n" +
-				 		   "}";
+					"\t}\n" +
+				 	"}";
 
 		//文字後半段(選項打勾後)
 		calleeTrans = "\t\tthrow new RuntimeException(e);	//Transform Exception Type\n" +
-				 			 "\t}\n" +
-				 			 "}";
+		 			 "\t}\n" +
+		 			 "}";
 
 		/// CallerTemplate程式碼的內容 ///
 		//文字前段
 		callerHead = "public void B() {\n" +
-							"\ttry {\n" +
-							"\t\tA();\t\t\t//call method A\n";
+					"\ttry {\n" +
+					"\t\tA();\t\t\t//call method A\n";
 
 		//文字中段(選項打勾前)
 		callerOrg = "\t} catch (FileNotFoundException e) {\n";
@@ -87,46 +94,17 @@ public class OverLoggingPage extends APropertyPage {
 
 		//文字後段
 		callerTail = "\t\tlogger.info(e);\t//use log\n" +
-							"\t}\n" +
-							"}";
-
-		//加入頁面的內容
-		addFirstSection(composite);
+					"\t}\n" +
+					"}";
 	}
 	
 	/**
 	 * 加入頁面的內容
 	 * @param overLoggingPage
 	 */
-	private void addFirstSection(final Composite overLoggingPage){
-		Document docJDom = JDomUtil.readXMLFile();
-		String exSet = "";
-		String log4jSet = "";
-		String javaLogSet = "";
-		if (docJDom != null){
-			//從XML裡讀出之前的設定
-			Element root = docJDom.getRootElement();
-			if (root.getChild(JDomUtil.OverLoggingTag) != null) {
-				Element rule = root.getChild(JDomUtil.OverLoggingTag).getChild("rule");
-				log4jSet = rule.getAttribute(JDomUtil.apache_log4j).getValue();
-				javaLogSet = rule.getAttribute(JDomUtil.java_Logger).getValue();
-
-				//從XML取得外部Library
-				Element libRule = root.getChild(JDomUtil.OverLoggingTag).getChild("librule");
-				List<Attribute> libRuleList = libRule.getAttributes();
-
-				Element exrule = root.getChild(JDomUtil.OverLoggingTag).getChild("exrule");
-				exSet = exrule.getAttribute(JDomUtil.trans_Exception).getValue();
-				
-				//把使用者所儲存的Library設定存到Map資料裡
-				for (int i=0; i < libRuleList.size(); i++) {
-					//把EH_STAR取代為符號"*"
-					String temp = libRuleList.get(i).getQualifiedName().replace("EH_STAR", "*");
-					libMap.put(temp,libRuleList.get(i).getValue().equals("Y"));
-				}
-			}
-		}
-
+	private void addFirstSection(final Composite overLoggingPage) {
+		libMap = smellSettings.getSemllPatterns(SmellSettings.SMELL_OVERLOGGING);
+		
 		/// 偵測條件Label ///
 		final Label detectSettingsLabel = new Label(overLoggingPage, SWT.NONE);
 		detectSettingsLabel.setText("偵測條件：");
@@ -144,8 +122,7 @@ public class OverLoggingPage extends APropertyPage {
 				adjustFont(overLoggingPage.getDisplay());
 			}
 		});
-		if (exSet.equals("Y"))
-			detectTransExBtn.setSelection(true);
+		detectTransExBtn.setSelection(smellSettings.isExtraRuleExist(SmellSettings.SMELL_OVERLOGGING, SmellSettings.EXTRARULE_OVERLOGGING_DETECTWRAPPINGEXCEPTION));
 
 		/// Customize定義偵測條件 Label ///
 		final Label detectSettingsLabel2 = new Label(overLoggingPage, SWT.NONE);
@@ -157,15 +134,15 @@ public class OverLoggingPage extends APropertyPage {
 		log4jBtn.setLocation(detectSettingsLabel2.getLocation().x+10, getBoundsPoint(detectSettingsLabel2).y + 5);
 		log4jBtn.setText("Detect using org.apache.log4j");
 		log4jBtn.pack();
-		if(log4jSet.equals("Y"))
-			log4jBtn.setSelection(true);
+		log4jBtn.setSelection(smellSettings.isExtraRuleExist(SmellSettings.SMELL_OVERLOGGING, SmellSettings.EXTRARULE_OrgApacheLog4j));
+		
 		//是否偵測JavaUtillog的按鈕
 		javaUtillogBtn = new Button(overLoggingPage, SWT.CHECK);
 		javaUtillogBtn.setText("Detect using java.util.logging.Logger");
 		javaUtillogBtn.setLocation(detectSettingsLabel2.getLocation().x+10, getBoundsPoint(log4jBtn).y + 5);
 		javaUtillogBtn.pack();
-		if(javaLogSet.equals("Y"))
-			javaUtillogBtn.setSelection(true);
+		javaUtillogBtn.setSelection(smellSettings.isExtraRuleExist(SmellSettings.SMELL_OVERLOGGING, SmellSettings.EXTRARULE_JavaUtilLoggingLogger));
+		
 		//Customize Rule Button
 		extraRuleBtn = new Button(overLoggingPage, SWT.NONE);
 		extraRuleBtn.setText("開啟");
@@ -221,8 +198,7 @@ public class OverLoggingPage extends APropertyPage {
 	/**
 	 * 調整Text的文字
 	 */
-	private void adjustText()
-	{
+	private void adjustText() {
 		/// CalleeTemplate的字型風格的位置範圍 ///
 		String calleeTemp = "";
 
@@ -271,58 +247,28 @@ public class OverLoggingPage extends APropertyPage {
 	 */
 	@Override
 	public boolean storeSettings() {
-		//取的XML的root
-		Element root = JDomUtil.createXMLContent();
-
-		//建立OverLogging的tag
-		Element overLogging = new Element(JDomUtil.OverLoggingTag);
-
-		Element rule = new Element("rule");
-		//假如log4j有被勾選起來
-		if (log4jBtn.getSelection())
-			rule.setAttribute(JDomUtil.apache_log4j,"Y");
-		else
-			rule.setAttribute(JDomUtil.apache_log4j,"N");	
-
-		//假如java.util.logging.Logger有被勾選起來
-		if (javaUtillogBtn.getSelection())
-			rule.setAttribute(JDomUtil.java_Logger,"Y");	
-		else
-			rule.setAttribute(JDomUtil.java_Logger,"N");
-
-		//把使用者自訂的Rule存入XML
-		Element libRule = new Element("librule");
-		Iterator<String> libIt = libMap.keySet().iterator();
-		while(libIt.hasNext()) {
-			String temp = libIt.next();
-			//若有出現*取代為EH_STAR(jdom不能記"*"這個字元)
-			String libName = temp.replace("*", "EH_STAR");
-			if (libMap.get(temp))
-				libRule.setAttribute(libName,"Y");
-			else
-				libRule.setAttribute(libName,"N");
+		smellSettings.removePatterns(SmellSettings.SMELL_OVERLOGGING);
+		smellSettings.removeExtraRule(SmellSettings.SMELL_OVERLOGGING, SmellSettings.EXTRARULE_OVERLOGGING_DETECTWRAPPINGEXCEPTION);
+		smellSettings.removeExtraRule(SmellSettings.SMELL_OVERLOGGING, SmellSettings.EXTRARULE_OrgApacheLog4j);
+		smellSettings.removeExtraRule(SmellSettings.SMELL_OVERLOGGING, SmellSettings.EXTRARULE_JavaUtilLoggingLogger);
+		
+		if(detectTransExBtn.getSelection())
+			smellSettings.addExtraRule(SmellSettings.SMELL_OVERLOGGING, SmellSettings.EXTRARULE_OVERLOGGING_DETECTWRAPPINGEXCEPTION);
+		if(log4jBtn.getSelection())
+			smellSettings.addExtraRule(SmellSettings.SMELL_OVERLOGGING, SmellSettings.EXTRARULE_OrgApacheLog4j);
+		if(javaUtillogBtn.getSelection())
+			smellSettings.addExtraRule(SmellSettings.SMELL_OVERLOGGING, SmellSettings.EXTRARULE_JavaUtilLoggingLogger);
+		
+		
+		// 存入使用者自訂Rule
+		Iterator<String> userDefinedCodeIterator = libMap.keySet().iterator();
+		while(userDefinedCodeIterator.hasNext()) {
+			String key = userDefinedCodeIterator.next();
+			smellSettings.addOverLoggingPattern(key, libMap.get(key));
 		}
-
-		Element exRule = new Element("exrule");
-		//把使用者設定的
-		if (detectTransExBtn.getSelection())
-			exRule.setAttribute(JDomUtil.trans_Exception,"Y");
-		else
-			exRule.setAttribute(JDomUtil.trans_Exception,"N");	
-
-		//將新建的tag加進去
-		overLogging.addContent(rule);
-		overLogging.addContent(libRule);
-		overLogging.addContent(exRule);
-
-		//將OverLogging Tag加入至XML中
-		if (root.getChild(JDomUtil.OverLoggingTag) != null)
-			root.removeChild(JDomUtil.OverLoggingTag);
-		root.addContent(overLogging);
-
+		
 		//將檔案寫回
-		String path = JDomUtil.getWorkspace()+File.separator+"CSPreference.xml";
-		JDomUtil.OutputXMLFile(root.getDocument(), path);
+		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		return true;
 	}
 }

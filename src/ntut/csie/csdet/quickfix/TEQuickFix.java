@@ -117,7 +117,7 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 	 */
 	private int rethrowException(String exception, int msgIdx) {
 		
-		actRoot.recordModifications();
+//		actRoot.recordModifications();
 		AST ast = currentMethodNode.getAST();
 
 		//準備在Catch Caluse中加入throw exception

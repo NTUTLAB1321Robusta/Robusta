@@ -110,21 +110,20 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				// 碰到Careless CleanUp的Quick fix and refactor方法
 			} else if(problem.equals(RLMarkerAttribute.CS_CARELESS_CLEANUP)){
 				//只有CCMessage才會有這個，所以只能在這邊get
-				int withTryBlock = 0;
+				boolean withTryBlock = false;
 				if(marker.getAttribute(RLMarkerAttribute.CCU_WITH_TRY) != null){
-					withTryBlock = (Integer) marker.getAttribute(RLMarkerAttribute.CCU_WITH_TRY);
+					withTryBlock = (Boolean) marker.getAttribute(RLMarkerAttribute.CCU_WITH_TRY);
 				}
 				
 				//MethodInv. won't throw exceptions will only offer "quick fix"
 				if(exceptionType == null){
 					markerList.add(new CCUQuickFix("Quick Fix==>Move code to finally block"));
 				}
-				//MethodInv. not in try block, should use "Three steps to refactor"
-				if(withTryBlock == 0){
-					markerList.add(new CarelessCleanUpAction("Refactor==>Use Three Steps"));
-				
+				//FIXME - MethodInv. not in try block, should use "Three steps to refactor" 左邊說明為原本構想，目前對應方法為不提供任何功能
+				if(!withTryBlock){
+					
 				//MethodInv. will throw exceptions and in try block
-				}else if(exceptionType != null && withTryBlock != 0){
+				}else if(exceptionType != null && withTryBlock){
 					markerList.add(new CarelessCleanUpAction("Refactor==>Use Extract Method"));
 				}
 				markerList.add(new CSQuickFix("新增 @SuppressSmell '" + problem + "' on Method", false));

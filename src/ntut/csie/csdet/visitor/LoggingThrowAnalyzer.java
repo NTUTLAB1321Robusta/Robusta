@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
-import ntut.csie.csdet.data.CSMessage;
+import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.rleht.common.RLBaseVisitor;
 
@@ -36,7 +36,7 @@ public class LoggingThrowAnalyzer extends RLBaseVisitor{
 	//是否要繼續偵測
 	private boolean isKeepTrace = false;
 	//儲存所找到的ignore Exception 
-	private List<CSMessage> loggingList = new ArrayList<CSMessage>();
+	private List<MarkerInfo> loggingList = new ArrayList<MarkerInfo>();
 
 	//傳進來的是最底層的Method(即要找Logging和Throw)
 	public LoggingThrowAnalyzer(CompilationUnit root, TreeMap<String, Integer> libMap, boolean isDetTransEx) {
@@ -77,7 +77,7 @@ public class LoggingThrowAnalyzer extends RLBaseVisitor{
 		//有沒有Logging動作
 		boolean isLogging = false;
 		//暫時的OverLogging List，看有沒有Throw決定是不是OverLogging，再記錄
-		List<CSMessage> tempList = new ArrayList<CSMessage>();
+		List<MarkerInfo> tempList = new ArrayList<MarkerInfo>();
 
 		//Trace Catch中每個Statement
 		for (int i = 0; i < statementTemp.size(); i++) {
@@ -124,7 +124,7 @@ public class LoggingThrowAnalyzer extends RLBaseVisitor{
 	 * @param loggingList 
 	 */
 	private boolean judgeLogging(CatchClause cc, SingleVariableDeclaration svd,
-							ExpressionStatement statement, List<CSMessage> loggingList) {
+							ExpressionStatement statement, List<MarkerInfo> loggingList) {
 		//偵測使用者所設定Logging的Library
 		if (findBindingLib(statement)) {			
 			addLoggingMessage(cc, svd, statement, loggingList);
@@ -154,8 +154,8 @@ public class LoggingThrowAnalyzer extends RLBaseVisitor{
 	 * @param loggingList
 	 */
 	private void addLoggingMessage(CatchClause cc,SingleVariableDeclaration svd,
-						ExpressionStatement statement, List<CSMessage> loggingList) {
-		CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_OVER_LOGGING, svd.resolveBinding().getType(),											
+						ExpressionStatement statement, List<MarkerInfo> loggingList) {
+		MarkerInfo csmsg = new MarkerInfo(RLMarkerAttribute.CS_OVER_LOGGING, svd.resolveBinding().getType(),											
 										cc.toString(), cc.getStartPosition(),
 										this.getLineNumber(statement.getStartPosition()), svd.getType().toString());
 		loggingList.add(csmsg);
@@ -182,7 +182,7 @@ public class LoggingThrowAnalyzer extends RLBaseVisitor{
 	 * 取得OverLogging 行數的資訊
 	 * @return
 	 */
-	public List<CSMessage> getOverLoggingList() {
+	public List<MarkerInfo> getOverLoggingList() {
 		return loggingList;
 	}
 }

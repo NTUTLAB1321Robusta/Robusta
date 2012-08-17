@@ -6,7 +6,7 @@ import static org.junit.Assert.assertNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import ntut.csie.csdet.data.CSMessage;
+import ntut.csie.csdet.data.MarkerInfo;
 
 import org.junit.After;
 import org.junit.Before;
@@ -46,12 +46,12 @@ public class ClassModelTest {
 	@Test
 	public void testSetIgnoreExList() {
 		int MAX = 10;
-		List<CSMessage> ignoreExList = null;
+		List<MarkerInfo> ignoreExList = null;
 		model.setIgnoreExList(ignoreExList, "ignoreMethod");
 		assertEquals(0, model.getIgnoreSize());
-		ignoreExList = new ArrayList<CSMessage>();
+		ignoreExList = new ArrayList<MarkerInfo>();
 		for(int i = 0; i < MAX; i++) {
-			ignoreExList.add(new CSMessage("ignore", null, null, i, i*2, null));
+			ignoreExList.add(new MarkerInfo("ignore", null, null, i, i*2, null));
 		}
 		model.setIgnoreExList(ignoreExList, "ignoreMethod");
 		assertEquals(MAX, model.getIgnoreSize());
@@ -62,12 +62,12 @@ public class ClassModelTest {
 	@Test
 	public void testSetDummyList() {
 		int MAX = 10;
-		List<CSMessage> dummyList = null;
+		List<MarkerInfo> dummyList = null;
 		model.setIgnoreExList(dummyList, "dummyMethod");
 		assertEquals(0, model.getIgnoreSize());
-		dummyList = new ArrayList<CSMessage>();
+		dummyList = new ArrayList<MarkerInfo>();
 		for(int i = 0; i < MAX; i++) {
-			dummyList.add(new CSMessage("dummy", null, null, i, i*2, null));
+			dummyList.add(new MarkerInfo("dummy", null, null, i, i*2, null));
 		}
 		model.setIgnoreExList(dummyList, "dummyMethod");
 		assertEquals(MAX, model.getIgnoreSize());
@@ -78,12 +78,12 @@ public class ClassModelTest {
 	@Test
 	public void testSetNestedTryList() {
 		int MAX = 10;
-		List<CSMessage> nestedTryList = null;
+		List<MarkerInfo> nestedTryList = null;
 		model.setIgnoreExList(nestedTryList, "nestedMethod");
 		assertEquals(0, model.getIgnoreSize());
-		nestedTryList = new ArrayList<CSMessage>();
+		nestedTryList = new ArrayList<MarkerInfo>();
 		for(int i = 0; i < MAX; i++) {
-			nestedTryList.add(new CSMessage("nested", null, null, i, i*2, null));
+			nestedTryList.add(new MarkerInfo("nested", null, null, i, i*2, null));
 		}
 		model.setIgnoreExList(nestedTryList, "nestedMethod");
 		assertEquals(MAX, model.getIgnoreSize());
@@ -94,12 +94,12 @@ public class ClassModelTest {
 	@Test
 	public void testSetUnprotectedMain() {
 		int MAX = 10;
-		List<CSMessage> unProtectedMain = null;
+		List<MarkerInfo> unProtectedMain = null;
 		model.setIgnoreExList(unProtectedMain, "mainMethod");
 		assertEquals(0, model.getIgnoreSize());
-		unProtectedMain = new ArrayList<CSMessage>();
+		unProtectedMain = new ArrayList<MarkerInfo>();
 		for(int i = 0; i < MAX; i++) {
-			unProtectedMain.add(new CSMessage("main", null, null, i, i*2, null));
+			unProtectedMain.add(new MarkerInfo("main", null, null, i, i*2, null));
 		}
 		model.setIgnoreExList(unProtectedMain, "mainMethod");
 		assertEquals(MAX, model.getIgnoreSize());
@@ -110,12 +110,12 @@ public class ClassModelTest {
 	@Test
 	public void testSetOverLogging() {
 		int MAX = 10;
-		List<CSMessage> overLoggingList = null;
+		List<MarkerInfo> overLoggingList = null;
 		model.setIgnoreExList(overLoggingList, "overMethod");
 		assertEquals(0, model.getIgnoreSize());
-		overLoggingList = new ArrayList<CSMessage>();
+		overLoggingList = new ArrayList<MarkerInfo>();
 		for(int i = 0; i < MAX; i++) {
-			overLoggingList.add(new CSMessage("over", null, null, i, i*2, null));
+			overLoggingList.add(new MarkerInfo("over", null, null, i, i*2, null));
 		}
 		model.setIgnoreExList(overLoggingList, "overMethod");
 		assertEquals(MAX, model.getIgnoreSize());
@@ -126,12 +126,12 @@ public class ClassModelTest {
 	@Test
 	public void testSetCarelessCleanUp() {
 		int MAX = 10;
-		List<CSMessage> carelessList = null;
+		List<MarkerInfo> carelessList = null;
 		model.setIgnoreExList(carelessList, "cleanMethod");
 		assertEquals(0, model.getIgnoreSize());
-		carelessList = new ArrayList<CSMessage>();
+		carelessList = new ArrayList<MarkerInfo>();
 		for(int i = 0; i < MAX; i++) {
-			carelessList.add(new CSMessage("clean", null, null, i, i*2, null));
+			carelessList.add(new MarkerInfo("clean", null, null, i, i*2, null));
 		}
 		model.setIgnoreExList(carelessList, "cleanMethod");
 		assertEquals(MAX, model.getIgnoreSize());

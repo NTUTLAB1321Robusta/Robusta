@@ -8,7 +8,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import ntut.csie.csdet.preference.JDomUtil;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.exceptionBadSmells.DummyAndIgnoreExample;
@@ -43,7 +42,7 @@ public class SpareHandlerVisitorTest {
 		jpm = new JavaProjectMaker("DummyHandlerTest");
 		jpm.setJREDefaultContainer();
 		// 新增欲載入的library
-		jpm.addJarToBuildPath("lib\\log4j-1.2.15.jar");
+		jpm.addJarFromProjectToBuildPath("lib\\log4j-1.2.15.jar");
 		// 根據測試檔案樣本內容建立新的檔案
 		jpm.createJavaFile("ntut.csie.exceptionBadSmells", "DummyHandlerExample.java", "package ntut.csie.exceptionBadSmells;\n" + jfs.getFileContent());
 		
@@ -61,7 +60,7 @@ public class SpareHandlerVisitorTest {
 
 	@After
 	public void tearDown() throws Exception {
-		File xmlFile = new File(JDomUtil.getWorkspace() + File.separator + "CSPreference.xml");
+		File xmlFile = new File(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		if(xmlFile.exists())
 			assertTrue(xmlFile.delete());
 		jpm.deleteProject();

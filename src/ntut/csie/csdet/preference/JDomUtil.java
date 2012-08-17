@@ -83,7 +83,7 @@ public class JDomUtil {
 			fout.close();
 		}catch(IOException e){
 			System.out.println("XML¿é¥X¥¢±Ñ¡I¡I¡I¡I");
-			
+			throw new RuntimeException(e);
 		}
 	}
 	
@@ -102,8 +102,10 @@ public class JDomUtil {
 				docJDOM = builder.build(xmlPath);
 			}catch(JDOMException e){
 				e.printStackTrace();
-			}catch (Exception ex) {
-				ex.printStackTrace();
+				throw new RuntimeException(e);
+			}catch (Exception e) {
+				e.printStackTrace();
+				throw new RuntimeException(e);
 			}
 			return docJDOM;
 		}else{

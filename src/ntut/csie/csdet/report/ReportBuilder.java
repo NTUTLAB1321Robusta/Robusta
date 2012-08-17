@@ -6,14 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
-import ntut.csie.csdet.data.CSMessage;
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.data.SSMessage;
 import ntut.csie.csdet.preference.JDomUtil;
-import ntut.csie.csdet.visitor.CarelessCleanUpAnalyzer;
+import ntut.csie.csdet.visitor.CarelessCleanupVisitor;
 import ntut.csie.csdet.visitor.DummyHandlerVisitor;
 import ntut.csie.csdet.visitor.IgnoreExceptionVisitor;
-import ntut.csie.csdet.visitor.MainAnalyzer;
+import ntut.csie.csdet.visitor.UnprotectedMainProgramVisitor;
 import ntut.csie.csdet.visitor.OverLoggingDetector;
 import ntut.csie.jcis.builder.core.internal.support.LOCCounter;
 import ntut.csie.jcis.builder.core.internal.support.LOCData;
@@ -103,16 +102,16 @@ public class ReportBuilder {
 
 			// 璝ぃ琌盎代场Project玥рRule兵ン纗
 			if (!isAllPackage) {
-				List<Attribute> filterList = filter.getAttributes();
+				List<?> filterList = filter.getAttributes();
 
 				for (int i = 0; i < filterList.size(); i++) {
 					// 菠筁ぃ妮Rule砞﹚
-					if (filterList.get(i).getQualifiedName() == "IsAllPackage")
+					if (((Attribute)filterList.get(i)).getQualifiedName() == "IsAllPackage")
 						continue;
 					// 璝Rule砞Θtrue纗
-					if (Boolean.valueOf(filterList.get(i).getValue()))
+					if (Boolean.valueOf(((Attribute)filterList.get(i)).getValue()))
 						filterRuleList
-								.add(filterList.get(i).getQualifiedName());
+								.add(((Attribute)filterList.get(i)).getQualifiedName());
 				}
 				model.setFilterList(filterRuleList);
 			}
@@ -138,8 +137,8 @@ public class ReportBuilder {
 //		CodeSmellAnalyzer csVisitor = null;
 		IgnoreExceptionVisitor ieVisitor = null;
 		DummyHandlerVisitor dhVisitor = null;
-		MainAnalyzer mainVisitor = null;
-		CarelessCleanUpAnalyzer ccVisitor = null;
+		UnprotectedMainProgramVisitor mainVisitor = null;
+		CarelessCleanupVisitor ccVisitor = null;
 		OverLoggingDetector loggingDetector = null;
 
 		// 篶AST
@@ -183,14 +182,7 @@ public class ReportBuilder {
 			if (detMethodSmell.get(RLMarkerAttribute.CS_INGNORE_EXCEPTION)) {
 				ieVisitor = new IgnoreExceptionVisitor(root);
 				method.accept(ieVisitor);
-				/* FIXME - 既锣传ノ单场常传ΘMarkerInfo碞ぃ惠璶硂LOOP */
-				List<MarkerInfo> ignoreList = ieVisitor.getIgnoreList();
-				List<CSMessage> tempList = new ArrayList<CSMessage>();
-				for(int i = 0; i < ignoreList.size(); i++) {
-					CSMessage message = new CSMessage(ignoreList.get(i).getCodeSmellType(), ignoreList.get(i).getTypeBinding(), ignoreList.get(i).getStatement(), ignoreList.get(i).getPosition(), ignoreList.get(i).getLineNumber(), ignoreList.get(i).getExceptionType());
-					tempList.add(message);
-				}
-				List<CSMessage> ignoreExList = checkCatchSmell(tempList
+				List<MarkerInfo> ignoreExList = checkCatchSmell(ieVisitor.getIgnoreList()
 						, detCatchSmell
 						.get(RLMarkerAttribute.CS_INGNORE_EXCEPTION));
 				newClassModel.setIgnoreExList(ignoreExList, methodName
@@ -201,14 +193,7 @@ public class ReportBuilder {
 			if (detMethodSmell.get(RLMarkerAttribute.CS_DUMMY_HANDLER)) {
 				dhVisitor = new DummyHandlerVisitor(root);
 				method.accept(dhVisitor);
-				/* FIXME - 既锣传ノ单场常传ΘMarkerInfo碞ぃ惠璶硂LOOP */
-				List<MarkerInfo> dhList = dhVisitor.getDummyList();
-				List<CSMessage> tempList = new ArrayList<CSMessage>();
-				for(int i = 0; i < dhList.size(); i++) {
-					CSMessage message = new CSMessage(dhList.get(i).getCodeSmellType(), dhList.get(i).getTypeBinding(), dhList.get(i).getStatement(), dhList.get(i).getPosition(), dhList.get(i).getLineNumber(), dhList.get(i).getExceptionType());
-					tempList.add(message);
-				}
-				List<CSMessage> dummyList = checkCatchSmell(tempList
+				List<MarkerInfo> dummyList = checkCatchSmell(dhVisitor.getDummyList()
 						, detCatchSmell
 						.get(RLMarkerAttribute.CS_DUMMY_HANDLER));
 				newClassModel.setDummyList(dummyList, methodName.getName()
@@ -222,7 +207,7 @@ public class ReportBuilder {
 				model.addNestedTotalTrySize(visitor.getNestedTryList().size());
 			}
 			// 碝т赣methodずunprotected main program
-			mainVisitor = new MainAnalyzer(root);
+			mainVisitor = new UnprotectedMainProgramVisitor(root);
 			method.accept(mainVisitor);
 			if (detMethodSmell.get(RLMarkerAttribute.CS_UNPROTECTED_MAIN)) {
 				newClassModel
@@ -232,20 +217,17 @@ public class ReportBuilder {
 						.size());
 			}
 			// т碝盡い┮ΤCareless Cleanup
-			ccVisitor = new CarelessCleanUpAnalyzer(root);
+			ccVisitor = new CarelessCleanupVisitor(root);
 			method.accept(ccVisitor);
 			if (detMethodSmell.get(RLMarkerAttribute.CS_CARELESS_CLEANUP)) {
-				newClassModel.setCarelessCleanUp(ccVisitor
-						.getCarelessCleanUpList(), methodName.getName()
-						.toString());
-				model.addCarelessCleanUpSize(ccVisitor.getCarelessCleanUpList()
-						.size());
+				newClassModel.setCarelessCleanUp(ccVisitor.getCarelessCleanupList(), methodName.getName().toString());
+				model.addCarelessCleanUpSize(ccVisitor.getCarelessCleanupList().size());
 			}
 			// 碝т赣methodずOverLogging
 			loggingDetector = new OverLoggingDetector(root, method);
 			loggingDetector.detect();
 			if (detMethodSmell.get(RLMarkerAttribute.CS_OVER_LOGGING)) {
-				List<CSMessage> olList = checkCatchSmell(loggingDetector
+				List<MarkerInfo> olList = checkCatchSmell(loggingDetector
 						.getOverLoggingList(), detCatchSmell
 						.get(RLMarkerAttribute.CS_OVER_LOGGING));
 				newClassModel.setOverLogging(olList, methodName.getName()
@@ -267,13 +249,13 @@ public class ReportBuilder {
 	 * @param allSmellList
 	 * @return
 	 */
-	private List<CSMessage> checkCatchSmell(List<CSMessage> allSmellList,
+	private List<MarkerInfo> checkCatchSmell(List<MarkerInfo> allSmellList,
 			List<Integer> posList) {
-		List<CSMessage> smellList = new ArrayList<CSMessage>();
+		List<MarkerInfo> smellList = new ArrayList<MarkerInfo>();
 		if (posList != null && posList.size() == 0)
 			smellList = allSmellList;
 		else {
-			for (CSMessage msg : allSmellList) {
+			for (MarkerInfo msg : allSmellList) {
 				if (!suppressMarker(posList, msg.getPosition()))
 					smellList.add(msg);
 			}

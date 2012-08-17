@@ -5,18 +5,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import ntut.csie.csdet.data.CSMessage;
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.data.SSMessage;
 import ntut.csie.csdet.preference.JDomUtil;
-import ntut.csie.csdet.visitor.CarelessCleanUpAnalyzer;
-import ntut.csie.csdet.visitor.CodeSmellAnalyzer;
+import ntut.csie.csdet.visitor.CarelessCleanupVisitor;
 import ntut.csie.csdet.visitor.DummyHandlerVisitor;
 import ntut.csie.csdet.visitor.IgnoreExceptionVisitor;
-import ntut.csie.csdet.visitor.MainAnalyzer;
+import ntut.csie.csdet.visitor.UnprotectedMainProgramVisitor;
 import ntut.csie.csdet.visitor.OverLoggingDetector;
+import ntut.csie.java.util.CastingObject;
 import ntut.csie.rleht.common.ASTHandler;
-import ntut.csie.rleht.rlAdvice.RLAdviceMessage;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLChecker;
 import ntut.csie.rleht.views.RLData;
@@ -53,7 +51,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	public static final String MARKER_TYPE = "ntut.csie.rleht.builder.RLProblem";
 
 	// 使用者所設定的是否偵測EH Smell設定
-	private TreeMap<String,Boolean> detSmellSetting = new TreeMap<String,Boolean>();
+	private TreeMap<String, Boolean> detSmellSetting = new TreeMap<String, Boolean>();
 
 	/**
 	 * 將相關例外資訊貼上marker(RLMessage)
@@ -86,18 +84,19 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	 * Made by Crimson 
 	 * @param file
 	 * @param errmsg
-	 * @param severityWarning
+	 * @param severityLevel
 	 * @param markerInfo
 	 * @param csIdx
 	 * @param methodIdx
 	 */
-	private void addMarker(IFile file, String errmsg, int severityWarning,
+	private void addMarker(IFile file, String errmsg, int severityLevel,
 			MarkerInfo markerInfo, int csIdx, int methodIdx) {
 		IMarker marker;
 		try{
 			marker = file.createMarker(MARKER_TYPE);
+			System.out.println("CCU馬克哀低：" + marker.getId());
 			marker.setAttribute(IMarker.MESSAGE, errmsg);
-			marker.setAttribute(IMarker.SEVERITY, severityWarning);
+			marker.setAttribute(IMarker.SEVERITY, severityLevel);
 			if (markerInfo.getLineNumber() == -1) {
 				markerInfo.setLineNumber(1);
 			}
@@ -108,9 +107,8 @@ public class RLBuilder extends IncrementalProjectBuilder {
 			marker.setAttribute(RLMarkerAttribute.RL_INFO_SRC_POS, String.valueOf(markerInfo.getPosition()));
 			marker.setAttribute(RLMarkerAttribute.RL_METHOD_INDEX, String.valueOf(methodIdx));
 			marker.setAttribute(RLMarkerAttribute.RL_MSG_INDEX, String.valueOf(csIdx));
-			marker.setAttribute(RLMarkerAttribute.CCU_WITH_TRY, -1);
+			marker.setAttribute(RLMarkerAttribute.CCU_WITH_TRY, markerInfo.getIsInTry());
 			marker.setAttribute(RLMarkerAttribute.MI_WITH_Ex, markerInfo.getExceptionType());
-
 		} catch (CoreException e) {
 			logger.error("[addCSMarker] Exception ",e);
 		}
@@ -129,7 +127,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	 * @param lineDetailInfo	//0, 沒有try block; 1, 有try block
 	 */
 	private void addMarker(IFile file, String message, int lineNumber, int severity, 
-			String mtype, CSMessage msg, int msgIdx, int methodIdx, int lineDetailInfo){
+			String mtype, MarkerInfo msg, int msgIdx, int methodIdx, boolean lineDetailInfo){
 		IMarker marker;
 		try{
 			marker = file.createMarker(MARKER_TYPE);
@@ -165,8 +163,8 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	 * @param methodIdx
 	 */
 	private void addMarker(IFile file, String message, int lineNumber, int severity, 
-			String mtype, CSMessage msg, int msgIdx, int methodIdx){
-		addMarker(file, message, lineNumber, severity, mtype, msg, msgIdx, methodIdx, -1);
+			String mtype, MarkerInfo msg, int msgIdx, int methodIdx){
+		addMarker(file, message, lineNumber, severity, mtype, msg, msgIdx, methodIdx, false);
 	}
 	
 	/**
@@ -214,7 +212,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	 * @see org.eclipse.core.internal.events.InternalBuilder#build(int,
 	 *      java.util.Map, org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
+	protected IProject[] build(int kind, @SuppressWarnings("rawtypes") Map args, IProgressMonitor monitor) throws CoreException {
 		getDetectSettings();
 		
 		long start = System.currentTimeMillis();
@@ -239,7 +237,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	 * 進行fullBuild or inrementalBuild時,都會去呼叫這個method
 	 * @param resource
 	 */
-	void checkRLAnnotation(IResource resource) {
+	private void checkBadSmells(IResource resource) {
 		if (resource instanceof IFile && resource.getName().endsWith(".java")) {
 			logger.debug("[RLBuilder] START !!");
 
@@ -266,9 +264,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 
 				ExceptionAnalyzer visitor = null;
 				
-				MainAnalyzer mainVisitor = null;
-				
-				CarelessCleanUpAnalyzer ccVisitor=null;
+				UnprotectedMainProgramVisitor mainVisitor = null;
 				
 				//RLAnalyzer eaVisitor = null;
 				
@@ -283,19 +279,13 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				List<SSMessage> suppressSmellList = null;
 				
 				// 目前method內的Nested Try Block資訊
-				List<CSMessage> nestedTryList = null; 
+				List<MarkerInfo> nestedTryList = null; 
 				
 				// 目前method內的Unprotected Main資訊
-				List<CSMessage> unprotectedMain = null;
-				
-				//目前method內的Careless CleanUp資訊(in try block)
-				List<CSMessage> ccuListInTry = null;
-				
-				//目前method內的Careless CleanUp資訊(without try block)
-				List<CSMessage> ccuListNoTry = null;
+				List<MarkerInfo> unprotectedMain = null;
 				
 				// 目前method內的OverLogging資訊
-				List<CSMessage> overLoggingList = null;
+				List<MarkerInfo> overLoggingList = null;
 				
 				// 目前的Method AST Node
 				ASTNode currentMethodNode = null;
@@ -313,7 +303,8 @@ public class RLBuilder extends IncrementalProjectBuilder {
 					TreeMap<String,Boolean> detMethodSmell = new TreeMap<String,Boolean>();
 					TreeMap<String, List<Integer>> detCatchSmell = new TreeMap<String, List<Integer>>();
 					//將使用者設定複製過來
-					detMethodSmell = (TreeMap<String,Boolean>) detSmellSetting.clone();
+					detMethodSmell = CastingObject.castTreeMap(detSmellSetting.clone(), String.class, Boolean.class);
+
 					//儲存SuppressSmell設定
 					inputSuppressData(suppressSmellList, detMethodSmell, detCatchSmell);
 
@@ -359,7 +350,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 					csIdx = -1;
 					//NestedTry List不為Null，且使用者沒有抑制Method內所有的Nested Try Marker
 					if(nestedTryList != null && detMethodSmell.get(RLMarkerAttribute.CS_NESTED_TRY_BLOCK)) {
-						for(CSMessage msg : nestedTryList) {
+						for(MarkerInfo msg : nestedTryList) {
 							csIdx++;
 							String errmsg = "EH Smell Type:["+ msg.getCodeSmellType() + "]未處理!!!";
 							//貼marker
@@ -369,17 +360,18 @@ public class RLBuilder extends IncrementalProjectBuilder {
 					}
 					
 					//找尋專案中所有的Careless Cleanup
-					ccVisitor = new CarelessCleanUpAnalyzer(root);
-					method.accept(ccVisitor);
-					/* CarelessCleanUp List不為Null，且使用者沒有抑制Method內所有的Careless CleanUp Marker */
+					CarelessCleanupVisitor carelessCleanupVisitor = new CarelessCleanupVisitor(root);
+					method.accept(carelessCleanupVisitor);
+					List<MarkerInfo> carelessCleanupList = carelessCleanupVisitor.getCarelessCleanupList();
 					csIdx = -1;
-					ccuListInTry = ccVisitor.getCarelessCleanUpList(true);
-					ccuAddMarkerActoin(file, ccuListInTry, methodIdx, detMethodSmell, csIdx, 1);
-
-					csIdx = -1;
-					ccuListNoTry = ccVisitor.getCarelessCleanUpList(false);
-					ccuAddMarkerActoin(file, ccuListNoTry, methodIdx, detMethodSmell, csIdx, 0);
-					/* CarelessCleanUp List不為Null，且使用者沒有抑制Method內所有的Careless CleanUp Marker */
+					if(carelessCleanupList != null && detMethodSmell.get(RLMarkerAttribute.CS_CARELESS_CLEANUP)) {
+						for(MarkerInfo markerInfo : carelessCleanupList) {
+							csIdx++;
+							String errmsg = "EH Smell Type:["+ markerInfo.getCodeSmellType() + "]未處理char!!!";
+							// 貼Marker
+							this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, markerInfo, csIdx, methodIdx);
+						}
+					}
 
 					//尋找專案中所有可以給予RL建議的statements
 //					eaVisitor = new RLAnalyzer(root);
@@ -403,7 +395,6 @@ public class RLBuilder extends IncrementalProjectBuilder {
 //						}
 //					}
 					
-					
 					//尋找該method內的OverLogging
 					loggingDetector = new OverLoggingDetector(root, method);
 					loggingDetector.detect();
@@ -415,7 +406,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 					//OverLogging List不為Null，且使用者沒有抑制Method內所有的OverLogging Marker
 					if(overLoggingList != null && detMethodSmell.get(RLMarkerAttribute.CS_OVER_LOGGING)){
 						List<Integer> posList = detCatchSmell.get(RLMarkerAttribute.CS_OVER_LOGGING);
-						for(CSMessage msg : overLoggingList) {
+						for(MarkerInfo msg : overLoggingList) {
 							csIdx++;
 							//判斷使用者有沒有在Catch內貼Annotation，抑制Smell Marker
 							if (suppressMarker(posList, msg.getPosition()))
@@ -428,7 +419,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 					}
 					
 					//尋找該method內的unprotected main program
-					mainVisitor = new MainAnalyzer(root);
+					mainVisitor = new UnprotectedMainProgramVisitor(root);
 					method.accept(mainVisitor);
 					unprotectedMain = mainVisitor.getUnprotedMainList();
 
@@ -436,7 +427,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 					csIdx = -1;
 					//OverLogging List不為Null，且使用者沒有抑制Method內的Unprotected Main Marker
 					if(unprotectedMain != null && detMethodSmell.get(RLMarkerAttribute.CS_UNPROTECTED_MAIN)) {
-						for (CSMessage msg : unprotectedMain) {
+						for (MarkerInfo msg : unprotectedMain) {
 							csIdx++;
 							String errmsg = "EH Smell Type:["+ msg.getCodeSmellType() + "]未處理!!!";
 							//貼marker
@@ -533,31 +524,6 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	}
 
 	/**
-	 * 因為Careless Cleanup的smell會因為在try/catch內外，而有不同的處理方式，
-	 * 所以在把這個方法Extract出來，讓不同位置的Smell，加入不同的maker attribute
-	 * @param file
-	 * @param carelessCleanUpList
-	 * @param methodIdx
-	 * @param detMethodSmell
-	 * @param csIdx
-	 * @param codeWithTryInfo	特別拿來區分Careless Cleanup，是否在try/catch block中
-	 */
-	private void ccuAddMarkerActoin(IFile file,
-			List<CSMessage> carelessCleanUpList, int methodIdx,
-			TreeMap<String, Boolean> detMethodSmell, int csIdx, int codeWithTryInfo) {
-		if(carelessCleanUpList != null && detMethodSmell.get(RLMarkerAttribute.CS_CARELESS_CLEANUP)) {
-			// 將每個Careless Cleanup都貼上marker
-			for(CSMessage msg : carelessCleanUpList) {
-				csIdx++;
-				String errmsg = "EH Smell Type:["+ msg.getCodeSmellType() + "]未處理!!!";
-				//貼marker
-				this.addMarker(file, errmsg, msg.getLineNumber(), IMarker.SEVERITY_WARNING,
-						msg.getCodeSmellType(), msg, csIdx, methodIdx, codeWithTryInfo);
-			}
-		}
-	}
-	
-	/**
 	 * 儲存Suppress Smell的設定
 	 * @param suppressSmellList
 	 * @param detMethodSmell
@@ -640,14 +606,14 @@ public class RLBuilder extends IncrementalProjectBuilder {
 			switch (delta.getKind()) {
 				case IResourceDelta.ADDED:
 					// handle added resource
-					checkRLAnnotation(resource);
+					checkBadSmells(resource);
 					break;
 				case IResourceDelta.REMOVED:
 					// handle removed resource
 					break;
 				case IResourceDelta.CHANGED:
 					// handle changed resource
-					checkRLAnnotation(resource);
+					checkBadSmells(resource);
 					break;
 			}
 			// return true to continue visiting children.
@@ -657,7 +623,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 
 	class RLResourceVisitor implements IResourceVisitor {
 		public boolean visit(IResource resource) {
-			checkRLAnnotation(resource);
+			checkBadSmells(resource);
 			// return true to continue visiting children.
 			return true;
 		}

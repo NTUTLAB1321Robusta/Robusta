@@ -2,8 +2,8 @@ package ntut.csie.csdet.refactor;
 
 import java.util.List;
 
-import ntut.csie.csdet.data.CSMessage;
-import ntut.csie.csdet.visitor.CarelessCleanUpAnalyzer;
+import ntut.csie.csdet.data.MarkerInfo;
+import ntut.csie.csdet.visitor.CarelessCleanupVisitor;
 import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 
@@ -34,6 +34,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.ImportDeclaration;
@@ -50,6 +51,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.TypeLiteral;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
+import org.eclipse.jdt.core.dom.WhileStatement;
 import org.eclipse.jdt.core.refactoring.CompilationUnitChange;
 import org.eclipse.jface.text.Document;
 import org.eclipse.ltk.core.refactoring.Change;
@@ -85,7 +87,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	private ASTNode currentMethodNode = null;
 	
 	// 收集Method內所有的Careless CleanUp
-	private List<CSMessage> CarelessCleanUpList = null;
+	private List<MarkerInfo> CarelessCleanUpList = null;
 	
 	// Method是否存在，是：新增Caller Method ，否：新增Release Method
 	private boolean isMethodExist = false;
@@ -103,7 +105,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	private IMethod existingMethod;
 	
 	// Careless CleanUp的Smell Message
-	private CSMessage smellMessage = null;
+	private MarkerInfo smellMessage = null;
 	
 	// 釋放資源的Statement
 	private ExpressionStatement cleanUpExpressionStatement;
@@ -136,10 +138,10 @@ public class CarelessCleanUpRefactor extends Refactoring {
 
 		boolean isOK = findMethod(marker.getResource());
 		if(isOK && currentMethodNode != null){
-			CarelessCleanUpAnalyzer visitor = new CarelessCleanUpAnalyzer(this.actRoot);
+			CarelessCleanupVisitor visitor = new CarelessCleanupVisitor(actRoot);
 			currentMethodNode.accept(visitor);
 			//取得code smell的List
-			CarelessCleanUpList = visitor.getCarelessCleanUpList();
+			CarelessCleanUpList = visitor.getCarelessCleanupList();
 		}
 
 		//取得EH Smell的資訊
@@ -243,13 +245,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	 */
 	private void collectChange(IResource resource){
 		//取得要修改的CompilationUnit
-		boolean isOK = findMethod(resource);
-		if (isOK && currentMethodNode != null) {
-//			CarelessCleanUpAnalyzer visitor = new CarelessCleanUpAnalyzer(this.actRoot);
-//			currentMethodNode.accept(visitor);
-//			//取得code smell的List
-//			CarelessCleanUpList = visitor.getCarelessCleanUpList();	
-
+		if (findMethod(resource) && currentMethodNode != null) {
 			extractMethod();
 		}
 	}
@@ -302,7 +298,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 
 		// 取得Smell所在的Try Block中
 		TryStatement tryStatement = findTryStatement();
-
+		
 		// 若try Statement裡沒有Finally Block,則建立Finally Block
 		Block finallyBlock = addFinallyBlock(ast, tryStatement);
 
@@ -336,7 +332,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 
 			if (tryList.get(i) instanceof VariableDeclarationStatement) {
 				VariableDeclarationStatement variable = (VariableDeclarationStatement) tryList.get(i);
-				List fragmentsList = variable.fragments();
+				List<?> fragmentsList = variable.fragments();
 				if (fragmentsList.size() == 1) {
 					VariableDeclarationFragment fragment = (VariableDeclarationFragment) fragmentsList.get(0);
 					// 若參數建在Try Block內
@@ -397,9 +393,22 @@ public class CarelessCleanUpRefactor extends Refactoring {
 		Block mdBlock = md.getBody();
 		List<?> statement = mdBlock.statements();
 
-		//TODO 未考慮Nested Try block的形況
+		return findTryStatement(statement);
+	}
+	
+	private TryStatement findTryStatement(List<?> statement) {
 		for (int i=0; i < statement.size(); i++) {
-			if (statement.get(i) instanceof TryStatement) {
+			if(((ASTNode)statement.get(i)).getNodeType() == ASTNode.WHILE_STATEMENT) {
+				WhileStatement ws = (WhileStatement)statement.get(i);
+				Block block = (Block)ws.getBody();
+				return findTryStatement(block.statements());
+			}
+			if(((ASTNode)statement.get(i)).getNodeType() == ASTNode.FOR_STATEMENT) {
+				ForStatement fs = (ForStatement)statement.get(i);
+				Block block = (Block)fs.getBody();
+				return findTryStatement(block.statements());
+			}
+			if(((ASTNode)statement.get(i)).getNodeType() == ASTNode.TRY_STATEMENT) {
 				TryStatement aTryStatement = (TryStatement) statement.get(i);
 				// 如果Smell位於Try內
 				if (aTryStatement.getStartPosition() <= smellMessage.getPosition() &&
@@ -436,11 +445,15 @@ public class CarelessCleanUpRefactor extends Refactoring {
 		//尋找Try Block
 		isDeleted = deleteBlockStatement(tryStatement.getBody(), ast);
 
-		List<CatchClause> catchs = tryStatement.catchClauses();
+		List<?> catchs = tryStatement.catchClauses();
 		for (int j=0; j < catchs.size() && !isDeleted; j++) {
-			CatchClause catchClause = catchs.get(j);
+			CatchClause catchClause = (CatchClause)catchs.get(j);
 			//尋找Catch Clause
 			isDeleted = deleteBlockStatement(catchClause.getBody(), ast);
+		}
+		
+		if(!isDeleted && tryStatement.getFinally() != null) {
+			deleteBlockStatement(tryStatement.getFinally(), ast);
 		}
 	}
 
@@ -529,7 +542,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 		block.statements().add(ts);
 		//將new MD加入
 		List<AbstractTypeDeclaration> typeList = actRoot.types();
-		TypeDeclaration td=(TypeDeclaration) typeList.get(0);
+		TypeDeclaration td = (TypeDeclaration) typeList.get(0);
 		td.bodyDeclarations().add(newMD);
 	}
 
@@ -651,9 +664,9 @@ public class CarelessCleanUpRefactor extends Refactoring {
 			return;
 
 		//若Package加入過也不加
-		List<ImportDeclaration> importList = actRoot.imports();
-		for(ImportDeclaration id : importList)
-			if(id.getName().getFullyQualifiedName().contains(classType.getFullyQualifiedName()))
+		List<?> importList = actRoot.imports();
+		for(Object id : importList)
+			if(((ImportDeclaration)id).getName().getFullyQualifiedName().contains(classType.getFullyQualifiedName()))
 				return;
 
 		//假如沒有import,就加入到AST中
@@ -766,9 +779,9 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	private void addJavaLoggerLibrary() {
 		//判斷是否有import java.util.logging.Logger
 		boolean isImportLibrary = false;
-		List<ImportDeclaration> importList = actRoot.imports();
-		for(ImportDeclaration id : importList){
-			if(id.getName().getFullyQualifiedName().contains("java.util.logging.Logger")){
+		List<?> importList = actRoot.imports();
+		for(Object id : importList){
+			if(((ImportDeclaration)id).getName().getFullyQualifiedName().contains("java.util.logging.Logger")){
 				isImportLibrary = true;
 			}
 		}
@@ -787,13 +800,13 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	 * @param ast
 	 */
 	private void addLoggerField(AST ast) {
-		List<AbstractTypeDeclaration> typeList = actRoot.types();
+		List<?> typeList = actRoot.types();
 		TypeDeclaration td = (TypeDeclaration) typeList.get(0);
 		
 		//若已經加入java logger則不加入
-		List<ASTNode> bodyList = td.bodyDeclarations();
+		List<?> bodyList = td.bodyDeclarations();
 		String result = "private Logger logger=Logger.getLogger";
-		for (ASTNode node: bodyList) {
+		for (Object node: bodyList) {
 			if (node instanceof FieldDeclaration) {
 				FieldDeclaration test = (FieldDeclaration) node;
 				if(test.toString().contains(result))
@@ -845,7 +858,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	/**
 	 * 將要變更的資料寫回至Document中
 	 */
-	private void applyChange(){
+	private void applyChange() {
 		//寫回Edit中
 		try {
 			ICompilationUnit cu = (ICompilationUnit) actOpenable;

@@ -2,7 +2,6 @@ package ntut.csie.csdet.quickfix;
 
 import java.util.List;
 
-import ntut.csie.csdet.data.CSMessage;
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.visitor.ASTCatchCollect;
 import ntut.csie.csdet.visitor.DummyHandlerVisitor;
@@ -130,7 +129,7 @@ public class DHQuickFix extends BaseQuickFix implements IMarkerResolution {
 	 */
 	private int rethrowException(int msgIdx){
 		try {
-			actRoot.recordModifications();
+//			actRoot.recordModifications();
 			AST ast = currentMethodNode.getAST();
 		
 			// 準備在Catch Clause中加入throw exception

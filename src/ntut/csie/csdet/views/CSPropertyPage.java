@@ -1,9 +1,9 @@
 package ntut.csie.csdet.views;
 
-import java.io.File;
 import java.util.ArrayList;
 
-import ntut.csie.csdet.preference.JDomUtil;
+import ntut.csie.csdet.preference.SmellSettings;
+import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -17,9 +17,11 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage{
 
 	//儲存每一個page
 	private ArrayList<APropertyPage> tabPages;
+	SmellSettings smellSettings;
 
 	public CSPropertyPage(){
 		super();
+		smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		tabPages = new ArrayList<APropertyPage>();
 		noDefaultAndApplyButton();
 	}
@@ -46,7 +48,7 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage{
 		final TabItem mainTabItem = new TabItem(tabFolder, SWT.NONE);
 		mainTabItem.setText("Setting Page");
 		final Composite mainComposite = new Composite(tabFolder, SWT.NONE);
-		APropertyPage mainPage = new SettingPage(mainComposite,this);
+		APropertyPage mainPage = new SettingPage(mainComposite, this, smellSettings);
 		mainTabItem.setControl(mainComposite);
 		tabPages.add(mainPage);
 
@@ -54,7 +56,7 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage{
 		final TabItem dummyHandlerTabItem = new TabItem(tabFolder, SWT.NONE);
 		dummyHandlerTabItem.setText("Dummy Handler");
 		final Composite dummyHandlerComposite = new Composite(tabFolder, SWT.NONE);
-		APropertyPage dummyHandlerPage = new DummyHandlerPage(dummyHandlerComposite,this);
+		APropertyPage dummyHandlerPage = new DummyHandlerPage(dummyHandlerComposite, this, smellSettings);
 		dummyHandlerTabItem.setControl(dummyHandlerComposite);
 		tabPages.add(dummyHandlerPage);
 
@@ -62,7 +64,7 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage{
 		final TabItem overLoggingTabItem = new TabItem(tabFolder, SWT.NONE);
 		overLoggingTabItem.setText("OverLogging");
 		final Composite overLoggingComposite = new Composite(tabFolder, SWT.NONE);
-		APropertyPage overLoggingPage = new OverLoggingPage(overLoggingComposite,this);
+		APropertyPage overLoggingPage = new OverLoggingPage(overLoggingComposite, this, smellSettings);
 		overLoggingTabItem.setControl(overLoggingComposite);
 		tabPages.add(overLoggingPage);
 		
@@ -70,19 +72,9 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage{
 		final TabItem carelessCleanUpTabItem=new TabItem(tabFolder,SWT.NONE);
 		carelessCleanUpTabItem.setText("Careless CleanUp");
 		final Composite carelessCleanUpPage=new Composite(tabFolder,SWT.NONE);
-		APropertyPage cleanUpPage = new CarelessCleanUpPage(carelessCleanUpPage,this);
+		APropertyPage cleanUpPage = new CarelessCleanUpPage(carelessCleanUpPage, this, smellSettings);
 		carelessCleanUpTabItem.setControl(carelessCleanUpPage);
 		tabPages.add(cleanUpPage);
-	}
-	
-	/**
-	 * 砍掉XML file (目前不使用)
-	 */
-	private void deleteXMLFile(){
-		String path = JDomUtil.getWorkspace()+File.separator+"CSPreference.xml";
-		File file = new File(path);
-		if(file.exists())
-			file.delete();
 	}
 
 	/**
@@ -90,8 +82,6 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage{
 	 * 然後將他儲存下來
 	 */
 	public boolean performOk() {
-//		//每次都先將xml檔砍掉,這樣code寫起來比較少
-//		deleteXMLFile();
 		for(int i=0;i<tabPages.size();i++){
 			tabPages.get(i).storeSettings();
 		}		

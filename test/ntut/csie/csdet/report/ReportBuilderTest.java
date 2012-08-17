@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
-import ntut.csie.csdet.data.CSMessage;
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.data.SSMessage;
 import ntut.csie.csdet.preference.JDomUtil;
@@ -59,8 +58,8 @@ public class ReportBuilderTest {
 		jpm = new JavaProjectMaker("DummyHandlerTest");
 		jpm.setJREDefaultContainer();
 		// 新增欲載入的library
-		jpm.addJarToBuildPath("lib\\log4j-1.2.15.jar");
-		jpm.addJarToBuildPath("..\\SingleSharedLibrary\\common\\agile.rl.jar");
+		jpm.addJarFromProjectToBuildPath("lib\\log4j-1.2.15.jar");
+		jpm.addJarFromProjectToBuildPath("..\\SingleSharedLibrary\\common\\agile.rl.jar");
 		// 根據測試檔案樣本內容建立新的檔案
 		jpm.createJavaFile("ntut.csie.exceptionBadSmells", "DummyAndIgnoreExample.java", "package ntut.csie.exceptionBadSmells;\n" + jfs.getFileContent());
 		
@@ -369,18 +368,18 @@ public class ReportBuilderTest {
 		methodList.get(10).accept(dhVisitor);
 		/* FIXME - 暫時轉換用，等全部都換成MarkerInfo就不需要這個LOOP */
 		List<MarkerInfo> dhList = dhVisitor.getDummyList();
-		List<CSMessage> tempList = new ArrayList<CSMessage>();
+		List<MarkerInfo> tempList = new ArrayList<MarkerInfo>();
 		for(int i = 0; i < dhList.size(); i++) {
-			CSMessage message = new CSMessage(dhList.get(i).getCodeSmellType(), dhList.get(i).getTypeBinding(), dhList.get(i).getStatement(), dhList.get(i).getPosition(), dhList.get(i).getLineNumber(), dhList.get(i).getExceptionType());
+			MarkerInfo message = new MarkerInfo(dhList.get(i).getCodeSmellType(), dhList.get(i).getTypeBinding(), dhList.get(i).getStatement(), dhList.get(i).getPosition(), dhList.get(i).getLineNumber(), dhList.get(i).getExceptionType());
 			tempList.add(message);
 		}
 		
-		List<CSMessage> result = null;
-		result = (List<CSMessage>)checkCatchSmell.invoke(reportBuilder, tempList, null);
+		List<MarkerInfo> result = null;
+		result = (List<MarkerInfo>)checkCatchSmell.invoke(reportBuilder, tempList, null);
 		assertEquals(2, result.size());
 		
 		List<Integer> posList = new ArrayList<Integer>();
-		result = (List<CSMessage>)checkCatchSmell.invoke(reportBuilder, tempList, posList);
+		result = (List<MarkerInfo>)checkCatchSmell.invoke(reportBuilder, tempList, posList);
 		assertEquals(2, result.size());
 	}
 	

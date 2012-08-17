@@ -31,7 +31,7 @@ public class JavaFileToString {
 	 * 讀取java檔的內容，但是會略過Package那行。副檔名會自動認定為.java。
 	 * 請參考{@link #read(Class, String, String)}
 	 * @param clazz 要讀的class
-	 * @param folder src資料夾或是test資料夾
+	 * @param folder 要讀的class是來自src資料夾或是test資料夾
 	 * @throws FileNotFoundException
 	 */
 	public void read(Class<?> clazz, String folder) throws FileNotFoundException {
@@ -75,6 +75,14 @@ public class JavaFileToString {
 	 */
 	public String getFileContent() {
 		return sb.toString();
+	}
+	
+	/**
+	 * 清除已經讀取過的內容。
+	 * @return
+	 */
+	public void clear() {
+		sb = new StringBuilder();
 	}
 	
 	/**

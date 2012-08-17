@@ -3,7 +3,7 @@ package ntut.csie.csdet.report;
 import java.util.ArrayList;
 import java.util.List;
 
-import ntut.csie.csdet.data.CSMessage;
+import ntut.csie.csdet.data.MarkerInfo;
 
 /**
  * 儲存Class內Smell資訊
@@ -15,7 +15,7 @@ public class ClassModel {
 	//存取Class的路徑
 	private String classPath = "";
 	//全部Smell資訊
-	private List<CSMessage> smellList = new ArrayList<CSMessage>();
+	private List<MarkerInfo> smellList = new ArrayList<MarkerInfo>();
 	//Smell位於的Method名稱
 	private List<String> methodList = new ArrayList<String>();
 	//Smell數量
@@ -38,7 +38,7 @@ public class ClassModel {
 	}
 	
 	///設定此Class的Smell List///
-	public void setIgnoreExList(List<CSMessage> ignoreExList, String MethodName) {
+	public void setIgnoreExList(List<MarkerInfo> ignoreExList, String MethodName) {
 		if(ignoreExList != null) {
 			ignoreExSize += ignoreExList.size();
 			//將Smell與其所在的Method名稱存起來
@@ -47,7 +47,7 @@ public class ClassModel {
 				methodList.add(MethodName);
 		}
 	}
-	public void setDummyList(List<CSMessage> dummyList, String MethodName) {
+	public void setDummyList(List<MarkerInfo> dummyList, String MethodName) {
 		if (dummyList != null) {
 			dummySize += dummyList.size();
 			smellList.addAll(dummyList);
@@ -55,7 +55,7 @@ public class ClassModel {
 				methodList.add(MethodName);
 		}
 	}
-	public void setNestedTryList(List<CSMessage> nestedTryList, String MethodName) {
+	public void setNestedTryList(List<MarkerInfo> nestedTryList, String MethodName) {
 		if (nestedTryList != null) {
 			nestedTrySize += nestedTryList.size();
 			smellList.addAll(nestedTryList);
@@ -63,7 +63,7 @@ public class ClassModel {
 				methodList.add(MethodName);
 		}
 	}
-	public void setUnprotectedMain(List<CSMessage> unProtectedMain, String MethodName) {
+	public void setUnprotectedMain(List<MarkerInfo> unProtectedMain, String MethodName) {
 		if (unProtectedMain != null) {
 			unMainSize += unProtectedMain.size();
 			smellList.addAll(unProtectedMain);
@@ -71,7 +71,7 @@ public class ClassModel {
 				methodList.add(MethodName);
 		}
 	}
-	public void setOverLogging(List<CSMessage> overLoggingList, String MethodName) {
+	public void setOverLogging(List<MarkerInfo> overLoggingList, String MethodName) {
 		if (overLoggingList != null) {
 			overLoggingSize += overLoggingList.size();
 			smellList.addAll(overLoggingList);
@@ -79,7 +79,7 @@ public class ClassModel {
 				methodList.add(MethodName);
 		}
 	}
-	public void setCarelessCleanUp(List<CSMessage> carelessList, String MethodName) {
+	public void setCarelessCleanUp(List<MarkerInfo> carelessList, String MethodName) {
 		if (carelessList != null) {
 			carelessSize += carelessList.size();
 			smellList.addAll(carelessList);

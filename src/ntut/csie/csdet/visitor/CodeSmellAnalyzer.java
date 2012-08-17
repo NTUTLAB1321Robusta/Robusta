@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
-import ntut.csie.csdet.data.CSMessage;
+import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.preference.JDomUtil;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.rleht.common.RLBaseVisitor;
@@ -29,10 +29,10 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 	private CompilationUnit root;
 
 	// 儲存所找到的ignore Exception 
-	private List<CSMessage> codeSmellList;
+	private List<MarkerInfo> codeSmellList;
 
 	// 儲存所找到的dummy handler
-	private List<CSMessage> dummyList;
+	private List<MarkerInfo> dummyList;
 
 	// 儲存偵測"Library的Name"和"是否Library"
 	// store使用者要偵測的library名稱，和"是否要偵測此library"
@@ -49,15 +49,15 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 	public CodeSmellAnalyzer(CompilationUnit root) {
 		super(true);
 		this.root = root;
-		codeSmellList = new ArrayList<CSMessage>();
-		dummyList = new ArrayList<CSMessage>();
+		codeSmellList = new ArrayList<MarkerInfo>();
+		dummyList = new ArrayList<MarkerInfo>();
 	}
 
 	public CodeSmellAnalyzer(CompilationUnit root,boolean currentMethod,int pos){
 		super(true);
 		this.root = root;
-		codeSmellList = new ArrayList<CSMessage>();
-		dummyList = new ArrayList<CSMessage>();
+		codeSmellList = new ArrayList<MarkerInfo>();
+		dummyList = new ArrayList<MarkerInfo>();
 	}
 
 	/*
@@ -96,7 +96,7 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 		// 如果catch statement裡面是空的話,表示是ignore exception
 		if (statementList.size() == 0) {
 			// 建立一個ignore exception type
-			CSMessage csmsg = new CSMessage(
+			MarkerInfo csmsg = new MarkerInfo(
 					RLMarkerAttribute.CS_INGNORE_EXCEPTION, svd
 							.resolveBinding().getType(), cc.toString(), cc
 							.getStartPosition(), this.getLineNumber(cc
@@ -137,7 +137,7 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 	 */
 	private void addDummyMessage(CatchClause cc, ExpressionStatement statement) {
 		SingleVariableDeclaration svd = cc.getException();
-		CSMessage csmsg = new CSMessage(RLMarkerAttribute.CS_DUMMY_HANDLER, svd
+		MarkerInfo csmsg = new MarkerInfo(RLMarkerAttribute.CS_DUMMY_HANDLER, svd
 				.resolveBinding().getType(), cc.toString(), cc
 				.getStartPosition(), this.getLineNumber(statement
 				.getStartPosition()), svd.getType().toString());
@@ -217,14 +217,14 @@ public class CodeSmellAnalyzer extends RLBaseVisitor {
 	/**
 	 * 取得dummy handler的List
 	 */
-	public List<CSMessage> getIgnoreExList() {
+	public List<MarkerInfo> getIgnoreExList() {
 		return codeSmellList;
 	}
 
 	/**
 	 * 取得dummy handler的List
 	 */
-	public List<CSMessage> getDummyList() {
+	public List<MarkerInfo> getDummyList() {
 		return dummyList;
 	}
 

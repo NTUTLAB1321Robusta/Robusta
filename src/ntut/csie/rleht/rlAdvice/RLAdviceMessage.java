@@ -1,6 +1,6 @@
 package ntut.csie.rleht.rlAdvice;
 
-import ntut.csie.csdet.data.CSMessage;
+import ntut.csie.csdet.data.MarkerInfo;
 
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IMemberValuePairBinding;
@@ -15,7 +15,7 @@ import agile.exception.RL;
  * @version 0.0.1
  */
 public class RLAdviceMessage {
-	private CSMessage csmsg;
+	private MarkerInfo csmsg;
 	
 	private IAnnotationBinding[] annotations;
 	
@@ -27,7 +27,7 @@ public class RLAdviceMessage {
 			int methodInvocationStartPosition, int catchClauseStartPosition,
 			int methodInvocationlineNumber,	int catchClauselineNumber, 
 			String exceptionType, IAnnotationBinding[] annotations) {
-		csmsg = new CSMessage(type, typeBinding, statement, methodInvocationStartPosition, 
+		csmsg = new MarkerInfo(type, typeBinding, statement, methodInvocationStartPosition, 
 				methodInvocationlineNumber,	exceptionType);
 		this.catchClauselineNumber = catchClauselineNumber;
 		this.catchClauseStartPosition = catchClauseStartPosition;

@@ -14,8 +14,10 @@ import java.util.List;
 
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.preference.JDomUtil;
+import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.visitor.ASTCatchCollect;
 import ntut.csie.csdet.visitor.CodeSmellAnalyzer;
+import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.RuntimeEnvironmentProjectReader;
@@ -37,7 +39,6 @@ import org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.Statement;
-import org.jdom.Element;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,6 +47,7 @@ public class DHQuickFixTest {
 	JavaFileToString jfs;
 	JavaProjectMaker jpm;
 	CompilationUnit unit;
+	SmellSettings smellSettings;
 
 	@Before
 	public void setUp() throws Exception {
@@ -56,12 +58,12 @@ public class DHQuickFixTest {
 		jpm = new JavaProjectMaker("DummyHandlerTest");
 		jpm.setJREDefaultContainer();
 		// 新增欲載入的library
-		jpm.addJarToBuildPath("lib\\log4j-1.2.15.jar");
-		jpm.addJarToBuildPath("..\\SingleSharedLibrary\\common\\agile.rl.jar");
+		jpm.addJarFromProjectToBuildPath("lib\\log4j-1.2.15.jar");
+		jpm.addJarFromProjectToBuildPath("..\\SingleSharedLibrary\\common\\agile.rl.jar");
 		// 根據測試檔案樣本內容建立新的檔案
 		jpm.createJavaFile("ntut.csie.exceptionBadSmells", "DummyHandlerExample.java", "package ntut.csie.exceptionBadSmells;\n" + jfs.getFileContent());
 		// 建立XML
-		CreateDummyHandlerXML();
+		CreateSettings();
 		
 		Path path = new Path("DummyHandlerTest\\src\\ntut\\csie\\exceptionBadSmells\\DummyHandlerExample.java");
 		//Create AST to parse
@@ -289,7 +291,7 @@ public class DHQuickFixTest {
 						"  }\n" +
 						"}\n", currentMethodNode.toString());
 		
-		/* 測試proglem為dummy handler的情況 */
+		/* 測試problem為dummy handler的情況 */
 		List<MarkerInfo> dummyList = (List)findEHSmellList.invoke(dhQF, "Dummy_Handler");
 		assertEquals(1, dummyList.size());
 		assertEquals("Dummy_Handler", dummyList.get(0).getCodeSmellType());
@@ -364,38 +366,17 @@ public class DHQuickFixTest {
 	}
 	
 	/**
-	 * 建立CSPreference.xml檔案
+	 * 建立xml檔案
 	 */
-	private void CreateDummyHandlerXML() {
-		//取的XML的root
-		Element root = JDomUtil.createXMLContent();
-
-		//建立Dummy Handler的Tag
-		Element dummyHandler = new Element(JDomUtil.DummyHandlerTag);
-		Element rule = new Element("rule");
-		//假如e.printStackTrace有被勾選起來
-		rule.setAttribute(JDomUtil.e_printstacktrace,"Y");
-
-		//假如system.out.println有被勾選起來
-		rule.setAttribute(JDomUtil.systemout_print,"Y");
-		
-		rule.setAttribute(JDomUtil.apache_log4j,"Y");
-		rule.setAttribute(JDomUtil.java_Logger,"Y");
-
-		//把使用者自訂的Rule存入XML
-		Element libRule = new Element("librule");
-		
-		//將新建的tag加進去
-		dummyHandler.addContent(rule);
-		dummyHandler.addContent(libRule);
-
-		if (root.getChild(JDomUtil.DummyHandlerTag) != null)
-			root.removeChild(JDomUtil.DummyHandlerTag);
-
-		root.addContent(dummyHandler);
-
-		//將檔案寫回
-		String path = JDomUtil.getWorkspace() + File.separator + "CSPreference.xml";
-		JDomUtil.OutputXMLFile(root.getDocument(), path);
+	private void CreateSettings() {
+		smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_ePrintStackTrace);
+		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_SystemErrPrint);
+		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_SystemErrPrintln);
+		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_SystemOutPrint);
+		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_SystemOutPrintln);
+		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_JavaUtilLoggingLogger);
+		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_OrgApacheLog4j);
+		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 	}
 }

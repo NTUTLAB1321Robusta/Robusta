@@ -600,7 +600,7 @@ public class RetryRefactoring extends Refactoring {
 			
 			//利用此List來紀錄
 			ArrayList<String> secList = new ArrayList<String>();
-			for(int i = 0; i<catchSt.size(); i++){
+			for(int i = 0; i< catchSt.size(); i++){
 				CatchClause cc = (CatchClause)catchSt.get(i);
 				//取得第二層例外的變數型態
 				SingleVariableDeclaration svd = (SingleVariableDeclaration)cc.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);

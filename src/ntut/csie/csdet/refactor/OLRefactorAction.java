@@ -3,7 +3,7 @@ package ntut.csie.csdet.refactor;
 import java.util.ArrayList;
 import java.util.List;
 
-import ntut.csie.csdet.data.CSMessage;
+import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.visitor.ASTCatchCollect;
 import ntut.csie.csdet.visitor.OverLoggingDetector;
 import ntut.csie.rleht.builder.ASTMethodCollector;
@@ -47,9 +47,9 @@ public class OLRefactorAction {
 	//存放同一個Class內要fix的method
 	private List<ASTNode> methodNodeList = new ArrayList<ASTNode>();
 	//目前Method內的OverLogging
-	private List<CSMessage> currentLoggingList = new ArrayList<CSMessage>();
+	private List<MarkerInfo> currentLoggingList = new ArrayList<MarkerInfo>();
 	//存放同一個Class內要fix的method內，所出現的OverLogging
-	private List<List<CSMessage>> loggingList = new ArrayList<List<CSMessage>>();
+	private List<List<MarkerInfo>> loggingList = new ArrayList<List<MarkerInfo>>();
 	
 	/**
 	 * 取得Class(CompilationUnit)的相關資訊
@@ -98,7 +98,7 @@ public class OLRefactorAction {
 			OverLoggingDetector loggingDetector = new OverLoggingDetector(this.actRoot, tempNode);
 			loggingDetector.detect();
 			//取得專案中OverLogging
-			List<CSMessage> overLogggingTemp = loggingDetector.getOverLoggingList();
+			List<MarkerInfo> overLogggingTemp = loggingDetector.getOverLoggingList();
 			currentLoggingList = overLogggingTemp;
 
 			//若沒有OverLogging則不記錄
@@ -113,7 +113,7 @@ public class OLRefactorAction {
 		currentMethodNode.accept(catchCollector);
 		List<ASTNode> catchList = catchCollector.getMethodList();
 		//刪除該Method內的Catch中的Logging Statement
-		for (CSMessage msg : currentLoggingList) {
+		for (MarkerInfo msg : currentLoggingList) {
 			//去比對startPosition,找出要修改的節點
 			for (ASTNode cc : catchList) {
 				if (cc.getStartPosition() == msg.getPosition()) {
@@ -148,7 +148,7 @@ public class OLRefactorAction {
 			OverLoggingDetector loggingDetector = new OverLoggingDetector(this.actRoot, tempNode);
 			loggingDetector.detect();
 			//取得專案中OverLogging
-			List<CSMessage> overLogggingTemp = loggingDetector.getOverLoggingList();
+			List<MarkerInfo> overLogggingTemp = loggingDetector.getOverLoggingList();
 			currentLoggingList = overLogggingTemp;
 
 			//若沒有OverLogging則不記錄
@@ -175,7 +175,7 @@ public class OLRefactorAction {
 				currentMethodNode.accept(catchCollector);
 				List<ASTNode> catchList = catchCollector.getMethodList();
 				//刪除該Method內的Catch中的Logging Statement
-				for (CSMessage msg : loggingList.get(i)) {
+				for (MarkerInfo msg : loggingList.get(i)) {
 					//去比對startPosition,找出要修改的節點
 					for (ASTNode cc : catchList) {
 						if (cc.getStartPosition() == msg.getPosition()) {
@@ -199,7 +199,7 @@ public class OLRefactorAction {
 	 * @param cc
 	 * @param msg
 	 */
-	private void deleteCatchStatement(ASTNode cc, CSMessage msg){		
+	private void deleteCatchStatement(ASTNode cc, MarkerInfo msg){		
 		CatchClause clause = (CatchClause)cc;
 		//取得CatchClause所有的statement,將相關print例外資訊的東西移除
 		List statementList = clause.getBody().statements();
@@ -311,10 +311,10 @@ public class OLRefactorAction {
 	public ASTNode getMethodNode(int index) {
 		return methodNodeList.get(index);
 	}
-	public List<CSMessage> getCurrentLoggingList() {
+	public List<MarkerInfo> getCurrentLoggingList() {
 		return currentLoggingList;
 	}
-	public List<CSMessage> getLoggingList(int index) {
+	public List<MarkerInfo> getLoggingList(int index) {
 		return loggingList.get(index);
 	}
 	/**

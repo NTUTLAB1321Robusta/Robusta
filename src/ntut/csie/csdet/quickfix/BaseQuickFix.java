@@ -58,16 +58,18 @@ public class BaseQuickFix {
 				IJavaElement javaElement = JavaCore.create(resource);
 				
 				if (javaElement instanceof IOpenable) {
-					this.actOpenable = (IOpenable) javaElement;
+					actOpenable = (IOpenable) javaElement;
 				}
-
+				
 				//Create AST to parse
 				ASTParser parser = ASTParser.newParser(AST.JLS3);
 				parser.setKind(ASTParser.K_COMPILATION_UNIT);
 	
 				parser.setSource((ICompilationUnit) javaElement);
 				parser.setResolveBindings(true);
-				this.actRoot = (CompilationUnit) parser.createAST(null);
+				actRoot = (CompilationUnit) parser.createAST(null);
+				//AST 2.0紀錄方式
+				actRoot.recordModifications();
 				
 				//取得該class所有的method
 				ASTMethodCollector methodCollector = new ASTMethodCollector();
@@ -75,7 +77,7 @@ public class BaseQuickFix {
 				List<ASTNode> methodList = methodCollector.getMethodList();
 				
 				//取得目前要被修改的method node
-				this.currentMethodNode = methodList.get(methodIdx);
+				currentMethodNode = methodList.get(methodIdx);
 			
 				return true;
 			} catch (Exception ex) {

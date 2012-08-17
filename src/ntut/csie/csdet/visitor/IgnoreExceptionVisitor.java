@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ntut.csie.csdet.data.MarkerInfo;
+import ntut.csie.jdt.util.NodeUtils;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -24,7 +25,7 @@ public class IgnoreExceptionVisitor extends ASTVisitor {
 	}
 	
 	public boolean visit(TryStatement node) {
-		ASTNode parent = getSpecifiedParentNode(node, ASTNode.TRY_STATEMENT);
+		ASTNode parent = NodeUtils.getSpecifiedParentNode(node, ASTNode.TRY_STATEMENT);
 		if(parent == null) {
 			/*
 			 * 這個TryStatement不是在TryStatement裡面
@@ -57,28 +58,5 @@ public class IgnoreExceptionVisitor extends ASTVisitor {
 	
 	public List<MarkerInfo> getIgnoreList() {
 		return ignoreExceptionList;
-	}
-	
-	/**
-	 * 從輸入的節點開始，尋找特定的父節點。
-	 * @param startNode
-	 * @param nodeType
-	 * @return
-	 */
-	public ASTNode getSpecifiedParentNode(ASTNode startNode, int nodeType) {
-		ASTNode resultNode = null;
-		ASTNode parentNode = startNode.getParent();
-		// 如果parentNode是null，表示傳進來的node已經是rootNode(CompilationUnit)
-		if(parentNode != null) {
-			while(parentNode.getNodeType() != nodeType) {
-				parentNode = parentNode.getParent();
-				// 無窮迴圈終止條件 - 已經沒有parentNode
-				if (parentNode == null) {
-					break;
-				}
-			}
-			resultNode = parentNode; 
-		}
-		return resultNode;
 	}
 }

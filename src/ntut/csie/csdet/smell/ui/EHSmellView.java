@@ -1,6 +1,6 @@
 package ntut.csie.csdet.smell.ui;
 
-import ntut.csie.csdet.data.CSMessage;
+import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.rleht.common.ConsoleLog;
 import ntut.csie.rleht.common.EditorUtils;
 import ntut.csie.rleht.common.ErrorLog;
@@ -170,7 +170,7 @@ public class EHSmellView extends ViewPart implements IShowInSource {
 		int idx = -1;
 		int currentLineNumber = model.getCurrentLine();
 
-		for (CSMessage msg : model.getAllSmellList()) {
+		for (MarkerInfo msg : model.getAllSmellList()) {
 			idx++;
 			TableItem item = new TableItem(smellList, SWT.NONE);
 			item.setData(String.valueOf(idx));

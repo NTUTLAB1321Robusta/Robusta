@@ -2,8 +2,8 @@ package ntut.csie.csdet.quickfix;
 
 import java.util.List;
 
-import ntut.csie.csdet.data.CSMessage;
-import ntut.csie.csdet.visitor.CarelessCleanUpAnalyzer;
+import ntut.csie.csdet.data.MarkerInfo;
+import ntut.csie.csdet.visitor.CarelessCleanupVisitor;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 
 import org.eclipse.core.resources.IMarker;
@@ -45,7 +45,7 @@ public class CCUQuickFix extends BaseQuickFix implements IMarkerResolution{
 	private String moveLine;
 
 	// Careless CleanUp的Smell Message
-	private CSMessage smellMessage = null;
+	private MarkerInfo smellMessage = null;
 
 	//第幾個tryBlock
 	private int tryIndex = -1;
@@ -74,49 +74,32 @@ public class CCUQuickFix extends BaseQuickFix implements IMarkerResolution{
 				/* 先從SmellMessage裡面去找出small的position()，
 				 * 才可以使用fineTryStatement()
 				 */
-				findSmellMessage(marker);
-				
-				findTryStatement();		
-
-				//判斷是否需要將VariableDeclaration宣告在try外面	
-				ExpressionStatement expSt = null;
-				if(moveLineStatement(tryStatement.getBody().statements()) instanceof ExpressionStatement){
-					expSt = (ExpressionStatement)moveLineStatement(tryStatement.getBody().statements());
-				}
-				MethodInvocation mi = (MethodInvocation)expSt.getExpression();
-				SimpleName sn = (SimpleName)mi.arguments().get(0);
-				if(isVariableDeclareInTry(sn.getFullyQualifiedName())){
-					actRoot.recordModifications();	//AST 2.0紀錄方式
-					moveInstance(mi.getAST(), tryStatement, mi);	//移動VariableDeclaration
-					this.applyChange();
-				}
-
-				findCurrentMethod(marker.getResource(), Integer.parseInt(methodIdx));
-
-				//找到要被修改的程式碼資訊
-				moveLine = findMoveLine(msgIdx);
-
 				findTryStatement();
 				
+				//判斷是否需要將VariableDeclaration宣告在try外面	
+				findOutTheVariableInTry();
 				/* 若try Statement裡已經有Finally Block,就直接將該行程式碼移到Finally Block中
 				 * 否則先建立Finally Block後,再移到Finally Block 
 				 */
-				//TODO: 做一次quickfix會存檔三次，造成要，undo三次。這個之後要記得修改
-				if (hasFinallyBlock()) {
-					moveToFinallyBlock();
-				} else {
-					addNewFinallyBlock();
-					findCurrentMethod(marker.getResource(), Integer.parseInt(methodIdx));
-					findTryStatement();
-					moveToFinallyBlock();
-				}
+				moveToFinallyBlock();
+				
 				//將要變更的資料寫回
 				this.applyChange(rewrite);
-				findCurrentMethod(marker.getResource(), Integer.parseInt(methodIdx));
-				findTryStatement();
 			}
 		} catch (CoreException e) {
 			logger.error("[CCUQuickFix] EXCEPTION ",e);
+		}
+	}
+	private void findOutTheVariableInTry() {
+		AST ast = actRoot.getAST();
+		rewrite = ASTRewrite.create(ast);
+		ExpressionStatement expSt = (ExpressionStatement)moveLineStatement(tryStatement.getBody().statements());
+		if(expSt != null) {
+			MethodInvocation mi = (MethodInvocation)expSt.getExpression();
+			SimpleName sn = (SimpleName)mi.arguments().get(0);
+			if(isVariableDeclareInTry(sn.getFullyQualifiedName())){
+				moveInstance(tryStatement, mi);	//移動VariableDeclaration
+			}
 		}
 	}
 
@@ -125,110 +108,66 @@ public class CCUQuickFix extends BaseQuickFix implements IMarkerResolution{
 	 * @return String
 	 */
 	private String findMoveLine(String msgIdx) {
-		CarelessCleanUpAnalyzer ccVisitor = new CarelessCleanUpAnalyzer(this.actRoot); 
+		CarelessCleanupVisitor ccVisitor = new CarelessCleanupVisitor(actRoot);
 		currentMethodNode.accept(ccVisitor);
-		//有try block的，才有可能提供quick fix
-		List<CSMessage> ccList = ccVisitor.getCarelessCleanUpList(true);
-		CSMessage csMsg = ccList.get(Integer.parseInt(msgIdx));
-		return csMsg.getStatement();
+		//有try block的，才有提供quick fix
+		smellMessage = ccVisitor.getCarelessCleanupList().get(Integer.parseInt(msgIdx));
+		return smellMessage.getStatement();
 	}
 	
 	/**
 	 * 尋找Try Block
 	 * @return
 	 */
-	private boolean findTryStatement() {
+	private void findTryStatement() {
 		MethodDeclaration md = (MethodDeclaration) currentMethodNode;
-		Block mdBlock = md.getBody();
-		List<?> statement = mdBlock.statements();
+		List<?> statement = md.getBody().statements();
 		for (int i =0; i < statement.size(); i++) {
 			if (statement.get(i) instanceof TryStatement) {
 				TryStatement trystat = (TryStatement) statement.get(i);
 				
-				boolean isFound = false;
-
-				Block tryBlock = trystat.getBody();
-				List<?> tryStatements = tryBlock.statements();
-				for (int j =0; j < tryStatements.size(); j++) {
-					String tryString = tryStatements.get(j).toString();
-					if(tryString.contains(moveLine)){
-						/* 判斷這個smell在哪個try block裡面。
-						 * 用來防止兩個try block裡面，剛好有一樣的變數名稱
-						 */
-						if(trystat.getStartPosition() <= smellMessage.getPosition() &&
-								trystat.getStartPosition() + trystat.getLength()
-							  >= smellMessage.getPosition()){
-							isFound = true;
-							tryIndex = i;
-						}
-					}
+				// find in try block
+				List<?> tryStatements = trystat.getBody().statements();
+				if(containTargetLine(trystat, tryStatements, i)) {
+					return;
 				}
-
+				// find in catch clause
 				List<?> ccList = trystat.catchClauses();
 				for (int j =0;j < ccList.size(); j++) {
 					CatchClause cc = (CatchClause) ccList.get(j);
-					Block catchBlock = cc.getBody();
-					List<?> catchStatements = catchBlock.statements();
-					for(int k = 0; k < catchStatements.size(); k++) {
-						String catchString = catchStatements.get(k).toString();
-						if (catchString.contains(moveLine))
-							isFound = true;
+					List<?> catchStatements = cc.getBody().statements();
+					if(containTargetLine(trystat, catchStatements, i)) {
+						return;
 					}
 				}
-
+				// find in finally if it has finally block
 				if (trystat.getFinally() != null) {
-					Block finallyBlock = trystat.getFinally();
-					List<?> finallyStatements = finallyBlock.statements();
-					for (int j=0; j < finallyStatements.size(); j++) {
-						String finallyString = finallyStatements.get(j).toString();
-						if (finallyString.contains(moveLine))
-							isFound = true;
+					List<?> finallyStatements = trystat.getFinally().statements();
+					if(containTargetLine(trystat, finallyStatements, i)) {
+						return;
 					}
 				}
-				if (!isFound) {
-					continue;
-				} else {
-					tryStatement = trystat;
+			}
+		}
+	}
+	
+	private boolean containTargetLine(TryStatement tryStatement, List<?> statements, int index) {
+		for (int j =0; j < statements.size(); j++) {
+			String tryString = statements.get(j).toString();
+			if(tryString.contains(moveLine)){
+				/* 判斷這個smell在哪個try block裡面。
+				 * 用來防止兩個try block裡面，剛好有一樣的變數名稱
+				 */
+				if(tryStatement.getStartPosition() <= smellMessage.getPosition() &&
+						tryStatement.getStartPosition() + tryStatement.getLength()
+					  >= smellMessage.getPosition()){
+					tryIndex = index;
+					this.tryStatement = tryStatement;
 					return true;
 				}
 			}
 		}
 		return false;
-	}
-	
-	private void findSmellMessage(IMarker marker) {
-		try {
-			String msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
-			CarelessCleanUpAnalyzer visitor = new CarelessCleanUpAnalyzer(this.actRoot);
-			currentMethodNode.accept(visitor);
-			smellMessage = visitor.getCarelessCleanUpList().get(Integer.parseInt(msgIdx));
-		} catch (CoreException e) {
-			logger.error("[Find CS Method] EXCEPTION ", e);
-		}
-	}
-	
-	/**
-	 * 判斷Try Statement是否有Finally Block
-	 * @return boolean
-	 */
-	private boolean hasFinallyBlock() {
-		Block finallyBlock = tryStatement.getFinally();
-		if (finallyBlock != null) {
-			//假如有Finally Block就標示為true
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * 在Try Statement裡建立Finally Block
-	 */
-	private void addNewFinallyBlock(){
-		actRoot.recordModifications();
-		AST ast = currentMethodNode.getAST();
-		Block block = ast.newBlock();
-		tryStatement.setFinally(block);
-		this.applyChange();
 	}
 	
 	private boolean isVariableDeclareInTry(String variableName){
@@ -254,20 +193,22 @@ public class CCUQuickFix extends BaseQuickFix implements IMarkerResolution{
 	 * @param tryStatement
 	 * @param mi 要移動宣告位置的mi
 	 */
-	private void moveInstance(AST ast, TryStatement tryStatement, MethodInvocation mi) {			
+	private void moveInstance(TryStatement tryStatement, MethodInvocation mi) {
+		AST ast = actRoot.getAST();
 		// traverse try statements
-		List<?> tryList = tryStatement.getBody().statements();
-		for (int i=0; i < tryList.size(); i++) {
-			if (tryList.get(i) instanceof VariableDeclarationStatement) {
-				VariableDeclarationStatement variable = (VariableDeclarationStatement) tryList.get(i);
-				List<?> fragmentsList = variable.fragments();
-				if (fragmentsList.size() == 1) {
-					VariableDeclarationFragment fragment = (VariableDeclarationFragment) fragmentsList.get(0);
-					// 若參數宣告在Try Block內
-					if (fragment.getName().toString().equals(mi.arguments().get(0).toString())) {
+		ListRewrite tsRewrite = rewrite.getListRewrite(tryStatement.getBody(), Block.STATEMENTS_PROPERTY);
+		List<?> oList = tsRewrite.getOriginalList();
+		for(int i = 0; i < oList.size(); i++) {
+			if(oList.get(i) instanceof VariableDeclarationStatement) {
+				VariableDeclarationStatement variable = (VariableDeclarationStatement)oList.get(i);
+				List<?> fragments = variable.fragments();
+				if(fragments.size() == 1) {
+					VariableDeclarationFragment fragment = (VariableDeclarationFragment)fragments.get(0);
+					// 若參數建在Try Block內
+					if(fragment.getName().toString().equals(mi.arguments().get(0).toString())) {
 						/* 將   InputStream fos = new ImputStream();
 						 * 改為 fos = new InputStream();
-						 */
+						 * */
 						Assignment assignment = ast.newAssignment();
 						assignment.setOperator(Assignment.Operator.ASSIGN);
 						// fos
@@ -278,19 +219,19 @@ public class CCUQuickFix extends BaseQuickFix implements IMarkerResolution{
 						assignment.setRightHandSide((Expression) copyNode);
 
 						// 將fos = new ImputStream(); 替換到原本的程式裡
-						if(assignment.getRightHandSide().getNodeType() != ASTNode.NULL_LITERAL){
+						if(assignment.getRightHandSide().getNodeType() != ASTNode.NULL_LITERAL) {
 							ExpressionStatement expressionStatement = ast.newExpressionStatement(assignment);
-							tryStatement.getBody().statements().set(i, expressionStatement);
-						}else{
-							//如果本來的程式碼是設定instance初始為null，那就直接移除掉 (ex: fos = null;)
-							tryStatement.getBody().statements().remove(i);
+							tsRewrite.replace(variable, expressionStatement, null);
+						} else {
+							tsRewrite.remove((ASTNode)oList.get(i), null);
 						}
 						// InputStream fos = null
 						// 將new動作替換成null
-						fragment.setInitializer(ast.newNullLiteral());
-						// 加至原本程式碼之前(看原本的程式碼在md裡面，是第幾個statement，插到那個位置)
-						MethodDeclaration md = (MethodDeclaration) currentMethodNode;
-						md.getBody().statements().add(tryIndex, variable);
+						// 加至原本程式碼之前
+						MethodDeclaration md = (MethodDeclaration)currentMethodNode;
+						ASTNode placeHolder = rewrite.createMoveTarget(variable);
+						ListRewrite moveRewrite = rewrite.getListRewrite(md.getBody(), Block.STATEMENTS_PROPERTY);
+						moveRewrite.insertFirst(placeHolder, null);
 						break;
 					}
 				}
@@ -302,39 +243,38 @@ public class CCUQuickFix extends BaseQuickFix implements IMarkerResolution{
 	 * 將欲修改的程式碼移到Finally Block中
 	 */
 	private void moveToFinallyBlock() {
-		Statement moveLineEs = null;
-
-		rewrite = ASTRewrite.create(actRoot.getAST());
-		
-		ListRewrite tsRewrite = rewrite.getListRewrite(tryStatement.getBody(),Block.STATEMENTS_PROPERTY);
+		ListRewrite tsRewrite = rewrite.getListRewrite(tryStatement.getBody(), Block.STATEMENTS_PROPERTY);
 		List<?> tsList = tsRewrite.getOriginalList();
 
-		//比對Try Statement裡是否有欲移動的程式碼,若有則移除
-		for (int j=0; j<tsList.size(); j++) {
-			String temp = tsList.get(j).toString();
-			if (temp.contains(moveLine))
-				moveLineEs = (Statement) tsList.get(j);
-		}
-//		moveLineEs = moveLineStatement(tsList);	//以上那麼多行，換這行
+		//比對Try Statement裡是否有欲移動的程式碼
+		Statement moveLineEs = moveLineStatement(tsList);
 		
-		//比對Catch Clauses裡是否有欲移動的程式碼,若有則移除
-		//TODO: 這樣的語法，不就只會紀錄最後一個catchClause
-		List<?> ccList = tryStatement.catchClauses();
-		for (int j =0; j < ccList.size(); j++) {
-			CatchClause cc = (CatchClause) ccList.get(j);
-			ListRewrite ccRewrite = rewrite.getListRewrite(cc.getBody(),Block.STATEMENTS_PROPERTY);
-			List<?> ccbody = ccRewrite.getOriginalList();
-			for (int k =0; k < ccbody.size(); k++) {
-				String ccStat = ccbody.get(k).toString();
-				if (ccStat.contains(moveLine))
-					moveLineEs = (Statement) ccbody.get(k);
+		// 如果Try Statement裡面找不到，表示是在Catch Clauses裡面
+		if(moveLineEs == null) {
+			//比對Catch Clauses裡是否有欲移動的程式碼
+			List<?> ccList = tryStatement.catchClauses();
+			for (int j =0; j < ccList.size(); j++) {
+				CatchClause cc = (CatchClause) ccList.get(j);
+				ListRewrite ccRewrite = rewrite.getListRewrite(cc.getBody(), Block.STATEMENTS_PROPERTY);
+				List<?> ccbody = ccRewrite.getOriginalList();
+				moveLineEs = moveLineStatement(ccbody);
+				if(moveLineEs != null)
+					break;
 			}
-//			moveLineEs = moveLineStatement(ccbody); //以上那麼多行，換這行
 		}
-
-		Block finallyBlock = tryStatement.getFinally();
+		
+		// 如果沒有finally block就幫它加上去
+		Block finallyBody = null;
+		if (tryStatement.getFinally() == null) {
+			finallyBody = actRoot.getAST().newBlock();
+			rewrite.set(tryStatement, TryStatement.FINALLY_PROPERTY, finallyBody, null);
+		}
+		else {
+			finallyBody = tryStatement.getFinally();
+		}
+		
 		ASTNode placeHolder = rewrite.createMoveTarget(moveLineEs);
-		ListRewrite moveRewrite = rewrite.getListRewrite(finallyBlock, Block.STATEMENTS_PROPERTY);
+		ListRewrite moveRewrite = rewrite.getListRewrite(finallyBody, Block.STATEMENTS_PROPERTY);
 		moveRewrite.insertLast(placeHolder, null);
 	}
 	
@@ -344,11 +284,12 @@ public class CCUQuickFix extends BaseQuickFix implements IMarkerResolution{
 	 * @return
 	 */
 	private Statement moveLineStatement(List<?> rewriteOriginalList){
-		Statement movelineSt = null;
 		for(int i = 0; i<rewriteOriginalList.size(); i++){
-			if(rewriteOriginalList.get(i).toString().contains(moveLine)){
-				movelineSt = (Statement)rewriteOriginalList.get(i);
-				return movelineSt;
+			Statement statement = (Statement)rewriteOriginalList.get(i);
+			if(statement.toString().contains(moveLine)){
+				if(statement.getStartPosition() == smellMessage.getPosition()) {
+					return statement;
+				}
 			}
 		}
 		return null;

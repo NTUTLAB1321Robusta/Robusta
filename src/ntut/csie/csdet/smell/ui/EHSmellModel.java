@@ -5,11 +5,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import ntut.csie.csdet.data.CSMessage;
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.visitor.DummyHandlerVisitor;
 import ntut.csie.csdet.visitor.IgnoreExceptionVisitor;
-import ntut.csie.csdet.visitor.MainAnalyzer;
+import ntut.csie.csdet.visitor.UnprotectedMainProgramVisitor;
 import ntut.csie.rleht.RLEHTPlugin;
 import ntut.csie.rleht.common.ASTHandler;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
@@ -35,11 +34,11 @@ public class EHSmellModel {
 	//魁тIgnoreCheckedException Smell
 	private List<MarkerInfo> ignoreExList = null;
 	//魁тNestedTryBlock Smell
-	private List<CSMessage> nestedTryList = null;
+	private List<MarkerInfo> nestedTryList = null;
 	//魁тUnprotectedMain Smell
-	private List<CSMessage> unprotectedMainList = null;
+	private List<MarkerInfo> unprotectedMainList = null;
 	//魁┮ΤSmell
-	private List<CSMessage> smellList = new ArrayList<CSMessage>();
+	private List<MarkerInfo> smellList = new ArrayList<MarkerInfo>();
 
 	// ヘ玡Method AST Node
 	private ASTNode methodNode = null;	
@@ -129,7 +128,7 @@ public class EHSmellModel {
 			nestedTryList = exVisitor.getNestedTryList();
 			
 			//碝т赣methodずunprotected main program
-			MainAnalyzer mainVisitor = new MainAnalyzer(actRoot);
+			UnprotectedMainProgramVisitor mainVisitor = new UnprotectedMainProgramVisitor(actRoot);
 			methodNode.accept(mainVisitor);
 			unprotectedMainList = mainVisitor.getUnprotedMainList();
 		}
@@ -139,18 +138,18 @@ public class EHSmellModel {
 		//р┮ΤSmellList癬
 		if (dummyHandlerList != null) {
 			/* FIXME - 既锣传ノ单场常传ΘMarkerInfo碞ぃ惠璶硂LOOP */
-			List<CSMessage> tempList = new ArrayList<CSMessage>();
+			List<MarkerInfo> tempList = new ArrayList<MarkerInfo>();
 			for(int i = 0; i < dummyHandlerList.size(); i++) {
-				CSMessage message = new CSMessage(dummyHandlerList.get(i).getCodeSmellType(), dummyHandlerList.get(i).getTypeBinding(), dummyHandlerList.get(i).getStatement(), dummyHandlerList.get(i).getPosition(), dummyHandlerList.get(i).getLineNumber(), dummyHandlerList.get(i).getExceptionType());
+				MarkerInfo message = new MarkerInfo(dummyHandlerList.get(i).getCodeSmellType(), dummyHandlerList.get(i).getTypeBinding(), dummyHandlerList.get(i).getStatement(), dummyHandlerList.get(i).getPosition(), dummyHandlerList.get(i).getLineNumber(), dummyHandlerList.get(i).getExceptionType());
 				tempList.add(message);
 			}
 			smellList.addAll(tempList);
 		}
 		if (ignoreExList != null) {
 			/* FIXME - 既锣传ノ单场常传ΘMarkerInfo碞ぃ惠璶硂LOOP */
-			List<CSMessage> tempList = new ArrayList<CSMessage>();
+			List<MarkerInfo> tempList = new ArrayList<MarkerInfo>();
 			for(int i = 0; i < ignoreExList.size(); i++) {
-				CSMessage message = new CSMessage(ignoreExList.get(i).getCodeSmellType(), ignoreExList.get(i).getTypeBinding(), ignoreExList.get(i).getStatement(), ignoreExList.get(i).getPosition(), ignoreExList.get(i).getLineNumber(), ignoreExList.get(i).getExceptionType());
+				MarkerInfo message = new MarkerInfo(ignoreExList.get(i).getCodeSmellType(), ignoreExList.get(i).getTypeBinding(), ignoreExList.get(i).getStatement(), ignoreExList.get(i).getPosition(), ignoreExList.get(i).getLineNumber(), ignoreExList.get(i).getExceptionType());
 				tempList.add(message);
 			}
 			smellList.addAll(tempList); 
@@ -211,9 +210,9 @@ public class EHSmellModel {
 	 * рCSMessageListㄌ︽计暗逼(ど经)
 	 * @param smellList
 	 */
-	private void sortCSMessageList(List<CSMessage> smellList) {
-		Collections.sort(smellList, new Comparator<CSMessage>(){
-			public int compare(CSMessage s1, CSMessage s2){
+	private void sortCSMessageList(List<MarkerInfo> smellList) {
+		Collections.sort(smellList, new Comparator<MarkerInfo>(){
+			public int compare(MarkerInfo s1, MarkerInfo s2){
 				if(s1.getLineNumber() < s2.getLineNumber())
 					return 0;
 				else
@@ -232,13 +231,13 @@ public class EHSmellModel {
 	public List<MarkerInfo> getIgnoreList() {
 		return ignoreExList;
 	}
-	public List<CSMessage> getnestedTryList() {
+	public List<MarkerInfo> getnestedTryList() {
 		return nestedTryList;
 	}
-	public List<CSMessage> getunprotectedMainList() {
+	public List<MarkerInfo> getunprotectedMainList() {
 		return unprotectedMainList;
 	}
-	public List<CSMessage> getAllSmellList() {
+	public List<MarkerInfo> getAllSmellList() {
 		return smellList;
 	}
 }

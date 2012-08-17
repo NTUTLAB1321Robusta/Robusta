@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
 
-import ntut.csie.csdet.data.CSMessage;
+import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.preference.JDomUtil;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -37,7 +37,7 @@ public class OverLoggingDetector {
 	private static Logger logger = LoggerFactory.getLogger(OverLoggingDetector.class);
 
 	//儲存所找到的OverLoging 
-	private List<CSMessage> overLoggingList = new ArrayList<CSMessage>();
+	private List<MarkerInfo> overLoggingList = new ArrayList<MarkerInfo>();
 	//AST Tree的root(檔案名稱)
 	private CompilationUnit root;
 	//最底層的Method
@@ -298,7 +298,7 @@ public class OverLoggingDetector {
 	 * 取得OverLogging資訊
 	 * @return
 	 */
-	public List<CSMessage> getOverLoggingList() {
+	public List<MarkerInfo> getOverLoggingList() {
 		return overLoggingList;
 	}
 }
