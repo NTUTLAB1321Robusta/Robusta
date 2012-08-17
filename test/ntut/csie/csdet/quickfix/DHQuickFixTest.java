@@ -16,7 +16,6 @@ import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.preference.JDomUtil;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.visitor.ASTCatchCollect;
-import ntut.csie.csdet.visitor.CodeSmellAnalyzer;
 import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
@@ -343,11 +342,6 @@ public class DHQuickFixTest {
 		currentMethodRLList.set(dhQF, exVisitor.getMethodRLAnnotationList());
 		
 //		DummyHandlerVisitor dhVisitor = new DummyHandlerVisitor(unit);
-		CodeSmellAnalyzer dhVisitor = new CodeSmellAnalyzer(unit);
-		currentMethodNode.accept(dhVisitor);
-		Field currentExList = DHQuickFix.class.getDeclaredField("currentExList");
-		currentExList.setAccessible(true);
-		currentExList.set(dhQF, dhVisitor.getDummyList());
 		/* FIXME - how to focus editor */
 //		IDE.openEditor(JavaPlugin.getActivePage(), (IFile)((ICompilationUnit)actO).getResource());
 		Method rethrowException = DHQuickFix.class.getDeclaredMethod("rethrowException", int.class);
