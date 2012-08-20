@@ -18,7 +18,7 @@ import ntut.csie.csdet.visitor.DummyHandlerVisitor;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.exceptionBadSmells.DummyAndIgnoreExample;
-import ntut.csie.filemaker.exceptionBadSmells.NestedTryBlockExample;
+import ntut.csie.filemaker.exceptionBadSmells.NestedTryStatementExample;
 import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
@@ -69,7 +69,7 @@ public class RethrowExRefactoringTest {
 		jpm.createJavaFile("ntut.csie.exceptionBadSmells", "DummyAndIgnoreExample.java", "package ntut.csie.exceptionBadSmells;\n" + jfs.getFileContent());
 		// «Ø¥ßNested try block example file
 		jfs = new JavaFileToString();
-		jfs.read(NestedTryBlockExample.class, "test");
+		jfs.read(NestedTryStatementExample.class, "test");
 		jpm.createJavaFile("ntut.csie.exceptionBadSmells", "NestedTryBlockExample.java", "package ntut.csie.exceptionBadSmells;\n" + jfs.getFileContent());
 		
 		Path path = new Path("DummyHandlerTest/src/ntut/csie/exceptionBadSmells/DummyAndIgnoreExample.java");
