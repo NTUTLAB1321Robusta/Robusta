@@ -2,7 +2,6 @@ package ntut.csie.csdet.visitor;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.jdt.util.NodeUtils;
 import ntut.csie.rleht.builder.RLMarkerAttribute;

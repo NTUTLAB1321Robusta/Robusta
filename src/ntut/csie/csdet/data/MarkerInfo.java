@@ -1,6 +1,10 @@
 package ntut.csie.csdet.data;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.core.dom.ITypeBinding;
 
@@ -112,4 +116,26 @@ public class MarkerInfo {
 		this.typeBinding = typeBinding;
 	}
 
+	/**
+	 * 使用者設定的條件可能會造成同一行程式碼造成的bad smell被記錄兩次。
+	 * 此副程式旨在處理這個問題。
+	 * @param nestedTryStatementList
+	 * @return
+	 */
+	public static List<MarkerInfo> RemoveDuplicatedMarkerInfo(List<MarkerInfo> nestedTryStatementList) {
+		List<MarkerInfo> rearrangedMarkerInfo = new ArrayList<MarkerInfo>();
+		Map<Integer, MarkerInfo> nestedTryStatementHashMap = new HashMap<Integer, MarkerInfo>();
+		for (MarkerInfo marker : nestedTryStatementList) {
+			if(!nestedTryStatementHashMap.containsKey(marker.getLineNumber())) {
+				nestedTryStatementHashMap.put(marker.getLineNumber(), marker);
+			}
+		}
+		
+        Iterator<MarkerInfo> iterator = nestedTryStatementHashMap.values().iterator();
+        while(iterator.hasNext()) {
+            rearrangedMarkerInfo.add((MarkerInfo)iterator.next());
+        }
+		
+		return rearrangedMarkerInfo;
+	}
 }
