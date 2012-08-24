@@ -4,6 +4,7 @@ import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
@@ -431,6 +432,43 @@ public class NestedTryStatementExample {
 				try {
 					fis.close();
 				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	public void nestedFinallyInNestedTry() {
+		FileInputStream fis = null;
+		FileOutputStream fos = null;
+		try {
+			fis = new FileInputStream("");
+			fis.read();
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} finally {
+			for(int i = 0; i<2; i++) {	// This situation should never happened
+				try {
+					fis.close();
+				} catch (IOException e) {
+					try {
+						fos = new FileOutputStream("");
+						fos.write(Byte.valueOf(e.getMessage()));
+					} catch (FileNotFoundException e1) {
+						throw new RuntimeException(e1);
+					} catch (NumberFormatException e1) {
+						throw new RuntimeException(e1);
+					} catch (IOException e1) {
+						throw new RuntimeException(e1);
+					} finally {
+						try {
+							fos.close();
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						}
+					}
 					e.printStackTrace();
 				}
 			}

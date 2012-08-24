@@ -8,6 +8,8 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 
+import ntut.csie.robusta.util.PathUtils;
+
 public class JarFileMaker {
 	public int BUFFER_SIZE = 10240;
 	/**
@@ -36,7 +38,7 @@ public class JarFileMaker {
 		    	System.out.println("Adding " + tobeJared[i].getName());
 			
 				// Add archive entry
-				JarEntry fileEntry = new JarEntry(dot2slash(fullPackageName) 
+				JarEntry fileEntry = new JarEntry(PathUtils.dot2slash(fullPackageName) 
 						+ "/" + tobeJared[i].getName());
 				fileEntry.setTime(tobeJared[i].lastModified());
 				out.putNextEntry(fileEntry);
@@ -92,16 +94,5 @@ public class JarFileMaker {
 			}
 		}
 		return willBeListedDir.listFiles();
-	}
-	
-	/**
-	 * packageName裡面的.換成斜線
-	 * @param packageName
-	 * @return
-	 */
-	private String dot2slash(String packageName) {
-		String result = "";
-		result = packageName.replaceAll(java.util.regex.Matcher.quoteReplacement("\\."), "/");
-		return result;
 	}
 }
