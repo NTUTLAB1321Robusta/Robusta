@@ -18,6 +18,15 @@ import agile.exception.RL;
 import agile.exception.Robustness;
 
 public class SmellSettings {
+	/*
+	 * <CodeSmells>
+	 * 	<SmellTypes name="DummyHandler" isDetecting="true">
+	 * 		<pattern name="" isDetecting="" />
+	 * 		<extraRule name="EXTRARULE_ePrintStackTrace" />
+	 * 	</SmellTypes>
+	 * 	<SmellTypes name="NestedTryBlock" isDetecting="false" />
+	 * </CodeSmells> 
+	 */
 	public final static String SETTING_FILENAME = "SmellSetting.xml";
 	public final static String TAG_ROOT = "CodeSmells";
 	public final static String TAG_SMELLTYPE4DETECTING = "SmellTypes";

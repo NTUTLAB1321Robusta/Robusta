@@ -19,6 +19,8 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.TryStatement;
+import agile.exception.Robustness;
+import agile.exception.RL;
 
 public class CarelessCleanupVisitor extends ASTVisitor {
 	/** AST的root */
@@ -50,6 +52,7 @@ public class CarelessCleanupVisitor extends ASTVisitor {
 	/**
 	 * 增加不檢查close的條件
 	 */
+	@Robustness(value = { @RL(level = 1, exception = java.lang.RuntimeException.class) })
 	public boolean visit(IfStatement node) {
 		if(isMethodDeclarationThrowException(node)) {
 			return true;
@@ -95,6 +98,7 @@ public class CarelessCleanupVisitor extends ASTVisitor {
 	/**
 	 * 增加不檢查close的條件
 	 */
+	@Robustness(value = { @RL(level = 1, exception = java.lang.RuntimeException.class) })
 	public boolean visit(TryStatement node) {
 		if(isMethodDeclarationThrowException(node)) {
 			return true;
@@ -145,6 +149,7 @@ public class CarelessCleanupVisitor extends ASTVisitor {
 	 * @param node
 	 * @return
 	 */
+	@Robustness(value = { @RL(level = 1, exception = java.lang.RuntimeException.class) })
 	private boolean isMethodDeclarationThrowException(ASTNode node) {
 		if(node.getNodeType() == ASTNode.COMPILATION_UNIT) {
 			throw new RuntimeException("Abatract Syntax Tree traversing error. by Charles.");
@@ -179,6 +184,7 @@ public class CarelessCleanupVisitor extends ASTVisitor {
 		return false;
 	}
 	
+	@Robustness(value = { @RL(level = 1, exception = java.lang.RuntimeException.class) })
 	public boolean visit(MethodInvocation node) {
 		boolean userDefinedLibResult = true;
 		boolean userDefinedResult = true;

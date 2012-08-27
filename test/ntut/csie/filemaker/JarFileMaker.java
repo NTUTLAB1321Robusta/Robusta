@@ -8,13 +8,17 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 
+import ntut.csie.robusta.util.PathUtils;
+
 public class JarFileMaker {
 	public int BUFFER_SIZE = 10240;
 	/**
 	 * @param archiveFile 指定產生Jar檔的路徑 + 檔名
-	 * @param packageList 傳入bin的listFile
+	 * @param binFolder 傳入bin的listFile
+	 * @param specifiedPackageName TODO
 	 */
-	public void createJarFile(File archiveFile, File[] packageList) {
+//	public void createJarFile(File archiveFile, File[] packageList, String specifiedPackageName) {
+	public void createJarFile(File archiveFile, File binFolder, String fullPackageName) {
 	    try {
 	    	byte buffer[] = new byte[BUFFER_SIZE];
 	    	// Open archive file
@@ -25,9 +29,8 @@ public class JarFileMaker {
 	    	attributes.putValue("Manifest-Version", "1.0");
 	    	// Open jar file
 	    	JarOutputStream out = new JarOutputStream(stream, manifest);
-	    	File agilePackage = packageList[0];
-	    	File exceptionPackage = agilePackage.listFiles()[0];
-	    	File[] tobeJared = exceptionPackage.listFiles();
+	    	
+	    	File[] tobeJared = getWillBeJaredClasses(binFolder, fullPackageName);
 	    	
 	    	for (int i = 0; i < tobeJared.length; i++) {
 	    		if (tobeJared[i] == null || !tobeJared[i].exists() || tobeJared[i].isDirectory())
@@ -35,7 +38,8 @@ public class JarFileMaker {
 		    	System.out.println("Adding " + tobeJared[i].getName());
 			
 				// Add archive entry
-				JarEntry fileEntry = new JarEntry(agilePackage.getName() + "/" + exceptionPackage.getName() + "/" + tobeJared[i].getName());
+				JarEntry fileEntry = new JarEntry(PathUtils.dot2slash(fullPackageName) 
+						+ "/" + tobeJared[i].getName());
 				fileEntry.setTime(tobeJared[i].lastModified());
 				out.putNextEntry(fileEntry);
 			
@@ -53,9 +57,42 @@ public class JarFileMaker {
 	    	out.close();
 	    	stream.close();
 	    	System.out.println("Adding completed OK");
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			System.out.println("Error: " + ex.getMessage());
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
+	}
+	
+	/**
+	 * 根據.分隔package name
+	 * @param name
+	 * @return
+	 */
+	private String[] splitNameByDot(String name) {
+		String[] result = new String[1];
+		if(name.indexOf(".") != -1) {
+			return name.split("\\.");
+		}
+		result[0] = name;
+		return result;
+	}
+	
+	/**
+	 * 蒐集要包Jar檔的class
+	 * @param binFolder
+	 * @param fullPackageName
+	 * @return
+	 */
+	private File[] getWillBeJaredClasses(File binFolder, String fullPackageName) {
+		String[] splitedPackageName = splitNameByDot(fullPackageName);
+		File willBeListedDir = binFolder;
+		for(int i = 0; i<splitedPackageName.length; i++) {
+			for(File currentFolder: willBeListedDir.listFiles()) {
+				if(currentFolder.getName().equals(splitedPackageName[i])) {
+					willBeListedDir = currentFolder;
+					break;
+				}
+			}
+		}
+		return willBeListedDir.listFiles();
 	}
 }
