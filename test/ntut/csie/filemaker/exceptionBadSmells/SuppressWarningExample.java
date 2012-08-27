@@ -180,11 +180,19 @@ public class SuppressWarningExample {
 		}
 	}
 	
-	private void throwSocketTimeoutException() throws SocketTimeoutException {
+	private void throwSocketTimeoutException() throws SocketTimeoutException{
 		throw new SocketTimeoutException();
 	}
 	
 	private void throwInterruptedIOException() throws InterruptedIOException {
+		throw new InterruptedIOException();
+	}
+	
+	public void twoExceptionForMethodGetExceptionList() throws SocketTimeoutException, InterruptedIOException {
+		throw new SocketTimeoutException();
+	}
+	
+	public void multiExceptionForMethodGetExceptionList() throws InterruptedIOException, ArithmeticException, Exception {
 		throw new InterruptedIOException();
 	}
 }

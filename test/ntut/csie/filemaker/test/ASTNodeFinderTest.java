@@ -64,7 +64,7 @@ public class ASTNodeFinderTest {
 	
 	@Test
 	public void testGetNodeFromSpecifiedClass() throws Exception {
-		/*
+		/**
 		 * 略述
 		 * lineNumber = 1 → 該目標 .java 全部 code
 		 * lineNumber method → 整個 method code
