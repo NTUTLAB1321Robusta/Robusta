@@ -118,6 +118,7 @@ public class ASTNodeFinderTest {
 		//case#6:指向分號get到node是正確的但是行數不match回傳null
 		lineNumber = 46;
 		astNode = ASTNodeFinder.getNodeFromSpecifiedClass(NodeUtilsTestSample.class, projectName, lineNumber);
+		// FIXME the bug need to be fix.
 		assertEquals(lineNumber, compilationUnit.getLineNumber(astNode.getStartPosition()));
 	}
 }

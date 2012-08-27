@@ -3,8 +3,8 @@ package ntut.csie.filemaker.exceptionBadSmells;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Level;
-
 import org.apache.log4j.Logger;
 
 
@@ -82,6 +82,9 @@ public class DummyAndIgnoreExample {
 		}
 	}
 	
+	/**
+	 * 同時測試若在catch內出現的expression statement內含的不是method invocation時，是否能正常運行
+	 */
 	public void true_systemOutPrintlnWithE() {
 		FileInputStream fis = null;
 		try {
@@ -89,6 +92,8 @@ public class DummyAndIgnoreExample {
 			fis.read();
 		} catch (IOException e) {
 			System.out.println(e);	//	DummyHandler
+			String stringToChar = "1001";
+			stringToChar.toString().toCharArray();
 		}
 	}
 	
@@ -99,9 +104,17 @@ public class DummyAndIgnoreExample {
 			fis.read();
 		} catch (IOException e) {
 			System.out.println("I am Dummy.");	//	DummyHandler
+			// 使用者自訂type2 - *.toString時 - true
+			e.toString();
+			// 使用者自訂type2 - *.toString時測*.toCharArray - false
+			e.toString().toCharArray();
 		}
 	}
-	
+
+	/**
+	 * 測試使用者自訂type3
+	 * 同時測試addDummyHandlerSmellInfo的去<>功能是否能正常運行
+	 */
 	public void true_systemOutAndPrintStack() {
 		FileInputStream fis = null;
 		try {
@@ -110,6 +123,9 @@ public class DummyAndIgnoreExample {
 		} catch (IOException e) {
 			e.printStackTrace();	//	DummyHandler
 			System.out.println(e);	//	DummyHandler
+			// 使用者自訂type3 - java.util.ArrayList.add時 - true
+			ArrayList<Boolean> booleanList = new ArrayList<Boolean>();
+			booleanList.add(true);
 		}
 	}
 	
@@ -143,7 +159,7 @@ public class DummyAndIgnoreExample {
 		}
 	}
 	
-	public void true_DummyHandlerInNestedTry() {
+	public void true_DummyHandlerFinallyNestedTry() {
 		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream("");
@@ -161,7 +177,7 @@ public class DummyAndIgnoreExample {
 		}
 	}
 	
-	public void false_IgnoredException() {
+	public void true_IgnoredException() {
 		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream("");
@@ -217,5 +233,67 @@ public class DummyAndIgnoreExample {
 			throw e;
 		}
 		System.out.println("I am not Dummy Handler.");
+	}
+	
+	public void true_DummyHandlerTryNestedTry() {
+		FileInputStream fis = null;
+		try {
+			fis = new FileInputStream("");
+			fis.read();
+			try {
+				fis.close();
+			} catch (IOException e) {
+				e.printStackTrace();	//	這個不應該被當作DummyHandler
+			}
+		} catch (IOException e) {
+			e.printStackTrace();	//	DummyHandler
+		}
+	}
+	
+	public void true_DummyHandlerCatchNestedTry() {
+		FileInputStream fis = null;
+		try {
+			fis = new FileInputStream("");
+			fis.read();
+		} catch (IOException e) {
+			e.printStackTrace();	//	DummyHandler
+			try {
+				fis.close();
+			} catch (IOException e1) {
+				e1.printStackTrace();	//	這個不應該被當作DummyHandler
+			}
+		}
+	}
+	
+	public void false_TryStatementWithoutCatch() {
+		try {
+		} finally {
+		}
+	}
+
+	/**
+	 * 在catch內使用outer class來測試使用者自訂的pattern
+	 */
+	public void false_userPatternType1WhitOuterClass() {
+		FileInputStream fis = null;
+		try {
+			fis = new FileInputStream("");
+			fis.read();
+		} catch (IOException e) {
+			UserDefineDummyHandlerFish userDefineDummyHandlerFish = new UserDefineDummyHandlerFish();
+			// 使用者自訂type1 - [javaFilePath].UserDefineDummyHandlerFish.*時 - true
+			userDefineDummyHandlerFish.eat();
+			/*
+			 * 使用者自訂type1 - [javaFilePath].UserDefineDummyHandlerFish.*時 - true
+			 * swim()有去呼叫System.out.println，但不會被「*.toString」偵測到
+			 */
+			userDefineDummyHandlerFish.swim();
+			/*
+			 * 使用者自訂type1 - [javaFilePath].UserDefineDummyHandlerFish.*時 - false
+			 * 雖然使用userDefineDummyHandlerFish，但此method是繼承Object來的，故不被記入
+			 * 若讓userDefineDummyHandlerFish override此method，就會被記入
+			 */
+			userDefineDummyHandlerFish.toString();
+		}
 	}
 }

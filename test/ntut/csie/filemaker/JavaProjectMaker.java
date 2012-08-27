@@ -52,7 +52,14 @@ public class JavaProjectMaker {
 	/** 存放unit test code的資料夾 */
 	public static final int UNITTEST_CODE_FOLDER = 17;
 	/** 取得RL.jar的路徑 */
-	public static final String LIBRARY_PATH = "lib/RL.jar";
+	public static final String RL_LIBRARY_PATH = "lib/RL.jar";
+	/** 定義強健度等級的class位於哪個Package */
+	public static final String RL_PACKAGE_NAME = "agile.exception";
+	
+	/** 專案存放Jar檔的資料夾名稱 */
+	public static final String LIB_JAR_FOLDERNAME = "lib";
+	/** 專案存放Class檔的資料夾名稱 */
+	public static final String BIN_CLASS_FOLDERNAME = "bin";
 	
 	/**
 	 * 產生一個Java專案。
@@ -300,16 +307,16 @@ public class JavaProjectMaker {
 	}
 	
 	/**
-	 * 在測試專案中產生定義強健度等級註記的類別
-	 * @param libPath 欲加入的lib的儲存位置
+	 * 將定義強健度等級註記的Class檔，打包成Jar並放到待測專案的lib資料夾中
+	 * @param libFoldername 存放.jar檔的資料夾
+	 * @param binFoldername 存放.class檔的資料夾
 	 * @throws CoreException
-	 * @throws IOException 
 	 */
-	public void addAgileExceptionClasses() throws CoreException {
-		createFolder("lib");
+	public void packAgileExceptionClasses2JarIntoLibFolder(String libFoldername, String binFoldername) throws CoreException {
+		createFolder(libFoldername);
 		File libFile = new File(libraryPath);
 		JarFileMaker jarFileMaker = new JarFileMaker();
-		jarFileMaker.createJarFile(libFile, new File("bin").listFiles());
+		jarFileMaker.createJarFile(libFile, new File(binFoldername), "agile.exception");
 	}
 	
 	/**

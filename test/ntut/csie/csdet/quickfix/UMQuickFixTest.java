@@ -50,7 +50,7 @@ public class UMQuickFixTest {
 		String projectName = "UnprotectedMainProgramTest";
 		javaFile2String = new JavaFileToString();
 		javaProjectMaker = new JavaProjectMaker(projectName);
-		javaProjectMaker.addAgileExceptionClasses();
+		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.LIB_JAR_FOLDERNAME, JavaProjectMaker.BIN_CLASS_FOLDERNAME);
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/lib/RL.jar");
 		javaProjectMaker.setJREDefaultContainer();
 		// 根據測試檔案樣本內容建立新的檔案

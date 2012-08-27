@@ -227,18 +227,7 @@ public class SettingPage extends APropertyPage {
 				File jar = new File(project.getLocation().toFile().getPath() + "/lib/RL.jar");
 				JarFileMaker jarFileMaker = new JarFileMaker();
 				File test = new File("bin");
-				jarFileMaker.createJarFile(jar, test.listFiles());
-//				Path jarPath = new Path(jar.getPath());
-//				IJavaProject javaProject = JavaCore.create(project);
-//				try {
-//					IClasspathEntry[] existedEntries = javaProject.getRawClasspath();
-//					IClasspathEntry[] extendedEntries = new IClasspathEntry[existedEntries.length + 1];
-//					System.arraycopy(existedEntries, 0, extendedEntries, 0, existedEntries.length);
-//					extendedEntries[existedEntries.length] = JavaCore.newLibraryEntry(jarPath, null, null);
-//					javaProject.setRawClasspath(extendedEntries, null);
-//				} catch(Exception e1) {
-//					e1.printStackTrace();
-//				}
+				jarFileMaker.createJarFile(jar, test, "agile.exception");
 			}
 		});
 

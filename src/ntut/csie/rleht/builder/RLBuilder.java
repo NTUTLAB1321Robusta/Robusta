@@ -11,6 +11,7 @@ import ntut.csie.csdet.preference.JDomUtil;
 import ntut.csie.csdet.visitor.CarelessCleanupVisitor;
 import ntut.csie.csdet.visitor.DummyHandlerVisitor;
 import ntut.csie.csdet.visitor.IgnoreExceptionVisitor;
+import ntut.csie.csdet.visitor.NestedTryStatementVisitor;
 import ntut.csie.csdet.visitor.UnprotectedMainProgramVisitor;
 import ntut.csie.csdet.visitor.OverLoggingDetector;
 import ntut.csie.java.util.CastingObject;
@@ -345,17 +346,18 @@ public class RLBuilder extends IncrementalProjectBuilder {
 						}
 					}
 					
-					//取得專案中的Nested Try Block
-					nestedTryList = visitor.getNestedTryList();
-					csIdx = -1;
-					//NestedTry List不為Null，且使用者沒有抑制Method內所有的Nested Try Marker
+					NestedTryStatementVisitor nestedTryStatementVisitor = null;
+					nestedTryStatementVisitor = new NestedTryStatementVisitor(root);
+					method.accept(nestedTryStatementVisitor);
+					nestedTryList = nestedTryStatementVisitor.getNestedTryStatementList();
+					int nestedTryStatementIndex = -1;
 					if(nestedTryList != null && detMethodSmell.get(RLMarkerAttribute.CS_NESTED_TRY_BLOCK)) {
-						for(MarkerInfo msg : nestedTryList) {
-							csIdx++;
-							String errmsg = "EH Smell Type:["+ msg.getCodeSmellType() + "]未處理!!!";
+						for(MarkerInfo markerInfo : nestedTryList) {
+							nestedTryStatementIndex ++;
+							String errmsg = "EH Smell Type:["+ markerInfo.getCodeSmellType() + "]未處理!!!";
 							//貼marker
-							this.addMarker(file, errmsg, msg.getLineNumber(), IMarker.SEVERITY_WARNING,
-									msg.getCodeSmellType(), msg, csIdx, methodIdx);						
+							this.addMarker(file, errmsg, markerInfo.getLineNumber(), IMarker.SEVERITY_WARNING,
+									markerInfo.getCodeSmellType(), markerInfo, csIdx, methodIdx);	
 						}
 					}
 					
