@@ -16,6 +16,7 @@ import org.eclipse.ui.IMarkerResolution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 /**
  * 在Marker上面的Quick Fix中，加入刪除此Statement的功能
  * @author Shiau
@@ -80,7 +81,6 @@ public class OLQuickFix extends BaseQuickFix implements IMarkerResolution{
 	 */
 	private void deleteMessage(int msgIdx) {
 		try {
-			actRoot.recordModifications();
 			//取得EH smell的資訊
 			MarkerInfo msg = overLoggingList.get(msgIdx);
 

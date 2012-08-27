@@ -96,45 +96,48 @@ public class DummyHandlerVisitor extends ASTVisitor {
 	 * @param node ExpressionStatement Node
 	 */
 	private void addDummyHandlerSmellInfo(ExpressionStatement node) {
-		MethodInvocation mi = (MethodInvocation)node.getExpression();
-		// 取得Method的Library名稱
-		String libName = mi.resolveMethodBinding().getDeclaringClass().getQualifiedName();
-		// 取得Method的名稱
-		String methodName = mi.resolveMethodBinding().getName();
+		// 若expression statement內的是methodInvocation才可以做下去
+		if (node.getExpression().getNodeType() == ASTNode.METHOD_INVOCATION) {
+			MethodInvocation mi = (MethodInvocation) node.getExpression();
+			// 取得Method的Library名稱
+			String libName = mi.resolveMethodBinding().getDeclaringClass().getQualifiedName();
+			// 取得Method的名稱
+			String methodName = mi.resolveMethodBinding().getName();
 
-		// 如果該行有Array(如java.util.ArrayList<java.lang.Boolean>)，把<>內容拿掉
-		if (libName.indexOf("<") != -1)
-			libName = libName.substring(0, libName.indexOf("<"));
-		
-		Iterator<String> libIt = libMap.keySet().iterator();
-		// 判斷是否要偵測 且 此句也包含欲偵測Library
-		while(libIt.hasNext()){
-			String temp = libIt.next();
-			CatchClause cc = (CatchClause) NodeUtils.getSpecifiedParentNode(node, ASTNode.CATCH_CLAUSE);
-			SingleVariableDeclaration svd = cc.getException();
-			MarkerInfo markerInfo = new MarkerInfo(	RLMarkerAttribute.CS_DUMMY_HANDLER, svd
-													.resolveBinding().getType(), cc.toString(), cc
-													.getStartPosition(), root.getLineNumber(node
-													.getStartPosition()), svd.getType().toString());
+			// 如果該行有Array(如java.util.ArrayList<java.lang.Boolean>)，把<>與其內容都拿掉
+			if (libName.indexOf("<") != -1)
+				libName = libName.substring(0, libName.indexOf("<"));
 			
-			// 只偵測Library
-			if (libMap.get(temp) == UserDefinedConstraintsType.Library) {
-				//若Library長度大於偵測長度，否則表不相同直接略過
-				if (libName.length() >= temp.length()) {
-					//比較前半段長度的名稱是否相同
-					if (libName.substring(0, temp.length()).equals(temp))
+			Iterator<String> libIt = libMap.keySet().iterator();
+			// 判斷是否要偵測 且 此句也包含欲偵測Library
+			while(libIt.hasNext()){
+				String temp = libIt.next();
+				CatchClause cc = (CatchClause) NodeUtils.getSpecifiedParentNode(node, ASTNode.CATCH_CLAUSE);
+				SingleVariableDeclaration svd = cc.getException();
+				MarkerInfo markerInfo = new MarkerInfo(	RLMarkerAttribute.CS_DUMMY_HANDLER, svd
+														.resolveBinding().getType(), cc.toString(), cc
+														.getStartPosition(), root.getLineNumber(node
+														.getStartPosition()), svd.getType().toString());
+				
+				// 只偵測Library
+				if (libMap.get(temp) == UserDefinedConstraintsType.Library) {
+					//若Library長度大於偵測長度，否則表不相同直接略過
+					if (libName.length() >= temp.length()) {
+						//比較前半段長度的名稱是否相同
+						if (libName.substring(0, temp.length()).equals(temp))
+							dummyHandlerList.add(markerInfo);
+					}
+				// 只偵測Method
+				} else if (libMap.get(temp) == UserDefinedConstraintsType.Method) {
+					if (methodName.equals(temp))
 						dummyHandlerList.add(markerInfo);
-				}
-			// 只偵測Method
-			} else if (libMap.get(temp) == UserDefinedConstraintsType.Method) {
-				if (methodName.equals(temp))
-					dummyHandlerList.add(markerInfo);
-			// 偵測Library.Method的形式
-			} else if (libMap.get(temp) == UserDefinedConstraintsType.FullQulifiedMethod) {
-				int pos = temp.lastIndexOf(".");
-				if (libName.equals(temp.substring(0, pos)) &&
-					methodName.equals(temp.substring(pos + 1))) {
-					dummyHandlerList.add(markerInfo);
+				// 偵測Library.Method的形式
+				} else if (libMap.get(temp) == UserDefinedConstraintsType.FullQulifiedMethod) {
+					int pos = temp.lastIndexOf(".");
+					if (libName.equals(temp.substring(0, pos)) &&
+						methodName.equals(temp.substring(pos + 1))) {
+						dummyHandlerList.add(markerInfo);
+					}
 				}
 			}
 		}
