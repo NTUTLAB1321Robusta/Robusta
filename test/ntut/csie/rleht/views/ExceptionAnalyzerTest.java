@@ -11,6 +11,7 @@ import ntut.csie.csdet.data.SSMessage;
 import ntut.csie.csdet.preference.JDomUtil;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
+import ntut.csie.filemaker.ASTNodeFinder;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.exceptionBadSmells.SuppressWarningExample;
@@ -23,6 +24,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.junit.After;
 import org.junit.Before;
@@ -85,13 +87,20 @@ public class ExceptionAnalyzerTest {
 		javaProjectMaker.deleteProject();
 	}
 	
-	@Test
-	public void testVisitNode() throws Exception {
-		fail("Not yet implemented");
-	}
+//	@Test
+//	public void testVisitNode() throws Exception {
+//		fail("Not yet implemented");
+//	}
+//	
+//	@Test
+//	public void testFindExceptionTypes() throws Exception {
+//		fail("Not yet implemented");
+//	}
 	
 	@Test
-	public void testFindExceptionTypes() throws Exception {
+	public void testFindAnnotation() throws Exception {
+		ASTNode astNode = ASTNodeFinder.getNodeFromSpecifiedClass(SuppressWarningExample.class, "ExceptionAnalyerTest", 179);
+		System.out.println("我是開心果但是熱量高");
 		fail("Not yet implemented");
 	}
 	
@@ -103,49 +112,74 @@ public class ExceptionAnalyzerTest {
 		List<ASTNode> methodlist = astMethodCollector.getMethodList();
 		List<RLMessage> totalRLList = new ArrayList<RLMessage>();
 		
-		Method methodAddRL = ExceptionAnalyzer.class.getDeclaredMethod("addRL", RLMessage.class, int.class);
-		methodAddRL.setAccessible(true);
+		Method methodAddRLForInt = ExceptionAnalyzer.class.getDeclaredMethod("addRL", RLMessage.class, int.class);
+		methodAddRLForInt.setAccessible(true);
+		
+		Method methodAddRLForString = ExceptionAnalyzer.class.getDeclaredMethod("addRL", RLMessage.class, String.class);
+		methodAddRLForString.setAccessible(true);
 		
 		Method methodGetMethodAnnotation = ExceptionAnalyzer.class.getDeclaredMethod("getMethodAnnotation", ASTNode.class);
 		methodGetMethodAnnotation.setAccessible(true);
 		
-		exceptionAnalyzer = new ExceptionAnalyzer(compilationUnit, methodlist.get(7).getStartPosition(), 0);
-		methodGetMethodAnnotation.invoke(exceptionAnalyzer, methodlist.get(7));
-		totalRLList.addAll(exceptionAnalyzer.getMethodRLAnnotationList());
-		assertEquals(0, exceptionAnalyzer.getExceptionList().size());
-		methodAddRL.invoke(exceptionAnalyzer, totalRLList.get(0), 0);
-		assertEquals(1, exceptionAnalyzer.getExceptionList().size());
-	}
+		assertEquals(0, totalRLList.size());
+		for (int i = 0; i < methodlist.size(); i++) {
+			exceptionAnalyzer = new ExceptionAnalyzer(compilationUnit, methodlist.get(i).getStartPosition(), 0);
+			methodGetMethodAnnotation.invoke(exceptionAnalyzer, methodlist.get(i));
+			totalRLList.addAll(exceptionAnalyzer.getMethodRLAnnotationList());
+		}
+		// 抓到三個RL註記的method
+		assertEquals(3, totalRLList.size());
+		for (int i = 0; i < totalRLList.size(); i++) {
+			methodAddRLForInt.invoke(exceptionAnalyzer, totalRLList.get(i), i);
+		}
+		// 將三個RL註記的method利用addRL這個method是否成功加入
+		assertEquals(3, exceptionAnalyzer.getExceptionList().size());
 
-	@Test
-	public void testExceptionAnalyzerCompilationUnitIntInt() {
-		fail("Not yet implemented");
+		totalRLList =  new ArrayList<RLMessage>();
+		
+		assertEquals(0, totalRLList.size());
+		for (int i = 0; i < methodlist.size(); i++) {
+			exceptionAnalyzer = new ExceptionAnalyzer(compilationUnit, methodlist.get(i).getStartPosition(), 0);
+			methodGetMethodAnnotation.invoke(exceptionAnalyzer, methodlist.get(i));
+			totalRLList.addAll(exceptionAnalyzer.getMethodRLAnnotationList());
+		}
+		// 抓到三個RL註記的method
+		assertEquals(3, totalRLList.size());
+		for (int i = 0; i < totalRLList.size(); i++) {
+			methodAddRLForString.invoke(exceptionAnalyzer, totalRLList.get(i), "父母親的id哀豬叉踹." + i);
+		}
+		assertEquals(3, exceptionAnalyzer.getExceptionList().size());
 	}
-
-	@Test
-	public void testExceptionAnalyzerCompilationUnitBooleanString() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testClear() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetNestedTryList() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetCurrentMethodNode() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetCurrentRLAnnotationNode() {
-		fail("Not yet implemented");
-	}
+//
+//	@Test
+//	public void testExceptionAnalyzerCompilationUnitIntInt() {
+//		fail("Not yet implemented");
+//	}
+//
+//	@Test
+//	public void testExceptionAnalyzerCompilationUnitBooleanString() {
+//		fail("Not yet implemented");
+//	}
+//
+//	@Test
+//	public void testClear() {
+//		fail("Not yet implemented");
+//	}
+//
+//	@Test
+//	public void testGetNestedTryList() {
+//		fail("Not yet implemented");
+//	}
+//
+//	@Test
+//	public void testGetCurrentMethodNode() {
+//		fail("Not yet implemented");
+//	}
+//
+//	@Test
+//	public void testGetCurrentRLAnnotationNode() {
+//		fail("Not yet implemented");
+//	}
 
 	@Test
 	public void testGetExceptionList() throws Exception {
