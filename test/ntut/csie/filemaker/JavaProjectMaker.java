@@ -51,8 +51,6 @@ public class JavaProjectMaker {
 	public static final int FUNTIONAL_CODE_FOLDER = 16;
 	/** 存放unit test code的資料夾 */
 	public static final int UNITTEST_CODE_FOLDER = 17;
-	/** 取得RL.jar的路徑 */
-	public static final String RL_LIBRARY_PATH = "lib/RL.jar";
 	/** 定義強健度等級的class位於哪個Package */
 	public static final String RL_PACKAGE_NAME = "agile.exception";
 	
@@ -60,7 +58,8 @@ public class JavaProjectMaker {
 	public static final String LIB_JAR_FOLDERNAME = "lib";
 	/** 專案存放Class檔的資料夾名稱 */
 	public static final String BIN_CLASS_FOLDERNAME = "bin";
-	
+	/** 取得RL.jar的路徑 */
+	public static final String RL_LIBRARY_PATH = LIB_JAR_FOLDERNAME + "/RL.jar";	
 	/**
 	 * 產生一個Java專案。
 	 * 用法：<br />
@@ -94,7 +93,7 @@ public class JavaProjectMaker {
 		/* 預設資料夾是src & test */
 		sourceCodeFolderName = "src";
 		testCodeFolderName = "test";
-		libraryPath = _project.getLocation().toFile().getAbsolutePath() + "/lib/RL.jar";
+		libraryPath = _project.getLocation().toFile().getAbsolutePath() + "/" + RL_LIBRARY_PATH;
 	}
 	
 	/**

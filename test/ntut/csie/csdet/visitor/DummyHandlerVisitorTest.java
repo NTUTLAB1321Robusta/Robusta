@@ -32,7 +32,7 @@ public class DummyHandlerVisitorTest {
 	JavaProjectMaker javaProjectMaker;
 	String javaProjectName;
 	JavaFileToString javaFile2String;
-	String javaFileName;
+//	String javaFileName;
 	CompilationUnit compilationUnit;
 	DummyHandlerVisitor dummyhandlerBSV;
 	SmellSettings smellSettings;
@@ -43,7 +43,7 @@ public class DummyHandlerVisitorTest {
 
 	public DummyHandlerVisitorTest() {
 		javaProjectName = "DummyHandlerTest";
-		javaFileName = "ntut.csie.filemaker.exceptionBadSmells";
+//		javaFileName = "ntut.csie.filemaker.exceptionBadSmells";
 	}
 	
 	@Before
@@ -57,13 +57,23 @@ public class DummyHandlerVisitorTest {
 		// 建立新的檔案DummyAndIgnoreExample
 		javaFile2String = new JavaFileToString();
 		javaFile2String.read(DummyAndIgnoreExample.class, "test");
-		javaProjectMaker.createJavaFile(javaFileName, "DummyAndIgnoreExample.java", 
-				"package " + javaFileName + ";\n" + javaFile2String.getFileContent());
+//		javaProjectMaker.createJavaFile(javaFileName, "DummyAndIgnoreExample.java", 
+//				"package " + javaFileName + ";\n" + javaFile2String.getFileContent());
+		javaProjectMaker.createJavaFile(
+				DummyAndIgnoreExample.class.getPackage().getName(),
+				DummyAndIgnoreExample.class.getSimpleName() + ".java",
+				"package " + DummyAndIgnoreExample.class.getPackage().getName() + ";\n"
+				+ javaFile2String.getFileContent());
 		// 繼續建立測試用的UserDefineDummyHandlerFish
 		javaFile2String.clear();
 		javaFile2String.read(UserDefineDummyHandlerFish.class, "test");
-		javaProjectMaker.createJavaFile(javaFileName, "UserDefineDummyHandlerFish.java", 
-				"package " + javaFileName + ";\n" + javaFile2String.getFileContent());
+		javaProjectMaker.createJavaFile(
+				UserDefineDummyHandlerFish.class.getPackage().getName(),
+				UserDefineDummyHandlerFish.class.getSimpleName() + ".java",
+				"package " + UserDefineDummyHandlerFish.class.getPackage().getName() + ";\n"
+				+ javaFile2String.getFileContent());
+//		javaProjectMaker.createJavaFile(javaFileName, "UserDefineDummyHandlerFish.java", 
+//				"package " + javaFileName + ";\n" + javaFile2String.getFileContent());
 
 		// 建立XML
 		argForSettingXML = new String[] {
@@ -281,7 +291,7 @@ public class DummyHandlerVisitorTest {
 //		java.util.ArrayList<java.lang.Boolean> case4 statement
 		
 		initializeMethodCollectList();
-		String testClassPattern = javaFileName + ".UserDefineDummyHandlerFish.*";
+		String testClassPattern = UserDefineDummyHandlerFish.class.getName() + ".*";
 		
 		// 確認初始值
 		setEmptySetting();
