@@ -58,7 +58,8 @@ public class DHQuickFixTest {
 		jpm.setJREDefaultContainer();
 		// 新增欲載入的library
 		jpm.addJarFromProjectToBuildPath("lib\\log4j-1.2.15.jar");
-		jpm.addJarFromProjectToBuildPath("..\\SingleSharedLibrary\\common\\agile.rl.jar");
+		jpm.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.LIB_JAR_FOLDERNAME, JavaProjectMaker.BIN_CLASS_FOLDERNAME);
+		jpm.addJarFromTestProjectToBuildPath("/lib/RL.jar");
 		// 根據測試檔案樣本內容建立新的檔案
 		jpm.createJavaFile("ntut.csie.exceptionBadSmells", "DummyHandlerExample.java", "package ntut.csie.exceptionBadSmells;\n" + jfs.getFileContent());
 		// 建立XML

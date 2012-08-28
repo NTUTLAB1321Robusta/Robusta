@@ -44,8 +44,8 @@ public class RLBuilderTest {
 		rlBuilder = new RLBuilder();
 		javaFile2String = new JavaFileToString();
 		javaProjectMaker = new JavaProjectMaker(projectName);
-//		javaProjectMaker.addAgileExceptionClasses();
-//		javaProjectMaker.addJarFromTestProjectToBuildPath("/lib/RL.jar");
+		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.LIB_JAR_FOLDERNAME, JavaProjectMaker.BIN_CLASS_FOLDERNAME);
+		javaProjectMaker.addJarFromTestProjectToBuildPath("/lib/RL.jar");
 		javaProjectMaker.setJREDefaultContainer();
 		// 根據測試檔案樣本內容建立新的檔案
 		javaFile2String.read(CarelessCleanupExample.class, "test");

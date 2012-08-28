@@ -42,6 +42,7 @@ public class NodeUtilsTestSample {
 		// NodeUtils不會抓出他是實作Closeable的
 		fis.toString();
 		// NodeUtils會抓出他是實作Closeable的
-		fis.close();
+		fis.close()
+		;
 	}
 }
