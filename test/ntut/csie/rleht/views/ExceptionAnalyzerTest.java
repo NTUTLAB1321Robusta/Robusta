@@ -11,7 +11,6 @@ import ntut.csie.csdet.data.SSMessage;
 import ntut.csie.csdet.preference.JDomUtil;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
-import ntut.csie.filemaker.ASTNodeFinder;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.exceptionBadSmells.SuppressWarningExample;
@@ -24,8 +23,12 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.IAnnotationBinding;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.TryStatement;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,7 +54,7 @@ public class ExceptionAnalyzerTest {
 		javaProjectMaker.addJarFromProjectToBuildPath("lib\\log4j-1.2.15.jar");
 		
 		// 根據測試檔案樣本內容建立新的檔案
-		javaProjectMaker.createJavaFile("ntut.csie.exceptionBadSmells", "SuppressWarningExample.java", "package ntut.csie.exceptionBadSmells;\n" + javaFileToString.getFileContent());
+		javaProjectMaker.createJavaFile("ntut.csie.filemaker.exceptionBadSmells", "SuppressWarningExample.java", "package ntut.csie.filemaker.exceptionBadSmells;\n" + javaFileToString.getFileContent());
 		javaFileToString.clear();
 		javaFileToString.read(UnprotectedMainProgramWithoutTryExample.class, "test");
 		javaProjectMaker.createJavaFile(
@@ -62,7 +65,7 @@ public class ExceptionAnalyzerTest {
 		
 		// 建立 XML
 		CreateSettings();
-		Path path = new Path("ExceptionAnalyerTest\\src\\ntut\\csie\\exceptionBadSmells\\SuppressWarningExample.java");
+		Path path = new Path("ExceptionAnalyerTest\\src\\ntut\\csie\\filemaker\\exceptionBadSmells\\SuppressWarningExample.java");
 		
 		// Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
@@ -99,8 +102,24 @@ public class ExceptionAnalyzerTest {
 	
 	@Test
 	public void testFindAnnotation() throws Exception {
-		ASTNode astNode = ASTNodeFinder.getNodeFromSpecifiedClass(SuppressWarningExample.class, "ExceptionAnalyerTest", 179);
-		System.out.println("我是開心果但是熱量高");
+		Method methodFindAnnotation = ExceptionAnalyzer.class.getDeclaredMethod("findAnnotation", ASTNode.class, IAnnotationBinding[].class);
+		methodFindAnnotation.setAccessible(true);
+		
+		ASTMethodCollector astMethodCollector = new ASTMethodCollector();
+		compilationUnit.accept(astMethodCollector);
+		
+		List<ASTNode> methodlist = astMethodCollector.getMethodList();
+		MethodDeclaration mDeclaration = (MethodDeclaration)methodlist.get(7);
+		TryStatement tryStatement = (TryStatement) mDeclaration.getBody().statements().get(1);
+		CatchClause catchClause = (CatchClause)tryStatement.catchClauses().get(0);
+		org.eclipse.jdt.core.dom.ThrowStatement throwStatement = (org.eclipse.jdt.core.dom.ThrowStatement)catchClause.getBody().statements().get(0);
+		ClassInstanceCreation classInstanceCreation = (ClassInstanceCreation)throwStatement.getExpression();
+		classInstanceCreation.resolveConstructorBinding().getAnnotations();
+		
+		exceptionAnalyzer = new ExceptionAnalyzer(compilationUnit, methodlist.get(7).getStartPosition(), 0);
+		methodFindAnnotation.invoke(exceptionAnalyzer, (ASTNode)classInstanceCreation, classInstanceCreation.resolveConstructorBinding().getAnnotations());
+		
+		System.out.println(classInstanceCreation.toString()+"\n我是開心果但是熱量高\n");
 		fail("Not yet implemented");
 	}
 	
@@ -127,12 +146,12 @@ public class ExceptionAnalyzerTest {
 			methodGetMethodAnnotation.invoke(exceptionAnalyzer, methodlist.get(i));
 			totalRLList.addAll(exceptionAnalyzer.getMethodRLAnnotationList());
 		}
-		// 抓到三個RL註記的method
+		// 抓到三個 RL 註記的 method overloading for addRL(RLMessage rlmsg, int currentCatch)
 		assertEquals(3, totalRLList.size());
 		for (int i = 0; i < totalRLList.size(); i++) {
 			methodAddRLForInt.invoke(exceptionAnalyzer, totalRLList.get(i), i);
 		}
-		// 將三個RL註記的method利用addRL這個method是否成功加入
+		// 將三個 RL 註記的 method 利用 addRL 這個 method 是否成功加入 
 		assertEquals(3, exceptionAnalyzer.getExceptionList().size());
 
 		totalRLList =  new ArrayList<RLMessage>();
@@ -143,7 +162,7 @@ public class ExceptionAnalyzerTest {
 			methodGetMethodAnnotation.invoke(exceptionAnalyzer, methodlist.get(i));
 			totalRLList.addAll(exceptionAnalyzer.getMethodRLAnnotationList());
 		}
-		// 抓到三個RL註記的method
+		// 抓到三個 RL 註記的 method overloading for addRL(RLMessage rlmsg, String key) 
 		assertEquals(3, totalRLList.size());
 		for (int i = 0; i < totalRLList.size(); i++) {
 			methodAddRLForString.invoke(exceptionAnalyzer, totalRLList.get(i), "父母親的id哀豬叉踹." + i);
