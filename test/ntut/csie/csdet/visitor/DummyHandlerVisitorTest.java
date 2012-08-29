@@ -6,11 +6,13 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import ntut.csie.csdet.preference.SmellSettings;
+import ntut.csie.filemaker.ASTNodeFinder;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.exceptionBadSmells.DummyAndIgnoreExample;
 import ntut.csie.filemaker.exceptionBadSmells.UserDefineDummyHandlerFish;
 import ntut.csie.rleht.builder.ASTMethodCollector;
+import ntut.csie.robusta.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
@@ -32,18 +34,16 @@ public class DummyHandlerVisitorTest {
 	JavaProjectMaker javaProjectMaker;
 	String javaProjectName;
 	JavaFileToString javaFile2String;
-//	String javaFileName;
 	CompilationUnit compilationUnit;
-	DummyHandlerVisitor dummyhandlerBSV;
+	DummyHandlerVisitor dummyHandlerVisitor;
 	SmellSettings smellSettings;
 	ASTMethodCollector methodCollector;
 	List<ASTNode> methodCollectList;
-	MethodDeclaration mDeclaration;
-	String[] argForSettingXML;
+//	MethodDeclaration mDeclaration;
+	String[] dummyHandlerPatternsInXML;
 
 	public DummyHandlerVisitorTest() {
 		javaProjectName = "DummyHandlerTest";
-//		javaFileName = "ntut.csie.filemaker.exceptionBadSmells";
 	}
 	
 	@Before
@@ -51,39 +51,40 @@ public class DummyHandlerVisitorTest {
 		// 準備測試檔案樣本內容
 		javaProjectMaker = new JavaProjectMaker(javaProjectName);
 		javaProjectMaker.setJREDefaultContainer();
+		
 		// 新增欲載入的library
 		javaProjectMaker.addJarFromProjectToBuildPath("lib/log4j-1.2.15.jar");
 		
 		// 建立新的檔案DummyAndIgnoreExample
 		javaFile2String = new JavaFileToString();
-		javaFile2String.read(DummyAndIgnoreExample.class, "test");
-//		javaProjectMaker.createJavaFile(javaFileName, "DummyAndIgnoreExample.java", 
-//				"package " + javaFileName + ";\n" + javaFile2String.getFileContent());
+		javaFile2String.read(DummyAndIgnoreExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				DummyAndIgnoreExample.class.getPackage().getName(),
-				DummyAndIgnoreExample.class.getSimpleName() + ".java",
+				DummyAndIgnoreExample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
 				"package " + DummyAndIgnoreExample.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
+		
 		// 繼續建立測試用的UserDefineDummyHandlerFish
 		javaFile2String.clear();
-		javaFile2String.read(UserDefineDummyHandlerFish.class, "test");
+		javaFile2String.read(UserDefineDummyHandlerFish.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				UserDefineDummyHandlerFish.class.getPackage().getName(),
-				UserDefineDummyHandlerFish.class.getSimpleName() + ".java",
+				UserDefineDummyHandlerFish.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
 				"package " + UserDefineDummyHandlerFish.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
-//		javaProjectMaker.createJavaFile(javaFileName, "UserDefineDummyHandlerFish.java", 
-//				"package " + javaFileName + ";\n" + javaFile2String.getFileContent());
-
+		
 		// 建立XML
-		argForSettingXML = new String[] {
+		dummyHandlerPatternsInXML = new String[] {
 				SmellSettings.EXTRARULE_ePrintStackTrace, SmellSettings.EXTRARULE_SystemErrPrint, 
 				SmellSettings.EXTRARULE_SystemErrPrintln, SmellSettings.EXTRARULE_SystemOutPrint, 
 				SmellSettings.EXTRARULE_SystemOutPrintln, SmellSettings.EXTRARULE_JavaUtilLoggingLogger, 
 				SmellSettings.EXTRARULE_OrgApacheLog4j};
-		setNewSettingsWithExtraRules(argForSettingXML);
+		setNewSettingsWithExtraRules(dummyHandlerPatternsInXML);
 		
-		Path path = new Path("DummyHandlerTest/src/ntut/csie/filemaker/exceptionBadSmells/DummyAndIgnoreExample.java");
+		Path path = new Path(javaProjectName + "/"
+				+ JavaProjectMaker.FOLDERNAME_SOURCE + "/"
+				+ PathUtils.dot2slash(DummyAndIgnoreExample.class.getName())
+				+ JavaProjectMaker.JAVA_FILE_EXTENSION);
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -93,7 +94,7 @@ public class DummyHandlerVisitorTest {
 		// 取得AST
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
-		dummyhandlerBSV = new DummyHandlerVisitor(compilationUnit);
+		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnit);
 	}
 
 	@After
@@ -106,177 +107,227 @@ public class DummyHandlerVisitorTest {
 	@Test
 	public void testVisitMemberData() {
 		int dummy = 0;
-		compilationUnit.accept(dummyhandlerBSV);
-		if(dummyhandlerBSV.getDummyList() != null)
-			dummy = dummyhandlerBSV.getDummyList().size();
+		compilationUnit.accept(dummyHandlerVisitor);
+		if(dummyHandlerVisitor.getDummyList() != null)
+			dummy = dummyHandlerVisitor.getDummyList().size();
 		
 		// 驗證總共抓到幾個bad smell
 		assertEquals(16, dummy);
-		assertEquals(2, dummyhandlerBSV.getFinallyCounter());
-		assertEquals(25, dummyhandlerBSV.getCatchCounter());
-		assertEquals(25, dummyhandlerBSV.getTryCounter());
+		assertEquals(2, dummyHandlerVisitor.getFinallyCounter());
+		assertEquals(25, dummyHandlerVisitor.getCatchCounter());
+		assertEquals(25, dummyHandlerVisitor.getTryCounter());
 	}
 	
 	@Test
 	public void testVisitReturnValue() throws Exception {
-		initializeMethodCollectList();
+		MethodDeclaration md = null;
+		TryStatement tryStatement = null;
 		
 		// 驗證return true的非巢狀case
-		mDeclaration = getMethodDeclarationByName(methodCollectList, "true_printStackTrace_protected");
-		TryStatement tryStatement = (TryStatement) mDeclaration.getBody().statements().get(1);
-		assertTrue(dummyhandlerBSV.visit(tryStatement));
-
+		md = ASTNodeFinder.getMethodDeclarationNodeByName(
+				compilationUnit, "true_printStackTrace_protected");	
+		tryStatement = (TryStatement) md.getBody().statements().get(1);
+		assertTrue(dummyHandlerVisitor.visit(tryStatement)); 
+		
 		// 驗證return false的巢狀final-try case
-		mDeclaration = getMethodDeclarationByName(methodCollectList, "true_DummyHandlerFinallyNestedTry");
-		tryStatement = (TryStatement) mDeclaration.getBody().statements().get(1);
+		md = ASTNodeFinder.getMethodDeclarationNodeByName(
+				compilationUnit, "true_DummyHandlerFinallyNestedTry");	
+		tryStatement = (TryStatement) md.getBody().statements().get(1);
 		tryStatement = (TryStatement) tryStatement.getFinally().statements().get(0);
-		assertEquals(false, dummyhandlerBSV.visit(tryStatement));
+		assertEquals(false, dummyHandlerVisitor.visit(tryStatement));
 
 		// 驗證return false的巢狀try-try case
-		mDeclaration = getMethodDeclarationByName(methodCollectList, "true_DummyHandlerTryNestedTry");
-		tryStatement = (TryStatement) mDeclaration.getBody().statements().get(1);
+		md = ASTNodeFinder.getMethodDeclarationNodeByName(
+				compilationUnit, "true_DummyHandlerTryNestedTry");	
+		tryStatement = (TryStatement) md.getBody().statements().get(1);
 		tryStatement = (TryStatement) tryStatement.getBody().statements().get(2);
-		assertEquals(false, dummyhandlerBSV.visit(tryStatement));
+		assertEquals(false, dummyHandlerVisitor.visit(tryStatement));
 		
 		// 驗證return false的巢狀catch-try case
-		mDeclaration = getMethodDeclarationByName(methodCollectList, "true_DummyHandlerCatchNestedTry");
-		tryStatement = (TryStatement) mDeclaration.getBody().statements().get(1);
+		md = ASTNodeFinder.getMethodDeclarationNodeByName(
+				compilationUnit, "true_DummyHandlerCatchNestedTry");		
+		tryStatement = (TryStatement) md.getBody().statements().get(1);
 		CatchClause catchStatement = (CatchClause) tryStatement.catchClauses().get(0);
 		tryStatement = (TryStatement) catchStatement.getBody().statements().get(1);
-		assertFalse(dummyhandlerBSV.visit(tryStatement));
+		assertFalse(dummyHandlerVisitor.visit(tryStatement));
 	}
 
 	@Test
 	public void testVisitTryStatementfinallyCounter() {
-		initializeMethodCollectList();
-		mDeclaration = getMethodDeclarationByName(methodCollectList, "true_DummyHandlerFinallyNestedTry");
-		TryStatement tryStatement = (TryStatement) mDeclaration.getBody().statements().get(1);
-		assertEquals(0, dummyhandlerBSV.getFinallyCounter());
-		assertEquals(0, dummyhandlerBSV.getCatchCounter());
-		assertEquals(0, dummyhandlerBSV.getTryCounter());
-		assertTrue(dummyhandlerBSV.visit(tryStatement));
-		assertEquals(1, dummyhandlerBSV.getFinallyCounter());
-		assertEquals(1, dummyhandlerBSV.getCatchCounter());
-		assertEquals(1, dummyhandlerBSV.getTryCounter());
+		MethodDeclaration md = ASTNodeFinder.getMethodDeclarationNodeByName(
+				compilationUnit, "true_DummyHandlerFinallyNestedTry");	
+		TryStatement tryStatement = (TryStatement) md.getBody().statements().get(1);
+		assertEquals(0, dummyHandlerVisitor.getFinallyCounter());
+		assertEquals(0, dummyHandlerVisitor.getCatchCounter());
+		assertEquals(0, dummyHandlerVisitor.getTryCounter());
+		assertTrue(dummyHandlerVisitor.visit(tryStatement));
+		assertEquals(1, dummyHandlerVisitor.getFinallyCounter());
+		assertEquals(1, dummyHandlerVisitor.getCatchCounter());
+		assertEquals(1, dummyHandlerVisitor.getTryCounter());
 	}
 	
 	@Test
 	public void testVisitMethodInvocation() {
-		initializeMethodCollectList();
-		mDeclaration = getMethodDeclarationByName(methodCollectList, "true_printStackTrace_public");
-		ExpressionStatement eStatement = getExpressionStatementFromMethodDeclaration(mDeclaration, 1, 0, 0);
+		MethodDeclaration md = ASTNodeFinder.getMethodDeclarationNodeByName(
+				compilationUnit, "true_printStackTrace_public");
+		ExpressionStatement eStatement = getExpressionStatementFromMethodDeclaration(md, 1, 0, 0);
 		MethodInvocation methodInvocation = (MethodInvocation) eStatement.getExpression();
-		assertFalse(dummyhandlerBSV.visit(methodInvocation));
-		assertEquals(1, dummyhandlerBSV.getDummyList().size());
+		assertFalse(dummyHandlerVisitor.visit(methodInvocation));
+		assertEquals(1, dummyHandlerVisitor.getDummyList().size());
 	}
 	
 	@Test
 	public void testDetectDummyHandler() {
 		// 確認初始值
-		initializeMethodCollectList();
-		assertEquals(0, dummyhandlerBSV.getDummyList().size());
+		MethodDeclaration md = null;
+		assertEquals(0, dummyHandlerVisitor.getDummyList().size());
 		
 		//#1 正常的DummyHandler
-		mDeclaration = getMethodDeclarationByName(methodCollectList, "true_printStackTrace_public");
-		ExpressionStatement eStatement = getExpressionStatementFromMethodDeclaration(mDeclaration, 1, 0, 0);
-		dummyhandlerBSV.detectDummyHandler(eStatement);
-		assertEquals(1, dummyhandlerBSV.getDummyList().size());
+		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "true_printStackTrace_public");
+		ExpressionStatement eStatement = getExpressionStatementFromMethodDeclaration(md, 1, 0, 0);
+		dummyHandlerVisitor.detectDummyHandler(eStatement);
+		assertEquals(1, dummyHandlerVisitor.getDummyList().size());
 		
 		//#2 有throw
-		mDeclaration = getMethodDeclarationByName(methodCollectList, "false_throwAndPrint");
-		eStatement = getExpressionStatementFromMethodDeclaration(mDeclaration, 0, 0, 0);
-		dummyhandlerBSV.detectDummyHandler(eStatement);
-		assertEquals(1, dummyhandlerBSV.getDummyList().size());
+		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "false_throwAndPrint");
+		eStatement = getExpressionStatementFromMethodDeclaration(md, 0, 0, 0);
+		dummyHandlerVisitor.detectDummyHandler(eStatement);
+		assertEquals(1, dummyHandlerVisitor.getDummyList().size());
 		
 		//#3 測 Catch 外面
-		mDeclaration = getMethodDeclarationByName(methodCollectList, "true_printStackTrace_protected");
-		TryStatement tryStatement = (TryStatement) mDeclaration.getBody().statements().get(1);
+		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "true_printStackTrace_protected");
+		TryStatement tryStatement = (TryStatement) md.getBody().statements().get(1);
 		eStatement = (ExpressionStatement)tryStatement.getBody().statements().get(1);
-		dummyhandlerBSV.detectDummyHandler(eStatement);
-		assertEquals(1, dummyhandlerBSV.getDummyList().size());
+		dummyHandlerVisitor.detectDummyHandler(eStatement);
+		assertEquals(1, dummyHandlerVisitor.getDummyList().size());
 	}
 	
 	@Test
-	public void testAddDummyHandlerSmellInfoForExtraRule () throws Exception {
-		initializeMethodCollectList();
+	public void testAddDummyHandlerSmellInfoForExtraRule_PrintStackTrace() throws Exception {
 		Method method = DummyHandlerVisitor.class.getDeclaredMethod("addDummyHandlerSmellInfo", ExpressionStatement.class);
 		method.setAccessible(true);
 		ExpressionStatement expressionStatement;
 		
 		// 確認初始值
 		setEmptySetting();
-		regetDummyhandlerBSV();
-		assertEquals(0, dummyhandlerBSV.getDummyList().size());
+		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnit);
+		compilationUnit.accept(dummyHandlerVisitor);
+		assertEquals(0, dummyHandlerVisitor.getDummyList().size());
 		
 		// ePrintStackTrace case
-		argForSettingXML = new String[] {SmellSettings.EXTRARULE_ePrintStackTrace};
-		setNewSettingsWithExtraRules(argForSettingXML);
+		dummyHandlerPatternsInXML = new String[] {SmellSettings.EXTRARULE_ePrintStackTrace};
+		setNewSettingsWithExtraRules(dummyHandlerPatternsInXML);
 		//   分別測試：全部例子、符合例子、不符合例子 是否有抓出
-		regetDummyhandlerBSV();
-		assertEquals(7, dummyhandlerBSV.getDummyList().size());
+		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnit);
+		compilationUnit.accept(dummyHandlerVisitor);
+		assertEquals(7, dummyHandlerVisitor.getDummyList().size());
+		
+		MethodDeclaration md = null;
+		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "true_printStackTrace_protected");  // ePrintStackTrace
+		expressionStatement = getExpressionStatementFromMethodDeclaration(md, 1, 0, 0);
+		method.invoke(dummyHandlerVisitor, expressionStatement);
+		assertEquals(8, dummyHandlerVisitor.getDummyList().size());
 
-		mDeclaration = getMethodDeclarationByName(methodCollectList, "true_printStackTrace_protected");  // ePrintStackTrace
-		expressionStatement = getExpressionStatementFromMethodDeclaration(mDeclaration, 1, 0, 0);
-		method.invoke(dummyhandlerBSV, expressionStatement);
-		assertEquals(8, dummyhandlerBSV.getDummyList().size());
-
-		mDeclaration = getMethodDeclarationByName(methodCollectList, "true_systemTrace");  // SystemPrint
-		expressionStatement = getExpressionStatementFromMethodDeclaration(mDeclaration, 1, 0, 0);
-		method.invoke(dummyhandlerBSV, expressionStatement);
-		assertEquals(8, dummyhandlerBSV.getDummyList().size());
-
-		// SystemPrint case
-		argForSettingXML = new String[] {
+		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "true_systemTrace");  // SystemPrint
+		expressionStatement = getExpressionStatementFromMethodDeclaration(md, 1, 0, 0);
+		method.invoke(dummyHandlerVisitor, expressionStatement);
+		assertEquals(8, dummyHandlerVisitor.getDummyList().size());
+	}
+	
+	@Test
+	public void testAddDummyHandlerSmellInfoForExtraRule_SystemOutPrint() throws Exception {
+		Method method = DummyHandlerVisitor.class.getDeclaredMethod("addDummyHandlerSmellInfo", ExpressionStatement.class);
+		method.setAccessible(true);
+		ExpressionStatement expressionStatement;
+		
+		// 確認初始值
+		setEmptySetting();
+		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnit);
+		compilationUnit.accept(dummyHandlerVisitor);
+		assertEquals(0, dummyHandlerVisitor.getDummyList().size());
+		
+		dummyHandlerPatternsInXML = new String[] {
 				SmellSettings.EXTRARULE_SystemErrPrint, SmellSettings.EXTRARULE_SystemErrPrintln,
 				SmellSettings.EXTRARULE_SystemOutPrint, SmellSettings.EXTRARULE_SystemOutPrint};
-		setNewSettingsWithExtraRules(argForSettingXML);
+		setNewSettingsWithExtraRules(dummyHandlerPatternsInXML);
 		//   分別測試：全部例子、符合例子、不符合例子 是否有抓出
-		regetDummyhandlerBSV();
-		assertEquals(6, dummyhandlerBSV.getDummyList().size());
+		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnit);
+		compilationUnit.accept(dummyHandlerVisitor);
+		assertEquals(6, dummyHandlerVisitor.getDummyList().size());
 
-		mDeclaration = getMethodDeclarationByName(methodCollectList, "true_systemTrace");  // SystemPrint
-		expressionStatement = getExpressionStatementFromMethodDeclaration(mDeclaration, 1, 0, 0);
-		method.invoke(dummyhandlerBSV, expressionStatement);
-		assertEquals(7, dummyhandlerBSV.getDummyList().size());
+		MethodDeclaration md;
+		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "true_systemTrace");  // SystemPrint
+		expressionStatement = getExpressionStatementFromMethodDeclaration(md, 1, 0, 0);
+		method.invoke(dummyHandlerVisitor, expressionStatement);
+		assertEquals(7, dummyHandlerVisitor.getDummyList().size());
 
-		mDeclaration = getMethodDeclarationByName(methodCollectList, "true_printStackTrace_protected");  // ePrintStackTrace
-		expressionStatement = getExpressionStatementFromMethodDeclaration(mDeclaration, 1, 0, 0);
-		method.invoke(dummyhandlerBSV, expressionStatement);
-		assertEquals(7, dummyhandlerBSV.getDummyList().size());
+		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "true_printStackTrace_protected");  // ePrintStackTrace
+		expressionStatement = getExpressionStatementFromMethodDeclaration(md, 1, 0, 0);
+		method.invoke(dummyHandlerVisitor, expressionStatement);
+		assertEquals(7, dummyHandlerVisitor.getDummyList().size());
+	}
+	
+	@Test
+	public void testAddDummyHandlerSmellInfoForExtraRule_JavaUtilLoggingLogger() throws Exception {
+		Method method = DummyHandlerVisitor.class.getDeclaredMethod("addDummyHandlerSmellInfo", ExpressionStatement.class);
+		method.setAccessible(true);
+		ExpressionStatement expressionStatement;
 		
+		// 確認初始值
+		setEmptySetting();
+		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnit);
+		compilationUnit.accept(dummyHandlerVisitor);
+		assertEquals(0, dummyHandlerVisitor.getDummyList().size());
 		// JavaUtilLoggingLogger case
-		argForSettingXML = new String[] {SmellSettings.EXTRARULE_JavaUtilLoggingLogger};
-		setNewSettingsWithExtraRules(argForSettingXML);
+		dummyHandlerPatternsInXML = new String[] {SmellSettings.EXTRARULE_JavaUtilLoggingLogger};
+		setNewSettingsWithExtraRules(dummyHandlerPatternsInXML);
 		//   分別測試：全部例子、符合例子、不符合例子 是否有抓出
-		regetDummyhandlerBSV();
-		assertEquals(2, dummyhandlerBSV.getDummyList().size());
+		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnit);
+		compilationUnit.accept(dummyHandlerVisitor);
+		assertEquals(2, dummyHandlerVisitor.getDummyList().size());
 
-		mDeclaration = getMethodDeclarationByName(methodCollectList, "true_javaLogInfo");  // JavaUtilLoggingLogger
-		expressionStatement = getExpressionStatementFromMethodDeclaration(mDeclaration, 1, 0, 0);
-		method.invoke(dummyhandlerBSV, expressionStatement);
-		assertEquals(3, dummyhandlerBSV.getDummyList().size());
+		MethodDeclaration md;
+		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "true_javaLogInfo");  // JavaUtilLoggingLogger
+		expressionStatement = getExpressionStatementFromMethodDeclaration(md, 1, 0, 0);
+		method.invoke(dummyHandlerVisitor, expressionStatement);
+		assertEquals(3, dummyHandlerVisitor.getDummyList().size());
 
-		mDeclaration = getMethodDeclarationByName(methodCollectList, "true_Log4J");  // OrgApacheLog4j
-		expressionStatement = getExpressionStatementFromMethodDeclaration(mDeclaration, 1, 0, 0);
-		method.invoke(dummyhandlerBSV, expressionStatement);
-		assertEquals(3, dummyhandlerBSV.getDummyList().size());
+		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "true_Log4J");  // OrgApacheLog4j
+		expressionStatement = getExpressionStatementFromMethodDeclaration(md, 1, 0, 0);
+		method.invoke(dummyHandlerVisitor, expressionStatement);
+		assertEquals(3, dummyHandlerVisitor.getDummyList().size());
 
+	}
+	
+	@Test
+	public void testAddDummyHandlerSmellInfoForExtraRule_OrgApacheLog4j() throws Exception {
+		Method method = DummyHandlerVisitor.class.getDeclaredMethod("addDummyHandlerSmellInfo", ExpressionStatement.class);
+		method.setAccessible(true);
+		ExpressionStatement expressionStatement;
+		
+		// 確認初始值
+		setEmptySetting();
+		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnit);
+		compilationUnit.accept(dummyHandlerVisitor);
+		assertEquals(0, dummyHandlerVisitor.getDummyList().size());
 		// OrgApacheLog4j case
-		argForSettingXML = new String[] {SmellSettings.EXTRARULE_OrgApacheLog4j};
-		setNewSettingsWithExtraRules(argForSettingXML);
+		dummyHandlerPatternsInXML = new String[] {SmellSettings.EXTRARULE_OrgApacheLog4j};
+		setNewSettingsWithExtraRules(dummyHandlerPatternsInXML);
 		//   分別測試：全部例子、符合例子、不符合例子 是否有抓出
-		regetDummyhandlerBSV();
-		assertEquals(1, dummyhandlerBSV.getDummyList().size());
+		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnit);
+		compilationUnit.accept(dummyHandlerVisitor);
+		assertEquals(1, dummyHandlerVisitor.getDummyList().size());
 
-		mDeclaration = getMethodDeclarationByName(methodCollectList, "true_Log4J");  // OrgApacheLog4j
-		expressionStatement = getExpressionStatementFromMethodDeclaration(mDeclaration, 1, 0, 0);
-		method.invoke(dummyhandlerBSV, expressionStatement);
-		assertEquals(2, dummyhandlerBSV.getDummyList().size());
+		MethodDeclaration md;
+		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "true_Log4J");  // OrgApacheLog4j
+		expressionStatement = getExpressionStatementFromMethodDeclaration(md, 1, 0, 0);
+		method.invoke(dummyHandlerVisitor, expressionStatement);
+		assertEquals(2, dummyHandlerVisitor.getDummyList().size());
 
-		mDeclaration = getMethodDeclarationByName(methodCollectList, "true_javaLogInfo");  // JavaUtilLoggingLogger
-		expressionStatement = getExpressionStatementFromMethodDeclaration(mDeclaration, 1, 0, 0);
-		method.invoke(dummyhandlerBSV, expressionStatement);
-		assertEquals(2, dummyhandlerBSV.getDummyList().size());
+		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "true_javaLogInfo");  // JavaUtilLoggingLogger
+		expressionStatement = getExpressionStatementFromMethodDeclaration(md, 1, 0, 0);
+		method.invoke(dummyHandlerVisitor, expressionStatement);
+		assertEquals(2, dummyHandlerVisitor.getDummyList().size());
 	}
 
 	/**
@@ -290,31 +341,32 @@ public class DummyHandlerVisitorTest {
 //		java.lang.String.toString case3 statement
 //		java.util.ArrayList<java.lang.Boolean> case4 statement
 		
-		initializeMethodCollectList();
 		String testClassPattern = UserDefineDummyHandlerFish.class.getName() + ".*";
 		
 		// 確認初始值
 		setEmptySetting();
-		regetDummyhandlerBSV();
-		assertEquals(0, dummyhandlerBSV.getDummyList().size());
+		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnit);
+		compilationUnit.accept(dummyHandlerVisitor);
+		assertEquals(0, dummyHandlerVisitor.getDummyList().size());
 
 		// 確認全部的Example中恰有偵測到兩次呼叫
 		smellSettings.addDummyHandlerPattern(testClassPattern, true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		regetDummyhandlerBSV();
-		assertEquals(2, dummyhandlerBSV.getDummyList().size());
+		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnit);
+		compilationUnit.accept(dummyHandlerVisitor);
+		assertEquals(2, dummyHandlerVisitor.getDummyList().size());
 		
 		// 確認當使用者未勾選時不會偵測到
 		setEmptySetting();
 		smellSettings.addDummyHandlerPattern(testClassPattern, false);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		regetDummyhandlerBSV();
-		assertEquals(0, dummyhandlerBSV.getDummyList().size());
+		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnit);
+		compilationUnit.accept(dummyHandlerVisitor);
+		assertEquals(0, dummyHandlerVisitor.getDummyList().size());
 	}
 	
 	@Test
 	public void testAddDummyHandlerSmellInfoForUserPatternType2() {
-		initializeMethodCollectList();
 		ExpressionStatement expressionStatement;
 		
 		// 使用者輸入為 *.toString
@@ -322,30 +374,35 @@ public class DummyHandlerVisitorTest {
 		setEmptySetting();
 		smellSettings.addDummyHandlerPattern("*.toString", true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		regetDummyhandlerBSV();
-		assertEquals(2, dummyhandlerBSV.getDummyList().size());
+		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnit);
+		compilationUnit.accept(dummyHandlerVisitor);
+		assertEquals(2, dummyHandlerVisitor.getDummyList().size());
+
+		MethodDeclaration md = null;
 		//   輸入一個 true case
-		mDeclaration = getMethodDeclarationByName(methodCollectList, "true_systemOutPrintlnWithoutE");
-		expressionStatement = getExpressionStatementFromMethodDeclaration(mDeclaration, 1, 0, 1);
-		dummyhandlerBSV.detectDummyHandler(expressionStatement);
-		assertEquals(3, dummyhandlerBSV.getDummyList().size());
+		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "true_systemOutPrintlnWithoutE");
+		expressionStatement = getExpressionStatementFromMethodDeclaration(md, 1, 0, 1);
+		dummyHandlerVisitor.detectDummyHandler(expressionStatement);
+		assertEquals(3, dummyHandlerVisitor.getDummyList().size());
 		//   輸入一個 false case - method declaration 是 *.toCharArray
-		expressionStatement = getExpressionStatementFromMethodDeclaration(mDeclaration, 1, 0, 2);
-		dummyhandlerBSV.detectDummyHandler(expressionStatement);
-		assertEquals(3, dummyhandlerBSV.getDummyList().size());
+		expressionStatement = getExpressionStatementFromMethodDeclaration(md, 1, 0, 2);
+		dummyHandlerVisitor.detectDummyHandler(expressionStatement);
+		assertEquals(3, dummyHandlerVisitor.getDummyList().size());
 
 		// 使用者輸入為 *.toString, 但未勾選時
 		setEmptySetting();
 		smellSettings.addDummyHandlerPattern("*.toString", false);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		regetDummyhandlerBSV();
-		assertEquals(0, dummyhandlerBSV.getDummyList().size());
+		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnit);
+		compilationUnit.accept(dummyHandlerVisitor);
+		assertEquals(0, dummyHandlerVisitor.getDummyList().size());
 		// 使用者輸入改為 *.toString(), 不會被視同是 *.toString
 		setEmptySetting();
 		smellSettings.addDummyHandlerPattern("*.toString()", true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		regetDummyhandlerBSV();
-		assertEquals(0, dummyhandlerBSV.getDummyList().size());
+		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnit);
+		compilationUnit.accept(dummyHandlerVisitor);
+		assertEquals(0, dummyHandlerVisitor.getDummyList().size());
 	}
 
 	/**
@@ -354,32 +411,32 @@ public class DummyHandlerVisitorTest {
 	 */
 	@Test
 	public void testAddDummyHandlerSmellInfoForUserPatternType3WithBracket() {
-		initializeMethodCollectList();
 		String testClassPattern = "java.util.ArrayList.add";
 		setEmptySetting();
 		smellSettings.addDummyHandlerPattern(testClassPattern, true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		regetDummyhandlerBSV();
-		assertEquals(1, dummyhandlerBSV.getDummyList().size());
+		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnit);
+		compilationUnit.accept(dummyHandlerVisitor);
+		assertEquals(1, dummyHandlerVisitor.getDummyList().size());
 	}
 
 	@Test
 	public void testIsThrowStatementInCatchClause() {
-		initializeMethodCollectList();
 		TryStatement tryStatement;
 		CatchClause catchStatement;
 
 		// 測試 符合的例子 是否會抓出
-		mDeclaration = getMethodDeclarationByName(methodCollectList, "false_throwAndPrint");
-		tryStatement = (TryStatement) mDeclaration.getBody().statements().get(0);
+		MethodDeclaration md = null;
+		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "false_throwAndPrint");
+		tryStatement = (TryStatement) md.getBody().statements().get(0);
 		catchStatement = (CatchClause) tryStatement.catchClauses().get(0);
-		assertTrue(dummyhandlerBSV.isThrowStatementInCatchClause(catchStatement));
+		assertTrue(dummyHandlerVisitor.isThrowStatementInCatchClause(catchStatement));
 		
 		// 測試 不符合例子 是否會抓出
-		mDeclaration = getMethodDeclarationByName(methodCollectList, "true_DummyHandlerTryNestedTry");
-		tryStatement = (TryStatement) mDeclaration.getBody().statements().get(1);
+		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "true_DummyHandlerTryNestedTry");
+		tryStatement = (TryStatement) md.getBody().statements().get(1);
 		catchStatement = (CatchClause) tryStatement.catchClauses().get(0);
-		assertFalse(dummyhandlerBSV.isThrowStatementInCatchClause(catchStatement));
+		assertFalse(dummyHandlerVisitor.isThrowStatementInCatchClause(catchStatement));
 	}
 
 	private void deleteOldSettings() {
@@ -403,21 +460,6 @@ public class DummyHandlerVisitorTest {
 		smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 	}
-	private void regetDummyhandlerBSV() {
-		dummyhandlerBSV = new DummyHandlerVisitor(compilationUnit);
-		compilationUnit.accept(dummyhandlerBSV);
-	}
-	
-	private MethodDeclaration getMethodDeclarationByName(
-			List<ASTNode> methodDeclarationList, String methodName) {
-		for (int i = 0; i < methodDeclarationList.size(); i++) {
-			mDeclaration = (MethodDeclaration) methodDeclarationList.get(i);
-			if (methodName.equals(mDeclaration.getName().toString())) {
-				return mDeclaration;
-			}
-		}
-		return null;
-	}
 	
 	private ExpressionStatement getExpressionStatementFromMethodDeclaration(
 			MethodDeclaration mDeclaration, int statementsNumberOnMethodDeclaration,
@@ -425,12 +467,5 @@ public class DummyHandlerVisitorTest {
 		TryStatement tryStatement = (TryStatement) mDeclaration.getBody().statements().get(statementsNumberOnMethodDeclaration);
 		CatchClause catchClause = (CatchClause) tryStatement.catchClauses().get(catchClauseNumber);
 		return (ExpressionStatement) catchClause.getBody().statements().get(statementsNumberOnCatchClause);
-	}
-
-	// 產生一個收集所有Method的Collector串成List
-	private void initializeMethodCollectList() {
-		methodCollector = new ASTMethodCollector();
-		compilationUnit.accept(methodCollector);
-		methodCollectList = methodCollector.getMethodList();
 	}
 }

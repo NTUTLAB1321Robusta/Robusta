@@ -34,24 +34,22 @@ public class NestedTryStatementVisitorTest {
 		String projectName = "NestedTryStatementExampleProject";
 		javaFile2String = new JavaFileToString();
 		javaProjectMaker = new JavaProjectMaker(projectName);
-		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.LIB_JAR_FOLDERNAME, JavaProjectMaker.BIN_CLASS_FOLDERNAME);
-		javaProjectMaker.addJarFromTestProjectToBuildPath("/lib/RL.jar");
+		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.FOLDERNAME_LIB_JAR, JavaProjectMaker.FOLDERNAME_BIN_CLASS);
+		javaProjectMaker.addJarFromTestProjectToBuildPath("/" + JavaProjectMaker.RL_LIBRARY_PATH);
 		javaProjectMaker.setJREDefaultContainer();
 		// 根據測試檔案樣本內容建立新的檔案
-		javaFile2String.read(NestedTryStatementExample.class, "test");
+		javaFile2String.read(NestedTryStatementExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				NestedTryStatementExample.class.getPackage().getName(),
-				NestedTryStatementExample.class.getSimpleName() + ".java",
+				NestedTryStatementExample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
 				"package " + NestedTryStatementExample.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
-		createSettings();
 		
 		Path nestedTryExamplePath = new Path(projectName
-				+ "/src/"
-				+ PathUtils.dot2slash(NestedTryStatementExample.class
-						.getPackage().getName()) + "/"
-				+ NestedTryStatementExample.class.getSimpleName().toString() + ".java");
+				+ "/" + JavaProjectMaker.FOLDERNAME_SOURCE + "/"
+				+ PathUtils.dot2slash(NestedTryStatementExample.class.getName()
+						.toString()) + JavaProjectMaker.JAVA_FILE_EXTENSION);
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -90,6 +88,28 @@ public class NestedTryStatementVisitorTest {
 		assertEquals(
 				colloectBadSmellListContent(nestedTryStatementVisitor.getNestedTryStatementList()),
 						24, nestedTryStatementCount); 
+	}
+	
+	@Test
+	public void testNestedTryStatementVisitor_doNotDetect() {
+//		File xmlFile = new File(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+//		if(xmlFile.exists()) {
+//			assertTrue(xmlFile.delete());
+//		}
+		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_NESTEDTRYBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, String.valueOf(false));
+		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		nestedTryStatementVisitor = new NestedTryStatementVisitor(compilationUnit);
+
+		int nestedTryStatementCount = 0;
+		assertNotNull(compilationUnit);
+		assertNotNull(nestedTryStatementVisitor);
+		compilationUnit.accept(nestedTryStatementVisitor);
+		if(nestedTryStatementVisitor.getNestedTryStatementList() != null) {
+			nestedTryStatementCount = nestedTryStatementVisitor.getNestedTryStatementList().size();
+		}
+		assertEquals(
+				colloectBadSmellListContent(nestedTryStatementVisitor.getNestedTryStatementList()),
+						0, nestedTryStatementCount); 
 	}
 	
 	/**

@@ -44,7 +44,7 @@ public class ExceptionAnalyzerTest {
 		javaProjectMaker.setJREDefaultContainer();
 		
 		// 新增欲載入的 library
-		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.LIB_JAR_FOLDERNAME, JavaProjectMaker.BIN_CLASS_FOLDERNAME);
+		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.FOLDERNAME_LIB_JAR, JavaProjectMaker.FOLDERNAME_BIN_CLASS);
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/lib/RL.jar");
 		javaProjectMaker.addJarFromProjectToBuildPath("lib\\log4j-1.2.15.jar");
 		

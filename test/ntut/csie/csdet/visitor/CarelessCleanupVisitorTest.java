@@ -16,6 +16,7 @@ import ntut.csie.filemaker.exceptionBadSmells.ClassImplementCloseable;
 import ntut.csie.filemaker.exceptionBadSmells.ClassWithNotThrowingExceptionCloseable;
 import ntut.csie.filemaker.exceptionBadSmells.UserDefinedCarelessCleanupDog;
 import ntut.csie.filemaker.exceptionBadSmells.UserDefinedCarelessCleanupWeather;
+import ntut.csie.robusta.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
@@ -39,53 +40,55 @@ public class CarelessCleanupVisitorTest {
 		String projectName = "CarelessCleanupExampleProject";
 		javaFile2String = new JavaFileToString();
 		javaProjectMaker = new JavaProjectMaker(projectName);
-		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.LIB_JAR_FOLDERNAME, JavaProjectMaker.BIN_CLASS_FOLDERNAME);
+		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.FOLDERNAME_LIB_JAR, JavaProjectMaker.FOLDERNAME_BIN_CLASS);
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/" + JavaProjectMaker.RL_LIBRARY_PATH);
 		javaProjectMaker.setJREDefaultContainer();
 		// 根據測試檔案樣本內容建立新的檔案
-		javaFile2String.read(CarelessCleanupExample.class, "test");
+		javaFile2String.read(CarelessCleanupExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				CarelessCleanupExample.class.getPackage().getName(),
-				CarelessCleanupExample.class.getSimpleName() + ".java",
+				CarelessCleanupExample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
 				"package " + CarelessCleanupExample.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
-		javaFile2String.read(ClassWithNotThrowingExceptionCloseable.class, "test");
+		javaFile2String.read(ClassWithNotThrowingExceptionCloseable.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				ClassWithNotThrowingExceptionCloseable.class.getPackage().getName(),
-				ClassWithNotThrowingExceptionCloseable.class.getSimpleName() + ".java",
+				ClassWithNotThrowingExceptionCloseable.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
 				"package " + ClassWithNotThrowingExceptionCloseable.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
-		javaFile2String.read(ClassImplementCloseable.class, "test");
+		javaFile2String.read(ClassImplementCloseable.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				ClassImplementCloseable.class.getPackage().getName(),
-				ClassImplementCloseable.class.getSimpleName() + ".java",
+				ClassImplementCloseable.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
 				"package " + ClassImplementCloseable.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
 		/* 測試使用者設定Pattern時候使用 */
-		javaFile2String.read(UserDefinedCarelessCleanupWeather.class, "test");
+		javaFile2String.read(UserDefinedCarelessCleanupWeather.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				UserDefinedCarelessCleanupWeather.class.getPackage().getName(),
-				UserDefinedCarelessCleanupWeather.class.getSimpleName() + ".java",
+				UserDefinedCarelessCleanupWeather.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
 				"package " + UserDefinedCarelessCleanupWeather.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
-		javaFile2String.read(UserDefinedCarelessCleanupDog.class, "test");
+		javaFile2String.read(UserDefinedCarelessCleanupDog.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				UserDefinedCarelessCleanupDog.class.getPackage().getName(),
-				UserDefinedCarelessCleanupDog.class.getSimpleName() + ".java",
+				UserDefinedCarelessCleanupDog.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
 				"package " + UserDefinedCarelessCleanupDog.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
-		Path ccExamplePath = new Path(
-				projectName	+ "/src/ntut/csie/filemaker/exceptionBadSmells/CarelessCleanupExample.java");
+		Path ccExamplePath = new Path(projectName
+				+ "/" + JavaProjectMaker.FOLDERNAME_SOURCE + "/"
+				+ PathUtils.dot2slash(CarelessCleanupExample.class.getName()
+						.toString()) + JavaProjectMaker.JAVA_FILE_EXTENSION);
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);

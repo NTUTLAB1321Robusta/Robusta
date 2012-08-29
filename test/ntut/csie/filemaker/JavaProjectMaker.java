@@ -55,11 +55,17 @@ public class JavaProjectMaker {
 	public static final String RL_PACKAGE_NAME = "agile.exception";
 	
 	/** 專案存放Jar檔的資料夾名稱 */
-	public static final String LIB_JAR_FOLDERNAME = "lib";
+	public static final String FOLDERNAME_LIB_JAR = "lib";
 	/** 專案存放Class檔的資料夾名稱 */
-	public static final String BIN_CLASS_FOLDERNAME = "bin";
+	public static final String FOLDERNAME_BIN_CLASS = "bin";
+	/** 測試程式碼資料夾的名稱 */
+	public static final String FOLDERNAME_TEST = "test";
+	/** 功能性程式碼的資料夾名稱 */
+	public static final String FOLDERNAME_SOURCE = "src";
 	/** 取得RL.jar的路徑 */
-	public static final String RL_LIBRARY_PATH = LIB_JAR_FOLDERNAME + "/RL.jar";	
+	public static final String RL_LIBRARY_PATH = FOLDERNAME_LIB_JAR + "/RL.jar";
+	/** java 副檔名 */
+	public static final String JAVA_FILE_EXTENSION = ".java";
 	/**
 	 * 產生一個Java專案。
 	 * 用法：<br />

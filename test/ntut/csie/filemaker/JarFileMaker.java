@@ -15,9 +15,8 @@ public class JarFileMaker {
 	/**
 	 * @param archiveFile 指定產生Jar檔的路徑 + 檔名
 	 * @param binFolder 傳入bin的listFile
-	 * @param specifiedPackageName TODO
+	 * @param fullPackageName
 	 */
-//	public void createJarFile(File archiveFile, File[] packageList, String specifiedPackageName) {
 	public void createJarFile(File archiveFile, File binFolder, String fullPackageName) {
 	    try {
 	    	byte buffer[] = new byte[BUFFER_SIZE];
@@ -35,7 +34,6 @@ public class JarFileMaker {
 	    	for (int i = 0; i < tobeJared.length; i++) {
 	    		if (tobeJared[i] == null || !tobeJared[i].exists() || tobeJared[i].isDirectory())
 	    			continue; // Just in case...
-		    	System.out.println("Adding " + tobeJared[i].getName());
 			
 				// Add archive entry
 				JarEntry fileEntry = new JarEntry(PathUtils.dot2slash(fullPackageName) 
@@ -56,7 +54,6 @@ public class JarFileMaker {
 	    	
 	    	out.close();
 	    	stream.close();
-	    	System.out.println("Adding completed OK");
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
