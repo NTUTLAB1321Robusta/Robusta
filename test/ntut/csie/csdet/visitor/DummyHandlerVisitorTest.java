@@ -39,7 +39,6 @@ public class DummyHandlerVisitorTest {
 	SmellSettings smellSettings;
 	ASTMethodCollector methodCollector;
 	List<ASTNode> methodCollectList;
-//	MethodDeclaration mDeclaration;
 	String[] dummyHandlerPatternsInXML;
 
 	public DummyHandlerVisitorTest() {
@@ -176,37 +175,36 @@ public class DummyHandlerVisitorTest {
 		assertEquals(1, dummyHandlerVisitor.getDummyList().size());
 	}
 	
-	@Test
-	public void testDetectDummyHandler() {
-		// 確認初始值
-		MethodDeclaration md = null;
-		assertEquals(0, dummyHandlerVisitor.getDummyList().size());
-		
-		//#1 正常的DummyHandler
-		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "true_printStackTrace_public");
-		ExpressionStatement eStatement = getExpressionStatementFromMethodDeclaration(md, 1, 0, 0);
-		dummyHandlerVisitor.detectDummyHandler(eStatement);
-		assertEquals(1, dummyHandlerVisitor.getDummyList().size());
-		
-		//#2 有throw
-		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "false_throwAndPrint");
-		eStatement = getExpressionStatementFromMethodDeclaration(md, 0, 0, 0);
-		dummyHandlerVisitor.detectDummyHandler(eStatement);
-		assertEquals(1, dummyHandlerVisitor.getDummyList().size());
-		
-		//#3 測 Catch 外面
-		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "true_printStackTrace_protected");
-		TryStatement tryStatement = (TryStatement) md.getBody().statements().get(1);
-		eStatement = (ExpressionStatement)tryStatement.getBody().statements().get(1);
-		dummyHandlerVisitor.detectDummyHandler(eStatement);
-		assertEquals(1, dummyHandlerVisitor.getDummyList().size());
-	}
+//	@Test
+//	public void testDetectDummyHandler() {
+//		// 確認初始值
+//		MethodDeclaration md = null;
+//		assertEquals(0, dummyHandlerVisitor.getDummyList().size());
+//		
+//		//#1 正常的DummyHandler
+//		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "true_printStackTrace_public");
+//		ExpressionStatement eStatement = getExpressionStatementFromMethodDeclaration(md, 1, 0, 0);
+//		dummyHandlerVisitor.detectDummyHandler(eStatement);
+//		assertEquals(1, dummyHandlerVisitor.getDummyList().size());
+//		
+//		//#2 有throw
+//		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "false_throwAndPrint");
+//		eStatement = getExpressionStatementFromMethodDeclaration(md, 0, 0, 0);
+//		dummyHandlerVisitor.detectDummyHandler(eStatement);
+//		assertEquals(1, dummyHandlerVisitor.getDummyList().size());
+//		
+//		//#3 測 Catch 外面
+//		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "true_printStackTrace_protected");
+//		TryStatement tryStatement = (TryStatement) md.getBody().statements().get(1);
+//		eStatement = (ExpressionStatement)tryStatement.getBody().statements().get(1);
+//		dummyHandlerVisitor.detectDummyHandler(eStatement);
+//		assertEquals(1, dummyHandlerVisitor.getDummyList().size());
+//	}
 	
 	@Test
 	public void testAddDummyHandlerSmellInfoForExtraRule_PrintStackTrace() throws Exception {
-		Method method = DummyHandlerVisitor.class.getDeclaredMethod("addDummyHandlerSmellInfo", ExpressionStatement.class);
+		Method method = DummyHandlerVisitor.class.getDeclaredMethod("addDummyHandlerSmellInfo", MethodInvocation.class);
 		method.setAccessible(true);
-		ExpressionStatement expressionStatement;
 		
 		// 確認初始值
 		setEmptySetting();
@@ -221,24 +219,17 @@ public class DummyHandlerVisitorTest {
 		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnit);
 		compilationUnit.accept(dummyHandlerVisitor);
 		assertEquals(7, dummyHandlerVisitor.getDummyList().size());
-		
-		MethodDeclaration md = null;
-		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "true_printStackTrace_protected");  // ePrintStackTrace
-		expressionStatement = getExpressionStatementFromMethodDeclaration(md, 1, 0, 0);
-		method.invoke(dummyHandlerVisitor, expressionStatement);
-		assertEquals(8, dummyHandlerVisitor.getDummyList().size());
 
-		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "true_systemTrace");  // SystemPrint
-		expressionStatement = getExpressionStatementFromMethodDeclaration(md, 1, 0, 0);
-		method.invoke(dummyHandlerVisitor, expressionStatement);
+		MethodInvocation mi = null;
+		mi = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(compilationUnit, "true_printStackTrace_protected", "e.printStackTrace()").get(0);
+		method.invoke(dummyHandlerVisitor, mi);
 		assertEquals(8, dummyHandlerVisitor.getDummyList().size());
 	}
 	
 	@Test
 	public void testAddDummyHandlerSmellInfoForExtraRule_SystemOutPrint() throws Exception {
-		Method method = DummyHandlerVisitor.class.getDeclaredMethod("addDummyHandlerSmellInfo", ExpressionStatement.class);
+		Method method = DummyHandlerVisitor.class.getDeclaredMethod("addDummyHandlerSmellInfo", MethodInvocation.class);
 		method.setAccessible(true);
-		ExpressionStatement expressionStatement;
 		
 		// 確認初始值
 		setEmptySetting();
@@ -255,23 +246,29 @@ public class DummyHandlerVisitorTest {
 		compilationUnit.accept(dummyHandlerVisitor);
 		assertEquals(6, dummyHandlerVisitor.getDummyList().size());
 
-		MethodDeclaration md;
-		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "true_systemTrace");  // SystemPrint
-		expressionStatement = getExpressionStatementFromMethodDeclaration(md, 1, 0, 0);
-		method.invoke(dummyHandlerVisitor, expressionStatement);
+		MethodInvocation mi = null;
+		mi = ASTNodeFinder
+				.getMethodInvocationByMethodNameAndCode(compilationUnit,
+						"true_systemTrace",
+						"System.out.println(\"DummyHandlerExample.true_systemErrPrint()\")")
+				.get(0);
+		method.invoke(dummyHandlerVisitor, mi);
 		assertEquals(7, dummyHandlerVisitor.getDummyList().size());
 
-		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "true_printStackTrace_protected");  // ePrintStackTrace
-		expressionStatement = getExpressionStatementFromMethodDeclaration(md, 1, 0, 0);
-		method.invoke(dummyHandlerVisitor, expressionStatement);
+		
+		mi = ASTNodeFinder
+		.getMethodInvocationByMethodNameAndCode(compilationUnit,
+				"true_printStackTrace_protected",
+				"e.printStackTrace()").get(0);
+		method.invoke(dummyHandlerVisitor, mi);
+		
 		assertEquals(7, dummyHandlerVisitor.getDummyList().size());
 	}
 	
 	@Test
 	public void testAddDummyHandlerSmellInfoForExtraRule_JavaUtilLoggingLogger() throws Exception {
-		Method method = DummyHandlerVisitor.class.getDeclaredMethod("addDummyHandlerSmellInfo", ExpressionStatement.class);
+		Method method = DummyHandlerVisitor.class.getDeclaredMethod("addDummyHandlerSmellInfo", MethodInvocation.class);
 		method.setAccessible(true);
-		ExpressionStatement expressionStatement;
 		
 		// 確認初始值
 		setEmptySetting();
@@ -286,24 +283,29 @@ public class DummyHandlerVisitorTest {
 		compilationUnit.accept(dummyHandlerVisitor);
 		assertEquals(2, dummyHandlerVisitor.getDummyList().size());
 
-		MethodDeclaration md;
-		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "true_javaLogInfo");  // JavaUtilLoggingLogger
-		expressionStatement = getExpressionStatementFromMethodDeclaration(md, 1, 0, 0);
-		method.invoke(dummyHandlerVisitor, expressionStatement);
+		MethodInvocation mi = null;
+		mi = ASTNodeFinder
+		.getMethodInvocationByMethodNameAndCode(compilationUnit,
+				"true_javaLogInfo",
+				"javaLog.info(\"\")").get(0);
+		method.invoke(dummyHandlerVisitor, mi);
 		assertEquals(3, dummyHandlerVisitor.getDummyList().size());
 
-		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "true_Log4J");  // OrgApacheLog4j
-		expressionStatement = getExpressionStatementFromMethodDeclaration(md, 1, 0, 0);
-		method.invoke(dummyHandlerVisitor, expressionStatement);
+		mi = ASTNodeFinder
+		.getMethodInvocationByMethodNameAndCode(compilationUnit,
+				"true_Log4J",
+				"log4j.info(\"message\")").get(0);
+		method.invoke(dummyHandlerVisitor, mi);
+		assertEquals(3, dummyHandlerVisitor.getDummyList().size());
+		method.invoke(dummyHandlerVisitor, mi);
 		assertEquals(3, dummyHandlerVisitor.getDummyList().size());
 
 	}
 	
 	@Test
 	public void testAddDummyHandlerSmellInfoForExtraRule_OrgApacheLog4j() throws Exception {
-		Method method = DummyHandlerVisitor.class.getDeclaredMethod("addDummyHandlerSmellInfo", ExpressionStatement.class);
+		Method method = DummyHandlerVisitor.class.getDeclaredMethod("addDummyHandlerSmellInfo", MethodInvocation.class);
 		method.setAccessible(true);
-		ExpressionStatement expressionStatement;
 		
 		// 確認初始值
 		setEmptySetting();
@@ -318,15 +320,18 @@ public class DummyHandlerVisitorTest {
 		compilationUnit.accept(dummyHandlerVisitor);
 		assertEquals(1, dummyHandlerVisitor.getDummyList().size());
 
-		MethodDeclaration md;
-		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "true_Log4J");  // OrgApacheLog4j
-		expressionStatement = getExpressionStatementFromMethodDeclaration(md, 1, 0, 0);
-		method.invoke(dummyHandlerVisitor, expressionStatement);
+		MethodInvocation mi = null;
+		mi = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(
+				compilationUnit, "true_Log4J", "log4j.info(\"message\")")
+				.get(0);
+		method.invoke(dummyHandlerVisitor, mi);
 		assertEquals(2, dummyHandlerVisitor.getDummyList().size());
-
-		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "true_javaLogInfo");  // JavaUtilLoggingLogger
-		expressionStatement = getExpressionStatementFromMethodDeclaration(md, 1, 0, 0);
-		method.invoke(dummyHandlerVisitor, expressionStatement);
+		
+		mi = ASTNodeFinder
+		.getMethodInvocationByMethodNameAndCode(compilationUnit,
+				"true_javaLogInfo",
+				"javaLog.info(\"\")").get(0);
+		method.invoke(dummyHandlerVisitor, mi);
 		assertEquals(2, dummyHandlerVisitor.getDummyList().size());
 	}
 
@@ -366,11 +371,8 @@ public class DummyHandlerVisitorTest {
 	}
 	
 	@Test
-	public void testAddDummyHandlerSmellInfoForUserPatternType2() {
-		ExpressionStatement expressionStatement;
-		
-		// 使用者輸入為 *.toString
-		//   測試全部的 Example Code
+	public void testAddDummyHandlerSmellInfoWithUserDefinedPatternAndDetecting() {
+		// 使用者自定義 *.toString 的Pattern，並且要求要偵測
 		setEmptySetting();
 		smellSettings.addDummyHandlerPattern("*.toString", true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
@@ -378,24 +380,35 @@ public class DummyHandlerVisitorTest {
 		compilationUnit.accept(dummyHandlerVisitor);
 		assertEquals(2, dummyHandlerVisitor.getDummyList().size());
 
-		MethodDeclaration md = null;
-		//   輸入一個 true case
-		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "true_systemOutPrintlnWithoutE");
-		expressionStatement = getExpressionStatementFromMethodDeclaration(md, 1, 0, 1);
-		dummyHandlerVisitor.detectDummyHandler(expressionStatement);
-		assertEquals(3, dummyHandlerVisitor.getDummyList().size());
-		//   輸入一個 false case - method declaration 是 *.toCharArray
-		expressionStatement = getExpressionStatementFromMethodDeclaration(md, 1, 0, 2);
-		dummyHandlerVisitor.detectDummyHandler(expressionStatement);
-		assertEquals(3, dummyHandlerVisitor.getDummyList().size());
+		MethodInvocation mi = null;
 
-		// 使用者輸入為 *.toString, 但未勾選時
+		// 符合 *.toString 的程式碼 -> e.toString()
+		mi = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(
+				compilationUnit, "true_systemOutPrintlnWithoutE",
+				"e.toString()").get(0);
+		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnit);
+		dummyHandlerVisitor.detectDummyHandler(mi);
+		assertEquals(1, dummyHandlerVisitor.getDummyList().size());
+
+		// 不符合 *.toString 的程式碼 -> e.toString.toCharArray()
+		mi = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(
+				compilationUnit, "true_systemOutPrintlnWithoutE",
+				"e.toString().toCharArray()").get(0);
+		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnit);
+		dummyHandlerVisitor.detectDummyHandler(mi);
+		assertEquals(0, dummyHandlerVisitor.getDummyList().size());
+	}
+	
+	@Test
+	public void testAddDummyHandlerSmellInfoWithUserDefinedPatternButNotDetecting() { 
+		// 使用者有自定義 *.toString 的Pattern，但是不要偵測
 		setEmptySetting();
 		smellSettings.addDummyHandlerPattern("*.toString", false);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnit);
 		compilationUnit.accept(dummyHandlerVisitor);
 		assertEquals(0, dummyHandlerVisitor.getDummyList().size());
+		
 		// 使用者輸入改為 *.toString(), 不會被視同是 *.toString
 		setEmptySetting();
 		smellSettings.addDummyHandlerPattern("*.toString()", true);
@@ -468,4 +481,8 @@ public class DummyHandlerVisitorTest {
 		CatchClause catchClause = (CatchClause) tryStatement.catchClauses().get(catchClauseNumber);
 		return (ExpressionStatement) catchClause.getBody().statements().get(statementsNumberOnCatchClause);
 	}
+	
+//	private MethodInvocation getMethodInvocationByMethodNameAndCode() {
+//		return null;
+//	}
 }

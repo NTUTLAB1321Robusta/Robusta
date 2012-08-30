@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -327,6 +328,88 @@ public class SmellSettingsTest {
 		assertTrue(smellSettingFile.exists());
 		
 		// 檢查檔案內容是否正確
+		String fileContent = readFileContents(smellSettingFile);
+		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells />", fileContent);
+	}
+	
+	@Test
+	public void testWriteXMLFile_OverwriteNonXMLFormatFile() throws Exception {
+		// 生成一個文字檔案，裡面都是中文字
+		String chineseString = "天地玄黃宇宙洪荒";
+		FileWriter fw = new FileWriter(smellSettingFile);
+		fw.write(chineseString);
+		fw.close();
+		// 確認檔案裡面的中文字
+		String chineseContent = readFileContents(smellSettingFile);
+		assertEquals(chineseString, chineseContent);
+		
+		// 生成XML檔案
+		smellSettings.writeXMLFile(smellSettingFile.getPath());
+		// 檢查檔案是否生成
+		assertTrue(smellSettingFile.exists());
+		
+		// 檢查檔案內容是否正確
+		String fileContent = readFileContents(smellSettingFile);
+		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells />", fileContent);		
+	}
+	
+	@Test
+	public void testWriteXMLFile_OverwriteXMLFormatFile() throws Exception {
+		// 生成一個文字檔案，裡面是舊有的XML設定檔
+		String xmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells><SmellTypes name=\"DummyHandler\" isDetecting=\"true\"><pattern name=\"*.toString\" isDetecting=\"true\" /></SmellTypes></CodeSmells>";
+		FileWriter fw = new FileWriter(smellSettingFile);
+		fw.write(xmlString);
+		fw.close();
+		// 確認檔案裡面的XML設定檔內容
+		String xmlReadContent = readFileContents(smellSettingFile);
+		assertEquals(xmlString, xmlReadContent);
+		
+		// 生成XML檔案
+		smellSettings.writeXMLFile(smellSettingFile.getPath());
+		// 檢查檔案是否生成
+		assertTrue(smellSettingFile.exists());
+		
+		// 檢查檔案內容是否正確
+		String fileContent = readFileContents(smellSettingFile);
+		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells />", fileContent);		
+	}
+	
+	@Test
+	public void testWriteXMLFile_UsingSameVariableTwiceWithDifferentNewInstance() throws Exception {
+		// 先用一個新的instace產生xml檔
+		smellSettings = new SmellSettings(smellSettingFile);
+		smellSettings.addDummyHandlerPattern("*.toString", true);
+		smellSettings.writeXMLFile(smellSettingFile.getPath());
+		// 確認內容
+		String firstTimeContent = readFileContents(smellSettingFile);
+		assertEquals(
+				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells><SmellTypes name=\"DummyHandler\" isDetecting=\"true\"><pattern name=\"*.toString\" isDetecting=\"true\" /></SmellTypes></CodeSmells>",
+				firstTimeContent);
+		
+		// 再用同一個變數產生新的instace，再產生xml檔
+		smellSettings = new SmellSettings(smellSettingFile);
+		smellSettings.writeXMLFile(smellSettingFile.getPath());
+		// 確認內容
+		String fileContent = readFileContents(smellSettingFile);
+		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells />", fileContent);
+	}
+	
+	@Test
+	public void testWriteXMLFile_UsingTwoDifferentVariable() throws Exception {
+		// 先用一個新的變數產生xml檔
+		SmellSettings setting = new SmellSettings(smellSettingFile);
+		setting.addDummyHandlerPattern("*.toString", true);
+		setting.writeXMLFile(smellSettingFile.getPath());
+		// 確認內容
+		String firstTimeContent = readFileContents(smellSettingFile);
+		assertEquals(
+				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells><SmellTypes name=\"DummyHandler\" isDetecting=\"true\"><pattern name=\"*.toString\" isDetecting=\"true\" /></SmellTypes></CodeSmells>",
+				firstTimeContent);
+		
+		// 再用另一個變數產生xml檔
+		smellSettings = new SmellSettings(smellSettingFile);
+		smellSettings.writeXMLFile(smellSettingFile.getPath());
+		// 確認內容
 		String fileContent = readFileContents(smellSettingFile);
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells />", fileContent);
 	}

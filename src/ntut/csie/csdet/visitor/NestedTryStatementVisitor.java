@@ -15,14 +15,14 @@ import org.eclipse.jdt.core.dom.TryStatement;
 public class NestedTryStatementVisitor extends ASTVisitor {
 	private CompilationUnit compilationUnit;
 	private List<MarkerInfo> nestedTryStatementList;
-	private boolean isDetectingNestedTryStatementmell;
+	private boolean isDetectingNestedTryStatementSmell;
 	
 	public NestedTryStatementVisitor(CompilationUnit compilationUnit) {
 		super();
 		this.compilationUnit = compilationUnit;
 		nestedTryStatementList = new ArrayList<MarkerInfo>();
-		SmellSettings sms = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		isDetectingNestedTryStatementmell = sms.isDetectingSmell(SmellSettings.SMELL_NESTEDTRYBLOCK);
+		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		isDetectingNestedTryStatementSmell = smellSettings.isDetectingSmell(SmellSettings.SMELL_NESTEDTRYBLOCK);
 	}
 	
 	/**
@@ -33,10 +33,20 @@ public class NestedTryStatementVisitor extends ASTVisitor {
 		return nestedTryStatementList;
 	}
 	
+	/**
+	 * 根據設定檔的資訊，決定要不要拜訪整棵樹。
+	 */
+	public boolean visit(CompilationUnit node) {
+		if(isDetectingNestedTryStatementSmell) {
+			return true;
+		}
+		return false;
+	}
+	
 	@Override
 	public boolean visit(TryStatement node) {
 		ASTNode parentTryStatement = NodeUtils.getSpecifiedParentNode(node, ASTNode.TRY_STATEMENT);
-		if (parentTryStatement != null && isDetectingNestedTryStatementmell) {
+		if (parentTryStatement != null) {
 			collectSmell(node);
 		}
 		return true;

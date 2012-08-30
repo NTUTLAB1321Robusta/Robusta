@@ -42,7 +42,7 @@ public class ExpressionStatementAnalyzerTest {
 	public void setUp() throws Exception {
 		// 讀取測試檔案樣本內容
 		javaFile2String = new JavaFileToString();
-		javaFile2String.read(DummyAndIgnoreExample.class, "test");
+		javaFile2String.read(DummyAndIgnoreExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		
 		javaProjectMaker = new JavaProjectMaker(projectName);
 		javaProjectMaker.setJREDefaultContainer();
