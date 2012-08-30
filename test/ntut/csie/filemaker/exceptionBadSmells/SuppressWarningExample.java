@@ -8,9 +8,6 @@ import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.SocketTimeoutException;
 
-import org.junit.Ignore;
-import org.junit.Test;
-
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithoutTryExample;
 
 import agile.exception.RL;
@@ -130,6 +127,7 @@ public class SuppressWarningExample {
 	/**
 	 * ¦³ suppress waring ªº careless cleanup
 	 */
+	@SuppressSmell("Careless_CleanUp")
 	@Robustness(value = { @RL(level = 1, exception = java.lang.RuntimeException.class) })
 	public void withSuppressWaringCarelessCleanup(byte[] context, File outputFile) {
 		FileOutputStream fileOutputStream  = null;

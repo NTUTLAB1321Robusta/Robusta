@@ -23,10 +23,11 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
-import org.eclipse.jdt.core.dom.CatchClause;
+import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.IAnnotationBinding;
+import org.eclipse.jdt.core.dom.ExpressionStatement;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TryStatement;
 import org.junit.After;
@@ -94,33 +95,64 @@ public class ExceptionAnalyzerTest {
 //	public void testVisitNode() throws Exception {
 //		fail("Not yet implemented");
 //	}
-//	
-//	@Test
-//	public void testFindExceptionTypes() throws Exception {
-//		fail("Not yet implemented");
-//	}
 	
 	@Test
-	public void testFindAnnotation() throws Exception {
-		Method methodFindAnnotation = ExceptionAnalyzer.class.getDeclaredMethod("findAnnotation", ASTNode.class, IAnnotationBinding[].class);
-		methodFindAnnotation.setAccessible(true);
-		
+	public void testProcessTryStatement() throws Exception {
+		Method MethodProcessTryStatement = ExceptionAnalyzer.class.getDeclaredMethod("processTryStatement", ASTNode.class);
+		MethodProcessTryStatement.setAccessible(true);
 		ASTMethodCollector astMethodCollector = new ASTMethodCollector();
 		compilationUnit.accept(astMethodCollector);
-		
+		List<ASTNode> methodList = astMethodCollector.getMethodList();
+		for (int i = 0; i < methodList.size(); i++) {
+			MethodDeclaration md = (MethodDeclaration) methodList.get(i);
+			for (int j = 0; j < md.getBody().statements().size(); j++) {
+				ASTNode node = (ASTNode)md.getBody().statements().get(j);
+				if (node.getNodeType()==ASTNode.TRY_STATEMENT) {
+					exceptionAnalyzer = new ExceptionAnalyzer(compilationUnit, methodList.get(i).getStartPosition(), 0);
+					MethodProcessTryStatement.invoke(exceptionAnalyzer, node);
+				}
+			}
+		}
+	}
+	
+	@Test
+	public void testFindExceptionTypes() throws Exception {
+		Method methodFindExceptionTypes = ExceptionAnalyzer.class.getDeclaredMethod("findExceptionTypes", ASTNode.class, ITypeBinding[].class);
+		methodFindExceptionTypes.setAccessible(true);
+		// 資料產生
+		ASTMethodCollector astMethodCollector = new ASTMethodCollector();
+		compilationUnit.accept(astMethodCollector);
 		List<ASTNode> methodlist = astMethodCollector.getMethodList();
+		List<RLMessage> totalRLList = new ArrayList<RLMessage>();
 		MethodDeclaration mDeclaration = (MethodDeclaration)methodlist.get(7);
 		TryStatement tryStatement = (TryStatement) mDeclaration.getBody().statements().get(1);
-		CatchClause catchClause = (CatchClause)tryStatement.catchClauses().get(0);
-		org.eclipse.jdt.core.dom.ThrowStatement throwStatement = (org.eclipse.jdt.core.dom.ThrowStatement)catchClause.getBody().statements().get(0);
-		ClassInstanceCreation classInstanceCreation = (ClassInstanceCreation)throwStatement.getExpression();
-		classInstanceCreation.resolveConstructorBinding().getAnnotations();
+		ExpressionStatement statement = (ExpressionStatement) tryStatement.getBody().statements().get(0);
+		ClassInstanceCreation cic = (ClassInstanceCreation)statement.getExpression();
 		
+		// Class Instance Creation
+		// 初始狀態
 		exceptionAnalyzer = new ExceptionAnalyzer(compilationUnit, methodlist.get(7).getStartPosition(), 0);
-		methodFindAnnotation.invoke(exceptionAnalyzer, (ASTNode)classInstanceCreation, classInstanceCreation.resolveConstructorBinding().getAnnotations());
+		totalRLList.addAll(exceptionAnalyzer.getExceptionList());
+		assertEquals(0, totalRLList.size());
+		methodFindExceptionTypes.invoke(exceptionAnalyzer, (ASTNode) cic, cic.resolveConstructorBinding().getExceptionTypes());
+		totalRLList.addAll(exceptionAnalyzer.getExceptionList());
+		assertEquals(1, totalRLList.size());
+		// 清除資料
+		exceptionAnalyzer = new ExceptionAnalyzer(compilationUnit, methodlist.get(6).getStartPosition(), 0);
+		totalRLList = new ArrayList<RLMessage>();
+		assertEquals(0, totalRLList.size());
+		mDeclaration = (MethodDeclaration) methodlist.get(6);
+		tryStatement = (TryStatement) mDeclaration.getBody().statements().get(1);
+		statement = (ExpressionStatement) tryStatement.getBody().statements().get(0);
+		Assignment assignment = (Assignment) statement.getExpression();
+		cic = (ClassInstanceCreation) assignment.getRightHandSide();
+		methodFindExceptionTypes.invoke(exceptionAnalyzer, (ASTNode) cic, cic.resolveConstructorBinding().getExceptionTypes());
+		// 疊加測試
+		totalRLList.addAll(exceptionAnalyzer.getExceptionList());
+		totalRLList.addAll(exceptionAnalyzer.getExceptionList());
+		assertEquals(2, totalRLList.size());
 		
-		System.out.println(classInstanceCreation.toString()+"\n我是開心果但是熱量高\n");
-		fail("Not yet implemented");
+		System.out.println(cic.resolveConstructorBinding().getExceptionTypes().toString());		
 	}
 	
 	@Test
@@ -246,8 +278,8 @@ public class ExceptionAnalyzerTest {
 		assertTrue(methodlist.get(9).toString().equals(totalList.get(2).getStatement().toString()));
 		
 		assertEquals(127, totalList.get(0).getLineNumber());
-		assertEquals(144, totalList.get(1).getLineNumber());
-		assertEquals(164, totalList.get(2).getLineNumber());
+		assertEquals(146, totalList.get(1).getLineNumber());
+		assertEquals(166, totalList.get(2).getLineNumber());
 		
 		assertEquals(3, totalList.size());
 	}
@@ -282,8 +314,8 @@ public class ExceptionAnalyzerTest {
 		assertEquals(81, totalList.get(3).getLineNumber());
 		assertEquals(100, totalList.get(4).getLineNumber());
 		assertEquals(127, totalList.get(5).getLineNumber());
-		assertEquals(144, totalList.get(6).getLineNumber());
-		assertEquals(164, totalList.get(7).getLineNumber());
+		assertEquals(146, totalList.get(6).getLineNumber());
+		assertEquals(166, totalList.get(7).getLineNumber());
 		
 		assertEquals(8, totalList.size());
 	}
