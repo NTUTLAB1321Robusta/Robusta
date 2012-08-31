@@ -37,10 +37,7 @@ public class NestedTryStatementVisitor extends ASTVisitor {
 	 * 根據設定檔的資訊，決定要不要拜訪整棵樹。
 	 */
 	public boolean visit(CompilationUnit node) {
-		if(isDetectingNestedTryStatementSmell) {
-			return true;
-		}
-		return false;
+		return isDetectingNestedTryStatementSmell;
 	}
 	
 	@Override

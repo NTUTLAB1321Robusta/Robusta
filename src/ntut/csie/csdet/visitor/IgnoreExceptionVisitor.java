@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ntut.csie.csdet.data.MarkerInfo;
+import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.jdt.util.NodeUtils;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 
@@ -17,12 +18,22 @@ import org.eclipse.jdt.core.dom.TryStatement;
 public class IgnoreExceptionVisitor extends ASTVisitor {
 	CompilationUnit root;
 	private List<MarkerInfo> ignoreExceptionList;
+	private boolean isDetectingIgnoredExcetion;
 	
 	public IgnoreExceptionVisitor(CompilationUnit root) {
 		super();
 		this.root = root;
 		ignoreExceptionList = new ArrayList<MarkerInfo>();
+		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		isDetectingIgnoredExcetion = smellSettings.isDetectingSmell(SmellSettings.SMELL_IGNORECHECKEDEXCEPTION);
 	}
+	
+	/**
+	 * 根據設定檔的資訊，決定要不要拜訪整棵樹。
+	 */
+	public boolean visit(CompilationUnit node) {
+		return isDetectingIgnoredExcetion;
+	}	
 	
 	public boolean visit(TryStatement node) {
 		ASTNode parent = NodeUtils.getSpecifiedParentNode(node, ASTNode.TRY_STATEMENT);

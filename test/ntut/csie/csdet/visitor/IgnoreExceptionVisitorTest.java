@@ -2,9 +2,15 @@ package ntut.csie.csdet.visitor;
 
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+
+import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.exceptionBadSmells.DummyAndIgnoreExample;
+import ntut.csie.robusta.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
@@ -17,25 +23,37 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class IgnoreExceptionVisitorTest {
-	JavaFileToString jfs;
-	JavaProjectMaker jpm;
-	CompilationUnit unit;
-	IgnoreExceptionVisitor ignoreExceptionBSV;
+	JavaFileToString javaFile2String;
+	JavaProjectMaker javaProjectMaker;
+	CompilationUnit compilationUnit;
+	IgnoreExceptionVisitor ignoreExceptionVisitor;
+	String javaProjectName;
+	
+	public IgnoreExceptionVisitorTest() {
+		javaProjectName = "IgnoredExceptionTest";
+	}
 	
 	@Before
 	public void setUp() throws Exception {
-		// 讀取測試檔案樣本內容
-		jfs = new JavaFileToString();
-		jfs.read(DummyAndIgnoreExample.class, "test");
+		javaProjectMaker = new JavaProjectMaker(javaProjectName);
+		javaProjectMaker.setJREDefaultContainer();
 		
-		jpm = new JavaProjectMaker("DummyHandlerTest");
-		jpm.setJREDefaultContainer();
 		// 新增欲載入的library
-		jpm.addJarFromProjectToBuildPath("lib\\log4j-1.2.15.jar");
+		javaProjectMaker.addJarFromProjectToBuildPath("lib/log4j-1.2.15.jar");
+
 		// 根據測試檔案樣本內容建立新的檔案
-		jpm.createJavaFile("ntut.csie.exceptionBadSmells", "DummyHandlerExample.java", "package ntut.csie.exceptionBadSmells;\n" + jfs.getFileContent());
+		javaFile2String = new JavaFileToString();
+		javaFile2String.read(DummyAndIgnoreExample.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaProjectMaker.createJavaFile(
+				DummyAndIgnoreExample.class.getPackage().getName(),
+				DummyAndIgnoreExample.class.getSimpleName() +  JavaProjectMaker.JAVA_FILE_EXTENSION,
+				"package " + DummyAndIgnoreExample.class.getPackage().getName() + ";\n"
+						+ javaFile2String.getFileContent());
 		
-		Path path = new Path("DummyHandlerTest\\src\\ntut\\csie\\exceptionBadSmells\\DummyHandlerExample.java");
+		Path path = new Path(javaProjectName + "/"
+				+ JavaProjectMaker.FOLDERNAME_SOURCE + "/"
+				+ PathUtils.dot2slash(DummyAndIgnoreExample.class.getName())
+				+ JavaProjectMaker.JAVA_FILE_EXTENSION);
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -43,24 +61,60 @@ public class IgnoreExceptionVisitorTest {
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
 		// 取得AST
-		unit = (CompilationUnit) parser.createAST(null); 
-		unit.recordModifications();
-		ignoreExceptionBSV = new IgnoreExceptionVisitor(unit);
+		compilationUnit = (CompilationUnit) parser.createAST(null); 
+		compilationUnit.recordModifications();
 	}
 
 	@After
 	public void tearDown() throws Exception {
-		jpm.deleteProject();
+		File smellSettingsFile = new File(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		if(smellSettingsFile.exists()) {
+			smellSettingsFile.delete();
+		}
+		javaProjectMaker.deleteProject();
+	}
+	
+	@Test
+	public void testVisitNode_withSettingFileAndIsDetectingFalse() {
+		int ignoredSmellCount = 0;
+		SmellSettings smellSetting = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		smellSetting.setSmellTypeAttribute(SmellSettings.SMELL_IGNORECHECKEDEXCEPTION, SmellSettings.ATTRIBUTE_ISDETECTING, String.valueOf(false));
+		smellSetting.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		assertTrue(new File(UserDefinedMethodAnalyzer.SETTINGFILEPATH).exists());
+		ignoreExceptionVisitor = new IgnoreExceptionVisitor(compilationUnit);
+		compilationUnit.accept(ignoreExceptionVisitor);
+		if(ignoreExceptionVisitor.getIgnoreList() != null)
+			ignoredSmellCount = ignoreExceptionVisitor.getIgnoreList().size();
+		
+		// 驗證總共抓到幾個bad smell
+		assertEquals(0, ignoredSmellCount);
+	}
+	
+	@Test
+	public void testVisitNode_withSettingFileAndIsDetectingTrue() {
+		int ignoredSmellCount = 0;
+		SmellSettings smellSetting = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		smellSetting.setSmellTypeAttribute(SmellSettings.SMELL_IGNORECHECKEDEXCEPTION, SmellSettings.ATTRIBUTE_ISDETECTING, String.valueOf(true));
+		smellSetting.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		assertTrue(new File(UserDefinedMethodAnalyzer.SETTINGFILEPATH).exists());
+		ignoreExceptionVisitor = new IgnoreExceptionVisitor(compilationUnit);
+		compilationUnit.accept(ignoreExceptionVisitor);
+		if(ignoreExceptionVisitor.getIgnoreList() != null)
+			ignoredSmellCount = ignoreExceptionVisitor.getIgnoreList().size();
+		
+		// 驗證總共抓到幾個bad smell
+		assertEquals(1, ignoredSmellCount);
 	}
 
 	@Test
-	public void testVisitNode() {
-		int ignore = 0;
-		unit.accept(ignoreExceptionBSV);
-		if(ignoreExceptionBSV.getIgnoreList() != null)
-			ignore = ignoreExceptionBSV.getIgnoreList().size();
+	public void testVisitNode_withoutSettingFile() {
+		int ignoredSmellCount = 0;
+		ignoreExceptionVisitor = new IgnoreExceptionVisitor(compilationUnit);
+		compilationUnit.accept(ignoreExceptionVisitor);
+		if(ignoreExceptionVisitor.getIgnoreList() != null)
+			ignoredSmellCount = ignoreExceptionVisitor.getIgnoreList().size();
 		
 		// 驗證總共抓到幾個bad smell
-		assertEquals(1, ignore);
+		assertEquals(0, ignoredSmellCount);
 	}
 }

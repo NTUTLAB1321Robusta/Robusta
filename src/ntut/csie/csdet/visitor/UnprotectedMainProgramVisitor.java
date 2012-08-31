@@ -31,13 +31,16 @@ public class UnprotectedMainProgramVisitor extends RLBaseVisitor{
 				.isDetectingSmell(SmellSettings.SMELL_UNPROTECTEDMAINPROGRAM);
 	}
 	
+	public boolean visit(CompilationUnit node) {
+		return isDetectingUnprotectedMainProgramSmell;
+	}
+	
 	/**
 	 * 尋找main function
 	 */
 	public boolean visit(MethodDeclaration node) {
 		// parse AST tree看看是否有void main(java.lang.String[])
-		if (node.resolveBinding().toString().contains("void main(java.lang.String[])")
-				&& isDetectingUnprotectedMainProgramSmell) {
+		if (node.resolveBinding().toString().contains("void main(java.lang.String[])")) {
 			List<?> statement = node.getBody().statements();
 			if(processMainFunction(statement)) {
 				//如果有找到code smell就將其加入

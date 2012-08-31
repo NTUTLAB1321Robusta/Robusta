@@ -326,7 +326,6 @@ public class JavaProjectMaker {
 	
 	/**
 	 * 刪除由建構元建立的專案
-	 * @param projectName
 	 * @throws CoreException 
 	 */
 	public synchronized void deleteProject() throws CoreException {
