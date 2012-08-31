@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.data.SSMessage;
 import ntut.csie.csdet.preference.JDomUtil;
 import ntut.csie.csdet.preference.SmellSettings;
@@ -98,21 +99,30 @@ public class ExceptionAnalyzerTest {
 	
 	@Test
 	public void testProcessTryStatement() throws Exception {
-		Method MethodProcessTryStatement = ExceptionAnalyzer.class.getDeclaredMethod("processTryStatement", ASTNode.class);
-		MethodProcessTryStatement.setAccessible(true);
+		Method methodProcessTryStatement = ExceptionAnalyzer.class.getDeclaredMethod("processTryStatement", ASTNode.class);
+		methodProcessTryStatement.setAccessible(true);
 		ASTMethodCollector astMethodCollector = new ASTMethodCollector();
 		compilationUnit.accept(astMethodCollector);
+		
 		List<ASTNode> methodList = astMethodCollector.getMethodList();
+		List<MarkerInfo> totalNTList = new ArrayList<MarkerInfo>();
+		List<RLMessage> tottalMethodRLList = new ArrayList<RLMessage>();
+		List<SSMessage> totalSSList = new ArrayList<SSMessage>();
+		
 		for (int i = 0; i < methodList.size(); i++) {
 			MethodDeclaration md = (MethodDeclaration) methodList.get(i);
 			for (int j = 0; j < md.getBody().statements().size(); j++) {
 				ASTNode node = (ASTNode)md.getBody().statements().get(j);
-				if (node.getNodeType()==ASTNode.TRY_STATEMENT) {
+				if (node.getNodeType() == ASTNode.TRY_STATEMENT) {
 					exceptionAnalyzer = new ExceptionAnalyzer(compilationUnit, methodList.get(i).getStartPosition(), 0);
-					MethodProcessTryStatement.invoke(exceptionAnalyzer, node);
+					methodProcessTryStatement.invoke(exceptionAnalyzer, node);
+					totalNTList.addAll(exceptionAnalyzer.getNestedTryList());
+					tottalMethodRLList.addAll(exceptionAnalyzer.getMethodRLAnnotationList());
+					totalSSList.addAll(exceptionAnalyzer.getSuppressSemllAnnotationList());
 				}
 			}
 		}
+		System.out.println("我是開心果但是熱量高");
 	}
 	
 	@Test
@@ -151,8 +161,6 @@ public class ExceptionAnalyzerTest {
 		totalRLList.addAll(exceptionAnalyzer.getExceptionList());
 		totalRLList.addAll(exceptionAnalyzer.getExceptionList());
 		assertEquals(2, totalRLList.size());
-		
-		System.out.println(cic.resolveConstructorBinding().getExceptionTypes().toString());		
 	}
 	
 	@Test
@@ -178,13 +186,13 @@ public class ExceptionAnalyzerTest {
 			methodGetMethodAnnotation.invoke(exceptionAnalyzer, methodlist.get(i));
 			totalRLList.addAll(exceptionAnalyzer.getMethodRLAnnotationList());
 		}
-		// 抓到三個 RL 註記的 method overloading for addRL(RLMessage rlmsg, int currentCatch)
-		assertEquals(3, totalRLList.size());
+		// 抓到 6 個 RL 註記的 method overloading for addRL(RLMessage rlmsg, int currentCatch)
+		assertEquals(6, totalRLList.size());
 		for (int i = 0; i < totalRLList.size(); i++) {
 			methodAddRLForInt.invoke(exceptionAnalyzer, totalRLList.get(i), i);
 		}
-		// 將三個 RL 註記的 method 利用 addRL 這個 method 是否成功加入 
-		assertEquals(3, exceptionAnalyzer.getExceptionList().size());
+		// 將 6 個 RL 註記的 method 利用 addRL 這個 method 是否成功加入 
+		assertEquals(6, exceptionAnalyzer.getExceptionList().size());
 
 		totalRLList =  new ArrayList<RLMessage>();
 		
@@ -194,12 +202,12 @@ public class ExceptionAnalyzerTest {
 			methodGetMethodAnnotation.invoke(exceptionAnalyzer, methodlist.get(i));
 			totalRLList.addAll(exceptionAnalyzer.getMethodRLAnnotationList());
 		}
-		// 抓到三個 RL 註記的 method overloading for addRL(RLMessage rlmsg, String key) 
-		assertEquals(3, totalRLList.size());
+		// 抓到 6 個 RL 註記的 method overloading for addRL(RLMessage rlmsg, String key) 
+		assertEquals(6, totalRLList.size());
 		for (int i = 0; i < totalRLList.size(); i++) {
 			methodAddRLForString.invoke(exceptionAnalyzer, totalRLList.get(i), "父母親的id哀豬叉踹." + i);
 		}
-		assertEquals(3, exceptionAnalyzer.getExceptionList().size());
+		assertEquals(6, exceptionAnalyzer.getExceptionList().size());
 	}
 //
 //	@Test
@@ -255,7 +263,7 @@ public class ExceptionAnalyzerTest {
 		assertEquals("java.lang.ArithmeticException",totalList.get(5).getRLData().getExceptionType().toString());
 		assertEquals("java.lang.Exception",totalList.get(6).getRLData().getExceptionType().toString());
 		
-		assertEquals(7, totalList.size());
+		assertEquals(10, totalList.size());
 	}
 
 	@Test
@@ -277,11 +285,11 @@ public class ExceptionAnalyzerTest {
 		assertTrue(methodlist.get(8).toString().equals(totalList.get(1).getStatement().toString()));
 		assertTrue(methodlist.get(9).toString().equals(totalList.get(2).getStatement().toString()));
 		
-		assertEquals(127, totalList.get(0).getLineNumber());
-		assertEquals(146, totalList.get(1).getLineNumber());
-		assertEquals(166, totalList.get(2).getLineNumber());
+		assertEquals(130, totalList.get(0).getLineNumber());
+		assertEquals(149, totalList.get(1).getLineNumber());
+		assertEquals(169, totalList.get(2).getLineNumber());
 		
-		assertEquals(3, totalList.size());
+		assertEquals(6, totalList.size());
 	}
 
 	@Test
@@ -308,16 +316,16 @@ public class ExceptionAnalyzerTest {
 		assertEquals("[Careless_CleanUp]", totalList.get(6).getSmellList().toString());
 		assertEquals("[Careless_CleanUp]", totalList.get(7).getSmellList().toString());
 		
-		assertEquals(28, totalList.get(0).getLineNumber());
-		assertEquals(37, totalList.get(1).getLineNumber());
-		assertEquals(64, totalList.get(2).getLineNumber());
-		assertEquals(81, totalList.get(3).getLineNumber());
-		assertEquals(100, totalList.get(4).getLineNumber());
-		assertEquals(127, totalList.get(5).getLineNumber());
-		assertEquals(146, totalList.get(6).getLineNumber());
-		assertEquals(166, totalList.get(7).getLineNumber());
+		assertEquals(31, totalList.get(0).getLineNumber());
+		assertEquals(40, totalList.get(1).getLineNumber());
+		assertEquals(67, totalList.get(2).getLineNumber());
+		assertEquals(84, totalList.get(3).getLineNumber());
+		assertEquals(103, totalList.get(4).getLineNumber());
+		assertEquals(130, totalList.get(5).getLineNumber());
+		assertEquals(149, totalList.get(6).getLineNumber());
+		assertEquals(169, totalList.get(7).getLineNumber());
 		
-		assertEquals(8, totalList.size());
+		assertEquals(10, totalList.size());
 	}
 
 	private void CreateSettings() {

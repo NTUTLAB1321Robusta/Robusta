@@ -7,6 +7,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.SocketTimeoutException;
+import java.nio.channels.FileLockInterruptionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithoutTryExample;
 
@@ -196,5 +199,83 @@ public class SuppressWarningExample {
 	
 	public void multiExceptionForMethodGetExceptionList() throws InterruptedIOException, ArithmeticException, Exception {
 		throw new InterruptedIOException();
+	}
+	
+	/* ---------------------OverLogging And Nested Try Example--------------------- */
+	/* -----------------------Call Chain In the Same Class------------------------- */
+	
+	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+	
+	public void theFirstOrderInTheSameClass() {
+		try {
+			theSecondOrderInTheSameClass();
+		} catch(@SuppressSmell("Dummy_Handler") IOException e) {
+			logger.log(Level.WARNING, e.getMessage());
+		}
+	}
+	/**
+	 * @SuppressSmell("Over_Logging")在 method 上
+	 */
+	@SuppressSmell("Over_Logging")
+	@Robustness(value = { @RL(level = 1, exception = java.io.IOException.class) })
+	public void theSecondOrderInTheSameClass() throws IOException {
+		try {
+			theThirdOrderInTheSameClass();
+		} catch(IOException e) {
+			logger.log(Level.WARNING, e.getMessage());
+			throw e;
+		}
+	}
+	/**
+	 * @SuppressSmell("Over_Logging")在 catch 上
+	 */
+	@Robustness(value = { @RL(level = 1, exception = java.io.IOException.class) })
+	public void theThirdOrderInTheSameClass() throws IOException {
+		try {
+			theFourthOrderInTheSameClass();
+		} catch(@SuppressSmell("Over_Logging") IOException e) {
+			logger.log(Level.WARNING, e.getMessage());
+			throw e;
+		}
+	}
+	/**
+	 * It is a BUG which has to be fixed.
+	 * 在 Nested Try Block 裡面的 Catch Clauses 有壞味道時 無法修復 或是 沒被偵測到
+	 * 必須寫 test case 處理
+	 */
+	@SuppressSmell({ "Careless_CleanUp", "Nested_Try_Block" })
+	@Robustness(value = { @RL(level = 1, exception = java.io.IOException.class) })
+	public void theFourthOrderInTheSameClass() throws IOException {
+		FileOutputStream fileOutputStream = null;
+		FileInputStream fis = null;
+		try {
+			new FileOutputStream("");
+			fileOutputStream = new FileOutputStream("");
+			fileOutputStream.close();
+			throw new IOException("IOException throws in callee");
+		} catch(@SuppressSmell({ "Nested_Try_Block" , "Over_Logging" }) FileNotFoundException e) {
+			logger.log(Level.WARNING, e.getMessage());
+			throw e;
+		} catch(@SuppressSmell({ "Nested_Try_Block" , "Over_Logging" , "Ignore_Checked_Exception"}) FileLockInterruptionException e) {
+			
+			
+		} catch(@SuppressSmell("Dummy_Handler") IOException e) {
+			logger.log(Level.WARNING, e.getMessage());
+		} catch (Exception e) {
+			try {
+				fis = new FileInputStream("");
+				fis.read();
+			} catch (@SuppressSmell( "Dummy_Handler" ) FileNotFoundException e1) {
+				e.printStackTrace();
+			} catch (@SuppressSmell({ "Dummy_Handler", "Dummy_Handler" }) IOException e1) {
+				e.printStackTrace();
+			} catch (@SuppressSmell( "Ignore_Checked_Exception" ) ArithmeticException e1) {
+				// TODO: handle exception
+			} catch (@SuppressSmell( { "Ignore_Checked_Exception", "Ignore_Checked_Exception" } ) ArrayStoreException  e1) {
+				// TODO: handle exception
+			} catch (Exception e2) {
+				fileOutputStream.close();
+			}
+		}
 	}
 }
