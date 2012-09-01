@@ -32,19 +32,18 @@ public class ExpressionStatementAnalyzerTest {
 	JavaFileToString javaFile2String;
 	JavaProjectMaker javaProjectMaker;
 	CompilationUnit compilationUnit;
-	String projectName;
 	
 	public ExpressionStatementAnalyzerTest() {
-		projectName = "ExpressionStatementTest";
 	}
 
 	@Before
 	public void setUp() throws Exception {
+		String testProjectName = "ExpressionStatementTest";
 		// 讀取測試檔案樣本內容
 		javaFile2String = new JavaFileToString();
 		javaFile2String.read(DummyAndIgnoreExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		
-		javaProjectMaker = new JavaProjectMaker(projectName);
+		javaProjectMaker = new JavaProjectMaker(testProjectName);
 		javaProjectMaker.setJREDefaultContainer();
 		// 新增欲載入的library
 		javaProjectMaker.addJarFromProjectToBuildPath("lib/log4j-1.2.15.jar");
@@ -57,7 +56,7 @@ public class ExpressionStatementAnalyzerTest {
 		// 建立XML
 		CreateDummyHandlerXML();
 		
-		Path path = new Path(projectName + "/"
+		Path path = new Path(testProjectName + "/"
 				+ JavaProjectMaker.FOLDERNAME_SOURCE + "/"
 				+ PathUtils.dot2slash(DummyAndIgnoreExample.class.getName())
 				+ JavaProjectMaker.JAVA_FILE_EXTENSION);

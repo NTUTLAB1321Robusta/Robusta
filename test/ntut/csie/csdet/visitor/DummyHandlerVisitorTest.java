@@ -32,7 +32,6 @@ import org.junit.Test;
 
 public class DummyHandlerVisitorTest {
 	JavaProjectMaker javaProjectMaker;
-	String javaProjectName;
 	JavaFileToString javaFile2String;
 	CompilationUnit compilationUnit;
 	DummyHandlerVisitor dummyHandlerVisitor;
@@ -42,13 +41,13 @@ public class DummyHandlerVisitorTest {
 	String[] dummyHandlerPatternsInXML;
 
 	public DummyHandlerVisitorTest() {
-		javaProjectName = "DummyHandlerTest";
 	}
 	
 	@Before
 	public void setUp() throws Exception {
+		String testProjectName = "DummyHandlerTest";
 		// 準備測試檔案樣本內容
-		javaProjectMaker = new JavaProjectMaker(javaProjectName);
+		javaProjectMaker = new JavaProjectMaker(testProjectName);
 		javaProjectMaker.setJREDefaultContainer();
 		
 		// 新增欲載入的library
@@ -80,7 +79,7 @@ public class DummyHandlerVisitorTest {
 				SmellSettings.EXTRARULE_OrgApacheLog4j};
 		setNewSettingsWithExtraRules(dummyHandlerPatternsInXML);
 		
-		Path path = new Path(javaProjectName + "/"
+		Path path = new Path(testProjectName + "/"
 				+ JavaProjectMaker.FOLDERNAME_SOURCE + "/"
 				+ PathUtils.dot2slash(DummyAndIgnoreExample.class.getName())
 				+ JavaProjectMaker.JAVA_FILE_EXTENSION);

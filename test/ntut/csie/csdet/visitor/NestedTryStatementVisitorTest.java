@@ -31,9 +31,9 @@ public class NestedTryStatementVisitorTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		String projectName = "NestedTryStatementExampleProject";
+		String testProjectName = "NestedTryStatementExampleProject";
 		javaFile2String = new JavaFileToString();
-		javaProjectMaker = new JavaProjectMaker(projectName);
+		javaProjectMaker = new JavaProjectMaker(testProjectName);
 		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.FOLDERNAME_LIB_JAR, JavaProjectMaker.FOLDERNAME_BIN_CLASS);
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/" + JavaProjectMaker.RL_LIBRARY_PATH);
 		javaProjectMaker.setJREDefaultContainer();
@@ -46,7 +46,7 @@ public class NestedTryStatementVisitorTest {
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
-		Path nestedTryExamplePath = new Path(projectName
+		Path nestedTryExamplePath = new Path(testProjectName
 				+ "/" + JavaProjectMaker.FOLDERNAME_SOURCE + "/"
 				+ PathUtils.dot2slash(NestedTryStatementExample.class.getName()
 						.toString()) + JavaProjectMaker.JAVA_FILE_EXTENSION);
@@ -60,7 +60,7 @@ public class NestedTryStatementVisitorTest {
 						getRoot().getFile(nestedTryExamplePath)));
 		parser.setResolveBindings(true);
 		// 建立XML
-		createSettings();
+		createSettings(true);
 		// 取得AST
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
@@ -92,12 +92,7 @@ public class NestedTryStatementVisitorTest {
 	
 	@Test
 	public void testNestedTryStatementVisitor_doNotDetect() {
-//		File xmlFile = new File(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-//		if(xmlFile.exists()) {
-//			assertTrue(xmlFile.delete());
-//		}
-		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_NESTEDTRYBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, String.valueOf(false));
-		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		createSettings(false);
 		nestedTryStatementVisitor = new NestedTryStatementVisitor(compilationUnit);
 
 		int nestedTryStatementCount = 0;
@@ -127,9 +122,9 @@ public class NestedTryStatementVisitorTest {
 		return sb.toString();
 	}
 
-	private void createSettings() {
+	private void createSettings(boolean isDetecting) {
 		smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_NESTEDTRYBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, String.valueOf(true));
+		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_NESTEDTRYBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, String.valueOf(isDetecting));
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 	}
 }

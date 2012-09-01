@@ -27,15 +27,14 @@ public class IgnoreExceptionVisitorTest {
 	JavaProjectMaker javaProjectMaker;
 	CompilationUnit compilationUnit;
 	IgnoreExceptionVisitor ignoreExceptionVisitor;
-	String javaProjectName;
 	
 	public IgnoreExceptionVisitorTest() {
-		javaProjectName = "IgnoredExceptionTest";
 	}
 	
 	@Before
 	public void setUp() throws Exception {
-		javaProjectMaker = new JavaProjectMaker(javaProjectName);
+		String testProjectName = "IgnoredExceptionTest";
+		javaProjectMaker = new JavaProjectMaker(testProjectName);
 		javaProjectMaker.setJREDefaultContainer();
 		
 		// 新增欲載入的library
@@ -50,7 +49,7 @@ public class IgnoreExceptionVisitorTest {
 				"package " + DummyAndIgnoreExample.class.getPackage().getName() + ";\n"
 						+ javaFile2String.getFileContent());
 		
-		Path path = new Path(javaProjectName + "/"
+		Path path = new Path(testProjectName + "/"
 				+ JavaProjectMaker.FOLDERNAME_SOURCE + "/"
 				+ PathUtils.dot2slash(DummyAndIgnoreExample.class.getName())
 				+ JavaProjectMaker.JAVA_FILE_EXTENSION);

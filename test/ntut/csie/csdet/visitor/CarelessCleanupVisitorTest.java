@@ -37,9 +37,9 @@ public class CarelessCleanupVisitorTest {
 
 	@Before
 	public void setUp() throws Exception {
-		String projectName = "CarelessCleanupExampleProject";
+		String testProjectName = "CarelessCleanupExampleProject";
 		javaFile2String = new JavaFileToString();
-		javaProjectMaker = new JavaProjectMaker(projectName);
+		javaProjectMaker = new JavaProjectMaker(testProjectName);
 		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.FOLDERNAME_LIB_JAR, JavaProjectMaker.FOLDERNAME_BIN_CLASS);
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/" + JavaProjectMaker.RL_LIBRARY_PATH);
 		javaProjectMaker.setJREDefaultContainer();
@@ -85,7 +85,7 @@ public class CarelessCleanupVisitorTest {
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
-		Path ccExamplePath = new Path(projectName
+		Path ccExamplePath = new Path(testProjectName
 				+ "/" + JavaProjectMaker.FOLDERNAME_SOURCE + "/"
 				+ PathUtils.dot2slash(CarelessCleanupExample.class.getName()
 						.toString()) + JavaProjectMaker.JAVA_FILE_EXTENSION);

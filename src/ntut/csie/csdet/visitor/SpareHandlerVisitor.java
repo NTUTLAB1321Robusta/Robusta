@@ -41,6 +41,15 @@ public class SpareHandlerVisitor extends RLBaseVisitor {
 	 * @param node
 	 */
 	private void processTryStatement(ASTNode node) {
+		/* 
+		 * 特定節點如果滿足以下條件，則認定使用者認定它為spare handler，
+		 * 並且想要用我們提供的Spare Handler 重構機制。
+		 * 1. 只要Catch Clause裡面不是空的
+		 * 2. Catch Clause裡面的所有程式碼都被選取
+		 * FIXME: 
+		 *  1. 他只會去判斷TryStatement有沒有整個被選起來，而不會去看這個TryStatement是不是在Catch Clause下面
+		 *  2. 如果不是TryStatement，而是整個Catch Clause裡面的程式碼被選取，也應該要可以重構 
+		 */
 		//只要在catch block之中還有一個try-catch,則視為spare handler
 		TryStatement ts = (TryStatement)node;
 		List<?> catchList = ts.catchClauses();
