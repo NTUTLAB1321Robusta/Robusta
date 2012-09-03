@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ntut.csie.csdet.data.MarkerInfo;
+import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.rleht.common.RLBaseVisitor;
 
@@ -20,10 +21,18 @@ public class UnprotectedMainProgramVisitor extends RLBaseVisitor{
 	private List<MarkerInfo> unprotectedMainList;	
 	// AST tree的root(檔案名稱)
 	private CompilationUnit root;
+	private boolean isDetectingUnprotectedMainProgramSmell;
 	
 	public UnprotectedMainProgramVisitor(CompilationUnit root){
 		this.root = root;
 		unprotectedMainList = new ArrayList<MarkerInfo>();
+		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		isDetectingUnprotectedMainProgramSmell = smellSettings
+				.isDetectingSmell(SmellSettings.SMELL_UNPROTECTEDMAINPROGRAM);
+	}
+	
+	public boolean visit(CompilationUnit node) {
+		return isDetectingUnprotectedMainProgramSmell;
 	}
 	
 	/**
@@ -31,7 +40,7 @@ public class UnprotectedMainProgramVisitor extends RLBaseVisitor{
 	 */
 	public boolean visit(MethodDeclaration node) {
 		// parse AST tree看看是否有void main(java.lang.String[])
-		if(node.resolveBinding().toString().contains("void main(java.lang.String[])")) {
+		if (node.resolveBinding().toString().contains("void main(java.lang.String[])")) {
 			List<?> statement = node.getBody().statements();
 			if(processMainFunction(statement)) {
 				//如果有找到code smell就將其加入

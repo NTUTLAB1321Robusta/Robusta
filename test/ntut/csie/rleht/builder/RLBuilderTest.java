@@ -44,7 +44,7 @@ public class RLBuilderTest {
 		rlBuilder = new RLBuilder();
 		javaFile2String = new JavaFileToString();
 		javaProjectMaker = new JavaProjectMaker(projectName);
-		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.LIB_JAR_FOLDERNAME, JavaProjectMaker.BIN_CLASS_FOLDERNAME);
+		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.FOLDERNAME_LIB_JAR, JavaProjectMaker.FOLDERNAME_BIN_CLASS);
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/lib/RL.jar");
 		javaProjectMaker.setJREDefaultContainer();
 		// 根據測試檔案樣本內容建立新的檔案

@@ -1,17 +1,15 @@
 package ntut.csie.csdet.visitor;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 
+import ntut.csie.filemaker.ASTNodeFinder;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.exceptionBadSmells.DummyAndIgnoreExample;
-import ntut.csie.rleht.common.RLBaseVisitor;
+import ntut.csie.robusta.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
@@ -19,43 +17,55 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.TryStatement;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 public class SpareHandlerVisitorTest {
 	
-	JavaFileToString jfs;
-	JavaProjectMaker jpm;
-	CompilationUnit unit;
+	JavaFileToString javaaFile2String;
+	JavaProjectMaker javaProjectMaker;
+	CompilationUnit compilationUnit;
 
-	public SpareHandlerVisitorTest() {
-	}
+	public SpareHandlerVisitorTest() {	}
 	
 	@Before
 	public void setUp() throws Exception {
+		String testProjectName = "SpareHandlerTest";
 		// 讀取測試檔案樣本內容
-		jfs = new JavaFileToString();
-		jfs.read(DummyAndIgnoreExample.class, "test");
+		javaaFile2String = new JavaFileToString();
+		javaaFile2String.read(DummyAndIgnoreExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		
-		jpm = new JavaProjectMaker("DummyHandlerTest");
-		jpm.setJREDefaultContainer();
+		javaProjectMaker = new JavaProjectMaker(testProjectName);
+		javaProjectMaker.setJREDefaultContainer();
 		// 新增欲載入的library
-		jpm.addJarFromProjectToBuildPath("lib\\log4j-1.2.15.jar");
+		javaProjectMaker.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR + "/log4j-1.2.15.jar");
 		// 根據測試檔案樣本內容建立新的檔案
-		jpm.createJavaFile("ntut.csie.exceptionBadSmells", "DummyHandlerExample.java", "package ntut.csie.exceptionBadSmells;\n" + jfs.getFileContent());
+		javaProjectMaker.createJavaFile(DummyAndIgnoreExample.class.getPackage().getName(),
+				DummyAndIgnoreExample.class.getSimpleName(),
+				"package " + DummyAndIgnoreExample.class.getPackage().getName()	+ ";\n"
+				+ javaaFile2String.getFileContent());
 		
-		Path path = new Path("DummyHandlerTest\\src\\ntut\\csie\\exceptionBadSmells\\DummyHandlerExample.java");
+		Path dummyAndIgnoreExamplePath = new Path(testProjectName
+				+ "/" + JavaProjectMaker.FOLDERNAME_SOURCE + "/"
+				+ PathUtils.dot2slash(DummyAndIgnoreExample.class.getName()
+						.toString()) + JavaProjectMaker.JAVA_FILE_EXTENSION);
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		// 設定要被建立AST的檔案
-		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
+		parser.setSource(
+				JavaCore.createCompilationUnitFrom(
+						ResourcesPlugin.getWorkspace().
+						getRoot().getFile(dummyAndIgnoreExamplePath)));
 		parser.setResolveBindings(true);
 		// 取得AST
-		unit = (CompilationUnit) parser.createAST(null); 
-		unit.recordModifications();
+		compilationUnit = (CompilationUnit) parser.createAST(null); 
+		compilationUnit.recordModifications();
 	}
 
 	@After
@@ -63,71 +73,134 @@ public class SpareHandlerVisitorTest {
 		File xmlFile = new File(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		if(xmlFile.exists())
 			assertTrue(xmlFile.delete());
-		jpm.deleteProject();
+		javaProjectMaker.deleteProject();
+	}
+	
+	
+	@Test
+	public void testVisitNode_visitTryNode() {
+		// 從Sample code裡面取出一個TryStatement
+		SimpleTryStatementFinder simpleTryFinder = new SimpleTryStatementFinder("true_DummyHandlerCatchNestedTry");
+		compilationUnit.accept(simpleTryFinder);
+		
+		// 使用者選擇的TryStatement與visitNode傳入的TryStatement是同一個
+		SpareHandlerVisitor spareHandlerVisitor = new SpareHandlerVisitor(simpleTryFinder.getTryStatement());
+		spareHandlerVisitor.visitNode(simpleTryFinder.getTryStatement());
+		assertTrue(spareHandlerVisitor.getResult());
 	}
 	
 	@Test
-	public void testProcessTryStatement() throws Exception {
-		// 收集所有trystatement
-		ASTTryCollect tryCollector = new ASTTryCollect();
-		unit.accept(tryCollector);
+	public void testVisitNode_visitATryNodeAndSelectAnotherTryNode() {
+		// 從Sample code裡面取出第一個TryStatement
+		SimpleTryStatementFinder simpleTryFinderUserSelect = new SimpleTryStatementFinder("true_DummyHandlerCatchNestedTry");
+		compilationUnit.accept(simpleTryFinderUserSelect);
 		
-		int index = 4;
-		List<ASTNode> tryList = tryCollector.getMethodList();
+		// 從Sample code裡面取出第二個TryStatement
+		SimpleTryStatementFinder simpleTryFinderInputVisitNode = new SimpleTryStatementFinder("true_DummyHandlerTryNestedTry");
+		compilationUnit.accept(simpleTryFinderInputVisitNode);
+		
+		// 使用者選擇的TryStatement與visitNode傳入的TryStatement是不同一個
+		SpareHandlerVisitor spareHandlerVisitor = new SpareHandlerVisitor(simpleTryFinderUserSelect.getTryStatement());
+		spareHandlerVisitor.visitNode(simpleTryFinderInputVisitNode.getTryStatement());
+		assertFalse(spareHandlerVisitor.getResult());
+	}
+	
+	@Test
+	public void testVisitNode_visitNotTryNode() {
+		// 從Sample code裡面去出一個MethodDeclaration
+		ASTNode node = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "true_DummyHandlerTryNestedTry");
+		
+		// 從Sample code裡面取出一個TryStatement
+		SimpleTryStatementFinder simpleTryFinder = new SimpleTryStatementFinder("true_DummyHandlerCatchNestedTry");
+		compilationUnit.accept(simpleTryFinder);
+		
+		// visitNode傳入的Node不是TryStatement
+		SpareHandlerVisitor spareHandlerVisitor = new SpareHandlerVisitor(simpleTryFinder.getTryStatement());
+		spareHandlerVisitor.visitNode(node);
+		assertFalse(spareHandlerVisitor.getResult());
+	}
+	
+	
+	@Test
+	public void testVisitNode_userNotSelectNode() {
+		// 從Sample code裡面取出一個TryStatement節點
+		SimpleTryStatementFinder simpleTryFinder = new SimpleTryStatementFinder("true_DummyHandlerCatchNestedTry");
+		compilationUnit.accept(simpleTryFinder);
+		
+		// 使用者沒有選擇節點
+		SpareHandlerVisitor spareHandlerVisitor = new SpareHandlerVisitor(null);
+		spareHandlerVisitor.visitNode(simpleTryFinder.getTryStatement());
+		assertFalse(spareHandlerVisitor.getResult());			
+	}
+	
+	@Test
+	public void testProcessTryStatement_CatchNestedTry() throws Exception {
+		// 根據指定的 Method Name 找出我們要的TryNode
+		SimpleTryStatementFinder simpleTryFinder = new SimpleTryStatementFinder("true_DummyHandlerCatchNestedTry");
+		compilationUnit.accept(simpleTryFinder);
+		
+		// 開放processTryStatement的存取權限
 		Method processTryStatement = SpareHandlerVisitor.class.getDeclaredMethod("processTryStatement", ASTNode.class);
 		processTryStatement.setAccessible(true);
 		
-		/* 尋找要被refactor的節點 */
-		for(int i = 0; i < tryList.size(); i++) {
-			SpareHandlerVisitor shVisitor = new SpareHandlerVisitor(tryList.get(index));
-			processTryStatement.invoke(shVisitor, tryList.get(i));
-			if(i == index)	// 找到該節點
-				assertTrue(shVisitor.getResult());
-			else			// 未找到
-				assertFalse(shVisitor.getResult());
-		}
+		SpareHandlerVisitor spareHandlerVisitor = new SpareHandlerVisitor(simpleTryFinder.getTryStatement());
+		processTryStatement.invoke(spareHandlerVisitor, simpleTryFinder.getTryStatement());
+		
+		assertTrue(spareHandlerVisitor.getResult());
 	}
 	
 	@Test
-	public void testVisitNode() throws Exception {
-		// 收集所有trystatement
-		ASTTryCollect tryCollector = new ASTTryCollect();
-		unit.accept(tryCollector);
-		SpareHandlerVisitor shVisitor = new SpareHandlerVisitor(tryCollector.getMethodList().get(4));
+	public void testProcessTryStatement_TryNestedTry() throws Exception {
+		// 根據指定的 Method Name 找出我們要的TryNode
+		SimpleTryStatementFinder simpleTryFinder = new SimpleTryStatementFinder("true_DummyHandlerTryNestedTry");
+		compilationUnit.accept(simpleTryFinder);
 		
-		unit.accept(shVisitor);
-		assertTrue(shVisitor.getResult());
+		// 開放processTryStatement的存取權限
+		Method processTryStatement = SpareHandlerVisitor.class.getDeclaredMethod("processTryStatement", ASTNode.class);
+		processTryStatement.setAccessible(true);
+		
+		SpareHandlerVisitor spareHandlerVisitor = new SpareHandlerVisitor(simpleTryFinder.getTryStatement());
+		processTryStatement.invoke(spareHandlerVisitor, simpleTryFinder.getTryStatement());
+		
+		assertTrue(spareHandlerVisitor.getResult());
 	}
 	
-	
-	/**
-	 * 收集TryStatement nodes 
-	 * @author Crimson
-	 */
-	public class ASTTryCollect extends RLBaseVisitor {
-		private List<ASTNode> methodList;
-		public ASTTryCollect() {
-			super(true);
-			methodList = new ArrayList<ASTNode>();
-		}
+	@Test
+	public void testProcessTryStatement_TryWithoutNested() throws Exception {
+		// 根據指定的 Method Name 找出我們要的TryNode
+		SimpleTryStatementFinder simpleTryFinder = new SimpleTryStatementFinder("false_rethrowRuntimeException");
+		compilationUnit.accept(simpleTryFinder);
 		
-		protected boolean visitNode(ASTNode node) {
-			try {
-				switch (node.getNodeType()) {
-				case ASTNode.TRY_STATEMENT:
-					this.methodList.add(node);
-					return true;
-				default:
-					return true;
+		// 開放processTryStatement的存取權限
+		Method processTryStatement = SpareHandlerVisitor.class.getDeclaredMethod("processTryStatement", ASTNode.class);
+		processTryStatement.setAccessible(true);
+		
+		SpareHandlerVisitor spareHandlerVisitor = new SpareHandlerVisitor(simpleTryFinder.getTryStatement());
+		processTryStatement.invoke(spareHandlerVisitor, simpleTryFinder.getTryStatement());
+		
+		assertTrue(spareHandlerVisitor.getResult());
+	}
 
-				}
-			} catch (Exception e) {
-				return false;
-			}
+	public class SimpleTryStatementFinder extends ASTVisitor{
+		private TryStatement tryStatement;
+		private String nameOfMethodWithSpecifiedTryStatement;
+		public SimpleTryStatementFinder(String nameOfMethodWithSpecifiedTry) {
+			super();
+			tryStatement = null;
+			nameOfMethodWithSpecifiedTryStatement = nameOfMethodWithSpecifiedTry;
 		}
 		
-		public List<ASTNode> getMethodList() {
-			return methodList;
+		public boolean visit(MethodDeclaration node) {
+			return node.getName().toString().equals(nameOfMethodWithSpecifiedTryStatement);
+		}
+		
+		public boolean visit(TryStatement node) {
+			tryStatement = node;
+			return false;
+		}
+		
+		public ASTNode getTryStatement() {
+			return tryStatement;
 		}
 	}
 }

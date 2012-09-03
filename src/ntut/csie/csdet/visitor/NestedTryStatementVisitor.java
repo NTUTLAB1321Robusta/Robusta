@@ -3,6 +3,7 @@ package ntut.csie.csdet.visitor;
 import java.util.ArrayList;
 import java.util.List;
 import ntut.csie.csdet.data.MarkerInfo;
+import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.jdt.util.NodeUtils;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 
@@ -14,11 +15,14 @@ import org.eclipse.jdt.core.dom.TryStatement;
 public class NestedTryStatementVisitor extends ASTVisitor {
 	private CompilationUnit compilationUnit;
 	private List<MarkerInfo> nestedTryStatementList;
+	private boolean isDetectingNestedTryStatementSmell;
 	
 	public NestedTryStatementVisitor(CompilationUnit compilationUnit) {
 		super();
 		this.compilationUnit = compilationUnit;
 		nestedTryStatementList = new ArrayList<MarkerInfo>();
+		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		isDetectingNestedTryStatementSmell = smellSettings.isDetectingSmell(SmellSettings.SMELL_NESTEDTRYBLOCK);
 	}
 	
 	/**
@@ -27,6 +31,13 @@ public class NestedTryStatementVisitor extends ASTVisitor {
 	 */
 	public List<MarkerInfo> getNestedTryStatementList() {
 		return nestedTryStatementList;
+	}
+	
+	/**
+	 * 根據設定檔的資訊，決定要不要拜訪整棵樹。
+	 */
+	public boolean visit(CompilationUnit node) {
+		return isDetectingNestedTryStatementSmell;
 	}
 	
 	@Override

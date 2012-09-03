@@ -12,6 +12,7 @@ import ntut.csie.csdet.preference.JDomUtil;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.exceptionBadSmells.DummyAndIgnoreExample;
+import ntut.csie.robusta.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
@@ -28,35 +29,47 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class ExpressionStatementAnalyzerTest {
-	JavaFileToString jfs;
-	JavaProjectMaker jpm;
-	CompilationUnit unit;
+	JavaFileToString javaFile2String;
+	JavaProjectMaker javaProjectMaker;
+	CompilationUnit compilationUnit;
+	
+	public ExpressionStatementAnalyzerTest() {
+	}
 
 	@Before
 	public void setUp() throws Exception {
+		String testProjectName = "ExpressionStatementTest";
 		// 讀取測試檔案樣本內容
-		jfs = new JavaFileToString();
-		jfs.read(DummyAndIgnoreExample.class, "test");
+		javaFile2String = new JavaFileToString();
+		javaFile2String.read(DummyAndIgnoreExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		
-		jpm = new JavaProjectMaker("DummyHandlerTest");
-		jpm.setJREDefaultContainer();
+		javaProjectMaker = new JavaProjectMaker(testProjectName);
+		javaProjectMaker.setJREDefaultContainer();
 		// 新增欲載入的library
-		jpm.addJarFromProjectToBuildPath("lib\\log4j-1.2.15.jar");
+		javaProjectMaker.addJarFromProjectToBuildPath("lib/log4j-1.2.15.jar");
 		// 根據測試檔案樣本內容建立新的檔案
-		jpm.createJavaFile("ntut.csie.exceptionBadSmells", "DummyHandlerExample.java", "package ntut.csie.exceptionBadSmells;\n" + jfs.getFileContent());
+		javaProjectMaker.createJavaFile(
+				DummyAndIgnoreExample.class.getPackage().getName(),
+				DummyAndIgnoreExample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
+				"package " + DummyAndIgnoreExample.class.getPackage().getName() + ";\n"
+				+ javaFile2String.getFileContent());
 		// 建立XML
 		CreateDummyHandlerXML();
 		
-		Path path = new Path("DummyHandlerTest\\src\\ntut\\csie\\exceptionBadSmells\\DummyHandlerExample.java");
+		Path path = new Path(testProjectName + "/"
+				+ JavaProjectMaker.FOLDERNAME_SOURCE + "/"
+				+ PathUtils.dot2slash(DummyAndIgnoreExample.class.getName())
+				+ JavaProjectMaker.JAVA_FILE_EXTENSION);
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		// 設定要被建立AST的檔案
-		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
+		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin
+				.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
 		// 取得AST
-		unit = (CompilationUnit) parser.createAST(null); 
-		unit.recordModifications();
+		compilationUnit = (CompilationUnit) parser.createAST(null); 
+		compilationUnit.recordModifications();
 	}
 
 	@After
@@ -66,7 +79,7 @@ public class ExpressionStatementAnalyzerTest {
 		if(xmlFile.exists())
 			assertTrue(xmlFile.delete());
 		// 刪除專案
-		jpm.deleteProject();
+		javaProjectMaker.deleteProject();
 	}
 	
 	@Test
@@ -74,7 +87,7 @@ public class ExpressionStatementAnalyzerTest {
 		// 宣告專門收集CatchClause的class
 		ASTCatchCollect catchCollector = new ASTCatchCollect();
 		// 收集所有CatchClause
-		unit.accept(catchCollector);
+		compilationUnit.accept(catchCollector);
 		// 取得CatchClause list
 		List<ASTNode> catchList = catchCollector.getMethodList();
 		// 設定DummyHandler的條件
@@ -109,7 +122,7 @@ public class ExpressionStatementAnalyzerTest {
 		// 宣告專門收集CatchClause的class
 		ASTCatchCollect catchCollector = new ASTCatchCollect();
 		// 收集所有CatchClause
-		unit.accept(catchCollector);
+		compilationUnit.accept(catchCollector);
 		// 取得CatchClause list
 		List<ASTNode> catchList = catchCollector.getMethodList();
 		// 設定DummyHandler的條件
@@ -185,7 +198,7 @@ public class ExpressionStatementAnalyzerTest {
 		// 宣告專門收集CatchClause的class
 		ASTCatchCollect catchCollector = new ASTCatchCollect();
 		// 收集所有CatchClause
-		unit.accept(catchCollector);
+		compilationUnit.accept(catchCollector);
 		// 取得CatchClause list
 		List<ASTNode> catchList = catchCollector.getMethodList();
 		// 設定DummyHandler的條件
