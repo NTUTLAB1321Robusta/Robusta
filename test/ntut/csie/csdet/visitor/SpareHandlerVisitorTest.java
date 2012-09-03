@@ -1,10 +1,11 @@
 package ntut.csie.csdet.visitor;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.lang.reflect.Method;
+
+import ntut.csie.filemaker.ASTNodeFinder;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.exceptionBadSmells.DummyAndIgnoreExample;
@@ -42,7 +43,7 @@ public class SpareHandlerVisitorTest {
 		javaProjectMaker = new JavaProjectMaker(testProjectName);
 		javaProjectMaker.setJREDefaultContainer();
 		// 新增欲載入的library
-		javaProjectMaker.addJarFromProjectToBuildPath("lib/log4j-1.2.15.jar");
+		javaProjectMaker.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR + "/log4j-1.2.15.jar");
 		// 根據測試檔案樣本內容建立新的檔案
 		javaProjectMaker.createJavaFile(DummyAndIgnoreExample.class.getPackage().getName(),
 				DummyAndIgnoreExample.class.getSimpleName(),
@@ -75,6 +76,63 @@ public class SpareHandlerVisitorTest {
 		javaProjectMaker.deleteProject();
 	}
 	
+	
+	@Test
+	public void testVisitNode_visitTryNode() {
+		// 從Sample code裡面取出一個TryStatement
+		SimpleTryStatementFinder simpleTryFinder = new SimpleTryStatementFinder("true_DummyHandlerCatchNestedTry");
+		compilationUnit.accept(simpleTryFinder);
+		
+		// 使用者選擇的TryStatement與visitNode傳入的TryStatement是同一個
+		SpareHandlerVisitor spareHandlerVisitor = new SpareHandlerVisitor(simpleTryFinder.getTryStatement());
+		spareHandlerVisitor.visitNode(simpleTryFinder.getTryStatement());
+		assertTrue(spareHandlerVisitor.getResult());
+	}
+	
+	@Test
+	public void testVisitNode_visitATryNodeAndSelectAnotherTryNode() {
+		// 從Sample code裡面取出第一個TryStatement
+		SimpleTryStatementFinder simpleTryFinderUserSelect = new SimpleTryStatementFinder("true_DummyHandlerCatchNestedTry");
+		compilationUnit.accept(simpleTryFinderUserSelect);
+		
+		// 從Sample code裡面取出第二個TryStatement
+		SimpleTryStatementFinder simpleTryFinderInputVisitNode = new SimpleTryStatementFinder("true_DummyHandlerTryNestedTry");
+		compilationUnit.accept(simpleTryFinderInputVisitNode);
+		
+		// 使用者選擇的TryStatement與visitNode傳入的TryStatement是不同一個
+		SpareHandlerVisitor spareHandlerVisitor = new SpareHandlerVisitor(simpleTryFinderUserSelect.getTryStatement());
+		spareHandlerVisitor.visitNode(simpleTryFinderInputVisitNode.getTryStatement());
+		assertFalse(spareHandlerVisitor.getResult());
+	}
+	
+	@Test
+	public void testVisitNode_visitNotTryNode() {
+		// 從Sample code裡面去出一個MethodDeclaration
+		ASTNode node = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "true_DummyHandlerTryNestedTry");
+		
+		// 從Sample code裡面取出一個TryStatement
+		SimpleTryStatementFinder simpleTryFinder = new SimpleTryStatementFinder("true_DummyHandlerCatchNestedTry");
+		compilationUnit.accept(simpleTryFinder);
+		
+		// visitNode傳入的Node不是TryStatement
+		SpareHandlerVisitor spareHandlerVisitor = new SpareHandlerVisitor(simpleTryFinder.getTryStatement());
+		spareHandlerVisitor.visitNode(node);
+		assertFalse(spareHandlerVisitor.getResult());
+	}
+	
+	
+	@Test
+	public void testVisitNode_userNotSelectNode() {
+		// 從Sample code裡面取出一個TryStatement節點
+		SimpleTryStatementFinder simpleTryFinder = new SimpleTryStatementFinder("true_DummyHandlerCatchNestedTry");
+		compilationUnit.accept(simpleTryFinder);
+		
+		// 使用者沒有選擇節點
+		SpareHandlerVisitor spareHandlerVisitor = new SpareHandlerVisitor(null);
+		spareHandlerVisitor.visitNode(simpleTryFinder.getTryStatement());
+		assertFalse(spareHandlerVisitor.getResult());			
+	}
+	
 	@Test
 	public void testProcessTryStatement_CatchNestedTry() throws Exception {
 		// 根據指定的 Method Name 找出我們要的TryNode
@@ -104,7 +162,7 @@ public class SpareHandlerVisitorTest {
 		SpareHandlerVisitor spareHandlerVisitor = new SpareHandlerVisitor(simpleTryFinder.getTryStatement());
 		processTryStatement.invoke(spareHandlerVisitor, simpleTryFinder.getTryStatement());
 		
-		assertFalse(spareHandlerVisitor.getResult());
+		assertTrue(spareHandlerVisitor.getResult());
 	}
 	
 	@Test
@@ -120,9 +178,9 @@ public class SpareHandlerVisitorTest {
 		SpareHandlerVisitor spareHandlerVisitor = new SpareHandlerVisitor(simpleTryFinder.getTryStatement());
 		processTryStatement.invoke(spareHandlerVisitor, simpleTryFinder.getTryStatement());
 		
-		assertFalse(spareHandlerVisitor.getResult());
+		assertTrue(spareHandlerVisitor.getResult());
 	}
-	
+
 	public class SimpleTryStatementFinder extends ASTVisitor{
 		private TryStatement tryStatement;
 		private String nameOfMethodWithSpecifiedTryStatement;

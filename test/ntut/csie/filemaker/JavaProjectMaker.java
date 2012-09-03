@@ -97,8 +97,8 @@ public class JavaProjectMaker {
 		this.projectName = projectName; 
 		
 		/* 預設資料夾是src & test */
-		sourceCodeFolderName = "src";
-		testCodeFolderName = "test";
+		sourceCodeFolderName = FOLDERNAME_SOURCE;
+		testCodeFolderName = FOLDERNAME_TEST;
 		libraryPath = _project.getLocation().toFile().getAbsolutePath() + "/" + RL_LIBRARY_PATH;
 	}
 	
@@ -117,7 +117,7 @@ public class JavaProjectMaker {
 	 * @throws CoreException
 	 */
 	public void createOutputFolder() throws CoreException {
-		createOutputFolder("bin");
+		createOutputFolder(FOLDERNAME_BIN_CLASS);
 	}
 	
 	/**
@@ -258,9 +258,8 @@ public class JavaProjectMaker {
 		}
 		
 		/* 判斷傳進來的檔名有沒有副檔名(.java)，如果沒有就幫他加上去 */
-		final String javaExtension = ".java";
-		if(!className.endsWith(javaExtension)) {
-			className += javaExtension;
+		if(!className.endsWith(JAVA_FILE_EXTENSION)) {
+			className += JAVA_FILE_EXTENSION;
 		}
 		
 		// 產生java檔
@@ -321,7 +320,7 @@ public class JavaProjectMaker {
 		createFolder(libFoldername);
 		File libFile = new File(libraryPath);
 		JarFileMaker jarFileMaker = new JarFileMaker();
-		jarFileMaker.createJarFile(libFile, new File(binFoldername), "agile.exception");
+		jarFileMaker.createJarFile(libFile, new File(binFoldername), RL_PACKAGE_NAME);
 	}
 	
 	/**

@@ -51,7 +51,7 @@ public class DummyHandlerVisitorTest {
 		javaProjectMaker.setJREDefaultContainer();
 		
 		// 新增欲載入的library
-		javaProjectMaker.addJarFromProjectToBuildPath("lib/log4j-1.2.15.jar");
+		javaProjectMaker.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR + "/log4j-1.2.15.jar");
 		
 		// 建立新的檔案DummyAndIgnoreExample
 		javaFile2String = new JavaFileToString();

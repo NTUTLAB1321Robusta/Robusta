@@ -38,7 +38,7 @@ public class IgnoreExceptionVisitorTest {
 		javaProjectMaker.setJREDefaultContainer();
 		
 		// 新增欲載入的library
-		javaProjectMaker.addJarFromProjectToBuildPath("lib/log4j-1.2.15.jar");
+		javaProjectMaker.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR + "/log4j-1.2.15.jar");
 
 		// 根據測試檔案樣本內容建立新的檔案
 		javaFile2String = new JavaFileToString();
