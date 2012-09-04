@@ -28,6 +28,9 @@ public class SuppressWarningExample {
 	 * 7.待補
 	 */
 	
+	/* ---------------------- With Suppress warning & RL Example --------------------- */
+	/* ------------------------------------ Start ------------------------------------ */
+	
 	/**
 	 * 有 suppress warning 的 unprotected main program
 	 */
@@ -185,22 +188,6 @@ public class SuppressWarningExample {
 		}
 	}
 	
-	private void throwSocketTimeoutException() throws SocketTimeoutException{
-		throw new SocketTimeoutException();
-	}
-	
-	private void throwInterruptedIOException() throws InterruptedIOException {
-		throw new InterruptedIOException();
-	}
-	
-	public void twoExceptionForMethodGetExceptionList() throws SocketTimeoutException, InterruptedIOException {
-		throw new SocketTimeoutException();
-	}
-	
-	public void multiExceptionForMethodGetExceptionList() throws InterruptedIOException, ArithmeticException, Exception {
-		throw new InterruptedIOException();
-	}
-	
 	/* ---------------------OverLogging And Nested Try Example--------------------- */
 	/* -----------------------Call Chain In the Same Class------------------------- */
 	
@@ -286,5 +273,217 @@ public class SuppressWarningExample {
 				fileOutputStream.close();
 			}
 		}
+	}
+	
+	/* ---------------------- With Suppress warning & RL Example --------------------- */
+	/* --------------------------------------- End ----------------------------------- */
+	
+	/* -------------------- Without Suppress warning & RL Example -------------------- */
+	/* ------------------------------------- Start ----------------------------------- */
+
+	public void withoutSuppressWaringDummyHandlerOnMethod() {
+		FileInputStream fis = null;
+		try {
+			fis = new FileInputStream("");
+			fis.read();
+		} catch (IOException e) {
+			e.printStackTrace();	//	DummyHandler
+		}
+	}
+
+	public void withoutSuppressWaringDummyHandlerOnCatch() {
+		FileInputStream fis = null;
+		try {
+			fis = new FileInputStream("");
+			fis.read();
+		} catch (IOException e) {
+			e.printStackTrace();	//	DummyHandler
+		}
+	}
+
+	public void withoutSuppressWaringNestedTryBlockOnCatch() {
+		try {
+			throwSocketTimeoutException();
+		} catch (SocketTimeoutException e) {
+			try {
+				throwInterruptedIOException();
+			} catch (InterruptedIOException e1) {
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+		}
+	}
+
+	public void withoutSuppressWaringNestedTryBlockOnFinally() {
+		try {
+			throwSocketTimeoutException();
+		} catch (SocketTimeoutException e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				throwInterruptedIOException();
+			} catch (InterruptedIOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void withoutSuppressWaringIgnoredExceptionOnMethod() {
+		FileInputStream fis = null;
+		try {
+			fis = new FileInputStream("");
+			fis.read();
+		} catch (IOException e) {	// IgnoreException
+			
+		}
+	}
+
+	public void withoutSuppressWaringIgnoredExceptionOnCatch() {
+		FileInputStream fis = null;
+		try {
+			fis = new FileInputStream("");
+			fis.read();
+		} catch (IOException e) {	// IgnoreException
+			
+		}
+	}
+
+	public void withoutSuppressWaringCarelessCleanup(byte[] context, File outputFile) {
+		FileOutputStream fileOutputStream  = null;
+		try {
+			new FileOutputStream("");
+			fileOutputStream = new FileOutputStream(outputFile);
+			fileOutputStream.write(context);
+			fileOutputStream.close();
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void withoutSuppressWaringCarelessCleanupCloseInTry(byte[] context, File outputFile) {
+		FileOutputStream fileOutputStream  = null;
+		try {
+			fileOutputStream = new FileOutputStream(outputFile);
+			fileOutputStream.write(context);
+			fileOutputStream.close();
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void withoutSuppressWaringCarelessCleanupCloseInTryAddFinlly(byte[] context, File outputFile) {
+		FileOutputStream fileOutputStream  = null;
+		try {
+			fileOutputStream = new FileOutputStream(outputFile);
+			fileOutputStream.write(context);
+			fileOutputStream.close();
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} finally {
+		}
+	}
+	
+	/* ---------------------OverLogging And Nested Try Example--------------------- */
+	/* -----------------------Call Chain In the Same Class------------------------- */
+	
+	public void withoutSuppressWaringtheFirstOrderInTheSameClass() {
+		try {
+			theSecondOrderInTheSameClass();
+		} catch(IOException e) {
+			logger.log(Level.WARNING, e.getMessage());
+		}
+	}
+
+	public void withoutSuppressWaringtheSecondOrderInTheSameClass() throws IOException {
+		try {
+			theThirdOrderInTheSameClass();
+		} catch(IOException e) {
+			logger.log(Level.WARNING, e.getMessage());
+			throw e;
+		}
+	}
+
+	public void withoutSuppressWaringtheThirdOrderInTheSameClass() throws IOException {
+		try {
+			theFourthOrderInTheSameClass();
+		} catch(IOException e) {
+			logger.log(Level.WARNING, e.getMessage());
+			throw e;
+		}
+	}
+	
+	/**
+	 * 在巢狀 try-catch 要在 catch 上 suppress bad smell 時
+	 * 反觀在 method 上 suppress bad smell 時可以正確的被 suppress
+	 */
+	public void withoutSuppressWaringtheFourthOrderInTheSameClass() throws IOException {
+		FileOutputStream fileOutputStream = null;
+		FileInputStream fileInputStream = null;
+		FileInputStream fis = null;
+		try {
+			new FileOutputStream("");
+			fileOutputStream = new FileOutputStream("");
+			fileOutputStream.close();
+			throw new IOException("IOException throws in callee");
+		} catch(FileNotFoundException e) {
+			logger.log(Level.WARNING, e.getMessage());
+			throw e;
+		} catch(FileLockInterruptionException e) {
+			
+		} catch(IOException e) {
+			logger.log(Level.WARNING, e.getMessage());
+		} catch (Exception e) {
+			try {
+				fis = new FileInputStream("");
+				fis.read();
+				//三層
+				try {
+					fileInputStream = new FileInputStream("");
+					fileInputStream.read();
+				} catch (IOException e2) {
+					throw e2;
+				}
+			} catch (FileNotFoundException e1) {
+				e.printStackTrace();
+			} catch (IOException e1) {
+				e.printStackTrace();
+			} catch (ArithmeticException e1) {
+				// TODO: handle exception
+			} catch (ArrayStoreException  e1) {
+				// TODO: handle exception
+			} catch (ArrayIndexOutOfBoundsException e1) {
+				fileOutputStream.close();
+			}
+		}
+	}
+	
+	/* -------------------- Without Suppress warning & RL Example -------------------- */
+	/* ------------------------------------- End ------------------------------------- */
+	
+	private void throwSocketTimeoutException() throws SocketTimeoutException{
+		throw new SocketTimeoutException();
+	}
+	
+	private void throwInterruptedIOException() throws InterruptedIOException {
+		throw new InterruptedIOException();
+	}
+	
+	public void twoExceptionForMethodGetExceptionList() throws SocketTimeoutException, InterruptedIOException {
+		throw new SocketTimeoutException();
+	}
+	
+	public void multiExceptionForMethodGetExceptionList() throws InterruptedIOException, ArithmeticException, Exception {
+		throw new InterruptedIOException();
+	}
+	
+	public SuppressWarningExample() {
+		
 	}
 }
