@@ -106,7 +106,7 @@ public class ExceptionAnalyzerTest {
 		
 		List<ASTNode> methodList = astMethodCollector.getMethodList();
 		List<MarkerInfo> totalNTList = new ArrayList<MarkerInfo>();
-		List<RLMessage> tottalMethodRLList = new ArrayList<RLMessage>();
+		List<RLMessage> totalMethodRLList = new ArrayList<RLMessage>();
 		List<SSMessage> totalSSList = new ArrayList<SSMessage>();
 		
 		for (int i = 0; i < methodList.size(); i++) {
@@ -117,12 +117,36 @@ public class ExceptionAnalyzerTest {
 					exceptionAnalyzer = new ExceptionAnalyzer(compilationUnit, methodList.get(i).getStartPosition(), 0);
 					methodProcessTryStatement.invoke(exceptionAnalyzer, node);
 					totalNTList.addAll(exceptionAnalyzer.getNestedTryList());
-					tottalMethodRLList.addAll(exceptionAnalyzer.getMethodRLAnnotationList());
+					totalMethodRLList.addAll(exceptionAnalyzer.getMethodRLAnnotationList());
 					totalSSList.addAll(exceptionAnalyzer.getSuppressSemllAnnotationList());
 				}
 			}
 		}
-		System.out.println("我是開心果但是熱量高");
+		
+		/*
+		 * 發生 nested try 所在的 line number
+		 */
+		int[] lineNumber = { 75, 95, 267, 271 };
+		
+		for (int i = 0; i < totalNTList.size(); i++) {
+			assertEquals(lineNumber[i], totalNTList.get(i).getLineNumber());
+		}
+		
+		/*
+		 * 不再 method 上
+		 */
+		assertEquals(0, totalMethodRLList.size());
+		
+		/*
+		 * nested try
+		 */
+		assertEquals(4, totalNTList.size());
+		
+		/*
+		 * 在巢狀 try-catch 要在 catch 上 suppress bad smell 時
+		 * 反觀在 method 上 suppress bad smell 時可以正確的被 suppress
+		 */
+		assertEquals("suppress warning 的資訊在 nested 底下不會被記錄到", 15, totalSSList.size());
 	}
 	
 	@Test
@@ -209,39 +233,9 @@ public class ExceptionAnalyzerTest {
 		}
 		assertEquals(6, exceptionAnalyzer.getExceptionList().size());
 	}
-//
-//	@Test
-//	public void testExceptionAnalyzerCompilationUnitIntInt() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	public void testExceptionAnalyzerCompilationUnitBooleanString() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	public void testClear() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	public void testGetNestedTryList() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	public void testGetCurrentMethodNode() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	public void testGetCurrentRLAnnotationNode() {
-//		fail("Not yet implemented");
-//	}
 
 	@Test
-	public void testGetExceptionList() throws Exception {
+	public void testGetMethodThrowsList() throws Exception {
 		ASTMethodCollector astMethodCollector = new ASTMethodCollector();
 		compilationUnit.accept(astMethodCollector);
 		List<ASTNode> methodlist = astMethodCollector.getMethodList();

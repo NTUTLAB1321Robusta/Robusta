@@ -24,7 +24,7 @@ public class SuppressWarningExample {
 	 * 3.nested try block
 	 * 4.ignored exception
 	 * 5.careless cleanup
-	 * 6.待補
+	 * 6.over logging
 	 * 7.待補
 	 */
 	
@@ -94,7 +94,7 @@ public class SuppressWarningExample {
 		finally {
 			try {
 				throwInterruptedIOException();
-			} catch (@SuppressSmell("Dummy_Handler") InterruptedIOException e) {
+			} catch (InterruptedIOException e) {
 				e.printStackTrace();
 			}
 		}
@@ -213,6 +213,7 @@ public class SuppressWarningExample {
 			logger.log(Level.WARNING, e.getMessage());
 		}
 	}
+	
 	/**
 	 * @SuppressSmell("Over_Logging")在 method 上
 	 */
@@ -226,6 +227,7 @@ public class SuppressWarningExample {
 			throw e;
 		}
 	}
+	
 	/**
 	 * @SuppressSmell("Over_Logging")在 catch 上
 	 */
@@ -238,15 +240,16 @@ public class SuppressWarningExample {
 			throw e;
 		}
 	}
+	
 	/**
-	 * It is a BUG which has to be fixed.
-	 * 在 Nested Try Block 裡面的 Catch Clauses 有壞味道時 無法修復 或是 沒被偵測到
-	 * 必須寫 test case 處理
+	 * 在巢狀 try-catch 要在 catch 上 suppress bad smell 時
+	 * 反觀在 method 上 suppress bad smell 時可以正確的被 suppress
 	 */
 	@SuppressSmell({ "Careless_CleanUp", "Nested_Try_Block" })
 	@Robustness(value = { @RL(level = 1, exception = java.io.IOException.class) })
 	public void theFourthOrderInTheSameClass() throws IOException {
 		FileOutputStream fileOutputStream = null;
+		FileInputStream fileInputStream = null;
 		FileInputStream fis = null;
 		try {
 			new FileOutputStream("");
@@ -258,13 +261,19 @@ public class SuppressWarningExample {
 			throw e;
 		} catch(@SuppressSmell({ "Nested_Try_Block" , "Over_Logging" , "Ignore_Checked_Exception"}) FileLockInterruptionException e) {
 			
-			
 		} catch(@SuppressSmell("Dummy_Handler") IOException e) {
 			logger.log(Level.WARNING, e.getMessage());
 		} catch (Exception e) {
 			try {
 				fis = new FileInputStream("");
 				fis.read();
+				//三層
+				try {
+					fileInputStream = new FileInputStream("");
+					fileInputStream.read();
+				} catch (IOException e2) {
+					throw e2;
+				}
 			} catch (@SuppressSmell( "Dummy_Handler" ) FileNotFoundException e1) {
 				e.printStackTrace();
 			} catch (@SuppressSmell({ "Dummy_Handler", "Dummy_Handler" }) IOException e1) {
@@ -273,7 +282,7 @@ public class SuppressWarningExample {
 				// TODO: handle exception
 			} catch (@SuppressSmell( { "Ignore_Checked_Exception", "Ignore_Checked_Exception" } ) ArrayStoreException  e1) {
 				// TODO: handle exception
-			} catch (Exception e2) {
+			} catch (ArrayIndexOutOfBoundsException e1) {
 				fileOutputStream.close();
 			}
 		}
