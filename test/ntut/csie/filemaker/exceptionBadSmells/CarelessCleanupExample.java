@@ -260,7 +260,7 @@ public class CarelessCleanupExample {
 	 * 如果是專門用來放在Finally關閉串流的method，將不做careless cleanup的檢查
 	 * @param fileOutputStream
 	 */
-	protected void closeStreamWithoutThrowingExceptionBigTry(FileOutputStream fileOutputStream) {
+	public void closeStreamWithoutThrowingExceptionBigTry(FileOutputStream fileOutputStream) {
 		try {
 			if (fileOutputStream != null) {
 				fileOutputStream.close();

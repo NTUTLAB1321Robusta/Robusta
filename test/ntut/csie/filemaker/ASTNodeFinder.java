@@ -118,7 +118,7 @@ public class ASTNodeFinder {
 	 * @author charles
 	 *
 	 */
-	public class NameOfMethodDeclarationVisitor extends ASTVisitor {
+	class NameOfMethodDeclarationVisitor extends ASTVisitor {
 		String methodName;
 		MethodDeclaration foundNode;
 		CompilationUnit astRoot;
@@ -148,7 +148,7 @@ public class ASTNodeFinder {
 	 * @author charles
 	 *
 	 */
-	public class CodeOfMethodInvocationVisitor extends ASTVisitor {
+	class CodeOfMethodInvocationVisitor extends ASTVisitor {
 		String methodName;
 		String codeName;
 		List<MethodInvocation> foundNodeList;
@@ -181,7 +181,7 @@ public class ASTNodeFinder {
 		}
 	}
 	
-	public class LineNumberOfASTNodeVisitor extends RLBaseVisitor {
+	class LineNumberOfASTNodeVisitor extends RLBaseVisitor {
 		int lineNumber;
 		ASTNode currentNode;
 		CompilationUnit root;

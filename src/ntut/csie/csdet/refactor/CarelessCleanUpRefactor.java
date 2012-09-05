@@ -648,7 +648,8 @@ public class CarelessCleanUpRefactor extends Refactoring {
 			addImportPackage(classType);
 
 		} catch (JavaModelException e) {
-			logger.error("[Java Method] EXCEPTION", e);
+//			logger.error("[Java Method] EXCEPTION", e);
+			throw new RuntimeException(e);
 		}
 	}
 

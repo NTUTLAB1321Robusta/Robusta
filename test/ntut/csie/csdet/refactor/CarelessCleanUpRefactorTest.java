@@ -16,6 +16,7 @@ import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.visitor.CarelessCleanupVisitor;
 import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
+import ntut.csie.filemaker.ASTNodeFinder;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.RuntimeEnvironmentProjectReader;
@@ -26,6 +27,7 @@ import ntut.csie.filemaker.exceptionBadSmells.UserDefinedCarelessCleanupDog;
 import ntut.csie.filemaker.exceptionBadSmells.UserDefinedCarelessCleanupWeather;
 import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
+import ntut.csie.robusta.util.PathUtils;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
@@ -63,54 +65,56 @@ public class CarelessCleanUpRefactorTest {
 
 	@Before
 	public void setUp() throws Exception {
-		String projectName = "CarelessCleanupExampleProject";
+		String testProjectName = "CarelessCleanupExampleProject";
 		javaFile2String = new JavaFileToString();
-		javaProjectMaker = new JavaProjectMaker(projectName);
+		javaProjectMaker = new JavaProjectMaker(testProjectName);
 		javaProjectMaker.setJREDefaultContainer();
 		// 根據測試檔案樣本內容建立新的檔案
-		javaFile2String.read(CarelessCleanupExample.class, "test");
+		javaFile2String.read(CarelessCleanupExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				CarelessCleanupExample.class.getPackage().getName(),
-				CarelessCleanupExample.class.getSimpleName() + ".java",
+				CarelessCleanupExample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
 				"package " + CarelessCleanupExample.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
-		javaFile2String.read(ClassWithNotThrowingExceptionCloseable.class, "test");
+		javaFile2String.read(ClassWithNotThrowingExceptionCloseable.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				ClassWithNotThrowingExceptionCloseable.class.getPackage().getName(),
-				ClassWithNotThrowingExceptionCloseable.class.getSimpleName() + ".java",
+				ClassWithNotThrowingExceptionCloseable.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
 				"package " + ClassWithNotThrowingExceptionCloseable.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
-		javaFile2String.read(ClassImplementCloseable.class, "test");
+		javaFile2String.read(ClassImplementCloseable.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				ClassImplementCloseable.class.getPackage().getName(),
-				ClassImplementCloseable.class.getSimpleName() + ".java",
+				ClassImplementCloseable.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
 				"package " + ClassImplementCloseable.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
 		/* 測試使用者設定Pattern時候使用 */
-		javaFile2String.read(UserDefinedCarelessCleanupWeather.class, "test");
+		javaFile2String.read(UserDefinedCarelessCleanupWeather.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				UserDefinedCarelessCleanupWeather.class.getPackage().getName(),
-				UserDefinedCarelessCleanupWeather.class.getSimpleName() + ".java",
+				UserDefinedCarelessCleanupWeather.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
 				"package " + UserDefinedCarelessCleanupWeather.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
-		javaFile2String.read(UserDefinedCarelessCleanupDog.class, "test");
+		javaFile2String.read(UserDefinedCarelessCleanupDog.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				UserDefinedCarelessCleanupDog.class.getPackage().getName(),
-				UserDefinedCarelessCleanupDog.class.getSimpleName() + ".java",
+				UserDefinedCarelessCleanupDog.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
 				"package " + UserDefinedCarelessCleanupDog.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
-		Path ccExamplePath = new Path(
-				projectName	+ "/src/ntut/csie/filemaker/exceptionBadSmells/CarelessCleanupExample.java");
+		Path ccExamplePath = new Path(testProjectName + "/"
+				+ JavaProjectMaker.FOLDERNAME_SOURCE + "/"
+				+ PathUtils.dot2slash(CarelessCleanupExample.class.getName())
+				+ JavaProjectMaker.JAVA_FILE_EXTENSION);
 		
 		javaElement = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot().getFile(ccExamplePath));
 		tempMarker = javaElement.getResource().createMarker("test.test");
@@ -802,13 +806,50 @@ public class CarelessCleanUpRefactorTest {
 				"  }\n" +
 				"}\n", md.toString());
 		
-		/** try statement without finally block and using existing method, expression statement is "fileOutputStream.close();" */
-		md = (MethodDeclaration)methodCollector.getMethodList().get(31);
-		tryStatement = (TryStatement)md.getBody().statements().get(0);
-		finallyBlock = md.getAST().newBlock();
-		tryStatement.setFinally(finallyBlock);
+		/** try statement with finally block and new close method itself, expression statement is "closeStreamWithoutThrowingException(fi);" */
+		md = (MethodDeclaration)methodCollector.getMethodList().get(30);
+		tryStatement = (TryStatement)md.getBody().statements().get(1);
 		currentMethodNode.set(refactor, md);
-		es = (ExpressionStatement)tryStatement.getBody().statements().remove(2);
+		es = (ExpressionStatement)((CatchClause)tryStatement.catchClauses().get(0)).getBody().statements().remove(0);
+		cleanUpExpressionStatement.set(refactor, es);
+		// test
+		addMethodInFinally.invoke(refactor, md.getAST(), tryStatement.getFinally());
+		// check postcondition
+		assertEquals(	"@Robustness(value={@RL(level=1,exception=java.io.IOException.class)}) public void uy_closeStreaminOuterMethodInCatch() throws IOException {\n" +
+						"  FileOutputStream fi=null;\n" +
+						"  try {\n" +
+						"    fi=new FileOutputStream(\"\");\n" +
+						"    fi.write(1);\n" +
+						"  }\n" +
+						" catch (  FileNotFoundException e) {\n" +
+						"    throw e;\n" +
+						"  }\n" +
+						" finally {\n" +
+						"    closeStreamWithoutThrowingException(fi);\n" +
+						"  }\n" +
+						"}\n", md.toString());
+	}
+	
+	@Test
+	public void testAddMethodInFinally_WithoutFinallyBlockAndUsingExsitedMethod() throws Exception {
+		MethodDeclaration md = null;
+		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "moveInstance");
+		/** 
+		 * try statement without finally block and using existing method, 
+		 * expression statement is "fileOutputStream.close();"
+		 */
+		TryStatement tryStatement = (TryStatement)md.getBody().statements().get(0);
+		Block finallyBlock = md.getAST().newBlock();
+		tryStatement.setFinally(finallyBlock);
+		
+		Field currentMethodNode = CarelessCleanUpRefactor.class.getDeclaredField("currentMethodNode");
+		currentMethodNode.setAccessible(true);
+		currentMethodNode.set(refactor, md);
+
+		Field cleanUpExpressionStatement = CarelessCleanUpRefactor.class.getDeclaredField("cleanUpExpressionStatement");
+		cleanUpExpressionStatement.setAccessible(true);
+		
+		ExpressionStatement es = (ExpressionStatement)tryStatement.getBody().statements().remove(2);
 		cleanUpExpressionStatement.set(refactor, es);
 		refactor.setIsRefactoringMethodExist(true);
 		
@@ -831,6 +872,9 @@ public class CarelessCleanUpRefactorTest {
 						"}\n", md.toString());
 		assertEquals("fi.close();\n", es.toString());
 		// test
+		Method addMethodInFinally = CarelessCleanUpRefactor.class.getDeclaredMethod("addMethodInFinally", AST.class, Block.class);
+		addMethodInFinally.setAccessible(true);
+		fail("Because this test case use private method \"createCallerMethod\", which is not tested yet, so we don't test it.");
 		addMethodInFinally.invoke(refactor, md.getAST(), tryStatement.getFinally());
 		// check postcondition
 		assertEquals(	"@Robustness(value={@RL(level=1,exception=java.io.IOException.class)}) public void moveInstance() throws IOException {\n" +
@@ -842,30 +886,7 @@ public class CarelessCleanUpRefactorTest {
 						"    throw e;\n" +
 						"  }\n" +
 						" finally {\n" +
-						"    y_closeStreamWithElseBigTry(fi);\n" +
-						"  }\n" +
-						"}\n", md.toString());
-		
-		/** try statement with finally block and new close method itself, expression statement is "closeStreamWithoutThrowingException(fi);" */
-		md = (MethodDeclaration)methodCollector.getMethodList().get(30);
-		tryStatement = (TryStatement)md.getBody().statements().get(1);
-		currentMethodNode.set(refactor, md);
-		es = (ExpressionStatement)((CatchClause)tryStatement.catchClauses().get(0)).getBody().statements().remove(0);
-		cleanUpExpressionStatement.set(refactor, es);
-		// test
-		addMethodInFinally.invoke(refactor, md.getAST(), tryStatement.getFinally());
-		// check postcondition
-		assertEquals(	"@Robustness(value={@RL(level=1,exception=java.io.IOException.class)}) public void uy_closeStreaminOuterMethodInCatch() throws IOException {\n" +
-						"  FileOutputStream fi=null;\n" +
-						"  try {\n" +
-						"    fi=new FileOutputStream(\"\");\n" +
-						"    fi.write(1);\n" +
-						"  }\n" +
-						" catch (  FileNotFoundException e) {\n" +
-						"    throw e;\n" +
-						"  }\n" +
-						" finally {\n" +
-						"    closeStreamWithoutThrowingException(fi);\n" +
+						"    closeStreamWithoutThrowingExceptionBigTry(fi);\n" +
 						"  }\n" +
 						"}\n", md.toString());
 	}
