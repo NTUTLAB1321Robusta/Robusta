@@ -96,8 +96,57 @@ public class ExceptionAnalyzerTest {
 	
 	@Test
 	public void testExceptionAnalyzer() {
-		exceptionAnalyzer = new ExceptionAnalyzer(compilationUnit, compilationUnit.getStartPosition(), 0);
-		compilationUnit.accept(exceptionAnalyzer);
+		
+		ASTMethodCollector collector = new ASTMethodCollector();
+		compilationUnit.accept(collector);
+		
+		// 儲存專區
+		List<ASTNode> methodList = collector.getMethodList();
+		List<MarkerInfo> totalNTList = new ArrayList<MarkerInfo>();
+		List<RLMessage> totalMethodRLList = new ArrayList<RLMessage>();
+		List<SSMessage> totalSSList = new ArrayList<SSMessage>();
+		
+		for (int i = 0; i < methodList.size(); i++) {
+			exceptionAnalyzer = new ExceptionAnalyzer(compilationUnit,  methodList.get(i).getStartPosition(), 0);
+			compilationUnit.accept(exceptionAnalyzer);
+			totalNTList.addAll(exceptionAnalyzer.getNestedTryList());
+			totalMethodRLList.addAll(exceptionAnalyzer.getMethodRLAnnotationList());
+			totalSSList.addAll(exceptionAnalyzer.getSuppressSemllAnnotationList());
+		}
+		
+		// totalNTList.get(0).getStatement() & totalNTList.get(0).getExceptionType()
+		// 所得到的值是一樣的
+		
+		assertEquals(8, totalNTList.size());
+		for (int i = 0; i < totalNTList.size(); i++) {
+			assertTrue(totalNTList.get(i).getCodeSmellType().toString().equals("Nested_Try_Block"));
+		}
+		assertEquals(78, totalNTList.get(0).getLineNumber());
+		assertEquals(98, totalNTList.get(1).getLineNumber());
+		assertEquals(254, totalNTList.get(2).getLineNumber());
+		assertEquals(258, totalNTList.get(3).getLineNumber());
+		assertEquals(308, totalNTList.get(4).getLineNumber());
+		assertEquals(324, totalNTList.get(5).getLineNumber());
+		assertEquals(443, totalNTList.get(6).getLineNumber());
+		assertEquals(447, totalNTList.get(7).getLineNumber());
+		
+		assertEquals(6, totalMethodRLList.size());
+
+		assertEquals(totalMethodRLList.get(0).getRLData().getExceptionType().toString(),"java.lang.RuntimeException");
+		assertEquals(totalMethodRLList.get(1).getRLData().getExceptionType().toString(),"java.lang.RuntimeException");
+		assertEquals(totalMethodRLList.get(2).getRLData().getExceptionType().toString(),"java.lang.RuntimeException");
+		assertEquals(totalMethodRLList.get(3).getRLData().getExceptionType().toString(),"java.io.IOException");
+		assertEquals(totalMethodRLList.get(4).getRLData().getExceptionType().toString(),"java.io.IOException");
+		assertEquals(totalMethodRLList.get(5).getRLData().getExceptionType().toString(),"java.io.IOException");
+		
+		assertEquals(133,totalMethodRLList.get(0).getLineNumber());
+		assertEquals(152,totalMethodRLList.get(1).getLineNumber());
+		assertEquals(172,totalMethodRLList.get(2).getLineNumber());
+		assertEquals(204,totalMethodRLList.get(3).getLineNumber());
+		assertEquals(218,totalMethodRLList.get(4).getLineNumber());
+		assertEquals(231,totalMethodRLList.get(5).getLineNumber());
+
+		assertEquals("suppress warning 的資訊在 nested 底下不會被記錄到",26, totalSSList.size());
 	}
 	
 	@Test
@@ -209,6 +258,7 @@ public class ExceptionAnalyzerTest {
 	public void testFindExceptionTypes() throws Exception {
 		Method methodFindExceptionTypes = ExceptionAnalyzer.class.getDeclaredMethod("findExceptionTypes", ASTNode.class, ITypeBinding[].class);
 		methodFindExceptionTypes.setAccessible(true);
+		
 		// 資料產生
 		ASTMethodCollector astMethodCollector = new ASTMethodCollector();
 		compilationUnit.accept(astMethodCollector);
@@ -227,6 +277,7 @@ public class ExceptionAnalyzerTest {
 		methodFindExceptionTypes.invoke(exceptionAnalyzer, (ASTNode) cic, cic.resolveConstructorBinding().getExceptionTypes());
 		totalRLList.addAll(exceptionAnalyzer.getExceptionList());
 		assertEquals(1, totalRLList.size());
+		
 		// 清除資料
 		exceptionAnalyzer = new ExceptionAnalyzer(compilationUnit, methodlist.get(6).getStartPosition(), 0);
 		totalRLList = new ArrayList<RLMessage>();
@@ -237,6 +288,7 @@ public class ExceptionAnalyzerTest {
 		Assignment assignment = (Assignment) statement.getExpression();
 		cic = (ClassInstanceCreation) assignment.getRightHandSide();
 		methodFindExceptionTypes.invoke(exceptionAnalyzer, (ASTNode) cic, cic.resolveConstructorBinding().getExceptionTypes());
+		
 		// 疊加測試
 		totalRLList.addAll(exceptionAnalyzer.getExceptionList());
 		totalRLList.addAll(exceptionAnalyzer.getExceptionList());
@@ -318,7 +370,8 @@ public class ExceptionAnalyzerTest {
 		assertEquals("java.io.InterruptedIOException",totalList.get(10).getRLData().getExceptionType().toString());
 		assertEquals("java.lang.ArithmeticException",totalList.get(11).getRLData().getExceptionType().toString());
 		assertEquals("java.lang.Exception",totalList.get(12).getRLData().getExceptionType().toString());
-		assertEquals(13, totalList.size());
+		
+		assertEquals(19, totalList.size());
 	}
 
 	@Test

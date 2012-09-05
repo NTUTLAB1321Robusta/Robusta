@@ -475,15 +475,46 @@ public class SuppressWarningExample {
 		throw new InterruptedIOException();
 	}
 	
-	public void twoExceptionForMethodGetExceptionList() throws SocketTimeoutException, InterruptedIOException {
+	public void twoExceptionForMethodGetExceptionList()
+			throws SocketTimeoutException, InterruptedIOException {
 		throw new SocketTimeoutException();
 	}
 	
-	public void multiExceptionForMethodGetExceptionList() throws InterruptedIOException, ArithmeticException, Exception {
+	public void multiExceptionForMethodGetExceptionList()
+			throws InterruptedIOException, ArithmeticException, Exception {
 		throw new InterruptedIOException();
 	}
+
+	static int testInt;
+	static double testDouble;
+	static char testChar;
+	static String testString;
+	static SuppressWarningExample testExample;
 	
-	public SuppressWarningExample() {
-		
+	public SuppressWarningExample(int testInt, double testDouble,
+			char testChar, String testString, SuppressWarningExample testExample) throws IOException {
+		throw new IOException();
+	}
+	
+	public SuppressWarningExample(int testInt, double testDouble,
+			char testChar, String testString) throws IOException {
+		this(testInt, testDouble, testChar, testString, testExample);
+	}
+	
+	public SuppressWarningExample(int testInt, double testDouble,
+			char testChar) throws IOException {
+		this(testInt, testDouble, testChar, testString, testExample);
+	}
+	
+	public SuppressWarningExample(int testInt, double testDouble) throws IOException {
+		this(testInt, testDouble, testChar, testString, testExample);
+	}
+	
+	public SuppressWarningExample(int a) throws IOException {
+		this(testInt, testDouble, testChar, testString, testExample);
+	}
+	
+	public SuppressWarningExample() throws IOException {
+		this(testInt, testDouble, testChar, testString, testExample);
 	}
 }
