@@ -391,7 +391,7 @@ public class SmellSettingsTest {
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		// 確認內容
 		String fileContent = readFileContents(smellSettingFile);
-		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells />", fileContent);
+		assertEquals("由smellsettings寫入的XML檔，當再次寫入時，不會取代舊有設定","<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells />", fileContent);
 	}
 	
 	@Test
@@ -411,7 +411,7 @@ public class SmellSettingsTest {
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		// 確認內容
 		String fileContent = readFileContents(smellSettingFile);
-		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells />", fileContent);
+		assertEquals("由smellsettings寫入的XML檔，當再次寫入時，不會取代舊有設定", "<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells />", fileContent);
 	}
 	
 	@Test
