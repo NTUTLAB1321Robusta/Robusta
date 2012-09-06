@@ -114,9 +114,6 @@ public class ExceptionAnalyzerTest {
 			totalSSList.addAll(exceptionAnalyzer.getSuppressSemllAnnotationList());
 		}
 		
-		// totalNTList.get(0).getStatement() & totalNTList.get(0).getExceptionType()
-		// 所得到的值是一樣的
-		
 		assertEquals(8, totalNTList.size());
 		for (int i = 0; i < totalNTList.size(); i++) {
 			assertTrue(totalNTList.get(i).getCodeSmellType().toString().equals("Nested_Try_Block"));
