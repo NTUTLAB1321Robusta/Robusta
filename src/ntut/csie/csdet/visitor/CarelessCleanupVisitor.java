@@ -27,15 +27,25 @@ public class CarelessCleanupVisitor extends ASTVisitor {
 	private CompilationUnit root;
 	/** 儲存找到的例外處理壞味道程式碼所在的行數以及程式碼片段...等 */
 	private List<MarkerInfo> carelessCleanupList;
+	private boolean isDetectingCarelessCleanupSmell;
 	
 	public CarelessCleanupVisitor(CompilationUnit compilationUnit){
 		super();
 		this.root = compilationUnit;
 		carelessCleanupList = new ArrayList<MarkerInfo>();
+		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		isDetectingCarelessCleanupSmell = smellSettings.isDetectingSmell(SmellSettings.SMELL_CARELESSCLEANUP);
 	}
 	
 	public List<MarkerInfo> getCarelessCleanupList() {
 		return carelessCleanupList;
+	}
+	
+	/**
+	 * 根據設定檔的資訊，決定要不要拜訪整棵樹。
+	 */
+	public boolean visit(CompilationUnit node) {
+		return isDetectingCarelessCleanupSmell;
 	}
 	
 	/**********************************************************
@@ -120,7 +130,6 @@ public class CarelessCleanupVisitor extends ASTVisitor {
 		if(isTryStatementThrowException(node)) {
 			return true;
 		}
-		
 		return false;
 	}
 	

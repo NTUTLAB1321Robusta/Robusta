@@ -51,16 +51,21 @@ public class JavaProjectMaker {
 	public static final int FUNTIONAL_CODE_FOLDER = 16;
 	/** 存放unit test code的資料夾 */
 	public static final int UNITTEST_CODE_FOLDER = 17;
-	/** 取得RL.jar的路徑 */
-	public static final String RL_LIBRARY_PATH = "lib/RL.jar";
 	/** 定義強健度等級的class位於哪個Package */
 	public static final String RL_PACKAGE_NAME = "agile.exception";
 	
 	/** 專案存放Jar檔的資料夾名稱 */
-	public static final String LIB_JAR_FOLDERNAME = "lib";
+	public static final String FOLDERNAME_LIB_JAR = "lib";
 	/** 專案存放Class檔的資料夾名稱 */
-	public static final String BIN_CLASS_FOLDERNAME = "bin";
-	
+	public static final String FOLDERNAME_BIN_CLASS = "bin";
+	/** 測試程式碼資料夾的名稱 */
+	public static final String FOLDERNAME_TEST = "test";
+	/** 功能性程式碼的資料夾名稱 */
+	public static final String FOLDERNAME_SOURCE = "src";
+	/** 取得RL.jar的路徑 */
+	public static final String RL_LIBRARY_PATH = FOLDERNAME_LIB_JAR + "/RL.jar";
+	/** java 副檔名 */
+	public static final String JAVA_FILE_EXTENSION = ".java";
 	/**
 	 * 產生一個Java專案。
 	 * 用法：<br />
@@ -92,9 +97,9 @@ public class JavaProjectMaker {
 		this.projectName = projectName; 
 		
 		/* 預設資料夾是src & test */
-		sourceCodeFolderName = "src";
-		testCodeFolderName = "test";
-		libraryPath = _project.getLocation().toFile().getAbsolutePath() + "/lib/RL.jar";
+		sourceCodeFolderName = FOLDERNAME_SOURCE;
+		testCodeFolderName = FOLDERNAME_TEST;
+		libraryPath = _project.getLocation().toFile().getAbsolutePath() + "/" + RL_LIBRARY_PATH;
 	}
 	
 	/**
@@ -112,7 +117,7 @@ public class JavaProjectMaker {
 	 * @throws CoreException
 	 */
 	public void createOutputFolder() throws CoreException {
-		createOutputFolder("bin");
+		createOutputFolder(FOLDERNAME_BIN_CLASS);
 	}
 	
 	/**
@@ -253,9 +258,8 @@ public class JavaProjectMaker {
 		}
 		
 		/* 判斷傳進來的檔名有沒有副檔名(.java)，如果沒有就幫他加上去 */
-		final String javaExtension = ".java";
-		if(!className.endsWith(javaExtension)) {
-			className += javaExtension;
+		if(!className.endsWith(JAVA_FILE_EXTENSION)) {
+			className += JAVA_FILE_EXTENSION;
 		}
 		
 		// 產生java檔
@@ -316,12 +320,11 @@ public class JavaProjectMaker {
 		createFolder(libFoldername);
 		File libFile = new File(libraryPath);
 		JarFileMaker jarFileMaker = new JarFileMaker();
-		jarFileMaker.createJarFile(libFile, new File(binFoldername), "agile.exception");
+		jarFileMaker.createJarFile(libFile, new File(binFoldername), RL_PACKAGE_NAME);
 	}
 	
 	/**
 	 * 刪除由建構元建立的專案
-	 * @param projectName
 	 * @throws CoreException 
 	 */
 	public synchronized void deleteProject() throws CoreException {
