@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import ntut.csie.jdt.util.NodeUtils;
 import ntut.csie.rleht.common.RLBaseVisitor;
 import ntut.csie.robusta.util.PathUtils;
 
@@ -18,6 +19,7 @@ import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.TryStatement;
 
 /**
  * 從指定的專案中的類別取得CompilationUnit
@@ -84,21 +86,47 @@ public class ASTNodeFinder {
 	 */
 	public static MethodDeclaration getMethodDeclarationNodeByName(
 			Class<?> clazz, String projectName, String methodName) {
+		
 		CompilationUnit compilationUnit = getCompilationUnit(clazz, projectName);
 		return getMethodDeclarationNodeByName(compilationUnit, methodName);
 	}
 
+	/**
+	 * 根據指定的Method Name，找出java檔中，第一個符合此Method Name的MethodDeclaration
+	 * @param compilationUnit
+	 * @param methodName
+	 * @return
+	 */
 	public static MethodDeclaration getMethodDeclarationNodeByName(
 			CompilationUnit compilationUnit, String methodName) {
+		
 		NameOfMethodDeclarationVisitor nameOfMethodDeclarationVisitor = 
-			new ASTNodeFinder().new NameOfMethodDeclarationVisitor(
-				compilationUnit, methodName);
+			new ASTNodeFinder().new NameOfMethodDeclarationVisitor(methodName);
+		
 		compilationUnit.accept(nameOfMethodDeclarationVisitor);
-		return nameOfMethodDeclarationVisitor.getFoundNode();
+		return nameOfMethodDeclarationVisitor.getFoundMethodDeclaration();
+	}
+	
+	/**
+	 * 根據指定的MethodName，找出這個Method所有的TryStatement。
+	 * (巢狀的Try不會另外被抓出來)
+	 * @param compilationUnit
+	 * @param methodName
+	 * @return
+	 */
+	public static List<TryStatement> getTryStatementNodeListByMethodDeclarationName(
+			CompilationUnit compilationUnit, String methodName) {
+		
+		NameOfMethodDeclarationVisitor nameOfMethodDeclarationVisitor =
+			 new ASTNodeFinder().new NameOfMethodDeclarationVisitor(methodName);
+		
+		compilationUnit.accept(nameOfMethodDeclarationVisitor);
+		return nameOfMethodDeclarationVisitor.getCollectedTryStatement();
 	}
 	
 	public static List<MethodInvocation> getMethodInvocationByMethodNameAndCode(
 			Class<?> clazz, String projectName, String methodName, String code) {
+		
 		CompilationUnit compilationUnit = getCompilationUnit(clazz, projectName);
 		return getMethodInvocationByMethodNameAndCode(compilationUnit, methodName, code);
 	}
@@ -106,12 +134,69 @@ public class ASTNodeFinder {
 	public static List<MethodInvocation> getMethodInvocationByMethodNameAndCode(
 			CompilationUnit compilationUnit, String methodName, String code) {
 		CodeOfMethodInvocationVisitor codeOfMethodInvocationVisitor = 
-			new ASTNodeFinder().new CodeOfMethodInvocationVisitor(
-				compilationUnit, methodName, code);
+			new ASTNodeFinder().new CodeOfMethodInvocationVisitor(methodName, code);
+		
 		compilationUnit.accept(codeOfMethodInvocationVisitor);
 		return codeOfMethodInvocationVisitor.getFoundNodes();
 	}
-
+	
+	/**
+	 * 從巢狀的TryStatement中取出內層的TryStatement
+	 * @param outerTryStatment 有巢狀結構的TryStatement
+	 * @param subNodeTypeOfOuterTryStatement 根據傳入ASTNode Type，決定要從TryBlock裡面去取TryStatement或是從 Catch Clause裡面去取 TryStatement
+	 * @return
+	 */
+	public static List<TryStatement> getTryStatementInNestedTryStatement(TryStatement outerTryStatment, int subNodeTypeOfOuterTryStatement) {
+		TryStatementInNestedTryStatementVisitor nestedTryStatementCollectorVisitor = new ASTNodeFinder().new TryStatementInNestedTryStatementVisitor(outerTryStatment, subNodeTypeOfOuterTryStatement);
+		outerTryStatment.accept(nestedTryStatementCollectorVisitor);
+		
+		return nestedTryStatementCollectorVisitor.getResultTryStatementList();
+	}
+	
+	/**
+	 * 從巢狀的TryStatement中，蒐集TryStatement。<br />
+	 * 可以選擇從Try Block裡面蒐集，也可以選擇從Catch Clause裡面蒐集。<br />
+	 * lacks: 如果選擇從CatchClause裡面蒐集，會去尋找所有CatchClause裡面的TryStatement，而不能指定特定的CatchClause。
+	 * lacks: 目前只有考慮巢狀結構只有一層的情況，再多可能會超乎預期。
+	 * @author charles
+	 *
+	 */
+	class TryStatementInNestedTryStatementVisitor extends ASTVisitor {
+		TryStatement bigTryStatement;
+		int subNodeTypeOfOuterTryStatement;
+		List<TryStatement> collectResultOfTryStatements;
+		
+		/**
+		 * 
+		 * @param nestedTryStatement 具有巢狀結構的TryStatement
+		 * @param subNodeTypeOfOuterTryStatement 你想要挖的TryStatement在Try Block裡面還是在Catch Clause裡面，請給定ASTNode Type。
+		 */
+		public TryStatementInNestedTryStatementVisitor(TryStatement nestedTryStatement, int subNodeTypeOfOuterTryStatement) {
+			bigTryStatement = nestedTryStatement;
+			this.subNodeTypeOfOuterTryStatement = subNodeTypeOfOuterTryStatement;
+			collectResultOfTryStatements = new ArrayList<TryStatement>();
+		}
+		
+		public boolean visit(TryStatement tryStatement) {
+			if(subNodeTypeOfOuterTryStatement == ASTNode.TRY_STATEMENT) {
+				ASTNode parentNode = NodeUtils.getSpecifiedParentNode(tryStatement, ASTNode.TRY_STATEMENT);
+				if(parentNode != null) {
+					collectResultOfTryStatements.add(tryStatement);
+				}
+			} else if (subNodeTypeOfOuterTryStatement == ASTNode.CATCH_CLAUSE) {
+				ASTNode parentNode = NodeUtils.getSpecifiedParentNode(tryStatement, ASTNode.CATCH_CLAUSE);
+				if(parentNode != null) {
+					collectResultOfTryStatements.add(tryStatement);
+				}
+			}
+			return true;
+		}
+		
+		public List<TryStatement> getResultTryStatementList() {
+			return collectResultOfTryStatements;
+		}
+	}
+	
 	/**
 	 * 利用Method Name找到指定的MethodDeclaration Node。<br />
 	 * Known Issue: 如果Class中擁有兩個使用相同名稱的Method，只會回傳最先找到的那個。
@@ -121,23 +206,33 @@ public class ASTNodeFinder {
 	class NameOfMethodDeclarationVisitor extends ASTVisitor {
 		String methodName;
 		MethodDeclaration foundNode;
-		CompilationUnit astRoot;
+		List<TryStatement> tryStatementList;
 		
-		public NameOfMethodDeclarationVisitor(CompilationUnit compilationUnit, String nodeName) {
-			astRoot = compilationUnit;
+		public NameOfMethodDeclarationVisitor(String nodeName) {
 			this.methodName = nodeName;
 			foundNode = null;
+			tryStatementList = new ArrayList<TryStatement>();
 		}
 		
 		public boolean visit(MethodDeclaration node) {
 			if(node.getName().toString().equals(methodName)) {
 				foundNode = node;
+				return true;
 			}
 			return false;
 		}
 		
-		public MethodDeclaration getFoundNode() {
+		public boolean visit(TryStatement node) {
+			tryStatementList.add(node);
+			return false;
+		}
+		
+		public MethodDeclaration getFoundMethodDeclaration() {
 			return foundNode;
+		}
+		
+		public List<TryStatement> getCollectedTryStatement() {
+			return tryStatementList;
 		}
 	}
 	
@@ -152,11 +247,8 @@ public class ASTNodeFinder {
 		String methodName;
 		String codeName;
 		List<MethodInvocation> foundNodeList;
-		CompilationUnit astRoot;
 		
-		public CodeOfMethodInvocationVisitor(CompilationUnit compilationUnit,
-				String methodName, String codeName) {
-			astRoot = compilationUnit;
+		public CodeOfMethodInvocationVisitor(String methodName, String codeName) {
 			this.methodName = methodName;
 			this.codeName = codeName;
 			foundNodeList = new ArrayList<MethodInvocation>();

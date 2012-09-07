@@ -9,12 +9,14 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import ntut.csie.csdet.visitor.ASTCatchCollect;
+import ntut.csie.filemaker.ASTNodeFinder;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.exceptionBadSmells.DummyAndIgnoreExample;
 import ntut.csie.filemaker.exceptionBadSmells.NestedTryStatementExample;
 import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
+import ntut.csie.robusta.util.PathUtils;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -45,6 +47,7 @@ import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
 import org.eclipse.jdt.core.refactoring.CompilationUnitChange;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.TextSelection;
+import org.eclipse.jface.text.projection.ProjectionMapping;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.TextFileChange;
 import org.eclipse.text.edits.TextEdit;
@@ -52,47 +55,66 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import sun.misc.GC.LatencyRequest;
+
 
 public class RetryRefactoringTest {
 	JavaFileToString jfs;
 	JavaProjectMaker jpm;
-	CompilationUnit unit1, unit2;
+	CompilationUnit dummyAndIgnoredExampleUnit, nestedTryStatementUnit;
+	String testProjectName;
+	Path dummyAndIgnoredExamplePath, nestedTryStatementExamplePath;
+	
+	public RetryRefactoringTest() {
+		testProjectName = "RetryRefactoringTestProject";
+		dummyAndIgnoredExamplePath = new Path(testProjectName + "/"
+				+ JavaProjectMaker.FOLDERNAME_SOURCE + "/"
+				+ PathUtils.dot2slash(DummyAndIgnoreExample.class.getName())
+				+ JavaProjectMaker.JAVA_FILE_EXTENSION);
+		nestedTryStatementExamplePath = new Path(testProjectName + "/"
+				+ JavaProjectMaker.FOLDERNAME_SOURCE + "/"
+				+ PathUtils.dot2slash(NestedTryStatementExample.class.getName())
+				+ JavaProjectMaker.JAVA_FILE_EXTENSION);
+	}
 
 	@Before
 	public void setUp() throws Exception {
 		// 讀取測試檔案樣本內容
 		jfs = new JavaFileToString();
-		jfs.read(DummyAndIgnoreExample.class, "test");
+		jfs.read(DummyAndIgnoreExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		
-		jpm = new JavaProjectMaker("DummyHandlerTest");
+		jpm = new JavaProjectMaker(testProjectName);
 		jpm.setJREDefaultContainer();
 		// 新增欲載入的library
-		jpm.addJarFromProjectToBuildPath("lib\\log4j-1.2.15.jar");
+		jpm.addJarFromProjectToBuildPath("lib/log4j-1.2.15.jar");
 		// 根據測試檔案樣本內容建立新的檔案
-		jpm.createJavaFile("ntut.csie.exceptionBadSmells", "DummyAndIgnoreExample.java", "package ntut.csie.exceptionBadSmells;\n" + jfs.getFileContent());
+		jpm.createJavaFile(DummyAndIgnoreExample.class.getPackage().getName(),
+				DummyAndIgnoreExample.class.getSimpleName(),
+				"package " + DummyAndIgnoreExample.class.getPackage().getName()
+				+ ";\n" + jfs.getFileContent());
 		// 建立Nested try block example file
 		jfs = new JavaFileToString();
-		jfs.read(NestedTryStatementExample.class, "test");
-		jpm.createJavaFile("ntut.csie.exceptionBadSmells", "NestedTryBlockExample.java", "package ntut.csie.exceptionBadSmells;\n" + jfs.getFileContent());
-		
-		Path path1 = new Path("DummyHandlerTest\\src\\ntut\\csie\\exceptionBadSmells\\DummyAndIgnoreExample.java");
-		Path path2 = new Path("DummyHandlerTest\\src\\ntut\\csie\\exceptionBadSmells\\NestedTryBlockExample.java");
+		jfs.read(NestedTryStatementExample.class, JavaProjectMaker.FOLDERNAME_TEST);
+		jpm.createJavaFile(NestedTryStatementExample.class.getPackage().getName(),
+				NestedTryStatementExample.class.getSimpleName(),
+				"package " + NestedTryStatementExample.class.getPackage().getName()
+				+ ";\n" + jfs.getFileContent());
 		
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		// 設定要被建立AST的檔案
-		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path1)));
+		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(dummyAndIgnoredExamplePath)));
 		parser.setResolveBindings(true);
 		// 取得AST
-		unit1 = (CompilationUnit) parser.createAST(null); 
-		unit1.recordModifications();
+		dummyAndIgnoredExampleUnit = (CompilationUnit) parser.createAST(null); 
+		dummyAndIgnoredExampleUnit.recordModifications();
 		
 		// Create the other AST to parse 
-		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path2)));
+		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(nestedTryStatementExamplePath)));
 		parser.setResolveBindings(true);
-		unit2 = (CompilationUnit) parser.createAST(null); 
-		unit2.recordModifications();
+		nestedTryStatementUnit = (CompilationUnit) parser.createAST(null); 
+		nestedTryStatementUnit.recordModifications();
 	}
 
 	@After
@@ -119,10 +141,10 @@ public class RetryRefactoringTest {
 						">", result.toString());
 		assertNull(exceptionType.get(refactoring));
 		/** 若輸入正確，則狀態為OK */
-		name = "test";
+		name = JavaProjectMaker.FOLDERNAME_TEST;
 		result = refactoring.setExceptionName(name);
 		assertEquals("<OK\n>", result.toString());
-		assertEquals("test", exceptionType.get(refactoring));
+		assertEquals(JavaProjectMaker.FOLDERNAME_TEST, exceptionType.get(refactoring));
 	}
 	
 	@Test
@@ -234,11 +256,10 @@ public class RetryRefactoringTest {
 				"}");
 		TextSelection textSelection = new TextSelection(document, 3069, 153);
 		// 取得專案下的java檔
-		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject("DummyHandlerTest");
+		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(testProjectName);
 		IJavaProject javaProject = JavaCore.create(project);
 		javaProject.open(null);
-		Path path = new Path("DummyHandlerTest\\src\\ntut\\csie\\exceptionBadSmells\\DummyAndIgnoreExample.java");
-		IJavaElement javaElement = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot().getFile(path));
+		IJavaElement javaElement = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot().getFile(dummyAndIgnoredExamplePath));
 		// 設定待測目標 RetryRefactoring
 		IProgressMonitor pm = null;
 		RetryRefactoring refactoring = new RetryRefactoring(javaProject,javaElement,textSelection,retry_type);
@@ -261,11 +282,10 @@ public class RetryRefactoringTest {
 	
 	@Test
 	public void testCreateChange() throws Exception {
-		Path path = new Path("DummyHandlerTest\\src\\ntut\\csie\\exceptionBadSmells\\DummyAndIgnoreExample.java");
-		IJavaElement javaElement = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot().getFile(path));
+		IJavaElement javaElement = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot().getFile(dummyAndIgnoredExamplePath));
 		RetryRefactoring retryRefactoring = new RetryRefactoring(null, javaElement, null, null);
 		// 設定測試前需要用到的變數內容
-		ASTRewrite rewrite = ASTRewrite.create(unit1.getAST());
+		ASTRewrite rewrite = ASTRewrite.create(dummyAndIgnoredExampleUnit.getAST());
 		ICompilationUnit cu = (ICompilationUnit) javaElement;
 		Document document = new Document(cu.getBuffer().getContents());	
 		TextEdit edits = rewrite.rewriteAST(document,null);
@@ -289,25 +309,25 @@ public class RetryRefactoringTest {
 	@Test
 	public void testAddImportRLDeclaration() throws Exception {
 		// 設定測試資料
-		Path path = new Path("DummyHandlerTest\\src\\ntut\\csie\\exceptionBadSmells\\DummyAndIgnoreExample.java");
-		IJavaElement javaElement = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot().getFile(path));
+		IJavaElement javaElement = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot().getFile(dummyAndIgnoredExamplePath));
 		RetryRefactoring retryRefactoring = new RetryRefactoring(null, javaElement, null, null);
 		Field actRoot = RetryRefactoring.class.getDeclaredField("actRoot");
 		actRoot.setAccessible(true);
-		actRoot.set(retryRefactoring, unit1);
+		actRoot.set(retryRefactoring, dummyAndIgnoredExampleUnit);
 		
 		Field rewrite = RetryRefactoring.class.getDeclaredField("rewrite");
 		rewrite.setAccessible(true);
-		ASTRewrite rw = ASTRewrite.create(unit1.getAST());
+		ASTRewrite rw = ASTRewrite.create(dummyAndIgnoredExampleUnit.getAST());
 		rewrite.set(retryRefactoring, rw);
 		// 驗證初始狀態
-		List<ImportDeclaration> importList = rw.getListRewrite(unit1, CompilationUnit.IMPORTS_PROPERTY).getRewrittenList();
-		assertEquals(5, importList.size());
+		List<ImportDeclaration> importList = rw.getListRewrite(dummyAndIgnoredExampleUnit, CompilationUnit.IMPORTS_PROPERTY).getRewrittenList();
+		assertEquals(6, importList.size());
 		assertEquals("import java.io.FileInputStream;\n", importList.get(0).toString());
 		assertEquals("import java.io.FileNotFoundException;\n", importList.get(1).toString());
 		assertEquals("import java.io.IOException;\n", importList.get(2).toString());
-		assertEquals("import java.util.logging.Level;\n", importList.get(3).toString());
-		assertEquals("import org.apache.log4j.Logger;\n", importList.get(4).toString());
+		assertEquals("import java.util.ArrayList;\n", importList.get(3).toString());
+		assertEquals("import java.util.logging.Level;\n", importList.get(4).toString());
+		assertEquals("import org.apache.log4j.Logger;\n", importList.get(5).toString());
 		
 		// 執行測試對象
 		Method addImportRLDeclaration = RetryRefactoring.class.getDeclaredMethod("addImportRLDeclaration");
@@ -316,34 +336,33 @@ public class RetryRefactoringTest {
 		
 		// 驗證結果
 		rw = (ASTRewrite)rewrite.get(retryRefactoring);
-		importList = rw.getListRewrite(unit1, CompilationUnit.IMPORTS_PROPERTY).getRewrittenList();
-		assertEquals(7, importList.size());
+		importList = rw.getListRewrite(dummyAndIgnoredExampleUnit, CompilationUnit.IMPORTS_PROPERTY).getRewrittenList();
+		assertEquals(8, importList.size());
 		assertEquals("import java.io.FileInputStream;\n", importList.get(0).toString());
 		assertEquals("import java.io.FileNotFoundException;\n", importList.get(1).toString());
 		assertEquals("import java.io.IOException;\n", importList.get(2).toString());
-		assertEquals("import java.util.logging.Level;\n", importList.get(3).toString());
-		assertEquals("import org.apache.log4j.Logger;\n", importList.get(4).toString());
-		assertEquals("import agile.exception.Robustness;\n", importList.get(5).toString());
-		assertEquals("import agile.exception.RL;\n", importList.get(6).toString());
+		assertEquals("import java.util.ArrayList;\n", importList.get(3).toString());
+		assertEquals("import java.util.logging.Level;\n", importList.get(4).toString());
+		assertEquals("import org.apache.log4j.Logger;\n", importList.get(5).toString());
+		assertEquals("import agile.exception.Robustness;\n", importList.get(6).toString());
+		assertEquals("import agile.exception.RL;\n", importList.get(7).toString());
 	}
 	
 	@Test
 	public void testGetRLAnnotation() throws Exception {
-		Path path = new Path("DummyHandlerTest\\src\\ntut\\csie\\exceptionBadSmells\\DummyAndIgnoreExample.java");
-		IJavaElement javaElement = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot().getFile(path));
+		IJavaElement javaElement = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot().getFile(dummyAndIgnoredExamplePath));
 		RetryRefactoring retryRefactoring = new RetryRefactoring(null, javaElement, null, null);
 		
 		Method getRLAnnotation = RetryRefactoring.class.getDeclaredMethod("getRLAnnotation", AST.class, int.class, String.class);
 		getRLAnnotation.setAccessible(true);
 		// 測試並驗證結果
-		NormalAnnotation annotation = (NormalAnnotation)getRLAnnotation.invoke(retryRefactoring, unit1.getAST(), 3, "RuntimeException");
+		NormalAnnotation annotation = (NormalAnnotation)getRLAnnotation.invoke(retryRefactoring, dummyAndIgnoredExampleUnit.getAST(), 3, "RuntimeException");
 		assertEquals("@RL(level=3,exception=RuntimeException.class)", annotation.toString());
 	}
 	
 	@Test
 	public void testAddAnnotationRoot() throws Exception {
-		Path path = new Path("DummyHandlerTest\\src\\ntut\\csie\\exceptionBadSmells\\DummyAndIgnoreExample.java");
-		IJavaElement javaElement = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot().getFile(path));
+		IJavaElement javaElement = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot().getFile(dummyAndIgnoredExamplePath));
 		RetryRefactoring retryRefactoring = new RetryRefactoring(null, javaElement, null, null);
 		
 		/* 設定測試參數 */
@@ -352,7 +371,7 @@ public class RetryRefactoringTest {
 		exceptionType.set(retryRefactoring, "RuntimeException");
 		
 		ASTMethodCollector methodCollector = new ASTMethodCollector();
-		unit1.accept(methodCollector);
+		dummyAndIgnoredExampleUnit.accept(methodCollector);
 		
 		Field currentMethodNode = RetryRefactoring.class.getDeclaredField("currentMethodNode");
 		currentMethodNode.setAccessible(true);
@@ -361,18 +380,18 @@ public class RetryRefactoringTest {
 		
 		Field currentMethodRLList = RetryRefactoring.class.getDeclaredField("currentMethodRLList");
 		currentMethodRLList.setAccessible(true);
-		ExceptionAnalyzer exVisitor = new ExceptionAnalyzer(unit1, methodList.get(6).getStartPosition(), 0);
+		ExceptionAnalyzer exVisitor = new ExceptionAnalyzer(dummyAndIgnoredExampleUnit, methodList.get(6).getStartPosition(), 0);
 		methodList.get(6).accept(exVisitor);
 		currentMethodRLList.set(retryRefactoring, exVisitor.getMethodRLAnnotationList());
 		assertEquals(0, exVisitor.getMethodRLAnnotationList().size());
 		
 		Field rewrite = RetryRefactoring.class.getDeclaredField("rewrite");
 		rewrite.setAccessible(true);
-		rewrite.set(retryRefactoring, ASTRewrite.create(unit1.getAST()));
+		rewrite.set(retryRefactoring, ASTRewrite.create(dummyAndIgnoredExampleUnit.getAST()));
 		
 		Field actRoot = RetryRefactoring.class.getDeclaredField("actRoot");
 		actRoot.setAccessible(true);
-		actRoot.set(retryRefactoring, unit1);
+		actRoot.set(retryRefactoring, dummyAndIgnoredExampleUnit);
 		
 		/* 檢查precondition */
 		List<?> modifiers = ((MethodDeclaration)methodList.get(6)).modifiers();
@@ -381,12 +400,12 @@ public class RetryRefactoringTest {
 		/* 測試目標 */
 		Method addAnnotationRoot = RetryRefactoring.class.getDeclaredMethod("addAnnotationRoot", AST.class);
 		addAnnotationRoot.setAccessible(true);
-		addAnnotationRoot.invoke(retryRefactoring, unit1.getAST());
+		addAnnotationRoot.invoke(retryRefactoring, dummyAndIgnoredExampleUnit.getAST());
 		/* 驗證結果 */
 		/*FIXME - 被refactoring的method上面應該出現RL annotation，class上方的import應該出現Robustness和RL才對*/
 		modifiers = ((MethodDeclaration)methodList.get(6)).modifiers();
 		assertEquals(1, modifiers.size());
-		assertEquals(7, ((CompilationUnit)actRoot.get(retryRefactoring)).imports().size());
+		assertEquals("本來有6個imports，經過refactoring以後，應該有8個imports才對", 8, ((CompilationUnit)actRoot.get(retryRefactoring)).imports().size());
 	}
 	
 	@Test
@@ -395,13 +414,13 @@ public class RetryRefactoringTest {
 		RetryRefactoring retryRefactoring = new RetryRefactoring(null, null, null, null);
 		Field actRoot = RetryRefactoring.class.getDeclaredField("actRoot");
 		actRoot.setAccessible(true);
-		actRoot.set(retryRefactoring, unit1);
+		actRoot.set(retryRefactoring, dummyAndIgnoredExampleUnit);
 		
-		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject("DummyHandlerTest");
+		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(testProjectName);
 		IType exType = JavaCore.create(project).findType("java.io.IOException");
 		retryRefactoring.setExType(exType);
 		
-		ASTRewrite rw = ASTRewrite.create(unit1.getAST());
+		ASTRewrite rw = ASTRewrite.create(dummyAndIgnoredExampleUnit.getAST());
 		Field rewrite = RetryRefactoring.class.getDeclaredField("rewrite");
 		rewrite.setAccessible(true);
 		rewrite.set(retryRefactoring, rw);
@@ -409,8 +428,8 @@ public class RetryRefactoringTest {
 		/** 給予已存在的import則不重複import */
 		
 		/* 檢查目前狀態 */
-		List<ImportDeclaration> importList = rw.getListRewrite(unit1, CompilationUnit.IMPORTS_PROPERTY).getRewrittenList();
-		assertEquals(5, importList.size());
+		List<ImportDeclaration> importList = rw.getListRewrite(dummyAndIgnoredExampleUnit, CompilationUnit.IMPORTS_PROPERTY).getRewrittenList();
+		assertEquals(6, importList.size());
 		
 		/* 執行測試對象 */
 		Method addImportDeclaration = RetryRefactoring.class.getDeclaredMethod("addImportDeclaration");
@@ -419,8 +438,8 @@ public class RetryRefactoringTest {
 		
 		/* 驗證結果 */
 		rw = (ASTRewrite)rewrite.get(retryRefactoring);
-		importList = rw.getListRewrite(unit1, CompilationUnit.IMPORTS_PROPERTY).getRewrittenList();
-		assertEquals(5, importList.size());
+		importList = rw.getListRewrite(dummyAndIgnoredExampleUnit, CompilationUnit.IMPORTS_PROPERTY).getRewrittenList();
+		assertEquals(6, importList.size());
 		
 		/** 給予新的import則必須import */
 		exType = JavaCore.create(project).findType("java.io.IOError");
@@ -429,44 +448,66 @@ public class RetryRefactoringTest {
 		
 		/* 驗證結果 */
 		rw = (ASTRewrite)rewrite.get(retryRefactoring);
-		importList = rw.getListRewrite(unit1, CompilationUnit.IMPORTS_PROPERTY).getRewrittenList();
-		assertEquals(6, importList.size());
+		importList = rw.getListRewrite(dummyAndIgnoredExampleUnit, CompilationUnit.IMPORTS_PROPERTY).getRewrittenList();
+		assertEquals(7, importList.size());
 	}
 	
 	@Test
-	public void testFindHomogeneousExType() throws Exception {
+	public void testFindHomogeneousExType_InnerTryStatementHoldHigherLevelExceptionType() throws Exception {
 		/* 設定參數 */
 		RetryRefactoring retryRefactoring = new RetryRefactoring(null, null, null, null);
 		Method findHomogeneousExType = RetryRefactoring.class.getDeclaredMethod("findHomogeneousExType", AST.class, SingleVariableDeclaration.class, Object.class);
 		findHomogeneousExType.setAccessible(true);
-		// 取得所有catch clause
-		ASTCatchCollect catchList = new ASTCatchCollect();
-		unit2.accept(catchList);
-		List<ASTNode> nodeList = catchList.getMethodList();
-		// 刪除對這測試不需要的部分
-		nodeList.remove(7);
-		nodeList.remove(5);
-		nodeList.remove(3);
-		nodeList.remove(1);
-		String parentExType = null;
-		// true : 表示是catch body裡面的statements, false : 表示finally body裡面的statements
-		boolean flag = true;
-		List<Statement> statementList;
-		for(int i = 0; i < nodeList.size(); i++, flag = !flag) {
-			SingleVariableDeclaration svd = (SingleVariableDeclaration)((CatchClause)nodeList.get(i)).getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
-			if(flag)
-				statementList = ((CatchClause)nodeList.get(i)).getBody().statements();
-			else
-				statementList = (((TryStatement)nodeList.get(i).getParent()).getFinally()).statements();
-			for(int j = 0; j < statementList.size(); j++) {
-				if(statementList.get(j).getNodeType() == ASTNode.TRY_STATEMENT)
-					parentExType = (String)findHomogeneousExType.invoke(retryRefactoring, unit2.getAST(), svd, statementList.get(j));
-			}
-			if(i < 2)
-				assertEquals("InterruptedIOException", parentExType);
-			else
-				assertEquals("Exception", parentExType);
-		}
+		
+		TryStatement tryStatement = ASTNodeFinder
+				.getTryStatementNodeListByMethodDeclarationName(nestedTryStatementUnit, "nestedCatch_InnerCatchWithParentExceptionTypeOfOuter").get(0);
+		
+		TryStatement tryStatementInCatchClause = ASTNodeFinder.getTryStatementInNestedTryStatement(tryStatement, ASTNode.CATCH_CLAUSE).get(0);
+		
+		SingleVariableDeclaration svd1 = (SingleVariableDeclaration) ((CatchClause) tryStatement
+				.catchClauses().get(0))
+				.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
+		String lastExType = (String) findHomogeneousExType.invoke(retryRefactoring,
+				nestedTryStatementUnit.getAST(), svd1, tryStatementInCatchClause);
+		assertEquals("InterruptedIOException", lastExType);
+	}
+
+	@Test
+	public void testFindHomogeneousExType_InnerTryStatementHoldLowerLevelExceptionType() throws Exception {
+		RetryRefactoring retryRefactoring = new RetryRefactoring(null, null, null, null);
+		Method findHomogeneousExType = RetryRefactoring.class.getDeclaredMethod("findHomogeneousExType", AST.class, SingleVariableDeclaration.class, Object.class);
+		findHomogeneousExType.setAccessible(true);
+		
+		TryStatement tryStatement = ASTNodeFinder
+				.getTryStatementNodeListByMethodDeclarationName(nestedTryStatementUnit, "nestedCatch_InnerCatchWithChildExceptionTypeOfOuter").get(0);
+		
+		TryStatement tryStatementInCatchClause = ASTNodeFinder.getTryStatementInNestedTryStatement(tryStatement, ASTNode.CATCH_CLAUSE).get(0);
+		
+		SingleVariableDeclaration svd1 = (SingleVariableDeclaration) ((CatchClause) tryStatement
+				.catchClauses().get(0))
+				.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
+		String lastExType = (String) findHomogeneousExType.invoke(retryRefactoring,
+				nestedTryStatementUnit.getAST(), svd1, tryStatementInCatchClause);
+		assertEquals("IOException", lastExType);
+	}
+	
+	@Test
+	public void testFindHomogeneousExType_InnerTryStatementExceptionTypeAndOuterTryStatementExceptionWithoutParentChildRelations() throws Exception {
+		RetryRefactoring retryRefactoring = new RetryRefactoring(null, null, null, null);
+		Method findHomogeneousExType = RetryRefactoring.class.getDeclaredMethod("findHomogeneousExType", AST.class, SingleVariableDeclaration.class, Object.class);
+		findHomogeneousExType.setAccessible(true);
+		
+		TryStatement tryStatement = ASTNodeFinder
+				.getTryStatementNodeListByMethodDeclarationName(nestedTryStatementUnit, "nestedCatch_ExceptionOfTwoCatchWithoutParentChildRelations").get(0);
+		
+		TryStatement tryStatementInCatchClause = ASTNodeFinder.getTryStatementInNestedTryStatement(tryStatement, ASTNode.CATCH_CLAUSE).get(0);
+		
+		SingleVariableDeclaration svd1 = (SingleVariableDeclaration) ((CatchClause) tryStatement
+				.catchClauses().get(0))
+				.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
+		String lastExType = (String) findHomogeneousExType.invoke(retryRefactoring,
+				nestedTryStatementUnit.getAST(), svd1, tryStatementInCatchClause);
+		assertEquals("Exception", lastExType);
 	}
 
 	@Test
@@ -477,7 +518,7 @@ public class RetryRefactoringTest {
 		retryRefactoring.setMaxAttemptVariable("maxAttempt");
 		retryRefactoring.setMaxAttemptNum("2");
 		retryRefactoring.setRetryVariable("retry");
-		ASTRewrite rw = ASTRewrite.create(unit2.getAST());
+		ASTRewrite rw = ASTRewrite.create(nestedTryStatementUnit.getAST());
 		Document document = new Document(
 				"try {\n" + 
 				"  throwSocketTimeoutException();\n" + 
@@ -494,7 +535,7 @@ public class RetryRefactoringTest {
 		// 模擬反白效果
 		TextSelection textSelection = new TextSelection(document, 371, 231);
 		NodeFinder nodeFinder = new NodeFinder(textSelection.getOffset(), textSelection.getLength());
-		unit2.accept(nodeFinder);
+		nestedTryStatementUnit.accept(nodeFinder);
 		ASTNode selectNode = nodeFinder.getCoveredNode();
 		ListRewrite listRewrite = rw.getListRewrite(selectNode.getParent(), Block.STATEMENTS_PROPERTY);
 		// 找出選取的部分對於整個unit來說位於哪個位置
@@ -509,7 +550,7 @@ public class RetryRefactoringTest {
 		// 執行測試對象
 		Method addNewVariable = RetryRefactoring.class.getDeclaredMethod("addNewVariable", AST.class, ListRewrite.class, int.class);
 		addNewVariable.setAccessible(true);
-		addNewVariable.invoke(retryRefactoring, unit2.getAST(), listRewrite, replacePos);
+		addNewVariable.invoke(retryRefactoring, nestedTryStatementUnit.getAST(), listRewrite, replacePos);
 		
 		// 驗證結果
 		List<?> rewriteList = listRewrite.getRewrittenList();
@@ -532,7 +573,7 @@ public class RetryRefactoringTest {
 		// 執行測試對象
 		Method addDoWhile = RetryRefactoring.class.getDeclaredMethod("addDoWhile", AST.class);
 		addDoWhile.setAccessible(true);
-		DoStatement result = (DoStatement)addDoWhile.invoke(retryRefactoring, unit2.getAST());
+		DoStatement result = (DoStatement)addDoWhile.invoke(retryRefactoring, nestedTryStatementUnit.getAST());
 		
 		// 驗證結果
 		assertEquals(	"do {\n" +
@@ -549,7 +590,7 @@ public class RetryRefactoringTest {
 		retryRefactoring.setMaxAttemptNum("2");
 		retryRefactoring.setRetryVariable("retry");
 		
-		ASTRewrite rw = ASTRewrite.create(unit2.getAST());
+		ASTRewrite rw = ASTRewrite.create(nestedTryStatementUnit.getAST());
 		Field rewrite = RetryRefactoring.class.getDeclaredField("rewrite");
 		rewrite.setAccessible(true);
 		rewrite.set(retryRefactoring, rw);
@@ -570,7 +611,7 @@ public class RetryRefactoringTest {
 		// 模擬反白效果
 		TextSelection textSelection = new TextSelection(document, 371, 231);
 		NodeFinder nodeFinder = new NodeFinder(textSelection.getOffset(), textSelection.getLength());
-		unit2.accept(nodeFinder);
+		nestedTryStatementUnit.accept(nodeFinder);
 		ASTNode selectNode = nodeFinder.getCoveredNode();
 		ListRewrite listRewrite = rw.getListRewrite(selectNode.getParent(), Block.STATEMENTS_PROPERTY);
 		// 找出選取的部分對於整個unit來說位於哪個位置
@@ -583,12 +624,12 @@ public class RetryRefactoringTest {
 		// 前置動作，先建立do-while statement
 		Method addDoWhile = RetryRefactoring.class.getDeclaredMethod("addDoWhile", AST.class);
 		addDoWhile.setAccessible(true);
-		DoStatement doWhile = (DoStatement)addDoWhile.invoke(retryRefactoring, unit2.getAST());
+		DoStatement doWhile = (DoStatement)addDoWhile.invoke(retryRefactoring, nestedTryStatementUnit.getAST());
 
 		// 執行測試對象		
 		Method addTryClause = RetryRefactoring.class.getDeclaredMethod("addTryClause", AST.class, DoStatement.class, TryStatement.class);
 		addTryClause.setAccessible(true);
-		TryStatement tryStatement = (TryStatement)addTryClause.invoke(retryRefactoring, unit2.getAST(), doWhile, original);
+		TryStatement tryStatement = (TryStatement)addTryClause.invoke(retryRefactoring, nestedTryStatementUnit.getAST(), doWhile, original);
 		
 		// 驗證結果
 		assertEquals(	"try {\n" +
@@ -609,7 +650,7 @@ public class RetryRefactoringTest {
 		retryRefactoring.setMaxAttemptNum("2");
 		retryRefactoring.setRetryVariable("retry");
 		
-		ASTRewrite rw = ASTRewrite.create(unit2.getAST());
+		ASTRewrite rw = ASTRewrite.create(nestedTryStatementUnit.getAST());
 		Field rewrite = RetryRefactoring.class.getDeclaredField("rewrite");
 		rewrite.setAccessible(true);
 		rewrite.set(retryRefactoring, rw);
@@ -630,7 +671,7 @@ public class RetryRefactoringTest {
 		// 模擬反白效果
 		TextSelection textSelection = new TextSelection(document, 371, 231);
 		NodeFinder nodeFinder = new NodeFinder(textSelection.getOffset(), textSelection.getLength());
-		unit2.accept(nodeFinder);
+		nestedTryStatementUnit.accept(nodeFinder);
 		ASTNode selectNode = nodeFinder.getCoveredNode();
 		ListRewrite listRewrite = rw.getListRewrite(selectNode.getParent(), Block.STATEMENTS_PROPERTY);
 		// 找出選取的部分對於整個unit來說位於哪個位置
@@ -643,12 +684,12 @@ public class RetryRefactoringTest {
 		// 前置動作，先建立do-while statement
 		Method addDoWhile = RetryRefactoring.class.getDeclaredMethod("addDoWhile", AST.class);
 		addDoWhile.setAccessible(true);
-		DoStatement doWhile = (DoStatement)addDoWhile.invoke(retryRefactoring, unit2.getAST());
+		DoStatement doWhile = (DoStatement)addDoWhile.invoke(retryRefactoring, nestedTryStatementUnit.getAST());
 		
 		// 執行測試對象
 		Method addNoAltTryBlock = RetryRefactoring.class.getDeclaredMethod("addNoAltTryBlock", AST.class, DoStatement.class, TryStatement.class);
 		addNoAltTryBlock.setAccessible(true);
-		TryStatement tryStatement = (TryStatement)addNoAltTryBlock.invoke(retryRefactoring, unit2.getAST(), doWhile, original);
+		TryStatement tryStatement = (TryStatement)addNoAltTryBlock.invoke(retryRefactoring, nestedTryStatementUnit.getAST(), doWhile, original);
 		
 		// 驗證結果
 		assertEquals(	"try {\n" +
@@ -665,7 +706,7 @@ public class RetryRefactoringTest {
 		retryRefactoring.setMaxAttemptNum("2");
 		retryRefactoring.setRetryVariable("retry");
 		
-		ASTRewrite rw = ASTRewrite.create(unit2.getAST());
+		ASTRewrite rw = ASTRewrite.create(nestedTryStatementUnit.getAST());
 		Field rewrite = RetryRefactoring.class.getDeclaredField("rewrite");
 		rewrite.setAccessible(true);
 		rewrite.set(retryRefactoring, rw);
@@ -676,17 +717,17 @@ public class RetryRefactoringTest {
 		
 		Field actRoot = RetryRefactoring.class.getDeclaredField("actRoot");
 		actRoot.setAccessible(true);
-		actRoot.set(retryRefactoring, unit2);
+		actRoot.set(retryRefactoring, nestedTryStatementUnit);
 		
 		ASTMethodCollector methodCollector = new ASTMethodCollector();
-		unit2.accept(methodCollector);
+		nestedTryStatementUnit.accept(methodCollector);
 		
 		Field currentMethodNode = RetryRefactoring.class.getDeclaredField("currentMethodNode");
 		currentMethodNode.setAccessible(true);
 		List<ASTNode> methodList = methodCollector.getMethodList();
 		currentMethodNode.set(retryRefactoring, methodList.get(0));
 		
-		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject("DummyHandlerTest");
+		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(testProjectName);
 		IType exType = JavaCore.create(project).findType("java.beans.PropertyVetoException");
 		retryRefactoring.setExType(exType);
 		
@@ -706,7 +747,7 @@ public class RetryRefactoringTest {
 		// 模擬反白效果
 		TextSelection textSelection = new TextSelection(document, 371, 231);
 		NodeFinder nodeFinder = new NodeFinder(textSelection.getOffset(), textSelection.getLength());
-		unit2.accept(nodeFinder);
+		nestedTryStatementUnit.accept(nodeFinder);
 		ASTNode selectNode = nodeFinder.getCoveredNode();
 		ListRewrite listRewrite = rw.getListRewrite(selectNode.getParent(), Block.STATEMENTS_PROPERTY);
 		// 找出選取的部分對於整個unit來說位於哪個位置
@@ -719,11 +760,11 @@ public class RetryRefactoringTest {
 		// 前置動作
 		Method addDoWhile = RetryRefactoring.class.getDeclaredMethod("addDoWhile", AST.class);
 		addDoWhile.setAccessible(true);
-		DoStatement doWhile = (DoStatement)addDoWhile.invoke(retryRefactoring, unit2.getAST());
+		DoStatement doWhile = (DoStatement)addDoWhile.invoke(retryRefactoring, nestedTryStatementUnit.getAST());
 		
 		Method addNoAltTryBlock = RetryRefactoring.class.getDeclaredMethod("addNoAltTryBlock", AST.class, DoStatement.class, TryStatement.class);
 		addNoAltTryBlock.setAccessible(true);
-		TryStatement tryStatement = (TryStatement)addNoAltTryBlock.invoke(retryRefactoring, unit2.getAST(), doWhile, original);
+		TryStatement tryStatement = (TryStatement)addNoAltTryBlock.invoke(retryRefactoring, nestedTryStatementUnit.getAST(), doWhile, original);
 		// 檢查初始狀態
 		assertEquals(	"try {\n" +
 						"  retry=false;\n" +
@@ -731,7 +772,7 @@ public class RetryRefactoringTest {
 		// 執行測試對象
 		Method addCatchBlock = RetryRefactoring.class.getDeclaredMethod("addCatchBlock", AST.class, TryStatement.class, TryStatement.class);
 		addCatchBlock.setAccessible(true);
-		addCatchBlock.invoke(retryRefactoring, unit2.getAST(), original, tryStatement);
+		addCatchBlock.invoke(retryRefactoring, nestedTryStatementUnit.getAST(), original, tryStatement);
 		// 驗證結果
 		assertEquals(	"try {\n" +
 						"  retry=false;\n" +
@@ -761,13 +802,12 @@ public class RetryRefactoringTest {
 				"} catch (IOException e) {" + 
 				"javaLog.log(Level.INFO, \"Just log it.\");	//	DummyHandler" + 
 				"}");
-		TextSelection textSelection = new TextSelection(document, 3073, 153);
+		TextSelection textSelection = new TextSelection(document, 3392, 168);
 		// 取得專案下的java檔
-		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject("DummyHandlerTest");
+		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(testProjectName);
 		IJavaProject javaProject = JavaCore.create(project);
 		javaProject.open(null);
-		Path path = new Path("DummyHandlerTest\\src\\ntut\\csie\\exceptionBadSmells\\DummyAndIgnoreExample.java");
-		IJavaElement javaElement = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot().getFile(path));
+		IJavaElement javaElement = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot().getFile(dummyAndIgnoredExamplePath));
 		// 設定待測目標 RetryRefactoring
 		RetryRefactoring refactoring = new RetryRefactoring(javaProject,javaElement,textSelection,retry_type);
 		refactoring.setAttemptVariable("attempt");
