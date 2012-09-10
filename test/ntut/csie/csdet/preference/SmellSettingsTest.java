@@ -31,7 +31,7 @@ public class SmellSettingsTest {
 		if(smellSettingFile.exists()) {
 			assertTrue(smellSettingFile.delete());
 		}
-		smellSettings = new SmellSettings();
+		smellSettings = new SmellSettings(smellSettingFile);
 	}
 
 	@After
@@ -43,7 +43,6 @@ public class SmellSettingsTest {
 	
 	@Test
 	public void testConstructor_File() throws Exception {
-		smellSettings = new SmellSettings(smellSettingFile);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		assertTrue(smellSettingFile.exists());
 		String fileContent = readFileContents(smellSettingFile);
@@ -54,7 +53,7 @@ public class SmellSettingsTest {
 	
 	@Test
 	public void testConstructor_String() throws Exception {
-		smellSettings = new SmellSettings(smellSettingFile.getPath());
+		smellSettings = new SmellSettings(smellSettingFile);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		assertTrue(smellSettingFile.exists());
 		String fileContent = readFileContents(smellSettingFile);
@@ -353,8 +352,13 @@ public class SmellSettingsTest {
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells />", fileContent);		
 	}
 	
+	/**
+	 * 如果SmellSettings的instance已經被產生出來，使用者同時再用其他文字編輯器寫入設定檔內容，
+	 * 最後再用SmellSettigs存檔後，其他文字編輯器寫入的內容會遺失。
+	 * @throws Exception
+	 */
 	@Test
-	public void testWriteXMLFile_OverwriteXMLFormatFile() throws Exception {
+	public void testWriteXMLFile_OtherTextWriterWriteSmellSettingXMLFormatFileAfterSmellSettingInstanceIsCreated() throws Exception {
 		// 生成一個文字檔案，裡面是舊有的XML設定檔
 		String xmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells><SmellTypes name=\"DummyHandler\" isDetecting=\"true\"><pattern name=\"*.toString\" isDetecting=\"true\" /></SmellTypes></CodeSmells>";
 		FileWriter fw = new FileWriter(smellSettingFile);
@@ -374,44 +378,54 @@ public class SmellSettingsTest {
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells />", fileContent);		
 	}
 	
+	/**
+	 * 相同路徑下已經有設定檔，則每次產生SmellSettings新的instance，都應該會自動讀取舊的設定檔。
+	 * @throws Exception
+	 */
 	@Test
 	public void testWriteXMLFile_UsingSameVariableTwiceWithDifferentNewInstance() throws Exception {
 		// 先用一個新的instace產生xml檔
 		smellSettings = new SmellSettings(smellSettingFile);
 		smellSettings.addDummyHandlerPattern("*.toString", true);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
+		
+		String expectedResult = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells><SmellTypes name=\"DummyHandler\" isDetecting=\"true\"><pattern name=\"*.toString\" isDetecting=\"true\" /></SmellTypes></CodeSmells>";
+		
 		// 確認內容
 		String firstTimeContent = readFileContents(smellSettingFile);
-		assertEquals(
-				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells><SmellTypes name=\"DummyHandler\" isDetecting=\"true\"><pattern name=\"*.toString\" isDetecting=\"true\" /></SmellTypes></CodeSmells>",
-				firstTimeContent);
+		assertEquals(expectedResult, firstTimeContent);
 		
 		// 再用同一個變數產生新的instace，再產生xml檔
 		smellSettings = new SmellSettings(smellSettingFile);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		// 確認內容
 		String fileContent = readFileContents(smellSettingFile);
-		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells />", fileContent);
+		assertEquals(expectedResult, fileContent);
 	}
 	
+	/**
+	 * 相同路徑下已經有設定檔，則每次產生SmellSettings新的instance，都應該會自動讀取舊的設定檔。
+	 * @throws Exception
+	 */
 	@Test
 	public void testWriteXMLFile_UsingTwoDifferentVariable() throws Exception {
 		// 先用一個新的變數產生xml檔
 		SmellSettings setting = new SmellSettings(smellSettingFile);
 		setting.addDummyHandlerPattern("*.toString", true);
 		setting.writeXMLFile(smellSettingFile.getPath());
+		
+		String expectedResult = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells><SmellTypes name=\"DummyHandler\" isDetecting=\"true\"><pattern name=\"*.toString\" isDetecting=\"true\" /></SmellTypes></CodeSmells>";
+		
 		// 確認內容
 		String firstTimeContent = readFileContents(smellSettingFile);
-		assertEquals(
-				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells><SmellTypes name=\"DummyHandler\" isDetecting=\"true\"><pattern name=\"*.toString\" isDetecting=\"true\" /></SmellTypes></CodeSmells>",
-				firstTimeContent);
+		assertEquals(expectedResult, firstTimeContent);
 		
 		// 再用另一個變數產生xml檔
 		smellSettings = new SmellSettings(smellSettingFile);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		// 確認內容
 		String fileContent = readFileContents(smellSettingFile);
-		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells />", fileContent);
+		assertEquals(expectedResult, fileContent);
 	}
 	
 	@Test

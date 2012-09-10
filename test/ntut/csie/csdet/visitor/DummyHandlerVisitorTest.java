@@ -481,8 +481,4 @@ public class DummyHandlerVisitorTest {
 		CatchClause catchClause = (CatchClause) tryStatement.catchClauses().get(catchClauseNumber);
 		return (ExpressionStatement) catchClause.getBody().statements().get(statementsNumberOnCatchClause);
 	}
-	
-//	private MethodInvocation getMethodInvocationByMethodNameAndCode() {
-//		return null;
-//	}
 }

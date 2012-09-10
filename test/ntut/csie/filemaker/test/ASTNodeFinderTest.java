@@ -119,6 +119,6 @@ public class ASTNodeFinderTest {
 		lineNumber = 46;
 		astNode = ASTNodeFinder.getNodeFromSpecifiedClass(NodeUtilsTestSample.class, projectName, lineNumber);
 		// FIXME the bug need to be fix.
-		assertEquals(lineNumber, compilationUnit.getLineNumber(astNode.getStartPosition()));
+		assertEquals("FIXME the bug need to be fix.",lineNumber, compilationUnit.getLineNumber(astNode.getStartPosition()));
 	}
 }

@@ -114,7 +114,7 @@ public class ExpressionStatementAnalyzerTest {
 		}
 		// 驗證被加入maker的有幾個Expression
 		// 因為只餵ExpressionStatement Node，故throw statement不會判斷到，會多1個
-		assertEquals(16 , esVisitor.getDummyHandlerList().size());
+		assertEquals("奕帆這邊記得要改", 16 , esVisitor.getDummyHandlerList().size());
 	}
 	
 	@Test
@@ -218,7 +218,7 @@ public class ExpressionStatementAnalyzerTest {
 				dummy += esVisitor.getDummyHandlerList().size();
 		}
 		// 驗證總共抓到幾個bad smell
-		assertEquals(15, dummy);
+		assertEquals("奕帆這邊記得要改", 15, dummy);
 	}
 
 	/**

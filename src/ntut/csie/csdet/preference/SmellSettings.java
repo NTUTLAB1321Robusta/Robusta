@@ -55,7 +55,7 @@ public class SmellSettings {
 	public final static String EXTRARULE_JavaUtilLoggingLogger = "java.util.logging.Logger";
 	private Document settingDoc;
 	
-	public SmellSettings() {
+	protected SmellSettings() {
 		settingDoc = new Document(new Element(TAG_ROOT));
 	}
 	

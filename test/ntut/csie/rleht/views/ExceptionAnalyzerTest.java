@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.data.SSMessage;
 import ntut.csie.csdet.preference.JDomUtil;
 import ntut.csie.csdet.preference.SmellSettings;
@@ -23,7 +24,15 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.Assignment;
+import org.eclipse.jdt.core.dom.CatchClause;
+import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.ExpressionStatement;
+import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.ThrowStatement;
+import org.eclipse.jdt.core.dom.TryStatement;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,7 +58,7 @@ public class ExceptionAnalyzerTest {
 		javaProjectMaker.addJarFromProjectToBuildPath("lib\\log4j-1.2.15.jar");
 		
 		// 根據測試檔案樣本內容建立新的檔案
-		javaProjectMaker.createJavaFile("ntut.csie.exceptionBadSmells", "SuppressWarningExample.java", "package ntut.csie.exceptionBadSmells;\n" + javaFileToString.getFileContent());
+		javaProjectMaker.createJavaFile("ntut.csie.filemaker.exceptionBadSmells", "SuppressWarningExample.java", "package ntut.csie.filemaker.exceptionBadSmells;\n" + javaFileToString.getFileContent());
 		javaFileToString.clear();
 		javaFileToString.read(UnprotectedMainProgramWithoutTryExample.class, "test");
 		javaProjectMaker.createJavaFile(
@@ -60,7 +69,7 @@ public class ExceptionAnalyzerTest {
 		
 		// 建立 XML
 		CreateSettings();
-		Path path = new Path("ExceptionAnalyerTest\\src\\ntut\\csie\\exceptionBadSmells\\SuppressWarningExample.java");
+		Path path = new Path("ExceptionAnalyerTest\\src\\ntut\\csie\\filemaker\\exceptionBadSmells\\SuppressWarningExample.java");
 		
 		// Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
@@ -86,13 +95,201 @@ public class ExceptionAnalyzerTest {
 	}
 	
 	@Test
+	public void testExceptionAnalyzer() {
+		
+		ASTMethodCollector collector = new ASTMethodCollector();
+		compilationUnit.accept(collector);
+		
+		// 儲存專區
+		List<ASTNode> methodList = collector.getMethodList();
+		List<MarkerInfo> totalNTList = new ArrayList<MarkerInfo>();
+		List<RLMessage> totalMethodRLList = new ArrayList<RLMessage>();
+		List<SSMessage> totalSSList = new ArrayList<SSMessage>();
+		
+		for (int i = 0; i < methodList.size(); i++) {
+			exceptionAnalyzer = new ExceptionAnalyzer(compilationUnit,  methodList.get(i).getStartPosition(), 0);
+			compilationUnit.accept(exceptionAnalyzer);
+			totalNTList.addAll(exceptionAnalyzer.getNestedTryList());
+			totalMethodRLList.addAll(exceptionAnalyzer.getMethodRLAnnotationList());
+			totalSSList.addAll(exceptionAnalyzer.getSuppressSemllAnnotationList());
+		}
+		
+		assertEquals(8, totalNTList.size());
+		for (int i = 0; i < totalNTList.size(); i++) {
+			assertTrue(totalNTList.get(i).getCodeSmellType().toString().equals("Nested_Try_Block"));
+		}
+		assertEquals(78, totalNTList.get(0).getLineNumber());
+		assertEquals(98, totalNTList.get(1).getLineNumber());
+		assertEquals(254, totalNTList.get(2).getLineNumber());
+		assertEquals(258, totalNTList.get(3).getLineNumber());
+		assertEquals(308, totalNTList.get(4).getLineNumber());
+		assertEquals(324, totalNTList.get(5).getLineNumber());
+		assertEquals(443, totalNTList.get(6).getLineNumber());
+		assertEquals(447, totalNTList.get(7).getLineNumber());
+		
+		assertEquals(6, totalMethodRLList.size());
+
+		assertEquals(totalMethodRLList.get(0).getRLData().getExceptionType().toString(),"java.lang.RuntimeException");
+		assertEquals(totalMethodRLList.get(1).getRLData().getExceptionType().toString(),"java.lang.RuntimeException");
+		assertEquals(totalMethodRLList.get(2).getRLData().getExceptionType().toString(),"java.lang.RuntimeException");
+		assertEquals(totalMethodRLList.get(3).getRLData().getExceptionType().toString(),"java.io.IOException");
+		assertEquals(totalMethodRLList.get(4).getRLData().getExceptionType().toString(),"java.io.IOException");
+		assertEquals(totalMethodRLList.get(5).getRLData().getExceptionType().toString(),"java.io.IOException");
+		
+		assertEquals(133,totalMethodRLList.get(0).getLineNumber());
+		assertEquals(152,totalMethodRLList.get(1).getLineNumber());
+		assertEquals(172,totalMethodRLList.get(2).getLineNumber());
+		assertEquals(204,totalMethodRLList.get(3).getLineNumber());
+		assertEquals(218,totalMethodRLList.get(4).getLineNumber());
+		assertEquals(231,totalMethodRLList.get(5).getLineNumber());
+
+		assertEquals("suppress warning 的資訊在 nested 底下不會被記錄到",26, totalSSList.size());
+	}
+	
+	@Test
 	public void testVisitNode() throws Exception {
-		fail("Not yet implemented");
+		ASTMethodCollector collector = new ASTMethodCollector();
+		compilationUnit.accept(collector);
+		
+		List<ASTNode> methodList = collector.getMethodList();
+		
+		Method visitNodemMethod = ExceptionAnalyzer.class.getDeclaredMethod("visitNode", ASTNode.class);
+		visitNodemMethod.setAccessible(true);
+
+		// #1 compilationUnit
+		exceptionAnalyzer = new ExceptionAnalyzer(compilationUnit, compilationUnit.getStartPosition(), 0);
+		assertTrue((Boolean)visitNodemMethod.invoke(exceptionAnalyzer, compilationUnit));
+		
+		// #2 METHOD_DECLARATION
+		for (int i = 0; i < methodList.size(); i++) {
+			exceptionAnalyzer = new ExceptionAnalyzer(compilationUnit, methodList.get(i).getStartPosition(), 0);
+			assertTrue((Boolean)visitNodemMethod.invoke(exceptionAnalyzer, methodList.get(i)));
+		}
+		
+		// #3 TRY_STATEMENT
+		for (int i = 0; i < methodList.size(); i++) {
+			MethodDeclaration md = (MethodDeclaration) methodList.get(i);
+			for (int j = 0; j < md.getBody().statements().size(); j++) {
+				ASTNode node = (ASTNode)md.getBody().statements().get(j);
+				if (node.getNodeType() == ASTNode.TRY_STATEMENT) {
+					exceptionAnalyzer = new ExceptionAnalyzer(compilationUnit, methodList.get(i).getStartPosition(), 0);
+					assertTrue((Boolean)visitNodemMethod.invoke(exceptionAnalyzer, node));
+				}
+			}
+		}
+		// #4 THROW_STATEMENT
+		for (int i = 0; i < methodList.size(); i++) {
+			MethodDeclaration md = (MethodDeclaration) methodList.get(i);
+			for (int j = 0; j < md.getBody().statements().size(); j++) {
+				ASTNode node = (ASTNode)md.getBody().statements().get(j);
+				if (node.getNodeType() == ASTNode.TRY_STATEMENT) {
+					TryStatement tStatement = (TryStatement)node;
+					for (int k = 0; k < tStatement.catchClauses().size(); k++) {
+						CatchClause clause = (CatchClause)tStatement.catchClauses().get(k);
+						for (int k2 = 0; k2 < clause.getBody().statements().size(); k2++) {
+							if (((ASTNode)clause.getBody().statements().get(k2)).getNodeType()== ASTNode.THROW_STATEMENT) {
+								ThrowStatement throwStatement = (ThrowStatement) clause.getBody().statements().get(k2);
+								exceptionAnalyzer = new ExceptionAnalyzer(compilationUnit, throwStatement.getStartPosition(), 0);
+								assertTrue((Boolean)visitNodemMethod.invoke(exceptionAnalyzer, throwStatement));
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	@Test
+	public void testProcessTryStatement() throws Exception {
+		Method methodProcessTryStatement = ExceptionAnalyzer.class.getDeclaredMethod("processTryStatement", ASTNode.class);
+		methodProcessTryStatement.setAccessible(true);
+		ASTMethodCollector astMethodCollector = new ASTMethodCollector();
+		compilationUnit.accept(astMethodCollector);
+		
+		List<ASTNode> methodList = astMethodCollector.getMethodList();
+		List<MarkerInfo> totalNTList = new ArrayList<MarkerInfo>();
+		List<RLMessage> totalMethodRLList = new ArrayList<RLMessage>();
+		List<SSMessage> totalSSList = new ArrayList<SSMessage>();
+		
+		for (int i = 0; i < methodList.size(); i++) {
+			MethodDeclaration md = (MethodDeclaration) methodList.get(i);
+			for (int j = 0; j < md.getBody().statements().size(); j++) {
+				ASTNode node = (ASTNode)md.getBody().statements().get(j);
+				if (node.getNodeType() == ASTNode.TRY_STATEMENT) {
+					exceptionAnalyzer = new ExceptionAnalyzer(compilationUnit, methodList.get(i).getStartPosition(), 0);
+					methodProcessTryStatement.invoke(exceptionAnalyzer, node);
+					totalNTList.addAll(exceptionAnalyzer.getNestedTryList());
+					totalMethodRLList.addAll(exceptionAnalyzer.getMethodRLAnnotationList());
+					totalSSList.addAll(exceptionAnalyzer.getSuppressSemllAnnotationList());
+				}
+			}
+		}
+		
+		/*
+		 * 發生 nested try 所在的 line number
+		 */
+		int[] lineNumber = { 78, 98, 254, 258, 308, 324, 443, 447 };
+		
+		for (int i = 0; i < totalNTList.size(); i++) {
+			assertEquals(lineNumber[i], totalNTList.get(i).getLineNumber());
+		}
+		
+		/*
+		 * 不再 method 上
+		 */
+		assertEquals(0, totalMethodRLList.size());
+		
+		/*
+		 * nested try
+		 */
+		assertEquals(8, totalNTList.size());
+		
+		/*
+		 * 在巢狀 try-catch 要在 catch 上 suppress bad smell 時
+		 * 反觀在 method 上 suppress bad smell 時可以正確的被 suppress
+		 */
+		assertEquals("suppress warning 的資訊在 nested 底下不會被記錄到", 15, totalSSList.size());
 	}
 	
 	@Test
 	public void testFindExceptionTypes() throws Exception {
-		fail("Not yet implemented");
+		Method methodFindExceptionTypes = ExceptionAnalyzer.class.getDeclaredMethod("findExceptionTypes", ASTNode.class, ITypeBinding[].class);
+		methodFindExceptionTypes.setAccessible(true);
+		
+		// 資料產生
+		ASTMethodCollector astMethodCollector = new ASTMethodCollector();
+		compilationUnit.accept(astMethodCollector);
+		List<ASTNode> methodlist = astMethodCollector.getMethodList();
+		List<RLMessage> totalRLList = new ArrayList<RLMessage>();
+		MethodDeclaration mDeclaration = (MethodDeclaration)methodlist.get(7);
+		TryStatement tryStatement = (TryStatement) mDeclaration.getBody().statements().get(1);
+		ExpressionStatement statement = (ExpressionStatement) tryStatement.getBody().statements().get(0);
+		ClassInstanceCreation cic = (ClassInstanceCreation)statement.getExpression();
+		
+		// Class Instance Creation
+		// 初始狀態
+		exceptionAnalyzer = new ExceptionAnalyzer(compilationUnit, methodlist.get(7).getStartPosition(), 0);
+		totalRLList.addAll(exceptionAnalyzer.getExceptionList());
+		assertEquals(0, totalRLList.size());
+		methodFindExceptionTypes.invoke(exceptionAnalyzer, (ASTNode) cic, cic.resolveConstructorBinding().getExceptionTypes());
+		totalRLList.addAll(exceptionAnalyzer.getExceptionList());
+		assertEquals(1, totalRLList.size());
+		
+		// 清除資料
+		exceptionAnalyzer = new ExceptionAnalyzer(compilationUnit, methodlist.get(6).getStartPosition(), 0);
+		totalRLList = new ArrayList<RLMessage>();
+		assertEquals(0, totalRLList.size());
+		mDeclaration = (MethodDeclaration) methodlist.get(6);
+		tryStatement = (TryStatement) mDeclaration.getBody().statements().get(1);
+		statement = (ExpressionStatement) tryStatement.getBody().statements().get(0);
+		Assignment assignment = (Assignment) statement.getExpression();
+		cic = (ClassInstanceCreation) assignment.getRightHandSide();
+		methodFindExceptionTypes.invoke(exceptionAnalyzer, (ASTNode) cic, cic.resolveConstructorBinding().getExceptionTypes());
+		
+		// 疊加測試
+		totalRLList.addAll(exceptionAnalyzer.getExceptionList());
+		totalRLList.addAll(exceptionAnalyzer.getExceptionList());
+		assertEquals(2, totalRLList.size());
 	}
 	
 	@Test
@@ -103,52 +300,47 @@ public class ExceptionAnalyzerTest {
 		List<ASTNode> methodlist = astMethodCollector.getMethodList();
 		List<RLMessage> totalRLList = new ArrayList<RLMessage>();
 		
-		Method methodAddRL = ExceptionAnalyzer.class.getDeclaredMethod("addRL", RLMessage.class, int.class);
-		methodAddRL.setAccessible(true);
+		Method methodAddRLForInt = ExceptionAnalyzer.class.getDeclaredMethod("addRL", RLMessage.class, int.class);
+		methodAddRLForInt.setAccessible(true);
+		
+		Method methodAddRLForString = ExceptionAnalyzer.class.getDeclaredMethod("addRL", RLMessage.class, String.class);
+		methodAddRLForString.setAccessible(true);
 		
 		Method methodGetMethodAnnotation = ExceptionAnalyzer.class.getDeclaredMethod("getMethodAnnotation", ASTNode.class);
 		methodGetMethodAnnotation.setAccessible(true);
 		
-		exceptionAnalyzer = new ExceptionAnalyzer(compilationUnit, methodlist.get(7).getStartPosition(), 0);
-		methodGetMethodAnnotation.invoke(exceptionAnalyzer, methodlist.get(7));
-		totalRLList.addAll(exceptionAnalyzer.getMethodRLAnnotationList());
-		assertEquals(0, exceptionAnalyzer.getExceptionList().size());
-		methodAddRL.invoke(exceptionAnalyzer, totalRLList.get(0), 0);
-		assertEquals(1, exceptionAnalyzer.getExceptionList().size());
+		assertEquals(0, totalRLList.size());
+		for (int i = 0; i < methodlist.size(); i++) {
+			exceptionAnalyzer = new ExceptionAnalyzer(compilationUnit, methodlist.get(i).getStartPosition(), 0);
+			methodGetMethodAnnotation.invoke(exceptionAnalyzer, methodlist.get(i));
+			totalRLList.addAll(exceptionAnalyzer.getMethodRLAnnotationList());
+		}
+		// 抓到 6 個 RL 註記的 method overloading for addRL(RLMessage rlmsg, int currentCatch)
+		assertEquals(6, totalRLList.size());
+		for (int i = 0; i < totalRLList.size(); i++) {
+			methodAddRLForInt.invoke(exceptionAnalyzer, totalRLList.get(i), i);
+		}
+		// 將 6 個 RL 註記的 method 利用 addRL 這個 method 是否成功加入 
+		assertEquals(6, exceptionAnalyzer.getExceptionList().size());
+
+		totalRLList =  new ArrayList<RLMessage>();
+		
+		assertEquals(0, totalRLList.size());
+		for (int i = 0; i < methodlist.size(); i++) {
+			exceptionAnalyzer = new ExceptionAnalyzer(compilationUnit, methodlist.get(i).getStartPosition(), 0);
+			methodGetMethodAnnotation.invoke(exceptionAnalyzer, methodlist.get(i));
+			totalRLList.addAll(exceptionAnalyzer.getMethodRLAnnotationList());
+		}
+		// 抓到 6 個 RL 註記的 method overloading for addRL(RLMessage rlmsg, String key) 
+		assertEquals(6, totalRLList.size());
+		for (int i = 0; i < totalRLList.size(); i++) {
+			methodAddRLForString.invoke(exceptionAnalyzer, totalRLList.get(i), "父母親的id哀豬叉踹." + i);
+		}
+		assertEquals(6, exceptionAnalyzer.getExceptionList().size());
 	}
 
 	@Test
-	public void testExceptionAnalyzerCompilationUnitIntInt() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testExceptionAnalyzerCompilationUnitBooleanString() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testClear() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetNestedTryList() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetCurrentMethodNode() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetCurrentRLAnnotationNode() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testGetExceptionList() throws Exception {
+	public void testGetMethodThrowsList() throws Exception {
 		ASTMethodCollector astMethodCollector = new ASTMethodCollector();
 		compilationUnit.accept(astMethodCollector);
 		List<ASTNode> methodlist = astMethodCollector.getMethodList();
@@ -162,15 +354,21 @@ public class ExceptionAnalyzerTest {
 			totalList.addAll(exceptionAnalyzer.getExceptionList());
 		}
 		
-		assertEquals("java.net.SocketTimeoutException",totalList.get(0).getRLData().getExceptionType().toString());
-		assertEquals("java.io.InterruptedIOException",totalList.get(1).getRLData().getExceptionType().toString());
-		assertEquals("java.net.SocketTimeoutException",totalList.get(2).getRLData().getExceptionType().toString());
-		assertEquals("java.io.InterruptedIOException",totalList.get(3).getRLData().getExceptionType().toString());
-		assertEquals("java.io.InterruptedIOException",totalList.get(4).getRLData().getExceptionType().toString());
-		assertEquals("java.lang.ArithmeticException",totalList.get(5).getRLData().getExceptionType().toString());
-		assertEquals("java.lang.Exception",totalList.get(6).getRLData().getExceptionType().toString());
+		assertEquals("java.io.IOException",totalList.get(0).getRLData().getExceptionType().toString());
+		assertEquals("java.io.IOException",totalList.get(1).getRLData().getExceptionType().toString());
+		assertEquals("java.io.IOException",totalList.get(2).getRLData().getExceptionType().toString());
+		assertEquals("java.io.IOException",totalList.get(3).getRLData().getExceptionType().toString());
+		assertEquals("java.io.IOException",totalList.get(4).getRLData().getExceptionType().toString());
+		assertEquals("java.io.IOException",totalList.get(5).getRLData().getExceptionType().toString());
+		assertEquals("java.net.SocketTimeoutException",totalList.get(6).getRLData().getExceptionType().toString());
+		assertEquals("java.io.InterruptedIOException",totalList.get(7).getRLData().getExceptionType().toString());
+		assertEquals("java.net.SocketTimeoutException",totalList.get(8).getRLData().getExceptionType().toString());
+		assertEquals("java.io.InterruptedIOException",totalList.get(9).getRLData().getExceptionType().toString());
+		assertEquals("java.io.InterruptedIOException",totalList.get(10).getRLData().getExceptionType().toString());
+		assertEquals("java.lang.ArithmeticException",totalList.get(11).getRLData().getExceptionType().toString());
+		assertEquals("java.lang.Exception",totalList.get(12).getRLData().getExceptionType().toString());
 		
-		assertEquals(7, totalList.size());
+		assertEquals(19, totalList.size());
 	}
 
 	@Test
@@ -192,11 +390,11 @@ public class ExceptionAnalyzerTest {
 		assertTrue(methodlist.get(8).toString().equals(totalList.get(1).getStatement().toString()));
 		assertTrue(methodlist.get(9).toString().equals(totalList.get(2).getStatement().toString()));
 		
-		assertEquals(127, totalList.get(0).getLineNumber());
-		assertEquals(144, totalList.get(1).getLineNumber());
-		assertEquals(164, totalList.get(2).getLineNumber());
+		assertEquals(133, totalList.get(0).getLineNumber());
+		assertEquals(152, totalList.get(1).getLineNumber());
+		assertEquals(172, totalList.get(2).getLineNumber());
 		
-		assertEquals(3, totalList.size());
+		assertEquals(6, totalList.size());
 	}
 
 	@Test
@@ -223,16 +421,16 @@ public class ExceptionAnalyzerTest {
 		assertEquals("[Careless_CleanUp]", totalList.get(6).getSmellList().toString());
 		assertEquals("[Careless_CleanUp]", totalList.get(7).getSmellList().toString());
 		
-		assertEquals(28, totalList.get(0).getLineNumber());
-		assertEquals(37, totalList.get(1).getLineNumber());
-		assertEquals(64, totalList.get(2).getLineNumber());
-		assertEquals(81, totalList.get(3).getLineNumber());
-		assertEquals(100, totalList.get(4).getLineNumber());
-		assertEquals(127, totalList.get(5).getLineNumber());
-		assertEquals(144, totalList.get(6).getLineNumber());
-		assertEquals(164, totalList.get(7).getLineNumber());
+		assertEquals(34, totalList.get(0).getLineNumber());
+		assertEquals(43, totalList.get(1).getLineNumber());
+		assertEquals(70, totalList.get(2).getLineNumber());
+		assertEquals(87, totalList.get(3).getLineNumber());
+		assertEquals(106, totalList.get(4).getLineNumber());
+		assertEquals(133, totalList.get(5).getLineNumber());
+		assertEquals(152, totalList.get(6).getLineNumber());
+		assertEquals(172, totalList.get(7).getLineNumber());
 		
-		assertEquals(8, totalList.size());
+		assertEquals(10, totalList.size());
 	}
 
 	private void CreateSettings() {
