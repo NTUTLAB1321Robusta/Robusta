@@ -174,31 +174,32 @@ public class DummyHandlerVisitorTest {
 		assertEquals(1, dummyHandlerVisitor.getDummyList().size());
 	}
 	
-//	@Test
-//	public void testDetectDummyHandler() {
-//		// 確認初始值
-//		MethodDeclaration md = null;
-//		assertEquals(0, dummyHandlerVisitor.getDummyList().size());
-//		
-//		//#1 正常的DummyHandler
-//		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "true_printStackTrace_public");
-//		ExpressionStatement eStatement = getExpressionStatementFromMethodDeclaration(md, 1, 0, 0);
-//		dummyHandlerVisitor.detectDummyHandler(eStatement);
-//		assertEquals(1, dummyHandlerVisitor.getDummyList().size());
-//		
-//		//#2 有throw
-//		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "false_throwAndPrint");
-//		eStatement = getExpressionStatementFromMethodDeclaration(md, 0, 0, 0);
-//		dummyHandlerVisitor.detectDummyHandler(eStatement);
-//		assertEquals(1, dummyHandlerVisitor.getDummyList().size());
-//		
-//		//#3 測 Catch 外面
-//		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "true_printStackTrace_protected");
-//		TryStatement tryStatement = (TryStatement) md.getBody().statements().get(1);
-//		eStatement = (ExpressionStatement)tryStatement.getBody().statements().get(1);
-//		dummyHandlerVisitor.detectDummyHandler(eStatement);
-//		assertEquals(1, dummyHandlerVisitor.getDummyList().size());
-//	}
+	@Test
+	public void testDetectDummyHandler() {
+		// 確認初始值
+		assertEquals(0, dummyHandlerVisitor.getDummyList().size());
+		
+		//#1 正常的DummyHandler
+		MethodInvocation eStatement = ASTNodeFinder
+				.getMethodInvocationByMethodNameAndCode(compilationUnit,
+				"true_printStackTrace_public", "e.printStackTrace()").get(0);
+		dummyHandlerVisitor.detectDummyHandler(eStatement);
+		assertEquals(1, dummyHandlerVisitor.getDummyList().size());
+		
+		//#2 有throw
+		eStatement = ASTNodeFinder
+			.getMethodInvocationByMethodNameAndCode(compilationUnit,
+			"false_throwAndPrint", "e.printStackTrace()").get(0);
+		dummyHandlerVisitor.detectDummyHandler(eStatement);
+		assertEquals(1, dummyHandlerVisitor.getDummyList().size());
+		
+		//#3 測 Catch 外面
+		eStatement = ASTNodeFinder
+		.getMethodInvocationByMethodNameAndCode(compilationUnit,
+		"true_printStackTrace_protected", "fis.read()").get(0);
+		dummyHandlerVisitor.detectDummyHandler(eStatement);
+		assertEquals(1, dummyHandlerVisitor.getDummyList().size());
+	}
 	
 	@Test
 	public void testAddDummyHandlerSmellInfoForExtraRule_PrintStackTrace() throws Exception {
