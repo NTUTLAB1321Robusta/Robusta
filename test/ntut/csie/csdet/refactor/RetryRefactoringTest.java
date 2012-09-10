@@ -8,7 +8,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import ntut.csie.csdet.visitor.ASTCatchCollect;
 import ntut.csie.filemaker.ASTNodeFinder;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
@@ -40,22 +39,18 @@ import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
-import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.TryStatement;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
 import org.eclipse.jdt.core.refactoring.CompilationUnitChange;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.TextSelection;
-import org.eclipse.jface.text.projection.ProjectionMapping;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.TextFileChange;
 import org.eclipse.text.edits.TextEdit;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import sun.misc.GC.LatencyRequest;
 
 
 public class RetryRefactoringTest {
@@ -533,11 +528,11 @@ public class RetryRefactoringTest {
 				"  e.printStackTrace();\n" +
 				"}\n");
 		// 模擬反白效果
-		TextSelection textSelection = new TextSelection(document, 371, 231);
+		TextSelection textSelection = new TextSelection(document, 1066, 231);
 		NodeFinder nodeFinder = new NodeFinder(textSelection.getOffset(), textSelection.getLength());
 		nestedTryStatementUnit.accept(nodeFinder);
-		ASTNode selectNode = nodeFinder.getCoveredNode();
-		ListRewrite listRewrite = rw.getListRewrite(selectNode.getParent(), Block.STATEMENTS_PROPERTY);
+		ASTNode selectNode = nodeFinder.getCoveringNode();
+		ListRewrite listRewrite = rw.getListRewrite(selectNode, Block.STATEMENTS_PROPERTY);
 		// 找出選取的部分對於整個unit來說位於哪個位置
 		int replacePos = -1;
 		for (int i = 0; i < listRewrite.getRewrittenList().size(); i++) {
@@ -555,10 +550,11 @@ public class RetryRefactoringTest {
 		// 驗證結果
 		List<?> rewriteList = listRewrite.getRewrittenList();
 		assertEquals(4, rewriteList.size());
-		assertEquals("int attempt=0;\n", rewriteList.get(0).toString());
-		assertEquals("int maxAttempt=2;\n", rewriteList.get(1).toString());
-		assertEquals("boolean retry=false;\n", rewriteList.get(2).toString());
-		assertEquals(document.get(), rewriteList.get(3).toString());
+		// CAUTION: 我發現這個listRewrite index的順序可能會被打亂
+		assertEquals("int maxAttempt=2;\n", rewriteList.get(0).toString());
+		assertEquals("boolean retry=false;\n", rewriteList.get(1).toString());
+		assertEquals(document.get(), rewriteList.get(2).toString());
+		assertEquals("int attempt=0;\n", rewriteList.get(3).toString());
 	}
 
 	@Test
@@ -609,15 +605,15 @@ public class RetryRefactoringTest {
 				"  e.printStackTrace();\n" +
 				"}\n");
 		// 模擬反白效果
-		TextSelection textSelection = new TextSelection(document, 371, 231);
+		TextSelection textSelection = new TextSelection(document, 1066, 231);
 		NodeFinder nodeFinder = new NodeFinder(textSelection.getOffset(), textSelection.getLength());
 		nestedTryStatementUnit.accept(nodeFinder);
-		ASTNode selectNode = nodeFinder.getCoveredNode();
-		ListRewrite listRewrite = rw.getListRewrite(selectNode.getParent(), Block.STATEMENTS_PROPERTY);
+		ASTNode selectNode = nodeFinder.getCoveringNode();
+		ListRewrite listRewrite = rw.getListRewrite(selectNode, Block.STATEMENTS_PROPERTY);
 		// 找出選取的部分對於整個unit來說位於哪個位置
 		TryStatement original = null;
 		for (int i = 0; i < listRewrite.getRewrittenList().size(); i++) {
-			if (listRewrite.getRewrittenList().get(i).equals(selectNode))
+			if (((ASTNode)listRewrite.getRewrittenList().get(i)).getParent().equals(selectNode))
 				original = (TryStatement)listRewrite.getRewrittenList().get(i);
 		}
 		
@@ -669,15 +665,15 @@ public class RetryRefactoringTest {
 				"  e.printStackTrace();\n" +
 				"}\n");
 		// 模擬反白效果
-		TextSelection textSelection = new TextSelection(document, 371, 231);
+		TextSelection textSelection = new TextSelection(document, 1066, 231);
 		NodeFinder nodeFinder = new NodeFinder(textSelection.getOffset(), textSelection.getLength());
 		nestedTryStatementUnit.accept(nodeFinder);
-		ASTNode selectNode = nodeFinder.getCoveredNode();
-		ListRewrite listRewrite = rw.getListRewrite(selectNode.getParent(), Block.STATEMENTS_PROPERTY);
+		ASTNode selectNode = nodeFinder.getCoveringNode();
+		ListRewrite listRewrite = rw.getListRewrite(selectNode, Block.STATEMENTS_PROPERTY);
 		// 找出選取的部分對於整個unit來說位於哪個位置
 		TryStatement original = null;
 		for (int i = 0; i < listRewrite.getRewrittenList().size(); i++) {
-			if (listRewrite.getRewrittenList().get(i).equals(selectNode))
+			if (((ASTNode)listRewrite.getRewrittenList().get(i)).getParent().equals(selectNode))
 				original = (TryStatement)listRewrite.getRewrittenList().get(i);
 		}
 		
@@ -745,15 +741,15 @@ public class RetryRefactoringTest {
 				"  e.printStackTrace();\n" +
 				"}\n");
 		// 模擬反白效果
-		TextSelection textSelection = new TextSelection(document, 371, 231);
+		TextSelection textSelection = new TextSelection(document, 1066, 231);
 		NodeFinder nodeFinder = new NodeFinder(textSelection.getOffset(), textSelection.getLength());
 		nestedTryStatementUnit.accept(nodeFinder);
-		ASTNode selectNode = nodeFinder.getCoveredNode();
-		ListRewrite listRewrite = rw.getListRewrite(selectNode.getParent(), Block.STATEMENTS_PROPERTY);
+		ASTNode selectNode = nodeFinder.getCoveringNode();
+		ListRewrite listRewrite = rw.getListRewrite(selectNode, Block.STATEMENTS_PROPERTY);
 		// 找出選取的部分對於整個unit來說位於哪個位置
 		TryStatement original = null;
 		for (int i = 0; i < listRewrite.getRewrittenList().size(); i++) {
-			if (listRewrite.getRewrittenList().get(i).equals(selectNode))
+			if (((ASTNode)listRewrite.getRewrittenList().get(i)).getParent().equals(selectNode))
 				original = (TryStatement)listRewrite.getRewrittenList().get(i);
 		}
 		
