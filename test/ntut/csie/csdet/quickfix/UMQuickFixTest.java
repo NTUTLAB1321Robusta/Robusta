@@ -22,6 +22,7 @@ import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.Unprotected
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithoutTryExample;
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedmainProgramWithTryAtFirstStatement;
 import ntut.csie.rleht.builder.ASTMethodCollector;
+import ntut.csie.robusta.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
@@ -39,89 +40,93 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class UMQuickFixTest {
+	String projectNameString;
 	JavaFileToString javaFile2String;
 	JavaProjectMaker javaProjectMaker;
 	CompilationUnit unit1, unit2, unit3, unit4, unit5, unit6, unit7, unit8;
 	SmellSettings smellSettings;
 	UMQuickFix umFix;
+	
+	public UMQuickFixTest() {
+		projectNameString = "UnprotectedMainProgramTest";
+	}
 
 	@Before
 	public void setUp() throws Exception {
-		String projectName = "UnprotectedMainProgramTest";
 		javaFile2String = new JavaFileToString();
-		javaProjectMaker = new JavaProjectMaker(projectName);
+		javaProjectMaker = new JavaProjectMaker(projectNameString);
 		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.FOLDERNAME_LIB_JAR, JavaProjectMaker.FOLDERNAME_BIN_CLASS);
-		javaProjectMaker.addJarFromTestProjectToBuildPath("/lib/RL.jar");
+		javaProjectMaker.addJarFromTestProjectToBuildPath("/" + JavaProjectMaker.FOLDERNAME_LIB_JAR + JavaProjectMaker.FOLDERNAME_LIB_JAR);
 		javaProjectMaker.setJREDefaultContainer();
 		// 根據測試檔案樣本內容建立新的檔案
 		// unit1
-		javaFile2String.read(UnprotectedMainProgramExample.class, "test");
+		javaFile2String.read(UnprotectedMainProgramExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				UnprotectedMainProgramExample.class.getPackage().getName()
-				, UnprotectedMainProgramExample.class.getSimpleName() + ".java"
+				, UnprotectedMainProgramExample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION
 				, "package " + UnprotectedMainProgramExample.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		// unit2
-		javaFile2String.read(UnprotectedMainProgramWithoutCatchExceptionExample.class, "test");
+		javaFile2String.read(UnprotectedMainProgramWithoutCatchExceptionExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				UnprotectedMainProgramWithoutCatchExceptionExample.class.getPackage().getName()
-				, UnprotectedMainProgramWithoutCatchExceptionExample.class.getSimpleName() + ".java"
+				, UnprotectedMainProgramWithoutCatchExceptionExample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION
 				, "package " + UnprotectedMainProgramWithoutCatchExceptionExample.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		// unit3
-		javaFile2String.read(UnprotectedMainProgramWithoutStatementExample.class, "test");
+		javaFile2String.read(UnprotectedMainProgramWithoutStatementExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				UnprotectedMainProgramWithoutStatementExample.class.getPackage().getName()
-				, UnprotectedMainProgramWithoutStatementExample.class.getSimpleName() + ".java"
+				, UnprotectedMainProgramWithoutStatementExample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION
 				, "package " + UnprotectedMainProgramWithoutStatementExample.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		// unit4
-		javaFile2String.read(UnprotectedMainProgramWithoutTryExample.class, "test");
+		javaFile2String.read(UnprotectedMainProgramWithoutTryExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				UnprotectedMainProgramWithoutTryExample.class.getPackage().getName()
-				, UnprotectedMainProgramWithoutTryExample.class.getSimpleName() + ".java"
+				, UnprotectedMainProgramWithoutTryExample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION
 				, "package " + UnprotectedMainProgramWithoutTryExample.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		// unit5
-		javaFile2String.read(UnprotectedmainProgramWithTryAtFirstStatement.class, "test");
+		javaFile2String.read(UnprotectedmainProgramWithTryAtFirstStatement.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				UnprotectedmainProgramWithTryAtFirstStatement.class.getPackage().getName()
-				, UnprotectedmainProgramWithTryAtFirstStatement.class.getSimpleName() + ".java"
+				, UnprotectedmainProgramWithTryAtFirstStatement.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION
 				, "package " + UnprotectedmainProgramWithTryAtFirstStatement.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		// unit6
-		javaFile2String.read(UnprotectedMainProgramWithTryAtMiddleStatement.class, "test");
+		javaFile2String.read(UnprotectedMainProgramWithTryAtMiddleStatement.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				UnprotectedMainProgramWithTryAtMiddleStatement.class.getPackage().getName()
-				, UnprotectedMainProgramWithTryAtMiddleStatement.class.getSimpleName() + ".java"
+				, UnprotectedMainProgramWithTryAtMiddleStatement.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION
 				, "package " + UnprotectedMainProgramWithTryAtMiddleStatement.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		// unit7
-		javaFile2String.read(UnprotectedMainProgramWithTryAtLastStatement.class, "test");
+		javaFile2String.read(UnprotectedMainProgramWithTryAtLastStatement.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				UnprotectedMainProgramWithTryAtLastStatement.class.getPackage().getName()
-				, UnprotectedMainProgramWithTryAtLastStatement.class.getSimpleName() + ".java"
+				, UnprotectedMainProgramWithTryAtLastStatement.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION
 				, "package " + UnprotectedMainProgramWithTryAtLastStatement.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		// unit8
-		javaFile2String.read(UnprotectedMainProgramWithTry.class, "test");
+		javaFile2String.read(UnprotectedMainProgramWithTry.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				UnprotectedMainProgramWithTry.class.getPackage().getName()
-				, UnprotectedMainProgramWithTry.class.getSimpleName() + ".java"
+				, UnprotectedMainProgramWithTry.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION
 				, "package " + UnprotectedMainProgramWithTry.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		// 建立XML
 		CreateSettings();
 		/** unit1 */ 
-		Path path1 = new Path(projectName + "/src/ntut/csie/filemaker/exceptionBadSmells/UnprotectedMainProgram/" + UnprotectedMainProgramExample.class.getSimpleName() + ".java");
+		Path path1 = new Path(PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramExample.class, projectNameString));
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -132,7 +137,7 @@ public class UMQuickFixTest {
 		unit1 = (CompilationUnit) parser.createAST(null); 
 		unit1.recordModifications();
 		/** unit2 */
-		Path path2 = new Path(projectName + "/src/ntut/csie/filemaker/exceptionBadSmells/UnprotectedMainProgram/" + UnprotectedMainProgramWithoutCatchExceptionExample.class.getSimpleName() + ".java");
+		Path path2 = new Path(PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithoutCatchExceptionExample.class, projectNameString));
 		//Create AST to parse
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -143,7 +148,7 @@ public class UMQuickFixTest {
 		unit2 = (CompilationUnit) parser.createAST(null); 
 		unit2.recordModifications();
 		/** unit3 */
-		Path path3 = new Path(projectName + "/src/ntut/csie/filemaker/exceptionBadSmells/UnprotectedMainProgram/" + UnprotectedMainProgramWithoutStatementExample.class.getSimpleName() + ".java");
+		Path path3 = new Path(PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithoutStatementExample.class, projectNameString));
 		//Create AST to parse
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -154,7 +159,7 @@ public class UMQuickFixTest {
 		unit3 = (CompilationUnit) parser.createAST(null); 
 		unit3.recordModifications();
 		/** unit4 */
-		Path path4 = new Path(projectName + "/src/ntut/csie/filemaker/exceptionBadSmells/UnprotectedMainProgram/" + UnprotectedMainProgramWithoutTryExample.class.getSimpleName() + ".java");
+		Path path4 = new Path(PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithoutTryExample.class, projectNameString));
 		//Create AST to parse
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -165,7 +170,7 @@ public class UMQuickFixTest {
 		unit4 = (CompilationUnit) parser.createAST(null);
 		unit4.recordModifications();
 		/** unit5 */
-		Path path5 = new Path(projectName + "/src/ntut/csie/filemaker/exceptionBadSmells/UnprotectedMainProgram/" + UnprotectedmainProgramWithTryAtFirstStatement.class.getSimpleName() + ".java");
+		Path path5 = new Path(PathUtils.getPathOfClassUnderSrcFolder(UnprotectedmainProgramWithTryAtFirstStatement.class, projectNameString));
 		//Create AST to parse
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -176,7 +181,7 @@ public class UMQuickFixTest {
 		unit5 = (CompilationUnit) parser.createAST(null);
 		unit5.recordModifications();
 		/** unit6 */
-		Path path6 = new Path(projectName + "/src/ntut/csie/filemaker/exceptionBadSmells/UnprotectedMainProgram/" + UnprotectedMainProgramWithTryAtMiddleStatement.class.getSimpleName() + ".java");
+		Path path6 = new Path(PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithTryAtMiddleStatement.class, projectNameString));
 		//Create AST to parse
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -187,7 +192,7 @@ public class UMQuickFixTest {
 		unit6 = (CompilationUnit) parser.createAST(null);
 		unit6.recordModifications();
 		/** unit7 */
-		Path path7 = new Path(projectName + "/src/ntut/csie/filemaker/exceptionBadSmells/UnprotectedMainProgram/" + UnprotectedMainProgramWithTryAtLastStatement.class.getSimpleName() + ".java");
+		Path path7 = new Path(PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithTryAtLastStatement.class, projectNameString));
 		//Create AST to parse
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -198,7 +203,7 @@ public class UMQuickFixTest {
 		unit7 = (CompilationUnit) parser.createAST(null);
 		unit7.recordModifications();
 		/** unit8 */
-		Path path8 = new Path(projectName + "/src/ntut/csie/filemaker/exceptionBadSmells/UnprotectedMainProgram/" + UnprotectedMainProgramWithTry.class.getSimpleName() + ".java");
+		Path path8 = new Path(PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithTry.class, projectNameString));
 		//Create AST to parse
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);

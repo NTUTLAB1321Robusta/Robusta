@@ -11,11 +11,12 @@ import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanupExample;
-import ntut.csie.filemaker.exceptionBadSmells.ClassImplementCloseable;
-import ntut.csie.filemaker.exceptionBadSmells.ClassWithNotThrowingExceptionCloseable;
-import ntut.csie.filemaker.exceptionBadSmells.UserDefinedCarelessCleanupDog;
-import ntut.csie.filemaker.exceptionBadSmells.UserDefinedCarelessCleanupWeather;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.CarelessCleanupExample;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.ClassImplementCloseable;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.ClassImplementCloseableWithoutThrowException;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.ClassWithNotThrowingExceptionCloseable;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.UserDefinedCarelessCleanupDog;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.UserDefinedCarelessCleanupWeather;
 import ntut.csie.robusta.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -85,6 +86,14 @@ public class CarelessCleanupVisitorTest {
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
+		javaFile2String.read(ClassImplementCloseableWithoutThrowException.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaProjectMaker.createJavaFile(
+				ClassImplementCloseableWithoutThrowException.class.getPackage().getName(),
+				ClassImplementCloseableWithoutThrowException.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
+				"package " + ClassImplementCloseableWithoutThrowException.class.getPackage().getName() + ";\n"
+				+ javaFile2String.getFileContent());
+		javaFile2String.clear();
+		
 		Path ccExamplePath = new Path(testProjectName
 				+ "/" + JavaProjectMaker.FOLDERNAME_SOURCE + "/"
 				+ PathUtils.dot2slash(CarelessCleanupExample.class.getName()
@@ -137,7 +146,7 @@ public class CarelessCleanupVisitorTest {
 		}
 		assertEquals(
 				colloectBadSmellListContent(carelessCleanupVisitor.getCarelessCleanupList()),
-				23, carelessCleanupSmellCount);
+				24, carelessCleanupSmellCount);
 	}
 	
 	@Test
@@ -151,7 +160,7 @@ public class CarelessCleanupVisitorTest {
 		}
 		assertEquals(
 				colloectBadSmellListContent(carelessCleanupVisitor.getCarelessCleanupList()),
-				25, carelessCleanupSmellCount);
+				26, carelessCleanupSmellCount);
 	}
 	
 	@Test
@@ -174,7 +183,7 @@ public class CarelessCleanupVisitorTest {
 		}
 		assertEquals(
 				colloectBadSmellListContent(carelessCleanupVisitor.getCarelessCleanupList()),
-				28, carelessCleanupSmellCount);
+				29, carelessCleanupSmellCount);
 	}
 	
 	@Test
@@ -197,7 +206,7 @@ public class CarelessCleanupVisitorTest {
 		}
 		assertEquals(
 				colloectBadSmellListContent(carelessCleanupVisitor.getCarelessCleanupList()),
-				26, carelessCleanupSmellCount);
+				27, carelessCleanupSmellCount);
 	}
 	
 	@Test
@@ -220,7 +229,7 @@ public class CarelessCleanupVisitorTest {
 		}
 		assertEquals(
 				colloectBadSmellListContent(carelessCleanupVisitor.getCarelessCleanupList()),
-				27, carelessCleanupSmellCount);
+				28, carelessCleanupSmellCount);
 	}
 	
 	@Test
@@ -243,7 +252,7 @@ public class CarelessCleanupVisitorTest {
 		}
 		assertEquals(
 				colloectBadSmellListContent(carelessCleanupVisitor.getCarelessCleanupList()),
-				26, carelessCleanupSmellCount);
+				27, carelessCleanupSmellCount);
 	}
 	
 	/**

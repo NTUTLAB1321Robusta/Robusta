@@ -15,6 +15,8 @@ import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.ui.IMarkerResolution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import agile.exception.Robustness;
+import agile.exception.RL;
 
 
 /**
@@ -41,6 +43,7 @@ public class OLQuickFix extends BaseQuickFix implements IMarkerResolution{
 		return label;
 	}
 
+	@Robustness(value = { @RL(level = 1, exception = java.lang.RuntimeException.class) })
 	@Override
 	public void run(IMarker marker) {
 		try {
@@ -60,6 +63,7 @@ public class OLQuickFix extends BaseQuickFix implements IMarkerResolution{
 			}
 		} catch (CoreException e) {
 			logger.error("[OLQuickFix] EXCEPTION ",e);
+			throw new RuntimeException(e);
 		}
 	}
 
@@ -79,6 +83,7 @@ public class OLQuickFix extends BaseQuickFix implements IMarkerResolution{
 	 * 刪除Message
 	 * @param exception
 	 */
+	@Robustness(value = { @RL(level = 1, exception = java.lang.RuntimeException.class) })
 	private void deleteMessage(int msgIdx) {
 		try {
 			//取得EH smell的資訊
@@ -101,6 +106,7 @@ public class OLQuickFix extends BaseQuickFix implements IMarkerResolution{
 			}
 		} catch (Exception ex) {
 			logger.error("[Delete Message] EXCEPTION ",ex);
+			throw new RuntimeException(ex);
 		}
 	}
 

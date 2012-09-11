@@ -20,11 +20,12 @@ import ntut.csie.filemaker.ASTNodeFinder;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.RuntimeEnvironmentProjectReader;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanupExample;
-import ntut.csie.filemaker.exceptionBadSmells.ClassImplementCloseable;
-import ntut.csie.filemaker.exceptionBadSmells.ClassWithNotThrowingExceptionCloseable;
-import ntut.csie.filemaker.exceptionBadSmells.UserDefinedCarelessCleanupDog;
-import ntut.csie.filemaker.exceptionBadSmells.UserDefinedCarelessCleanupWeather;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.CarelessCleanupExample;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.ClassImplementCloseable;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.ClassImplementCloseableWithoutThrowException;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.ClassWithNotThrowingExceptionCloseable;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.UserDefinedCarelessCleanupDog;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.UserDefinedCarelessCleanupWeather;
 import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.robusta.util.PathUtils;
@@ -111,6 +112,14 @@ public class CarelessCleanUpRefactorTest {
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
+		javaFile2String.read(ClassImplementCloseableWithoutThrowException.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaProjectMaker.createJavaFile(
+				ClassImplementCloseableWithoutThrowException.class.getPackage().getName(),
+				ClassImplementCloseableWithoutThrowException.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
+				"package " + ClassImplementCloseableWithoutThrowException.class.getPackage().getName() + ";\n"
+				+ javaFile2String.getFileContent());
+		javaFile2String.clear();
+		
 		Path ccExamplePath = new Path(testProjectName + "/"
 				+ JavaProjectMaker.FOLDERNAME_SOURCE + "/"
 				+ PathUtils.dot2slash(CarelessCleanupExample.class.getName())
@@ -172,7 +181,7 @@ public class CarelessCleanUpRefactorTest {
 		assertTrue((Boolean)findMethod.invoke(refactor, javaElement.getResource()));
 		
 		// check postcondition
-		assertEquals("CarelessCleanupExample.java (not open) [in ntut.csie.filemaker.exceptionBadSmells [in src [in CarelessCleanupExampleProject]]]", actOpenable.get(refactor).toString());
+		assertEquals("CarelessCleanupExample.java (not open) [in ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup [in src [in CarelessCleanupExampleProject]]]", actOpenable.get(refactor).toString());
 		assertNotNull(actRoot.get(refactor));
 		assertEquals(	"/** \n" + 
 						" * 會被CarelessCleanupVisitor在fileOutputStream.close();加上mark(兩處)\n" +

@@ -12,11 +12,11 @@ import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.RuntimeEnvironmentProjectReader;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanupExample;
-import ntut.csie.filemaker.exceptionBadSmells.ClassImplementCloseable;
-import ntut.csie.filemaker.exceptionBadSmells.ClassWithNotThrowingExceptionCloseable;
-import ntut.csie.filemaker.exceptionBadSmells.UserDefinedCarelessCleanupDog;
-import ntut.csie.filemaker.exceptionBadSmells.UserDefinedCarelessCleanupWeather;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.CarelessCleanupExample;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.ClassImplementCloseable;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.ClassWithNotThrowingExceptionCloseable;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.UserDefinedCarelessCleanupDog;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.UserDefinedCarelessCleanupWeather;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;

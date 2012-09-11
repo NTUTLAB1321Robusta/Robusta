@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
-import ntut.csie.csdet.preference.JDomUtil;
-import ntut.csie.csdet.visitor.ExpressionStatementAnalyzer;
-import ntut.csie.csdet.visitor.LoggingAnalyzer;
+import ntut.csie.csdet.preference.SmellSettings.UserDefinedConstraintsType;
+import ntut.csie.csdet.visitor.OverLoggingVisitor;
+import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.rleht.common.EditorUtils;
 
@@ -20,13 +20,16 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.astview.NodeFinder;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMember;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IOpenable;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.internal.corext.callhierarchy.CallHierarchy;
 import org.eclipse.jdt.internal.corext.callhierarchy.MethodWrapper;
@@ -41,8 +44,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
-import org.jdom.Attribute;
-import org.jdom.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,12 +56,14 @@ public class OLRefactoring implements IMarkerResolution{
 
 	//紀錄code smell的type
 	private String problem;
+	// Compilation Unit
+	private CompilationUnit actRoot;
 	//code smell的訊息
 	private String label;
 	//OverLogging設定 (是否要偵測Exception轉型)
 	private boolean detectTransExSet = false;
 	//OverLogging設定 (使用者要偵測的Logging規則)
-	private TreeMap<String, Integer> libMap = new TreeMap<String, Integer>();
+	private TreeMap<String, UserDefinedConstraintsType> libMap = new TreeMap<String, UserDefinedConstraintsType>();
 	//要刪除OverLogging的List(一個CompilationUnit為單位)
 	private List<OLRefactorAction> fixList = new ArrayList<OLRefactorAction>();
 
@@ -81,19 +84,19 @@ public class OLRefactoring implements IMarkerResolution{
 			problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
 			if(problem != null && (problem.equals(RLMarkerAttribute.CS_OVER_LOGGING))) {
 				//將User對於OverLogging的設定存下來
-				getOverLoggingSettings();
+//				getOverLoggingSettings();
 
 				//取得Marker的資訊
 				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
 				String msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
-
+				
 				//取得Class的相關資訊 (觸發的Method)
 				OLRefactorAction baseMethod = new OLRefactorAction();
 				boolean isok = baseMethod.obtainResource(marker.getResource());
 				if(isok) {
 					//取得Method相關資訊
 					baseMethod.bindMethod(Integer.parseInt(methodIdx));
-
+					actRoot = baseMethod.getActRoot();
 					//取得欲反白的行數
 					int selectLine = baseMethod.getCurrentLoggingList().get(Integer.parseInt(msgIdx)).getLineNumber();
 					//加入至刪除名單
@@ -181,8 +184,7 @@ public class OLRefactoring implements IMarkerResolution{
 		String classInfo = methodDeclaration.resolveBinding().getDeclaringClass().getQualifiedName();
 		MethodDeclaration methodNode = transMethodNode(callerMethod);
 		//偵測是否將Exception傳到上一層
-		LoggingAnalyzer visitor = new LoggingAnalyzer(classInfo, method.getElementName(),
-										libMap, detectTransExSet);				
+		OverLoggingVisitor visitor = new OverLoggingVisitor(actRoot, method.getElementName());				
 		methodNode.accept(visitor);
 
 		return visitor.getIsKeepTrace();
@@ -333,59 +335,6 @@ public class OLRefactoring implements IMarkerResolution{
 			logger.error("[BadLocation] EXCEPTION ", jme);
 		} catch (BadLocationException ble) {
 			logger.error("[BadLocation] EXCEPTION ", ble);
-		}
-	}
-	
-	/**
-	 * 將User對於OverLogging的設定存下來
-	 */
-	public void getOverLoggingSettings() {
-		Element root = JDomUtil.createXMLContent();
-		//如果是null表示XML檔是剛建好的,還沒有OverLogging的tag,直接跳出去
-		if(root.getChild(JDomUtil.OverLoggingTag) != null) {
-			//這裡表示之前使用者已經有設定過preference了,去取得相關偵測設定值
-			Element overLogging = root.getChild(JDomUtil.OverLoggingTag);
-			Element rule = overLogging.getChild("rule");
-			String log4jSet = rule.getAttribute(JDomUtil.apache_log4j).getValue();
-			String javaLogger = rule.getAttribute(JDomUtil.java_Logger).getValue();
-
-			/// 把內建偵測加入到名單內 ///
-			//把log4j和javaLog加入偵測內
-			if (log4jSet.equals("Y"))
-				libMap.put("org.apache.log4j", ExpressionStatementAnalyzer.LIBRARY);
-			if (javaLogger.equals("Y"))
-				libMap.put("java.util.logging", ExpressionStatementAnalyzer.LIBRARY);
-
-			Element libRule = overLogging.getChild("librule");
-			// 把外部Library和Statement儲存在List內
-			List<Attribute> libRuleList = libRule.getAttributes();
-
-			/// 把使用者所設定的Exception轉型偵不偵設定 ///
-			Element exrule = overLogging.getChild("exrule");
-			String exSet = exrule.getAttribute(JDomUtil.trans_Exception).getValue();
-			detectTransExSet = exSet.equals("Y");
-			
-			//把外部的Library加入偵測名單內
-			for (int i=0; i < libRuleList.size(); i++) {
-				if (libRuleList.get(i).getValue().equals("Y")) {
-					String temp = libRuleList.get(i).getQualifiedName();					
-
-					//若有.*為只偵測Library
-					if (temp.indexOf(".EH_STAR")!=-1) {
-						int pos = temp.indexOf(".EH_STAR");
-						libMap.put(temp.substring(0,pos), ExpressionStatementAnalyzer.LIBRARY);
-					//若有*.為只偵測Method
-					} else if (temp.indexOf("EH_STAR.") != -1) {
-						libMap.put(temp.substring(8), ExpressionStatementAnalyzer.METHOD);
-					//都沒有為都偵測，偵測Library+Method
-					} else if (temp.lastIndexOf(".") != -1) {
-						libMap.put(temp, ExpressionStatementAnalyzer.LIBRARY_METHOD);
-					//若有其它形況則設成Method
-					} else {
-						libMap.put(temp, ExpressionStatementAnalyzer.METHOD);
-					}
-				}
-			}
 		}
 	}
 	

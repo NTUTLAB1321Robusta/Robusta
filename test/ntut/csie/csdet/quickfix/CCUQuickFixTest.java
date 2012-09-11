@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -11,22 +12,21 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import ntut.csie.csdet.data.MarkerInfo;
-import ntut.csie.csdet.preference.JDomUtil;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanupExample;
-import ntut.csie.filemaker.exceptionBadSmells.ClassImplementCloseable;
-import ntut.csie.filemaker.exceptionBadSmells.ClassWithNotThrowingExceptionCloseable;
-import ntut.csie.filemaker.exceptionBadSmells.UserDefinedCarelessCleanupDog;
-import ntut.csie.filemaker.exceptionBadSmells.UserDefinedCarelessCleanupWeather;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.CarelessCleanupExample;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.ClassImplementCloseable;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.ClassImplementCloseableWithoutThrowException;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.ClassWithNotThrowingExceptionCloseable;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.UserDefinedCarelessCleanupDog;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.UserDefinedCarelessCleanupWeather;
 import ntut.csie.rleht.builder.ASTMethodCollector;
+import ntut.csie.robusta.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IOpenable;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -41,62 +41,76 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class CCUQuickFixTest {
+	String projectName;
 	JavaFileToString javaFile2String;
 	JavaProjectMaker javaProjectMaker;
 	CompilationUnit compilationUnit;
 	SmellSettings smellSettings;
 	CCUQuickFix ccuFix;
+	ASTMethodCollector methodCollector;
+	List<?> methodList;
+	
+	public CCUQuickFixTest() {
+		projectName = "CarelessCleanupExampleProject";
+	}
 	
 	@Before
 	public void setUp() throws Exception {
-		String projectName = "CarelessCleanupExampleProject";
 		javaFile2String = new JavaFileToString();
 		javaProjectMaker = new JavaProjectMaker(projectName);
 		javaProjectMaker.setJREDefaultContainer();
 		// 根據測試檔案樣本內容建立新的檔案
-		javaFile2String.read(CarelessCleanupExample.class, "test");
+		javaFile2String.read(CarelessCleanupExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				CarelessCleanupExample.class.getPackage().getName(),
-				CarelessCleanupExample.class.getSimpleName() + ".java",
+				CarelessCleanupExample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
 				"package " + CarelessCleanupExample.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
-		javaFile2String.read(ClassWithNotThrowingExceptionCloseable.class, "test");
+		javaFile2String.read(ClassWithNotThrowingExceptionCloseable.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				ClassWithNotThrowingExceptionCloseable.class.getPackage().getName(),
-				ClassWithNotThrowingExceptionCloseable.class.getSimpleName() + ".java",
+				ClassWithNotThrowingExceptionCloseable.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
 				"package " + ClassWithNotThrowingExceptionCloseable.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
-		javaFile2String.read(ClassImplementCloseable.class, "test");
+		javaFile2String.read(ClassImplementCloseable.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				ClassImplementCloseable.class.getPackage().getName(),
-				ClassImplementCloseable.class.getSimpleName() + ".java",
+				ClassImplementCloseable.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
 				"package " + ClassImplementCloseable.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
+		javaFile2String.read(ClassImplementCloseableWithoutThrowException.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaProjectMaker.createJavaFile(
+				ClassImplementCloseableWithoutThrowException.class.getPackage().getName(),
+				ClassImplementCloseableWithoutThrowException.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
+				"package " + ClassImplementCloseableWithoutThrowException.class.getPackage().getName() + ";\n"
+				+ javaFile2String.getFileContent());
+		javaFile2String.clear();
+		
 		/* 測試使用者設定Pattern時候使用 */
-		javaFile2String.read(UserDefinedCarelessCleanupWeather.class, "test");
+		javaFile2String.read(UserDefinedCarelessCleanupWeather.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				UserDefinedCarelessCleanupWeather.class.getPackage().getName(),
-				UserDefinedCarelessCleanupWeather.class.getSimpleName() + ".java",
+				UserDefinedCarelessCleanupWeather.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
 				"package " + UserDefinedCarelessCleanupWeather.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
-		javaFile2String.read(UserDefinedCarelessCleanupDog.class, "test");
+		javaFile2String.read(UserDefinedCarelessCleanupDog.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				UserDefinedCarelessCleanupDog.class.getPackage().getName(),
-				UserDefinedCarelessCleanupDog.class.getSimpleName() + ".java",
+				UserDefinedCarelessCleanupDog.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
 				"package " + UserDefinedCarelessCleanupDog.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
-		Path ccExamplePath = new Path(
-				projectName	+ "/src/ntut/csie/filemaker/exceptionBadSmells/CarelessCleanupExample.java");
+		Path ccExamplePath = new Path(PathUtils.getPathOfClassUnderSrcFolder(CarelessCleanupExample.class, projectName));
+
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -113,11 +127,15 @@ public class CCUQuickFixTest {
 		compilationUnit.recordModifications();
 		
 		ccuFix = new CCUQuickFix("");
+		
+		methodCollector = new ASTMethodCollector();
+		compilationUnit.accept(methodCollector);
+		methodList = methodCollector.getMethodList();
 	}
 
 	@After
 	public void tearDown() throws Exception {
-		File xmlFile = new File(JDomUtil.getWorkspace() + File.separator + "CSPreference.xml");
+		File xmlFile = new File(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		// 如果xml檔案存在，則刪除之
 		if(xmlFile.exists())
 			assertTrue(xmlFile.delete());
@@ -127,10 +145,6 @@ public class CCUQuickFixTest {
 	
 	@Test
 	public void testFindMoveLine() throws Exception {
-		ASTMethodCollector methodCollector = new ASTMethodCollector();
-		compilationUnit.accept(methodCollector);
-		List<?> methodList = methodCollector.getMethodList();
-		
 		Field actRoot = BaseQuickFix.class.getDeclaredField("actRoot");
 		actRoot.setAccessible(true);
 		actRoot.set(ccuFix, compilationUnit);
@@ -152,7 +166,7 @@ public class CCUQuickFixTest {
 		// check postcondition
 		assertEquals("closeStreamWithoutThrowingException(fi)", findMoveLine.invoke(ccuFix, "0"));
 		MarkerInfo marker = (MarkerInfo)smellMessage.get(ccuFix);
-		assertEquals(540, marker.getLineNumber());
+		assertEquals(519, marker.getLineNumber());
 	}
 	
 	@Test
@@ -161,9 +175,6 @@ public class CCUQuickFixTest {
 		actRoot.setAccessible(true);
 		actRoot.set(ccuFix, compilationUnit);
 		
-		ASTMethodCollector methodCollector = new ASTMethodCollector();
-		compilationUnit.accept(methodCollector);
-		List<?> methodList = methodCollector.getMethodList();
 		MethodDeclaration md = (MethodDeclaration)methodList.get(29);
 		
 		Field currentMethodNode = BaseQuickFix.class.getDeclaredField("currentMethodNode");
@@ -203,9 +214,6 @@ public class CCUQuickFixTest {
 		actRoot.setAccessible(true);
 		actRoot.set(ccuFix, compilationUnit);
 		
-		ASTMethodCollector methodCollector = new ASTMethodCollector();
-		compilationUnit.accept(methodCollector);
-		List<?> methodList = methodCollector.getMethodList();
 		MethodDeclaration md = (MethodDeclaration)methodList.get(29);
 		
 		Field currentMethodNode = BaseQuickFix.class.getDeclaredField("currentMethodNode");
@@ -253,10 +261,6 @@ public class CCUQuickFixTest {
 		Field actRoot = BaseQuickFix.class.getDeclaredField("actRoot");
 		actRoot.setAccessible(true);
 		actRoot.set(ccuFix, compilationUnit);
-		
-		ASTMethodCollector methodCollector = new ASTMethodCollector();
-		compilationUnit.accept(methodCollector);
-		List<?> methodList = methodCollector.getMethodList();
 		
 		Field currentMethodNode = BaseQuickFix.class.getDeclaredField("currentMethodNode");
 		currentMethodNode.setAccessible(true);
@@ -319,9 +323,6 @@ public class CCUQuickFixTest {
 	
 	@Test
 	public void testIsVariableDeclareInTry() throws Exception {
-		ASTMethodCollector methodCollector = new ASTMethodCollector();
-		compilationUnit.accept(methodCollector);
-		List<?> methodList = methodCollector.getMethodList();
 		TryStatement tryStat = (TryStatement)((MethodDeclaration)methodList.get(30)).getBody().statements().get(1);
 		
 		Field tryStatement = CCUQuickFix.class.getDeclaredField("tryStatement");
@@ -368,9 +369,10 @@ public class CCUQuickFixTest {
 		actRoot.setAccessible(true);
 		actRoot.set(ccuFix, compilationUnit);
 		
-		ASTMethodCollector methodCollector = new ASTMethodCollector();
-		compilationUnit.accept(methodCollector);
-		List<?> methodList = methodCollector.getMethodList();
+		Field rewrite = CCUQuickFix.class.getDeclaredField("rewrite");
+		rewrite.setAccessible(true);
+		rewrite.set(ccuFix, ASTRewrite.create(compilationUnit.getAST()));
+		
 		TryStatement tryStat = (TryStatement)((MethodDeclaration)methodList.get(29)).getBody().statements().get(0);
 		
 		Field tryStatement = CCUQuickFix.class.getDeclaredField("tryStatement");
@@ -385,11 +387,11 @@ public class CCUQuickFixTest {
 		tryIndex.setAccessible(true);
 		tryIndex.set(ccuFix, 0);
 		
-		ExpressionStatement es = (ExpressionStatement)tryStat.getBody().statements().get(2);
-		MethodInvocation mi = (MethodInvocation)es.getExpression();
+		ExpressionStatement eStatement = (ExpressionStatement)tryStat.getBody().statements().get(2);
+		MethodInvocation mInvocation = (MethodInvocation) eStatement.getExpression();
 		
 		// check precondition
-		assertEquals("closeStreamWithoutThrowingException(fi)", mi.toString());
+		assertEquals("closeStreamWithoutThrowingException(fi)", mInvocation.toString());
 		assertEquals(	"@Robustness(value={@RL(level=1,exception=java.io.IOException.class)}) public void uy_closeStreaminOuterMethodInTry() throws IOException {\n" +
 						"  try {\n" +
 						"    FileOutputStream fi=new FileOutputStream(\"\");\n" +
@@ -400,35 +402,33 @@ public class CCUQuickFixTest {
 						"    throw e;\n" +
 						"  }\n" +
 						"}\n", currentMethodNode.get(ccuFix).toString());
-		// test
+		// test the method
 		Method moveInstance = CCUQuickFix.class.getDeclaredMethod("moveInstance", TryStatement.class, MethodInvocation.class);
 		moveInstance.setAccessible(true);
-		moveInstance.invoke(ccuFix, tryStat, mi);
+		moveInstance.invoke(ccuFix, tryStat, mInvocation);
 		// check postcondition
-		// FIXME - 底下是預期的結果，由於是用ASTRewrite修改，沒有applyChange就不會修改原本內容，故要找出一個方法驗證結果
-		assertEquals(	"@Robustness(value={@RL(level=1,exception=java.io.IOException.class)}) public void uy_closeStreaminOuterMethodInTry() throws IOException {\n" +
-						"  FileOutputStream fi=null;\n" +
-						"  try {\n" +
-						"    fi=new FileOutputStream(\"\");\n" +
-						"    fi.write(1);\n" +
-						"    closeStreamWithoutThrowingException(fi);\n" +
-						"  }\n" +
-						" catch (  FileNotFoundException e) {\n" +
-						"    throw e;\n" +
-						"  }\n" +
-						"}\n", currentMethodNode.get(ccuFix).toString());
+		assertEquals(
+				"底下是預期的結果，無法模擬focus在當前的editor，所以apply change會拋出例外" +
+				"目前只是用ASTRewrite修改，沒有呼叫applyChange去修改原本內容，還沒找出一個方法驗證結果",
+				"@Robustness(value={@RL(level=1,exception=java.io.IOException.class)}) public void uy_closeStreaminOuterMethodInTry() throws IOException {\n"
+						+ "  FileOutputStream fi=null;\n"
+						+ "  try {\n"
+						+ "    fi=new FileOutputStream(\"\");\n"
+						+ "    fi.write(1);\n"
+						+ "    closeStreamWithoutThrowingException(fi);\n"
+						+ "  }\n"
+						+ " catch (  FileNotFoundException e) {\n"
+						+ "    throw e;\n" + "  }\n" + "}\n", currentMethodNode.get(ccuFix).toString());
 	}
 	
 	@Test
-	public void testFindOutTheVariableInTry() throws Exception {
+	public void testFindOutTheVariableInTryWithArgument() throws Exception {
 		Field actRoot = BaseQuickFix.class.getDeclaredField("actRoot");
 		actRoot.setAccessible(true);
 		actRoot.set(ccuFix, compilationUnit);
 		
-		ASTMethodCollector methodCollector = new ASTMethodCollector();
-		compilationUnit.accept(methodCollector);
-		List<?> methodList = methodCollector.getMethodList();
-		TryStatement tryStat = (TryStatement)((MethodDeclaration)methodList.get(29)).getBody().statements().get(0);
+		MethodDeclaration mDeclaration = (MethodDeclaration) methodList.get(29);
+		TryStatement tryStat = (TryStatement) mDeclaration.getBody().statements().get(0);
 		
 		Field tryStatement = CCUQuickFix.class.getDeclaredField("tryStatement");
 		tryStatement.setAccessible(true);
@@ -436,7 +436,7 @@ public class CCUQuickFixTest {
 		
 		Field currentMethodNode = BaseQuickFix.class.getDeclaredField("currentMethodNode");
 		currentMethodNode.setAccessible(true);
-		currentMethodNode.set(ccuFix, methodList.get(29));
+		currentMethodNode.set(ccuFix, mDeclaration);
 		
 		Field tryIndex = CCUQuickFix.class.getDeclaredField("tryIndex");
 		tryIndex.setAccessible(true);
@@ -449,53 +449,52 @@ public class CCUQuickFixTest {
 		moveLine.set(ccuFix, findMoveLine.invoke(ccuFix, "0"));
 		
 		// check precondition
-		assertEquals(	"@Robustness(value={@RL(level=1,exception=java.io.IOException.class)}) public void uy_closeStreaminOuterMethodInTry() throws IOException {\n" +
-						"  try {\n" +
-						"    FileOutputStream fi=new FileOutputStream(\"\");\n" +
-						"    fi.write(1);\n" +
-						"    closeStreamWithoutThrowingException(fi);\n" +
-						"  }\n" +
-						" catch (  FileNotFoundException e) {\n" +
-						"    throw e;\n" +
-						"  }\n" +
-						"}\n", currentMethodNode.get(ccuFix).toString());
+		assertEquals(
+				"@Robustness(value={@RL(level=1,exception=java.io.IOException.class)}) public void uy_closeStreaminOuterMethodInTry() throws IOException {\n"
+						+ "  try {\n"
+						+ "    FileOutputStream fi=new FileOutputStream(\"\");\n"
+						+ "    fi.write(1);\n"
+						+ "    closeStreamWithoutThrowingException(fi);\n"
+						+ "  }\n"
+						+ " catch (  FileNotFoundException e) {\n"
+						+ "    throw e;\n" + "  }\n" + "}\n", currentMethodNode.get(ccuFix).toString());
+		
 		// test
 		Method findOutTheVariableInTry = CCUQuickFix.class.getDeclaredMethod("findOutTheVariableInTry");
 		findOutTheVariableInTry.setAccessible(true);
 		findOutTheVariableInTry.invoke(ccuFix);
+		
 		// check postcondition
-		// FIXME - 底下是預期的結果，由於是用ASTRewrite修改，沒有applyChange就不會修改原本內容，故要找出一個方法驗證結果
-		assertEquals(	"@Robustness(value={@RL(level=1,exception=java.io.IOException.class)}) public void uy_closeStreaminOuterMethodInTry() throws IOException {\n" +
-						"  FileOutputStream fi=null;\n" +
-						"  try {\n" +
-						"    fi=new FileOutputStream(\"\");\n" +
-						"    fi.write(1);\n" +
-						"    closeStreamWithoutThrowingException(fi);\n" +
-						"  }\n" +
-						" catch (  FileNotFoundException e) {\n" +
-						"    throw e;\n" +
-						"  }\n" +
-						"}\n", currentMethodNode.get(ccuFix).toString());
+		assertEquals(
+				"底下是預期的結果，無法模擬focus在當前的editor，所以apply change會拋出例外" +
+				"目前只是用ASTRewrite修改，沒有呼叫applyChange去修改原本內容，還沒找出一個方法驗證結果",
+				"@Robustness(value={@RL(level=1,exception=java.io.IOException.class)}) public void uy_closeStreaminOuterMethodInTry() throws IOException {\n"
+						+ "  FileOutputStream fi=null;\n"
+						+ "  try {\n"
+						+ "    fi=new FileOutputStream(\"\");\n"
+						+ "    fi.write(1);\n"
+						+ "    closeStreamWithoutThrowingException(fi);\n"
+						+ "  }\n"
+						+ " catch (  FileNotFoundException e) {\n"
+						+ "    throw e;\n" + "  }\n" + "}\n", currentMethodNode.get(ccuFix).toString());
 	}
-	
+
+	/**
+	 * Test the case if there is close invocation in try block,
+	 * and test the case if finally block exists.
+	 */
 	@Test
-	public void testMoveToFinallyBlock() throws Exception {
-		Path path = new Path("CarelessCleanupExampleProject/src/ntut/csie/filemaker/exceptionBadSmells/CarelessCleanupExample.java");
-		IJavaElement javaElement = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot().getFile(path));
-		
-		Field actOpenable = BaseQuickFix.class.getDeclaredField("actOpenable");
-		actOpenable.setAccessible(true);
-		((IOpenable)javaElement).open(null);
-		actOpenable.set(ccuFix, (IOpenable)javaElement);
-		
+	public void testMoveToFinallyBlockWithCloseInTryAndFinallyDoExist() throws Exception {
 		Field actRoot = BaseQuickFix.class.getDeclaredField("actRoot");
 		actRoot.setAccessible(true);
 		actRoot.set(ccuFix, compilationUnit);
+
+		Field rewrite = CCUQuickFix.class.getDeclaredField("rewrite");
+		rewrite.setAccessible(true);
+		rewrite.set(ccuFix, ASTRewrite.create(compilationUnit.getAST()));
 		
-		ASTMethodCollector methodCollector = new ASTMethodCollector();
-		compilationUnit.accept(methodCollector);
-		List<?> methodList = methodCollector.getMethodList();
-		TryStatement tryStat = (TryStatement)((MethodDeclaration)methodList.get(29)).getBody().statements().get(0);
+		MethodDeclaration closeStreamInTryBlockWithBF = (MethodDeclaration) methodList.get(4);
+		TryStatement tryStat = (TryStatement)(closeStreamInTryBlockWithBF.getBody().statements().get(1));
 		
 		Field tryStatement = CCUQuickFix.class.getDeclaredField("tryStatement");
 		tryStatement.setAccessible(true);
@@ -503,43 +502,144 @@ public class CCUQuickFixTest {
 		
 		Field currentMethodNode = BaseQuickFix.class.getDeclaredField("currentMethodNode");
 		currentMethodNode.setAccessible(true);
-		currentMethodNode.set(ccuFix, methodList.get(29));
+		currentMethodNode.set(ccuFix, closeStreamInTryBlockWithBF);
 		
 		Method findMoveLine = CCUQuickFix.class.getDeclaredMethod("findMoveLine", String.class);
 		findMoveLine.setAccessible(true);
 		Field moveLine = CCUQuickFix.class.getDeclaredField("moveLine");
 		moveLine.setAccessible(true);
 		moveLine.set(ccuFix, findMoveLine.invoke(ccuFix, "0"));
+
+		ExpressionStatement eStatement = (ExpressionStatement) tryStat.getBody().statements().get(2);
+		MethodInvocation mInvocation = (MethodInvocation) eStatement.getExpression();
 		
-		/** there is finally block in the try statement */
 		// check precondition
-		Field rewrite = CCUQuickFix.class.getDeclaredField("rewrite");
-		rewrite.setAccessible(true);
-		assertNull(rewrite.get(ccuFix));
+		assertEquals("fileOutputStream.close()", mInvocation.toString());
+		assertEquals(
+				"/** \n"
+						+ " * 會被CarelessCleanupVisitor在fileOutputStream.close();加上mark\n"
+						+ " * @param context\n"
+						+ " * @param outputFile\n"
+						+ " */\n"
+						+ "@Robustness(value={@RL(level=1,exception=java.lang.RuntimeException.class)}) public void y_closeStreamInTryBlockWithBlankFinally(byte[] context,File outputFile){\n"
+						+ "  FileOutputStream fileOutputStream=null;\n"
+						+ "  try {\n"
+						+ "    fileOutputStream=new FileOutputStream(outputFile);\n"
+						+ "    fileOutputStream.write(context);\n"
+						+ "    fileOutputStream.close();\n" + "  }\n"
+						+ " catch (  FileNotFoundException e) {\n"
+						+ "    throw new RuntimeException(e);\n" + "  }\n"
+						+ "catch (  IOException e) {\n"
+						+ "    throw new RuntimeException(e);\n" + "  }\n"
+						+ " finally {\n" + "  }\n" + "}\n", currentMethodNode.get(ccuFix).toString());
+		
 		// test
 		Method moveToFinallyBlock = CCUQuickFix.class.getDeclaredMethod("moveToFinallyBlock");
 		moveToFinallyBlock.setAccessible(true);
 		moveToFinallyBlock.invoke(ccuFix);
+
+		// check precondition
+		assertEquals("fileOutputStream.close()", mInvocation.toString());
+		assertEquals(
+				"底下是預期的結果，無法模擬focus在當前的editor，所以apply change會拋出例外" +
+				"目前只是用ASTRewrite修改，沒有呼叫applyChange去修改原本內容，還沒找出一個方法驗證結果",
+				"/** \n"
+						+ " * 會被CarelessCleanupVisitor在fileOutputStream.close();加上mark\n"
+						+ " * @param context\n"
+						+ " * @param outputFile\n"
+						+ " */\n"
+						+ "@Robustness(value={@RL(level=1,exception=java.lang.RuntimeException.class)}) public void y_closeStreamInTryBlockWithBlankFinally(byte[] context,File outputFile){\n"
+						+ "  FileOutputStream fileOutputStream=null;\n"
+						+ "  try {\n"
+						+ "    fileOutputStream=new FileOutputStream(outputFile);\n"
+						+ "    fileOutputStream.write(context);\n" + "  }\n"
+						+ " catch (  FileNotFoundException e) {\n"
+						+ "    throw new RuntimeException(e);\n" + "  }\n"
+						+ "catch (  IOException e) {\n"
+						+ "    throw new RuntimeException(e);\n" + "  }\n"
+						+ " finally {\n" + "    fileOutputStream.close();\n" +  "  }\n" + "}\n", currentMethodNode.get(ccuFix).toString());
+	}
+
+	/**
+	 * Test the case if the close invocation in try block is implemented of Closable,
+	 * but the close method doesn't throw exception
+	 */
+	@Test
+	public void testMoveToFinallyBlockWithCloseImplementClosableWithoutThrowException() throws Exception {
+		Field actRoot = BaseQuickFix.class.getDeclaredField("actRoot");
+		actRoot.setAccessible(true);
+		actRoot.set(ccuFix, compilationUnit);
+
+		Field rewrite = CCUQuickFix.class.getDeclaredField("rewrite");
+		rewrite.setAccessible(true);
+		rewrite.set(ccuFix, ASTRewrite.create(compilationUnit.getAST()));
 		
-		// FIXME - 	原本構想是修改完ASTTree之後apply change，驗證修改結果是否正確，
-		// 			目前卡在不知道怎樣模擬focus在當前的editor，所以apply change會拋例外。
-		Method applyChange = BaseQuickFix.class.getDeclaredMethod("applyChange", ASTRewrite.class);
-		applyChange.setAccessible(true);
-		applyChange.invoke(ccuFix, rewrite.get(ccuFix));
-		// check postcondition
-//		assertEquals("", ((ASTRewrite)rewrite.get(ccuFix)).getAST().toString());
+		MethodDeclaration closeStreamInTryBlockWithBF = (MethodDeclaration) methodList.get(32);
+		TryStatement tryStat = (TryStatement)(closeStreamInTryBlockWithBF.getBody().statements().get(1));
 		
-		/** there is no finally block in the try statement */
-		tryStat = (TryStatement)((MethodDeclaration)methodList.get(30)).getBody().statements().get(1);
+		Field tryStatement = CCUQuickFix.class.getDeclaredField("tryStatement");
+		tryStatement.setAccessible(true);
 		tryStatement.set(ccuFix, tryStat);
-		currentMethodNode.set(ccuFix, methodList.get(30));
+		
+		Field currentMethodNode = BaseQuickFix.class.getDeclaredField("currentMethodNode");
+		currentMethodNode.setAccessible(true);
+		currentMethodNode.set(ccuFix, closeStreamInTryBlockWithBF);
+		
+		Method findMoveLine = CCUQuickFix.class.getDeclaredMethod("findMoveLine", String.class);
+		findMoveLine.setAccessible(true);
+		Field moveLine = CCUQuickFix.class.getDeclaredField("moveLine");
+		moveLine.setAccessible(true);
 		moveLine.set(ccuFix, findMoveLine.invoke(ccuFix, "0"));
+
+		ExpressionStatement eStatement = (ExpressionStatement) tryStat.getBody().statements().get(1);
+		MethodInvocation mInvocation = (MethodInvocation) eStatement.getExpression();
+		
+		// check precondition
+		assertEquals("anInstance.close()", mInvocation.toString());
+		assertEquals(
+				"/** \n"
+				+ " * 若.close() method不會丟出例外，應可以直接quick fix放到finally block中\n"
+				+ " * @throws IOException\n"
+				+ " */\n"
+				+ "@Robustness(value={@RL(level=1,exception=java.io.IOException.class)}) public void theCloseImplementClosableWillNotThrowException() throws IOException {\n"
+				+ "  ClassImplementCloseableWithoutThrowException anInstance=null;\n"
+				+ "  try {\n"
+				+ "    anInstance=new ClassImplementCloseableWithoutThrowException();\n"
+				+ "    anInstance.close();\n" + "  }\n"
+				+ "  finally {\n" + "  }\n" + "}\n", currentMethodNode.get(ccuFix).toString());
+		
 		// test
+		Method moveToFinallyBlock = CCUQuickFix.class.getDeclaredMethod("moveToFinallyBlock");
+		moveToFinallyBlock.setAccessible(true);
 		moveToFinallyBlock.invoke(ccuFix);
-		// check postcondition
-//		assertEquals("", ((ASTRewrite)rewrite.get(ccuFix)).getAST().toString());
+
+		// check precondition
+		assertEquals("anInstance.close()", mInvocation.toString());
+		assertEquals(
+				"這個地方有個錯誤要處理：\n"
+						+ "    底下是預期的結果，但因無法模擬focus在當前的editor，所以apply change會拋出例外\n"
+						+ "    目前只是用ASTRewrite修改，沒有呼叫applyChange去修改原本內容，還沒找出一個方法驗證結果",
+				"/** \n"
+						+ " * 若.close() method不會丟出例外，應可以直接quick fix放到finally block中\n"
+						+ " * @throws IOException\n"
+						+ " */\n"
+						+ "@Robustness(value={@RL(level=1,exception=java.io.IOException.class)}) public void theCloseImplementClosableWillNotThrowException() throws IOException {\n"
+						+ "  ClassImplementCloseableWithoutThrowException anInstance=null;\n"
+						+ "  try {\n"
+						+ "    anInstance=new ClassImplementCloseableWithoutThrowException();\n"
+						+ "  }\n" + "  finally {\n"
+						+ "    anInstance.close();\n" + "  }\n" + "}\n", currentMethodNode.get(ccuFix).toString());
 	}
 	
+	/**
+	 * Test the case if there is close invocation in catch block,
+	 * and test the case if finally block doesn't exist.
+	*/
+	@Test
+	public void testMoveToFinallyBlockWithCloseInCatchAndFinallyNotExist() throws Exception {
+		fail("測試程式與testMoveToFinallyBlockWithCloseInTryAndFinallyDoExist()極為類似\n但同樣會遇到無法模擬focus在當前的editor，所以apply change會拋出例外的情況");
+	}
+
 	private void CreateSettings() {
 		smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);

@@ -28,11 +28,7 @@ import org.eclipse.jdt.core.dom.TryStatement;
  */
 public class ASTNodeFinder {
 	public static CompilationUnit getCompilationUnit(Class<?> clazz, String projectName) {
-		String classCanonicalName = clazz.getCanonicalName();
-		String classPath = PathUtils.dot2slash(classCanonicalName);
-		Path path = new Path(ResourcesPlugin.getWorkspace().getRoot().getProject(projectName).getName()
-				+ "/" + JavaProjectMaker.FOLDERNAME_SOURCE + "/"
-				+ classPath	+ JavaProjectMaker.JAVA_FILE_EXTENSION);
+		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(clazz, projectName));
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -45,7 +41,7 @@ public class ASTNodeFinder {
 		compilationUnit.recordModifications();
 		return compilationUnit;
 	}
-	
+
 	/**
 	 * 從指定class尋找特定節點
 	 * 如果找不到特定節點，則回傳null。
@@ -56,9 +52,7 @@ public class ASTNodeFinder {
 	 * @throws CoreException 
 	 */
 	public static ASTNode getNodeFromSpecifiedClass (Class<?> className, String projectName, int lineNumber) throws IOException, CoreException {
-		String classCanonicalName = className.getCanonicalName();
-		String classPath = classCanonicalName.replace('.', '/');
-		Path path = new Path(ResourcesPlugin.getWorkspace().getRoot().getProject(projectName).getName() + "/src/" + classPath + ".java");
+		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(className, projectName));
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);

@@ -10,13 +10,14 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import ntut.csie.csdet.preference.JDomUtil;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.RuntimeEnvironmentProjectReader;
 import ntut.csie.filemaker.exceptionBadSmells.DummyAndIgnoreExample;
+import ntut.csie.filemaker.exceptionBadSmells.OverLogging.OverLoggingJavaLogExample;
+import ntut.csie.robusta.util.PathUtils;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -32,29 +33,40 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class BaseQuickFixTest {
+	String testProjectNameString;
+	String testPackageNameString;
+	String testClassSimpleNameString;
 	JavaFileToString jfs;
 	JavaProjectMaker jpm;
 	CompilationUnit unit;
 	SmellSettings smellSettings;
 	
+	public BaseQuickFixTest() {
+		testProjectNameString = "DummyHandlerTest";
+		testPackageNameString = DummyAndIgnoreExample.class.getPackage().getName();
+		testClassSimpleNameString = DummyAndIgnoreExample.class.getSimpleName();
+	}
+	
 	@Before
 	public void setUp() throws Exception {
 		// 讀取測試檔案樣本內容
 		jfs = new JavaFileToString();
-		jfs.read(DummyAndIgnoreExample.class, "test");
+		jfs.read(DummyAndIgnoreExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		
-		jpm = new JavaProjectMaker("DummyHandlerTest");
+		jpm = new JavaProjectMaker(testProjectNameString);
 		jpm.setJREDefaultContainer();
 		// 新增欲載入的library
-		jpm.addJarFromProjectToBuildPath("lib\\log4j-1.2.15.jar");
+		jpm.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR + "/log4j-1.2.15.jar");
 		jpm.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.FOLDERNAME_LIB_JAR, JavaProjectMaker.FOLDERNAME_BIN_CLASS);
-		jpm.addJarFromTestProjectToBuildPath("/lib/RL.jar");
+		jpm.addJarFromTestProjectToBuildPath("/" + JavaProjectMaker.FOLDERNAME_LIB_JAR + JavaProjectMaker.FOLDERNAME_LIB_JAR);
 		// 根據測試檔案樣本內容建立新的檔案
-		jpm.createJavaFile("ntut.csie.exceptionBadSmells", "DummyHandlerExample.java", "package ntut.csie.exceptionBadSmells;\n" + jfs.getFileContent());
+		jpm.createJavaFile(testPackageNameString,
+				testClassSimpleNameString + JavaProjectMaker.JAVA_FILE_EXTENSION,
+				"package " + testPackageNameString + ";\n" + jfs.getFileContent());
 		// 建立XML
 		CreateSettings();
 		
-		Path path = new Path("DummyHandlerTest\\src\\ntut\\csie\\exceptionBadSmells\\DummyHandlerExample.java");
+		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(DummyAndIgnoreExample.class, testProjectNameString));
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -68,7 +80,7 @@ public class BaseQuickFixTest {
 
 	@After
 	public void tearDown() throws Exception {
-		File xmlFile = new File(JDomUtil.getWorkspace() + File.separator + "CSPreference.xml");
+		File xmlFile = new File(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		// 如果xml檔案存在，則刪除之
 		if(xmlFile.exists())
 			assertTrue(xmlFile.delete());
@@ -97,10 +109,13 @@ public class BaseQuickFixTest {
 		// test
 		Method findCurrentMethod = BaseQuickFix.class.getDeclaredMethod("findCurrentMethod", IResource.class, int.class);
 		findCurrentMethod.setAccessible(true);
-		findCurrentMethod.invoke(bqFix, RuntimeEnvironmentProjectReader.getType(jpm.getProjectName(), "ntut.csie.exceptionBadSmells", "DummyHandlerExample").getResource(), 6);
+		findCurrentMethod.invoke(bqFix, RuntimeEnvironmentProjectReader.getType(testProjectNameString, testPackageNameString, testClassSimpleNameString).getResource(), 6);
 		
 		// check postcondition
-		assertEquals("DummyHandlerExample.java (not open) [in ntut.csie.exceptionBadSmells [in src [in DummyHandlerTest]]]", actOpenable.get(bqFix).toString());
+		assertEquals(testClassSimpleNameString + JavaProjectMaker.JAVA_FILE_EXTENSION
+				+ " (not open) [in " + testPackageNameString + " [in "
+				+ JavaProjectMaker.FOLDERNAME_SOURCE + " [in " + testProjectNameString + "]]]",
+				actOpenable.get(bqFix).toString());
 		assertNotNull(actRoot.get(bqFix));
 		assertEquals(	"public void true_systemErrPrint(){\n" +
 				"  FileInputStream fis=null;\n" +
@@ -120,13 +135,13 @@ public class BaseQuickFixTest {
 		
 		Method findCurrentMethod = BaseQuickFix.class.getDeclaredMethod("findCurrentMethod", IResource.class, int.class);
 		findCurrentMethod.setAccessible(true);
-		findCurrentMethod.invoke(bqFix, RuntimeEnvironmentProjectReader.getType(jpm.getProjectName(), "ntut.csie.exceptionBadSmells", "DummyHandlerExample").getResource(), 6);
+		findCurrentMethod.invoke(bqFix, RuntimeEnvironmentProjectReader.getType(testProjectNameString, testPackageNameString, testClassSimpleNameString).getResource(), 6);
 		
 		Method getChange = BaseQuickFix.class.getDeclaredMethod("getChange", CompilationUnit.class, ASTRewrite.class);
 		getChange.setAccessible(true);
 		Change change = (Change)getChange.invoke(bqFix, unit, null);
-		assertEquals("DummyHandlerExample.java", change.getName());
-		assertEquals("L/DummyHandlerTest/src/ntut/csie/exceptionBadSmells/DummyHandlerExample.java", change.getModifiedElement().toString());
+		assertEquals(testClassSimpleNameString + JavaProjectMaker.JAVA_FILE_EXTENSION, change.getName());
+		assertEquals("L/"+PathUtils.getPathOfClassUnderSrcFolder(DummyAndIgnoreExample.class, "DummyHandlerTest"), change.getModifiedElement().toString());
 	}
 	
 	@Test
