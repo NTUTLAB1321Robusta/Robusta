@@ -188,7 +188,7 @@ public class RethrowExRefactoringTest {
 		
 		Method selectSourceLine = RethrowExRefactoring.class.getDeclaredMethod("selectSourceLine");
 		selectSourceLine.setAccessible(true);
-		// FIXME - ITextEditorunit testいヘ玡ぃ笵focus珿代刚穦fail
+		// FIXME - ITextEditorunit testいヘ玡ぃ笵focus珿代刚穦Error
 		assertTrue("ぃ笵或FocusITextEditor", (Boolean)selectSourceLine.invoke(refactoring));
 	}
 	
@@ -601,12 +601,13 @@ public class RethrowExRefactoringTest {
 						"}\n", node.toString());
 		// 浪琩import计秖の嘿
 		List imports = compilationUnit.imports();
-		assertEquals(5, imports.size());
+		assertEquals(6, imports.size());
 		assertEquals("import java.io.FileInputStream;\n", imports.get(0).toString());
 		assertEquals("import java.io.FileNotFoundException;\n", imports.get(1).toString());
 		assertEquals("import java.io.IOException;\n", imports.get(2).toString());
-		assertEquals("import java.util.logging.Level;\n", imports.get(3).toString());
-		assertEquals("import org.apache.log4j.Logger;\n", imports.get(4).toString());
+		assertEquals("import java.util.ArrayList;\n", imports.get(3).toString());
+		assertEquals("import java.util.logging.Level;\n", imports.get(4).toString());
+		assertEquals("import org.apache.log4j.Logger;\n", imports.get(5).toString());
 		
 		Method collectChange = RethrowExRefactoring.class.getDeclaredMethod("collectChange", IResource.class);
 		collectChange.setAccessible(true);
@@ -631,15 +632,16 @@ public class RethrowExRefactoringTest {
 		Field actRoot = RethrowExRefactoring.class.getDeclaredField("actRoot");
 		actRoot.setAccessible(true);
 		List newImports = ((CompilationUnit)actRoot.get(refactoring)).imports(); 
-		assertEquals(8, newImports.size());
+		assertEquals(9, newImports.size());
 		assertEquals("import java.io.FileInputStream;\n", newImports.get(0).toString());
 		assertEquals("import java.io.FileNotFoundException;\n", newImports.get(1).toString());
 		assertEquals("import java.io.IOException;\n", newImports.get(2).toString());
-		assertEquals("import java.util.logging.Level;\n", newImports.get(3).toString());
-		assertEquals("import org.apache.log4j.Logger;\n", newImports.get(4).toString());
-		assertEquals("import agile.exception.Robustness;\n", newImports.get(5).toString());
-		assertEquals("import agile.exception.RL;\n", newImports.get(6).toString());
-		assertEquals("import java.io.IOError;\n", newImports.get(7).toString());
+		assertEquals("import java.util.ArrayList;\n", imports.get(3).toString());
+		assertEquals("import java.util.logging.Level;\n", newImports.get(4).toString());
+		assertEquals("import org.apache.log4j.Logger;\n", newImports.get(5).toString());
+		assertEquals("import agile.exception.Robustness;\n", newImports.get(6).toString());
+		assertEquals("import agile.exception.RL;\n", newImports.get(7).toString());
+		assertEquals("import java.io.IOError;\n", newImports.get(8).toString());
 	}
 	
 	@Test

@@ -35,7 +35,6 @@ import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.DoStatement;
-import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
@@ -315,7 +314,7 @@ public class RetryRefactoringTest {
 		ASTRewrite rw = ASTRewrite.create(dummyAndIgnoredExampleUnit.getAST());
 		rewrite.set(retryRefactoring, rw);
 		// 驗證初始狀態
-		List<ImportDeclaration> importList = rw.getListRewrite(dummyAndIgnoredExampleUnit, CompilationUnit.IMPORTS_PROPERTY).getRewrittenList();
+		List<?> importList = rw.getListRewrite(dummyAndIgnoredExampleUnit, CompilationUnit.IMPORTS_PROPERTY).getRewrittenList();
 		assertEquals(6, importList.size());
 		assertEquals("import java.io.FileInputStream;\n", importList.get(0).toString());
 		assertEquals("import java.io.FileNotFoundException;\n", importList.get(1).toString());
@@ -423,7 +422,7 @@ public class RetryRefactoringTest {
 		/** 給予已存在的import則不重複import */
 		
 		/* 檢查目前狀態 */
-		List<ImportDeclaration> importList = rw.getListRewrite(dummyAndIgnoredExampleUnit, CompilationUnit.IMPORTS_PROPERTY).getRewrittenList();
+		List<?> importList = rw.getListRewrite(dummyAndIgnoredExampleUnit, CompilationUnit.IMPORTS_PROPERTY).getRewrittenList();
 		assertEquals(6, importList.size());
 		
 		/* 執行測試對象 */
