@@ -4,7 +4,6 @@ import ntut.csie.csdet.quickfix.DHQuickFixTest;
 import ntut.csie.csdet.refactor.RetryRefactoringTest;
 import ntut.csie.csdet.report.ReportBuilderTest;
 import ntut.csie.csdet.visitor.DummyHandlerVisitorTest;
-import ntut.csie.csdet.visitor.ExpressionStatementAnalyzerTest;
 import ntut.csie.csdet.visitor.IgnoreExceptionVisitorTest;
 import ntut.csie.csdet.visitor.SpareHandlerVisitorTest;
 
@@ -16,7 +15,6 @@ import org.junit.runners.Suite;
 	DHQuickFixTest.class,
 	RetryRefactoringTest.class,
 	DummyHandlerVisitorTest.class,
-	ExpressionStatementAnalyzerTest.class,
 	IgnoreExceptionVisitorTest.class,
 	SpareHandlerVisitorTest.class,
 	ReportBuilderTest.class

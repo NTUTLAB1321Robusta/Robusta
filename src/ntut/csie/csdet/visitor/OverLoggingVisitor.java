@@ -22,21 +22,21 @@ import org.eclipse.jdt.core.dom.ThrowStatement;
 
 public class OverLoggingVisitor extends ASTVisitor {
 	// 是否要繼續偵測
-	private boolean isKeepTrace = false;
+	boolean isKeepTrace = false;
 	// 是否有Logging
-	private boolean isLogging = false;
+	boolean isLogging = false;
 	// 轉型是否繼續追蹤
-	private boolean isDetTransEx = false;
+	boolean isDetTransEx = false;
 	// 是否找到callee
-	private boolean isFoundCallee = false;
+	boolean isFoundCallee = false;
 	// Callee的Class和Method的資訊
-	private String methodInfo;
+	String methodInfo;
 	// 預先儲存可能是overlogging的ExpressionStatement
-	private ASTNode suspectNode;
+	ASTNode suspectNode;
 	// AST Tree的root(檔案名稱)
-	private CompilationUnit root;
+	CompilationUnit root;
 	// 儲存所找到的OverLogging Exception 
-	private List<MarkerInfo> loggingList = new ArrayList<MarkerInfo>();
+	List<MarkerInfo> loggingList = new ArrayList<MarkerInfo>();
 	// 儲存使用者定義的Log條件
 	TreeMap<String, UserDefinedConstraintsType> libMap = new TreeMap<String, UserDefinedConstraintsType>();
 	// 設定檔
@@ -92,7 +92,7 @@ public class OverLoggingVisitor extends ASTVisitor {
 		
 		return true;
 	}
-	
+
 	/**
 	 * 判斷是否為Throw new Exception
 	 */

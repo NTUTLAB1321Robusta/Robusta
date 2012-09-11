@@ -203,7 +203,7 @@ public class RethrowExRefactoringTest {
 		actRoot.setAccessible(true);
 		actRoot.set(refactoring, unit);
 		
-		List imports = unit.imports();
+		List<?> imports = unit.imports();
 		assertEquals(5, imports.size());
 		assertEquals("import java.io.FileInputStream;\n", imports.get(0).toString());
 		assertEquals("import java.io.FileNotFoundException;\n", imports.get(1).toString());
@@ -259,7 +259,7 @@ public class RethrowExRefactoringTest {
 		addImportDeclaration.invoke(refactoring);
 		
 		/* 驗證結果 */
-		List imports = unit.imports();
+		List<?> imports = unit.imports();
 		assertEquals(5, imports.size());
 		assertEquals("import java.io.FileInputStream;\n", imports.get(0).toString());
 		assertEquals("import java.io.FileNotFoundException;\n", imports.get(1).toString());
@@ -326,7 +326,7 @@ public class RethrowExRefactoringTest {
 		/** 第二次import RL，已經存在則不重複import */
 		ExceptionAnalyzer exVisitor = new ExceptionAnalyzer(root, node.getStartPosition(), 0);
 		node.accept(exVisitor);
-		List rlList = exVisitor.getExceptionList();
+		List<?> rlList = exVisitor.getExceptionList();
 		
 		Field currentMethodRLList = RethrowExRefactoring.class.getDeclaredField("currentMethodRLList");
 		currentMethodRLList.setAccessible(true);
@@ -340,13 +340,13 @@ public class RethrowExRefactoringTest {
 	public void testDeleteStatement() throws Exception {
 		ASTCatchCollect catchCollector = new ASTCatchCollect();
 		unit.accept(catchCollector);
-		List<ASTNode> catchList = catchCollector.getMethodList();
+		List<CatchClause> catchList = catchCollector.getMethodList();
 		
 		Method deleteStatement = RethrowExRefactoring.class.getDeclaredMethod("deleteStatement", List.class);
 		deleteStatement.setAccessible(true);
 		
 		for(int i = 0; i < catchList.size(); i++) {
-			List<Statement> statements = ((CatchClause)catchList.get(i)).getBody().statements();
+			List<Statement> statements = catchList.get(i).getBody().statements();
 			deleteStatement.invoke(refactoring, statements);
 			// 經過deleteStatement method之後，如果還有剩下statement的話，可能是一些其他邏輯
 			if(statements.size() > 0) {
@@ -424,14 +424,14 @@ public class RethrowExRefactoringTest {
 		
 		ASTMethodCollector methodCollector = new ASTMethodCollector();
 		unit.accept(methodCollector);
-		List methodList = methodCollector.getMethodList();
+		List<?> methodList = methodCollector.getMethodList();
 		ASTNode node = (ASTNode)methodList.get(16);
 		
 		Field currentMethodNode = RethrowExRefactoring.class.getDeclaredField("currentMethodNode");
 		currentMethodNode.setAccessible(true);
 		currentMethodNode.set(refactoring, node);
 		
-		List exceptionList = ((MethodDeclaration)node).thrownExceptions();
+		List<?> exceptionList = ((MethodDeclaration)node).thrownExceptions();
 		
 		/** method會拋出指定的exception type的情況，此時就不必把exception type加入到這method的資訊中*/
 		refactoring.setExceptionName("IOException");
@@ -489,7 +489,7 @@ public class RethrowExRefactoringTest {
 		
 		ASTMethodCollector methodCollector = new ASTMethodCollector();
 		unit.accept(methodCollector);
-		List methodList = methodCollector.getMethodList();
+		List<?> methodList = methodCollector.getMethodList();
 		ASTNode node = (ASTNode)methodList.get(1);
 		
 		ExceptionAnalyzer exVisitor = new ExceptionAnalyzer(unit, node.getStartPosition(), 0);
@@ -561,7 +561,7 @@ public class RethrowExRefactoringTest {
 		/** check precondition */
 		ASTMethodCollector methodCollector = new ASTMethodCollector();
 		unit.accept(methodCollector);
-		List methodList = methodCollector.getMethodList();
+		List<?> methodList = methodCollector.getMethodList();
 		ASTNode node = (ASTNode)methodList.get(1);
 		// 檢查選取到的method
 		assertEquals(	"public void true_printStackTrace_public(){\n" +
@@ -575,7 +575,7 @@ public class RethrowExRefactoringTest {
 						"  }\n" +
 						"}\n", node.toString());
 		// 檢查import的數量以及名稱
-		List imports = unit.imports();
+		List<?> imports = unit.imports();
 		assertEquals(5, imports.size());
 		assertEquals("import java.io.FileInputStream;\n", imports.get(0).toString());
 		assertEquals("import java.io.FileNotFoundException;\n", imports.get(1).toString());
@@ -605,7 +605,7 @@ public class RethrowExRefactoringTest {
 		// 驗證import數量以及名稱
 		Field actRoot = RethrowExRefactoring.class.getDeclaredField("actRoot");
 		actRoot.setAccessible(true);
-		List newImports = ((CompilationUnit)actRoot.get(refactoring)).imports(); 
+		List<?> newImports = ((CompilationUnit)actRoot.get(refactoring)).imports(); 
 		assertEquals(8, newImports.size());
 		assertEquals("import java.io.FileInputStream;\n", newImports.get(0).toString());
 		assertEquals("import java.io.FileNotFoundException;\n", newImports.get(1).toString());

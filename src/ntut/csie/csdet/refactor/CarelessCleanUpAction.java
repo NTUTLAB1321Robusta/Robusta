@@ -31,21 +31,20 @@ public class CarelessCleanUpAction implements IMarkerResolution{
 	
 	@Override
 	public void run(IMarker marker) {
-		try{
+		try {
 			String problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
 			if ((problem != null && problem.equals(RLMarkerAttribute.CS_CARELESS_CLEANUP))){
-				//建立操作Refactor的物件,並將marker傳進去以利之後取得code smell相關資訊
+				// 建立操作Refactor的物件,並將marker傳進去以利之後取得code smell相關資訊
 				CarelessCleanUpRefactor refactoring = new CarelessCleanUpRefactor();				
 				refactoring.setMarker(marker);
-				//啟動Refactor dialog
+				// 啟動Refactor dialog
 				RefactoringWizardOpenOperation operation = 
-					new RefactoringWizardOpenOperation(new ExtractCleanUpMethodWizard(refactoring,0));
+					new RefactoringWizardOpenOperation(new ExtractCleanUpMethodWizard(refactoring, 0));
 				operation.run(new Shell(), "My Extract Method");
 			}
-		} catch (InterruptedException e) {
-			logger.error("[Refactor][My Extract Method] EXCEPTION ",e);
-		} catch (CoreException e) {
-			logger.error("[Refactor][My Extract Method] EXCEPTION ",e);
+		} catch (Exception e) {
+			// 會拋出的利外型有InterruptedException、CoreException
+			logger.error("[Refactor][My Extract Method] EXCEPTION ", e);
 		}
 	}
 }

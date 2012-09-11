@@ -11,7 +11,6 @@ import ntut.csie.rleht.views.RLMessage;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ArrayInitializer;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
@@ -67,13 +66,13 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 			problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
 			
 			if(problem != null && (problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)) || 
-								  (problem.equals(RLMarkerAttribute.CS_INGNORE_EXCEPTION))){
+								  (problem.equals(RLMarkerAttribute.CS_INGNORE_EXCEPTION))) {
 				//如果碰到dummy handler,則將exception rethrow
 				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
 				String msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
 				String exception = marker.getAttribute(RLMarkerAttribute.RL_INFO_EXCEPTION).toString();
 				//儲存按下QuickFix該行的程式起始位置
-				this.srcPos = marker.getAttribute(RLMarkerAttribute.RL_INFO_SRC_POS).toString();
+				srcPos = marker.getAttribute(RLMarkerAttribute.RL_INFO_SRC_POS).toString();
 
 				boolean isok = this.findCurrentMethod(marker.getResource(), Integer.parseInt(methodIdx));
 				if(isok) {
@@ -116,25 +115,23 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 	 * @return				
 	 */
 	private int rethrowException(String exception, int msgIdx) {
-		
-//		actRoot.recordModifications();
 		AST ast = currentMethodNode.getAST();
 
 		//準備在Catch Caluse中加入throw exception
 		//收集該method所有的catch clause
 		ASTCatchCollect catchCollector = new ASTCatchCollect();
 		currentMethodNode.accept(catchCollector);
-		List<ASTNode> catchList = catchCollector.getMethodList();
+		List<CatchClause> catchList = catchCollector.getMethodList();
 
 		for (int i = 0; i < catchList.size(); i++) {
 			//找到該Catch(如果Catch的位置與按下Quick那行的起始位置相同)
 			if (catchList.get(i).getStartPosition() == Integer.parseInt(srcPos)) {
 				//建立RL Annotation
-				addAnnotationRoot(exception,ast);
+				addAnnotationRoot(exception, ast);
 				//在catch clause中建立throw statement
 				addThrowStatement(catchList.get(i), ast);
 				//檢查在method前面有沒有throw exception
-				checkMethodThrow(ast,exception);
+				checkMethodThrow(ast, exception);
 				//寫回Edit中
 				this.applyChange();
 				return i;
@@ -158,7 +155,7 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 
 		MethodDeclaration method = (MethodDeclaration) currentMethodNode;		
 		
-		if(currentMethodRLList.size() == 0){		
+		if(currentMethodRLList.size() == 0) {		
 			rlary.expressions().add(getRLAnnotation(ast,1,exception));
 		}else{
 			for (RLMessage rlmsg : currentMethodRLList) {
@@ -167,7 +164,7 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 				int pos = rlmsg.getRLData().getExceptionType().toString().lastIndexOf(".");
 				String cut = rlmsg.getRLData().getExceptionType().toString().substring(pos+1);
 
-				if((!cut.equals(exception)) && (rlmsg.getRLData().getLevel() == 1)){					
+				if((!cut.equals(exception)) && (rlmsg.getRLData().getLevel() == 1)) {					
 					rlary.expressions().add(
 							getRLAnnotation(ast, rlmsg.getRLData().getLevel(), rlmsg.getRLData().getExceptionType()));	
 				}
@@ -197,7 +194,6 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 	 * @param exClass:例外類別
 	 * @return NormalAnnotation AST Node
 	 */
-	@SuppressWarnings("unchecked")
 	private NormalAnnotation getRLAnnotation(AST ast, int levelVal,String excption) {
 		//要建立@Robustness(value={@RL(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
 		NormalAnnotation rl = ast.newNormalAnnotation();
@@ -256,12 +252,10 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 	 * @param cc
 	 * @param ast
 	 */
-	private void addThrowStatement(ASTNode cc, AST ast) {
+	private void addThrowStatement(CatchClause cc, AST ast) {
 		//取得該catch()中的exception variable
 		SingleVariableDeclaration svd = 
 			(SingleVariableDeclaration) cc.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
-
-		CatchClause clause = (CatchClause)cc;
 
 		//自行建立一個throw statement加入
 		ThrowStatement ts = ast.newThrowStatement();
@@ -273,10 +267,10 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 		ts.setExpression(name);
 
 		//取得CatchClause所有的statement,將相關print例外資訊的東西移除
-		List statement = clause.getBody().statements();
+		List statement = cc.getBody().statements();
 
 		delStatement = statement.size();
-		if(problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)){	
+		if(problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)) {	
 			//假如要fix的code smell是dummy handler,就要把catch中的列印資訊刪除
 			deleteStatement(statement);
 		}
@@ -289,11 +283,11 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 	/**
 	 * 在Rethrow之前,先將相關的print字串都清除掉
 	 */
-	private void deleteStatement(List<Statement> statementTemp){
+	private void deleteStatement(List<Statement> statementTemp) {
 		// 從Catch Clause裡面剖析兩種情形
 		if(statementTemp.size() != 0){
-			for(int i=0;i<statementTemp.size();i++){			
-				if(statementTemp.get(i) instanceof ExpressionStatement ){
+			for(int i=0;i<statementTemp.size();i++) {			
+				if(statementTemp.get(i) instanceof ExpressionStatement ) {
 					ExpressionStatement statement = (ExpressionStatement) statementTemp.get(i);
 					// 遇到System.out.print or printStackTrace就把他remove掉
 					if (statement.getExpression().toString().contains("System.out.print") ||
@@ -314,14 +308,14 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 	 * @param ast
 	 * @param exception 
 	 */
-	private void checkMethodThrow(AST ast, String exception){
+	private void checkMethodThrow(AST ast, String exception) {
 		MethodDeclaration md = (MethodDeclaration)currentMethodNode;
 		List thStat = md.thrownExceptions();
 		boolean isExist = false;
-		for(int i=0;i<thStat.size();i++){
-			if(thStat.get(i) instanceof SimpleName){
+		for(int i=0;i<thStat.size();i++) {
+			if(thStat.get(i) instanceof SimpleName) {
 				SimpleName sn = (SimpleName)thStat.get(i);
-				if(sn.getIdentifier().equals(exception)){
+				if(sn.getIdentifier().equals(exception)) {
 					isExist = true;
 					break;
 				}
@@ -331,7 +325,7 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 			thStat.add(ast.newSimpleName(exception));
 		}
 	}
-
+	
 //	/**
 //	 * 反白指定行數
 //	 * @param marker		欲反白Statement的Resource

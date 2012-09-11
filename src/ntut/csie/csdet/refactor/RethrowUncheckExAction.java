@@ -41,17 +41,15 @@ public class RethrowUncheckExAction implements IMarkerResolution{
 				refactoring.setMarker(marker);
 				//啟動Refactor dialog
 				RefactoringWizardOpenOperation operation = 
-					new RefactoringWizardOpenOperation(new RethrowExWizard(refactoring,0));
+					new RefactoringWizardOpenOperation(new RethrowExWizard(refactoring, 0));
 				operation.run(new Shell(), "Rethrow Unchecked Exception");
 
 				//若Annotation順序不對，則交換順序。最後再定位
 				refactoring.changeAnnotation();
 			}
-		
-		} catch (InterruptedException e) {
-			logger.error("[Refactor][Rethrow Unchecked Exception] EXCEPTION ",e);
-		} catch (CoreException e) {
-			logger.error("[Refactor][Rethrow Unchecked Exception] EXCEPTION ",e);
+		} catch (Exception e) {
+			// 會拋出的利外型有InterruptedException、CoreException
+			logger.error("[Refactor][My Extract Method] EXCEPTION ", e);
 		}
 	}
 }

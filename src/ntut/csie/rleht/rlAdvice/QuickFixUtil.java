@@ -45,14 +45,14 @@ public class QuickFixUtil {
 	 * @param statements
 	 * @param delStrings
 	 */
-	public void deleteStatement(List<Statement> statements, String[] delStrings){
-		if(statements.size() != 0){
-			for(int i = 0; i<statements.size(); i++){
+	public void deleteStatement(List<Statement> statements, String[] delStrings) {
+		if(statements.size() != 0) {
+			for(int i = 0; i<statements.size(); i++) {
 				//TODO 想辦法別用instanceof
-				if(statements.get(i) instanceof ExpressionStatement){
+				if(statements.get(i) instanceof ExpressionStatement) {
 					ExpressionStatement expStatement = (ExpressionStatement) statements.get(i);
-					for(int j=0; j<delStrings.length; j++){
-						if(expStatement.getExpression().toString().contains(delStrings[j])){
+					for(int j=0; j<delStrings.length; j++) {
+						if(expStatement.getExpression().toString().contains(delStrings[j])) {
 							statements.remove(i);
 							deleteStatement(statements, delStrings);
 							break;
@@ -75,8 +75,8 @@ public class QuickFixUtil {
 	public void addAnnotationRoot(CompilationUnit actRoot,
 			ASTNode currentMethodDeclarationNode, int rlValue,
 			String exceptionClass) {
-		//要建立@Robustness(value={@RL(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
-		//建立Annotation root
+		// 要建立@Robustness(value={@RL(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
+		// 建立Annotation root
 		
 		AST ast = currentMethodDeclarationNode.getAST();
 		NormalAnnotation root = ast.newNormalAnnotation();
@@ -96,18 +96,17 @@ public class QuickFixUtil {
 			rlary.expressions().add(getRLAnnotation(ast, rlValue, exceptionClass));
 		} else {
 			for (RLMessage rlmsg : currentMethodRLList) {
-				//把舊的annotation加進去
-				//判斷如果遇到重複的就不要加annotation
+				// 把舊的annotation加進去
+				// 判斷如果遇到重複的就不要加annotation
 				
-				if((!rlmsg.getRLData().getExceptionType().toString().contains(exceptionClass)) && (rlmsg.getRLData().getLevel() == rlValue)){					
+				if((!rlmsg.getRLData().getExceptionType().toString().contains(exceptionClass)) && (rlmsg.getRLData().getLevel() == rlValue))				
 					rlary.expressions().add(getRLAnnotation(ast, rlmsg.getRLData().getLevel(), rlmsg.getRLData().getExceptionType()));	
-				}
 			}
 			rlary.expressions().add(getRLAnnotation(ast, rlValue, exceptionClass));
 			
 			List<IExtendedModifier> modifiers = method.modifiers();
 			for (int i = 0, size = modifiers.size(); i < size; i++) {
-				//找到舊有的annotation後將它移除
+				// 找到舊有的annotation後將它移除
 				if (modifiers.get(i).isAnnotation() && modifiers.get(i).toString().indexOf("Robustness") != -1) {
 					method.modifiers().remove(i);
 					break;
@@ -117,7 +116,7 @@ public class QuickFixUtil {
 		if (rlary.expressions().size() > 0) {
 			method.modifiers().add(0, root);
 		}
-		//將RL的library加進來
+		// 將RL的library加進來
 		addImportDeclaration(actRoot);
 	}
 	
@@ -130,17 +129,15 @@ public class QuickFixUtil {
 	private void addImportDeclaration(CompilationUnit actRoot) {
 		// 判斷是否已經Import Robustness及RL的宣告
 		List<ImportDeclaration> importList = actRoot.imports();
-		//是否已存在Robustness及RL的宣告
+		// 是否已存在Robustness及RL的宣告
 		boolean isImportRobustnessClass = false;
 		boolean isImportRLClass = false;
 
 		for (ImportDeclaration id : importList) {
-			if (RLData.CLASS_ROBUSTNESS.equals(id.getName().getFullyQualifiedName())) {
+			if (RLData.CLASS_ROBUSTNESS.equals(id.getName().getFullyQualifiedName()))
 				isImportRobustnessClass = true;
-			}
-			if (RLData.CLASS_RL.equals(id.getName().getFullyQualifiedName())) {
+			if (RLData.CLASS_RL.equals(id.getName().getFullyQualifiedName()))
 				isImportRLClass = true;
-			}
 		}
 
 		AST rootAst = actRoot.getAST();
@@ -164,7 +161,6 @@ public class QuickFixUtil {
 	 * @param excption: 例外類別
 	 * @return NormalAnnotation AST Node
 	 */
-	@SuppressWarnings("unchecked")
 	private NormalAnnotation getRLAnnotation(AST ast, int levelVal,String excption) {
 		//要建立@Robustness(value={@RL(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
 		NormalAnnotation rl = ast.newNormalAnnotation();
@@ -197,8 +193,7 @@ public class QuickFixUtil {
 	 * @param currentMethodDeclarationNode
 	 * @param exceptionClass
 	 */
-	@SuppressWarnings("unchecked")
-	public void addThrowStatement(ASTNode cc, AST currentMethodDeclarationNode, String exceptionClass){
+	public void addThrowStatement(ASTNode cc, AST currentMethodDeclarationNode, String exceptionClass) {
 		// 取得該catch()中的exception variable
 		SingleVariableDeclaration svd = (SingleVariableDeclaration) cc.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
 		CatchClause clause = (CatchClause) cc;
@@ -221,11 +216,11 @@ public class QuickFixUtil {
 		actRoot.recordModifications();
 		AST ast = currentMethodNode.getAST();
 
-		//準備在Catch Caluse中加入throw exception
-		//收集該method所有的catch clause
+		// 準備在Catch Caluse中加入throw exception
+		// 收集該method所有的catch clause
 		ASTCatchCollect catchCollector = new ASTCatchCollect();
 		currentMethodNode.accept(catchCollector);
-		List<ASTNode> catchList = catchCollector.getMethodList();
+		List<CatchClause> catchList = catchCollector.getMethodList();
 
 		for (int i = 0; i < catchList.size(); i++) {
 			//找到該Catch(如果Catch的位置與按下Quick那行的起始位置相同)
@@ -236,7 +231,7 @@ public class QuickFixUtil {
 				//在catch clause中建立throw statement
 				addThrowStatement(catchList.get(i), ast);
 				//檢查在method前面有沒有throw exception
-				addThrownException(ast,exception, currentMethodNode);
+				addThrownException(ast, exception, currentMethodNode);
 
 //			}
 		}
@@ -247,25 +242,21 @@ public class QuickFixUtil {
 	 * @param cc
 	 * @param ast
 	 */
-	@SuppressWarnings("unchecked")
-	private void addThrowStatement(ASTNode cc, AST ast) {
-		//取得該catch()中的exception variable
-		SingleVariableDeclaration svd = 
-			(SingleVariableDeclaration) cc.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
+	private void addThrowStatement(CatchClause cc, AST ast) {
+		// 取得該catch()中的exception variable
+		SingleVariableDeclaration svd = (SingleVariableDeclaration) cc.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
 
-		CatchClause clause = (CatchClause)cc;
-
-		//自行建立一個throw statement加入
+		// 自行建立一個throw statement加入
 		ThrowStatement ts = ast.newThrowStatement();
 
-		//取得Catch後Exception的變數
+		// 取得Catch後Exception的變數
 		SimpleName name = ast.newSimpleName(svd.resolveBinding().getName());		
 		
-		//加到throw statement
+		// 加到throw statement
 		ts.setExpression(name);
 
-		//將新建立的節點寫回
-		clause.getBody().statements().add(ts);
+		// 將新建立的節點寫回
+		cc.getBody().statements().add(ts);
 	}
 	
 	/**
@@ -275,13 +266,13 @@ public class QuickFixUtil {
 	 * @param currentMethodNode
 	 */
 	@SuppressWarnings("unchecked")
-	private void addThrownException(AST ast, String exception, ASTNode currentMethodNode){
+	private void addThrownException(AST ast, String exception, ASTNode currentMethodNode) {
 		MethodDeclaration md = (MethodDeclaration)currentMethodNode;
 		boolean isExist = false;
-		for(int i=0;i<md.thrownExceptions().size();i++){
-			if(md.thrownExceptions().get(i) instanceof SimpleName){
+		for(int i=0;i<md.thrownExceptions().size();i++) {
+			if(md.thrownExceptions().get(i) instanceof SimpleName) {
 				SimpleName sn = (SimpleName)md.thrownExceptions().get(i);
-				if(sn.getIdentifier().equals(exception)){
+				if(sn.getIdentifier().equals(exception)) {
 					isExist = true;
 					break;
 				}

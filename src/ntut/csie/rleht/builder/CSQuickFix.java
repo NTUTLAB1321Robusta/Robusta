@@ -77,8 +77,7 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 	private String markerStartPos;
 	/** marker所在的Catch Index */
 	private int catchIdx = -1;
-//	/** Annotation是否存在 */
-//	private boolean isAnnotationExist = true;
+	
 	public CSQuickFix(String label, boolean inCatch) {
 		this.label = label;
 		this.inCatch = inCatch;
@@ -108,45 +107,45 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 				boolean isok = findMethod(marker.getResource(), Integer.parseInt(methodIdx));
 
 				if (isok) {
-					//是否加在Catch內，否則在Method上
+					// 是否加在Catch內，否則在Method上
 					if (inCatch) {
-						//取得欲修改ASTNode
+						// 取得欲修改ASTNode
 						CatchClause cc = getCatchClause();	
 						SingleVariableDeclaration svd = cc.getException();
 	
-						//修改SuppressSmell Annotation訊息
+						// 修改SuppressSmell Annotation訊息
 						replaceSuppressSmellAnnotation(svd.modifiers(), faultName);
 					} else {
-						//取得欲修改的ASTNode
+						// 取得欲修改的ASTNode
 						MethodDeclaration method = (MethodDeclaration) currentMethodNode;
-						//將Annotation訊息增加到指定Method上
+						// 將Annotation訊息增加到指定Method上
 						replaceSuppressSmellAnnotation(method.modifiers(), faultName);
 					}
 				}
 			} else {
 				if (!problem.equals(RLMarkerAttribute.ERR_SS_NO_SMELL))
-					this.markerType = problem;
+					markerType = problem;
 
 				boolean isok = findMethod(marker.getResource(), Integer.parseInt(methodIdx));
 				if (isok) {
-					//是否加在Catch內，否則在Method上
+					// 是否加在Catch內，否則在Method上
 					if (inCatch) {
-						//取得欲修改ASTNode
+						// 取得欲修改ASTNode
 						CatchClause cc = getCatchClause();
 
 						SingleVariableDeclaration svd = cc.getException();
 						
-						//將Annotation訊息增加到指定Catch中
+						// 將Annotation訊息增加到指定Catch中
 						addSuppressSmellAnnotation(svd, svd.modifiers(), SingleVariableDeclaration.MODIFIERS2_PROPERTY);
 					} else {
-						//取得欲修改的ASTNode
+						// 取得欲修改的ASTNode
 						MethodDeclaration method = (MethodDeclaration) currentMethodNode;
-						//將Annotation訊息增加到指定Method上
+						// 將Annotation訊息增加到指定Method上
 						addSuppressSmellAnnotation(method, method.modifiers(), method.getModifiersProperty());
 					}
 				}
 			}
-			//定位到Annotation該行
+			// 定位到Annotation該行
 			selectLine(marker, methodIdx);
 		} catch (CoreException e) {
 			ErrorLog.getInstance().logError("[CSQuickFix]", e);
@@ -173,14 +172,14 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 
 				parser.setSource((ICompilationUnit) javaElement);
 				parser.setResolveBindings(true);
-				this.actRoot = (CompilationUnit) parser.createAST(null);
+				actRoot = (CompilationUnit) parser.createAST(null);
 				ASTMethodCollector methodCollector = new ASTMethodCollector();
 				actRoot.accept(methodCollector);
 				List<ASTNode> methodList = methodCollector.getMethodList();
 
 				ASTNode method = methodList.get(methodIdx);
 				if (method != null) {
-					ExceptionAnalyzer visitor = new ExceptionAnalyzer(this.actRoot, method.getStartPosition(), 0);
+					ExceptionAnalyzer visitor = new ExceptionAnalyzer(actRoot, method.getStartPosition(), 0);
 					method.accept(visitor);
 					currentMethodNode = visitor.getCurrentMethodNode();
 
@@ -202,17 +201,17 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 	private CatchClause getCatchClause() {
 		ASTCatchCollect catchCollector = new ASTCatchCollect();
 		currentMethodNode.accept(catchCollector);
-		List<ASTNode> catchList = catchCollector.getMethodList();
+		List<CatchClause> catchList = catchCollector.getMethodList();
 
 		//若已取得Catch位置，則直接輸出
 		if (catchIdx != -1)
-			return (CatchClause) catchList.get(catchIdx);
+			return catchList.get(catchIdx);
 
 		for (int i = 0; i < catchList.size(); i++) {
 			//找到該Catch(如果Catch的位置與按下Quick那行的起始位置相同)
 			if (catchList.get(i).getStartPosition() == Integer.parseInt(markerStartPos)) {
 				catchIdx = i;
-				return (CatchClause) catchList.get(i);
+				return catchList.get(i);
 			}
 		}
 		return null;
@@ -229,18 +228,17 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 		AST ast = currentMethodNode.getAST();
 		rewrite = ASTRewrite.create(ast);
 
-		//加入SuppressSmell Library 
+		// 加入SuppressSmell Library 
 		addImportDeclaration();
 
-		//建立Annotation root
+		// 建立Annotation root
 		Annotation existing = findExistingAnnotation(modifiers);
 		
 		StringLiteral newStringLiteral = ast.newStringLiteral();
 		newStringLiteral.setLiteralValue(markerType);
 
-		//SuppressSmell Annotation不存在
+		// SuppressSmell Annotation不存在
 		if (existing == null) {
-//			isAnnotationExist = false;
 			
 			ListRewrite listRewrite = rewrite.getListRewrite(node, property);
 			
@@ -250,7 +248,7 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 			newAnnot.setValue(newStringLiteral);
 
 			listRewrite.insertFirst(newAnnot, null);
-		//若已存在 @SuppressSmell()
+		// 若已存在 @SuppressSmell()
 		} else if (existing instanceof SingleMemberAnnotation) {
 			SingleMemberAnnotation annotation= (SingleMemberAnnotation) existing;
 			Expression value= annotation.getValue();
@@ -258,7 +256,7 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 			if (!addSuppressArgument(rewrite, value, newStringLiteral)) {
 				rewrite.set(existing, SingleMemberAnnotation.VALUE_PROPERTY, newStringLiteral, null);
 			}
-		//若已存在 @SuppressSmell(value={})
+		// 若已存在 @SuppressSmell(value={})
 		} else if (existing instanceof NormalAnnotation) {
 			NormalAnnotation annotation = (NormalAnnotation) existing;
 			Expression value = findValue(annotation.values());
@@ -273,7 +271,7 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 				listRewrite.insertFirst(pair, null);
 			}
 		}
-		//將要變更的資料寫回至Document中 
+		// 將要變更的資料寫回至Document中 
 		applyChange(rewrite);
 	}
 
@@ -305,28 +303,28 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 	 * @param faultName 
 	 */
 	private void replaceSuppressSmellAnnotation(List<?> modifiers, String faultName) {
-		//取得欲修改的ASTNode
+		// 取得欲修改的ASTNode
 		AST ast = currentMethodNode.getAST();
 		rewrite = ASTRewrite.create(ast);
 
 		StringLiteral newStringLiteral = ast.newStringLiteral();
 		newStringLiteral.setLiteralValue(markerType);
 		
-		//建立Annotation root
+		// 建立Annotation root
 		Annotation existing = findExistingAnnotation(modifiers);
 		if (existing instanceof SingleMemberAnnotation) {
 			SingleMemberAnnotation annotation= (SingleMemberAnnotation) existing;
 			Expression value= annotation.getValue();
 			
 			replaceSuppressArgument(newStringLiteral, value, faultName);
-		//若已存在 @SuppressSmell(value={})
+		// 若已存在 @SuppressSmell(value={})
 		} else if (existing instanceof NormalAnnotation) {
 			NormalAnnotation annotation = (NormalAnnotation) existing;
 			Expression value = findValue(annotation.values());
 
 			replaceSuppressArgument(newStringLiteral, value, faultName);
 		}
-		//將要變更的資料寫回至Document中 
+		// 將要變更的資料寫回至Document中 
 		applyChange();
 	}
 
@@ -337,13 +335,13 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 	 * @param faultName 
 	 */
 	private void replaceSuppressArgument(StringLiteral newStringLiteral, Expression value, String faultName) {
-		//若Annotation裡只有String Literal直接修改
+		// 若Annotation裡只有String Literal直接修改
 		if (value instanceof StringLiteral) {
 			rewrite.replace(value, newStringLiteral, null);
-		//若Annotation裡有Array，尋找Fault Name再取代
+		// 若Annotation裡有Array，尋找Fault Name再取代
 		} else if (value instanceof ArrayInitializer) {
 			ArrayInitializer ai = (ArrayInitializer) value;
-			//尋找fault name並修改為使用者所選擇的Smell Type
+			// 尋找fault name並修改為使用者所選擇的Smell Type
 			for(Object obj: ai.expressions()) {
 				StringLiteral sl = (StringLiteral)obj;
 				if (sl.getLiteralValue().equals(faultName)) {
@@ -363,9 +361,8 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 	private Expression findValue(List<?> keyValues) {
 		for (int i = 0; i < keyValues.size(); i++) {
 			MemberValuePair curr= (MemberValuePair) keyValues.get(i);
-			if ("value".equals(curr.getName().getIdentifier())) {
+			if ("value".equals(curr.getName().getIdentifier()))
 				return curr.getValue();
-			}
 		}
 		return null;
 	}
@@ -404,7 +401,7 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 	private void addImportDeclaration() {
 		// 判斷是否已經Import Robustness及RL的宣告
 		ListRewrite listRewrite = rewrite.getListRewrite(this.actRoot, CompilationUnit.IMPORTS_PROPERTY);
-		//尋找有沒有import agile.exception.SuppressSmell;
+		// 尋找有沒有import agile.exception.SuppressSmell;
 		boolean isSuppressSmellClass = false;
 		for (Object obj : listRewrite.getRewrittenList()) {
 			ImportDeclaration id = (ImportDeclaration)obj;
@@ -412,7 +409,7 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 				isSuppressSmellClass = true;
 			}			
 		}
-		//若未加入SuppressSmell Class，則加入import
+		// 若未加入SuppressSmell Class，則加入import
 		AST rootAst = this.actRoot.getAST();
 		if (!isSuppressSmellClass) {
 			ImportDeclaration imp = rootAst.newImportDeclaration();
@@ -425,7 +422,7 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 //	 * 將要變更的資料寫回至Document中
 //	 */
 //	private void applyChange(){
-//		//寫回Edit中
+//		// 寫回Edit中
 //		try {
 //			ICompilationUnit cu = (ICompilationUnit) actOpenable;
 //			Document document = new Document(cu.getBuffer().getContents());
@@ -449,7 +446,7 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 //	 */
 //	private void deleteCatchClauseSpace(ICompilationUnit cu, Document document,	Annotation anno)
 //			throws BadLocationException, JavaModelException {
-//		//尋找Annotation後的換行、空格、'\t'長度
+//		// 尋找Annotation後的換行、空格、'\t'長度
 //		int length = 2;
 //		while (true) {
 //			char inp = document.getChar(anno.getStartPosition()+ anno.getLength() + length);
@@ -457,7 +454,7 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 //				break;
 //			length++;
 //		}
-//		//將Annotation後的換行、空格、'\t'用" "取代
+//		// 將Annotation後的換行、空格、'\t'用" "取代
 //		document.replace(anno.getStartPosition()+ anno.getLength(), length, " ");
 //		cu.getBuffer().setContents(document.get());
 //	}
@@ -469,38 +466,34 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 	 * @throws JavaModelException
 	 */
 	private void selectLine(IMarker marker, String methodIdx) throws JavaModelException {
-		//重新取得新的Method資訊(因為資料已改變，method那些資訊是舊的)
+		// 重新取得新的Method資訊(因為資料已改變，method那些資訊是舊的)
 		boolean isok = findMethod(marker.getResource(), Integer.parseInt(methodIdx));
 		if (isok) {
 			ICompilationUnit cu = (ICompilationUnit) actOpenable;
 			Document document = new Document(cu.getBuffer().getContents());
 			
-			//取得目前的EditPart
+			// 取得目前的EditPart
 			IEditorPart editorPart = EditorUtils.getActiveEditor();
 			ITextEditor editor = (ITextEditor) editorPart;
 
 			try {
 				if (inCatch) {
-					//取得Catch Clause
+					// 取得Catch Clause
 					CatchClause cc = getCatchClause();
-					//取得Annotation
+					// 取得Annotation
 					Annotation anno  = findExistingAnnotation(cc.getException().modifiers());
-
-//					//若Catch中的Annotation原本不存在，刪除Annotation後的換行
-//					if (!isAnnotationExist)
-//						deleteCatchClauseSpace(cu, document, anno);
 					
-					//反白該行 在Quick fix完之後,可以將游標定位在Quick Fix那行
+					// 反白該行 在Quick fix完之後,可以將游標定位在Quick Fix那行
 					editor.selectAndReveal(anno.getStartPosition(), anno.getLength());
 				} else {
-					//取得Method的起點位置
+					// 取得Method的起點位置
 					int srcPos = currentMethodNode.getStartPosition();
-					//用Method起點位置取得Method位於第幾行數(起始行數從0開始，不是1，所以減1)
-					int numLine = this.actRoot.getLineNumber(srcPos)-1;
+					// 用Method起點位置取得Method位於第幾行數(起始行數從0開始，不是1，所以減1)
+					int numLine = this.actRoot.getLineNumber(srcPos) - 1;
 	
-					//取得行數的資料
+					// 取得行數的資料
 					IRegion lineInfo = document.getLineInformation(numLine);
-					//反白該行 在Quick fix完之後,可以將游標定位在Quick Fix那行
+					// 反白該行 在Quick fix完之後,可以將游標定位在Quick Fix那行
 					editor.selectAndReveal(lineInfo.getOffset(), lineInfo.getLength());
 				}
 			} catch (BadLocationException e) {
@@ -516,9 +509,9 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 
 	@Override
 	public Image getImage() {
-		//Resource Icons的Annotation圖示
-		//return ImageManager.getInstance().get("annotation");
-		//內建的
+		// Resource Icons的Annotation圖示
+		// return ImageManager.getInstance().get("annotation");
+		// 內建的
 		return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_ANNOTATION);
 	}
 

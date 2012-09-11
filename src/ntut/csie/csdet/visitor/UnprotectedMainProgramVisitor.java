@@ -6,9 +6,9 @@ import java.util.List;
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
-import ntut.csie.rleht.common.RLBaseVisitor;
 
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.IExtendedModifier;
@@ -16,7 +16,7 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TryStatement;
 
-public class UnprotectedMainProgramVisitor extends RLBaseVisitor{
+public class UnprotectedMainProgramVisitor extends ASTVisitor {
 	// 儲存所找到的Unprotected main Program 
 	private List<MarkerInfo> unprotectedMainList;	
 	// AST tree的root(檔案名稱)

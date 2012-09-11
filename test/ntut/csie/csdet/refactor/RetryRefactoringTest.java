@@ -442,7 +442,7 @@ public class RetryRefactoringTest {
 		// 取得所有catch clause
 		ASTCatchCollect catchList = new ASTCatchCollect();
 		unit2.accept(catchList);
-		List<ASTNode> nodeList = catchList.getMethodList();
+		List<CatchClause> nodeList = catchList.getMethodList();
 		// 刪除對這測試不需要的部分
 		nodeList.remove(7);
 		nodeList.remove(5);

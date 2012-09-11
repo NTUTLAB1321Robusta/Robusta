@@ -261,7 +261,7 @@ public class OLQuickFixTest {
 		actRoot.setAccessible(true);
 		actRoot.set(olQuickFix, compilationUnit);
 
-		Method deleteCatchStatement = OLQuickFix.class.getDeclaredMethod("deleteCatchStatement", ASTNode.class, MarkerInfo.class);
+		Method deleteCatchStatement = OLQuickFix.class.getDeclaredMethod("deleteCatchStatement", CatchClause.class, MarkerInfo.class);
 		deleteCatchStatement.setAccessible(true);
 		
 		// 產生測試用 argument
@@ -293,7 +293,7 @@ public class OLQuickFixTest {
 		actRoot.setAccessible(true);
 		actRoot.set(olQuickFix, compilationUnit);
 		
-		Method deleteCatchStatement = OLQuickFix.class.getDeclaredMethod("deleteCatchStatement", ASTNode.class, MarkerInfo.class);
+		Method deleteCatchStatement = OLQuickFix.class.getDeclaredMethod("deleteCatchStatement", CatchClause.class, MarkerInfo.class);
 		deleteCatchStatement.setAccessible(true);
 		
 		// 產生測試用 argument

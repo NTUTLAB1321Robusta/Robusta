@@ -143,7 +143,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 			//取得code smell的List
 			CarelessCleanUpList = visitor.getCarelessCleanupList();
 		}
-
+		
 		//取得EH Smell的資訊
 		findSmellMessage();
 
@@ -279,7 +279,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
 
 				//取得目前要被修改的method node
-				this.currentMethodNode = methodList.get(Integer.parseInt(methodIdx));
+				currentMethodNode = methodList.get(Integer.parseInt(methodIdx));
 
 				return true;			
 			} catch (Exception ex) {
