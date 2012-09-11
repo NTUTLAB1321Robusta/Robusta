@@ -9,6 +9,7 @@ import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.jdt.util.NodeUtils;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 
+import org.eclipse.compare.internal.NullViewer;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Block;
@@ -183,6 +184,9 @@ public class CarelessCleanupVisitor extends ASTVisitor {
 		/*
 		 *	尋找這個close是不是實作Closeable 
 		 */
+		if(node.resolveMethodBinding() == null) {
+			System.out.println("aa");
+		}
 		if (!NodeUtils.isITypeBindingImplemented(node.resolveMethodBinding()
 				.getDeclaringClass(), Closeable.class)) {
 			return true;

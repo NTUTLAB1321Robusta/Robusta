@@ -1,4 +1,4 @@
-package ntut.csie.filemaker.exceptionBadSmells;
+package ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+
 
 import agile.exception.RL;
 import agile.exception.Robustness;
@@ -167,6 +168,8 @@ public class CarelessCleanupExample {
 	
 	/**
 	 * 不會被CarelessCleanupVisitor在anInstance.close();加上mark
+	 * 因為ClassWithNotThrowingExceptionCloseable不是implements Closeable介面
+	 * 所以不會被視為是關閉資源的動作
 	 */
 	@Robustness(value = { @RL(level = 1, exception = java.lang.RuntimeException.class) })
 	public void closeNonClosableInstance() {
@@ -296,31 +299,7 @@ public class CarelessCleanupExample {
 			}
 		}
 	}
-	
-//	private FileInputStream ccuFileInputStream;
-//	
-//	public void closeFileInputStream() {
-//		if(ccuFileInputStream != null) {
-//			try {
-//				ccuFileInputStream.close();
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//		}
-//	}
-//	
-//	@Robustness(value = { @RL(level = 1, exception = java.io.IOException.class) })
-//	public void closeMemberStream() throws IOException {	
-//		try {
-//			ccuFileInputStream.read();
-//			closeFileInputStream();
-//		} catch (FileNotFoundException e) {
-//			throw e;
-//		}
-//	}
-//	
-//	
-//	
+
 	/**
 	 * 如果是專門用來放在Finally關閉串流的method，將不做careless cleanup的檢查
 	 * @param fileOutputStream
@@ -566,6 +545,20 @@ public class CarelessCleanupExample {
 			fi.close();
 		} catch (IOException e) {
 			throw e;
+		}
+	}
+	
+	/**
+	 * 若.close() method不會丟出例外，應可以直接quick fix放到finally block中
+	 * @throws IOException
+	 */
+	@Robustness(value = { @RL(level = 1, exception = java.io.IOException.class) })
+	public void theCloseImplementClosableWillNotThrowException() throws IOException {
+		ClassImplementCloseableWithoutThrowException anInstance = null;
+		try {
+			anInstance = new ClassImplementCloseableWithoutThrowException();
+			anInstance.close();
+		} finally {
 		}
 	}
 }

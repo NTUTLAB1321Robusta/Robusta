@@ -3,6 +3,7 @@ package ntut.csie.csdet.visitor;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.util.List;
@@ -11,11 +12,12 @@ import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanupExample;
-import ntut.csie.filemaker.exceptionBadSmells.ClassImplementCloseable;
-import ntut.csie.filemaker.exceptionBadSmells.ClassWithNotThrowingExceptionCloseable;
-import ntut.csie.filemaker.exceptionBadSmells.UserDefinedCarelessCleanupDog;
-import ntut.csie.filemaker.exceptionBadSmells.UserDefinedCarelessCleanupWeather;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.CarelessCleanupExample;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.ClassImplementCloseable;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.ClassWithNotThrowingExceptionCloseable;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.UserDefinedCarelessCleanupDog;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.UserDefinedCarelessCleanupWeather;
+import ntut.csie.robusta.util.PathUtils;
 import ntut.csie.robusta.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -113,6 +115,14 @@ public class CarelessCleanupVisitorTest {
 		if(settingFile.exists()) {
 			assertTrue(settingFile.delete());
 		}
+	}
+
+	// FIXME 功能需要修改
+	@Test
+	public void visitorCouldBeBetter() throws Exception {
+		fail("目前的CCUQuickFix功能不會標記*.close的部分，因為原本認為是refactor的工作，\n"
+				+ "也因此findOutTheVariableInTry()中的node.resolveMethodBinding()會是null，\n"
+				+ "會使得CarelessCleanupVisitorTest的所有測試都出現NullPointer錯誤");
 	}
 	
 	@Test

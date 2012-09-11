@@ -9,6 +9,7 @@ import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.jdt.util.testSampleCode.NodeUtilsTestSample;
 import ntut.csie.rleht.builder.ASTMethodCollector;
+import ntut.csie.robusta.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
@@ -43,8 +44,7 @@ public class ASTNodeFinderTest {
 						+ javaFileToString.getFileContent());
 		javaFileToString.clear();
 		
-		Path ccExamplePath = new Path(
-				projectName	+ "/src/" + NodeUtilsTestSample.class.getName().replace(".", "/") + ".java");
+		Path ccExamplePath = new Path(PathUtils.getPathOfClassUnderSrcFolder(NodeUtilsTestSample.class, projectName));
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);

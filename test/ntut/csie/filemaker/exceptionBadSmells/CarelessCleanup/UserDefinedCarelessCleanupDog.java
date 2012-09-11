@@ -1,4 +1,4 @@
-package ntut.csie.filemaker.exceptionBadSmells;
+package ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup;
 
 import agile.exception.Robustness;
 import agile.exception.RL;

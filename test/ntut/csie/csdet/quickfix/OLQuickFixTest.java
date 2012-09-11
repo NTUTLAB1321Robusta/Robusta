@@ -2,6 +2,7 @@ package ntut.csie.csdet.quickfix;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -14,9 +15,10 @@ import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
-import ntut.csie.filemaker.exceptionBadSmells.OverLoggingExample;
+import ntut.csie.filemaker.exceptionBadSmells.OverLogging.OverLoggingJavaLogExample;
 import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
+import ntut.csie.robusta.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
@@ -35,10 +37,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class OLQuickFixTest {
-	JavaProjectMaker javaProjectMaker;
 	String javaProjectName;
+	String javaPackageName;
+	JavaProjectMaker javaProjectMaker;
 	JavaFileToString javaFile2String;
-	String javaFileName;
 	CompilationUnit compilationUnit;
 	SmellSettings smellSettings;
 	OLQuickFix olQuickFix;
@@ -49,7 +51,7 @@ public class OLQuickFixTest {
 
 	public OLQuickFixTest() {
 		javaProjectName = "OverLoggingExampleProject";
-		javaFileName = OverLoggingExample.class.getPackage().getName();
+		javaPackageName = OverLoggingJavaLogExample.class.getPackage().getName();
 	}
 	
 	@Before
@@ -57,15 +59,16 @@ public class OLQuickFixTest {
 		// 準備測試檔案樣本內容
 		javaProjectMaker = new JavaProjectMaker(javaProjectName);
 		javaProjectMaker.setJREDefaultContainer();
-
-		// 建立新的檔案OverLoggingExample
+		
+		// 建立新的檔案OverLoggingJavaLogExample
 		javaFile2String = new JavaFileToString();
-		javaFile2String.read(OverLoggingExample.class, "test");
-		javaProjectMaker.createJavaFile(javaFileName, "OverLoggingExample.java", 
-				"package " + javaFileName + ";\n" + javaFile2String.getFileContent());
+		javaFile2String.read(OverLoggingJavaLogExample.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaProjectMaker.createJavaFile(javaPackageName,
+				OverLoggingJavaLogExample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
+				"package " + javaPackageName + ";\n" + javaFile2String.getFileContent());
 
-		Path olExamplePath = new Path(
-				javaProjectName	+ "/src/ntut/csie/filemaker/exceptionBadSmells/OverLoggingExample.java");
+		Path olExamplePath = new Path(PathUtils.getPathOfClassUnderSrcFolder(OverLoggingJavaLogExample.class, javaProjectName));
+		
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -78,6 +81,11 @@ public class OLQuickFixTest {
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
 		olQuickFix = new OLQuickFix("");
+		
+		// 產生收集所有Method的Collector串成List
+		methodCollector = new ASTMethodCollector();
+		compilationUnit.accept(methodCollector);
+		methodCollectList = methodCollector.getMethodList();
 	}
 
 	@After
@@ -92,25 +100,83 @@ public class OLQuickFixTest {
 	}
 
 	@Test
-	public void test() {
+	public void testRun() {
+		fail("There was an excepsion when method \"deleteMessage\" invoke the method \"applyChange\"");
 	}
 
-	// TODO 測試未寫
+	
+	/**
+	 * 測試theSecondOrderInTheSameClassWithJavaLog()
+	 * 此method的call chain有over logging，且此method的log非最上層
+	 */
 	@Test
-	public void testFindLoggingList() {
-	}
-
-	@Test
-	public void testDeleteMessageWithIfIsTrue() throws Exception {
-		initializeMethodCollectList();
-
+	@SuppressWarnings("unchecked")
+	public void testFindLoggingListReturnNonEmptyList() throws Exception {
 		Field actRoot = BaseQuickFix.class.getDeclaredField("actRoot");
 		actRoot.setAccessible(true);
 		actRoot.set(olQuickFix, compilationUnit);
 		
 		Field currentMethodNode = BaseQuickFix.class.getDeclaredField("currentMethodNode");
 		currentMethodNode.setAccessible(true);
-		currentMethodNode.set(olQuickFix, methodCollectList.get(0));
+		currentMethodNode.set(olQuickFix, methodCollectList.get(1));
+
+		Method findLoggingList = OLQuickFix.class.getDeclaredMethod("findLoggingList");
+		findLoggingList.setAccessible(true);
+
+		// 初始化成null
+		List<MarkerInfo> overLoggingList = null;
+		// 執行method後list長度應為1
+		overLoggingList = (List<MarkerInfo>) findLoggingList.invoke(olQuickFix);
+		assertEquals(1, overLoggingList.size());
+	}
+
+	/**
+	 * 測試theThirdOrderInTheSameClassWithJavaLog()
+	 * 此method的call chain有over logging，但此method並沒有log的動作，故不會被標記
+	 */
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testFindLoggingListReturnEmptyList() throws Exception {
+		Field actRoot = BaseQuickFix.class.getDeclaredField("actRoot");
+		actRoot.setAccessible(true);
+		actRoot.set(olQuickFix, compilationUnit);
+		
+		Field currentMethodNode = BaseQuickFix.class.getDeclaredField("currentMethodNode");
+		currentMethodNode.setAccessible(true);
+		currentMethodNode.set(olQuickFix, methodCollectList.get(2));
+		
+		Method findLoggingList = OLQuickFix.class.getDeclaredMethod("findLoggingList");
+		findLoggingList.setAccessible(true);
+
+		// 初始化成null
+		List<MarkerInfo> overLoggingList = null;
+		// 執行method後list長度應為0
+		overLoggingList = (List<MarkerInfo>) findLoggingList.invoke(olQuickFix);
+		assertEquals(0, overLoggingList.size());
+	}
+	
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testFindLoggingListReturnNull() throws Exception {
+		Method findLoggingList = OLQuickFix.class.getDeclaredMethod("findLoggingList");
+		findLoggingList.setAccessible(true);
+		
+		// 初始化成空鏈結
+		List<MarkerInfo> overLoggingList = new ArrayList<MarkerInfo>();
+		// 執行method後應被設為null
+		overLoggingList = (List<MarkerInfo>) findLoggingList.invoke(olQuickFix);
+		assertEquals(null, overLoggingList);
+	}
+	
+	@Test
+	public void testDeleteMessageWithIfIsTrue() throws Exception {
+		Field actRoot = BaseQuickFix.class.getDeclaredField("actRoot");
+		actRoot.setAccessible(true);
+		actRoot.set(olQuickFix, compilationUnit);
+		
+		Field currentMethodNode = BaseQuickFix.class.getDeclaredField("currentMethodNode");
+		currentMethodNode.setAccessible(true);
+		currentMethodNode.set(olQuickFix, methodCollectList.get(1));
 		
 		Field smellMessage = OLQuickFix.class.getDeclaredField("overLoggingList");
 		smellMessage.setAccessible(true);
@@ -121,7 +187,7 @@ public class OLQuickFixTest {
 		deleteMessage.setAccessible(true);
 
 		// 產生測試用 argument
-		mDeclaration = getMethodDeclarationByName(methodCollectList, "theFirstOrderInTheSameClass");
+		mDeclaration = getMethodDeclarationByName(methodCollectList, "theSecondOrderInTheSameClassWithJavaLog");
 		TryStatement tStatement = (TryStatement) mDeclaration.getBody().statements().get(0);
 		CatchClause cClause = (CatchClause) tStatement.catchClauses().get(0);
 		ExpressionStatement eStatement = (ExpressionStatement) cClause.getBody().statements().get(0);
@@ -135,22 +201,26 @@ public class OLQuickFixTest {
 
 		overLoggingList.add(marker);
 		
+		// check precondition
+		@SuppressWarnings("unchecked")
+		List<ASTNode> statementList = cClause.getBody().statements();
+		assertEquals(2, statementList.size());
+
 		// do method and check postcondition
-		// FIXME 進入if呼叫到applyChange時會拋出例外，未修復問題
+		// FIXME deleteMessage呼叫applyChange時會拋出例外，console會出現例外訊息
 		deleteMessage.invoke(olQuickFix, 0);
+		assertEquals(1, statementList.size());
 	}
 
 	@Test
 	public void testDeleteMessageWithIfIsFalse() throws Exception {
-		initializeMethodCollectList();
-
 		Field actRoot = BaseQuickFix.class.getDeclaredField("actRoot");
 		actRoot.setAccessible(true);
 		actRoot.set(olQuickFix, compilationUnit);
 		
 		Field currentMethodNode = BaseQuickFix.class.getDeclaredField("currentMethodNode");
 		currentMethodNode.setAccessible(true);
-		currentMethodNode.set(olQuickFix, methodCollectList.get(0));
+		currentMethodNode.set(olQuickFix, methodCollectList.get(1));
 		
 		Field smellMessage = OLQuickFix.class.getDeclaredField("overLoggingList");
 		smellMessage.setAccessible(true);
@@ -161,7 +231,7 @@ public class OLQuickFixTest {
 		deleteMessage.setAccessible(true);
 
 		// 產生測試用 argument
-		mDeclaration = getMethodDeclarationByName(methodCollectList, "theFirstOrderInTheSameClass");
+		mDeclaration = getMethodDeclarationByName(methodCollectList, "theSecondOrderInTheSameClassWithJavaLog");
 		TryStatement tStatement = (TryStatement) mDeclaration.getBody().statements().get(0);
 		CatchClause cClause = (CatchClause) tStatement.catchClauses().get(0);
 		ExpressionStatement eStatement = (ExpressionStatement) cClause.getBody().statements().get(0);
@@ -169,28 +239,24 @@ public class OLQuickFixTest {
 		SingleVariableDeclaration singleVariableDeclaration = cClause.getException();
 		marker = new MarkerInfo(RLMarkerAttribute.CS_OVER_LOGGING,
 				singleVariableDeclaration.resolveBinding().getType(),
-				cClause.toString(), cClause.getStartPosition() + 1,
+				cClause.toString(), cClause.getStartPosition() + 1,  // 故意給錯的位置
 				compilationUnit.getLineNumber(eStatement.getStartPosition()),
 				singleVariableDeclaration.getType().toString());
 
 		overLoggingList.add(marker);
-		
+
+		// check precondition
+		@SuppressWarnings("unchecked")
+		List<ASTNode> statementList = cClause.getBody().statements();
+		assertEquals(2, statementList.size());
+
 		// do method and check postcondition
 		deleteMessage.invoke(olQuickFix, 0);
-	}
-
-	@Test
-	public void testDeleteMessageWithException() throws Exception {
-		Method deleteMessage = OLQuickFix.class.getDeclaredMethod("deleteMessage", int.class);
-		deleteMessage.setAccessible(true);
-
-		deleteMessage.invoke(olQuickFix, 1);
+		assertEquals(2, statementList.size());
 	}
 	
 	@Test
 	public void testDeleteCatchStatementWithRightArgument() throws Exception {
-		initializeMethodCollectList();
-		
 		Field actRoot = BaseQuickFix.class.getDeclaredField("actRoot");
 		actRoot.setAccessible(true);
 		actRoot.set(olQuickFix, compilationUnit);
@@ -199,9 +265,10 @@ public class OLQuickFixTest {
 		deleteCatchStatement.setAccessible(true);
 		
 		// 產生測試用 argument
-		mDeclaration = getMethodDeclarationByName(methodCollectList, "theFirstOrderInTheSameClass");
+		mDeclaration = getMethodDeclarationByName(methodCollectList, "theSecondOrderInTheSameClassWithJavaLog");
 		TryStatement tStatement = (TryStatement) mDeclaration.getBody().statements().get(0);
 		CatchClause cClause = (CatchClause) tStatement.catchClauses().get(0);
+		@SuppressWarnings("unchecked")
 		List<ASTNode> statementList = cClause.getBody().statements();
 		ExpressionStatement eStatement = (ExpressionStatement) statementList.get(0);
 
@@ -222,8 +289,6 @@ public class OLQuickFixTest {
 
 	@Test
 	public void testDeleteCatchStatementWithWrongArgument() throws Exception {
-		initializeMethodCollectList();
-		
 		Field actRoot = BaseQuickFix.class.getDeclaredField("actRoot");
 		actRoot.setAccessible(true);
 		actRoot.set(olQuickFix, compilationUnit);
@@ -232,9 +297,10 @@ public class OLQuickFixTest {
 		deleteCatchStatement.setAccessible(true);
 		
 		// 產生測試用 argument
-		mDeclaration = getMethodDeclarationByName(methodCollectList, "theFirstOrderInTheSameClass");
+		mDeclaration = getMethodDeclarationByName(methodCollectList, "theSecondOrderInTheSameClassWithJavaLog");
 		TryStatement tStatement = (TryStatement) mDeclaration.getBody().statements().get(0);
 		CatchClause cClause = (CatchClause) tStatement.catchClauses().get(0);
+		@SuppressWarnings("unchecked")
 		List<ASTNode> statementList = cClause.getBody().statements();
 		ExpressionStatement eStatement = (ExpressionStatement) statementList.get(0);
 
@@ -270,12 +336,5 @@ public class OLQuickFixTest {
 			}
 		}
 		return null;
-	}
-	
-	// 產生一個收集所有Method的Collector串成List
-	private void initializeMethodCollectList() {
-		methodCollector = new ASTMethodCollector();
-		compilationUnit.accept(methodCollector);
-		methodCollectList = methodCollector.getMethodList();
 	}
 }
