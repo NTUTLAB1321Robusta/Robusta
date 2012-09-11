@@ -8,7 +8,6 @@ public class AllTests {
 	public static Test suite() {
 		TestSuite suite = new TestSuite("Test for ntut.csie.AllTest");
 		//$JUnit-BEGIN$
-		suite.addTest(new TestSuite(ntut.csie.csdet.data.MarkerInfoTest.class));
 		suite.addTest(new TestSuite(ntut.csie.csdet.preference.JDomUtilTest.class));
 		suite.addTest(new TestSuite(ntut.csie.csdet.visitor.ASTCatchCollectTest.class));
 		//$JUnit-END$
