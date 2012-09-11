@@ -16,6 +16,7 @@ import ntut.csie.csdet.preference.JDomUtil;
 import ntut.csie.csdet.visitor.ASTCatchCollect;
 import ntut.csie.csdet.visitor.DummyHandlerVisitor;
 import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
+import ntut.csie.filemaker.ASTNodeFinder;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.exceptionBadSmells.DummyAndIgnoreExample;
@@ -512,10 +513,7 @@ public class RethrowExRefactoringTest {
 		
 		refactoring.setExceptionName("RuntimeException");
 		
-		ASTMethodCollector methodCollector = new ASTMethodCollector();
-		compilationUnit.accept(methodCollector);
-		List<?> methodList = methodCollector.getMethodList();
-		ASTNode node = (ASTNode)methodList.get(1);
+		ASTNode node = (ASTNode)ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "true_printStackTrace_public");
 		
 		ExceptionAnalyzer exVisitor = new ExceptionAnalyzer(compilationUnit, node.getStartPosition(), 0);
 		node.accept(exVisitor);

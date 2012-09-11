@@ -234,6 +234,7 @@ public class RethrowExRefactoring extends Refactoring {
 	/**
 	 *建立Throw Exception的資訊 
 	 */
+	@Robustness(value = { @RL(level = 1, exception = RuntimeException.class) })
 	private void rethrowException() {
 		try {
 			actRoot.recordModifications();
@@ -267,7 +268,8 @@ public class RethrowExRefactoring extends Refactoring {
 			// 寫回Edit中
 			applyChange();
 		}catch (Exception e) {
-			logger.error("[Rethrow Unchecked Exception] EXCEPTION ", e);
+//			logger.error("[Rethrow Unchecked Exception] EXCEPTION ", e);
+			throw new RuntimeException(e);
 		}
 	}
 	
