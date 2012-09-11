@@ -8,7 +8,8 @@ public class CSMessageTest extends TestCase {
 	
 	protected void setUp() throws Exception {
 		super.setUp();
-		cm = new CSMessage(RLMarkerAttribute.CS_INGNORE_EXCEPTION,null,"catch(Exception e){}",155,77,"Exception");
+		cm = new CSMessage(RLMarkerAttribute.CS_INGNORE_EXCEPTION, null,
+				"catch(Exception e){}", 155, 77, "Exception");
 	}
 
 	protected void tearDown() throws Exception {

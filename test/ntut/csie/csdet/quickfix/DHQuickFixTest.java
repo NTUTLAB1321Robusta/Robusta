@@ -104,7 +104,7 @@ public class DHQuickFixTest {
 		DHQuickFix dhQF = new DHQuickFix("??"); 
 		ASTCatchCollect catchCollector = new ASTCatchCollect();
 		unit.accept(catchCollector);
-		List<ASTNode> catchList = catchCollector.getMethodList();
+		List<CatchClause> catchList = catchCollector.getMethodList();
 		
 		Method deleteStatement = DHQuickFix.class.getDeclaredMethod("deleteStatement", List.class);
 		deleteStatement.setAccessible(true);
@@ -252,7 +252,7 @@ public class DHQuickFixTest {
 		problem.set(dhQF, "Dummy_Handler");
 		
 		/* add throw statement */
-		Method addThrowStatement = DHQuickFix.class.getDeclaredMethod("addThrowStatement", ASTNode.class, AST.class);
+		Method addThrowStatement = DHQuickFix.class.getDeclaredMethod("addThrowStatement", CatchClause.class, AST.class);
 		addThrowStatement.setAccessible(true);
 		// 取得該method的catch clause
 		ASTCatchCollect catchCollector = new ASTCatchCollect();

@@ -10,7 +10,7 @@ import ntut.csie.csdet.quickfix.OLQuickFix;
 import ntut.csie.csdet.quickfix.TEQuickFix;
 import ntut.csie.csdet.quickfix.UMQuickFix;
 import ntut.csie.csdet.refactor.CarelessCleanUpAction;
-import ntut.csie.csdet.refactor.OLRefactoring;
+import ntut.csie.csdet.refactor.OverLoggingAction;
 import ntut.csie.csdet.refactor.RethrowUncheckExAction;
 import ntut.csie.rleht.common.RLUtils;
 import ntut.csie.rleht.rlAdvice.AchieveRL1QuickFix;
@@ -130,7 +130,8 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				// 碰到OverLogging的Quick fix and refactor方法
 			}else if(problem.equals(RLMarkerAttribute.CS_OVER_LOGGING)){
 				markerList.add(new OLQuickFix("Quick Fix==>Remove Logging"));
-				markerList.add(new OLRefactoring("Refactor==>Remove Reference Logging"));
+//				markerList.add(new OLRefactoring("Refactor==>Remove Reference Logging"));
+				markerList.add(new OverLoggingAction("Refactor==>Remove Reference Logging"));
 				markerList.add(new CSQuickFix("新增 @SuppressSmell '" + problem + "' on Method", false));
 				markerList.add(new CSQuickFix("新增 @SuppressSmell '" + problem + "' on Catch", true));
 				//遇到可以建議的方法

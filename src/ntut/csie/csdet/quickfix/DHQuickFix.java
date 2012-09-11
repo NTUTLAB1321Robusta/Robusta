@@ -56,8 +56,6 @@ public class DHQuickFix extends BaseQuickFix implements IMarkerResolution {
 
 	//刪掉的Statement數目
 	private int delStatement = 0;
-	// 反白的行數
-	//int selectLine = -1;
 	
 	public DHQuickFix(String label){
 		this.label = label;
@@ -108,7 +106,6 @@ public class DHQuickFix extends BaseQuickFix implements IMarkerResolution {
 			currentMethodRLList = exVisitor.getMethodRLAnnotationList();
 
 			// 找出這個method的code smell
-//			CodeSmellAnalyzer visitor = new CodeSmellAnalyzer(this.actRoot);
 			if (problem.equals(RLMarkerAttribute.CS_INGNORE_EXCEPTION)) {
 				IgnoreExceptionVisitor ieVisitor = new IgnoreExceptionVisitor(actRoot);
 				currentMethodNode.accept(ieVisitor);
@@ -139,7 +136,7 @@ public class DHQuickFix extends BaseQuickFix implements IMarkerResolution {
 			//收集該method所有的catch clause
 			ASTCatchCollect catchCollector = new ASTCatchCollect();
 			currentMethodNode.accept(catchCollector);
-			List<ASTNode> catchList = catchCollector.getMethodList();
+			List<CatchClause> catchList = catchCollector.getMethodList();
 			
 			// 去比對startPosition,找出要修改的節點
 			for (int i = 0; i < catchList.size(); i++) {
@@ -165,10 +162,9 @@ public class DHQuickFix extends BaseQuickFix implements IMarkerResolution {
 	 * @param cc
 	 * @param ast
 	 */
-	private void addThrowStatement(ASTNode cc, AST ast) {
+	private void addThrowStatement(CatchClause cc, AST ast) {
 		// 取得該catch()中的exception variable
 		SingleVariableDeclaration svd = (SingleVariableDeclaration) cc.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
-		CatchClause clause = (CatchClause) cc;
 		// 自行建立一個throw statement加入
 		ThrowStatement ts = ast.newThrowStatement();
 		// 將throw的variable傳入
@@ -178,7 +174,7 @@ public class DHQuickFix extends BaseQuickFix implements IMarkerResolution {
 		// 將throw new RuntimeException(ex)括號中加入參數
 		cic.arguments().add(ast.newSimpleName(svd.resolveBinding().getName()));
 		// 取得CatchClause所有的statement,將相關print例外資訊的東西移除
-		List<Statement> statement = clause.getBody().statements();
+		List<Statement> statement = cc.getBody().statements();
 
 		delStatement = statement.size();
 		if (problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)) {
@@ -195,7 +191,7 @@ public class DHQuickFix extends BaseQuickFix implements IMarkerResolution {
 	 * 產生Annotation
 	 * @param ast
 	 */
-	private void addAnnotationRoot(AST ast){
+	private void addAnnotationRoot(AST ast) {
 		//要建立@Robustness(value={@RL(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
 		//建立Annotation root
 		NormalAnnotation root = ast.newNormalAnnotation();
@@ -215,9 +211,8 @@ public class DHQuickFix extends BaseQuickFix implements IMarkerResolution {
 				//把舊的annotation加進去
 				//判斷如果遇到重複的就不要加annotation
 				
-				if((!rlmsg.getRLData().getExceptionType().toString().contains(exType)) && (rlmsg.getRLData().getLevel() == 1)){					
+				if((!rlmsg.getRLData().getExceptionType().toString().contains(exType)) && (rlmsg.getRLData().getLevel() == 1))					
 					rlary.expressions().add(getRLAnnotation(ast, rlmsg.getRLData().getLevel(), rlmsg.getRLData().getExceptionType()));	
-				}
 			}
 			rlary.expressions().add(getRLAnnotation(ast,1,exType));
 			
@@ -304,9 +299,9 @@ public class DHQuickFix extends BaseQuickFix implements IMarkerResolution {
 	 * 在Rethrow之前,先將相關的print字串都清除掉
 	 * @param statementTemp
 	 */
-	private void deleteStatement(List<Statement> statementTemp){
+	private void deleteStatement(List<Statement> statementTemp) {
 		// 從Catch Clause裡面剖析兩種情形
-		if(statementTemp.size() != 0){
+		if(statementTemp.size() != 0) {
 			for (int i = 0; i < statementTemp.size(); i++) {
 				if (statementTemp.get(i) instanceof ExpressionStatement) {
 					ExpressionStatement statement = (ExpressionStatement) statementTemp.get(i);
@@ -317,7 +312,6 @@ public class DHQuickFix extends BaseQuickFix implements IMarkerResolution {
 
 						statementTemp.remove(i);
 						// 移除完之後ArrayList的位置會重新調整過,所以利用遞迴來繼續往下找符合的條件並移除
-//						deleteStatement(statementTemp);
 						i--;
 					}
 				}

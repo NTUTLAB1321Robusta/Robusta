@@ -29,13 +29,13 @@ import org.slf4j.LoggerFactory;
  * @author Shiau
  */
 public class OverLoggingDetector {
-	private static Logger logger = LoggerFactory.getLogger(OverLoggingDetector.class);
+	static Logger logger = LoggerFactory.getLogger(OverLoggingDetector.class);
 	// 儲存所找到的OverLoging 
-	private List<MarkerInfo> overLoggingList = new ArrayList<MarkerInfo>();
+	List<MarkerInfo> overLoggingList = new ArrayList<MarkerInfo>();
 	// AST Tree的root(檔案名稱)
-	private CompilationUnit root;
+	CompilationUnit root;
 	// 最底層的Method
-	private MethodDeclaration startMethod;
+	MethodDeclaration startMethod;
 	
 	OverLoggingVisitor visitor;
 
@@ -61,9 +61,8 @@ public class OverLoggingDetector {
 		// 是否繼續偵測
 		if (visitor.getIsKeepTrace()) {
 			// 使用遞迴判斷是否發生OverLogging，若OverLogging則記錄其Message
-			if (detectOverLogging(method)) {
+			if (detectOverLogging(method))
 				overLoggingList = visitor.getOverLoggingList();
-			}
 		}
 	}
 	
@@ -75,7 +74,7 @@ public class OverLoggingDetector {
 	 */
 	private boolean detectOverLogging(IMethod method) {
 		//TODO 曾發生Internal Error
-		//往下一層邁進		
+		//往下一層邁進
 		IMember[] methodArray = new IMember[] {method};
 		MethodWrapper[] currentMW = CallHierarchy.getDefault().getCallerRoots(methodArray);
 		if (currentMW.length != 1)

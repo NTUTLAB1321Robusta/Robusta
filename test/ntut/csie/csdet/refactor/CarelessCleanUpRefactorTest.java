@@ -50,7 +50,6 @@ import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.TryStatement;
-import org.eclipse.jdt.core.dom.WhileStatement;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -403,14 +402,13 @@ public class CarelessCleanUpRefactorTest {
 	
 	@Test
 	public void testFindTryStatement() throws Exception {
-		ASTMethodCollector methodCollector = new ASTMethodCollector();
-		compilationUnit.accept(methodCollector);
+		MethodDeclaration md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "y_closeStreamWithElseBigTry");
 		
 		Field currentMethodNode = CarelessCleanUpRefactor.class.getDeclaredField("currentMethodNode");
 		currentMethodNode.setAccessible(true);
-		currentMethodNode.set(refactor, methodCollector.getMethodList().get(11));
+		currentMethodNode.set(refactor, md);
 		
-		MarkerInfo marker = new MarkerInfo(null, null, null, 7141, 0, null);
+		MarkerInfo marker = new MarkerInfo(null, null, null, 7297, 237, null);
 		Field smellMessage = CarelessCleanUpRefactor.class.getDeclaredField("smellMessage");
 		smellMessage.setAccessible(true);
 		smellMessage.set(refactor, marker);
@@ -431,9 +429,10 @@ public class CarelessCleanUpRefactorTest {
 						"}\n", findTryStatement.invoke(refactor).toString());
 		
 		// for statement contain bad smell
-		marker = new MarkerInfo(null, null, null, 13201, 181, null);
+		marker = new MarkerInfo(null, null, null, 12858, 444, null);
 		smellMessage.set(refactor, marker);
-		currentMethodNode.set(refactor, methodCollector.getMethodList().get(25));
+		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "y_multiNestedStatementWithTryBlock");
+		currentMethodNode.set(refactor, md);
 		assertEquals(	"try {\n" +
 						"  if (a == 5) {\n" +
 						"    FileWriter fw=new FileWriter(\"filepath\");\n" +
@@ -446,9 +445,10 @@ public class CarelessCleanUpRefactorTest {
 						"}\n", findTryStatement.invoke(refactor).toString());
 		
 		// while statement conatin bad smell
-		marker = new MarkerInfo(null, null, null, 13742, 185, null);
+		marker = new MarkerInfo(null, null, null, 13454, 469, null);
 		smellMessage.set(refactor, marker);
-		currentMethodNode.set(refactor, methodCollector.getMethodList().get(26));
+		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "y_closeStreamInFinallyButThrowsExceptionInCatchAndFinally");
+		currentMethodNode.set(refactor, md);
 		assertEquals(	"try {\n" +
 						"  if (a == 5) {\n" +
 						"    fw=new FileWriter(\"filepath\");\n" +
@@ -482,12 +482,11 @@ public class CarelessCleanUpRefactorTest {
 
 	@Test
 	public void testDeleteBlockStatement() throws Exception {
-		ASTMethodCollector methodCollector = new ASTMethodCollector();
-		compilationUnit.accept(methodCollector);
-		MethodDeclaration md = (MethodDeclaration)methodCollector.getMethodList().get(12);
-		TryStatement tryStatement = (TryStatement)md.getBody().statements().get(0);
+		String nameOfWillBeTestedMethod = "y_closeStreamInTryBlock";
+		MethodDeclaration md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, nameOfWillBeTestedMethod);
+		TryStatement tryStatement = ASTNodeFinder.getTryStatementNodeListByMethodDeclarationName(compilationUnit, nameOfWillBeTestedMethod).get(0);
 		
-		MarkerInfo marker = new MarkerInfo(null, null, null, 7653, 25, null);
+		MarkerInfo marker = new MarkerInfo(null, null, null, 1508, 52, null);
 		Field smellMessage = CarelessCleanUpRefactor.class.getDeclaredField("smellMessage");
 		smellMessage.setAccessible(true);
 		smellMessage.set(refactor, marker);
@@ -499,12 +498,11 @@ public class CarelessCleanUpRefactorTest {
 	
 	@Test
 	public void testDeleteCleanUpLine() throws Exception {
-		ASTMethodCollector methodCollector = new ASTMethodCollector();
-		compilationUnit.accept(methodCollector);
-		MethodDeclaration md = (MethodDeclaration)methodCollector.getMethodList().get(12);
-		TryStatement tryStatement = (TryStatement)md.getBody().statements().get(0);
+		String nameOfWillBeTestedMethod = "y_closeStreamWithMultiStatementInThenBigTry";
+		MethodDeclaration md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, nameOfWillBeTestedMethod);
+		TryStatement tryStatement = ASTNodeFinder.getTryStatementNodeListByMethodDeclarationName(compilationUnit, nameOfWillBeTestedMethod).get(0);
 		
-		MarkerInfo marker = new MarkerInfo(null, null, null, 7653, 25, null);
+		MarkerInfo marker = new MarkerInfo(null, null, null, 7763, 254, null);
 		Field smellMessage = CarelessCleanUpRefactor.class.getDeclaredField("smellMessage");
 		smellMessage.setAccessible(true);
 		smellMessage.set(refactor, marker);
@@ -532,9 +530,10 @@ public class CarelessCleanUpRefactorTest {
 						"  e.printStackTrace();\n" +
 						"}\n", tryStatement.toString());
 		
-		md = (MethodDeclaration)methodCollector.getMethodList().get(6);
-		tryStatement = (TryStatement)md.getBody().statements().get(1);
-		marker = new MarkerInfo(null, null, null, 4977, 25, null);
+		nameOfWillBeTestedMethod = "y2_closeStreamInCatchClause";
+		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, nameOfWillBeTestedMethod);
+		tryStatement = ASTNodeFinder.getTryStatementNodeListByMethodDeclarationName(compilationUnit, nameOfWillBeTestedMethod).get(0);
+		marker = new MarkerInfo(null, null, null, 4995, 159, null);
 		smellMessage.set(refactor, marker);
 		
 		// check precondition
@@ -573,10 +572,10 @@ public class CarelessCleanUpRefactorTest {
 						"  System.out.println(\"Close nothing at all.\");\n" +
 						"}\n", tryStatement.toString());
 		
-		md = (MethodDeclaration)methodCollector.getMethodList().get(26);
-		WhileStatement whileStatement = (WhileStatement)md.getBody().statements().get(1);
-		tryStatement = (TryStatement)((Block)whileStatement.getBody()).statements().get(1);
-		marker = new MarkerInfo(null, null, null, 13910, 11, null);
+		nameOfWillBeTestedMethod = "y_closeStreamInFinallyButThrowsExceptionInCatchAndFinally";
+		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, nameOfWillBeTestedMethod);
+		tryStatement = ASTNodeFinder.getTryStatementNodeListByMethodDeclarationName(compilationUnit, nameOfWillBeTestedMethod).get(0);
+		marker = new MarkerInfo(null, null, null, 13454, 469, null);
 		smellMessage.set(refactor, marker);
 		
 		// check precondition

@@ -98,7 +98,8 @@ public class CarelessCleanupVisitorTest {
 				+ "/" + JavaProjectMaker.FOLDERNAME_SOURCE + "/"
 				+ PathUtils.dot2slash(CarelessCleanupExample.class.getName()
 						.toString()) + JavaProjectMaker.JAVA_FILE_EXTENSION);
-		//Create AST to parse
+		// Create AST to parse
+		
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		// 設定要被建立AST的檔案

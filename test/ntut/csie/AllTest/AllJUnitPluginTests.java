@@ -11,7 +11,6 @@ import ntut.csie.csdet.refactor.RetryRefactoringTest;
 import ntut.csie.csdet.report.ReportBuilderTest;
 import ntut.csie.csdet.visitor.CarelessCleanupVisitorTest;
 import ntut.csie.csdet.visitor.DummyHandlerVisitorTest;
-import ntut.csie.csdet.visitor.ExpressionStatementAnalyzerTest;
 import ntut.csie.csdet.visitor.IgnoreExceptionVisitorTest;
 import ntut.csie.csdet.visitor.NestedTryStatementVisitorTest;
 import ntut.csie.csdet.visitor.SpareHandlerVisitorTest;
@@ -40,7 +39,6 @@ import org.junit.runners.Suite;
 	
 	CarelessCleanupVisitorTest.class,
 	DummyHandlerVisitorTest.class,
-	ExpressionStatementAnalyzerTest.class,
 	IgnoreExceptionVisitorTest.class,
 	NestedTryStatementVisitorTest.class,
 	SpareHandlerVisitorTest.class,

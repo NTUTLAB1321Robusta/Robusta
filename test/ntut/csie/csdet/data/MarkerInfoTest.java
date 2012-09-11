@@ -4,11 +4,12 @@ import ntut.csie.rleht.builder.RLMarkerAttribute;
 import junit.framework.TestCase;
 
 public class MarkerInfoTest extends TestCase {
-	private MarkerInfo cm;
+	private MarkerInfo markerInfo;
 	
 	protected void setUp() throws Exception {
 		super.setUp();
-		cm = new MarkerInfo(RLMarkerAttribute.CS_INGNORE_EXCEPTION,null,"catch(Exception e){}",155,77,"Exception");
+		markerInfo = new MarkerInfo(RLMarkerAttribute.CS_INGNORE_EXCEPTION,
+				null, "catch(Exception e){}", 155, 77, "Exception");
 	}
 
 	protected void tearDown() throws Exception {
@@ -16,23 +17,23 @@ public class MarkerInfoTest extends TestCase {
 	}
 
 	public void testGetCodeSmellType() {
-		assertEquals(RLMarkerAttribute.CS_INGNORE_EXCEPTION,cm.getCodeSmellType());
+		assertEquals(RLMarkerAttribute.CS_INGNORE_EXCEPTION, markerInfo.getCodeSmellType());
 	}
 
 	public void testGetLineNumber() {
-		assertEquals(77,cm.getLineNumber());
+		assertEquals(77,markerInfo.getLineNumber());
 	}
 
 	public void testGetExceptionType() {
-		assertEquals("Exception",cm.getExceptionType());
+		assertEquals("Exception", markerInfo.getExceptionType());
 	}
 
 	public void testGetStatement() {
-		assertEquals("catch(Exception e){}",cm.getStatement());
+		assertEquals("catch(Exception e){}", markerInfo.getStatement());
 	}
 
 	public void testGetPosition() {
-		assertEquals(155,cm.getPosition());
+		assertEquals(155,markerInfo.getPosition());
 	}
 
 }
