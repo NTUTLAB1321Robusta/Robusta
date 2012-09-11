@@ -263,7 +263,7 @@ public class CarelessCleanupExample {
 	 * 如果是專門用來放在Finally關閉串流的method，將不做careless cleanup的檢查
 	 * @param fileOutputStream
 	 */
-	public void closeStreamWithoutThrowingExceptionBigTry(FileOutputStream fileOutputStream) {
+	protected void closeStreamWithoutThrowingExceptionBigTry(FileOutputStream fileOutputStream) {
 		try {
 			if (fileOutputStream != null) {
 				fileOutputStream.close();
@@ -552,11 +552,12 @@ public class CarelessCleanupExample {
 	 * 若.close() method不會丟出例外，應可以直接quick fix放到finally block中
 	 * @throws IOException
 	 */
-	public void theCloseImplementClosableWillNotThrowException() {
-		ClassImplementCloseableWithoutThrowException anotherInstance = null;
+	@Robustness(value = { @RL(level = 1, exception = java.io.IOException.class) })
+	public void theCloseImplementClosableWillNotThrowException() throws IOException {
+		ClassImplementCloseableWithoutThrowException anInstance = null;
 		try {
-			anotherInstance = new ClassImplementCloseableWithoutThrowException();
-			anotherInstance.close();
+			anInstance = new ClassImplementCloseableWithoutThrowException();
+			anInstance.close();
 		} finally {
 		}
 	}

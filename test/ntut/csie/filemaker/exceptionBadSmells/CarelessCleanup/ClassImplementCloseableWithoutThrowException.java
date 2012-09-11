@@ -10,7 +10,7 @@ import java.io.Closeable;
 public class ClassImplementCloseableWithoutThrowException implements Closeable {
 
 	@Override
-	public void close(){
+	public void close() {
 	}
 
 }
