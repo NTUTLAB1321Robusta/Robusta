@@ -30,22 +30,27 @@ public class ASTNodeFinderTest {
 	CompilationUnit compilationUnit;
 	String projectName;
 	
+	public ASTNodeFinderTest() {
+		projectName = "ASTNodeFinderExampleProject";
+	}
+	
 	@Before
 	public void setUp() throws Exception {
-		projectName = "NodeUtilsExampleProject";
 		javaFileToString = new JavaFileToString();
 		javaProjectMaker = new JavaProjectMaker(projectName);
 		javaProjectMaker.setJREDefaultContainer();
 		// 根據測試檔案樣本內容建立新的檔案
-		javaFileToString.read(NodeUtilsTestSample.class, "test");
+		javaFileToString.read(NodeUtilsTestSample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(NodeUtilsTestSample.class.getPackage().getName(),
-				NodeUtilsTestSample.class.getSimpleName() + ".java",
+				NodeUtilsTestSample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
 				"package " + NodeUtilsTestSample.class.getPackage().getName() + ";\n"
 						+ javaFileToString.getFileContent());
 		javaFileToString.clear();
 		
+
 		Path ccExamplePath = new Path(PathUtils.getPathOfClassUnderSrcFolder(NodeUtilsTestSample.class, projectName));
-		//Create AST to parse
+		
+		// Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		// 設定要被建立AST的檔案

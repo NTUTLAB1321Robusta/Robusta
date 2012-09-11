@@ -1,6 +1,5 @@
 package ntut.csie.csdet.report;
 
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -16,12 +15,16 @@ import java.util.TreeMap;
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.data.SSMessage;
 import ntut.csie.csdet.preference.JDomUtil;
+import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.visitor.DummyHandlerVisitor;
+import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.exceptionBadSmells.DummyAndIgnoreExample;
+import ntut.csie.filemaker.exceptionBadSmells.UserDefineDummyHandlerFish;
 import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
+import ntut.csie.robusta.util.PathUtils;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -42,42 +45,71 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class ReportBuilderTest {
-	JavaFileToString jfs;
-	JavaProjectMaker jpm;
-	CompilationUnit unit;
+	JavaFileToString javaFileToString;
+	JavaProjectMaker javaProjectMaker;
+	CompilationUnit compilationUnit;
 	ReportBuilder reportBuilder;
 	IProject project;
+	String projectName;
+	SmellSettings smellSettings;
+	
+	public ReportBuilderTest() {
+		projectName = "DummyHandlerTest";
+	}
 
 	@Before
 	public void setUp() throws Exception {
-		CreateDummyHandlerXML();
+		
 		// 讀取測試檔案樣本內容
-		jfs = new JavaFileToString();
-		jfs.read(DummyAndIgnoreExample.class, "test");
+		javaFileToString = new JavaFileToString();
+		javaProjectMaker = new JavaProjectMaker(projectName);
+		javaProjectMaker.setJREDefaultContainer();
 		
-		jpm = new JavaProjectMaker("DummyHandlerTest");
-		jpm.setJREDefaultContainer();
 		// 新增欲載入的library
-		jpm.addJarFromProjectToBuildPath("lib\\log4j-1.2.15.jar");
-		jpm.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.FOLDERNAME_LIB_JAR, JavaProjectMaker.FOLDERNAME_BIN_CLASS);
-		jpm.addJarFromTestProjectToBuildPath("/lib/RL.jar");
+		javaProjectMaker.addJarFromProjectToBuildPath("lib\\log4j-1.2.15.jar");
+		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(
+				JavaProjectMaker.FOLDERNAME_LIB_JAR,
+				JavaProjectMaker.FOLDERNAME_BIN_CLASS);
+		javaProjectMaker.addJarFromTestProjectToBuildPath("/"
+				+ JavaProjectMaker.RL_LIBRARY_PATH);
+		
 		// 根據測試檔案樣本內容建立新的檔案
-		jpm.createJavaFile("ntut.csie.exceptionBadSmells", "DummyAndIgnoreExample.java", "package ntut.csie.exceptionBadSmells;\n" + jfs.getFileContent());
+		javaFileToString.read(DummyAndIgnoreExample.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaProjectMaker.createJavaFile(
+				DummyAndIgnoreExample.class.getPackage().getName(),
+				DummyAndIgnoreExample.class.getSimpleName()
+				+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
+				+ DummyAndIgnoreExample.class.getPackage().getName()
+				+ ";\n" + javaFileToString.getFileContent());
+		javaFileToString.clear();
 		
-		project = ResourcesPlugin.getWorkspace().getRoot().getProject("DummyHandlerTest");
+		javaFileToString.read(UserDefineDummyHandlerFish.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaProjectMaker.createJavaFile(
+				UserDefineDummyHandlerFish.class.getPackage().getName(),
+				UserDefineDummyHandlerFish.class.getSimpleName()
+				+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
+				+ UserDefineDummyHandlerFish.class.getPackage().getName()
+				+ ";\n" + javaFileToString.getFileContent());
+		javaFileToString.clear();
+		
+		CreateSettings();
+		
+		project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 		reportBuilder = new ReportBuilder(project, new ReportModel());
-		
-		Path path = new Path("DummyHandlerTest\\src\\ntut\\csie\\exceptionBadSmells\\DummyAndIgnoreExample.java");
+
+		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(DummyAndIgnoreExample.class, projectName));
 		
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
+		
 		// 設定要被建立AST的檔案
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
+		
 		// 取得AST
-		unit = (CompilationUnit) parser.createAST(null); 
-		unit.recordModifications();
+		compilationUnit = (CompilationUnit) parser.createAST(null); 
+		compilationUnit.recordModifications();
 	}
 
 	@After
@@ -87,7 +119,7 @@ public class ReportBuilderTest {
 		if(xmlFile.exists())
 			assertTrue(xmlFile.delete());
 		// 刪除專案
-		jpm.deleteProject();
+		javaProjectMaker.deleteProject();
 	}
 
 	@Test
@@ -96,8 +128,8 @@ public class ReportBuilderTest {
 		/** 正確路徑下的class file */
 		Method countFileLOC = ReportBuilder.class.getDeclaredMethod("countFileLOC", String.class);
 		countFileLOC.setAccessible(true);
-		assertEquals(221, countFileLOC.invoke(reportBuilder, "/DummyHandlerTest/src/ntut/csie/exceptionBadSmells/DummyAndIgnoreExample.java"));
-		
+		// 檢查測試專案檔案的行數
+		assertEquals(299, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(DummyAndIgnoreExample.class, projectName)));
 		/** 路徑不正確或者不存在的class file */
 		assertEquals(0, countFileLOC.invoke(reportBuilder, "not/exist/example.java"));
 	}
@@ -111,7 +143,7 @@ public class ReportBuilderTest {
 		assertEquals(13, roots.length);
 		for(int i = 0; i < roots.length; i++) {
 			if(i == roots.length - 1)
-				assertEquals("src", roots[i].getElementName());
+				assertEquals(JavaProjectMaker.FOLDERNAME_SOURCE, roots[i].getElementName());
 			else
 				assertTrue(roots[i].getPath().toString().endsWith(".jar"));
 		}
@@ -128,27 +160,27 @@ public class ReportBuilderTest {
 	public void testGetTrimFolderName() throws Exception {
 		Method getTrimFolderName = ReportBuilder.class.getDeclaredMethod("getTrimFolderName", String.class);
 		getTrimFolderName.setAccessible(true);
-		assertEquals("ntut.csie.exceptionBadSmells", (String)getTrimFolderName.invoke(reportBuilder, "EH_LEFTsrcEH_RIGHTntut.csie.exceptionBadSmells"));
+		assertEquals(DummyAndIgnoreExample.class.getPackage().getName(), (String)getTrimFolderName.invoke(reportBuilder, "EH_LEFTsrcEH_RIGHT" + DummyAndIgnoreExample.class.getPackage().getName()));
 	}
 	
 	@Test
 	public void testIsConformFolderFormat() throws Exception {
 		Method isConformFolderFormat = ReportBuilder.class.getDeclaredMethod("isConformFolderFormat", String.class);
 		isConformFolderFormat.setAccessible(true);
-		assertTrue((Boolean)isConformFolderFormat.invoke(reportBuilder, "EH_LEFTsrcEH_RIGHTntut.csie.exceptionBadSmells"));
-		assertFalse((Boolean)isConformFolderFormat.invoke(reportBuilder, "ntut.csie.exceptionBadSmells"));
-		assertFalse((Boolean)isConformFolderFormat.invoke(reportBuilder, "srcEH_RIGHTntut.csie.exceptionBadSmells"));
-		assertFalse((Boolean)isConformFolderFormat.invoke(reportBuilder, "EH_LEFTsrcntut.csie.exceptionBadSmells"));
-		assertFalse((Boolean)isConformFolderFormat.invoke(reportBuilder, "EH_RIGHTsrcEH_LEFTntut.csie.exceptionBadSmells"));
+		assertTrue((Boolean)isConformFolderFormat.invoke(reportBuilder, "EH_LEFTsrcEH_RIGHT" + DummyAndIgnoreExample.class.getPackage().getName()));
+		assertFalse((Boolean)isConformFolderFormat.invoke(reportBuilder, DummyAndIgnoreExample.class.getPackage().getName()));
+		assertFalse((Boolean)isConformFolderFormat.invoke(reportBuilder, "srcEH_RIGHT" + DummyAndIgnoreExample.class.getPackage().getName()));
+		assertFalse((Boolean)isConformFolderFormat.invoke(reportBuilder, "EH_LEFT" + DummyAndIgnoreExample.class.getPackage().getName()));
+		assertFalse((Boolean)isConformFolderFormat.invoke(reportBuilder, "EH_RIGHTsrcEH_LEFTntut.csie.exceptionBadSmells" + DummyAndIgnoreExample.class.getPackage().getName()));
 	}
 	
 	@Test
 	public void testGetFolderName() throws Exception {
 		Method getFolderName = ReportBuilder.class.getDeclaredMethod("getFolderName", String.class);
 		getFolderName.setAccessible(true);
-		assertEquals("src", getFolderName.invoke(reportBuilder, "EH_LEFTsrcEH_RIGHTntut.csie.exceptionBadSmells"));
-		assertEquals("src", getFolderName.invoke(reportBuilder, "EH_LEFTsrcEH_RIGHTntut.csie.*"));
-		assertEquals("src", getFolderName.invoke(reportBuilder, "EH_LEFTsrcEH_RIGHT"));
+		assertEquals(JavaProjectMaker.FOLDERNAME_SOURCE, getFolderName.invoke(reportBuilder, "EH_LEFTsrcEH_RIGHT" + DummyAndIgnoreExample.class.getPackage().getName()));
+		assertEquals(JavaProjectMaker.FOLDERNAME_SOURCE, getFolderName.invoke(reportBuilder, "EH_LEFTsrcEH_RIGHTntut.csie.*"));
+		assertEquals(JavaProjectMaker.FOLDERNAME_SOURCE, getFolderName.invoke(reportBuilder, "EH_LEFTsrcEH_RIGHT"));
 	}
 	
 	@Test
@@ -216,16 +248,21 @@ public class ReportBuilderTest {
 		tempList.add("EH_LEFTsrcEH_RIGHTntut.csie.EH_STAR");
 		ruleList.add(tempList);
 		tempList = new ArrayList<String>();
-		tempList.add("EH_LEFTsrcEH_RIGHTntut.csie.exceptionBadSmells");
+		tempList.add("EH_LEFTsrcEH_RIGHTntut.csie.filemaker.EH_STAR");
+		ruleList.add(tempList);
+		tempList = new ArrayList<String>();
+		tempList.add("EH_LEFTsrcEH_RIGHT" + DummyAndIgnoreExample.class.getPackage().getName());
 		ruleList.add(tempList);
 		tempList = new ArrayList<String>();
 		tempList.add("ntut.EH_STAR");
 		ruleList.add(tempList);
 		tempList = new ArrayList<String>();
 		tempList.add("ntut.csie.EH_STAR");
+		tempList = new ArrayList<String>();
+		tempList.add("ntut.csie.filemaker.EH_STAR");
 		ruleList.add(tempList);
 		tempList = new ArrayList<String>();
-		tempList.add("ntut.csie.exceptionBadSmells");
+		tempList.add(DummyAndIgnoreExample.class.getPackage().getName());
 		ruleList.add(tempList);
 		
 		Field filterRuleList = ReportBuilder.class.getDeclaredField("filterRuleList");
@@ -248,6 +285,8 @@ public class ReportBuilderTest {
 								assertTrue((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
 							else if(j == 3)
 								assertTrue((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
+							else if(j == 4)
+								assertTrue((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
 						}
 						else if(k == 1) {
 							if(j == 0)
@@ -257,6 +296,8 @@ public class ReportBuilderTest {
 							else if(j == 2)
 								assertTrue((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
 							else if(j == 3)
+								assertTrue((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
+							else if(j == 4)
 								assertTrue((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
 						}
 						else if(k == 2) {
@@ -268,6 +309,8 @@ public class ReportBuilderTest {
 								assertTrue((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
 							else if(j == 3)
 								assertTrue((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
+							else if(j == 4)
+								assertTrue((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
 						}
 						else if(k == 3) {
 							if(j == 0)
@@ -278,25 +321,31 @@ public class ReportBuilderTest {
 								assertFalse((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
 							else if(j == 3)
 								assertTrue((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
+							else if(j == 4)
+								assertTrue((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
 						}
 						else if(k == 4) {
 							if(j == 0)
 								assertFalse((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
 							else if(j == 1)
-								assertTrue((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
+								assertFalse((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
 							else if(j == 2)
-								assertTrue((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
+								assertFalse((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
 							else if(j == 3)
+								assertFalse((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
+							else if(j == 4)
 								assertTrue((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
 						}
 						else if(k == 5) {
 							if(j == 0)
 								assertFalse((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
 							else if(j == 1)
-								assertFalse((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
+								assertTrue((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
 							else if(j == 2)
 								assertTrue((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
 							else if(j == 3)
+								assertTrue((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
+							else if(j == 4)
 								assertTrue((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
 						}
 						else if(k == 6) {
@@ -307,6 +356,32 @@ public class ReportBuilderTest {
 							else if(j == 2)
 								assertFalse((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
 							else if(j == 3)
+								assertTrue((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
+							else if(j == 4)
+								assertTrue((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
+						}
+						else if(k == 7) {
+							if(j == 0)
+								assertFalse((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
+							else if(j == 1)
+								assertFalse((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
+							else if(j == 2)
+								assertFalse((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
+							else if(j == 3)
+								assertFalse((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
+							else if(j == 4)
+								assertTrue((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
+						}
+						else if(k == 8) {
+							if(j == 0)
+								assertFalse((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
+							else if(j == 1)
+								assertFalse((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
+							else if(j == 2)
+								assertFalse((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
+							else if(j == 3)
+								assertTrue((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
+							else if(j == 4)
 								assertTrue((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
 						}
 					}
@@ -321,12 +396,12 @@ public class ReportBuilderTest {
 		inputSuppressData.setAccessible(true);
 		
 		ASTMethodCollector methodCollector = new ASTMethodCollector();
-		unit.accept(methodCollector);
+		compilationUnit.accept(methodCollector);
 		// 取得專案中所有的method
 		List<ASTNode> methodList = methodCollector.getMethodList();
 		
 		for(int i = 0; i < methodList.size(); i++) {
-			ExceptionAnalyzer visitor = new ExceptionAnalyzer(unit, methodList.get(i).getStartPosition(), 0);
+			ExceptionAnalyzer visitor = new ExceptionAnalyzer(compilationUnit, methodList.get(i).getStartPosition(), 0);
 			methodList.get(i).accept(visitor);
 			List<SSMessage> suppressSmellList = visitor.getSuppressSemllAnnotationList();
 			TreeMap<String, Boolean> detMethodSmell = new TreeMap<String, Boolean>();
@@ -361,9 +436,9 @@ public class ReportBuilderTest {
 		Method checkCatchSmell = ReportBuilder.class.getDeclaredMethod("checkCatchSmell", List.class, List.class);
 		checkCatchSmell.setAccessible(true);
 		
-		DummyHandlerVisitor dhVisitor = new DummyHandlerVisitor(unit);
+		DummyHandlerVisitor dhVisitor = new DummyHandlerVisitor(compilationUnit);
 		ASTMethodCollector methodCollector = new ASTMethodCollector();
-		unit.accept(methodCollector);
+		compilationUnit.accept(methodCollector);
 		// 取得專案中所有的method
 		List<ASTNode> methodList = methodCollector.getMethodList();
 		methodList.get(10).accept(dhVisitor);
@@ -411,13 +486,13 @@ public class ReportBuilderTest {
 				}
 			}
 		}
-		assertEquals(19, reportModel.getTryCounter());
-		assertEquals(16, reportModel.getCatchCounter());
-		assertEquals(1, reportModel.getFinallyCounter());
+		assertEquals(25, reportModel.getTryCounter());
+		assertEquals(25, reportModel.getCatchCounter());
+		assertEquals(2, reportModel.getFinallyCounter());
 		assertEquals(4, reportModel.getCarelessCleanUpTotalSize());
-		assertEquals(14, reportModel.getDummyTotalSize());
+		assertEquals(16, reportModel.getDummyTotalSize());
 		assertEquals(1, reportModel.getIgnoreTotalSize());
-		assertEquals(1, reportModel.getNestedTryTotalSize());
+		assertEquals(3, reportModel.getNestedTryTotalSize());
 		assertEquals(0, reportModel.getOverLoggingTotalSize());
 	}
 	
@@ -462,14 +537,14 @@ public class ReportBuilderTest {
 		assertEquals(0, ruleList.size());
 		
 		/** xml存在，且裡面有設定，則依據內容的設定來偵測 */
-		CreateDummyHandlerXML();
+		ForTestGetFilterSettings();
 		
 		getFilterSettings.invoke(reportBuilder);
 		assertFalse((Boolean)isAllPackage.get(reportBuilder));
 		assertEquals(3, ruleList.size());
-		assertEquals("src", ruleList.get(0));
+		assertEquals(JavaProjectMaker.FOLDERNAME_SOURCE, ruleList.get(0));
 		assertEquals("ntut.csie.EH_STAR", ruleList.get(1));
-		assertEquals("ntut.csie.exceptionBadSmells", ruleList.get(2));
+		assertEquals(DummyAndIgnoreExample.class.getPackage().getName(), ruleList.get(2));
 	}
 	
 	@Test
@@ -479,52 +554,42 @@ public class ReportBuilderTest {
 		Thread.sleep(1000);
 		fail("結果未驗證");
 	}
-	
-	/**
-	 * 建立CSPreference.xml檔案
-	 */
-	private void CreateDummyHandlerXML() {
+
+	private void ForTestGetFilterSettings() {
 		//取的XML的root
 		Element root = JDomUtil.createXMLContent();
 
-		//建立Dummy Handler的Tag
-		Element dummyHandler = new Element(JDomUtil.DummyHandlerTag);
-		Element rule = new Element("rule");
-		//假如e.printStackTrace有被勾選起來
-		rule.setAttribute(JDomUtil.e_printstacktrace, "Y");
-
-		//假如system.out.println有被勾選起來
-		rule.setAttribute(JDomUtil.systemout_print, "Y");
-		
-		rule.setAttribute(JDomUtil.apache_log4j, "Y");
-		rule.setAttribute(JDomUtil.java_Logger, "Y");
-
-		//把使用者自訂的Rule存入XML
-		Element libRule = new Element("librule");
-		
-		//將新建的tag加進去
-		dummyHandler.addContent(rule);
-		dummyHandler.addContent(libRule);
-		
 		// 建立report filter的tag
 		Element filter = new Element(JDomUtil.EHSmellFilterTaq);
 		Element filterRules = new Element("filter");
 		
 		filterRules.setAttribute("IsAllPackage", "false");
-		filterRules.setAttribute("src", "true");
+		filterRules.setAttribute(JavaProjectMaker.FOLDERNAME_SOURCE, "true");
 		filterRules.setAttribute("ntut.csie.EH_STAR", "true");
-		filterRules.setAttribute("ntut.csie.exceptionBadSmells", "true");
+		filterRules.setAttribute(DummyAndIgnoreExample.class.getPackage().getName(), "true");
 		
 		filter.addContent(filterRules);
 
 		if (root.getChild(JDomUtil.DummyHandlerTag) != null)
 			root.removeChild(JDomUtil.DummyHandlerTag);
 
-		root.addContent(dummyHandler);
 		root.addContent(filter);
 
 		//將檔案寫回
 		String path = JDomUtil.getWorkspace() + File.separator + "CSPreference.xml";
 		JDomUtil.OutputXMLFile(root.getDocument(), path);
+	}
+	
+	/**
+	 * 建立CSPreference.xml檔案
+	 */
+	private void CreateSettings() {
+		smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_ePrintStackTrace);
+		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_JavaUtilLoggingLogger);
+		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_OrgApacheLog4j);
+		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_SystemOutPrint);
+		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_SystemOutPrintln);
+		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 	}
 }

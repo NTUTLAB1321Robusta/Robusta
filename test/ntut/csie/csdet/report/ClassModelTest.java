@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ntut.csie.csdet.data.MarkerInfo;
+import ntut.csie.filemaker.JavaProjectMaker;
 
 import org.junit.After;
 import org.junit.Before;
@@ -39,8 +40,11 @@ public class ClassModelTest {
 	@Test
 	public void testSetClassPath() {
 		model.setClassName(ClassModel.class.getSimpleName());
-		model.setClassPath("src/ntut/csie/csdet/report");
-		assertEquals("src/ntut/csie/csdet/report/ClassModel", model.getClassPath());
+		model.setClassPath(JavaProjectMaker.FOLDERNAME_SOURCE + "/"
+				+ ClassModel.class.getPackage().getName().replace(".", "/"));
+		assertEquals(JavaProjectMaker.FOLDERNAME_SOURCE + "/"
+				+ ClassModel.class.getName().replace(".", "/"),
+				model.getClassPath());
 	}
 	
 	@Test

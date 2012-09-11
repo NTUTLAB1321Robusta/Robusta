@@ -17,6 +17,7 @@ import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.exceptionBadSmells.SuppressWarningExample;
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithoutTryExample;
 import ntut.csie.rleht.builder.ASTMethodCollector;
+import ntut.csie.robusta.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
@@ -48,28 +49,35 @@ public class ExceptionAnalyzerTest {
 	public void setUp() throws Exception {
 		// 讀取測試檔案樣本內容
 		javaFileToString = new JavaFileToString();
-		javaFileToString.read(SuppressWarningExample.class, "test");
+		javaFileToString.read(SuppressWarningExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker = new JavaProjectMaker("ExceptionAnalyerTest");
 		javaProjectMaker.setJREDefaultContainer();
 		
 		// 新增欲載入的 library
-		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.FOLDERNAME_LIB_JAR, JavaProjectMaker.FOLDERNAME_BIN_CLASS);
-		javaProjectMaker.addJarFromTestProjectToBuildPath("/lib/RL.jar");
-		javaProjectMaker.addJarFromProjectToBuildPath("lib\\log4j-1.2.15.jar");
+		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(
+				JavaProjectMaker.FOLDERNAME_LIB_JAR,
+				JavaProjectMaker.FOLDERNAME_BIN_CLASS);
+		javaProjectMaker.addJarFromTestProjectToBuildPath("/"
+				+ JavaProjectMaker.RL_LIBRARY_PATH);
 		
 		// 根據測試檔案樣本內容建立新的檔案
-		javaProjectMaker.createJavaFile("ntut.csie.filemaker.exceptionBadSmells", "SuppressWarningExample.java", "package ntut.csie.filemaker.exceptionBadSmells;\n" + javaFileToString.getFileContent());
+		javaProjectMaker.createJavaFile(
+				SuppressWarningExample.class.getPackage().getName(),
+				SuppressWarningExample.class.getSimpleName()
+				+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
+				+ SuppressWarningExample.class.getPackage().getName()
+				+ ";\n" + javaFileToString.getFileContent());
 		javaFileToString.clear();
-		javaFileToString.read(UnprotectedMainProgramWithoutTryExample.class, "test");
+		javaFileToString.read(UnprotectedMainProgramWithoutTryExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				UnprotectedMainProgramWithoutTryExample.class.getPackage().getName()
-				, UnprotectedMainProgramWithoutTryExample.class.getSimpleName() + ".java"
+				, UnprotectedMainProgramWithoutTryExample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION
 				, "package " + UnprotectedMainProgramWithoutTryExample.class.getPackage().getName() + ";\n"
 				+ javaFileToString.getFileContent());
 		
 		// 建立 XML
 		CreateSettings();
-		Path path = new Path("ExceptionAnalyerTest\\src\\ntut\\csie\\filemaker\\exceptionBadSmells\\SuppressWarningExample.java");
+		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(SuppressWarningExample.class, javaProjectMaker.getProjectName()));
 		
 		// Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);

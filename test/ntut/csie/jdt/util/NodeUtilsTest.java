@@ -9,6 +9,7 @@ import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.jdt.util.simpleVisitor.MethodInvocationVisitor;
 import ntut.csie.jdt.util.testSampleCode.NodeUtilsTestSample;
+import ntut.csie.robusta.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
@@ -25,24 +26,27 @@ public class NodeUtilsTest {
 	JavaProjectMaker javaProjectMaker;
 	CompilationUnit compilationUnit;
 	MethodInvocationVisitor miVisitor;
+	String projectName;
+	
+	public NodeUtilsTest() {
+		projectName = "NodeUtilsExampleProject";
+	}
 
 	@Before
 	public void setUp() throws Exception {
-		String projectName = "NodeUtilsExampleProject";
 		javaFile2String = new JavaFileToString();
 		javaProjectMaker = new JavaProjectMaker(projectName);
 		javaProjectMaker.setJREDefaultContainer();
 		// 根據測試檔案樣本內容建立新的檔案
-		javaFile2String.read(NodeUtilsTestSample.class, "test");
+		javaFile2String.read(NodeUtilsTestSample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(NodeUtilsTestSample.class.getPackage().getName(),
-				NodeUtilsTestSample.class.getSimpleName() + ".java",
+				NodeUtilsTestSample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
 				"package " + NodeUtilsTestSample.class.getPackage().getName() + ";\n"
 						+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
-		Path ccExamplePath = new Path(
-				projectName	+ "/src/ntut/csie/jdt/util/testSampleCode/NodeUtilsTestSample.java");
-		//Create AST to parse
+		Path ccExamplePath = new Path(PathUtils.getPathOfClassUnderSrcFolder(NodeUtilsTestSample.class, projectName));
+		// Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		// 設定要被建立AST的檔案

@@ -269,7 +269,7 @@ public class SettingPage extends APropertyPage {
 		
 		//Template Group
 		templateGroup = new Group(selectComposite, SWT.NONE);
-		templateGroup.setText("Detial");
+		templateGroup.setText("Detail");
 		templateGroup.setLocation(10, getBoundsPoint(smellList).y + 10);
 
 		//是否要選擇性偵測的Button

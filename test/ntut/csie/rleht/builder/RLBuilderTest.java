@@ -45,63 +45,50 @@ public class RLBuilderTest {
 		javaFile2String = new JavaFileToString();
 		javaProjectMaker = new JavaProjectMaker(projectName);
 		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.FOLDERNAME_LIB_JAR, JavaProjectMaker.FOLDERNAME_BIN_CLASS);
-		javaProjectMaker.addJarFromTestProjectToBuildPath("/lib/RL.jar");
+		javaProjectMaker.addJarFromTestProjectToBuildPath("/" + JavaProjectMaker.RL_LIBRARY_PATH);
 		javaProjectMaker.setJREDefaultContainer();
 		// 根據測試檔案樣本內容建立新的檔案
-		javaFile2String.read(CarelessCleanupExample.class, "test");
+		javaFile2String.read(CarelessCleanupExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				CarelessCleanupExample.class.getPackage().getName(),
-				CarelessCleanupExample.class.getSimpleName() + ".java",
+				CarelessCleanupExample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
 				"package " + CarelessCleanupExample.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
-		javaFile2String.read(ClassWithNotThrowingExceptionCloseable.class, "test");
+		javaFile2String.read(ClassWithNotThrowingExceptionCloseable.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				ClassWithNotThrowingExceptionCloseable.class.getPackage().getName(),
-				ClassWithNotThrowingExceptionCloseable.class.getSimpleName() + ".java",
+				ClassWithNotThrowingExceptionCloseable.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
 				"package " + ClassWithNotThrowingExceptionCloseable.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
-		javaFile2String.read(ClassImplementCloseable.class, "test");
+		javaFile2String.read(ClassImplementCloseable.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				ClassImplementCloseable.class.getPackage().getName(),
-				ClassImplementCloseable.class.getSimpleName() + ".java",
+				ClassImplementCloseable.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
 				"package " + ClassImplementCloseable.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
 		/* 測試使用者設定Pattern時候使用 */
-		javaFile2String.read(UserDefinedCarelessCleanupWeather.class, "test");
+		javaFile2String.read(UserDefinedCarelessCleanupWeather.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				UserDefinedCarelessCleanupWeather.class.getPackage().getName(),
-				UserDefinedCarelessCleanupWeather.class.getSimpleName() + ".java",
+				UserDefinedCarelessCleanupWeather.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
 				"package " + UserDefinedCarelessCleanupWeather.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
-		javaFile2String.read(UserDefinedCarelessCleanupDog.class, "test");
+		javaFile2String.read(UserDefinedCarelessCleanupDog.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				UserDefinedCarelessCleanupDog.class.getPackage().getName(),
-				UserDefinedCarelessCleanupDog.class.getSimpleName() + ".java",
+				UserDefinedCarelessCleanupDog.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
 				"package " + UserDefinedCarelessCleanupDog.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
-		
-//		Path ccExamplePath = new Path(
-//				projectName	+ "/src/ntut/csie/filemaker/exceptionBadSmells/CarelessCleanupExample.java");
-//		//Create AST to parse
-//		ASTParser parser = ASTParser.newParser(AST.JLS3);
-//		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-//		// 設定要被建立AST的檔案
-//		parser.setSource(
-//				JavaCore.createCompilationUnitFrom(
-//						ResourcesPlugin.getWorkspace().
-//						getRoot().getFile(ccExamplePath)));
-//		parser.setResolveBindings(true);
-//		compilationUnit = (CompilationUnit) parser.createAST(null);
-		
+
 		/** 產生舊版設定檔 */
 		String oldSettingsContents = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<CodeSmellDetect>\r\n  <CarelessCleanUp>\r\n    <rule detusermethod=\"Y\" />\r\n    <librule EH_STAR.lib=\"Y\" aaa.EH_STAR=\"Y\" />\r\n  </CarelessCleanUp>\r\n  <DetectSmell>\r\n    <rule detectall=\"Y\" Ignore_Checked_Exception=\"Y\" Dummy_Handler=\"Y\" Nested_Try_Block=\"Y\" Unprotected_Main_Program=\"Y\" Careless_CleanUp=\"Y\" Over_Logging=\"Y\" />\r\n  </DetectSmell>\r\n  <DummyHandler>\r\n    <rule eprintstacktrace=\"Y\" systemoutprint=\"Y\" apache_log4j=\"N\" java_Logger=\"N\" />\r\n    <librule report.EH_STAR=\"Y\" />\r\n  </DummyHandler>\r\n  <OverLogging>\r\n    <rule apache_log4j=\"Y\" java_Logger=\"Y\" />\r\n    <librule />\r\n    <exrule detectionTransException=\"Y\" />\r\n  </OverLogging>\r\n</CodeSmellDetect>\r\n\r\n";
 		FileWriter fw = null;
