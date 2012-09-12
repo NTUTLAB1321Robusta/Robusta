@@ -546,6 +546,7 @@ public class RethrowExRefactoring extends Refactoring {
 			for (int i = 0; i < catchStatements.size(); i++) {
 				if (catchStatements.get(i) instanceof ThrowStatement) {
 					ThrowStatement statement = (ThrowStatement) catchStatements.get(i);
+					// 誰可以告訴我，為什麼selectLine要減一以後才回傳? charles 20120912
 					selectLine = this.actRoot.getLineNumber(statement.getStartPosition()) - 1;
 					return selectLine;
 				}
