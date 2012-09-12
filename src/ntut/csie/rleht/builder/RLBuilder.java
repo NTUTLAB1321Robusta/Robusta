@@ -519,6 +519,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 			}
 			catch (Exception ex) {
 				logger.error("[checkRLAnnotation] EXCEPTION ",ex);
+				throw new RuntimeException(ex);
 			}
 			logger.debug("[RLBuilder] END !!");
 

@@ -14,10 +14,10 @@ import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.CarelessCleanupExample;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.ClassImplementCloseable;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.ClassImplementCloseableWithoutThrowException;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.ClassWithNotThrowingExceptionCloseable;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.UserDefinedCarelessCleanupDog;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.UserDefinedCarelessCleanupWeather;
-import ntut.csie.robusta.util.PathUtils;
 import ntut.csie.robusta.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -87,6 +87,14 @@ public class CarelessCleanupVisitorTest {
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
+		javaFile2String.read(ClassImplementCloseableWithoutThrowException.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaProjectMaker.createJavaFile(
+				ClassImplementCloseableWithoutThrowException.class.getPackage().getName(),
+				ClassImplementCloseableWithoutThrowException.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
+				"package " + ClassImplementCloseableWithoutThrowException.class.getPackage().getName() + ";\n"
+				+ javaFile2String.getFileContent());
+		javaFile2String.clear();
+		
 		Path ccExamplePath = new Path(testProjectName
 				+ "/" + JavaProjectMaker.FOLDERNAME_SOURCE + "/"
 				+ PathUtils.dot2slash(CarelessCleanupExample.class.getName()
@@ -117,14 +125,6 @@ public class CarelessCleanupVisitorTest {
 			assertTrue(settingFile.delete());
 		}
 	}
-
-	// FIXME 功能需要修改
-	@Test
-	public void visitorCouldBeBetter() throws Exception {
-		fail("目前的CCUQuickFix功能不會標記*.close的部分，因為原本認為是refactor的工作，\n"
-				+ "也因此findOutTheVariableInTry()中的node.resolveMethodBinding()會是null，\n"
-				+ "會使得CarelessCleanupVisitorTest的所有測試都出現NullPointer錯誤");
-	}
 	
 	@Test
 	public void testGetCarelessCleanupListWithoutExtraRules() {
@@ -148,7 +148,7 @@ public class CarelessCleanupVisitorTest {
 		}
 		assertEquals(
 				colloectBadSmellListContent(carelessCleanupVisitor.getCarelessCleanupList()),
-				23, carelessCleanupSmellCount);
+				24, carelessCleanupSmellCount);
 	}
 	
 	@Test
@@ -162,7 +162,7 @@ public class CarelessCleanupVisitorTest {
 		}
 		assertEquals(
 				colloectBadSmellListContent(carelessCleanupVisitor.getCarelessCleanupList()),
-				25, carelessCleanupSmellCount);
+				26, carelessCleanupSmellCount);
 	}
 	
 	@Test
@@ -185,7 +185,7 @@ public class CarelessCleanupVisitorTest {
 		}
 		assertEquals(
 				colloectBadSmellListContent(carelessCleanupVisitor.getCarelessCleanupList()),
-				28, carelessCleanupSmellCount);
+				29, carelessCleanupSmellCount);
 	}
 	
 	@Test
@@ -208,7 +208,7 @@ public class CarelessCleanupVisitorTest {
 		}
 		assertEquals(
 				colloectBadSmellListContent(carelessCleanupVisitor.getCarelessCleanupList()),
-				26, carelessCleanupSmellCount);
+				27, carelessCleanupSmellCount);
 	}
 	
 	@Test
@@ -231,7 +231,7 @@ public class CarelessCleanupVisitorTest {
 		}
 		assertEquals(
 				colloectBadSmellListContent(carelessCleanupVisitor.getCarelessCleanupList()),
-				27, carelessCleanupSmellCount);
+				28, carelessCleanupSmellCount);
 	}
 	
 	@Test
@@ -254,7 +254,7 @@ public class CarelessCleanupVisitorTest {
 		}
 		assertEquals(
 				colloectBadSmellListContent(carelessCleanupVisitor.getCarelessCleanupList()),
-				26, carelessCleanupSmellCount);
+				27, carelessCleanupSmellCount);
 	}
 	
 	/**

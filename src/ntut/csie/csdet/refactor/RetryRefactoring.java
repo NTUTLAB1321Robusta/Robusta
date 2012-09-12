@@ -577,11 +577,16 @@ public class RetryRefactoring extends Refactoring {
 	}	
 	
 	/**
+	 * 我們假設source code中，如果catch clause裡面還有try-catch的例外處理，
+	 * 就假設符合spare-handler的bad smell。因此，我們要找出catch clause的裡外，
+	 * 和catch clause裡面try-catch的catch clause的例外可以用哪個exception的類別來包含兩者，
+	 * 使得兩層try-catch可以合併為一個try-catch。20120907補註解，Charles。
+	 * 
 	 * 當碰到第一層與第二層捕捉的例外不同時,尋找同質性例外
 	 * @param type : 第一層的例外型態變數
-	 * @param cc : 第二層的try statement
+	 * @param node : 第二層的try statement
 	 */
-	private String findHomogeneousExType(AST ast,SingleVariableDeclaration type,Object node){	
+	private String findHomogeneousExType(AST ast, SingleVariableDeclaration type, Object node) {	
 		TryStatement ts = (TryStatement)node;
 		//找第二層try block中所有的catch區塊
 		List<?> catchSt = ts.catchClauses();		

@@ -42,6 +42,10 @@ public class UserDefinedMethodAnalyzer {
 		Iterator<String> userDefinedMethodIterator = methodTreeMap.keySet().iterator();
 		while(userDefinedMethodIterator.hasNext()) {
 			String condition = userDefinedMethodIterator.next();
+			// 目前知道的情況：Override Closeable的close，使其不會拋出IOException，會造成resolveMethodBinding為null
+			if(node.resolveMethodBinding() == null) {
+				continue;
+			}
 			if(node.resolveMethodBinding().getDeclaringClass().getQualifiedName().equals(condition)) {
 				return true;
 			}

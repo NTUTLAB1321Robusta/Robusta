@@ -234,6 +234,7 @@ public class RethrowExRefactoring extends Refactoring {
 	/**
 	 *建立Throw Exception的資訊 
 	 */
+	@Robustness(value = { @RL(level = 1, exception = RuntimeException.class) })
 	private void rethrowException() {
 		try {
 			actRoot.recordModifications();
@@ -267,7 +268,7 @@ public class RethrowExRefactoring extends Refactoring {
 			// 寫回Edit中
 			applyChange();
 		}catch (Exception e) {
-			logger.error("[Rethrow Unchecked Exception] EXCEPTION ", e);
+			throw new RuntimeException(e);
 		}
 	}
 	
@@ -544,6 +545,7 @@ public class RethrowExRefactoring extends Refactoring {
 			for (int i = 0; i < catchStatements.size(); i++) {
 				if (catchStatements.get(i) instanceof ThrowStatement) {
 					ThrowStatement statement = (ThrowStatement) catchStatements.get(i);
+					// 誰可以告訴我，為什麼selectLine要減一以後才回傳? charles 20120912
 					selectLine = this.actRoot.getLineNumber(statement.getStartPosition()) - 1;
 					return selectLine;
 				}

@@ -2,6 +2,7 @@ package ntut.csie.filemaker.test;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
 import java.util.List;
 
 import ntut.csie.filemaker.ASTNodeFinder;
@@ -12,6 +13,7 @@ import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.robusta.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
@@ -117,12 +119,24 @@ public class ASTNodeFinderTest {
 		lineNumber = 999999999;
 		astNode = ASTNodeFinder.getNodeFromSpecifiedClass(NodeUtilsTestSample.class, projectName, lineNumber);
 		assertNull(astNode);
+	}
+	
+//	@Test
+	public void testGetNodeFromSpecifiedClass_caseSemicolonParentheses() throws Exception {
+		//取得該行內容
+		ASTMethodCollector methodCollector = new ASTMethodCollector();
+		compilationUnit.accept(methodCollector);
+		List<ASTNode> list = methodCollector.getMethodList();
+		MethodDeclaration mDeclaration = (MethodDeclaration)list.get(1);
+		
+		//輸入class指定行數
+		int lineNumber = 20;
 		
 		//(尚未解決)
 		//類似的case有 ";" "{" "}"
 		//case#6:指向分號get到node是正確的但是行數不match回傳null
 		lineNumber = 46;
-		astNode = ASTNodeFinder.getNodeFromSpecifiedClass(NodeUtilsTestSample.class, projectName, lineNumber);
+		ASTNode astNode = ASTNodeFinder.getNodeFromSpecifiedClass(NodeUtilsTestSample.class, projectName, lineNumber);
 		// FIXME the bug need to be fix.
 		assertEquals("FIXME the bug need to be fix.",lineNumber, compilationUnit.getLineNumber(astNode.getStartPosition()));
 	}

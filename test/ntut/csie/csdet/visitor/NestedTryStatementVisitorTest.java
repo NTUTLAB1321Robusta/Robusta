@@ -87,7 +87,7 @@ public class NestedTryStatementVisitorTest {
 		}
 		assertEquals(
 				colloectBadSmellListContent(nestedTryStatementVisitor.getNestedTryStatementList()),
-						24, nestedTryStatementCount); 
+						25, nestedTryStatementCount); 
 	}
 	
 	@Test

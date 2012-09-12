@@ -16,23 +16,6 @@ import agile.exception.RL;
 public class NestedTryStatementExample {
 	
 	/**
-	 * 在catch中出現巢狀try-catch
-	 * 內外層try-catch的exception type為Exception下面中的同一子系列
-	 */
-	public void nestedCatch() {
-		try {
-			throwSocketTimeoutException();
-		} catch (SocketTimeoutException e) {
-			try {
-				throwInterruptedIOException();
-			} catch (InterruptedIOException e1) {
-				e1.printStackTrace();
-			}
-			e.printStackTrace();
-		}
-	}
-	
-	/**
 	 * 在finally中出現巢狀try-catch
 	 * 內外層try-catch的exception type為Exception下面中的同一子系列
 	 */
@@ -53,15 +36,49 @@ public class NestedTryStatementExample {
 	
 	/**
 	 * 在catch中出現巢狀try-catch
+	 * 內外層try-catch的exception type為外層Catch的exception type父類別
+	 */
+	public void nestedCatch_InnerCatchWithParentExceptionTypeOfOuter() {
+		try {
+			throwSocketTimeoutException();
+		} catch (SocketTimeoutException e) {
+			try {
+				throwInterruptedIOException();
+			} catch (InterruptedIOException e1) {
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 在catch中出現巢狀try-catch
 	 * 內外層try-catch的exception type不為Exception下面中的同一子系列
 	 */
-	public void nestedCatchWithTopException() {
+	public void nestedCatch_ExceptionOfTwoCatchWithoutParentChildRelations() {
 		try {
 			throwDataFormatException();
 		} catch (DataFormatException e) {
 			try {
 				throwPropertyVetoException();
 			} catch (PropertyVetoException e1) {
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 在catch中出現巢狀try-catch
+	 * 內外層try-catch的exception type為外層Catch的exception type子類別
+	 */
+	public void nestedCatch_InnerCatchWithChildExceptionTypeOfOuter() {
+		try {
+			throw new IOException();
+		} catch (IOException e) {
+			try {
+				throw new FileNotFoundException();
+			} catch (FileNotFoundException e1) {
 				e1.printStackTrace();
 			}
 			e.printStackTrace();

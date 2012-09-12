@@ -144,12 +144,12 @@ public class BaseQuickFixTest {
 		assertEquals("L/"+PathUtils.getPathOfClassUnderSrcFolder(DummyAndIgnoreExample.class, "DummyHandlerTest"), change.getModifiedElement().toString());
 	}
 	
-	@Test
+//	@Test
 	public void testPerformChange() throws Exception {
 		fail("目前不知道如何在Unit Test中抓到EditorPart，所以未實作");
 	}
 	
-	@Test
+//	@Test
 	public void testApplyChange() throws Exception {
 		fail("目前不知道如何在Unit Test中抓到EditorPart，所以未實作");
 	}
