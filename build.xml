@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--****************************************************************************
+ * Build Robusta for CI & Wrap for Eclipse Update Site
+ ****************************************************************************-->
+<project name="Robusta" default="all">
+	<property environment="env"/>
+    <property name="ECLIPSE_HOME" value="D:/DevProgram/eclipse-helios"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.6"/>
+    <property name="source" value="1.6"/>
+    <property name="jar-file-name" value="Robusta_2.0.0.jar"/>
+    <property name="update-folder" value="update"/>
+    <property name="feature-folder" value="${update-folder}/features"/>
+    <property name="plugin-folder" value="${update-folder}/plugins"/>
+	<property name="license-folder" value="${update-folder}/licenses"/>
+	<property name="update-id" value="Robusta"/>
+	<property name="eclipse-public-license" value="epl-v10.html"/>
+	<property name="notice" value="notice.html"/>
+	
+	<!-- plugin lib -->
+	<path id="Plug-in Dependencies.libraryclasspath">
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui_3.6.2.M20110203-1100.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.swt_3.6.2.v3659c.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.swt.win32.win32.x86_3.6.2.v3659c.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jface_3.6.2.M20110210-1200.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.commands_3.6.0.I20100512-1500.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui.workbench_3.6.2.M20110210-1200.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.runtime_3.6.0.v20100505.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.osgi_3.6.2.R36x_v20110210.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.equinox.common_3.6.0.v20100503.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.jobs_3.5.1.R36x_v20100824.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.runtime.compatibility.registry_3.3.0.v20100520/runtime_registry_compatibility.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.equinox.registry_3.5.0.v20100503.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.equinox.preferences_3.3.0.v20100503.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.contenttype_3.4.100.v20100505-1235.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.equinox.app_1.3.1.R36x_v20100803.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jdt_3.6.1.v201102101200.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jdt.core_3.6.2.v_A76_R36x.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jdt.compiler.apt_1.0.300.v20100513-0845.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jdt.compiler.tool_1.0.100.v_A76_R36x.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.resources_3.6.1.R36x_v20110131-1630.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ltk.core.refactoring_3.5.101.r362_v20101117-0800.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ltk.ui.refactoring_3.5.0.v20100526-0800.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jface.text_3.6.1.r361_v20100825-0800.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.text_3.5.0.v20100601-1300.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui.editors_3.6.1.r361_v20100825-0800.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.filebuffers_3.5.100.v20100520-0800.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jdt.ui_3.6.2.r362_v20110203.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui.workbench.texteditor_3.6.1.r361_v20100714-0800.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui.console_3.5.0.v20100526.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui.ide_3.6.2.M20101201-0800.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.compare_3.5.101.R36x_v20100929-0800.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.compare.core_3.5.101.R36x_v20100929-0800.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jdt.junit_3.6.1.r361_v20100825-0800.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jdt.junit.core_3.6.1.r361_v20100825-0800.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/net.java.amateras.umleditor_1.3.1.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/net.java.amateras.umleditor.java_1.3.1.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/net.java.amateras.xstream_1.3.1.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.draw2d_3.6.2.v20110128-0100.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.gef_3.6.2.v20110110-2020.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jdt.launching_3.5.200.v20110105_r362.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.junit_4.8.1.v4_8_1_v20100427-1100/junit.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jdt.astview_1.1.3.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jdt.core.manipulation_1.3.0.v20100520-0800.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui.views_3.5.1.M20110202-0800.jar"/>
+    </path>
+	
+	<!-- project lib -->
+    <path id="RLEHT.classpath">
+        <pathelement location="bin"/>
+        <pathelement location="lib/"/>
+		<pathelement location="lib/commons-lang-2.3.jar"/>
+        <pathelement location="lib/slf4j-api-1.5.0.jar"/>
+        <pathelement location="lib/slf4j-log4j12-1.5.0.jar"/>
+        <pathelement location="lib/log4j-1.2.15.jar"/>
+        <pathelement location="lib/jdom.jar"/>
+        <pathelement location="lib/jfreechart-1.0.8a.jar"/>
+        <pathelement location="lib/jcommon-1.0.12.jar"/>
+        <pathelement location="lib/loc_counter.jar"/>
+        <pathelement location="lib/net.java.amateras.umleditor_1.3.1.jar"/>
+        <pathelement location="lib/net.java.amateras.umleditor.java_1.3.1.jar"/>
+        <pathelement location="lib/net.java.amateras.xstream_1.3.1.jar"/>
+        <pathelement location="lib/org.eclipse.draw2d_3.2.100.v20070529.jar"/>
+        <pathelement location="lib/org.eclipse.gef_3.2.101.v20070814.jar"/>
+        <pathelement location="lib/org.eclipse.jdt.astview_1.1.3.jar"/>
+        <path refid="Plug-in Dependencies.libraryclasspath"/>
+    </path>
+	
+	<!-- OS picker -->
+	<condition property="isMac">
+		<os family="mac" />
+	</condition>
+
+	<condition property="isWindows">
+		<os family="windows" />
+	</condition>
+
+	<condition property="isUnix">
+		<os family="unix" />
+	</condition>
+	
+	<!-- main target -->
+	<target name="all" depends="init, build-project, jar, clean, write-site-xml, write-feature-xml"/>
+	
+    <target name="init">
+        <mkdir dir="bin"/>
+		<mkdir dir="${update-folder}"/>
+		<mkdir dir="${feature-folder}"/>
+		<mkdir dir="${plugin-folder}"/>
+		<mkdir dir="${license-folder}"/>
+		<copy todir="${license-folder}">
+			<fileset dir="${basedir}">
+				<include name="*.html"/>
+			</fileset>
+		</copy>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="src">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        <!--<copy includeemptydirs="false" todir="bin">
+            <fileset dir="test">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>-->
+		<copy includeemptydirs="false" todir="bin/icons">
+			<fileset dir="icons"/>
+		</copy>
+		<copy includeemptydirs="false" todir="bin/lib">
+			<fileset dir="lib"/>
+		</copy>
+		<copy file="${basedir}/plugin.xml" tofile="bin/plugin.xml"/>
+    </target>
+	
+	<!-- compile project -->
+    <target name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}" includeantruntime="false">
+            <src path="src"/>
+            <classpath refid="RLEHT.classpath"/>
+        </javac>
+        <!--<javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}" includeantruntime="false">
+            <src path="test"/>
+            <classpath refid="RLEHT.classpath"/>
+        </javac>-->
+    </target>
+	
+	<!-- wrap bin folder to jar file -->
+	<target name="jar">
+		<jar destfile="${plugin-folder}/${jar-file-name}" filesetmanifest="mergewithoutmain" basedir="bin">
+			<manifest>
+				<attribute name="Bundle-ManifestVersion" value="2"/>
+				<attribute name="Bundle-Name" value="RLEHT Plug-in"/>
+				<attribute name="Bundle-SymbolicName" value="RLEHT; singleton:=true"/>
+				<attribute name="Bundle-Version" value="2.0.0"/>
+				<attribute name="Bundle-Activator" value="ntut.csie.rleht.RLEHTPlugin"/>
+				<attribute name="Bundle-Vendor" value="Ntut.Csie.Lab1321.Robusta"/>
+				<attribute name="Bundle-Localization" value="plugin"/>
+				<attribute name="Bundle-ClassPath" value=".,./bin,lib/commons-lang-2.3.jar,lib/slf4j-log4j12-1.5.0.jar,lib/slf4j-api-1.5.0.jar,lib/log4j-1.2.15.jar,lib/jdom.jar,lib/jfreechart-1.0.8a.jar,lib/jcommon-1.0.12.jar,lib/loc_counter.jar,lib/"/>
+				<attribute name="Require-Bundle" value="org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.jdt,org.eclipse.jdt.core,org.eclipse.core.resources,org.eclipse.ltk.core.refactoring,org.eclipse.ltk.ui.refactoring,org.eclipse.jface.text,org.eclipse.ui.editors,org.eclipse.jdt.ui,org.eclipse.ui.workbench.texteditor,org.eclipse.ui.console,org.eclipse.ui.ide,org.eclipse.compare,org.eclipse.jdt.junit,net.java.amateras.umleditor,net.java.amateras.umleditor.java,net.java.amateras.xstream,org.eclipse.draw2d,org.eclipse.gef,org.eclipse.jdt.launching,org.junit,org.eclipse.jdt.astview,org.eclipse.jdt.core.manipulation"/>
+				<attribute name="Eclipse-LazyStart" value="true"/>
+		    </manifest>
+		</jar>
+    </target>
+
+	<!-- write a site.xml for eclipse update -->
+	<target name="write-site-xml">
+		<echoxml file="${update-folder}/site.xml">
+			<site>
+				<feature url="features/${jar-file-name}" id="${update-id}" version="2.0.0"/>
+			</site>
+		</echoxml>
+	</target>
+	
+	<!-- write a feature.xml for eclipse update -->
+	<target name="write-feature-xml">
+		<echoxml file="${feature-folder}/feature.xml">
+			<feature
+				id="${update-id}"
+				label="RLEHTeclipse"
+				version="2.0.0"
+				provider-name="Software System Lab."
+				plugin="${update-id}">
+ 
+				<description>
+					Release for ezScrum.
+				</description>
+
+				<copyright>
+				  Copyright 2000-2012, 版權所有
+				</copyright>
+ 
+				<license url="http://www.gnu.org/licenses/gpl.txt"/>
+ 
+				<url>
+					<update label="updates" url="这里填你最后发布的update地址"/>
+				</url>
+			 
+				<requires>
+					<import plugin="org.eclipse.ui.views"/>
+					<import plugin="org.eclipse.jface.text"/>
+					<import plugin="org.eclipse.ui.workbench.texteditor"/>
+					<import plugin="org.eclipse.ui.editors"/>
+					<import plugin="org.eclipse.core.runtime"/>
+					<import plugin="org.eclipse.ui.ide"/>
+					<import plugin="org.eclipse.ui"/>
+					<import plugin="org.eclipse.compare"/>
+					<import plugin="org.eclipse.jdt.ui"/>
+					<import plugin="org.eclipse.jdt.core"/>
+					<import plugin="org.eclipse.ui.console"/>
+					<import plugin="org.eclipse.debug.ui"/>
+				</requires>
+ 
+				<plugin 
+					id="${update-id}"
+					download-size="0"
+					install-size="0"
+					version="1.0.0"/>
+			</feature>
+		</echoxml>
+	</target>
+	
+	<!-- recover to original state -->
+    <target name="clean">
+        <!--<delete dir="bin"/>
+			<delete dir="update"/>-->
+    </target>
+</project>
