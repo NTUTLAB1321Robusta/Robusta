@@ -7,9 +7,10 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import ntut.csie.robusta.agile.exception.Tag;
+import ntut.csie.robusta.agile.exception.Robustness;
 
-import agile.exception.RL;
-import agile.exception.Robustness;
+
 
 /**
  * Careless Cleanup的錯誤範例。
@@ -25,7 +26,7 @@ public class CarelessCleanupExample {
 	 * @param context
 	 * @param outputFile
 	 */
-	@Robustness(value = { @RL(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
 	public void withoutCloseStream(byte[] context, File outputFile) {
 		FileOutputStream fileOutputStream  = null;
 		try {
@@ -43,7 +44,7 @@ public class CarelessCleanupExample {
 	 * @param context
 	 * @param outputFile
 	 */
-	@Robustness(value = { @RL(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
 	public void y_closeStreamInTryBlock(byte[] context, File outputFile) {
 		FileOutputStream fileOutputStream  = null;
 		try {
@@ -62,7 +63,7 @@ public class CarelessCleanupExample {
 	 * @param context
 	 * @param outputFile
 	 */
-	@Robustness(value = { @RL(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
 	public void y2_close2StreamInTryBlock(byte[] context, File inputFile, File outputFile) {
 		FileOutputStream fileOutputStream  = null;
 		FileInputStream  fileInputStream = null;
@@ -84,7 +85,7 @@ public class CarelessCleanupExample {
 	 * @param context
 	 * @param outputFile
 	 */
-	@Robustness(value = { @RL(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
 	public void y_closeStreamInTryBlockWithEmptyFinally(byte[] context, File outputFile) {
 		FileOutputStream fileOutputStream  = null;
 		try {
@@ -104,7 +105,7 @@ public class CarelessCleanupExample {
 	 * @param context
 	 * @param outputFile
 	 */
-	@Robustness(value = { @RL(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
 	public void y_closeStreamInTryBlockWithBlankFinally(byte[] context, File outputFile) {
 		FileOutputStream fileOutputStream  = null;
 		try {
@@ -125,7 +126,7 @@ public class CarelessCleanupExample {
 	 * @param context
 	 * @param outputFile
 	 */
-	@Robustness(value = { @RL(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
 	public void y_closeStreamInTryBlockWithNonblankFinally(byte[] context, File outputFile) {
 		FileOutputStream fileOutputStream  = null;
 		try {
@@ -148,8 +149,8 @@ public class CarelessCleanupExample {
 	 * @throws IOException
 	 */
 	@Robustness(value = {
-			@RL(level = 1, exception = java.io.FileNotFoundException.class),
-			@RL(level = 1, exception = java.io.IOException.class) })
+			@Tag(level = 1, exception = java.io.FileNotFoundException.class),
+			@Tag(level = 1, exception = java.io.IOException.class) })
 	public void y2_closeStreamInCatchClause(byte[] context, File outputFile) throws IOException {
 		FileOutputStream fileOutputStream  = null;
 		try {
@@ -171,7 +172,7 @@ public class CarelessCleanupExample {
 	 * 因為ClassWithNotThrowingExceptionCloseable不是implements Closeable介面
 	 * 所以不會被視為是關閉資源的動作
 	 */
-	@Robustness(value = { @RL(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
 	public void closeNonClosableInstance() {
 		ClassWithNotThrowingExceptionCloseable anInstance = null;
 		try {
@@ -183,7 +184,7 @@ public class CarelessCleanupExample {
 		}
 	}
 	
-	@Robustness(value = { @RL(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
 	public void y_closeUserImplementingClosableInstance() {
 		ClassImplementCloseable anInstance = null;
 		try {
@@ -199,7 +200,7 @@ public class CarelessCleanupExample {
 	 * @param fileOutputStream
 	 * @throws IOException 
 	 */
-	@Robustness(value = { @RL(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
 	protected void y_closeStreamThrowingExceptionDeclaring(FileOutputStream fileOutputStream) throws IOException {
 		try {
 			if (fileOutputStream != null) {
@@ -215,7 +216,7 @@ public class CarelessCleanupExample {
 	 * 看似專門用來放在Finally做關閉串流的程式碼，但是他會拋出例外，所以還是要被Careless Cleanup檢查。
 	 * @param fileOutputStream
 	 */
-	@Robustness(value = { @RL(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
 	protected void y_closeStreamThrowingException(FileOutputStream fileOutputStream) {
 		try {
 			if (fileOutputStream != null) {
@@ -319,7 +320,7 @@ public class CarelessCleanupExample {
 	 * 會被CarelessCleanupVisitor在fis.close();加上mark
 	 * @throws IOException 
 	 */
-	@Robustness(value = { @RL(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
 	private void y_closeStreamWithoutTryBlock() throws IOException {
 		FileInputStream fis = new FileInputStream("");
 		fis.read();
@@ -330,7 +331,7 @@ public class CarelessCleanupExample {
 	 * 會被CarelessCleanupVisitor在fis.close();加上mark
 	 * @throws IOException
 	 */
-	@Robustness(value = { @RL(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
 	private void y_closeStreamWithoutTryBlockInIfStatement() throws IOException {
 		int a = 10;
 		if(a != 20) {
@@ -344,7 +345,7 @@ public class CarelessCleanupExample {
 	 * 會被CarelessCleanupVisitor在fis.close();加上mark
 	 * @throws IOException
 	 */
-	@Robustness(value = { @RL(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
 	private void y_closeStreamWithoutTryBlockInForStatement() throws IOException {
 		for (int a = 0; a < 10; a++) {
 			FileInputStream fis = new FileInputStream("");
@@ -357,7 +358,7 @@ public class CarelessCleanupExample {
 	 * 會被CarelessCleanupVisitor在fis.close();加上mark
 	 * @throws IOException
 	 */
-	@Robustness(value = { @RL(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
 	private void y_closeStreamWithoutTryBlockInWhileStatement() throws IOException {
 		int a = 10;
 		while (a >= 10) {
@@ -372,7 +373,7 @@ public class CarelessCleanupExample {
 	 * 會被CarelessCleanupVisitor在fis.close();加上mark
 	 * @throws IOException
 	 */
-	@Robustness(value = { @RL(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
 	private void y_closeStreamWithoutTryBlockInDoWhileStatement() throws IOException {
 		int a = 10;
 		do {
@@ -386,7 +387,7 @@ public class CarelessCleanupExample {
 	 * 只是要消除private method的警告用，不會有任何mark
 	 * @throws IOException
 	 */
-	@Robustness(value = { @RL(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
 	public void callAllPrivate() throws IOException {
 		y_closeStreamWithoutTryBlock();
 		y_closeStreamWithoutTryBlockInIfStatement();
@@ -398,7 +399,7 @@ public class CarelessCleanupExample {
 	/**
 	 * close IO的標準寫法
 	 */
-	@Robustness(value = { @RL(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
 	public void openStream2Write() {
 		FileOutputStream fos = null;
 		try {
@@ -416,7 +417,7 @@ public class CarelessCleanupExample {
 	 * 會被CarelessCleanupVisitor在fis.close();加上mark
 	 * @throws IOException
 	 */
-	@Robustness(value = { @RL(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
 	public void y_multiNestedStatementWithoutTryBlock() throws IOException {
 		for (int a = 0; a < 10; a++) {
 			FileWriter fw = null;
@@ -434,7 +435,7 @@ public class CarelessCleanupExample {
 	 * 會被CarelessCleanupVisitor在fis.close();加上mark
 	 * @throws IOException
 	 */
-	@Robustness(value = { @RL(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
 	public void y_multiNestedStatementWithTryBlock() throws IOException {
 		for (int a = 0; a < 10; a++) {
 			try {
@@ -453,7 +454,7 @@ public class CarelessCleanupExample {
 	 * 會被CarelessCleanupVisitor在fw.close();加上mark(因為catch與finally都會拋出例外)
 	 * @throws IOException
 	 */
-	@Robustness(value = { @RL(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
 	public void y_closeStreamInFinallyButThrowsExceptionInCatchAndFinally() throws IOException {
 		int a =10;
 		while (a > 0) {
@@ -478,7 +479,7 @@ public class CarelessCleanupExample {
 	 * 應該是不希望method的宣告會拋出例外，所以finally不應該拋出例外。)
 	 * @throws IOException
 	 */
-	@Robustness(value = { @RL(level = 2, exception = java.io.IOException.class) })
+	@Robustness(value = { @Tag(level = 2, exception = java.io.IOException.class) })
 	public void y_closeStreamInFinallyButThrowsExceptionOnlyInFinally() throws IOException {
 		int a =10;
 		while (a > 0) {
@@ -499,7 +500,7 @@ public class CarelessCleanupExample {
 	
 	//=========要在設定檔裡面加上使用者偵測條件，才能判斷出以下method是否有careless cleanup=========//
 	
-	@Robustness(value = { @RL(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
 	public void uy_userDefinedLibrary() throws IOException {
 		UserDefinedCarelessCleanupWeather weather = new UserDefinedCarelessCleanupWeather();
 		weather.Shine();
@@ -511,7 +512,7 @@ public class CarelessCleanupExample {
 	}
 	
 	//======要再設定檔裡面勾選Extra rule，才能判斷出以下method是否有careless cleanup======//
-	@Robustness(value = { @RL(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
 	public void uy_closeStreaminOuterMethodInTry() throws IOException {
 		try {
 			FileOutputStream fi = new FileOutputStream("");
@@ -522,7 +523,7 @@ public class CarelessCleanupExample {
 		}
 	}
 	
-	@Robustness(value = { @RL(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
 	public void uy_closeStreaminOuterMethodInCatch() throws IOException {
 		FileOutputStream fi = null;
 		
@@ -537,7 +538,7 @@ public class CarelessCleanupExample {
 	}
 	
 	//================測試moveInstance case使用的特定格式==========================
-	@Robustness(value = { @RL(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
 	public void moveInstance() throws IOException {
 		try {
 			FileOutputStream fi = new FileOutputStream("");
@@ -552,7 +553,7 @@ public class CarelessCleanupExample {
 	 * 若.close() method不會丟出例外，應可以直接quick fix放到finally block中
 	 * @throws IOException
 	 */
-	@Robustness(value = { @RL(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
 	public void theCloseImplementClosableWillNotThrowException() throws IOException {
 		ClassImplementCloseableWithoutThrowException anInstance = null;
 		try {

@@ -323,12 +323,12 @@ public class ExceptionAnalyzerTest {
 			methodGetMethodAnnotation.invoke(exceptionAnalyzer, methodlist.get(i));
 			totalRLList.addAll(exceptionAnalyzer.getMethodRLAnnotationList());
 		}
-		// 抓到 6 個 RL 註記的 method overloading for addRL(RLMessage rlmsg, int currentCatch)
+		// 抓到 6 個 Tag 註記的 method overloading for addRL(RLMessage rlmsg, int currentCatch)
 		assertEquals(6, totalRLList.size());
 		for (int i = 0; i < totalRLList.size(); i++) {
 			methodAddRLForInt.invoke(exceptionAnalyzer, totalRLList.get(i), i);
 		}
-		// 將 6 個 RL 註記的 method 利用 addRL 這個 method 是否成功加入 
+		// 將 6 個 Tag 註記的 method 利用 addRL 這個 method 是否成功加入 
 		assertEquals(6, exceptionAnalyzer.getExceptionList().size());
 
 		totalRLList =  new ArrayList<RLMessage>();
@@ -339,7 +339,7 @@ public class ExceptionAnalyzerTest {
 			methodGetMethodAnnotation.invoke(exceptionAnalyzer, methodlist.get(i));
 			totalRLList.addAll(exceptionAnalyzer.getMethodRLAnnotationList());
 		}
-		// 抓到 6 個 RL 註記的 method overloading for addRL(RLMessage rlmsg, String key) 
+		// 抓到 6 個 Tag 註記的 method overloading for addRL(RLMessage rlmsg, String key) 
 		assertEquals(6, totalRLList.size());
 		for (int i = 0; i < totalRLList.size(); i++) {
 			methodAddRLForString.invoke(exceptionAnalyzer, totalRLList.get(i), "父母親的id哀豬叉踹." + i);

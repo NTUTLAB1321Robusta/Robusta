@@ -160,8 +160,8 @@ public class DHQuickFixTest {
 		assertEquals("import java.util.ArrayList;\n", imports.get(3).toString());
 		assertEquals("import java.util.logging.Level;\n", imports.get(4).toString());
 		assertEquals("import org.apache.log4j.Logger;\n", imports.get(5).toString());
-		assertEquals("import agile.exception.Robustness;\n", imports.get(6).toString());
-		assertEquals("import agile.exception.RL;\n", imports.get(7).toString());
+		assertEquals("import ntut.csie.robusta.agile.exception.Robustness;\n", imports.get(6).toString());
+		assertEquals("import ntut.csie.robusta.agile.exception.Tag;\n", imports.get(7).toString());
 	}
 	
 	@Test
@@ -170,7 +170,7 @@ public class DHQuickFixTest {
 		Method getRLAnnotation = DHQuickFix.class.getDeclaredMethod("getRLAnnotation", AST.class, int.class, String.class);
 		getRLAnnotation.setAccessible(true);
 		NormalAnnotation annotation = (NormalAnnotation)getRLAnnotation.invoke(dhQF, unit.getAST(), 1, "RuntimeException");
-		assertEquals("@RL(level=1,exception=RuntimeException.class)", annotation.toString());
+		assertEquals("@Tag(level=1,exception=RuntimeException.class)", annotation.toString());
 	}
 	
 //	@Test
@@ -201,30 +201,30 @@ public class DHQuickFixTest {
 		currentMethodRLListField.set(dhQF, currentMethodRLList);
 		// 驗證一開始沒有任何RL
 		assertEquals(0, currentMethodRLList.size());
-		// 新增RuntimeException RL
+		// 新增RuntimeException Tag
 		Method addAnnotationRoot = DHQuickFix.class.getDeclaredMethod("addAnnotationRoot", AST.class);
 		addAnnotationRoot.setAccessible(true);
 		addAnnotationRoot.invoke(dhQF, currentMethodNode.getAST());
 		List<IExtendedModifier> modifiers = ((MethodDeclaration)currentMethodNodeField.get(dhQF)).modifiers();
 		assertEquals(2, modifiers.size());
-		assertEquals("@Robustness(value={@RL(level=1,exception=RuntimeException.class)})", modifiers.get(0).toString());
+		assertEquals("@Robustness(value={@Tag(level=1,exception=RuntimeException.class)})", modifiers.get(0).toString());
 		assertEquals("public", modifiers.get(1).toString());
 
 		/* FIXME -  問題在於我們建立出來的Compilation Unit對他修改了現在抓取到的Method，
 		 * 			可是ExceptionAnalyzer還是只能對原來的cu做visitor的動作
 		 */
 		/* 建立有內容的RL list，測試RL加上去時，是否會出現重複的RL annotation */
-		// 上面已加入RuntimeException RL，再讓它加一次
+		// 上面已加入RuntimeException Tag，再讓它加一次
 		currentMethodNode.accept(exVisitor);
 		currentMethodRLList = exVisitor.getMethodRLAnnotationList();
 		currentMethodRLListField.set(dhQF, currentMethodRLList);
 		// 驗證已經存在的RL
 		assertEquals(1, currentMethodRLList.size());
-		// 新增RuntimeException RL
+		// 新增RuntimeException Tag
 		addAnnotationRoot.invoke(dhQF, currentMethodNode.getAST());
 		modifiers = ((MethodDeclaration)currentMethodNodeField.get(dhQF)).modifiers();
 		assertEquals(2, modifiers.size());
-		assertEquals("@Robustness(value={@RL(level=1,exception=RuntimeException.class)})", modifiers.get(0).toString());
+		assertEquals("@Robustness(value={@Tag(level=1,exception=RuntimeException.class)})", modifiers.get(0).toString());
 		assertEquals("public", modifiers.get(1).toString());
 	}
 	

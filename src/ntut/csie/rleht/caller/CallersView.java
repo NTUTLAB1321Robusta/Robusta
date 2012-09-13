@@ -163,7 +163,7 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 	 */
 	private void createRLColumn(Tree tree) {
 		TreeColumn column2 = new TreeColumn(tree, SWT.LEFT);
-		column2.setText("@RL{Level,Exception}");
+		column2.setText("@Tag{Level,Exception}");
 		column2.setWidth(250);
 
 		TreeColumn column3 = new TreeColumn(tree, SWT.LEFT);

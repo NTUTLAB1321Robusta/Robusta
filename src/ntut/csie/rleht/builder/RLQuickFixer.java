@@ -15,6 +15,7 @@ import ntut.csie.csdet.refactor.RethrowUncheckExAction;
 import ntut.csie.rleht.common.RLUtils;
 import ntut.csie.rleht.rlAdvice.AchieveRL1QuickFix;
 import ntut.csie.rleht.views.RLData;
+import ntut.csie.robusta.agile.exception.Tag;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
@@ -23,7 +24,6 @@ import org.eclipse.ui.IMarkerResolutionGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import agile.exception.RL;
 
 public class RLQuickFixer implements IMarkerResolutionGenerator {
 	private static Logger logger = LoggerFactory.getLogger(RLQuickFixer.class);
@@ -49,11 +49,11 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				}
 			} else if (problem.equals(RLMarkerAttribute.ERR_NO_RL)) {
 				if (!RLData.validLevel(RLUtils.str2int(level, -1))) {
-					level = String.valueOf(RL.LEVEL_1_ERR_REPORTING);
+					level = String.valueOf(Tag.LEVEL_1_ERR_REPORTING);
 				}
-				markerList.add(new RLQuickFix("新增@RL (level=" + level + ",exception=" + exception + ")",errMsg));
+				markerList.add(new RLQuickFix("新增@Tag (level=" + level + ",exception=" + exception + ")",errMsg));
 			} else if (problem.equals(RLMarkerAttribute.ERR_RL_DUPLICATE)) {
-				markerList.add(new RLQuickFix("移除首次出現之@RL (" + exception + ")",errMsg));
+				markerList.add(new RLQuickFix("移除首次出現之@Tag (" + exception + ")",errMsg));
 			} else if (problem.equals(RLMarkerAttribute.ERR_RL_INSTANCE)) {
 				markerList.add(new RLQuickFix("@RL順序對調(" + marker.getAttribute(IMarker.MESSAGE) + ")",errMsg));
 				// SuppressSmell內沒有名稱
@@ -138,7 +138,7 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 			}else if(problem.equals(RLMarkerAttribute.CS_EXCEPTION_RLADVICE)){
 				String advice = (String) marker.getAttribute(IMarker.MESSAGE);
 				//有RL annotation，才是有拋出這個例外(我有偷偷幫throw e的都硬上RL)
-				if(advice.contains("RL")){
+				if(advice.contains("Tag")){
 					markerList.add(new AchieveRL1QuickFix("RL1 quick gene ==> Rethrow Unckecked Exception"));
 				}
 			}

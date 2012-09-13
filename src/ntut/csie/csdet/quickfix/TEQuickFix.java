@@ -7,6 +7,8 @@ import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLData;
 import ntut.csie.rleht.views.RLMessage;
+import ntut.csie.robusta.agile.exception.Tag;
+import ntut.csie.robusta.agile.exception.Robustness;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
@@ -28,8 +30,6 @@ import org.eclipse.ui.IMarkerResolution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import agile.exception.RL;
-import agile.exception.Robustness;
 
 
 /**
@@ -142,7 +142,7 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 
 	@SuppressWarnings("unchecked")
 	private void addAnnotationRoot(String exception,AST ast) {
-		//要建立@Robustness(value={@RL(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
+		//要建立@Robustness(value={@Tag(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
 		//建立Annotation root
 		NormalAnnotation root = ast.newNormalAnnotation();
 		root.setTypeName(ast.newSimpleName("Robustness"));
@@ -195,9 +195,9 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 	 * @return NormalAnnotation AST Node
 	 */
 	private NormalAnnotation getRLAnnotation(AST ast, int levelVal,String excption) {
-		//要建立@Robustness(value={@RL(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
+		//要建立@Robustness(value={@Tag(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
 		NormalAnnotation rl = ast.newNormalAnnotation();
-		rl.setTypeName(ast.newSimpleName("RL"));
+		rl.setTypeName(ast.newSimpleName("Tag"));
 
 		// level = 1
 		MemberValuePair level = ast.newMemberValuePair();
@@ -241,7 +241,7 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 		}
 		if (!isImportRLClass) {
 			ImportDeclaration imp = rootAst.newImportDeclaration();
-			imp.setName(rootAst.newName(RL.class.getName()));
+			imp.setName(rootAst.newName(Tag.class.getName()));
 			this.actRoot.imports().add(imp);
 		}
 	}

@@ -5,6 +5,8 @@ import java.util.TreeMap;
 
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
+import ntut.csie.robusta.agile.exception.Tag;
+import ntut.csie.robusta.agile.exception.Robustness;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
@@ -17,8 +19,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import agile.exception.Robustness;
-import agile.exception.RL;
 
 public class CarelessCleanUpPage  extends APropertyPage {
 	// 放code template的區域
@@ -40,7 +40,7 @@ public class CarelessCleanUpPage  extends APropertyPage {
 	// 負責處理讀寫XML
 	SmellSettings smellSettings;
 	
-	@Robustness(value = { @RL(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
 	public CarelessCleanUpPage(Composite composite, CSPropertyPage page, SmellSettings smellSettings){
 		super(composite,page);
 		//不偵測時,TextBox的內容
@@ -273,7 +273,7 @@ public class CarelessCleanUpPage  extends APropertyPage {
 	/**
 	 * 儲存使用者設定
 	 */
-	@Robustness(value = { @RL(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
 	@Override
 	public boolean storeSettings() {
 		smellSettings.removePatterns(SmellSettings.SMELL_CARELESSCLEANUP);

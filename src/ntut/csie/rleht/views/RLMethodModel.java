@@ -7,6 +7,8 @@ import ntut.csie.rleht.builder.RLNature;
 import ntut.csie.rleht.common.ASTHandler;
 import ntut.csie.rleht.common.ConsoleLog;
 import ntut.csie.rleht.common.ErrorLog;
+import ntut.csie.robusta.agile.exception.Tag;
+import ntut.csie.robusta.agile.exception.Robustness;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
@@ -33,8 +35,6 @@ import org.eclipse.text.edits.TextEdit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import agile.exception.RL;
-import agile.exception.Robustness;
 
 public class RLMethodModel {
 	private static Logger logger = LoggerFactory.getLogger(RLMethodModel.class);
@@ -205,11 +205,11 @@ public class RLMethodModel {
 			if (add) {
 				addImportDeclaration();
 
-				// 增加現在所選Exception的@RL Annotation
+				// 增加現在所選Exception的@Tag Annotation
 				rlary.expressions().add(getRLAnnotation(ast, msg.getRLData()));
 			}
 
-			// 加入舊有的@RL Annotation
+			// 加入舊有的@Tag Annotation
 			int idx = 0;
 			for (RLMessage rlmsg : rlAnnotationList) {
 				if (add) {
@@ -277,7 +277,7 @@ public class RLMethodModel {
 		}
 		if (!isImportRLClass) {
 			ImportDeclaration imp = rootAst.newImportDeclaration();
-			imp.setName(rootAst.newName(RL.class.getName()));
+			imp.setName(rootAst.newName(Tag.class.getName()));
 			this.actRoot.imports().add(imp);
 		}
 
@@ -351,7 +351,7 @@ public class RLMethodModel {
 	@SuppressWarnings("unchecked")
 	private NormalAnnotation getRLAnnotation(AST ast, RLData rldata) {
 		NormalAnnotation rl = ast.newNormalAnnotation();
-		rl.setTypeName(ast.newSimpleName("RL"));
+		rl.setTypeName(ast.newSimpleName("Tag"));
 
 		MemberValuePair level = ast.newMemberValuePair();
 		level.setName(ast.newSimpleName("level"));

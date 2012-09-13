@@ -1,4 +1,4 @@
-package agile.exception;
+package ntut.csie.robusta.agile.exception;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RL {
+public @interface Tag {
 	public static final int LEVEL_1_ERR_REPORTING = 1;
 
 	public static final int LEVEL_2_STATE_RECOVERY = 2;

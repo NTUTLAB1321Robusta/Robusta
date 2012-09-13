@@ -7,21 +7,21 @@ import java.util.TreeMap;
 
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.jdt.util.NodeUtils;
+import ntut.csie.robusta.agile.exception.Tag;
+import ntut.csie.robusta.agile.exception.Robustness;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 
-import agile.exception.RL;
-import agile.exception.Robustness;
 
 public class UserDefinedMethodAnalyzer {
 	public final static String SETTINGFILEPATH = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString() + File.separator + SmellSettings.SETTING_FILENAME;
 	private TreeMap<String, SmellSettings.UserDefinedConstraintsType> methodTreeMap;
 	boolean isEnable;
 	
-	@Robustness(value = { @RL(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
 	public UserDefinedMethodAnalyzer(String smellName) {
 		SmellSettings smellSettings = new SmellSettings(SETTINGFILEPATH);
 		methodTreeMap = smellSettings.getSmellSettings(SmellSettings.SMELL_CARELESSCLEANUP);

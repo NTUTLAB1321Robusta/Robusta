@@ -450,7 +450,7 @@ public class CallersSeqDiagram {
 			this.exceptions = exceptions;
 		}
 		/**
-		 * RL Annotation
+		 * Tag Annotation
 		 */
 		public String getRLAnnotations() {
 			return RLAnnotations;

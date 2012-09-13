@@ -6,6 +6,7 @@ import ntut.csie.csdet.quickfix.DHQuickFixTest;
 import ntut.csie.csdet.quickfix.OLQuickFixTest;
 import ntut.csie.csdet.quickfix.UMQuickFixTest;
 import ntut.csie.csdet.refactor.CarelessCleanUpRefactorTest;
+import ntut.csie.csdet.refactor.OverLoggingRefactorTest;
 import ntut.csie.csdet.refactor.RethrowExRefactoringTest;
 import ntut.csie.csdet.refactor.RetryRefactoringTest;
 import ntut.csie.csdet.report.ReportBuilderTest;
@@ -34,6 +35,7 @@ import org.junit.runners.Suite;
 	CarelessCleanUpRefactorTest.class,
 	RethrowExRefactoringTest.class,
 	RetryRefactoringTest.class,
+	OverLoggingRefactorTest.class,
 	
 	ReportBuilderTest.class,
 	

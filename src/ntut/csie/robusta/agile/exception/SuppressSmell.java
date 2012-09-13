@@ -1,4 +1,4 @@
-package agile.exception;
+package ntut.csie.robusta.agile.exception;
 
 import static java.lang.annotation.ElementType.CONSTRUCTOR;
 import static java.lang.annotation.ElementType.METHOD;

@@ -2,6 +2,7 @@ package ntut.csie.rleht.rlAdvice;
 
 import ntut.csie.csdet.quickfix.BaseQuickFix;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
+import ntut.csie.robusta.agile.exception.Tag;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
@@ -11,7 +12,6 @@ import org.eclipse.ui.IMarkerResolution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import agile.exception.RL;
 
 /**
  * 當使用者希望程式碼可以達到RL1時，我們幫他整理code，並產生一些提示
@@ -68,7 +68,7 @@ public class AchieveRL1QuickFix extends BaseQuickFix implements IMarkerResolutio
 						if(((String)marker.getAttribute(RLMarkerAttribute.MI_WITH_Ex)).contains(cc.getException().getType().toString())){
 							//加入RL annotation
 							qf.addAnnotationRoot(actRoot, currentMethodNode, 
-									RL.LEVEL_1_ERR_REPORTING, QuickFixUtil.runtimeException);
+									Tag.LEVEL_1_ERR_REPORTING, QuickFixUtil.runtimeException);
 							
 							//加入RuntimeException
 							qf.addThrowStatement(cc, currentMethodNode.getAST(), 

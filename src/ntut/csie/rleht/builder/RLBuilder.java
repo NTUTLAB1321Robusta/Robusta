@@ -449,7 +449,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 						msgIdx++;
 						if (msg.getRLData().getLevel() >= 0) {
 							if (!msg.isHandling()) {
-								String errmsg = "*例外[" + msg.getRLData().getExceptionType() + "] 未定義@RL！";
+								String errmsg = "*例外[" + msg.getRLData().getExceptionType() + "] 未定義@Tag！";
 								this.addMarker(file, errmsg.toString(), msg.getLineNumber(), IMarker.SEVERITY_WARNING,
 										RLMarkerAttribute.ERR_NO_RL, msg, msgIdx, methodIdx);
 							}
@@ -483,7 +483,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 						// 檢查@RL清單內的level是否正確
 						if (!RLData.validLevel(msg.getRLData().getLevel())) {
 							StringBuffer errmsg = new StringBuffer();
-							errmsg.append("@RL( level=").append(msg.getRLData().getLevel());
+							errmsg.append("@Tag( level=").append(msg.getRLData().getLevel());
 							errmsg.append(" , exception=");
 							errmsg.append(msg.getRLData().getExceptionType() + ") level值錯誤！");
 
@@ -499,15 +499,15 @@ public class RLBuilder extends IncrementalProjectBuilder {
 							}
 
 							if (msg.getRLData().getExceptionType().equals(msg2.getRLData().getExceptionType())) {
-								this.addMarker(file, "@RL(level=" + msg.getRLData().getLevel() + ",exception="
+								this.addMarker(file, "@Tag(level=" + msg.getRLData().getLevel() + ",exception="
 										+ msg.getRLData().getExceptionType() + ") 重覆！", lineNumber,
 										IMarker.SEVERITY_ERROR, RLMarkerAttribute.ERR_RL_DUPLICATE, msg, msgIdx,
 										methodIdx);
 							}
 							else if (ASTHandler.isInstance(msg2.getTypeBinding(), msg.getTypeBinding()
 									.getQualifiedName())) {
-								this.addMarker(file, "@RL(level=" + msg.getRLData().getLevel() + ",exception="
-										+ msg.getRLData().getExceptionType() + ") 為 @RL(level="
+								this.addMarker(file, "@Tag(level=" + msg.getRLData().getLevel() + ",exception="
+										+ msg.getRLData().getExceptionType() + ") 為 @Tag(level="
 										+ msg2.getRLData().getLevel() + ",exception="
 										+ msg2.getRLData().getExceptionType() + ")之父類別(子類別順序應在前)！", lineNumber,
 										IMarker.SEVERITY_ERROR, RLMarkerAttribute.ERR_RL_INSTANCE, msg, msgIdx,

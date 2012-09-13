@@ -52,7 +52,7 @@ public class JavaProjectMaker {
 	/** 存放unit test code的資料夾 */
 	public static final int UNITTEST_CODE_FOLDER = 17;
 	/** 定義強健度等級的class位於哪個Package */
-	public static final String RL_PACKAGE_NAME = "agile.exception";
+	public static final String RL_PACKAGE_NAME = "ntut.csie.robusta.agile.exception";
 	
 	/** 專案存放Jar檔的資料夾名稱 */
 	public static final String FOLDERNAME_LIB_JAR = "lib";
@@ -63,7 +63,7 @@ public class JavaProjectMaker {
 	/** 功能性程式碼的資料夾名稱 */
 	public static final String FOLDERNAME_SOURCE = "src";
 	/** 取得RL.jar的路徑 */
-	public static final String RL_LIBRARY_PATH = FOLDERNAME_LIB_JAR + "/RL.jar";
+	public static final String RL_LIBRARY_PATH = FOLDERNAME_LIB_JAR + "/Tag.jar";
 	/** java 副檔名 */
 	public static final String JAVA_FILE_EXTENSION = ".java";
 	/**

@@ -1,4 +1,4 @@
-package agile.exception;
+package ntut.csie.robusta.agile.exception;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -14,7 +14,7 @@ import static java.lang.annotation.ElementType.CONSTRUCTOR;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Robustness {
 
-	RL[] value();
+	Tag[] value();
 	
 }
 

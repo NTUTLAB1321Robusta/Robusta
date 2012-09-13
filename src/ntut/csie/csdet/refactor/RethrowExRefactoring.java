@@ -13,6 +13,8 @@ import ntut.csie.rleht.common.EditorUtils;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLData;
 import ntut.csie.rleht.views.RLMessage;
+import ntut.csie.robusta.agile.exception.Tag;
+import ntut.csie.robusta.agile.exception.Robustness;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -60,8 +62,6 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import agile.exception.RL;
-import agile.exception.Robustness;
 
 /**
  * Rethrow Unchecked exception的具體操作都在這個class中
@@ -234,7 +234,7 @@ public class RethrowExRefactoring extends Refactoring {
 	/**
 	 *建立Throw Exception的資訊 
 	 */
-	@Robustness(value = { @RL(level = 1, exception = RuntimeException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = RuntimeException.class) })
 	private void rethrowException() {
 		try {
 			actRoot.recordModifications();
@@ -361,7 +361,7 @@ public class RethrowExRefactoring extends Refactoring {
 	}
 	
 	private void addAnnotationRoot(AST ast) {
-		// 要建立@Robustness(value={@RL(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
+		// 要建立@Robustness(value={@Tag(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
 		// 建立Annotation root
 		NormalAnnotation root = ast.newNormalAnnotation();
 		root.setTypeName(ast.newSimpleName("Robustness"));
@@ -415,9 +415,9 @@ public class RethrowExRefactoring extends Refactoring {
 	 * @return NormalAnnotation AST Node
 	 */
 	private NormalAnnotation getRLAnnotation(AST ast, int levelVal, String excption) {
-		// 要建立@Robustness(value={@RL(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
+		// 要建立@Robustness(value={@Tag(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
 		NormalAnnotation rl = ast.newNormalAnnotation();
-		rl.setTypeName(ast.newSimpleName("RL"));
+		rl.setTypeName(ast.newSimpleName("Tag"));
 
 		// level = 1
 		MemberValuePair level = ast.newMemberValuePair();
@@ -480,7 +480,7 @@ public class RethrowExRefactoring extends Refactoring {
 		}
 		if (!isImportRLClass) {
 			ImportDeclaration imp = rootAst.newImportDeclaration();
-			imp.setName(rootAst.newName(RL.class.getName()));
+			imp.setName(rootAst.newName(Tag.class.getName()));
 			actRoot.imports().add(imp);
 		}
 	}

@@ -6,6 +6,8 @@ import ntut.csie.csdet.visitor.ASTCatchCollect;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLData;
 import ntut.csie.rleht.views.RLMessage;
+import ntut.csie.robusta.agile.exception.Tag;
+import ntut.csie.robusta.agile.exception.Robustness;
 
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -25,8 +27,6 @@ import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TypeLiteral;
 
-import agile.exception.RL;
-import agile.exception.Robustness;
 
 /**
  * 蒐集了quickfix時，常用的修改動作
@@ -75,7 +75,7 @@ public class QuickFixUtil {
 	public void addAnnotationRoot(CompilationUnit actRoot,
 			ASTNode currentMethodDeclarationNode, int rlValue,
 			String exceptionClass) {
-		// 要建立@Robustness(value={@RL(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
+		// 要建立@Robustness(value={@Tag(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
 		// 建立Annotation root
 		
 		AST ast = currentMethodDeclarationNode.getAST();
@@ -122,7 +122,7 @@ public class QuickFixUtil {
 	
 	/**
 	 * @see ntut.csie.csdet.quickfix.DHQuickFix#addImportDeclaration
-	 * import Robustness & RL class，以利annotation使用
+	 * import Robustness & Tag class，以利annotation使用
 	 * @param actRoot
 	 */
 	@SuppressWarnings("unchecked")
@@ -148,7 +148,7 @@ public class QuickFixUtil {
 		}
 		if (!isImportRLClass) {
 			ImportDeclaration imp = rootAst.newImportDeclaration();
-			imp.setName(rootAst.newName(RL.class.getName()));
+			imp.setName(rootAst.newName(Tag.class.getName()));
 			actRoot.imports().add(imp);
 		}
 	}
@@ -162,9 +162,9 @@ public class QuickFixUtil {
 	 * @return NormalAnnotation AST Node
 	 */
 	private NormalAnnotation getRLAnnotation(AST ast, int levelVal,String excption) {
-		//要建立@Robustness(value={@RL(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
+		//要建立@Robustness(value={@Tag(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
 		NormalAnnotation rl = ast.newNormalAnnotation();
-		rl.setTypeName(ast.newSimpleName("RL"));
+		rl.setTypeName(ast.newSimpleName("Tag"));
 
 		// level = 1
 		MemberValuePair level = ast.newMemberValuePair();

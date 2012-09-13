@@ -36,7 +36,7 @@ public class RLMessage {
 	// 是否被處理
 	private boolean handling = false;
 
-	// 是否被降級(RL Level)
+	// 是否被降級(Tag Level)
 	private boolean reduction = false;
 
 	// 是否為Checked Exception

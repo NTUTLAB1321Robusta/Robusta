@@ -8,14 +8,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
+import ntut.csie.robusta.agile.exception.Tag;
+import ntut.csie.robusta.agile.exception.Robustness;
+
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
 
-import agile.exception.RL;
-import agile.exception.Robustness;
 
 public class SmellSettings {
 	/*
@@ -59,7 +60,7 @@ public class SmellSettings {
 		settingDoc = new Document(new Element(TAG_ROOT));
 	}
 	
-	@Robustness(value = { @RL(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
 	public SmellSettings(File xmlFile) {
 		this();
 		if(!xmlFile.exists()) {
@@ -75,7 +76,7 @@ public class SmellSettings {
 		}
 	}
 	
-	@Robustness(value = { @RL(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
 	public SmellSettings(String xmlFilepath) {
 		this(new File(xmlFilepath));
 	}
@@ -371,7 +372,7 @@ public class SmellSettings {
 		return libMap;
 	}
 
-	@Robustness(value = { @RL(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
 	public void writeXMLFile(String path) {
 		FileWriter fw = null;
 		XMLOutputter out = new XMLOutputter();

@@ -9,6 +9,8 @@ import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLChecker;
 import ntut.csie.rleht.views.RLData;
 import ntut.csie.rleht.views.RLMessage;
+import ntut.csie.robusta.agile.exception.Tag;
+import ntut.csie.robusta.agile.exception.Robustness;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -38,8 +40,6 @@ import org.eclipse.ui.IMarkerResolution2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import agile.exception.RL;
-import agile.exception.Robustness;
 
 public class RLQuickFix extends BaseQuickFix implements IMarkerResolution, IMarkerResolution2 {
 	private static Logger logger = LoggerFactory.getLogger(RLQuickFix.class);
@@ -72,7 +72,7 @@ public class RLQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 	
 	@Override
 	public String getDescription() {
-		// return Messages.format(CorrectionMessages.MarkerResolutionProposal_additionaldesc, "@RL");
+		// return Messages.format(CorrectionMessages.MarkerResolutionProposal_additionaldesc, "@Tag");
 		return Messages.format(CorrectionMessages.MarkerResolutionProposal_additionaldesc, errMsg);
 	}
 
@@ -86,7 +86,7 @@ public class RLQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 	public void run(IMarker marker) {
 		try {
 			String problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
-			//RL Level有問題(超出1~3範圍內)
+			//Tag Level有問題(超出1~3範圍內)
 			if (problem != null && problem.equals(RLMarkerAttribute.ERR_RL_LEVEL)) {
 				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
 				String msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
@@ -201,7 +201,7 @@ public class RLQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 		}
 		if (!isImportRLClass) {
 			ImportDeclaration imp = rootAst.newImportDeclaration();
-			imp.setName(rootAst.newName(RL.class.getName()));
+			imp.setName(rootAst.newName(Tag.class.getName()));
 			this.actRoot.imports().add(imp);
 		}
 	}
@@ -236,13 +236,13 @@ public class RLQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 			if (add) {
 				addImportDeclaration();
 
-				// 增加現在所選Exception的@RL Annotation
+				// 增加現在所選Exception的@Tag Annotation
 				rlary.expressions().add(
-						getRLAnnotation(ast, msg.getRLData().getLevel() <= 0 ? RL.LEVEL_1_ERR_REPORTING : msg
+						getRLAnnotation(ast, msg.getRLData().getLevel() <= 0 ? Tag.LEVEL_1_ERR_REPORTING : msg
 								.getRLData().getLevel(), msg.getRLData().getExceptionType()));
 			}
 
-			// 加入舊有的@RL Annotation
+			// 加入舊有的@Tag Annotation
 			int idx = 0;
 			for (RLMessage rlmsg : currentMethodRLList) {
 				if (add) {
@@ -355,7 +355,7 @@ public class RLQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 	@SuppressWarnings("unchecked")
 	private NormalAnnotation getRLAnnotation(AST ast, int levelVal, String exClass) {
 		NormalAnnotation rl = ast.newNormalAnnotation();
-		rl.setTypeName(ast.newSimpleName("RL"));
+		rl.setTypeName(ast.newSimpleName("Tag"));
 
 		MemberValuePair level = ast.newMemberValuePair();
 		level.setName(ast.newSimpleName("level"));

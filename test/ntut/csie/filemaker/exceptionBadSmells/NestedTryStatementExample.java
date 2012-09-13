@@ -10,8 +10,9 @@ import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.net.SocketTimeoutException;
 import java.util.zip.DataFormatException;
-import agile.exception.Robustness;
-import agile.exception.RL;
+
+import ntut.csie.robusta.agile.exception.Tag;
+import ntut.csie.robusta.agile.exception.Robustness;
 
 public class NestedTryStatementExample {
 	
@@ -104,22 +105,22 @@ public class NestedTryStatementExample {
 		}
 	}
 	
-	@Robustness(value = { @RL(level = 2, exception = java.net.SocketTimeoutException.class) })
+	@Robustness(value = { @Tag(level = 2, exception = java.net.SocketTimeoutException.class) })
 	private void throwSocketTimeoutException() throws SocketTimeoutException {
 		throw new SocketTimeoutException();
 	}
 	
-	@Robustness(value = { @RL(level = 2, exception = java.io.InterruptedIOException.class) })
+	@Robustness(value = { @Tag(level = 2, exception = java.io.InterruptedIOException.class) })
 	private void throwInterruptedIOException() throws InterruptedIOException {
 		throw new InterruptedIOException();
 	}
 	
-	@Robustness(value = { @RL(level = 2, exception = java.util.zip.DataFormatException.class) })
+	@Robustness(value = { @Tag(level = 2, exception = java.util.zip.DataFormatException.class) })
 	private void throwDataFormatException() throws DataFormatException {
 		throw new DataFormatException();
 	}
 	
-	@Robustness(value = { @RL(level = 2, exception = java.beans.PropertyVetoException.class) })
+	@Robustness(value = { @Tag(level = 2, exception = java.beans.PropertyVetoException.class) })
 	private void throwPropertyVetoException() throws PropertyVetoException {
 		throw new PropertyVetoException(null, null);
 	}
@@ -345,7 +346,7 @@ public class NestedTryStatementExample {
 	/*
 	 * Nested TryStatment in Finally surrounded by other block.
 	 */
-	@Robustness(value = { @RL(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
 	public void nestedFinallyInIfStatement() {
 		FileInputStream fis = null;
 		try {
@@ -366,7 +367,7 @@ public class NestedTryStatementExample {
 		}
 	}
 	
-	@Robustness(value = { @RL(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
 	public void nestedFinallyInBlock() {
 		FileInputStream fis = null;
 		try {
@@ -390,7 +391,7 @@ public class NestedTryStatementExample {
 		}
 	}
 	
-	@Robustness(value = { @RL(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
 	public void nestedFinallyInWhileStatement() {
 		FileInputStream fis = null;
 		try {
@@ -412,7 +413,7 @@ public class NestedTryStatementExample {
 		}
 	}
 	
-	@Robustness(value = { @RL(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
 	public void nestedFinallyInDoStatement() {
 		FileInputStream fis = null;
 		try {
@@ -434,7 +435,7 @@ public class NestedTryStatementExample {
 		}
 	}
 	
-	@Robustness(value = { @RL(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
 	public void nestedFinallyInForStatement() {
 		FileInputStream fis = null;
 		try {

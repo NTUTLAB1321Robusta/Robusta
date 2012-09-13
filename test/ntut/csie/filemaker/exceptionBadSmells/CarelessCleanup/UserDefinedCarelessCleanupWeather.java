@@ -1,8 +1,9 @@
 package ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup;
 
 import java.io.IOException;
-import agile.exception.Robustness;
-import agile.exception.RL;
+
+import ntut.csie.robusta.agile.exception.Tag;
+import ntut.csie.robusta.agile.exception.Robustness;
 
 /**
  * This class is not implemented Closeable.
@@ -15,7 +16,7 @@ public class UserDefinedCarelessCleanupWeather {
 		
 	}
 	
-	@Robustness(value = { @RL(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
 	public void Shine() throws IOException {
 		throw new IOException("¹J¨ì¯Q¶³");
 	}

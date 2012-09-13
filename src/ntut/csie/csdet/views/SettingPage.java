@@ -197,7 +197,7 @@ public class SettingPage extends APropertyPage {
 		});
 		
 //		addLibBtn = new Button(composite, SWT.PUSH);
-//		addLibBtn.setText("Add RL Library");
+//		addLibBtn.setText("Add Tag Library");
 //		addLibBtn.setLocation(getBoundsPoint(detAllBtn).x + 20, 10);
 //		addLibBtn.pack();
 //		addLibBtn.addSelectionListener(new SelectionAdapter() {
@@ -224,10 +224,10 @@ public class SettingPage extends APropertyPage {
 //				File lib = new File(project.getLocation().toFile().getPath() + "/lib");
 //				if(!lib.exists())
 //					lib.mkdir();
-//				File jar = new File(project.getLocation().toFile().getPath() + "/lib/RL.jar");
+//				File jar = new File(project.getLocation().toFile().getPath() + "/lib/Tag.jar");
 //				JarFileMaker jarFileMaker = new JarFileMaker();
 //				File test = new File("bin");
-//				jarFileMaker.createJarFile(jar, test, "agile.exception");
+//				jarFileMaker.createJarFile(jar, test, "ntut.csie.robusta.agile.exception");
 //			}
 //		});
 

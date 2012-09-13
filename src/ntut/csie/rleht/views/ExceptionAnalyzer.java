@@ -7,6 +7,8 @@ import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.data.SSMessage;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.rleht.common.RLBaseVisitor;
+import ntut.csie.robusta.agile.exception.Robustness;
+import ntut.csie.robusta.agile.exception.SuppressSmell;
 
 import org.apache.commons.lang.text.StrTokenizer;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -29,8 +31,6 @@ import org.eclipse.jdt.core.dom.TryStatement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import agile.exception.Robustness;
-import agile.exception.SuppressSmell;
 
 public class ExceptionAnalyzer extends RLBaseVisitor {
 	private static Logger logger = LoggerFactory.getLogger(ExceptionAnalyzer.class);

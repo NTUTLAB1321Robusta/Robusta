@@ -8,6 +8,7 @@ import ntut.csie.rleht.common.EditorUtils;
 import ntut.csie.rleht.common.ErrorLog;
 import ntut.csie.rleht.common.ImageManager;
 import ntut.csie.rleht.common.RLUtils;
+import ntut.csie.robusta.agile.exception.Tag;
 
 import org.eclipse.core.filebuffers.FileBuffers;
 import org.eclipse.core.resources.IFile;
@@ -61,7 +62,6 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import agile.exception.RL;
 
 public class RLMethodView extends ViewPart implements IShowInSource {
 	private static Logger logger = LoggerFactory.getLogger(RLMethodView.class);
@@ -556,8 +556,8 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 			public void run() {
 			}
 		};
-		actionAddRLAnnotation.setText("加到方法之@RL Annotation上");
-		actionAddRLAnnotation.setToolTipText("加到方法之@RL Annotation上");
+		actionAddRLAnnotation.setText("加到方法之@Tag Annotation上");
+		actionAddRLAnnotation.setToolTipText("加到方法之@Tag Annotation上");
 		actionAddRLAnnotation.setImageDescriptor(ImageManager.getInstance().getDescriptor("link"));
 		actionAddRLAnnotation.setChecked(false);
 
@@ -567,7 +567,7 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 		Menu popupMenu = new Menu(this.tableExList);
 
 		MenuItem itemAddRL = new MenuItem(popupMenu, SWT.NONE);
-		itemAddRL.setText("增加 @RL Annotation");
+		itemAddRL.setText("增加 @Tag Annotation");
 		itemAddRL.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				TableItem[] selection = tableExList.getSelection();
@@ -595,7 +595,7 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 		Menu popupMenu = new Menu(this.tableRLList);
 
 		MenuItem itemRemoveRL = new MenuItem(popupMenu, SWT.NONE);
-		itemRemoveRL.setText("移除 @RL Annotation");
+		itemRemoveRL.setText("移除 @Tag Annotation");
 		itemRemoveRL.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				TableItem[] selection = tableRLList.getSelection();
@@ -613,7 +613,7 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 		});
 
 		MenuItem itemUpdateRL = new MenuItem(popupMenu, SWT.NONE);
-		itemUpdateRL.setText("更新 @RL Annotation");
+		itemUpdateRL.setText("更新 @Tag Annotation");
 		itemUpdateRL.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				List<RLData> rlmsgList = new ArrayList<RLData>();
@@ -801,7 +801,7 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 								RLMessage msg = model.getRLAnnotationList().get(pos);
 								msg.setEdited(true);
 								if (col == 1) {
-									msg.getRLData().setLevel(RLUtils.str2int(inputVal, RL.LEVEL_1_ERR_REPORTING));
+									msg.getRLData().setLevel(RLUtils.str2int(inputVal, Tag.LEVEL_1_ERR_REPORTING));
 								}
 								if (col == 2) {
 									msg.getRLData().setExceptionType(inputVal);
@@ -818,7 +818,7 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 					});
 
 				} catch (Exception ex) {
-					ErrorLog.getInstance().logError("處理@RL Table發生錯誤！", ex);
+					ErrorLog.getInstance().logError("處理@Tag Table發生錯誤！", ex);
 				}
 
 			}

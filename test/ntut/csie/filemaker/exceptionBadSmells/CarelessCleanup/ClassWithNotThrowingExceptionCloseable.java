@@ -1,8 +1,9 @@
 package ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup;
 
 import java.io.IOException;
-import agile.exception.Robustness;
-import agile.exception.RL;
+
+import ntut.csie.robusta.agile.exception.Tag;
+import ntut.csie.robusta.agile.exception.Robustness;
 
 /**
  * 這個Class沒有繼承Closeable，但是有close的method，
@@ -11,12 +12,12 @@ import agile.exception.RL;
  *
  */
 public class ClassWithNotThrowingExceptionCloseable {
-	@Robustness(value = { @RL(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
 	public ClassWithNotThrowingExceptionCloseable() throws IOException {
 		throw new IOException();
 	}
 	
-	@Robustness(value = { @RL(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
 	public void open() throws IOException {
 		throw new IOException();
 	}

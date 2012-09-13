@@ -7,6 +7,7 @@ import ntut.csie.csdet.visitor.ASTCatchCollect;
 import ntut.csie.rleht.common.EditorUtils;
 import ntut.csie.rleht.common.ErrorLog;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
+import ntut.csie.robusta.agile.exception.SuppressSmell;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -48,7 +49,6 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import agile.exception.SuppressSmell;
 
 /**
  * Quick Fix SuppressSmell Annotation
@@ -380,13 +380,13 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 				ITypeBinding typeBinding= annotation.resolveTypeBinding();
 				if (typeBinding != null) {
 					if ("SuppressSmell".equals(typeBinding.getQualifiedName()) ||
-						"agile.exception.SuppressSmell".equals(typeBinding.getQualifiedName())) {
+						"ntut.csie.robusta.agile.exception.SuppressSmell".equals(typeBinding.getQualifiedName())) {
 						return annotation;
 					}
 				} else {
 					String fullyQualifiedName = annotation.getTypeName().getFullyQualifiedName();
 					if ("SuppressSmell".equals(fullyQualifiedName) ||
-						"agile.exception.SuppressSmell".equals(fullyQualifiedName)) {
+						"ntut.csie.robusta.agile.exception.SuppressSmell".equals(fullyQualifiedName)) {
 						return annotation;
 					}
 				}
@@ -401,7 +401,7 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 	private void addImportDeclaration() {
 		// 判斷是否已經Import Robustness及RL的宣告
 		ListRewrite listRewrite = rewrite.getListRewrite(this.actRoot, CompilationUnit.IMPORTS_PROPERTY);
-		// 尋找有沒有import agile.exception.SuppressSmell;
+		// 尋找有沒有import ntut.csie.robusta.agile.exception.SuppressSmell;
 		boolean isSuppressSmellClass = false;
 		for (Object obj : listRewrite.getRewrittenList()) {
 			ImportDeclaration id = (ImportDeclaration)obj;

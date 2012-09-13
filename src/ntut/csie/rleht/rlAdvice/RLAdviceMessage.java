@@ -1,12 +1,12 @@
 package ntut.csie.rleht.rlAdvice;
 
 import ntut.csie.csdet.data.MarkerInfo;
+import ntut.csie.robusta.agile.exception.Tag;
 
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IMemberValuePairBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 
-import agile.exception.RL;
 
 /**
  * 從會throw出exception的expressionStatement中，蒐集跟他相關的資訊
@@ -98,7 +98,7 @@ public class RLAdviceMessage {
 		//method可能有很多annotation
 		for (IAnnotationBinding annotation : annotations) {
 			//尋找Robustness的annotation
-			if (annotation.getAnnotationType().getBinaryName().equals("agile.exception.Robustness")) {
+			if (annotation.getAnnotationType().getBinaryName().equals("ntut.csie.robusta.agile.exception.Robustness")) {
 				IMemberValuePairBinding[] mvpb = annotation.getAllMemberValuePairs();
 				//這裡有點醜，反正就是把robustness的annotation中，RL跟exception的資訊都存起來
 				Object[] values = (Object[]) mvpb[0].getValue();
@@ -122,7 +122,7 @@ public class RLAdviceMessage {
 		if(!isRobustnessAnnotationExist){
 			rlinfo = new RLInfo[1];
 			rlinfo[0] = new RLInfo();
-			rlinfo[0].setLevel(RL.LEVEL_1_ERR_REPORTING);
+			rlinfo[0].setLevel(Tag.LEVEL_1_ERR_REPORTING);
 			rlinfo[0].setException(getExceptionType());
 //			System.out.println("RLAdviceMessage沒有Annotation，例外類型為: "+ getExceptionType());
 		}

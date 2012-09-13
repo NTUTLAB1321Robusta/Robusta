@@ -476,7 +476,7 @@ public class RLSequenceModelBuilder {
 /*		Shiau: RL的訊息應依照Exception為單位而非Method,所以刪除。
 		// 如果顯示RL資訊，才將名稱增加RL
 		if (isShowRL)
-			message = "RL " + level + "\t" + message;
+			message = "Tag " + level + "\t" + message;
 */
 		String message = messageModel.getName();
 		messageModel.setName(" " + message);

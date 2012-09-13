@@ -8,6 +8,8 @@ import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLData;
 import ntut.csie.rleht.views.RLMessage;
+import ntut.csie.robusta.agile.exception.Tag;
+import ntut.csie.robusta.agile.exception.Robustness;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -61,8 +63,6 @@ import org.eclipse.text.edits.TextEditGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import agile.exception.RL;
-import agile.exception.Robustness;
 
 public class RetryRefactoring extends Refactoring {
 	private static Logger logger = LoggerFactory.getLogger(RetryRefactoring.class);
@@ -661,7 +661,7 @@ public class RetryRefactoring extends Refactoring {
 	}
 	
 	private void addAnnotationRoot(AST ast){
-		//要建立@Robustness(value={@RL(level=3, exception=java.lang.RuntimeException.class)})這樣的Annotation
+		//要建立@Robustness(value={@Tag(level=3, exception=java.lang.RuntimeException.class)})這樣的Annotation
 		//建立Annotation root
 		NormalAnnotation root = ast.newNormalAnnotation();
 		root.setTypeName(ast.newSimpleName("Robustness"));
@@ -718,9 +718,9 @@ public class RetryRefactoring extends Refactoring {
 	 * @return NormalAnnotation AST Node
 	 */
 	private NormalAnnotation getRLAnnotation(AST ast, int levelVal,String excption) {
-		//要建立@Robustness(value={@RL(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
+		//要建立@Robustness(value={@Tag(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
 		NormalAnnotation rl = ast.newNormalAnnotation();
-		rl.setTypeName(ast.newSimpleName("RL"));
+		rl.setTypeName(ast.newSimpleName("Tag"));
 
 		// level = 3
 		MemberValuePair level = ast.newMemberValuePair();
@@ -763,7 +763,7 @@ public class RetryRefactoring extends Refactoring {
 		}
 		if (!isImportRLClass) {
 			ImportDeclaration imp = rootAst.newImportDeclaration();
-			imp.setName(rootAst.newName(RL.class.getName()));
+			imp.setName(rootAst.newName(Tag.class.getName()));
 			listRewrite.insertLast(imp, null);
 		}
 	}

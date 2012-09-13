@@ -23,8 +23,8 @@ public class CallersEditorAction implements IEditorActionDelegate {
 			CallersView callersView = (CallersView) workbenchPage.showView(CallersView.ID);
 			callersView.handleSelectionChanged4Editor();
 		} catch (PartInitException e) {
-			RLEHTPlugin.logError("礚猭ち传@RL Call Hierarchy View!", e);
-			logger.error("礚猭ち传@RL Call Hierarchy View!", e);
+			RLEHTPlugin.logError("礚猭ち传@Tag Call Hierarchy View!", e);
+			logger.error("礚猭ち传@Tag Call Hierarchy View!", e);
 		}
 	}
 

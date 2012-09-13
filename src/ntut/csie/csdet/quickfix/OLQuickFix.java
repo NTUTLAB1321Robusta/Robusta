@@ -6,6 +6,8 @@ import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.visitor.ASTCatchCollect;
 import ntut.csie.csdet.visitor.OverLoggingDetector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
+import ntut.csie.robusta.agile.exception.Tag;
+import ntut.csie.robusta.agile.exception.Robustness;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
@@ -14,8 +16,6 @@ import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.ui.IMarkerResolution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import agile.exception.Robustness;
-import agile.exception.RL;
 
 
 /**
@@ -42,7 +42,7 @@ public class OLQuickFix extends BaseQuickFix implements IMarkerResolution {
 		return label;
 	}
 
-	@Robustness(value = { @RL(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
 	@Override
 	public void run(IMarker marker) {
 		try {
@@ -82,7 +82,7 @@ public class OLQuickFix extends BaseQuickFix implements IMarkerResolution {
 	 * 刪除Message
 	 * @param exception
 	 */
-	@Robustness(value = { @RL(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
 	private void deleteMessage(int msgIdx) {
 		try {
 			// 取得EH smell的資訊

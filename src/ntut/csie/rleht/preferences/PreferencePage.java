@@ -33,7 +33,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 	 */
 	public void createFieldEditors() {
 
-		addField(new StringFieldEditor(PreferenceConstants.P_RLCHPF_STRING, "RL Call Hierarchy Package Filiter:", getFieldEditorParent()));
+		addField(new StringFieldEditor(PreferenceConstants.P_RLCHPF_STRING, "Tag Call Hierarchy Package Filiter:", getFieldEditorParent()));
 	}
 
 	@Override

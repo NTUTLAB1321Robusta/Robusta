@@ -68,7 +68,7 @@ public class RLOrderFix {
 			permutation(newRLList,1);
 		}
 
-		//穝场 RL Annotation List
+		//穝场 Tag Annotation List
 		updateRLAnnotation(Integer.parseInt(msgIdx));
 	}
 	
@@ -177,7 +177,7 @@ public class RLOrderFix {
 	 * @param newRLList
 	 * 		穝竚RL Annotation List
 	 * @return
-	 * 		RL List抖琌场タ絋
+	 * 		Tag List抖琌场タ絋
 	 */
 	private boolean isRLListCorrect(RLMessage[] newRLList)
 	{
@@ -306,7 +306,7 @@ public class RLOrderFix {
 	@SuppressWarnings("unchecked")
 	private NormalAnnotation getRLAnnotation(AST ast, int levelVal, String exClass) {
 		NormalAnnotation rl = ast.newNormalAnnotation();
-		rl.setTypeName(ast.newSimpleName("RL"));
+		rl.setTypeName(ast.newSimpleName("Tag"));
 
 		MemberValuePair level = ast.newMemberValuePair();
 		level.setName(ast.newSimpleName("level"));
