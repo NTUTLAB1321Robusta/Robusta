@@ -4,11 +4,12 @@
  ****************************************************************************-->
 <project name="Robusta" default="all">
 	<property environment="env"/>
-    <property name="ECLIPSE_HOME" value="D:/DevProgram/eclipse-helios"/>
+    <property name="ECLIPSE_HOME" value="${env.ECLIPSE_HOME}"/>
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.6"/>
     <property name="source" value="1.6"/>
-    <property name="jar-file-name" value="Robusta_2.0.0.jar"/>
+    <property name="jar-file-name" value="ntut.csie.robusta_2.0.0.jar"/>
+	<property name="rl-jar-file-name" value="ntut.csie.robusta.agile.exception_1.0.0.jar"/>
     <property name="update-folder" value="update"/>
     <property name="feature-folder" value="${update-folder}/features"/>
     <property name="plugin-folder" value="${update-folder}/plugins"/>
@@ -101,7 +102,7 @@
 	</condition>
 	
 	<!-- main target -->
-	<target name="all" depends="init, build-project, remove-other-plugin-lib, jar, clean, write-site-xml, write-feature-xml"/>
+	<target name="all" depends="init, build-project, remove-other-plugin-lib, agile-jar, product-jar, clean, write-site-xml, write-feature-xml"/>
 	
     <target name="init">
         <mkdir dir="bin"/>
@@ -168,8 +169,16 @@
 		</delete>
 	</target>
 	
+	<target name="agile-jar">
+		<jar destfile="${plugin-folder}/${rl-jar-file-name}" filesetmanifest="mergewithoutmain" basedir="bin" includes="**/RL.class, **/Robustness.class, **/SuppressSmell.class">
+			<manifest>
+				<attribute name="ClassPath" value="."/>
+			</manifest>
+		</jar>
+	</target>
+	
 	<!-- wrap bin folder to jar file -->
-	<target name="jar">
+	<target name="product-jar">
 		<jar destfile="${plugin-folder}/${jar-file-name}" filesetmanifest="mergewithoutmain" basedir="bin">
 			<manifest>
 				<attribute name="Bundle-ManifestVersion" value="2"/>
@@ -218,7 +227,7 @@
 				<url>
 					<update label="updates" url="这里填你最后发布的update地址"/>
 				</url>
-			 
+			 	
 				<requires>
 					<import plugin="org.eclipse.ui.views"/>
 					<import plugin="org.eclipse.jface.text"/>

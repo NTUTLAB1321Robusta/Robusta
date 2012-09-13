@@ -1,20 +1,9 @@
 package ntut.csie.csdet.views;
 
-import java.io.File;
-
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
-import ntut.csie.filemaker.JarFileMaker;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.internal.ui.packageview.PackageFragmentRootContainer;
-import org.eclipse.jface.text.ITextSelection;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -29,8 +18,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.ui.ISelectionService;
-import org.eclipse.ui.internal.Workbench;
 import org.jdom.Element;
 
 /**
