@@ -47,7 +47,7 @@ public class SettingPage extends APropertyPage {
 	private Composite selectComposite;
 	private Button detAllBtn;
 	private Button showWarningBtn;
-	private Button addLibBtn;
+//	private Button addLibBtn;
 	
 	private boolean isDetAll = false;
 	private boolean[] detSmellList;
@@ -196,51 +196,51 @@ public class SettingPage extends APropertyPage {
 			}
 		});
 		
-		addLibBtn = new Button(composite, SWT.PUSH);
-		addLibBtn.setText("Add RL Library");
-		addLibBtn.setLocation(getBoundsPoint(detAllBtn).x + 20, 10);
-		addLibBtn.pack();
-		addLibBtn.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				ISelectionService selectionService = Workbench.getInstance().getActiveWorkbenchWindow().getSelectionService();
-				ISelection selection = selectionService.getSelection();
-				IProject project = null;
-				if(selection instanceof IStructuredSelection) {
-				    Object element = ((IStructuredSelection)selection).getFirstElement();
-				    if (element instanceof IResource) {
-				        project= ((IResource)element).getProject();
-				    } else if (element instanceof PackageFragmentRootContainer) {
-				        IJavaProject jProject = ((PackageFragmentRootContainer)element).getJavaProject();
-				        project = jProject.getProject();
-				    } else if (element instanceof IJavaElement) {
-				        IJavaProject jProject= ((IJavaElement)element).getJavaProject();
-				        project = jProject.getProject();
-				    }
-				} else if (selection instanceof ITextSelection) {
-				    System.out.println("Fail");
-				    return;
-				}
-				File lib = new File(project.getLocation().toFile().getPath() + "/lib");
-				if(!lib.exists())
-					lib.mkdir();
-				File jar = new File(project.getLocation().toFile().getPath() + "/lib/RL.jar");
-				JarFileMaker jarFileMaker = new JarFileMaker();
-				File test = new File("bin");
-				jarFileMaker.createJarFile(jar, test, "agile.exception");
-			}
-		});
+//		addLibBtn = new Button(composite, SWT.PUSH);
+//		addLibBtn.setText("Add RL Library");
+//		addLibBtn.setLocation(getBoundsPoint(detAllBtn).x + 20, 10);
+//		addLibBtn.pack();
+//		addLibBtn.addSelectionListener(new SelectionAdapter() {
+//			@Override
+//			public void widgetSelected(SelectionEvent e) {
+//				ISelectionService selectionService = Workbench.getInstance().getActiveWorkbenchWindow().getSelectionService();
+//				ISelection selection = selectionService.getSelection();
+//				IProject project = null;
+//				if(selection instanceof IStructuredSelection) {
+//				    Object element = ((IStructuredSelection)selection).getFirstElement();
+//				    if (element instanceof IResource) {
+//				        project= ((IResource)element).getProject();
+//				    } else if (element instanceof PackageFragmentRootContainer) {
+//				        IJavaProject jProject = ((PackageFragmentRootContainer)element).getJavaProject();
+//				        project = jProject.getProject();
+//				    } else if (element instanceof IJavaElement) {
+//				        IJavaProject jProject= ((IJavaElement)element).getJavaProject();
+//				        project = jProject.getProject();
+//				    }
+//				} else if (selection instanceof ITextSelection) {
+//				    System.out.println("Fail");
+//				    return;
+//				}
+//				File lib = new File(project.getLocation().toFile().getPath() + "/lib");
+//				if(!lib.exists())
+//					lib.mkdir();
+//				File jar = new File(project.getLocation().toFile().getPath() + "/lib/RL.jar");
+//				JarFileMaker jarFileMaker = new JarFileMaker();
+//				File test = new File("bin");
+//				jarFileMaker.createJarFile(jar, test, "agile.exception");
+//			}
+//		});
 
 		//¤À¹j½u
 		final Label label = new Label(composite, SWT.HORIZONTAL | SWT.SEPARATOR);
-		label.setBounds(0, getBoundsPoint(addLibBtn).y + 5, 550, 1);
+//		label.setBounds(0, getBoundsPoint(addLibBtn).y + 5, 550, 1);
 
 		selectComposite = new Composite(composite, SWT.NONE);
 		selectComposite.setBounds(0, getBoundsPoint(label).y + 5, 550, 402);
 
 		final Label label1 = new Label(selectComposite, SWT.NONE);
 		label1.setText("Detect EH Smell Type:");
-		label1.setLocation(10, 5);
+		label1.setLocation(10, 15);
 		label1.pack();
 
 		//¿ï¾ÜEH Smell List
