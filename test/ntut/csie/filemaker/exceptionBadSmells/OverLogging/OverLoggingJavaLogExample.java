@@ -8,12 +8,11 @@ import java.util.logging.Logger;
 import ntut.csie.robusta.agile.exception.Tag;
 import ntut.csie.robusta.agile.exception.Robustness;
 
-
 public class OverLoggingJavaLogExample {
 	Logger javaLogger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 	
 	/** ---------------------Call Chain In Normal Case----------------------------- */
-	/* ----------------------Call Chain In the Same Class-------------------------- */
+	/* ----------------------Call Chain In The Same Class-------------------------- */
 	
 	public void theFirstOrderInTheSameClassWithJavaLog() {
 		try {
@@ -58,8 +57,51 @@ public class OverLoggingJavaLogExample {
 			throw e;
 		}
 	}
+	
+	// ----------------------Call Chain In The Same Class Without Logging At Beginning
+	
+	public void theFirstOrderInTheSameClassWithJavaLogAndWithoutLoggingAtBeginning() {
+		try {
+			theSecondOrderInTheSameClassWithJavaLogAndWithoutLoggingAtBeginning();
+		} catch(IOException e) {
+			// Call chain最上層不會標示OverLogging
+			javaLogger.log(Level.WARNING, e.getMessage() + "theFirstOrderInTheSameClassWithJavaLogAndWithoutLoggingAtBeginning");
+		}
+	}
+	
+	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
+	public void theSecondOrderInTheSameClassWithJavaLogAndWithoutLoggingAtBeginning() throws IOException {
+		try {
+			theThirdOrderInTheSameClassWithJavaLogAndWithoutLoggingAtBeginning();
+		} catch(IOException e) {
+			// OverLogging
+			javaLogger.log(Level.WARNING, e.getMessage() + "theSecondOrderInTheSameClassWithJavaLogAndWithoutLoggingAtBeginning");
+			throw e;
+		}
+	}
+	
+	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
+	public void theThirdOrderInTheSameClassWithJavaLogAndWithoutLoggingAtBeginning() throws IOException {
+		try {
+			theFourthOrderInTheSameClassWithJavaLogAndWithoutLoggingAtBeginning();
+		} catch(IOException e) {
+			// OverLogging
+			javaLogger.log(Level.WARNING, e.getMessage() + "theThirdOrderInTheSameClassWithJavaLogAndWithoutLoggingAtBeginning");
+			throw e;
+		}
+	}
+	
+	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
+	public void theFourthOrderInTheSameClassWithJavaLogAndWithoutLoggingAtBeginning() throws IOException {
+		try {
+			throw new IOException("IOException throws in callee");
+		} catch(IOException e) {
+			e.printStackTrace();
+			throw e;
+		}
+	}
 
-	/* ----------------------Call Chain In the outer Class------------------------- */ 
+	/* ----------------------Call Chain In The Outer Class------------------------- */ 
 	
 	public void calleeInOutterClassWithJavaLog() {
 		try {
@@ -72,7 +114,7 @@ public class OverLoggingJavaLogExample {
 	}
 	
 	/** -------Call Chain With Transforming Exception And Changing Exception------- */
-	/* -----------------------Call Chain In the Same Class------------------------- */
+	/* -----------------------Call Chain In The Same Class------------------------- */
 	
 	public void theFirstOrderInTheSameClassWithJavaLogAndSomeConditions() {
 		try {
@@ -91,7 +133,7 @@ public class OverLoggingJavaLogExample {
 		} catch(FileNotFoundException e) {
 			e.printStackTrace();
 			// OverLogging
-			javaLogger.log(Level.WARNING, e.getMessage() + "theFifththOrderInTheSameClassWithJavaLogAndSomeConditions");
+			javaLogger.log(Level.WARNING, e.getMessage() + "theSecondOrderInTheSameClassWithJavaLogAndSomeConditions");
 			throw e;
 		}
 	}
@@ -125,7 +167,7 @@ public class OverLoggingJavaLogExample {
 		try {
 			theSixthOrderInTheSameClassWithJavaLogAndSomeConditions();
 		} catch(FileNotFoundException e) {
-			javaLogger.log(Level.WARNING, e.getMessage() + "theSecondOrderInTheSameClassWithJavaLogAndSomeConditions");
+			javaLogger.log(Level.WARNING, e.getMessage() + "theFifthOrderInTheSameClassWithJavaLogAndSomeConditions");
 			// 拋全新的例外，所以不繼續追蹤
 			throw new IOException();
 		}
@@ -138,12 +180,12 @@ public class OverLoggingJavaLogExample {
 		} catch(FileNotFoundException e) {
 			e.printStackTrace();
 			// OverLogging
-			javaLogger.log(Level.WARNING, e.getMessage() + "theFifththOrderInTheSameClassWithJavaLogAndSomeConditions");
+			javaLogger.log(Level.WARNING, e.getMessage() + "theSixthOrderInTheSameClassWithJavaLogAndSomeConditions");
 			throw e;
 		}
 	}
 	
-	/* -----------------------Call Chain In the outer Class------------------------ */ 
+	/* -----------------------Call Chain In The Outer Class------------------------ */ 
 	
 	public void calleeInOutterClassWithJavaLogAndSomeConditions() {
 		try {

@@ -4,11 +4,10 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import ntut.csie.robusta.agile.exception.Tag;
-import ntut.csie.robusta.agile.exception.Robustness;
-
 import org.slf4j.LoggerFactory;
 
+import ntut.csie.robusta.agile.exception.Tag;
+import ntut.csie.robusta.agile.exception.Robustness;
 
 public class OverLoggingTheThirdOrderClass {
 	Logger javaLogger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);

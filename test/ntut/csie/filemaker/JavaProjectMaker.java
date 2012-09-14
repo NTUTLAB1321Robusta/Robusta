@@ -63,7 +63,8 @@ public class JavaProjectMaker {
 	/** 功能性程式碼的資料夾名稱 */
 	public static final String FOLDERNAME_SOURCE = "src";
 	/** 取得RL.jar的路徑 */
-	public static final String RL_LIBRARY_PATH = FOLDERNAME_LIB_JAR + "/Tag.jar";
+	public static final String RL_LIBRARY_PATH = FOLDERNAME_LIB_JAR
+			+ "/ntut.csie.robusta.agile.exception_1.0.0.jar";
 	/** java 副檔名 */
 	public static final String JAVA_FILE_EXTENSION = ".java";
 	/**

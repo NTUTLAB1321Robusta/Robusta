@@ -12,6 +12,7 @@ import ntut.csie.csdet.preference.JDomUtil;
 import ntut.csie.csdet.visitor.CarelessCleanupVisitor;
 import ntut.csie.csdet.visitor.DummyHandlerVisitor;
 import ntut.csie.csdet.visitor.IgnoreExceptionVisitor;
+import ntut.csie.csdet.visitor.NestedTryStatementVisitor;
 import ntut.csie.csdet.visitor.UnprotectedMainProgramVisitor;
 import ntut.csie.csdet.visitor.OverLoggingDetector;
 import ntut.csie.jcis.builder.core.internal.support.LOCCounter;
@@ -137,6 +138,7 @@ public class ReportBuilder {
 //		CodeSmellAnalyzer csVisitor = null;
 		IgnoreExceptionVisitor ieVisitor = null;
 		DummyHandlerVisitor dhVisitor = null;
+		NestedTryStatementVisitor ntsVisitor = null;
 		UnprotectedMainProgramVisitor mainVisitor = null;
 		CarelessCleanupVisitor ccVisitor = null;
 		OverLoggingDetector loggingDetector = null;
@@ -202,9 +204,14 @@ public class ReportBuilder {
 			}
 			// 取得專案中的Nested Try Block
 			if (detMethodSmell.get(RLMarkerAttribute.CS_NESTED_TRY_BLOCK)) {
-				newClassModel.setNestedTryList(visitor.getNestedTryList(),
-						methodName.getName().toString());
-				model.addNestedTotalTrySize(visitor.getNestedTryList().size());
+				ntsVisitor = new NestedTryStatementVisitor(root);
+				method.accept(ntsVisitor);
+				List<MarkerInfo> nestedTryList = checkCatchSmell(ntsVisitor.getNestedTryStatementList()
+						, detCatchSmell
+						.get(RLMarkerAttribute.CS_NESTED_TRY_BLOCK));
+				newClassModel.setDummyList(nestedTryList, methodName.getName()
+						.toString());
+				model.addNestedTotalTrySize(nestedTryList.size());
 			}
 			// 尋找該method內的unprotected main program
 			mainVisitor = new UnprotectedMainProgramVisitor(root);

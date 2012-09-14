@@ -3,12 +3,11 @@ package ntut.csie.filemaker.exceptionBadSmells.OverLogging;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import ntut.csie.robusta.agile.exception.Tag;
-import ntut.csie.robusta.agile.exception.Robustness;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ntut.csie.robusta.agile.exception.Tag;
+import ntut.csie.robusta.agile.exception.Robustness;
 
 public class OverLoggingSelf4JExample {
 	Logger self4jLogger = LoggerFactory.getLogger(this.getClass());

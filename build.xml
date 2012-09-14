@@ -170,7 +170,7 @@
 	</target>
 	
 	<target name="agile-jar">
-		<jar destfile="${plugin-folder}/${rl-jar-file-name}" filesetmanifest="mergewithoutmain" basedir="bin" includes="**/RL.class, **/Robustness.class, **/SuppressSmell.class">
+		<jar destfile="${plugin-folder}/${rl-jar-file-name}" filesetmanifest="mergewithoutmain" basedir="bin" includes="**/Tag.class, **/Robustness.class, **/SuppressSmell.class">
 			<manifest>
 				<attribute name="ClassPath" value="."/>
 			</manifest>

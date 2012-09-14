@@ -8,15 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
-import ntut.csie.robusta.agile.exception.Tag;
-import ntut.csie.robusta.agile.exception.Robustness;
-
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
 
+import ntut.csie.robusta.agile.exception.Tag;
+import ntut.csie.robusta.agile.exception.Robustness;;
 
 public class SmellSettings {
 	/*
@@ -56,7 +55,7 @@ public class SmellSettings {
 	public final static String EXTRARULE_JavaUtilLoggingLogger = "java.util.logging.Logger";
 	private Document settingDoc;
 	
-	protected SmellSettings() {
+	public SmellSettings() {
 		settingDoc = new Document(new Element(TAG_ROOT));
 	}
 	
@@ -352,6 +351,9 @@ public class SmellSettings {
 			if(rule.equals(EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD)) {
 				libMap.put(rule, UserDefinedConstraintsType.FullQulifiedMethod);
 				continue;
+			}
+			if(rule.equals(EXTRARULE_OVERLOGGING_DETECTWRAPPINGEXCEPTION)) {
+				libMap.put(rule, UserDefinedConstraintsType.FullQulifiedMethod);
 			}
 		}
 		// add patterns to libMap
