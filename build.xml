@@ -111,13 +111,13 @@
 			<formatter type="xml"/>
 			<batchtest todir="${xml-folder}">
 				<fileset dir="${bin-folder}">
-					<!--<include name="**/AllJUnitTests.class"/>-->
-					<include name="**/CSMessageTest.class"/>
+					<include name="**/AllJUnitTests.class"/>
+					<!--<include name="**/CSMessageTest.class"/>
 					<include name="**/MarkerInfoTest.class"/>
 					<include name="**/SmellSettingsTest.class"/>
 					<include name="**/ClassModelTest.class"/>
 					<include name="**/CarelessCleanUpPageTest.class"/>
-					<include name="**/ClazzTest.class"/>
+					<include name="**/ClazzTest.class"/>-->
 				</fileset>
 			</batchtest>
 			<classpath refid="Robusta.test.classpath"/>
