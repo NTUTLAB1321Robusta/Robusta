@@ -50,7 +50,10 @@
 	</condition>
 	
 	<!-- main target -->
-	<target name="all" depends="init, build-project, test, junit-report, remove-other-plugin-lib, agile-jar, product-jar, write-site-xml, write-feature-xml, zip-product"/>
+	<target name="all" depends="init, build-project, test, junit-report, remove-other-plugin-lib,
+								agile-jar, product-jar, write-site-xml, write-feature-xml, zip-product">
+		<echo message="Ant build complete"/>
+	</target>
 	
     <target name="init">
     	<delete quiet="true" dir="${bin-folder}"/>
@@ -228,6 +231,6 @@
 	</target>
 	
 	<target name="zip-product">
-		<zip destfile="${basedir}/Robusta.zip" basedir="${update-folder}"/>
+		<zip destfile="${update-id}.zip" basedir="${update-folder}"/>
 	</target>
 </project>
