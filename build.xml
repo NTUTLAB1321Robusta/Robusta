@@ -10,25 +10,29 @@
     <property name="source" value="1.6"/>
     <property name="jar-file-name" value="ntut.csie.robusta_2.0.0.jar"/>
 	<property name="rl-jar-file-name" value="ntut.csie.robusta.agile.exception_1.0.0.jar"/>
-	<property name="result-folder" value="result"/>
+	<property name="result-folder" value="${basedir}/result"/>
 	<property name="xml-folder" value="${result-folder}/xml"/>
     <property name="update-folder" value="${result-folder}/update"/>
     <property name="feature-folder" value="${update-folder}/features"/>
     <property name="plugin-folder" value="${update-folder}/plugins"/>
 	<property name="license-folder" value="${update-folder}/licenses"/>
+	<property name="src-folder" value="${basedir}/src"/>
+	<property name="test-folder" value="${basedir}/test"/>
+	<property name="bin-folder" value="${basedir}/bin"/>
+	<property name="lib-folder" value="${basedir}/lib"/>
 	<property name="update-id" value="ntut.csie.robusta_2.0.0"/>
 	<property name="eclipse-public-license" value="epl-v10.html"/>
 	<property name="notice" value="notice.html"/>
 	
 	<!-- project lib -->
     <path id="Robusta.classpath">
-    	<fileset dir="bin/" includes="**/*.*"/>
+    	<fileset dir="${bin-folder}" includes="**/*.*"/>
     	<fileset dir="${ECLIPSE_HOME}/plugins/" includes="**/*.jar"/>
     </path>
 	
 	<path id="Robusta.test.classpath">
-		<fileset dir="lib" includes="**/*.jar"/>
-		<pathelement path="${basedir}/bin"/>
+		<fileset dir="${lib-folder}" includes="**/*.jar"/>
+		<pathelement path="${bin-folder}"/>
 		<fileset dir="${ECLIPSE_HOME}/plugins/" includes="**/*.jar"/>
     </path>
 	
@@ -46,11 +50,12 @@
 	</condition>
 	
 	<!-- main target -->
-	<target name="all" depends="init, build-project, test, junit-report, remove-other-plugin-lib, agile-jar, product-jar, write-site-xml, write-feature-xml, clean"/>
+	<target name="all" depends="init, build-project, test, junit-report, remove-other-plugin-lib, agile-jar, product-jar, write-site-xml, write-feature-xml, zip-product"/>
 	
     <target name="init">
+    	<delete quiet="true" dir="${bin-folder}"/>
     	<delete quiet="true" dir="${result-folder}"/>
-        <mkdir dir="bin"/>
+        <mkdir dir="${bin-folder}"/>
     	<mkdir dir="${result-folder}"/>
     	<mkdir dir="${xml-folder}"/>
 		<mkdir dir="${update-folder}"/>
@@ -60,26 +65,26 @@
 		<copy todir="${license-folder}">
 			<fileset dir="${basedir}" includes="*.html"/>
 		</copy>
-        <copy includeemptydirs="false" todir="bin">
-            <fileset dir="src">
+        <copy includeemptydirs="false" todir="${bin-folder}">
+            <fileset dir="${src-folder}">
                 <exclude name="**/*.launch"/>
                 <exclude name="**/*.java"/>
             </fileset>
         </copy>
-        <copy includeemptydirs="false" todir="bin">
-            <fileset dir="test">
+        <copy includeemptydirs="false" todir="${bin-folder}">
+            <fileset dir="${test-folder}">
                 <exclude name="**/*.launch"/>
                 <exclude name="**/*.java"/>
             </fileset>
         </copy>
-		<copy includeemptydirs="false" todir="bin/icons">
-			<fileset dir="icons"/>
+		<copy includeemptydirs="false" todir="${bin-folder}/icons">
+			<fileset dir="${basedir}/icons"/>
 		</copy>
-		<copy includeemptydirs="false" todir="bin/lib">
-			<fileset dir="lib"/>
+		<copy includeemptydirs="false" todir="${bin-folder}/lib">
+			<fileset dir="${lib-folder}"/>
 		</copy>
 		<copy todir="${plugin-folder}">
-			<fileset dir="lib">
+			<fileset dir="${lib-folder}">
 				<include name="net.java.amateras.umleditor.java_1.3.1.jar"/>
 				<include name="net.java.amateras.umleditor_1.3.1.jar"/>
 				<include name="net.java.amateras.xstream_1.3.1.jar"/>
@@ -88,12 +93,12 @@
 				<include name="org.eclipse.jdt.astview_1.1.3.jar"/>
 			</fileset>
 		</copy>
-		<copy file="${basedir}/plugin.xml" tofile="bin/plugin.xml"/>
+		<copy file="${basedir}/plugin.xml" tofile="${bin-folder}/plugin.xml"/>
     </target>
 	
 	<!-- compile project -->
     <target name="build-project">
-        <javac srcdir="src:test" debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}" includeantruntime="false">
+        <javac srcdir="${src-folder}:${test-folder}" debug="true" debuglevel="${debuglevel}" destdir="${bin-folder}" source="${source}" target="${target}" includeantruntime="false" encoding="MS950">
             <classpath refid="Robusta.classpath"/>
         </javac>
     </target>
@@ -102,7 +107,7 @@
 		<junit printsummary="yes">
 			<formatter type="xml"/>
 			<batchtest todir="${xml-folder}">
-				<fileset dir="${basedir}/bin">
+				<fileset dir="${bin-folder}">
 					<!--<include name="**/AllJUnitTests.class"/>-->
 					<include name="**/CSMessageTest.class"/>
 					<include name="**/MarkerInfoTest.class"/>
@@ -128,7 +133,7 @@
 	 
 	<target name="remove-other-plugin-lib">
 		<delete>
-			<fileset dir="bin/lib">
+			<fileset dir="${bin-folder}/lib">
 				<include name="net.java.amateras.umleditor.java_1.3.1.jar"/>
 				<include name="net.java.amateras.umleditor_1.3.1.jar"/>
 				<include name="net.java.amateras.xstream_1.3.1.jar"/>
@@ -140,7 +145,7 @@
 	</target>
 	
 	<target name="agile-jar">
-		<jar destfile="${update-folder}/${rl-jar-file-name}" filesetmanifest="mergewithoutmain" basedir="bin" includes="**/Tag.class, **/Robustness.class, **/SuppressSmell.class">
+		<jar destfile="${update-folder}/${rl-jar-file-name}" filesetmanifest="mergewithoutmain" basedir="${bin-folder}" includes="**/Tag.class, **/Robustness.class, **/SuppressSmell.class">
 			<manifest>
 				<attribute name="ClassPath" value="."/>
 			</manifest>
@@ -149,7 +154,7 @@
 	
 	<!-- wrap bin folder to jar file -->
 	<target name="product-jar">
-		<jar destfile="${plugin-folder}/${jar-file-name}" filesetmanifest="mergewithoutmain" basedir="bin" excludes="**/filemaker/, **/*Test.class">
+		<jar destfile="${plugin-folder}/${jar-file-name}" filesetmanifest="mergewithoutmain" basedir="${bin-folder}" excludes="**/filemaker/, **/*Test.class">
 			<manifest>
 				<attribute name="Bundle-ManifestVersion" value="2"/>
 				<attribute name="Bundle-Name" value="RLEHT Plug-in"/>
@@ -222,8 +227,7 @@
 		</echoxml>
 	</target>
 	
-	<!-- recover to original state -->
-    <target name="clean">
-    	<!--<delete quiet="true" dir="bin"/>-->
-    </target>
+	<target name="zip-product">
+		<zip destfile="${basedir}/Robusta.zip" basedir="${update-folder}"/>
+	</target>
 </project>
