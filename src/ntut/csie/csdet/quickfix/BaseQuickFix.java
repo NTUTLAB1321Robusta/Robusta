@@ -16,9 +16,9 @@ import org.eclipse.jdt.core.IOpenable;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jdt.internal.ui.javaeditor.EditorUtility;
@@ -44,7 +44,7 @@ public class BaseQuickFix {
 	/** 存放目前要修改的.java檔 */
 	protected CompilationUnit actRoot = null;
 	/** 存放目前所要fix的method node */
-	protected ASTNode currentMethodNode = null;
+	protected MethodDeclaration currentMethodNode = null;
 
 	/**
 	 * 取得Method相關資訊
@@ -74,7 +74,7 @@ public class BaseQuickFix {
 				//取得該class所有的method
 				ASTMethodCollector methodCollector = new ASTMethodCollector();
 				actRoot.accept(methodCollector);
-				List<ASTNode> methodList = methodCollector.getMethodList();
+				List<MethodDeclaration> methodList = methodCollector.getMethodList();
 				
 				//取得目前要被修改的method node
 				currentMethodNode = methodList.get(methodIdx);

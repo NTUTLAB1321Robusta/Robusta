@@ -84,7 +84,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	private CompilationUnit actRoot;
 	
 	// 存放目前所要fix的method node
-	private ASTNode currentMethodNode = null;
+	private MethodDeclaration currentMethodNode = null;
 	
 	// 收集Method內所有的Careless CleanUp
 	private List<MarkerInfo> CarelessCleanUpList = null;
@@ -275,7 +275,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 				//取得該class所有的method
 				ASTMethodCollector methodCollector = new ASTMethodCollector();
 				actRoot.accept(methodCollector);
-				List<ASTNode> methodList = methodCollector.getMethodList();
+				List<MethodDeclaration> methodList = methodCollector.getMethodList();
 				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
 
 				//取得目前要被修改的method node
@@ -362,7 +362,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 						// 將new動作替換成null
 						fragment.setInitializer(ast.newNullLiteral());
 						// 加至原本程式碼之前
-						MethodDeclaration md = (MethodDeclaration) currentMethodNode;
+						MethodDeclaration md = currentMethodNode;
 						md.getBody().statements().add(tryIndex, variable);
 						break;
 					}
@@ -389,7 +389,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	 */
 	private TryStatement findTryStatement() {
 		//取得方法中所有的statement
-		MethodDeclaration md = (MethodDeclaration) currentMethodNode;
+		MethodDeclaration md = currentMethodNode;
 		Block mdBlock = md.getBody();
 		List<?> statement = mdBlock.statements();
 
@@ -885,7 +885,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	/**
 	 * 取得ICompilationUnit的名稱
 	 */
-	public ASTNode getCurrentMethodNode(){
+	public MethodDeclaration getCurrentMethodNode() {
 		IResource resource = marker.getResource();
 		//取得MethodNode
 		findMethod(resource);

@@ -10,6 +10,7 @@ import ntut.csie.rleht.builder.RLMarkerAttribute;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TryStatement;
 
 public class NestedTryStatementVisitor extends ASTVisitor {
@@ -36,7 +37,7 @@ public class NestedTryStatementVisitor extends ASTVisitor {
 	/**
 	 * 根據設定檔的資訊，決定要不要拜訪整棵樹。
 	 */
-	public boolean visit(CompilationUnit node) {
+	public boolean visit(MethodDeclaration node) {
 		return isDetectingNestedTryStatementSmell;
 	}
 	

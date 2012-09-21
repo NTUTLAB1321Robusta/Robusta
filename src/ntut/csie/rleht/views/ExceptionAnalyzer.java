@@ -41,7 +41,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 	private int sourceEnd;
 
 	// 目前所在之Method節點
-	private ASTNode currentMethodNode;
+	private MethodDeclaration currentMethodNode;
 
 	private int currentMethodStart;
 
@@ -218,7 +218,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 					}
 					
 					if (currentMethodStart <= sourceStart && sourceEnd <= currentMethodEnd) {
-						currentMethodNode = node;
+						currentMethodNode = (MethodDeclaration)node;
 						currentMethodFound = true;
 						getMethodAnnotation(node);
 						getMethodThrowsList(node);
@@ -550,7 +550,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		return nestedTryList;
 	}
 	
-	public ASTNode getCurrentMethodNode() {
+	public MethodDeclaration getCurrentMethodNode() {
 		return currentMethodNode;
 	}
 

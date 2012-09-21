@@ -109,7 +109,7 @@ public class ExceptionAnalyzerTest {
 		compilationUnit.accept(collector);
 		
 		// 儲存專區
-		List<ASTNode> methodList = collector.getMethodList();
+		List<MethodDeclaration> methodList = collector.getMethodList();
 		List<MarkerInfo> totalNTList = new ArrayList<MarkerInfo>();
 		List<RLMessage> totalMethodRLList = new ArrayList<RLMessage>();
 		List<SSMessage> totalSSList = new ArrayList<SSMessage>();
@@ -159,7 +159,7 @@ public class ExceptionAnalyzerTest {
 		ASTMethodCollector collector = new ASTMethodCollector();
 		compilationUnit.accept(collector);
 		
-		List<ASTNode> methodList = collector.getMethodList();
+		List<MethodDeclaration> methodList = collector.getMethodList();
 		
 		Method visitNodemMethod = ExceptionAnalyzer.class.getDeclaredMethod("visitNode", ASTNode.class);
 		visitNodemMethod.setAccessible(true);
@@ -187,7 +187,7 @@ public class ExceptionAnalyzerTest {
 		}
 		// #4 THROW_STATEMENT
 		for (int i = 0; i < methodList.size(); i++) {
-			MethodDeclaration md = (MethodDeclaration) methodList.get(i);
+			MethodDeclaration md = methodList.get(i);
 			for (int j = 0; j < md.getBody().statements().size(); j++) {
 				ASTNode node = (ASTNode)md.getBody().statements().get(j);
 				if (node.getNodeType() == ASTNode.TRY_STATEMENT) {
@@ -214,13 +214,13 @@ public class ExceptionAnalyzerTest {
 		ASTMethodCollector astMethodCollector = new ASTMethodCollector();
 		compilationUnit.accept(astMethodCollector);
 		
-		List<ASTNode> methodList = astMethodCollector.getMethodList();
+		List<MethodDeclaration> methodList = astMethodCollector.getMethodList();
 		List<MarkerInfo> totalNTList = new ArrayList<MarkerInfo>();
 		List<RLMessage> totalMethodRLList = new ArrayList<RLMessage>();
 		List<SSMessage> totalSSList = new ArrayList<SSMessage>();
 		
 		for (int i = 0; i < methodList.size(); i++) {
-			MethodDeclaration md = (MethodDeclaration) methodList.get(i);
+			MethodDeclaration md = methodList.get(i);
 			for (int j = 0; j < md.getBody().statements().size(); j++) {
 				ASTNode node = (ASTNode)md.getBody().statements().get(j);
 				if (node.getNodeType() == ASTNode.TRY_STATEMENT) {
@@ -267,9 +267,9 @@ public class ExceptionAnalyzerTest {
 		// 資料產生
 		ASTMethodCollector astMethodCollector = new ASTMethodCollector();
 		compilationUnit.accept(astMethodCollector);
-		List<ASTNode> methodlist = astMethodCollector.getMethodList();
+		List<MethodDeclaration> methodlist = astMethodCollector.getMethodList();
 		List<RLMessage> totalRLList = new ArrayList<RLMessage>();
-		MethodDeclaration mDeclaration = (MethodDeclaration)methodlist.get(7);
+		MethodDeclaration mDeclaration = methodlist.get(7);
 		TryStatement tryStatement = (TryStatement) mDeclaration.getBody().statements().get(1);
 		ExpressionStatement statement = (ExpressionStatement) tryStatement.getBody().statements().get(0);
 		ClassInstanceCreation cic = (ClassInstanceCreation)statement.getExpression();
@@ -287,7 +287,7 @@ public class ExceptionAnalyzerTest {
 		exceptionAnalyzer = new ExceptionAnalyzer(compilationUnit, methodlist.get(6).getStartPosition(), 0);
 		totalRLList = new ArrayList<RLMessage>();
 		assertEquals(0, totalRLList.size());
-		mDeclaration = (MethodDeclaration) methodlist.get(6);
+		mDeclaration = methodlist.get(6);
 		tryStatement = (TryStatement) mDeclaration.getBody().statements().get(1);
 		statement = (ExpressionStatement) tryStatement.getBody().statements().get(0);
 		Assignment assignment = (Assignment) statement.getExpression();
@@ -305,7 +305,7 @@ public class ExceptionAnalyzerTest {
 		ASTMethodCollector astMethodCollector = new ASTMethodCollector();
 		compilationUnit.accept(astMethodCollector);
 		
-		List<ASTNode> methodlist = astMethodCollector.getMethodList();
+		List<MethodDeclaration> methodlist = astMethodCollector.getMethodList();
 		List<RLMessage> totalRLList = new ArrayList<RLMessage>();
 		
 		Method methodAddRLForInt = ExceptionAnalyzer.class.getDeclaredMethod("addRL", RLMessage.class, int.class);
@@ -351,7 +351,7 @@ public class ExceptionAnalyzerTest {
 	public void testGetMethodThrowsList() throws Exception {
 		ASTMethodCollector astMethodCollector = new ASTMethodCollector();
 		compilationUnit.accept(astMethodCollector);
-		List<ASTNode> methodlist = astMethodCollector.getMethodList();
+		List<MethodDeclaration> methodlist = astMethodCollector.getMethodList();
 		List<RLMessage> totalList = new ArrayList<RLMessage>();
 		Method methodGetMethodThrowsList = ExceptionAnalyzer.class.getDeclaredMethod("getMethodThrowsList", ASTNode.class);
 		methodGetMethodThrowsList.setAccessible(true);
@@ -383,7 +383,7 @@ public class ExceptionAnalyzerTest {
 	public void testGetMethodAnnotationForRLAnnotation() throws Exception {
 		ASTMethodCollector astMethodCollector = new ASTMethodCollector();
 		compilationUnit.accept(astMethodCollector);
-		List<ASTNode> methodlist = astMethodCollector.getMethodList();
+		List<MethodDeclaration> methodlist = astMethodCollector.getMethodList();
 		List<RLMessage> totalList = new ArrayList<RLMessage>();
 		Method methodGetMethodAnnotation = ExceptionAnalyzer.class.getDeclaredMethod("getMethodAnnotation", ASTNode.class);
 		methodGetMethodAnnotation.setAccessible(true);
@@ -409,7 +409,7 @@ public class ExceptionAnalyzerTest {
 	public void testGetMethodAnnotationForSuppressSemllAnnotation() throws Exception {
 		ASTMethodCollector astMethodCollector = new ASTMethodCollector();
 		compilationUnit.accept(astMethodCollector);
-		List<ASTNode> methodlist = astMethodCollector.getMethodList();
+		List<MethodDeclaration> methodlist = astMethodCollector.getMethodList();
 		List<SSMessage> totalList = new ArrayList<SSMessage>();
 		Method methodGetMethodAnnotation = ExceptionAnalyzer.class.getDeclaredMethod("getMethodAnnotation", ASTNode.class);
 		methodGetMethodAnnotation.setAccessible(true);

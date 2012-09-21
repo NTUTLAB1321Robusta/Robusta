@@ -1,11 +1,11 @@
 package ntut.csie.csdet.visitor;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.lang.reflect.Method;
 
-import ntut.csie.filemaker.ASTNodeFinder;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.exceptionBadSmells.DummyAndIgnoreExample;
@@ -26,12 +26,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class SpareHandlerVisitorTest {
-	
 	JavaFileToString javaaFile2String;
 	JavaProjectMaker javaProjectMaker;
 	CompilationUnit compilationUnit;
-
-	public SpareHandlerVisitorTest() {	}
 	
 	@Before
 	public void setUp() throws Exception {
@@ -85,7 +82,7 @@ public class SpareHandlerVisitorTest {
 		
 		// 使用者選擇的TryStatement與visitNode傳入的TryStatement是同一個
 		SpareHandlerVisitor spareHandlerVisitor = new SpareHandlerVisitor(simpleTryFinder.getTryStatement());
-		spareHandlerVisitor.visitNode(simpleTryFinder.getTryStatement());
+		spareHandlerVisitor.visit(simpleTryFinder.getTryStatement());
 		assertTrue(spareHandlerVisitor.getResult());
 	}
 	
@@ -101,25 +98,9 @@ public class SpareHandlerVisitorTest {
 		
 		// 使用者選擇的TryStatement與visitNode傳入的TryStatement是不同一個
 		SpareHandlerVisitor spareHandlerVisitor = new SpareHandlerVisitor(simpleTryFinderUserSelect.getTryStatement());
-		spareHandlerVisitor.visitNode(simpleTryFinderInputVisitNode.getTryStatement());
+		spareHandlerVisitor.visit(simpleTryFinderInputVisitNode.getTryStatement());
 		assertFalse(spareHandlerVisitor.getResult());
-	}
-	
-	@Test
-	public void testVisitNode_visitNotTryNode() {
-		// 從Sample code裡面去出一個MethodDeclaration
-		ASTNode node = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "true_DummyHandlerTryNestedTry");
-		
-		// 從Sample code裡面取出一個TryStatement
-		SimpleTryStatementFinder simpleTryFinder = new SimpleTryStatementFinder("true_DummyHandlerCatchNestedTry");
-		compilationUnit.accept(simpleTryFinder);
-		
-		// visitNode傳入的Node不是TryStatement
-		SpareHandlerVisitor spareHandlerVisitor = new SpareHandlerVisitor(simpleTryFinder.getTryStatement());
-		spareHandlerVisitor.visitNode(node);
-		assertFalse(spareHandlerVisitor.getResult());
-	}
-	
+	}	
 	
 	@Test
 	public void testVisitNode_userNotSelectNode() {
@@ -129,7 +110,7 @@ public class SpareHandlerVisitorTest {
 		
 		// 使用者沒有選擇節點
 		SpareHandlerVisitor spareHandlerVisitor = new SpareHandlerVisitor(null);
-		spareHandlerVisitor.visitNode(simpleTryFinder.getTryStatement());
+		spareHandlerVisitor.visit(simpleTryFinder.getTryStatement());
 		assertFalse(spareHandlerVisitor.getResult());			
 	}
 	
@@ -199,7 +180,7 @@ public class SpareHandlerVisitorTest {
 			return false;
 		}
 		
-		public ASTNode getTryStatement() {
+		public TryStatement getTryStatement() {
 			return tryStatement;
 		}
 	}

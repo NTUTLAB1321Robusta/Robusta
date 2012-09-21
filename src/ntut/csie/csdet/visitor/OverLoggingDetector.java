@@ -29,24 +29,24 @@ import org.slf4j.LoggerFactory;
  * @author Shiau
  */
 public class OverLoggingDetector {
-	static Logger logger = LoggerFactory.getLogger(OverLoggingDetector.class);
+	private static Logger logger = LoggerFactory.getLogger(OverLoggingDetector.class);
 	// 儲存所找到的OverLoging 
-	List<MarkerInfo> overLoggingList = new ArrayList<MarkerInfo>();
+	private List<MarkerInfo> overLoggingList = new ArrayList<MarkerInfo>();
 	// AST Tree的root(檔案名稱)
-	CompilationUnit root;
+	private CompilationUnit root;
 	// 最底層的Method
-	MethodDeclaration startMethod;
+	private MethodDeclaration startMethod;
 	
-	OverLoggingVisitor visitor;
+	private OverLoggingVisitor visitor;
 
 	/**
 	 * Constructor
 	 * @param root
 	 * @param method
 	 */
-	public OverLoggingDetector(CompilationUnit root, ASTNode method) {
+	public OverLoggingDetector(CompilationUnit root, MethodDeclaration method) {
 		this.root = root;
-		startMethod = (MethodDeclaration) method;
+		startMethod = method;
 	}
 	
 	/**

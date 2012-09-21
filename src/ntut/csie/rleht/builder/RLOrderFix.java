@@ -97,9 +97,9 @@ public class RLOrderFix {
 				this.actRoot = (CompilationUnit) parser.createAST(null);
 				ASTMethodCollector methodCollector = new ASTMethodCollector();
 				actRoot.accept(methodCollector);
-				List<ASTNode> methodList = methodCollector.getMethodList();
+				List<MethodDeclaration> methodList = methodCollector.getMethodList();
 
-				ASTNode method = methodList.get(methodIdx);
+				MethodDeclaration method = methodList.get(methodIdx);
 				if (method != null) {
 					ExceptionAnalyzer visitor = new ExceptionAnalyzer(this.actRoot, method.getStartPosition(), 0);
 					method.accept(visitor);

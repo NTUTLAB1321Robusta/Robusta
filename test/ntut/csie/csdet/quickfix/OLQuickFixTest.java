@@ -45,7 +45,7 @@ public class OLQuickFixTest {
 	SmellSettings smellSettings;
 	OLQuickFix olQuickFix;
 	ASTMethodCollector methodCollector;
-	List<ASTNode> methodCollectList;
+	List<MethodDeclaration> methodCollectList;
 	MethodDeclaration mDeclaration;
 	MarkerInfo marker;
 
@@ -328,9 +328,9 @@ public class OLQuickFixTest {
 	}
 
 	private MethodDeclaration getMethodDeclarationByName(
-			List<ASTNode> methodDeclarationList, String methodName) {
+			List<MethodDeclaration> methodDeclarationList, String methodName) {
 		for (int i = 0; i < methodDeclarationList.size(); i++) {
-			mDeclaration = (MethodDeclaration) methodDeclarationList.get(i);
+			mDeclaration = methodDeclarationList.get(i);
 			if (methodName.equals(mDeclaration.getName().toString())) {
 				return mDeclaration;
 			}

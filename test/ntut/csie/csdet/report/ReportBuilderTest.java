@@ -36,9 +36,9 @@ import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.jdom.Element;
 import org.junit.After;
 import org.junit.Before;
@@ -398,7 +398,7 @@ public class ReportBuilderTest {
 		ASTMethodCollector methodCollector = new ASTMethodCollector();
 		compilationUnit.accept(methodCollector);
 		// 眔盡い┮Τmethod
-		List<ASTNode> methodList = methodCollector.getMethodList();
+		List<MethodDeclaration> methodList = methodCollector.getMethodList();
 		
 		for(int i = 0; i < methodList.size(); i++) {
 			ExceptionAnalyzer visitor = new ExceptionAnalyzer(compilationUnit, methodList.get(i).getStartPosition(), 0);
@@ -440,7 +440,7 @@ public class ReportBuilderTest {
 		ASTMethodCollector methodCollector = new ASTMethodCollector();
 		compilationUnit.accept(methodCollector);
 		// 眔盡い┮Τmethod
-		List<ASTNode> methodList = methodCollector.getMethodList();
+		List<MethodDeclaration> methodList = methodCollector.getMethodList();
 		methodList.get(10).accept(dhVisitor);
 		/* FIXME - 既锣传ノ单场常传ΘMarkerInfo碞ぃ惠璶硂LOOP */
 		List<MarkerInfo> dhList = dhVisitor.getDummyList();
@@ -489,10 +489,10 @@ public class ReportBuilderTest {
 		assertEquals(25, reportModel.getTryCounter());
 		assertEquals(25, reportModel.getCatchCounter());
 		assertEquals(2, reportModel.getFinallyCounter());
-		assertEquals(4, reportModel.getCarelessCleanUpTotalSize());
+		assertEquals(0, reportModel.getCarelessCleanUpTotalSize());
 		assertEquals(16, reportModel.getDummyTotalSize());
-		assertEquals(1, reportModel.getIgnoreTotalSize());
-		assertEquals(3, reportModel.getNestedTryTotalSize());
+		assertEquals(0, reportModel.getIgnoreTotalSize());
+		assertEquals(0, reportModel.getNestedTryTotalSize());
 		assertEquals(0, reportModel.getOverLoggingTotalSize());
 	}
 	

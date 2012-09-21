@@ -45,7 +45,7 @@ public class CarelessCleanupVisitor extends ASTVisitor {
 	/**
 	 * 根據設定檔的資訊，決定要不要拜訪整棵樹。
 	 */
-	public boolean visit(CompilationUnit node) {
+	public boolean visit(MethodDeclaration node) {
 		return isDetectingCarelessCleanupSmell;
 	}
 	

@@ -154,16 +154,16 @@ public class ReportBuilder {
 
 		root.accept(methodCollector);
 		// 取得專案中所有的method
-		List<ASTNode> methodList = methodCollector.getMethodList();
+		List<MethodDeclaration> methodList = methodCollector.getMethodList();
 
 		ClassModel newClassModel = new ClassModel();
 		newClassModel.setClassName(icu.getElementName());
 		newClassModel.setClassPath(pkPath);
 
 		// 目前的Method AST Node
-		ASTNode currentMethodNode = null;
+		MethodDeclaration currentMethodNode = null;
 		int methodIdx = -1;
-		for (ASTNode method : methodList) {
+		for (MethodDeclaration method : methodList) {
 			methodIdx++;
 
 			visitor = new ExceptionAnalyzer(root, method.getStartPosition(), 0);
@@ -171,7 +171,7 @@ public class ReportBuilder {
 			currentMethodNode = visitor.getCurrentMethodNode();
 			suppressSmellList = visitor.getSuppressSemllAnnotationList();
 
-			MethodDeclaration methodName = (MethodDeclaration) currentMethodNode;
+			MethodDeclaration methodName = currentMethodNode;
 
 			// SuppressSmell
 			TreeMap<String, Boolean> detMethodSmell = new TreeMap<String, Boolean>();

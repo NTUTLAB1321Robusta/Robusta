@@ -369,7 +369,7 @@ public class RetryRefactoringTest {
 		
 		Field currentMethodNode = RetryRefactoring.class.getDeclaredField("currentMethodNode");
 		currentMethodNode.setAccessible(true);
-		List<ASTNode> methodList = methodCollector.getMethodList();
+		List<MethodDeclaration> methodList = methodCollector.getMethodList();
 		currentMethodNode.set(retryRefactoring, methodList.get(6));
 		
 		Field currentMethodRLList = RetryRefactoring.class.getDeclaredField("currentMethodRLList");
@@ -718,7 +718,7 @@ public class RetryRefactoringTest {
 		
 		Field currentMethodNode = RetryRefactoring.class.getDeclaredField("currentMethodNode");
 		currentMethodNode.setAccessible(true);
-		List<ASTNode> methodList = methodCollector.getMethodList();
+		List<MethodDeclaration> methodList = methodCollector.getMethodList();
 		currentMethodNode.set(retryRefactoring, methodList.get(0));
 		
 		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(testProjectName);
