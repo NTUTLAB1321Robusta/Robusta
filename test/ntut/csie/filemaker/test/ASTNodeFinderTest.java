@@ -1,8 +1,8 @@
 package ntut.csie.filemaker.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
-import java.io.IOException;
 import java.util.List;
 
 import ntut.csie.filemaker.ASTNodeFinder;
@@ -13,7 +13,6 @@ import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.robusta.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
@@ -85,8 +84,8 @@ public class ASTNodeFinderTest {
 		//取得該行內容
 		ASTMethodCollector methodCollector = new ASTMethodCollector();
 		compilationUnit.accept(methodCollector);
-		List<ASTNode> list = methodCollector.getMethodList();
-		MethodDeclaration mDeclaration = (MethodDeclaration)list.get(1);
+		List<MethodDeclaration> list = methodCollector.getMethodList();
+		MethodDeclaration mDeclaration = list.get(1);
 		ExpressionStatement statement = (ExpressionStatement) mDeclaration.getBody().statements().get(1);
 		
 		//輸入class指定行數
@@ -126,8 +125,8 @@ public class ASTNodeFinderTest {
 		//取得該行內容
 		ASTMethodCollector methodCollector = new ASTMethodCollector();
 		compilationUnit.accept(methodCollector);
-		List<ASTNode> list = methodCollector.getMethodList();
-		MethodDeclaration mDeclaration = (MethodDeclaration)list.get(1);
+		List<MethodDeclaration> list = methodCollector.getMethodList();
+		MethodDeclaration mDeclaration = list.get(1);
 		
 		//輸入class指定行數
 		int lineNumber = 20;

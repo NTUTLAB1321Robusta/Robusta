@@ -2,38 +2,27 @@ package ntut.csie.csdet.visitor;
 
 import java.util.List;
 
-import ntut.csie.rleht.common.RLBaseVisitor;
-
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.TryStatement;
 
 /**
  * 找尋專案中所有的spare handler
  * @author chewei
  */
-public class SpareHandlerVisitor extends RLBaseVisitor {
-	
+public class SpareHandlerVisitor extends ASTVisitor {
 	private boolean result = false;	
 	/** 滑鼠反白選到的節點 */
 	private ASTNode selectNode = null;
 	
 	public SpareHandlerVisitor(ASTNode node) {
 		super(true);
-		this.selectNode = node;
+		selectNode = node;
 	}
 	
-	/*
-	 * (non-Javadoc)
-	 * @see ntut.csie.rleht.views.ASTBaseVisitor#visitNode(org.eclipse.jdt.core.dom.ASTNode)
-	 */
-	protected boolean visitNode(ASTNode node) {
-		switch (node.getNodeType()) {
-			case ASTNode.TRY_STATEMENT:
-				processTryStatement(node);
-				return false;
-			default:
-				return true;
-		}
+	public boolean visit(TryStatement node) {
+		processTryStatement(node);
+		return false;
 	}
 	
 	/**
@@ -66,6 +55,6 @@ public class SpareHandlerVisitor extends RLBaseVisitor {
 	 * @return
 	 */
 	public boolean getResult() {
-		return this.result;
+		return result;
 	}
 }

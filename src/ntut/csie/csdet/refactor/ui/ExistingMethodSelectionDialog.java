@@ -51,7 +51,7 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
 
 	private List<String> superClassList = new ArrayList<String>();
 
-	public ExistingMethodSelectionDialog(Shell parent, ASTNode methodNode) {
+	public ExistingMethodSelectionDialog(Shell parent, MethodDeclaration methodNode) {
 		super(parent, new JavaElementLabelProvider(JavaElementLabelProvider.SHOW_DEFAULT),
 					  new ClassRenderer());
 
@@ -63,31 +63,27 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
 	 * 分析Method的Class，找出所有的SuperClass
 	 * @param methodNode
 	 */
-	private void analyzeSuperClass(ASTNode methodNode) {
-		if (methodNode instanceof MethodDeclaration) {
-			MethodDeclaration md = (MethodDeclaration) methodNode;
+	private void analyzeSuperClass(MethodDeclaration methodNode) {
+		if (methodNode.getParent() instanceof TypeDeclaration) {
+			TypeDeclaration typeDeclaration = (TypeDeclaration) methodNode.getParent();
+			//取得Method的Class Name
+			className = typeDeclaration.getName() + ".java";
+			superClassList.add(typeDeclaration.resolveBinding().getBinaryName());
+			
+			//取得所有SuperClass
+			if (typeDeclaration.resolveBinding().getSuperclass() != null) {
+				ITypeBinding type = typeDeclaration.resolveBinding().getSuperclass();					
+				superClassList.add(type.getBinaryName());
 
-			if (md.getParent() instanceof TypeDeclaration) {
-				TypeDeclaration typeDeclaration = (TypeDeclaration) md.getParent();
-				//取得Method的Class Name
-				className = typeDeclaration.getName() + ".java";
-				superClassList.add(typeDeclaration.resolveBinding().getBinaryName());
-				
-				//取得所有SuperClass
-				if (typeDeclaration.resolveBinding().getSuperclass() != null) {
-					ITypeBinding type = typeDeclaration.resolveBinding().getSuperclass();					
+				//一直追蹤到沒有SuperClass
+				while (true) {
+					if (type.getSuperclass() == null)
+						break;
+					type = type.getSuperclass();
 					superClassList.add(type.getBinaryName());
-
-					//一直追蹤到沒有SuperClass
-					while (true) {
-						if (type.getSuperclass() == null)
-							break;
-						type = type.getSuperclass();
-						superClassList.add(type.getBinaryName());
-					}
 				}
-				
 			}
+			
 		}
 	}
 

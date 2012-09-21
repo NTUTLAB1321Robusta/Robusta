@@ -26,7 +26,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
@@ -224,8 +223,8 @@ public class UnprotectedMainProgramVisitorTest {
 		ASTMethodCollector methodCollector = new ASTMethodCollector();
 		unit1.accept(methodCollector);
 		mainVisitor = new UnprotectedMainProgramVisitor(unit1);
-		List<ASTNode> list = methodCollector.getMethodList();	
-		MethodDeclaration md = (MethodDeclaration)list.get(0);
+		List<MethodDeclaration> list = methodCollector.getMethodList();	
+		MethodDeclaration md = list.get(0);
 		// check precondition
 		assertEquals(1, md.getBody().statements().size());
 		// test target
@@ -239,7 +238,7 @@ public class UnprotectedMainProgramVisitorTest {
 		unit2.accept(methodCollector);
 		mainVisitor = new UnprotectedMainProgramVisitor(unit2);
 		list = methodCollector.getMethodList();
-		md = (MethodDeclaration)list.get(0);
+		md = list.get(0);
 		// check precondition
 		assertEquals(1, md.getBody().statements().size());
 		// test target & check postcondition
@@ -250,7 +249,7 @@ public class UnprotectedMainProgramVisitorTest {
 		unit3.accept(methodCollector);
 		mainVisitor = new UnprotectedMainProgramVisitor(unit3);
 		list = methodCollector.getMethodList();
-		md = (MethodDeclaration)list.get(0);
+		md = list.get(0);
 		// check precondition
 		assertEquals(0, md.getBody().statements().size());
 		// test target & check postcondition
@@ -261,7 +260,7 @@ public class UnprotectedMainProgramVisitorTest {
 		unit4.accept(methodCollector);
 		mainVisitor = new UnprotectedMainProgramVisitor(unit4);
 		list = methodCollector.getMethodList();
-		md = (MethodDeclaration)list.get(0);
+		md = list.get(0);
 		// check precondition
 		assertEquals(2, md.getBody().statements().size());
 		// test target & check postcondition
@@ -274,8 +273,8 @@ public class UnprotectedMainProgramVisitorTest {
 		ASTMethodCollector methodCollector = new ASTMethodCollector();
 		unit1.accept(methodCollector);
 		mainVisitor = new UnprotectedMainProgramVisitor(unit1);
-		List<ASTNode> list = methodCollector.getMethodList();
-		MethodDeclaration md = (MethodDeclaration)list.get(0);
+		List<MethodDeclaration> list = methodCollector.getMethodList();
+		MethodDeclaration md = list.get(0);
 		// check precondition
 		assertEquals(1, md.getBody().statements().size());
 		// 如果main function上面有annotation的話，該method的起始位置會從annotation開始算起
@@ -292,7 +291,7 @@ public class UnprotectedMainProgramVisitorTest {
 		unit2.accept(methodCollector);
 		mainVisitor = new UnprotectedMainProgramVisitor(unit2);
 		list = methodCollector.getMethodList();
-		md = (MethodDeclaration)list.get(0);
+		md = list.get(0);
 		// check precondition
 		assertEquals(1, md.getBody().statements().size());
 		// 因為main function上面沒有annotation，所以main function在第幾行，marker就加在第幾行
@@ -306,8 +305,8 @@ public class UnprotectedMainProgramVisitorTest {
 		// case 1 : give the main function
 		ASTMethodCollector methodCollector = new ASTMethodCollector();
 		unit4.accept(methodCollector);
-		List<ASTNode> list = methodCollector.getMethodList();
-		MethodDeclaration md = (MethodDeclaration)list.get(0);
+		List<MethodDeclaration> list = methodCollector.getMethodList();
+		MethodDeclaration md = list.get(0);
 		// test target & check postcondition
 		mainVisitor = new UnprotectedMainProgramVisitor(unit4);
 		assertFalse(mainVisitor.visit(md));
@@ -316,7 +315,7 @@ public class UnprotectedMainProgramVisitorTest {
 		methodCollector = new ASTMethodCollector();
 		unit1.accept(methodCollector);
 		list = methodCollector.getMethodList();
-		md = (MethodDeclaration)list.get(0);
+		md = list.get(0);
 		// test target & check postcondition
 		assertTrue(mainVisitor.visit(md));
 	}

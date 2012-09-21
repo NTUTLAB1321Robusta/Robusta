@@ -153,4 +153,22 @@ public class OverLoggingLog4JExample {
 			log4jLogger.error(e.getMessage() + "calleeInOutterClassWithLog4JAndSomeConditions");
 		}
 	}
+	
+	/* -----------------------------------Others------------------------------------ */
+	
+	public void topMethod() {
+		try {
+			bottomMethod();
+		} catch (IOException e) {
+			log4jLogger.error(e.getMessage() + "topMethod");
+		}
+	}
+	
+	public void bottomMethod() throws IOException {
+		try {
+			throw new FileNotFoundException("bottomMethod");
+		} catch (IOException e) {
+			throw e;
+		}
+	}
 }

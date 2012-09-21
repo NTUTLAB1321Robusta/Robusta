@@ -33,6 +33,7 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.junit.After;
 import org.junit.Before;
@@ -266,9 +267,9 @@ public class OverLoggingVisitorTest {
 		/* OverLoggingJavaLogExample */
 		ASTMethodCollector methodCollector = new ASTMethodCollector();
 		overLoggingJavaLogExampleUnit.accept(methodCollector);
-		List<ASTNode> methodList = methodCollector.getMethodList();
+		List<MethodDeclaration> methodList = methodCollector.getMethodList();
 		List<MarkerInfo> markerInfoList = new ArrayList<MarkerInfo>();
-		for(ASTNode node : methodList) {
+		for(MethodDeclaration node : methodList) {
 			// 在這裡用到別的class，其實是不好的，但是OverLoggingVisitor不像其他visitor只要accept一次就能全部抓到
 			OverLoggingDetector detector = new OverLoggingDetector(overLoggingJavaLogExampleUnit, node);
 			detector.detect();
@@ -281,7 +282,7 @@ public class OverLoggingVisitorTest {
 		overLoggingLog4JExampleUnit.accept(methodCollector);
 		methodList = methodCollector.getMethodList();
 		markerInfoList = new ArrayList<MarkerInfo>();
-		for(ASTNode node : methodList) {
+		for(MethodDeclaration node : methodList) {
 			// 在這裡用到別的class，其實是不好的，但是OverLoggingVisitor不像其他visitor只要accept一次就能全部抓到
 			OverLoggingDetector detector = new OverLoggingDetector(overLoggingLog4JExampleUnit, node);
 			detector.detect();
@@ -290,13 +291,13 @@ public class OverLoggingVisitorTest {
 		assertEquals(5, markerInfoList.size());
 		
 		/* OverLoggingSelf4JExample */
-		smellSettings.addOverLoggingPattern("org.slf4j.Logger", true);
+		smellSettings.addOverLoggingPattern(org.slf4j.Logger.class.getPackage().getName() + "." + org.slf4j.Logger.class.getSimpleName(), true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		methodCollector = new ASTMethodCollector();
 		overLoggingSelf4JExampleUnit.accept(methodCollector);
 		methodList = methodCollector.getMethodList();
 		markerInfoList = new ArrayList<MarkerInfo>();
-		for(ASTNode node : methodList) {
+		for(MethodDeclaration node : methodList) {
 			// 在這裡用到別的class，其實是不好的，但是OverLoggingVisitor不像其他visitor只要accept一次就能全部抓到
 			OverLoggingDetector detector = new OverLoggingDetector(overLoggingSelf4JExampleUnit, node);
 			detector.detect();

@@ -9,8 +9,8 @@ import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLChecker;
 import ntut.csie.rleht.views.RLData;
 import ntut.csie.rleht.views.RLMessage;
-import ntut.csie.robusta.agile.exception.Tag;
 import ntut.csie.robusta.agile.exception.Robustness;
+import ntut.csie.robusta.agile.exception.Tag;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -43,16 +43,12 @@ import org.slf4j.LoggerFactory;
 
 public class RLQuickFix extends BaseQuickFix implements IMarkerResolution, IMarkerResolution2 {
 	private static Logger logger = LoggerFactory.getLogger(RLQuickFix.class);
-	
 	// 目前method的Exception資訊
 	private List<RLMessage> currentMethodExList = null;
-
 	// 目前method的RL Annotation資訊
 	private List<RLMessage> currentMethodRLList = null;
-
 	private String label;
 	private String errMsg;
-
 	private int levelForUpdate;
 
 	public RLQuickFix(String label, String errMsg) {
@@ -149,9 +145,9 @@ public class RLQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 				this.actRoot = (CompilationUnit) parser.createAST(null);
 				ASTMethodCollector methodCollector = new ASTMethodCollector();
 				this.actRoot.accept(methodCollector);
-				List<ASTNode> methodList = methodCollector.getMethodList();
+				List<MethodDeclaration> methodList = methodCollector.getMethodList();
 
-				ASTNode method = methodList.get(methodIdx);
+				MethodDeclaration method = methodList.get(methodIdx);
 				if (method != null) {
 					ExceptionAnalyzer visitor = new ExceptionAnalyzer(this.actRoot, method.getStartPosition(), 0);
 					method.accept(visitor);

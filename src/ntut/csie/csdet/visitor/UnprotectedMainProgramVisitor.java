@@ -31,14 +31,12 @@ public class UnprotectedMainProgramVisitor extends ASTVisitor {
 				.isDetectingSmell(SmellSettings.SMELL_UNPROTECTEDMAINPROGRAM);
 	}
 	
-	public boolean visit(CompilationUnit node) {
-		return isDetectingUnprotectedMainProgramSmell;
-	}
-	
 	/**
 	 * 尋找main function
 	 */
 	public boolean visit(MethodDeclaration node) {
+		if(!isDetectingUnprotectedMainProgramSmell)
+			return false;
 		// parse AST tree看看是否有void main(java.lang.String[])
 		if (node.resolveBinding().toString().contains("void main(java.lang.String[])")) {
 			List<?> statement = node.getBody().statements();

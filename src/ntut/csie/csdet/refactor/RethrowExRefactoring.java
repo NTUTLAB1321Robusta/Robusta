@@ -95,7 +95,7 @@ public class RethrowExRefactoring extends Refactoring {
 	private CompilationUnit actRoot;
 	
 	// 存放目前所要fix的method node
-	private ASTNode currentMethodNode = null;
+	private MethodDeclaration currentMethodNode = null;
 	
 	private List<MarkerInfo> currentExList = null;
 	
@@ -202,7 +202,7 @@ public class RethrowExRefactoring extends Refactoring {
 				// 取得該class所有的method
 				ASTMethodCollector methodCollector = new ASTMethodCollector();
 				actRoot.accept(methodCollector);
-				List<ASTNode> methodList = methodCollector.getMethodList();
+				List<MethodDeclaration> methodList = methodCollector.getMethodList();
 				
 				// 取得目前要被修改的method node
 				currentMethodNode = methodList.get(Integer.parseInt(methodIdx));

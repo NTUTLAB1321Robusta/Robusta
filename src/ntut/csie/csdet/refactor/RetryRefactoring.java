@@ -97,7 +97,7 @@ public class RetryRefactoring extends Refactoring {
 	private CompilationUnit actRoot;
 	
 	//存放目前所要fix的method node
-	private ASTNode currentMethodNode = null;
+	private MethodDeclaration currentMethodNode = null;
 	
 	private ASTRewrite rewrite;
 	
@@ -174,10 +174,10 @@ public class RetryRefactoring extends Refactoring {
 			status.addFatalError("Selection Error, please retry again!!!");
 		} else {
 			//取得class中所有的method
-			List<ASTNode> methodList = methodCollector.getMethodList();
+			List<MethodDeclaration> methodList = methodCollector.getMethodList();
 			int methodIdx = -1;
 			SpareHandlerVisitor visitor = null;
-			for(ASTNode method : methodList){
+			for(MethodDeclaration method : methodList){
 				methodIdx++;
 				visitor = new SpareHandlerVisitor(selectNode);
 				method.accept(visitor);
@@ -559,7 +559,7 @@ public class RetryRefactoring extends Refactoring {
 		if(!exceptionType.equals("RuntimeException")){
 			addImportDeclaration();
 			//假如method前面沒有throw東西的話,就加上去
-			MethodDeclaration md = (MethodDeclaration)currentMethodNode;
+			MethodDeclaration md = currentMethodNode;
 			List thStat = md.thrownExceptions();
 			boolean isExist = false;
 			for(int i=0;i<thStat.size();i++){
@@ -672,7 +672,7 @@ public class RetryRefactoring extends Refactoring {
 		ArrayInitializer rlary = ast.newArrayInitializer();
 		value.setValue(rlary);
 		
-		MethodDeclaration method = (MethodDeclaration) currentMethodNode;		
+		MethodDeclaration method = currentMethodNode;		
 		if(currentMethodRLList.size() == 0){		
 			//Retry的RL = 3
 			rlary.expressions().add(getRLAnnotation(ast,3,exceptionType));

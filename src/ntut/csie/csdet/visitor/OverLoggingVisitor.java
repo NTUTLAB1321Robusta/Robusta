@@ -16,31 +16,34 @@ import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 
 public class OverLoggingVisitor extends ASTVisitor {
 	// 是否要繼續偵測
-	boolean isKeepTrace = false;
+	private boolean isKeepTrace = false;
 	// 是否有Logging
-	boolean isLogging = false;
+	private boolean isLogging = false;
 	// 轉型是否繼續追蹤
-	boolean isDetTransEx = false;
+	private boolean isDetTransEx = false;
 	// 是否找到callee
-	boolean isFoundCallee = false;
+	private boolean isFoundCallee = false;
+	// 是否偵測OverLoggingBadSmell
+	private boolean isDetectingOverLoggingSmell;
 	// Callee的Class和Method的資訊
-	String methodInfo;
+	private String methodInfo;
 	// 預先儲存可能是overlogging的ExpressionStatement
-	ASTNode suspectNode;
+	private ASTNode suspectNode;
 	// AST Tree的root(檔案名稱)
-	CompilationUnit root;
+	private CompilationUnit root;
 	// 儲存所找到的OverLogging Exception 
-	List<MarkerInfo> loggingList = new ArrayList<MarkerInfo>();
+	private List<MarkerInfo> loggingList = new ArrayList<MarkerInfo>();
 	// 儲存使用者定義的Log條件
-	TreeMap<String, UserDefinedConstraintsType> libMap = new TreeMap<String, UserDefinedConstraintsType>();
+	private TreeMap<String, UserDefinedConstraintsType> libMap = new TreeMap<String, UserDefinedConstraintsType>();
 	// 設定檔
-	SmellSettings smellSettings;
+	private SmellSettings smellSettings;
 
 	public OverLoggingVisitor(CompilationUnit root, String methodInfo) {
 		this.root = root;
@@ -48,6 +51,14 @@ public class OverLoggingVisitor extends ASTVisitor {
 		smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		libMap = smellSettings.getSmellSettings(SmellSettings.SMELL_OVERLOGGING);
 		isDetTransEx = (libMap.get(SmellSettings.EXTRARULE_OVERLOGGING_DETECTWRAPPINGEXCEPTION) != null) ? true : false;
+		isDetectingOverLoggingSmell = smellSettings.isDetectingSmell(SmellSettings.SMELL_OVERLOGGING);
+	}
+	
+	/**
+	 * 根據設定檔的資訊，決定要不要拜訪整棵樹。
+	 */
+	public boolean visit(MethodDeclaration node) {
+		return isDetectingOverLoggingSmell;
 	}
 	
 	/**

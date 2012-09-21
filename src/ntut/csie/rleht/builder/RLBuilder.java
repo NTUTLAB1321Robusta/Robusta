@@ -12,8 +12,8 @@ import ntut.csie.csdet.visitor.CarelessCleanupVisitor;
 import ntut.csie.csdet.visitor.DummyHandlerVisitor;
 import ntut.csie.csdet.visitor.IgnoreExceptionVisitor;
 import ntut.csie.csdet.visitor.NestedTryStatementVisitor;
-import ntut.csie.csdet.visitor.UnprotectedMainProgramVisitor;
 import ntut.csie.csdet.visitor.OverLoggingDetector;
+import ntut.csie.csdet.visitor.UnprotectedMainProgramVisitor;
 import ntut.csie.java.util.CastingObject;
 import ntut.csie.rleht.common.ASTHandler;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
@@ -38,6 +38,7 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.slf4j.Logger;
@@ -261,7 +262,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				root.accept(methodCollector);
 				
 				//取得專案中所有的method
-				List<ASTNode> methodList = methodCollector.getMethodList();
+				List<MethodDeclaration> methodList = methodCollector.getMethodList();
 
 				ExceptionAnalyzer visitor = null;
 				
@@ -291,7 +292,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				// 目前的Method AST Node
 				ASTNode currentMethodNode = null;
 				int methodIdx = -1;
-				for (ASTNode method : methodList) {
+				for (MethodDeclaration method : methodList) {
 					methodIdx++;
 
 					visitor = new ExceptionAnalyzer(root, method.getStartPosition(), 0);

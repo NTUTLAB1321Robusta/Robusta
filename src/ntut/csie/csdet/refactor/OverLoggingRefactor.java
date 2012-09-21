@@ -38,20 +38,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class OverLoggingRefactor {
-	static Logger logger = LoggerFactory.getLogger(OverLoggingRefactor.class);
-	IMarker marker = null;
+	private static Logger logger = LoggerFactory.getLogger(OverLoggingRefactor.class);
+	private IMarker marker = null;
 	// Class(CompilationUnit)的相關資訊
-	IOpenable actOpenable = null;
-	CompilationUnit actRoot = null;
+	private IOpenable actOpenable = null;
+	private CompilationUnit actRoot = null;
 	// 存放目前所要fix的method node
-	ASTNode currentMethodNode = null;
+	private MethodDeclaration currentMethodNode = null;
 	// 存放同一個Class內要fix的method
-	List<ASTNode> methodNodeList = new ArrayList<ASTNode>();
+	private List<MethodDeclaration> methodNodeList = new ArrayList<MethodDeclaration>();
 	// 目前Method內的OverLogging
-	List<MarkerInfo> currentLoggingList = new ArrayList<MarkerInfo>();
+	private List<MarkerInfo> currentLoggingList = new ArrayList<MarkerInfo>();
 	// 存放同一個Class內要fix的method內，所出現的OverLogging
-	List<List<MarkerInfo>> loggingList = new ArrayList<List<MarkerInfo>>();
-	List<CompilationUnit> unitList = new ArrayList<CompilationUnit>();
+	private List<List<MarkerInfo>> loggingList = new ArrayList<List<MarkerInfo>>();
+	private List<CompilationUnit> unitList = new ArrayList<CompilationUnit>();
 	
 	public void refator(IMarker marker) {
 		try {
@@ -70,6 +70,8 @@ public class OverLoggingRefactor {
 				for (CompilationUnit unit : unitList) {
 					// 刪除List中的OverLogging (一次以一個Class為單位刪除)
 					deleteMessage(unit);
+					// 將所要變更的內容寫回Edit中
+					applyChange();
 				}
 			}
 		} catch(CoreException e) {
@@ -113,10 +115,10 @@ public class OverLoggingRefactor {
 		// 取得該class所有的method
 		ASTMethodCollector methodCollector = new ASTMethodCollector();
 		actRoot.accept(methodCollector);
-		List<ASTNode> methodList = methodCollector.getMethodList();
+		List<MethodDeclaration> methodList = methodCollector.getMethodList();
 		
 		// 取得目前要被修改的method node
-		ASTNode tempNode = methodList.get(methodIdx);
+		MethodDeclaration tempNode = methodList.get(methodIdx);
 		currentMethodNode = tempNode;
 
 		// 尋找該method內的OverLogging
@@ -137,9 +139,8 @@ public class OverLoggingRefactor {
 	 * 往上一層Trace，找出Caller的OverLogging資訊
 	 * @param currentNode
 	 */
-	private void traceCallerMethod(ASTNode currentMethodNode) {
+	private void traceCallerMethod(MethodDeclaration methodDeclaration) {
 		// 從MethodDeclaration取得IMthod
-		MethodDeclaration methodDeclaration = (MethodDeclaration) currentMethodNode;
 		IMethod method = (IMethod) methodDeclaration.resolveBinding().getJavaElement();
 		// 取得Method的Caller
 		IMember[] methodArray = new IMember[] {method};
@@ -166,7 +167,7 @@ public class OverLoggingRefactor {
 				// 偵測是否繼續Trace上一層Caller
 				// 若Exception又傳到上一層，則繼續偵測
 				if (getIsKeepTrace(method, callerMethod))
-					traceCallerMethod(this.currentMethodNode);
+					traceCallerMethod(currentMethodNode);
 			}
 		}
 	}
@@ -179,14 +180,14 @@ public class OverLoggingRefactor {
 		// 取得該class所有的method
 		ASTMethodCollector methodCollector = new ASTMethodCollector();
 		actRoot.accept(methodCollector);
-		List<ASTNode> methodList = methodCollector.getMethodList();
+		List<MethodDeclaration> methodList = methodCollector.getMethodList();
 		
 		int methodIdx = -1;
 		// 若不曉得methodIndex就從methodList中去比較來取得
 		methodIdx = findMethodIndex(method, methodList);
 
 		// 取得目前要被修改的method node
-		ASTNode tempNode = methodList.get(methodIdx);
+		MethodDeclaration tempNode = methodList.get(methodIdx);
 		currentMethodNode = tempNode;
 		
 		// 尋找該method內的OverLogging
@@ -209,21 +210,21 @@ public class OverLoggingRefactor {
 	 * @param methodList	該class中全部的Method
 	 * @return				位於class中第幾個Method
 	 */
-	private int findMethodIndex(IMethod callerMethod, List<ASTNode> methodList) {
+	private int findMethodIndex(IMethod callerMethod, List<MethodDeclaration> methodList) {
 		// 轉換成MethodDeclaration
 		ASTNode methodNode = transMethodNode(callerMethod);
 
 		// 計算他位於Method List中哪一個index
 		int methodIndex = -1;
 		if (methodNode != null) {
-			for (ASTNode method : methodList){
+			for (MethodDeclaration method : methodList){
 				methodIndex++;
 				// 與要找的程式是否相同
 				if (method.toString().equals(methodNode.toString()))
-					break;
+					return methodIndex;
 			}
 		}
-		return methodIndex;
+		return -1;
 	}
 
 	/**
@@ -264,9 +265,8 @@ public class OverLoggingRefactor {
 	 * 往下一層Trace，找出Caller的OverLogging資訊
 	 * @param currentMethodNode
 	 */
-	private void traceCalleeMethod(ASTNode currentMethodNode) {
+	private void traceCalleeMethod(MethodDeclaration methodDeclaration) {
 		// 從MethodDeclaration取得IMthod
-		MethodDeclaration methodDeclaration = (MethodDeclaration) currentMethodNode;
 		IMethod method = (IMethod) methodDeclaration.resolveBinding().getJavaElement();
 		// 取得Method的Callee
 		IMember[] methodArray = new IMember[] {method};
@@ -297,7 +297,7 @@ public class OverLoggingRefactor {
 						}
 
 						// 繼續下一層Trace
-						traceCalleeMethod(this.currentMethodNode);
+						traceCalleeMethod(currentMethodNode);
 					}
 				} catch (JavaModelException e) {
 					logger.error("[Java Model Exception] JavaModelException ", e);
@@ -316,11 +316,9 @@ public class OverLoggingRefactor {
 			actOpenable = (IOpenable)actRoot.getJavaElement();
 			// 若有複數個Method要修改
 			for (int i=0; i < methodNodeList.size(); i++) {
-				ASTNode currentMethodNode = methodNodeList.get(i);
-
 				// 收集該method所有的catch clause
 				ASTCatchCollect catchCollector = new ASTCatchCollect();
-				currentMethodNode.accept(catchCollector);
+				methodNodeList.get(i).accept(catchCollector);
 				List<CatchClause> catchList = catchCollector.getMethodList();
 				// 刪除該Method內的Catch中的Logging Statement
 				for (MarkerInfo msg : loggingList.get(i)) {
@@ -334,8 +332,6 @@ public class OverLoggingRefactor {
 					}
 				}
 			}
-			// 將所要變更的內容寫回Edit中
-			applyChange();
 		} catch (Exception e) {
 			logger.error("[Delete Message] EXCEPTION ", e);
 		}
@@ -415,13 +411,13 @@ public class OverLoggingRefactor {
 			unitList.add(actRoot);
 	}
 	
-	private boolean isExistence(ASTNode newNode) {
+	private boolean isExistence(MethodDeclaration newNode) {
 		boolean isExistence = false;
 		
 		if(methodNodeList.size() == 0)
 			return isExistence;
 		
-		for(ASTNode node : methodNodeList) {
+		for(MethodDeclaration node : methodNodeList) {
 			if(node.toString().equals(newNode.toString())) {
 				isExistence = true;
 				break;
