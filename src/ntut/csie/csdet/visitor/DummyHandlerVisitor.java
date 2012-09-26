@@ -73,7 +73,7 @@ public class DummyHandlerVisitor extends ASTVisitor {
 	
 	public boolean visit(MethodInvocation node) {
 		detectDummyHandler(node);
-		return false;	
+		return false;
 	}
 	
 	public void detectDummyHandler(MethodInvocation node) {

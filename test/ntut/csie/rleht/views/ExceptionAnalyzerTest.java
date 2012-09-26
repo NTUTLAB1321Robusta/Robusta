@@ -14,7 +14,7 @@ import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
-import ntut.csie.filemaker.exceptionBadSmells.SuppressWarningExample;
+import ntut.csie.filemaker.exceptionBadSmells.SuppressWarningExampleForAnalyzer;
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithoutTryExample;
 import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.robusta.util.PathUtils;
@@ -36,6 +36,7 @@ import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TryStatement;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ExceptionAnalyzerTest {
@@ -49,7 +50,7 @@ public class ExceptionAnalyzerTest {
 	public void setUp() throws Exception {
 		// 讀取測試檔案樣本內容
 		javaFileToString = new JavaFileToString();
-		javaFileToString.read(SuppressWarningExample.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaFileToString.read(SuppressWarningExampleForAnalyzer.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker = new JavaProjectMaker("ExceptionAnalyerTest");
 		javaProjectMaker.setJREDefaultContainer();
 		
@@ -62,10 +63,10 @@ public class ExceptionAnalyzerTest {
 		
 		// 根據測試檔案樣本內容建立新的檔案
 		javaProjectMaker.createJavaFile(
-				SuppressWarningExample.class.getPackage().getName(),
-				SuppressWarningExample.class.getSimpleName()
+				SuppressWarningExampleForAnalyzer.class.getPackage().getName(),
+				SuppressWarningExampleForAnalyzer.class.getSimpleName()
 				+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
-				+ SuppressWarningExample.class.getPackage().getName()
+				+ SuppressWarningExampleForAnalyzer.class.getPackage().getName()
 				+ ";\n" + javaFileToString.getFileContent());
 		javaFileToString.clear();
 		javaFileToString.read(UnprotectedMainProgramWithoutTryExample.class, JavaProjectMaker.FOLDERNAME_TEST);
@@ -77,7 +78,7 @@ public class ExceptionAnalyzerTest {
 		
 		// 建立 XML
 		CreateSettings();
-		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(SuppressWarningExample.class, javaProjectMaker.getProjectName()));
+		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(SuppressWarningExampleForAnalyzer.class, javaProjectMaker.getProjectName()));
 		
 		// Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
@@ -103,8 +104,7 @@ public class ExceptionAnalyzerTest {
 	}
 	
 	@Test
-	public void testExceptionAnalyzer() {
-		
+	public void testExceptionAnalyzerWithIntArgument() {
 		ASTMethodCollector collector = new ASTMethodCollector();
 		compilationUnit.accept(collector);
 		
@@ -152,6 +152,11 @@ public class ExceptionAnalyzerTest {
 		assertEquals(231,totalMethodRLList.get(5).getLineNumber());
 
 		assertEquals("suppress warning 的資訊在 nested 底下不會被記錄到。應該是26個，但是目前功能只能檢查到19個",19, totalSSList.size());
+	}
+
+	@Ignore
+	public void testExceptionAnalyzerWithBooleanArgument() {
+		fail("第二種overloading的ExceptionAnalyzer未被測試");
 	}
 	
 	@Test

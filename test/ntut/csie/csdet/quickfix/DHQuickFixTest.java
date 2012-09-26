@@ -21,6 +21,7 @@ import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.RuntimeEnvironmentProjectReader;
 import ntut.csie.filemaker.exceptionBadSmells.DummyAndIgnoreExample;
+import ntut.csie.filemaker.exceptionBadSmells.UserDefineDummyHandlerFish;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLMessage;
 import ntut.csie.robusta.util.PathUtils;
@@ -47,9 +48,9 @@ public class DHQuickFixTest {
 	String projectNameString;
 	String packageNameString;
 	String classSimpleNameString;
-	JavaFileToString jfs;
-	JavaProjectMaker jpm;
-	CompilationUnit unit;
+	JavaFileToString javaFile2String;
+	JavaProjectMaker javaProjectMaker;
+	CompilationUnit compilationUnit;
 	SmellSettings smellSettings;
 	
 	public DHQuickFixTest() {
@@ -60,20 +61,37 @@ public class DHQuickFixTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		// 讀取測試檔案樣本內容
-		jfs = new JavaFileToString();
-		jfs.read(DummyAndIgnoreExample.class, JavaProjectMaker.FOLDERNAME_TEST);
+		// 準備測試檔案樣本內容
+		javaProjectMaker = new JavaProjectMaker(projectNameString);
+		javaProjectMaker.setJREDefaultContainer();
 		
-		jpm = new JavaProjectMaker(projectNameString);
-		jpm.setJREDefaultContainer();
 		// 新增欲載入的library
-		jpm.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR + "/log4j-1.2.15.jar");
-		jpm.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.FOLDERNAME_LIB_JAR, JavaProjectMaker.FOLDERNAME_BIN_CLASS);
-		jpm.addJarFromTestProjectToBuildPath("/" + JavaProjectMaker.FOLDERNAME_LIB_JAR + JavaProjectMaker.FOLDERNAME_LIB_JAR);
-		// 根據測試檔案樣本內容建立新的檔案
-		jpm.createJavaFile(packageNameString,
-				classSimpleNameString + JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + packageNameString + ";\n" + jfs.getFileContent());
+		javaProjectMaker.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR + "/log4j-1.2.15.jar");
+		
+		// 若example code中有robustness notation則有此行可以讓編譯通過
+		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(
+				JavaProjectMaker.FOLDERNAME_LIB_JAR,
+				JavaProjectMaker.FOLDERNAME_BIN_CLASS);
+		javaProjectMaker.addJarFromTestProjectToBuildPath("/" + JavaProjectMaker.FOLDERNAME_LIB_JAR + JavaProjectMaker.FOLDERNAME_LIB_JAR);
+
+		// 建立新的檔案DummyAndIgnoreExample
+		javaFile2String = new JavaFileToString();
+		javaFile2String.read(DummyAndIgnoreExample.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaProjectMaker.createJavaFile(
+				DummyAndIgnoreExample.class.getPackage().getName(),
+				DummyAndIgnoreExample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
+				"package " + DummyAndIgnoreExample.class.getPackage().getName() + ";\n"
+				+ javaFile2String.getFileContent());
+		
+		// 繼續建立測試用的UserDefineDummyHandlerFish
+		javaFile2String.clear();
+		javaFile2String.read(UserDefineDummyHandlerFish.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaProjectMaker.createJavaFile(
+				UserDefineDummyHandlerFish.class.getPackage().getName(),
+				UserDefineDummyHandlerFish.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
+				"package " + UserDefineDummyHandlerFish.class.getPackage().getName() + ";\n"
+				+ javaFile2String.getFileContent());
+		
 		// 建立XML
 		CreateSettings();
 		
@@ -85,8 +103,8 @@ public class DHQuickFixTest {
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
 		// 取得AST
-		unit = (CompilationUnit) parser.createAST(null); 
-		unit.recordModifications();
+		compilationUnit = (CompilationUnit) parser.createAST(null); 
+		compilationUnit.recordModifications();
 	}
 
 	@After
@@ -96,14 +114,14 @@ public class DHQuickFixTest {
 		if(xmlFile.exists())
 			assertTrue(xmlFile.delete());
 		// 刪除專案
-		jpm.deleteProject();
+		javaProjectMaker.deleteProject();
 	}
 	
 	@Test
 	public void testDeleteStatement() throws Exception {
 		DHQuickFix dhQF = new DHQuickFix("??"); 
 		ASTCatchCollect catchCollector = new ASTCatchCollect();
-		unit.accept(catchCollector);
+		compilationUnit.accept(catchCollector);
 		List<CatchClause> catchList = catchCollector.getMethodList();
 		
 		Method deleteStatement = DHQuickFix.class.getDeclaredMethod("deleteStatement", List.class);
@@ -136,10 +154,10 @@ public class DHQuickFixTest {
 		Field actRoot = BaseQuickFix.class.getDeclaredField("actRoot");
 		assertNull(actRoot.get(dhQF));
 		actRoot.setAccessible(true);
-		actRoot.set(dhQF, unit);
+		actRoot.set(dhQF, compilationUnit);
 		assertNotNull(actRoot.get(dhQF));
 		// 檢查原本import的classes
-		List<?> imports = unit.imports();
+		List<?> imports = compilationUnit.imports();
 		assertEquals(6, imports.size());
 		assertEquals("import java.io.FileInputStream;\n", imports.get(0).toString());
 		assertEquals("import java.io.FileNotFoundException;\n", imports.get(1).toString());
@@ -152,7 +170,7 @@ public class DHQuickFixTest {
 		addImportDeclaration.setAccessible(true);
 		addImportDeclaration.invoke(dhQF);
 		// 驗證是否有import Robustness及RL的宣告
-		imports = unit.imports();
+		imports = compilationUnit.imports();
 		assertEquals(8, imports.size());
 		assertEquals("import java.io.FileInputStream;\n", imports.get(0).toString());
 		assertEquals("import java.io.FileNotFoundException;\n", imports.get(1).toString());
@@ -169,7 +187,7 @@ public class DHQuickFixTest {
 		DHQuickFix dhQF = new DHQuickFix("??");
 		Method getRLAnnotation = DHQuickFix.class.getDeclaredMethod("getRLAnnotation", AST.class, int.class, String.class);
 		getRLAnnotation.setAccessible(true);
-		NormalAnnotation annotation = (NormalAnnotation)getRLAnnotation.invoke(dhQF, unit.getAST(), 1, "RuntimeException");
+		NormalAnnotation annotation = (NormalAnnotation)getRLAnnotation.invoke(dhQF, compilationUnit.getAST(), 1, "RuntimeException");
 		assertEquals("@Tag(level=1,exception=RuntimeException.class)", annotation.toString());
 	}
 	
@@ -193,7 +211,7 @@ public class DHQuickFixTest {
 						"}\n", currentMethodNode.toString());
 		
 		/* 建立空的RL list，測試RL是否會加上去 */
-		ExceptionAnalyzer exVisitor = new ExceptionAnalyzer(unit, currentMethodNode.getStartPosition(), 0);
+		ExceptionAnalyzer exVisitor = new ExceptionAnalyzer(compilationUnit, currentMethodNode.getStartPosition(), 0);
 		currentMethodNode.accept(exVisitor);
 		List<RLMessage> currentMethodRLList = exVisitor.getMethodRLAnnotationList();
 		Field currentMethodRLListField = DHQuickFix.class.getDeclaredField("currentMethodRLList");
@@ -277,7 +295,7 @@ public class DHQuickFixTest {
 		Field actRoot = BaseQuickFix.class.getDeclaredField("actRoot");
 		assertNull(actRoot.get(dhQF));
 		actRoot.setAccessible(true);
-		actRoot.set(dhQF, unit);
+		actRoot.set(dhQF, compilationUnit);
 		assertNotNull(actRoot.get(dhQF));
 		
 		/* 測試尚未抓取current method node時的情況 */
@@ -324,7 +342,7 @@ public class DHQuickFixTest {
 		Field actRoot = BaseQuickFix.class.getDeclaredField("actRoot");
 		assertNull(actRoot.get(dhQF));
 		actRoot.setAccessible(true);
-		actRoot.set(dhQF, unit);
+		actRoot.set(dhQF, compilationUnit);
 		assertNotNull(actRoot.get(dhQF));
 		// 選定要quick fix的method
 		dhQF.findCurrentMethod(RuntimeEnvironmentProjectReader.getType(projectNameString, packageNameString, classSimpleNameString).getResource(), 6);
@@ -348,7 +366,7 @@ public class DHQuickFixTest {
 		
 		Field currentMethodRLList = DHQuickFix.class.getDeclaredField("currentMethodRLList");
 		currentMethodRLList.setAccessible(true);
-		ExceptionAnalyzer exVisitor = new ExceptionAnalyzer(unit, currentMethodNode.getStartPosition(), 0);
+		ExceptionAnalyzer exVisitor = new ExceptionAnalyzer(compilationUnit, currentMethodNode.getStartPosition(), 0);
 		currentMethodNode.accept(exVisitor);
 		currentMethodRLList.set(dhQF, exVisitor.getMethodRLAnnotationList());
 		

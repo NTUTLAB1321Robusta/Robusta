@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.exceptionBadSmells.DummyAndIgnoreExample;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.CarelessCleanupExample;
 import ntut.csie.robusta.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -47,10 +48,7 @@ public class SpareHandlerVisitorTest {
 				"package " + DummyAndIgnoreExample.class.getPackage().getName()	+ ";\n"
 				+ javaaFile2String.getFileContent());
 		
-		Path dummyAndIgnoreExamplePath = new Path(testProjectName
-				+ "/" + JavaProjectMaker.FOLDERNAME_SOURCE + "/"
-				+ PathUtils.dot2slash(DummyAndIgnoreExample.class.getName()
-						.toString()) + JavaProjectMaker.JAVA_FILE_EXTENSION);
+		Path dummyAndIgnoreExamplePath = new Path(PathUtils.getPathOfClassUnderSrcFolder(DummyAndIgnoreExample.class, testProjectName));
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);

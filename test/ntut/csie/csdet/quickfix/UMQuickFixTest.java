@@ -40,19 +40,17 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class UMQuickFixTest {
-	String projectNameString;
 	JavaFileToString javaFile2String;
 	JavaProjectMaker javaProjectMaker;
 	CompilationUnit unit1, unit2, unit3, unit4, unit5, unit6, unit7, unit8;
 	SmellSettings smellSettings;
 	UMQuickFix umFix;
 	
-	public UMQuickFixTest() {
-		projectNameString = "UnprotectedMainProgramTest";
-	}
+	public UMQuickFixTest() {}
 
 	@Before
 	public void setUp() throws Exception {
+		String projectNameString = "UnprotectedMainProgramTest";
 		javaFile2String = new JavaFileToString();
 		javaProjectMaker = new JavaProjectMaker(projectNameString);
 		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.FOLDERNAME_LIB_JAR, JavaProjectMaker.FOLDERNAME_BIN_CLASS);
@@ -459,7 +457,7 @@ public class UMQuickFixTest {
 	
 	private void CreateSettings() {
 		smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_UNPROTECTEDMAINPROGRAM, SmellSettings.ATTRIBUTE_ISDETECTING, "true");
+		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_UNPROTECTEDMAINPROGRAM, SmellSettings.ATTRIBUTE_ISDETECTING, true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 	}
 }

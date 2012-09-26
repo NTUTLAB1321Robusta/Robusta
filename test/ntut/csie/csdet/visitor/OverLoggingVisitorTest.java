@@ -17,6 +17,7 @@ import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.ASTNodeFinder;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.CarelessCleanupExample;
 import ntut.csie.filemaker.exceptionBadSmells.OverLogging.OverLoggingIntegrationExample;
 import ntut.csie.filemaker.exceptionBadSmells.OverLogging.OverLoggingJavaLogExample;
 import ntut.csie.filemaker.exceptionBadSmells.OverLogging.OverLoggingLog4JExample;
@@ -25,6 +26,7 @@ import ntut.csie.filemaker.exceptionBadSmells.OverLogging.OverLoggingTheFirstOrd
 import ntut.csie.filemaker.exceptionBadSmells.OverLogging.OverLoggingTheSecondOrderClass;
 import ntut.csie.filemaker.exceptionBadSmells.OverLogging.OverLoggingTheThirdOrderClass;
 import ntut.csie.rleht.builder.ASTMethodCollector;
+import ntut.csie.robusta.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
@@ -115,11 +117,7 @@ public class OverLoggingVisitorTest {
 		// «Ø¥ßXML
 		CreateSettings();
 		
-		Path path = new Path(projectName
-				+ "/" + JavaProjectMaker.FOLDERNAME_SOURCE
-				+ "/" + OverLoggingJavaLogExample.class.getPackage().getName().replace(".", "/") + "/"
-				+ OverLoggingJavaLogExample.class.getSimpleName()
-				+ JavaProjectMaker.JAVA_FILE_EXTENSION);
+		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(OverLoggingJavaLogExample.class, projectName));
 		
 		// Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
@@ -131,10 +129,7 @@ public class OverLoggingVisitorTest {
 		overLoggingJavaLogExampleUnit = (CompilationUnit) parser.createAST(null); 
 		overLoggingJavaLogExampleUnit.recordModifications();
 		
-		path = new Path(projectName
-				+ "/" + JavaProjectMaker.FOLDERNAME_SOURCE
-				+ "/" + OverLoggingLog4JExample.class.getPackage().getName().replace(".", "/") + "/"
-				+ OverLoggingLog4JExample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION);
+		path = new Path(PathUtils.getPathOfClassUnderSrcFolder(OverLoggingLog4JExample.class, projectName));
 		
 		// Create AST to parse
 		parser = ASTParser.newParser(AST.JLS3);
@@ -146,9 +141,7 @@ public class OverLoggingVisitorTest {
 		overLoggingLog4JExampleUnit = (CompilationUnit) parser.createAST(null); 
 		overLoggingLog4JExampleUnit.recordModifications();
 		
-		path = new Path(	projectName + "/" + JavaProjectMaker.FOLDERNAME_SOURCE + "/" +
-							OverLoggingSelf4JExample.class.getPackage().getName().replace(".", "/") + 
-							"/" + OverLoggingSelf4JExample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION);
+		path = new Path(PathUtils.getPathOfClassUnderSrcFolder(OverLoggingSelf4JExample.class, projectName));
 
 		// Create AST to parse
 		parser = ASTParser.newParser(AST.JLS3);

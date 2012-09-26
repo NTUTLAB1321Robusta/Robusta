@@ -41,7 +41,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class CCUQuickFixTest {
-	String projectName;
 	JavaFileToString javaFile2String;
 	JavaProjectMaker javaProjectMaker;
 	CompilationUnit compilationUnit;
@@ -50,12 +49,12 @@ public class CCUQuickFixTest {
 	ASTMethodCollector methodCollector;
 	List<?> methodList;
 	
-	public CCUQuickFixTest() {
-		projectName = "CarelessCleanupExampleProject";
-	}
+	public CCUQuickFixTest() {}
 	
 	@Before
 	public void setUp() throws Exception {
+		String projectName = "CarelessCleanupExampleProject";
+		
 		javaFile2String = new JavaFileToString();
 		javaProjectMaker = new JavaProjectMaker(projectName);
 		javaProjectMaker.setJREDefaultContainer();

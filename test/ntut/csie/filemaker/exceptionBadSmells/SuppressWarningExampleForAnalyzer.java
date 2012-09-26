@@ -17,7 +17,7 @@ import ntut.csie.robusta.agile.exception.Robustness;
 import ntut.csie.robusta.agile.exception.SuppressSmell;
 
 
-public class SuppressWarningExample {
+public class SuppressWarningExampleForAnalyzer {
 	/*
 	 * 1.unprotected main program
 	 * 2.dummy handler
@@ -393,26 +393,26 @@ public class SuppressWarningExample {
 	/* ---------------------OverLogging And Nested Try Example--------------------- */
 	/* -----------------------Call Chain In the Same Class------------------------- */
 	
-	public void withoutSuppressWaringtheFirstOrderInTheSameClass() {
+	public void withoutSuppressWaringTheFirstOrderInTheSameClass() {
 		try {
-			theSecondOrderInTheSameClass();
+			withoutSuppressWaringTheSecondOrderInTheSameClass();
 		} catch(IOException e) {
 			logger.log(Level.WARNING, e.getMessage());
 		}
 	}
 
-	public void withoutSuppressWaringtheSecondOrderInTheSameClass() throws IOException {
+	public void withoutSuppressWaringTheSecondOrderInTheSameClass() throws IOException {
 		try {
-			theThirdOrderInTheSameClass();
+			withoutSuppressWaringTheThirdOrderInTheSameClass();
 		} catch(IOException e) {
 			logger.log(Level.WARNING, e.getMessage());
 			throw e;
 		}
 	}
 
-	public void withoutSuppressWaringtheThirdOrderInTheSameClass() throws IOException {
+	public void withoutSuppressWaringTheThirdOrderInTheSameClass() throws IOException {
 		try {
-			theFourthOrderInTheSameClass();
+			withoutSuppressWaringTheFourthOrderInTheSameClass();
 		} catch(IOException e) {
 			logger.log(Level.WARNING, e.getMessage());
 			throw e;
@@ -423,7 +423,7 @@ public class SuppressWarningExample {
 	 * 在巢狀 try-catch 要在 catch 上 suppress bad smell 時
 	 * 反觀在 method 上 suppress bad smell 時可以正確的被 suppress
 	 */
-	public void withoutSuppressWaringtheFourthOrderInTheSameClass() throws IOException {
+	public void withoutSuppressWaringTheFourthOrderInTheSameClass() throws IOException {
 		FileOutputStream fileOutputStream = null;
 		FileInputStream fileInputStream = null;
 		FileInputStream fis = null;
@@ -489,32 +489,32 @@ public class SuppressWarningExample {
 	static double testDouble;
 	static char testChar;
 	static String testString;
-	static SuppressWarningExample testExample;
+	static SuppressWarningExampleForAnalyzer testExample;
 	
-	public SuppressWarningExample(int testInt, double testDouble,
-			char testChar, String testString, SuppressWarningExample testExample) throws IOException {
+	public SuppressWarningExampleForAnalyzer(int testInt, double testDouble,
+			char testChar, String testString, SuppressWarningExampleForAnalyzer testExample) throws IOException {
 		throw new IOException();
 	}
 	
-	public SuppressWarningExample(int testInt, double testDouble,
+	public SuppressWarningExampleForAnalyzer(int testInt, double testDouble,
 			char testChar, String testString) throws IOException {
 		this(testInt, testDouble, testChar, testString, testExample);
 	}
 	
-	public SuppressWarningExample(int testInt, double testDouble,
+	public SuppressWarningExampleForAnalyzer(int testInt, double testDouble,
 			char testChar) throws IOException {
 		this(testInt, testDouble, testChar, testString, testExample);
 	}
 	
-	public SuppressWarningExample(int testInt, double testDouble) throws IOException {
+	public SuppressWarningExampleForAnalyzer(int testInt, double testDouble) throws IOException {
 		this(testInt, testDouble, testChar, testString, testExample);
 	}
 	
-	public SuppressWarningExample(int a) throws IOException {
+	public SuppressWarningExampleForAnalyzer(int a) throws IOException {
 		this(testInt, testDouble, testChar, testString, testExample);
 	}
 	
-	public SuppressWarningExample() throws IOException {
+	public SuppressWarningExampleForAnalyzer() throws IOException {
 		this(testInt, testDouble, testChar, testString, testExample);
 	}
 }

@@ -118,7 +118,7 @@ public class UnprotectedMainProgramVisitorTest {
 		// «Ø¥ßXML
 		CreateSettings();
 		/** unit1 */ 
-		Path path1 = new Path(testProjectName + "/" + JavaProjectMaker.FOLDERNAME_SOURCE + "/" + PathUtils.dot2slash(UnprotectedMainProgramExample.class.getName()) + JavaProjectMaker.JAVA_FILE_EXTENSION);
+		Path path1 = new Path(PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramExample.class, testProjectName));
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -129,7 +129,7 @@ public class UnprotectedMainProgramVisitorTest {
 		unit1 = (CompilationUnit) parser.createAST(null); 
 		unit1.recordModifications();
 		/** unit2 */
-		Path path2 = new Path(testProjectName + "/" + JavaProjectMaker.FOLDERNAME_SOURCE + "/" + PathUtils.dot2slash(UnprotectedMainProgramWithoutCatchExceptionExample.class.getName()) + JavaProjectMaker.JAVA_FILE_EXTENSION);
+		Path path2 = new Path(PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithoutCatchExceptionExample.class, testProjectName));
 		//Create AST to parse
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -140,7 +140,7 @@ public class UnprotectedMainProgramVisitorTest {
 		unit2 = (CompilationUnit) parser.createAST(null); 
 		unit2.recordModifications();
 		/** unit3 */
-		Path path3 = new Path(testProjectName + "/" + JavaProjectMaker.FOLDERNAME_SOURCE + "/" + PathUtils.dot2slash(UnprotectedMainProgramWithoutStatementExample.class.getName()) + JavaProjectMaker.JAVA_FILE_EXTENSION);
+		Path path3 = new Path(PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithoutStatementExample.class, testProjectName));
 		//Create AST to parse
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -151,7 +151,7 @@ public class UnprotectedMainProgramVisitorTest {
 		unit3 = (CompilationUnit) parser.createAST(null); 
 		unit3.recordModifications();
 		/** unit4 */
-		Path path4 = new Path(testProjectName + "/" + JavaProjectMaker.FOLDERNAME_SOURCE + "/" + PathUtils.dot2slash(UnprotectedMainProgramWithoutTryExample.class.getName()) + JavaProjectMaker.JAVA_FILE_EXTENSION);
+		Path path4 = new Path(PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithoutTryExample.class, testProjectName));
 		//Create AST to parse
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -162,7 +162,7 @@ public class UnprotectedMainProgramVisitorTest {
 		unit4 = (CompilationUnit) parser.createAST(null);
 		unit4.recordModifications();
 		/** unit5 */
-		Path path5 = new Path(testProjectName + "/" + JavaProjectMaker.FOLDERNAME_SOURCE + "/" + PathUtils.dot2slash(UnprotectedmainProgramWithTryAtFirstStatement.class.getName()) + JavaProjectMaker.JAVA_FILE_EXTENSION);
+		Path path5 = new Path(PathUtils.getPathOfClassUnderSrcFolder(UnprotectedmainProgramWithTryAtFirstStatement.class, testProjectName));
 		//Create AST to parse
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -173,7 +173,7 @@ public class UnprotectedMainProgramVisitorTest {
 		unit5 = (CompilationUnit) parser.createAST(null);
 		unit5.recordModifications();
 		/** unit6 */
-		Path path6 = new Path(testProjectName + "/" + JavaProjectMaker.FOLDERNAME_SOURCE + "/" + PathUtils.dot2slash(UnprotectedMainProgramWithTryAtMiddleStatement.class.getName()) + JavaProjectMaker.JAVA_FILE_EXTENSION);
+		Path path6 = new Path(PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithTryAtMiddleStatement.class, testProjectName));
 		//Create AST to parse
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -184,7 +184,7 @@ public class UnprotectedMainProgramVisitorTest {
 		unit6 = (CompilationUnit) parser.createAST(null);
 		unit6.recordModifications();
 		/** unit7 */
-		Path path7 = new Path(testProjectName + "/" + JavaProjectMaker.FOLDERNAME_SOURCE + "/" + PathUtils.dot2slash(UnprotectedMainProgramWithTryAtLastStatement.class.getName()) + JavaProjectMaker.JAVA_FILE_EXTENSION);
+		Path path7 = new Path(PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithTryAtLastStatement.class, testProjectName));
 		//Create AST to parse
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -195,7 +195,7 @@ public class UnprotectedMainProgramVisitorTest {
 		unit7 = (CompilationUnit) parser.createAST(null);
 		unit7.recordModifications();
 		/** unit8 */
-		Path path8 = new Path(testProjectName + "/" + JavaProjectMaker.FOLDERNAME_SOURCE + "/" + PathUtils.dot2slash(UnprotectedMainProgramWithTry.class.getName()) + JavaProjectMaker.JAVA_FILE_EXTENSION);
+		Path path8 = new Path(PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithTry.class, testProjectName));
 		//Create AST to parse
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -329,7 +329,7 @@ public class UnprotectedMainProgramVisitorTest {
 	
 	@Test
 	public void testUnprotectedMainProgramWithoutCatchExceptionExample_doNotDetect() {
-		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_UNPROTECTEDMAINPROGRAM, SmellSettings.ATTRIBUTE_ISDETECTING, String.valueOf(false));
+		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_UNPROTECTEDMAINPROGRAM, SmellSettings.ATTRIBUTE_ISDETECTING, false);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		
 		mainVisitor = new UnprotectedMainProgramVisitor(unit2);
@@ -388,7 +388,7 @@ public class UnprotectedMainProgramVisitorTest {
 	
 	private void CreateSettings() {
 		smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_UNPROTECTEDMAINPROGRAM, SmellSettings.ATTRIBUTE_ISDETECTING, "true");
+		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_UNPROTECTEDMAINPROGRAM, SmellSettings.ATTRIBUTE_ISDETECTING, true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 	}
 }

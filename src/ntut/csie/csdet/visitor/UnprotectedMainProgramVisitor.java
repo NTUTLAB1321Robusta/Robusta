@@ -32,7 +32,8 @@ public class UnprotectedMainProgramVisitor extends ASTVisitor {
 	}
 	
 	/**
-	 * 尋找main function
+	 * 先根據設定檔的資訊，決定要不要繼續拜訪，
+	 * 再尋找main function
 	 */
 	public boolean visit(MethodDeclaration node) {
 		if(!isDetectingUnprotectedMainProgramSmell)

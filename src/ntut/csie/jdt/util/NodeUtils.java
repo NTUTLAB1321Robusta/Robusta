@@ -80,6 +80,8 @@ public class NodeUtils {
 	 */
 	public static ASTNode getSpecifiedParentNode(ASTNode startNode, int nodeType) {
 		ASTNode resultNode = null;
+		if(startNode == null)
+			return startNode;
 		ASTNode parentNode = startNode.getParent();
 		// 如果parentNode是null，表示傳進來的node已經是rootNode(CompilationUnit)
 		if(parentNode != null) {

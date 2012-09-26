@@ -158,7 +158,7 @@ public class SmellSettingsTest {
 		assertTrue(smellSettings.isDetectingSmell(SmellSettings.SMELL_DUMMYHANDLER));
 		assertFalse(smellSettings.isDetectingSmell(SmellSettings.SMELL_CARELESSCLEANUP));
 		
-		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_IGNORECHECKEDEXCEPTION, SmellSettings.ATTRIBUTE_ISDETECTING, String.valueOf(true));
+		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_IGNORECHECKEDEXCEPTION, SmellSettings.ATTRIBUTE_ISDETECTING, true);
 		assertTrue(smellSettings.isDetectingSmell(SmellSettings.SMELL_DUMMYHANDLER));
 		assertFalse(smellSettings.isDetectingSmell(SmellSettings.SMELL_CARELESSCLEANUP));
 		assertTrue(smellSettings.isDetectingSmell(SmellSettings.SMELL_IGNORECHECKEDEXCEPTION));
@@ -485,8 +485,8 @@ public class SmellSettingsTest {
 						"<extraRule name=\"DetectIsReleaseIOCodeInDeclaredMethod\" />" +
 						"</SmellTypes></CodeSmells>", content);
 		
-		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.ATTRIBUTE_ISDETECTING, "false");
-		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.ATTRIBUTE_ISDETECTING, "false");
+		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.ATTRIBUTE_ISDETECTING, false);
+		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.ATTRIBUTE_ISDETECTING, false);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		// 驗證結果是否正確
 		content = readFileContents(smellSettingFile);
@@ -644,7 +644,7 @@ public class SmellSettingsTest {
 		assertNull(libMap.get("FileInputStream"));
 		
 		/** 設定檔未選取時，則無任何讀取動作 */
-		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.ATTRIBUTE_ISDETECTING, String.valueOf(false));
+		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.ATTRIBUTE_ISDETECTING, false);
 		libMap = smellSettings.getSmellSettings(SmellSettings.SMELL_DUMMYHANDLER);
 		assertEquals(0, libMap.size());
 	}
@@ -658,5 +658,41 @@ public class SmellSettingsTest {
 		}
 		br.close();
 		return sb.toString();
+	}
+
+	@Test
+	public void testActivateAllConditions() throws Exception {
+		// 先用一個新的instace產生xml檔
+		smellSettings = new SmellSettings(smellSettingFile);
+		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_ePrintStackTrace);
+		smellSettings.writeXMLFile(smellSettingFile.getPath());
+		
+		String expectedResult = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells><SmellTypes name=\"DummyHandler\" isDetecting=\"true\"><extraRule name=\"printStackTrace\" /></SmellTypes></CodeSmells>";
+		
+		// 確認內容
+		String firstTimeContent = readFileContents(smellSettingFile);
+		assertEquals(expectedResult, firstTimeContent);
+		
+		// 呼叫activateAllConditions，使其勾選所有設定
+		smellSettings.activateAllConditions(smellSettingFile.getPath());
+
+		// 確認內容
+		String fileContent = readFileContents(smellSettingFile);
+		assertEquals(
+				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells>" +
+				"<SmellTypes name=\"DummyHandler\" isDetecting=\"true\">" +
+				"<extraRule name=\"printStackTrace\" /><extraRule name=\"System.err.print\" />" +
+				"<extraRule name=\"System.err.println\" /><extraRule name=\"System.out.print\" />" +
+				"<extraRule name=\"System.out.println\" /><extraRule name=\"java.util.logging.Logger\" />" +
+				"<extraRule name=\"org.apache.log4j\" />" +
+				"</SmellTypes><SmellTypes name=\"IgnoreCheckedException\" isDetecting=\"true\" />" +
+				"<SmellTypes name=\"NestedTryBlock\" isDetecting=\"true\" />" +
+				"<SmellTypes name=\"UnprotectedMainProgram\" isDetecting=\"true\" />" +
+				"<SmellTypes name=\"CarelessCleanup\" isDetecting=\"true\">" +
+				"<extraRule name=\"DetectIsReleaseIOCodeInDeclaredMethod\" /></SmellTypes>" +
+				"<SmellTypes name=\"OverLogging\" isDetecting=\"true\"><extraRule name=\"DetectWrappingExcetion\" />" +
+				"<extraRule name=\"java.util.logging.Logger\" /><extraRule name=\"org.apache.log4j\" />" +
+				"</SmellTypes></CodeSmells>",
+				fileContent);
 	}
 }

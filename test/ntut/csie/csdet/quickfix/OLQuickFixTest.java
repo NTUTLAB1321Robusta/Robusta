@@ -37,8 +37,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class OLQuickFixTest {
-	String javaProjectName;
-	String javaPackageName;
 	JavaProjectMaker javaProjectMaker;
 	JavaFileToString javaFile2String;
 	CompilationUnit compilationUnit;
@@ -50,12 +48,12 @@ public class OLQuickFixTest {
 	MarkerInfo marker;
 
 	public OLQuickFixTest() {
-		javaProjectName = "OverLoggingExampleProject";
-		javaPackageName = OverLoggingJavaLogExample.class.getPackage().getName();
 	}
 	
 	@Before
 	public void setUp() throws Exception {
+		String javaProjectName = "OverLoggingExampleProject";
+		String javaPackageName = OverLoggingJavaLogExample.class.getPackage().getName();
 		// 準備測試檔案樣本內容
 		javaProjectMaker = new JavaProjectMaker(javaProjectName);
 		javaProjectMaker.setJREDefaultContainer();

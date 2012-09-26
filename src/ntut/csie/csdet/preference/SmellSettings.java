@@ -14,6 +14,7 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
 
+import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 import ntut.csie.robusta.agile.exception.Tag;
 import ntut.csie.robusta.agile.exception.Robustness;;
 
@@ -80,6 +81,11 @@ public class SmellSettings {
 		this(new File(xmlFilepath));
 	}
 	
+	/**
+	 * 輸入要要查詢的bad smell名稱，回傳設定檔中是否有勾選要偵測
+	 * @param badSmellName 要查詢的bad smell名稱
+	 * @return 
+	 */
 	public boolean isDetectingSmell(String badSmellName) {
 		Element root = settingDoc.getRootElement();
 		List<?> elements = root.getChildren(TAG_SMELLTYPE4DETECTING);
@@ -123,9 +129,9 @@ public class SmellSettings {
 		return badSmellElement;
 	}
 	
-	public void setSmellTypeAttribute(String badSmellName, String attributeName, String attributeValue) {
+	public void setSmellTypeAttribute(String badSmellName, String attributeName, Boolean attributeValue) {
 		Element badSmellElement = getSmellType(badSmellName);
-		badSmellElement.setAttribute(attributeName, attributeValue);
+		badSmellElement.setAttribute(attributeName, String.valueOf(attributeValue));
 	}
 	
 	public void addDummyHandlerPattern(String patternName, boolean isDetecting) {
@@ -402,5 +408,35 @@ public class SmellSettings {
 		Library,
 		Method,
 		FullQulifiedMethod
+	}
+	
+	/**
+	 * 將所有的條件都勾選，並寫到設定檔中
+	 */
+	public void activateAllConditions(String path) {
+		setSmellTypeAttribute(SMELL_IGNORECHECKEDEXCEPTION, ATTRIBUTE_ISDETECTING, true);
+
+		setSmellTypeAttribute(SMELL_DUMMYHANDLER, ATTRIBUTE_ISDETECTING, true);
+		addExtraRule(SMELL_DUMMYHANDLER, EXTRARULE_ePrintStackTrace);
+		addExtraRule(SMELL_DUMMYHANDLER, EXTRARULE_SystemErrPrint);
+		addExtraRule(SMELL_DUMMYHANDLER, EXTRARULE_SystemErrPrintln);
+		addExtraRule(SMELL_DUMMYHANDLER, EXTRARULE_SystemOutPrint);
+		addExtraRule(SMELL_DUMMYHANDLER, EXTRARULE_SystemOutPrintln);
+		addExtraRule(SMELL_DUMMYHANDLER, EXTRARULE_JavaUtilLoggingLogger);
+		addExtraRule(SMELL_DUMMYHANDLER, EXTRARULE_OrgApacheLog4j);
+		
+		setSmellTypeAttribute(SMELL_NESTEDTRYBLOCK, ATTRIBUTE_ISDETECTING, true);
+		
+		setSmellTypeAttribute(SMELL_UNPROTECTEDMAINPROGRAM, ATTRIBUTE_ISDETECTING, true);
+
+		setSmellTypeAttribute(SMELL_CARELESSCLEANUP, ATTRIBUTE_ISDETECTING, true);
+		addExtraRule(SMELL_CARELESSCLEANUP, EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
+
+		setSmellTypeAttribute(SMELL_OVERLOGGING, ATTRIBUTE_ISDETECTING, true);
+		addExtraRule(SMELL_OVERLOGGING, EXTRARULE_OVERLOGGING_DETECTWRAPPINGEXCEPTION);
+		addExtraRule(SMELL_OVERLOGGING, EXTRARULE_JavaUtilLoggingLogger);
+		addExtraRule(SMELL_OVERLOGGING, EXTRARULE_OrgApacheLog4j);
+		
+		writeXMLFile(path);
 	}
 }

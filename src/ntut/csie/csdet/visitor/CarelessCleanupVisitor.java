@@ -61,7 +61,7 @@ public class CarelessCleanupVisitor extends ASTVisitor {
 	// FIXME - for, while, do-while, parenthesis
 	
 	/**
-	 * 增加不檢查close的條件
+	 * 增加不檢查close的條件:If
 	 */
 	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
 	public boolean visit(IfStatement node) {
@@ -107,7 +107,7 @@ public class CarelessCleanupVisitor extends ASTVisitor {
 	}
 	
 	/**
-	 * 增加不檢查close的條件
+	 * 增加不檢查close的條件:Try
 	 */
 	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
 	public boolean visit(TryStatement node) {

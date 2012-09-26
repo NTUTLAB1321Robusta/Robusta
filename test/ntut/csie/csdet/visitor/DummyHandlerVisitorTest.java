@@ -2,6 +2,7 @@ package ntut.csie.csdet.visitor;
 
 import static org.junit.Assert.*;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -10,7 +11,9 @@ import ntut.csie.filemaker.ASTNodeFinder;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.exceptionBadSmells.DummyAndIgnoreExample;
+import ntut.csie.filemaker.exceptionBadSmells.DummyHandlerExampleWithTryStatementInNonTryStatement;
 import ntut.csie.filemaker.exceptionBadSmells.UserDefineDummyHandlerFish;
+import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramExample;
 import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.robusta.util.PathUtils;
 
@@ -31,6 +34,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class DummyHandlerVisitorTest {
+	String testProjectName;
 	JavaProjectMaker javaProjectMaker;
 	JavaFileToString javaFile2String;
 	CompilationUnit compilationUnit;
@@ -41,18 +45,24 @@ public class DummyHandlerVisitorTest {
 	String[] dummyHandlerPatternsInXML;
 
 	public DummyHandlerVisitorTest() {
+		testProjectName = "DummyHandlerTest";
 	}
 	
 	@Before
 	public void setUp() throws Exception {
-		String testProjectName = "DummyHandlerTest";
 		// 準備測試檔案樣本內容
 		javaProjectMaker = new JavaProjectMaker(testProjectName);
 		javaProjectMaker.setJREDefaultContainer();
 		
 		// 新增欲載入的library
 		javaProjectMaker.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR + "/log4j-1.2.15.jar");
-		
+
+		// 若example code中有robustness notation則有此行可以讓編譯通過
+		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(
+				JavaProjectMaker.FOLDERNAME_LIB_JAR,
+				JavaProjectMaker.FOLDERNAME_BIN_CLASS);
+		javaProjectMaker.addJarFromTestProjectToBuildPath("/" + JavaProjectMaker.FOLDERNAME_LIB_JAR + JavaProjectMaker.FOLDERNAME_LIB_JAR);
+
 		// 建立新的檔案DummyAndIgnoreExample
 		javaFile2String = new JavaFileToString();
 		javaFile2String.read(DummyAndIgnoreExample.class, JavaProjectMaker.FOLDERNAME_TEST);
@@ -78,11 +88,8 @@ public class DummyHandlerVisitorTest {
 				SmellSettings.EXTRARULE_SystemOutPrintln, SmellSettings.EXTRARULE_JavaUtilLoggingLogger, 
 				SmellSettings.EXTRARULE_OrgApacheLog4j};
 		setNewSettingsWithExtraRules(dummyHandlerPatternsInXML);
-		
-		Path path = new Path(testProjectName + "/"
-				+ JavaProjectMaker.FOLDERNAME_SOURCE + "/"
-				+ PathUtils.dot2slash(DummyAndIgnoreExample.class.getName())
-				+ JavaProjectMaker.JAVA_FILE_EXTENSION);
+
+		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(DummyAndIgnoreExample.class, testProjectName));
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -106,8 +113,7 @@ public class DummyHandlerVisitorTest {
 	public void testVisitMemberData() {
 		int dummy = 0;
 		compilationUnit.accept(dummyHandlerVisitor);
-		if(dummyHandlerVisitor.getDummyList() != null)
-			dummy = dummyHandlerVisitor.getDummyList().size();
+		dummy = dummyHandlerVisitor.getDummyList().size();
 		
 		// 驗證總共抓到幾個bad smell
 		assertEquals(16, dummy);
@@ -166,10 +172,9 @@ public class DummyHandlerVisitorTest {
 	
 	@Test
 	public void testVisitMethodInvocation() {
-		MethodDeclaration md = ASTNodeFinder.getMethodDeclarationNodeByName(
-				compilationUnit, "true_printStackTrace_public");
-		ExpressionStatement eStatement = getExpressionStatementFromMethodDeclaration(md, 1, 0, 0);
-		MethodInvocation methodInvocation = (MethodInvocation) eStatement.getExpression();
+		MethodInvocation methodInvocation = ASTNodeFinder
+				.getMethodInvocationByMethodNameAndCode(compilationUnit,
+						"true_printStackTrace_public", "e.printStackTrace()").get(0);
 		assertFalse(dummyHandlerVisitor.visit(methodInvocation));
 		assertEquals(1, dummyHandlerVisitor.getDummyList().size());
 	}
@@ -180,25 +185,64 @@ public class DummyHandlerVisitorTest {
 		assertEquals(0, dummyHandlerVisitor.getDummyList().size());
 		
 		//#1 正常的DummyHandler
-		MethodInvocation eStatement = ASTNodeFinder
+		MethodInvocation methodInvocation = ASTNodeFinder
 				.getMethodInvocationByMethodNameAndCode(compilationUnit,
 				"true_printStackTrace_public", "e.printStackTrace()").get(0);
-		dummyHandlerVisitor.detectDummyHandler(eStatement);
+		dummyHandlerVisitor.detectDummyHandler(methodInvocation);
 		assertEquals(1, dummyHandlerVisitor.getDummyList().size());
-		
+
 		//#2 有throw
-		eStatement = ASTNodeFinder
+		methodInvocation = ASTNodeFinder
 			.getMethodInvocationByMethodNameAndCode(compilationUnit,
 			"false_throwAndPrint", "e.printStackTrace()").get(0);
-		dummyHandlerVisitor.detectDummyHandler(eStatement);
+		dummyHandlerVisitor.detectDummyHandler(methodInvocation);
 		assertEquals(1, dummyHandlerVisitor.getDummyList().size());
 		
 		//#3 測 Catch 外面
-		eStatement = ASTNodeFinder
+		methodInvocation = ASTNodeFinder
 		.getMethodInvocationByMethodNameAndCode(compilationUnit,
 		"true_printStackTrace_protected", "fis.read()").get(0);
-		dummyHandlerVisitor.detectDummyHandler(eStatement);
+		dummyHandlerVisitor.detectDummyHandler(methodInvocation);
 		assertEquals(1, dummyHandlerVisitor.getDummyList().size());
+	}
+
+	/**
+	 * 另外測試若 try statement 位於非  try statement 之中時，是否會正確偵測
+	 * @throws Exception 
+	 */
+	@Test
+	public void testDetectDummyHandlerWithTryStatementInNonTryStatement() throws Exception {
+		CompilationUnit compilationUnitWithTSINTS;
+		
+		// 新建立測試用的 DummyHandlerExampleWithTryStatementInNonTryStatement
+		javaFile2String.clear();
+		javaFile2String.read(DummyHandlerExampleWithTryStatementInNonTryStatement.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaProjectMaker.createJavaFile(
+				DummyHandlerExampleWithTryStatementInNonTryStatement.class.getPackage().getName(),
+				DummyHandlerExampleWithTryStatementInNonTryStatement.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
+				"package " + DummyHandlerExampleWithTryStatementInNonTryStatement.class.getPackage().getName() + ";\n"
+				+ javaFile2String.getFileContent());
+
+		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(DummyHandlerExampleWithTryStatementInNonTryStatement.class, testProjectName));
+		//Create AST to parse
+		ASTParser parser = ASTParser.newParser(AST.JLS3);
+		parser.setKind(ASTParser.K_COMPILATION_UNIT);
+		// 設定要被建立AST的檔案
+		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
+		parser.setResolveBindings(true);
+		// 取得AST
+		compilationUnitWithTSINTS = (CompilationUnit) parser.createAST(null); 
+		compilationUnitWithTSINTS.recordModifications();
+		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnitWithTSINTS);
+
+		// 確認初始值
+		assertEquals(0, dummyHandlerVisitor.getDummyList().size());
+		
+		// do this test
+		compilationUnitWithTSINTS.accept(dummyHandlerVisitor);
+		
+		// 驗證總共抓到幾個bad smell
+		assertEquals(2, dummyHandlerVisitor.getDummyList().size());
 	}
 	
 	@Test
@@ -341,11 +385,6 @@ public class DummyHandlerVisitorTest {
 	 */
 	@Test
 	public void testAddDummyHandlerSmellInfoForUserPatternType1() {
-//		java.util.* case1 class
-//		*.toString case2 statement
-//		java.lang.String.toString case3 statement
-//		java.util.ArrayList<java.lang.Boolean> case4 statement
-		
 		String testClassPattern = UserDefineDummyHandlerFish.class.getName() + ".*";
 		
 		// 確認初始值
@@ -472,13 +511,5 @@ public class DummyHandlerVisitorTest {
 		deleteOldSettings();
 		smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-	}
-	
-	private ExpressionStatement getExpressionStatementFromMethodDeclaration(
-			MethodDeclaration mDeclaration, int statementsNumberOnMethodDeclaration,
-			int catchClauseNumber, int statementsNumberOnCatchClause) {
-		TryStatement tryStatement = (TryStatement) mDeclaration.getBody().statements().get(statementsNumberOnMethodDeclaration);
-		CatchClause catchClause = (CatchClause) tryStatement.catchClauses().get(catchClauseNumber);
-		return (ExpressionStatement) catchClause.getBody().statements().get(statementsNumberOnCatchClause);
 	}
 }

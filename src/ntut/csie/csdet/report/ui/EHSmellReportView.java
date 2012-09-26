@@ -3,7 +3,9 @@ package ntut.csie.csdet.report.ui;
 import java.util.ArrayList;
 import java.util.List;
 
+import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.report.ReportModel;
+import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 import ntut.csie.rleht.RLEHTPlugin;
 import ntut.csie.rleht.common.ImageManager;
 
@@ -100,6 +102,10 @@ public class EHSmellReportView extends ViewPart {
 			public void widgetSelected(final SelectionEvent e) {
 				IProject[] projectList  = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 
+				// 沒有設定檔存在時，幫使用者預設為所有的條件都勾選
+				SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+				smellSettings.activateAllConditions(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+				
 				//若有選擇Project就產生報表，並把Browser指向記頁
 				for (IProject project : projectList) {
 					if (project.getName().equals(projectCombo.getItem(projectCombo.getSelectionIndex()))) {

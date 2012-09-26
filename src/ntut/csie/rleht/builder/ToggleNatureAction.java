@@ -2,6 +2,9 @@ package ntut.csie.rleht.builder;
 
 import java.util.Iterator;
 
+import ntut.csie.csdet.preference.SmellSettings;
+import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
@@ -77,6 +80,10 @@ public class ToggleNatureAction implements IObjectActionDelegate {
 			IProjectDescription description = project.getDescription();
 			String[] natures = description.getNatureIds();
 
+			// 沒有設定檔存在時，幫使用者預設為所有的條件都勾選
+			SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+			smellSettings.activateAllConditions(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+			
 			for (int i = 0; i < natures.length; ++i) {
 				if (RLNature.NATURE_ID.equals(natures[i])) {
 					// Remove the nature
