@@ -13,6 +13,7 @@ import ntut.csie.csdet.visitor.CarelessCleanupVisitor;
 import ntut.csie.csdet.visitor.DummyHandlerVisitor;
 import ntut.csie.csdet.visitor.IgnoreExceptionVisitor;
 import ntut.csie.csdet.visitor.NestedTryStatementVisitor;
+import ntut.csie.csdet.visitor.TryStatementCounterVisitor;
 import ntut.csie.csdet.visitor.UnprotectedMainProgramVisitor;
 import ntut.csie.csdet.visitor.OverLoggingDetector;
 import ntut.csie.jcis.builder.core.internal.support.LOCCounter;
@@ -31,7 +32,6 @@ import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
@@ -142,6 +142,7 @@ public class ReportBuilder {
 		UnprotectedMainProgramVisitor mainVisitor = null;
 		CarelessCleanupVisitor ccVisitor = null;
 		OverLoggingDetector loggingDetector = null;
+		TryStatementCounterVisitor counterVisitor = null;
 
 		// 建構AST
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
@@ -241,10 +242,12 @@ public class ReportBuilder {
 						.toString());
 				model.addOverLoggingSize(olList.size());
 			}
-			// 記錄Code Information //
-			model.addTryCounter(dhVisitor.getTryCounter());
-			model.addCatchCounter(dhVisitor.getCatchCounter());
-			model.addFinallyCounter(dhVisitor.getFinallyCounter());
+			// 記錄Code Information
+			counterVisitor = new TryStatementCounterVisitor();
+			method.accept(counterVisitor);
+			model.addTryCounter(counterVisitor.getTryCount());
+			model.addCatchCounter(counterVisitor.getCatchCount());
+			model.addFinallyCounter(counterVisitor.getFinallyCount());
 		}
 		// 記錄到ReportModel中
 		newPackageModel.addClassModel(newClassModel);
