@@ -15,6 +15,7 @@ public @interface RTag {
 	
 	int level() default 1;
 
+	//Class不會判斷是否繼承於Throwable，所以不能用Class<Throwable> exception()
 	Class<?> exception() default Throwable.class;
 }
 
