@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Tag {
+public @interface RTag {
 	public static final int LEVEL_1_ERR_REPORTING = 1;
 
 	public static final int LEVEL_2_STATE_RECOVERY = 2;
@@ -15,6 +15,6 @@ public @interface Tag {
 	
 	int level() default 1;
 
-	//Class不會判斷是否繼承於Throwable，所以不能用Class<Throwable> exception()
 	Class<?> exception() default Throwable.class;
 }
+

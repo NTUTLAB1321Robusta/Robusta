@@ -15,7 +15,7 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
 
 import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
-import ntut.csie.robusta.agile.exception.Tag;
+import ntut.csie.robusta.agile.exception.RTag;
 import ntut.csie.robusta.agile.exception.Robustness;;
 
 public class SmellSettings {
@@ -60,7 +60,7 @@ public class SmellSettings {
 		settingDoc = new Document(new Element(TAG_ROOT));
 	}
 	
-	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
 	public SmellSettings(File xmlFile) {
 		this();
 		if(!xmlFile.exists()) {
@@ -76,7 +76,7 @@ public class SmellSettings {
 		}
 	}
 	
-	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
 	public SmellSettings(String xmlFilepath) {
 		this(new File(xmlFilepath));
 	}
@@ -380,7 +380,7 @@ public class SmellSettings {
 		return libMap;
 	}
 
-	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
 	public void writeXMLFile(String path) {
 		FileWriter fw = null;
 		XMLOutputter out = new XMLOutputter();

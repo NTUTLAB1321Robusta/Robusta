@@ -8,7 +8,7 @@ import ntut.csie.rleht.common.EditorUtils;
 import ntut.csie.rleht.common.ErrorLog;
 import ntut.csie.rleht.common.ImageManager;
 import ntut.csie.rleht.common.RLUtils;
-import ntut.csie.robusta.agile.exception.Tag;
+import ntut.csie.robusta.agile.exception.RTag;
 
 import org.eclipse.core.filebuffers.FileBuffers;
 import org.eclipse.core.resources.IFile;
@@ -801,7 +801,7 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 								RLMessage msg = model.getRLAnnotationList().get(pos);
 								msg.setEdited(true);
 								if (col == 1) {
-									msg.getRLData().setLevel(RLUtils.str2int(inputVal, Tag.LEVEL_1_ERR_REPORTING));
+									msg.getRLData().setLevel(RLUtils.str2int(inputVal, RTag.LEVEL_1_ERR_REPORTING));
 								}
 								if (col == 2) {
 									msg.getRLData().setExceptionType(inputVal);

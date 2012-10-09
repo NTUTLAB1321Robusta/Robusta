@@ -188,7 +188,7 @@ public class CarelessCleanUpRefactorTest {
 						" * @param outputFile\n" +
 						" * @throws IOException\n" + 
 						" */\n" +
-						"@Robustness(value={@Tag(level=1,exception=java.io.FileNotFoundException.class),@Tag(level=1,exception=java.io.IOException.class)}) public void y2_closeStreamInCatchClause(byte[] context,File outputFile) throws IOException {\n" +
+						"@Robustness(value={@RTag(level=1,exception=java.io.FileNotFoundException.class),@RTag(level=1,exception=java.io.IOException.class)}) public void y2_closeStreamInCatchClause(byte[] context,File outputFile) throws IOException {\n" +
 						"  FileOutputStream fileOutputStream=null;\n" +
 						"  try {\n" +
 						"    fileOutputStream=new FileOutputStream(outputFile);\n" +
@@ -220,7 +220,7 @@ public class CarelessCleanUpRefactorTest {
 						" * @param outputFile\n" +
 						" * @throws IOException\n" + 
 						" */\n" +
-						"@Robustness(value={@Tag(level=1,exception=java.io.FileNotFoundException.class),@Tag(level=1,exception=java.io.IOException.class)}) public void y2_closeStreamInCatchClause(byte[] context,File outputFile) throws IOException {\n" +
+						"@Robustness(value={@RTag(level=1,exception=java.io.FileNotFoundException.class),@RTag(level=1,exception=java.io.IOException.class)}) public void y2_closeStreamInCatchClause(byte[] context,File outputFile) throws IOException {\n" +
 						"  FileOutputStream fileOutputStream=null;\n" +
 						"  try {\n" +
 						"    fileOutputStream=new FileOutputStream(outputFile);\n" +
@@ -486,9 +486,9 @@ public class CarelessCleanUpRefactorTest {
 		MethodDeclaration md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, nameOfWillBeTestedMethod);
 		TryStatement tryStatement = ASTNodeFinder.getTryStatementNodeListByMethodDeclarationName(compilationUnit, nameOfWillBeTestedMethod).get(0);
 		/**
-		 * 關閉串流的程式碼startposition是1550, 但是測試的時候是1550-1
+		 * 關閉串流的程式碼startposition是1553, 但是測試的時候是1552-1
 		 */
-		MarkerInfo marker = new MarkerInfo(null, null, null, 1549, 53, null);
+		MarkerInfo marker = new MarkerInfo(null, null, null, 1552, 53, null);
 		Field smellMessage = CarelessCleanUpRefactor.class.getDeclaredField("smellMessage");
 		smellMessage.setAccessible(true);
 		smellMessage.set(refactor, marker);
@@ -504,7 +504,7 @@ public class CarelessCleanUpRefactorTest {
 		MethodDeclaration md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, nameOfWillBeTestedMethod);
 		TryStatement tryStatement = ASTNodeFinder.getTryStatementNodeListByMethodDeclarationName(compilationUnit, nameOfWillBeTestedMethod).get(0);
 		
-		MarkerInfo marker = new MarkerInfo(null, null, null, 7813, 255, null);
+		MarkerInfo marker = new MarkerInfo(null, null, null, 7819, 255, null);
 		Field smellMessage = CarelessCleanUpRefactor.class.getDeclaredField("smellMessage");
 		smellMessage.setAccessible(true);
 		smellMessage.set(refactor, marker);
@@ -535,7 +535,7 @@ public class CarelessCleanUpRefactorTest {
 		nameOfWillBeTestedMethod = "y2_closeStreamInCatchClause";
 		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, nameOfWillBeTestedMethod);
 		tryStatement = ASTNodeFinder.getTryStatementNodeListByMethodDeclarationName(compilationUnit, nameOfWillBeTestedMethod).get(0);
-		marker = new MarkerInfo(null, null, null, 5042, 160, null);
+		marker = new MarkerInfo(null, null, null, 5051, 160, null);
 		smellMessage.set(refactor, marker);
 		
 		// check precondition
@@ -577,7 +577,7 @@ public class CarelessCleanUpRefactorTest {
 		nameOfWillBeTestedMethod = "y_closeStreamInFinallyButThrowsExceptionInCatchAndFinally";
 		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, nameOfWillBeTestedMethod);
 		tryStatement = ASTNodeFinder.getTryStatementNodeListByMethodDeclarationName(compilationUnit, nameOfWillBeTestedMethod).get(0);
-		marker = new MarkerInfo(null, null, null, 13515, 458, null);
+		marker = new MarkerInfo(null, null, null, 13538, 458, null);
 		smellMessage.set(refactor, marker);
 		
 		// check precondition
@@ -631,7 +631,7 @@ public class CarelessCleanUpRefactorTest {
 		cleanUpExpressionStatement.set(refactor, tryStatement.getBody().statements().get(2));
 		
 		// check precondition
-		assertEquals(	"@Robustness(value={@Tag(level=1,exception=java.io.IOException.class)}) public void moveInstance() throws IOException {\n" +
+		assertEquals(	"@Robustness(value={@RTag(level=1,exception=java.io.IOException.class)}) public void moveInstance() throws IOException {\n" +
 						"  try {\n" +
 						"    FileOutputStream fi=new FileOutputStream(\"\");\n" +
 						"    fi.write(1);\n" +
@@ -648,7 +648,7 @@ public class CarelessCleanUpRefactorTest {
 		moveInstance.invoke(refactor, md.getAST(), tryStatement);
 		
 		// check postcondition
-		assertEquals(	"@Robustness(value={@Tag(level=1,exception=java.io.IOException.class)}) " +
+		assertEquals(	"@Robustness(value={@RTag(level=1,exception=java.io.IOException.class)}) " +
 						"public void moveInstance() throws IOException {\n" +
 						"  FileOutputStream fi=null;\n" +
 						"  try {\n" +
@@ -681,7 +681,7 @@ public class CarelessCleanUpRefactorTest {
 		assertEquals("import java.io.FileOutputStream;\n", imports.get(3).toString());
 		assertEquals("import java.io.FileWriter;\n", imports.get(4).toString());
 		assertEquals("import java.io.IOException;\n", imports.get(5).toString());
-		assertEquals("import ntut.csie.robusta.agile.exception.Tag;\n", imports.get(6).toString());
+		assertEquals("import ntut.csie.robusta.agile.exception.RTag;\n", imports.get(6).toString());
 		assertEquals("import ntut.csie.robusta.agile.exception.Robustness;\n", imports.get(7).toString());
 		
 		// 模擬加入一個method，而需要import原本沒有的package
@@ -700,7 +700,7 @@ public class CarelessCleanUpRefactorTest {
 		assertEquals("import java.io.FileOutputStream;\n", imports.get(3).toString());
 		assertEquals("import java.io.FileWriter;\n", imports.get(4).toString());
 		assertEquals("import java.io.IOException;\n", imports.get(5).toString());
-		assertEquals("import ntut.csie.robusta.agile.exception.Tag;\n", imports.get(6).toString());
+		assertEquals("import ntut.csie.robusta.agile.exception.RTag;\n", imports.get(6).toString());
 		assertEquals("import ntut.csie.robusta.agile.exception.Robustness;\n", imports.get(7).toString());
 		assertEquals("import java.io.IOError;\n", imports.get(8).toString());
 	}
@@ -773,7 +773,7 @@ public class CarelessCleanUpRefactorTest {
 						" * @param context\n" +
 						" * @param outputFile\n" +
 						" */\n" +
-						"@Robustness(value={@Tag(level=1,exception=java.lang.RuntimeException.class)}) public void y_closeStreamInTryBlock(byte[] context,File outputFile){\n" +
+						"@Robustness(value={@RTag(level=1,exception=java.lang.RuntimeException.class)}) public void y_closeStreamInTryBlock(byte[] context,File outputFile){\n" +
 						"  FileOutputStream fileOutputStream=null;\n" +
 						"  try {\n" +
 						"    fileOutputStream=new FileOutputStream(outputFile);\n" +
@@ -799,7 +799,7 @@ public class CarelessCleanUpRefactorTest {
 				" * @param context\n" +
 				" * @param outputFile\n" +
 				" */\n" +
-				"@Robustness(value={@Tag(level=1,exception=java.lang.RuntimeException.class)}) public void y_closeStreamInTryBlock(byte[] context,File outputFile){\n" +
+				"@Robustness(value={@RTag(level=1,exception=java.lang.RuntimeException.class)}) public void y_closeStreamInTryBlock(byte[] context,File outputFile){\n" +
 				"  FileOutputStream fileOutputStream=null;\n" +
 				"  try {\n" +
 				"    fileOutputStream=new FileOutputStream(outputFile);\n" +
@@ -825,7 +825,7 @@ public class CarelessCleanUpRefactorTest {
 		// test
 		addMethodInFinally.invoke(refactor, md.getAST(), tryStatement.getFinally());
 		// check postcondition
-		assertEquals(	"@Robustness(value={@Tag(level=1,exception=java.io.IOException.class)}) public void uy_closeStreaminOuterMethodInCatch() throws IOException {\n" +
+		assertEquals(	"@Robustness(value={@RTag(level=1,exception=java.io.IOException.class)}) public void uy_closeStreaminOuterMethodInCatch() throws IOException {\n" +
 						"  FileOutputStream fi=null;\n" +
 						"  try {\n" +
 						"    fi=new FileOutputStream(\"\");\n" +

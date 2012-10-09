@@ -7,7 +7,7 @@ import ntut.csie.rleht.builder.RLNature;
 import ntut.csie.rleht.common.ASTHandler;
 import ntut.csie.rleht.common.ConsoleLog;
 import ntut.csie.rleht.common.ErrorLog;
-import ntut.csie.robusta.agile.exception.Tag;
+import ntut.csie.robusta.agile.exception.RTag;
 import ntut.csie.robusta.agile.exception.Robustness;
 
 import org.eclipse.core.resources.IProject;
@@ -277,7 +277,7 @@ public class RLMethodModel {
 		}
 		if (!isImportRLClass) {
 			ImportDeclaration imp = rootAst.newImportDeclaration();
-			imp.setName(rootAst.newName(Tag.class.getName()));
+			imp.setName(rootAst.newName(RTag.class.getName()));
 			this.actRoot.imports().add(imp);
 		}
 

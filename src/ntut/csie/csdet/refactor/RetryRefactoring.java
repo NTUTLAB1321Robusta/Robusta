@@ -8,7 +8,7 @@ import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLData;
 import ntut.csie.rleht.views.RLMessage;
-import ntut.csie.robusta.agile.exception.Tag;
+import ntut.csie.robusta.agile.exception.RTag;
 import ntut.csie.robusta.agile.exception.Robustness;
 
 import org.eclipse.core.resources.IFile;
@@ -763,7 +763,7 @@ public class RetryRefactoring extends Refactoring {
 		}
 		if (!isImportRLClass) {
 			ImportDeclaration imp = rootAst.newImportDeclaration();
-			imp.setName(rootAst.newName(Tag.class.getName()));
+			imp.setName(rootAst.newName(RTag.class.getName()));
 			listRewrite.insertLast(imp, null);
 		}
 	}

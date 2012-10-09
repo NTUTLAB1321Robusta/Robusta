@@ -10,7 +10,7 @@ import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLData;
 import ntut.csie.rleht.views.RLMessage;
-import ntut.csie.robusta.agile.exception.Tag;
+import ntut.csie.robusta.agile.exception.RTag;
 import ntut.csie.robusta.agile.exception.Robustness;
 
 import org.eclipse.core.resources.IMarker;
@@ -290,7 +290,7 @@ public class DHQuickFix extends BaseQuickFix implements IMarkerResolution {
 		}
 		if (!isImportRLClass) {
 			ImportDeclaration imp = rootAst.newImportDeclaration();
-			imp.setName(rootAst.newName(Tag.class.getName()));
+			imp.setName(rootAst.newName(RTag.class.getName()));
 			this.actRoot.imports().add(imp);
 		}
 	}

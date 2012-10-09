@@ -15,7 +15,7 @@ import ntut.csie.csdet.refactor.RethrowUncheckExAction;
 import ntut.csie.rleht.common.RLUtils;
 import ntut.csie.rleht.rlAdvice.AchieveRL1QuickFix;
 import ntut.csie.rleht.views.RLData;
-import ntut.csie.robusta.agile.exception.Tag;
+import ntut.csie.robusta.agile.exception.RTag;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
@@ -49,7 +49,7 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				}
 			} else if (problem.equals(RLMarkerAttribute.ERR_NO_RL)) {
 				if (!RLData.validLevel(RLUtils.str2int(level, -1))) {
-					level = String.valueOf(Tag.LEVEL_1_ERR_REPORTING);
+					level = String.valueOf(RTag.LEVEL_1_ERR_REPORTING);
 				}
 				markerList.add(new RLQuickFix("·s¼W@Tag (level=" + level + ",exception=" + exception + ")",errMsg));
 			} else if (problem.equals(RLMarkerAttribute.ERR_RL_DUPLICATE)) {

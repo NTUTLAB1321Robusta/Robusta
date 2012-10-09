@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import ntut.csie.robusta.agile.exception.Tag;
+import ntut.csie.robusta.agile.exception.RTag;
 import ntut.csie.robusta.agile.exception.Robustness;
 
 public class OverLoggingJavaLogExample {
@@ -23,7 +23,7 @@ public class OverLoggingJavaLogExample {
 		}
 	}
 	
-	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void theSecondOrderInTheSameClassWithJavaLog() throws IOException {
 		try {
 			theThirdOrderInTheSameClassWithJavaLog();
@@ -34,7 +34,7 @@ public class OverLoggingJavaLogExample {
 		}
 	}
 	
-	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void theThirdOrderInTheSameClassWithJavaLog() throws IOException {
 		try {
 			theFourthOrderInTheSameClassWithJavaLog();
@@ -46,7 +46,7 @@ public class OverLoggingJavaLogExample {
 		}
 	}
 	
-	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void theFourthOrderInTheSameClassWithJavaLog() throws IOException {
 		try {
 			throw new IOException("IOException throws in callee");
@@ -69,7 +69,7 @@ public class OverLoggingJavaLogExample {
 		}
 	}
 	
-	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void theSecondOrderInTheSameClassWithJavaLogAndWithoutLoggingAtBeginning() throws IOException {
 		try {
 			theThirdOrderInTheSameClassWithJavaLogAndWithoutLoggingAtBeginning();
@@ -80,7 +80,7 @@ public class OverLoggingJavaLogExample {
 		}
 	}
 	
-	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void theThirdOrderInTheSameClassWithJavaLogAndWithoutLoggingAtBeginning() throws IOException {
 		try {
 			theFourthOrderInTheSameClassWithJavaLogAndWithoutLoggingAtBeginning();
@@ -91,7 +91,7 @@ public class OverLoggingJavaLogExample {
 		}
 	}
 	
-	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void theFourthOrderInTheSameClassWithJavaLogAndWithoutLoggingAtBeginning() throws IOException {
 		try {
 			throw new IOException("IOException throws in callee");
@@ -126,7 +126,7 @@ public class OverLoggingJavaLogExample {
 		}
 	}
 	
-	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void theSecondOrderInTheSameClassWithJavaLogAndSomeConditions() throws IOException {
 		try {
 			theThirdOrderInTheSameClassWithJavaLogAndSomeConditions();
@@ -138,7 +138,7 @@ public class OverLoggingJavaLogExample {
 		}
 	}
 	
-	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void theThirdOrderInTheSameClassWithJavaLogAndSomeConditions() throws IOException {
 		try {
 			theFourthOrderInTheSameClassWithJavaLogAndSomeConditions();
@@ -150,7 +150,7 @@ public class OverLoggingJavaLogExample {
 		}
 	}
 	
-	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void theFourthOrderInTheSameClassWithJavaLogAndSomeConditions() throws IOException {
 		try {
 			throw new FileNotFoundException("FileNotFoundException throws in callee");
@@ -162,7 +162,7 @@ public class OverLoggingJavaLogExample {
 		}
 	}
 	
-	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void theFifthOrderInTheSameClassWithJavaLogAndSomeConditions() throws IOException {
 		try {
 			theSixthOrderInTheSameClassWithJavaLogAndSomeConditions();
@@ -173,7 +173,7 @@ public class OverLoggingJavaLogExample {
 		}
 	}
 	
-	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void theSixthOrderInTheSameClassWithJavaLogAndSomeConditions() throws IOException {
 		try {
 			throw new FileNotFoundException("FileNotFoundException throws in callee");
