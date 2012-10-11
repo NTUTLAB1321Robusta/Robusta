@@ -17,5 +17,11 @@ public @interface RTag {
 
 	//Class不會判斷是否繼承於Throwable，所以不能用Class<Throwable> exception()
 	Class<?> exception() default Throwable.class;
+	
+	/** The level of thrown exception */
+	public static final String LEVEL = "level";
+	
+	/** The full qualified name of the exception */
+	public static final String EXCEPTION = "exception";
 }
 

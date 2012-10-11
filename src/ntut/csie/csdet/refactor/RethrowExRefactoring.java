@@ -417,18 +417,18 @@ public class RethrowExRefactoring extends Refactoring {
 	private NormalAnnotation getRLAnnotation(AST ast, int levelVal, String excption) {
 		// 要建立@Robustness(value={@Tag(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
 		NormalAnnotation rl = ast.newNormalAnnotation();
-		rl.setTypeName(ast.newSimpleName("Tag"));
+		rl.setTypeName(ast.newSimpleName(RTag.class.getSimpleName().toString()));
 
 		// level = 1
 		MemberValuePair level = ast.newMemberValuePair();
-		level.setName(ast.newSimpleName("level"));
+		level.setName(ast.newSimpleName(RTag.LEVEL));
 		//throw statement 預設level = 1
 		level.setValue(ast.newNumberLiteral(String.valueOf(levelVal)));
 		rl.values().add(level);
 
 		// exception=java.lang.RuntimeException.class
 		MemberValuePair exception = ast.newMemberValuePair();
-		exception.setName(ast.newSimpleName("exception"));
+		exception.setName(ast.newSimpleName(RTag.EXCEPTION));
 		TypeLiteral exclass = ast.newTypeLiteral();
 		// 預設為RuntimeException
 		exclass.setType(ast.newSimpleType(ast.newName(excption)));

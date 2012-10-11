@@ -179,7 +179,7 @@ public class DHQuickFixTest {
 		assertEquals("import java.util.logging.Level;\n", imports.get(4).toString());
 		assertEquals("import org.apache.log4j.Logger;\n", imports.get(5).toString());
 		assertEquals("import ntut.csie.robusta.agile.exception.Robustness;\n", imports.get(6).toString());
-		assertEquals("import ntut.csie.robusta.agile.exception.Tag;\n", imports.get(7).toString());
+		assertEquals("import ntut.csie.robusta.agile.exception.RTag;\n", imports.get(7).toString());
 	}
 	
 	@Test
@@ -188,7 +188,7 @@ public class DHQuickFixTest {
 		Method getRLAnnotation = DHQuickFix.class.getDeclaredMethod("getRLAnnotation", AST.class, int.class, String.class);
 		getRLAnnotation.setAccessible(true);
 		NormalAnnotation annotation = (NormalAnnotation)getRLAnnotation.invoke(dhQF, compilationUnit.getAST(), 1, "RuntimeException");
-		assertEquals("@Tag(level=1,exception=RuntimeException.class)", annotation.toString());
+		assertEquals("@RTag(level=1,exception=RuntimeException.class)", annotation.toString());
 	}
 	
 //	@Test
@@ -225,7 +225,7 @@ public class DHQuickFixTest {
 		addAnnotationRoot.invoke(dhQF, currentMethodNode.getAST());
 		List<IExtendedModifier> modifiers = ((MethodDeclaration)currentMethodNodeField.get(dhQF)).modifiers();
 		assertEquals(2, modifiers.size());
-		assertEquals("@Robustness(value={@Tag(level=1,exception=RuntimeException.class)})", modifiers.get(0).toString());
+		assertEquals("@Robustness(value={@RTag(level=1,exception=RuntimeException.class)})", modifiers.get(0).toString());
 		assertEquals("public", modifiers.get(1).toString());
 
 		/* FIXME -  問題在於我們建立出來的Compilation Unit對他修改了現在抓取到的Method，
@@ -242,7 +242,7 @@ public class DHQuickFixTest {
 		addAnnotationRoot.invoke(dhQF, currentMethodNode.getAST());
 		modifiers = ((MethodDeclaration)currentMethodNodeField.get(dhQF)).modifiers();
 		assertEquals(2, modifiers.size());
-		assertEquals("@Robustness(value={@Tag(level=1,exception=RuntimeException.class)})", modifiers.get(0).toString());
+		assertEquals("@Robustness(value={@RTag(level=1,exception=RuntimeException.class)})", modifiers.get(0).toString());
 		assertEquals("public", modifiers.get(1).toString());
 	}
 	
