@@ -7,7 +7,7 @@ import java.util.TreeMap;
 
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
-import ntut.csie.robusta.agile.exception.Tag;
+import ntut.csie.robusta.agile.exception.RTag;
 import ntut.csie.robusta.agile.exception.Robustness;
 
 import org.eclipse.swt.SWT;
@@ -44,7 +44,7 @@ public class CarelessCleanUpPage  extends APropertyPage {
 
 	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
 	
-	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
 	public CarelessCleanUpPage(Composite composite, CSPropertyPage page, SmellSettings smellSettings){
 		super(composite,page);
 		//不偵測時,TextBox的內容
@@ -276,7 +276,7 @@ public class CarelessCleanUpPage  extends APropertyPage {
 	/**
 	 * 儲存使用者設定
 	 */
-	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
 	@Override
 	public boolean storeSettings() {
 		smellSettings.removePatterns(SmellSettings.SMELL_CARELESSCLEANUP);

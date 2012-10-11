@@ -187,7 +187,7 @@ public class CCUQuickFixTest {
 		moveLine.setAccessible(true);
 		moveLine.set(ccuFix, findMoveLine.invoke(ccuFix, "0"));
 		assertEquals("closeStreamWithoutThrowingException(fi)", moveLine.get(ccuFix));
-		assertEquals(	"@Robustness(value={@Tag(level=1,exception=java.io.IOException.class)}) " +
+		assertEquals(	"@Robustness(value={@RTag(level=1,exception=java.io.IOException.class)}) " +
 						"public void uy_closeStreaminOuterMethodInTry() throws IOException {\n" +
 						"  try {\n" +
 						"    FileOutputStream fi=new FileOutputStream(\"\");\n" +
@@ -391,7 +391,7 @@ public class CCUQuickFixTest {
 		
 		// check precondition
 		assertEquals("closeStreamWithoutThrowingException(fi)", mInvocation.toString());
-		assertEquals(	"@Robustness(value={@Tag(level=1,exception=java.io.IOException.class)}) public void uy_closeStreaminOuterMethodInTry() throws IOException {\n" +
+		assertEquals(	"@Robustness(value={@RTag(level=1,exception=java.io.IOException.class)}) public void uy_closeStreaminOuterMethodInTry() throws IOException {\n" +
 						"  try {\n" +
 						"    FileOutputStream fi=new FileOutputStream(\"\");\n" +
 						"    fi.write(1);\n" +
@@ -409,7 +409,7 @@ public class CCUQuickFixTest {
 		assertEquals(
 				"底下是預期的結果，無法模擬focus在當前的editor，所以apply change會拋出例外" +
 				"目前只是用ASTRewrite修改，沒有呼叫applyChange去修改原本內容，還沒找出一個方法驗證結果",
-				"@Robustness(value={@Tag(level=1,exception=java.io.IOException.class)}) public void uy_closeStreaminOuterMethodInTry() throws IOException {\n"
+				"@Robustness(value={@RTag(level=1,exception=java.io.IOException.class)}) public void uy_closeStreaminOuterMethodInTry() throws IOException {\n"
 						+ "  FileOutputStream fi=null;\n"
 						+ "  try {\n"
 						+ "    fi=new FileOutputStream(\"\");\n"
@@ -449,7 +449,7 @@ public class CCUQuickFixTest {
 		
 		// check precondition
 		assertEquals(
-				"@Robustness(value={@Tag(level=1,exception=java.io.IOException.class)}) public void uy_closeStreaminOuterMethodInTry() throws IOException {\n"
+				"@Robustness(value={@RTag(level=1,exception=java.io.IOException.class)}) public void uy_closeStreaminOuterMethodInTry() throws IOException {\n"
 						+ "  try {\n"
 						+ "    FileOutputStream fi=new FileOutputStream(\"\");\n"
 						+ "    fi.write(1);\n"
@@ -467,7 +467,7 @@ public class CCUQuickFixTest {
 		assertEquals(
 				"底下是預期的結果，無法模擬focus在當前的editor，所以apply change會拋出例外" +
 				"目前只是用ASTRewrite修改，沒有呼叫applyChange去修改原本內容，還沒找出一個方法驗證結果",
-				"@Robustness(value={@Tag(level=1,exception=java.io.IOException.class)}) public void uy_closeStreaminOuterMethodInTry() throws IOException {\n"
+				"@Robustness(value={@RTag(level=1,exception=java.io.IOException.class)}) public void uy_closeStreaminOuterMethodInTry() throws IOException {\n"
 						+ "  FileOutputStream fi=null;\n"
 						+ "  try {\n"
 						+ "    fi=new FileOutputStream(\"\");\n"
@@ -520,7 +520,7 @@ public class CCUQuickFixTest {
 						+ " * @param context\n"
 						+ " * @param outputFile\n"
 						+ " */\n"
-						+ "@Robustness(value={@Tag(level=1,exception=java.lang.RuntimeException.class)}) public void y_closeStreamInTryBlockWithBlankFinally(byte[] context,File outputFile){\n"
+						+ "@Robustness(value={@RTag(level=1,exception=java.lang.RuntimeException.class)}) public void y_closeStreamInTryBlockWithBlankFinally(byte[] context,File outputFile){\n"
 						+ "  FileOutputStream fileOutputStream=null;\n"
 						+ "  try {\n"
 						+ "    fileOutputStream=new FileOutputStream(outputFile);\n"
@@ -547,7 +547,7 @@ public class CCUQuickFixTest {
 						+ " * @param context\n"
 						+ " * @param outputFile\n"
 						+ " */\n"
-						+ "@Robustness(value={@Tag(level=1,exception=java.lang.RuntimeException.class)}) public void y_closeStreamInTryBlockWithBlankFinally(byte[] context,File outputFile){\n"
+						+ "@Robustness(value={@RTag(level=1,exception=java.lang.RuntimeException.class)}) public void y_closeStreamInTryBlockWithBlankFinally(byte[] context,File outputFile){\n"
 						+ "  FileOutputStream fileOutputStream=null;\n"
 						+ "  try {\n"
 						+ "    fileOutputStream=new FileOutputStream(outputFile);\n"
@@ -600,7 +600,7 @@ public class CCUQuickFixTest {
 				+ " * 若.close() method不會丟出例外，應可以直接quick fix放到finally block中\n"
 				+ " * @throws IOException\n"
 				+ " */\n"
-				+ "@Robustness(value={@Tag(level=1,exception=java.io.IOException.class)}) public void theCloseImplementClosableWillNotThrowException() throws IOException {\n"
+				+ "@Robustness(value={@RTag(level=1,exception=java.io.IOException.class)}) public void theCloseImplementClosableWillNotThrowException() throws IOException {\n"
 				+ "  ClassImplementCloseableWithoutThrowException anInstance=null;\n"
 				+ "  try {\n"
 				+ "    anInstance=new ClassImplementCloseableWithoutThrowException();\n"
@@ -622,7 +622,7 @@ public class CCUQuickFixTest {
 						+ " * 若.close() method不會丟出例外，應可以直接quick fix放到finally block中\n"
 						+ " * @throws IOException\n"
 						+ " */\n"
-						+ "@Robustness(value={@Tag(level=1,exception=java.io.IOException.class)}) public void theCloseImplementClosableWillNotThrowException() throws IOException {\n"
+						+ "@Robustness(value={@RTag(level=1,exception=java.io.IOException.class)}) public void theCloseImplementClosableWillNotThrowException() throws IOException {\n"
 						+ "  ClassImplementCloseableWithoutThrowException anInstance=null;\n"
 						+ "  try {\n"
 						+ "    anInstance=new ClassImplementCloseableWithoutThrowException();\n"

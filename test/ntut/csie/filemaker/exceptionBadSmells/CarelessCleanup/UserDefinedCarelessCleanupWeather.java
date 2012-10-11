@@ -2,7 +2,7 @@ package ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup;
 
 import java.io.IOException;
 
-import ntut.csie.robusta.agile.exception.Tag;
+import ntut.csie.robusta.agile.exception.RTag;
 import ntut.csie.robusta.agile.exception.Robustness;
 
 /**
@@ -16,7 +16,7 @@ public class UserDefinedCarelessCleanupWeather {
 		
 	}
 	
-	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void Shine() throws IOException {
 		throw new IOException("¹J¨ì¯Q¶³");
 	}

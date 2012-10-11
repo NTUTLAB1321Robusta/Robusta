@@ -2,7 +2,7 @@ package ntut.csie.rleht.rlAdvice;
 
 import ntut.csie.csdet.quickfix.BaseQuickFix;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
-import ntut.csie.robusta.agile.exception.Tag;
+import ntut.csie.robusta.agile.exception.RTag;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
@@ -68,7 +68,7 @@ public class AchieveRL1QuickFix extends BaseQuickFix implements IMarkerResolutio
 						if(((String)marker.getAttribute(RLMarkerAttribute.MI_WITH_Ex)).contains(cc.getException().getType().toString())){
 							//加入RL annotation
 							qf.addAnnotationRoot(actRoot, currentMethodNode, 
-									Tag.LEVEL_1_ERR_REPORTING, QuickFixUtil.runtimeException);
+									RTag.LEVEL_1_ERR_REPORTING, QuickFixUtil.runtimeException);
 							
 							//加入RuntimeException
 							qf.addThrowStatement(cc, currentMethodNode.getAST(), 

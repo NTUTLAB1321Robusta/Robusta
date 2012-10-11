@@ -1,7 +1,7 @@
 package ntut.csie.rleht.rlAdvice;
 
 import ntut.csie.csdet.data.MarkerInfo;
-import ntut.csie.robusta.agile.exception.Tag;
+import ntut.csie.robusta.agile.exception.RTag;
 
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IMemberValuePairBinding;
@@ -122,7 +122,7 @@ public class RLAdviceMessage {
 		if(!isRobustnessAnnotationExist){
 			rlinfo = new RLInfo[1];
 			rlinfo[0] = new RLInfo();
-			rlinfo[0].setLevel(Tag.LEVEL_1_ERR_REPORTING);
+			rlinfo[0].setLevel(RTag.LEVEL_1_ERR_REPORTING);
 			rlinfo[0].setException(getExceptionType());
 //			System.out.println("RLAdviceMessage沒有Annotation，例外類型為: "+ getExceptionType());
 		}

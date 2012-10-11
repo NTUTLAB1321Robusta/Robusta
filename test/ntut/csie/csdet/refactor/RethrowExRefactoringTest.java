@@ -246,7 +246,7 @@ public class RethrowExRefactoringTest {
 		assertEquals("import java.util.logging.Level;\n", imports.get(4).toString());
 		assertEquals("import org.apache.log4j.Logger;\n", imports.get(5).toString());
 		assertEquals("import ntut.csie.robusta.agile.exception.Robustness;\n", imports.get(6).toString());
-		assertEquals("import ntut.csie.robusta.agile.exception.Tag;\n", imports.get(7).toString());
+		assertEquals("import ntut.csie.robusta.agile.exception.RTag;\n", imports.get(7).toString());
 		
 		/** 第二次import，RL和Robustness已經有了，故不會再import一次 */
 		addImportRLDeclaration.invoke(refactoring);
@@ -260,7 +260,7 @@ public class RethrowExRefactoringTest {
 		assertEquals("import java.util.logging.Level;\n", imports.get(4).toString());
 		assertEquals("import org.apache.log4j.Logger;\n", imports.get(5).toString());
 		assertEquals("import ntut.csie.robusta.agile.exception.Robustness;\n", imports.get(6).toString());
-		assertEquals("import ntut.csie.robusta.agile.exception.Tag;\n", imports.get(7).toString());
+		assertEquals("import ntut.csie.robusta.agile.exception.RTag;\n", imports.get(7).toString());
 	}
 	
 	@Test
@@ -312,7 +312,7 @@ public class RethrowExRefactoringTest {
 	public void testGetRLAnnotation() throws Exception {
 		Method getRLAnnotation = RethrowExRefactoring.class.getDeclaredMethod("getRLAnnotation", AST.class, int.class, String.class);
 		getRLAnnotation.setAccessible(true);
-		assertEquals("@Tag(level=2,exception=RuntimeException.class)", getRLAnnotation.invoke(refactoring, compilationUnit.getAST(), 2, "RuntimeException").toString());
+		assertEquals("@RTag(level=2,exception=RuntimeException.class)", getRLAnnotation.invoke(refactoring, compilationUnit.getAST(), 2, "RuntimeException").toString());
 	}
 	
 	@Test
@@ -547,7 +547,7 @@ public class RethrowExRefactoringTest {
 		rethrowException.invoke(refactoring);
 		
 		// verify postcondition
-		assertEquals(	"@Robustness(value={@Tag(level=1,exception=RuntimeException.class)}) " +
+		assertEquals(	"@Robustness(value={@RTag(level=1,exception=RuntimeException.class)}) " +
 						"public void true_printStackTrace_public(){\n" +
 						"  FileInputStream fis=null;\n" +
 						"  try {\n" +
@@ -613,7 +613,7 @@ public class RethrowExRefactoringTest {
 		Field currentMethodNode = RethrowExRefactoring.class.getDeclaredField("currentMethodNode");
 		currentMethodNode.setAccessible(true);
 		// 驗證選取的method的改變
-		assertEquals(	"@Robustness(value={@Tag(level=1,exception=IOError.class)}) " +
+		assertEquals(	"@Robustness(value={@RTag(level=1,exception=IOError.class)}) " +
 						"public void true_printStackTrace_public() throws IOError {\n" +
 						"  FileInputStream fis=null;\n" +
 						"  try {\n" +
@@ -636,7 +636,7 @@ public class RethrowExRefactoringTest {
 		assertEquals("import java.util.logging.Level;\n", newImports.get(4).toString());
 		assertEquals("import org.apache.log4j.Logger;\n", newImports.get(5).toString());
 		assertEquals("import ntut.csie.robusta.agile.exception.Robustness;\n", newImports.get(6).toString());
-		assertEquals("import ntut.csie.robusta.agile.exception.Tag;\n", newImports.get(7).toString());
+		assertEquals("import ntut.csie.robusta.agile.exception.RTag;\n", newImports.get(7).toString());
 		assertEquals("import java.io.IOError;\n", newImports.get(8).toString());
 	}
 	

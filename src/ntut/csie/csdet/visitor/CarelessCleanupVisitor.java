@@ -8,7 +8,7 @@ import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.jdt.util.NodeUtils;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
-import ntut.csie.robusta.agile.exception.Tag;
+import ntut.csie.robusta.agile.exception.RTag;
 import ntut.csie.robusta.agile.exception.Robustness;
 
 import org.eclipse.compare.internal.NullViewer;
@@ -63,7 +63,7 @@ public class CarelessCleanupVisitor extends ASTVisitor {
 	/**
 	 * 增加不檢查close的條件:If
 	 */
-	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
 	public boolean visit(IfStatement node) {
 		if(isMethodDeclarationThrowException(node)) {
 			return true;
@@ -109,7 +109,7 @@ public class CarelessCleanupVisitor extends ASTVisitor {
 	/**
 	 * 增加不檢查close的條件:Try
 	 */
-	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
 	public boolean visit(TryStatement node) {
 		if(isMethodDeclarationThrowException(node)) {
 			return true;
@@ -159,7 +159,7 @@ public class CarelessCleanupVisitor extends ASTVisitor {
 	 * @param node
 	 * @return
 	 */
-	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
 	private boolean isMethodDeclarationThrowException(ASTNode node) {
 		if(node.getNodeType() == ASTNode.COMPILATION_UNIT) {
 			throw new RuntimeException("Abatract Syntax Tree traversing error. by Charles.");
@@ -197,7 +197,7 @@ public class CarelessCleanupVisitor extends ASTVisitor {
 		return false;
 	}
 	
-	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
 	public boolean visit(MethodInvocation node) {
 		boolean userDefinedLibResult = true;
 		boolean userDefinedResult = true;

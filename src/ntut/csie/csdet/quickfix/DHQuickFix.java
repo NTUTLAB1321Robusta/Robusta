@@ -10,7 +10,7 @@ import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLData;
 import ntut.csie.rleht.views.RLMessage;
-import ntut.csie.robusta.agile.exception.Tag;
+import ntut.csie.robusta.agile.exception.RTag;
 import ntut.csie.robusta.agile.exception.Robustness;
 
 import org.eclipse.core.resources.IMarker;
@@ -242,18 +242,18 @@ public class DHQuickFix extends BaseQuickFix implements IMarkerResolution {
 	private NormalAnnotation getRLAnnotation(AST ast, int levelVal,String excption) {
 		//要建立@Tag(level=1, exception=java.lang.RuntimeException.class)這樣的Annotation
 		NormalAnnotation rl = ast.newNormalAnnotation();
-		rl.setTypeName(ast.newSimpleName("Tag"));
+		rl.setTypeName(ast.newSimpleName(RTag.class.getSimpleName().toString()));
 
 		// level = 1
 		MemberValuePair level = ast.newMemberValuePair();
-		level.setName(ast.newSimpleName("level"));
+		level.setName(ast.newSimpleName(RTag.LEVEL));
 		//throw statement 預設level = 1
 		level.setValue(ast.newNumberLiteral(String.valueOf(levelVal)));
 		rl.values().add(level);
 
 		// exception=java.lang.RuntimeException.class
 		MemberValuePair exception = ast.newMemberValuePair();
-		exception.setName(ast.newSimpleName("exception"));
+		exception.setName(ast.newSimpleName(RTag.EXCEPTION));
 		TypeLiteral exclass = ast.newTypeLiteral();
 		// 預設為RuntimeException
 		exclass.setType(ast.newSimpleType(ast.newName(excption)));
@@ -290,7 +290,7 @@ public class DHQuickFix extends BaseQuickFix implements IMarkerResolution {
 		}
 		if (!isImportRLClass) {
 			ImportDeclaration imp = rootAst.newImportDeclaration();
-			imp.setName(rootAst.newName(Tag.class.getName()));
+			imp.setName(rootAst.newName(RTag.class.getName()));
 			this.actRoot.imports().add(imp);
 		}
 	}
