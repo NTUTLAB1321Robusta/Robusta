@@ -8,15 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
+import ntut.csie.robusta.agile.exception.Robustness;
+import ntut.csie.robusta.agile.exception.Tag;
+
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
-
-import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
-import ntut.csie.robusta.agile.exception.RTag;
-import ntut.csie.robusta.agile.exception.Robustness;;
 
 public class SmellSettings {
 	/*
@@ -60,7 +59,7 @@ public class SmellSettings {
 		settingDoc = new Document(new Element(TAG_ROOT));
 	}
 	
-	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
 	public SmellSettings(File xmlFile) {
 		this();
 		if(!xmlFile.exists()) {
@@ -76,7 +75,7 @@ public class SmellSettings {
 		}
 	}
 	
-	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
 	public SmellSettings(String xmlFilepath) {
 		this(new File(xmlFilepath));
 	}
@@ -380,7 +379,7 @@ public class SmellSettings {
 		return libMap;
 	}
 
-	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
 	public void writeXMLFile(String path) {
 		FileWriter fw = null;
 		XMLOutputter out = new XMLOutputter();
@@ -395,7 +394,7 @@ public class SmellSettings {
 	}
 
 	private void close(Closeable ioInstance) {
-		if(ioInstance != null) {			
+		if(ioInstance != null) {
 			try {
 				ioInstance.close();
 			} catch (IOException e) {
@@ -414,6 +413,10 @@ public class SmellSettings {
 	 * 將所有的條件都勾選，並寫到設定檔中
 	 */
 	public void activateAllConditions(String path) {
+		File settingFile = new File(path);
+		if(settingFile.exists())
+			return;
+		
 		setSmellTypeAttribute(SMELL_IGNORECHECKEDEXCEPTION, ATTRIBUTE_ISDETECTING, true);
 
 		setSmellTypeAttribute(SMELL_DUMMYHANDLER, ATTRIBUTE_ISDETECTING, true);

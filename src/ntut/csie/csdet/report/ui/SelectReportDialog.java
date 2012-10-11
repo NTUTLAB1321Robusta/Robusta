@@ -5,6 +5,8 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.dialogs.Dialog;
@@ -43,6 +45,8 @@ public class SelectReportDialog  extends Dialog {
 	//特定專案底下內全部的Report Path
 	private List<File> fileList = new ArrayList<File>();
 	
+	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
+	
 	public SelectReportDialog(Shell parentShell, List<String> projctList) {
 		super(parentShell);
 
@@ -52,7 +56,7 @@ public class SelectReportDialog  extends Dialog {
 	
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Report List");
+		newShell.setText(resource.getString("report.list"));
 	}
 	
 	protected Control createDialogArea(Composite parent) {
@@ -60,7 +64,7 @@ public class SelectReportDialog  extends Dialog {
 		composite.setLayout(new GridLayout(2,false));
 
 		Label label = new Label(composite,SWT.None);
-		label.setText("Project Name:");
+		label.setText(resource.getString("project.name"));
 
 		//建置Table
 		buildTable(composite);
@@ -96,7 +100,7 @@ public class SelectReportDialog  extends Dialog {
 	    reportTable.setHeaderVisible(true);
 
 	    TableColumn column1 = new TableColumn(reportTable, SWT.NONE);
-	    column1.setText("Time");
+	    column1.setText(resource.getString("time"));
 	    column1.setWidth(200);
 
 	    //set layout
@@ -185,7 +189,7 @@ public class SelectReportDialog  extends Dialog {
 	protected void createButtonsForButtonBar(Composite parent) {
 		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
 	    createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, true);
-	    createButton(parent, DELETE_SELECTION, "Delete", true);
+	    createButton(parent, DELETE_SELECTION, resource.getString("delete"), true);
 	}
 	
 	/**

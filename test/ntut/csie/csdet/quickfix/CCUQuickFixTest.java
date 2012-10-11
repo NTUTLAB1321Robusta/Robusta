@@ -187,7 +187,7 @@ public class CCUQuickFixTest {
 		moveLine.setAccessible(true);
 		moveLine.set(ccuFix, findMoveLine.invoke(ccuFix, "0"));
 		assertEquals("closeStreamWithoutThrowingException(fi)", moveLine.get(ccuFix));
-		assertEquals(	"@Robustness(value={@RTag(level=1,exception=java.io.IOException.class)}) " +
+		assertEquals(	"@Robustness(value={@Tag(level=1,exception=java.io.IOException.class)}) " +
 						"public void uy_closeStreaminOuterMethodInTry() throws IOException {\n" +
 						"  try {\n" +
 						"    FileOutputStream fi=new FileOutputStream(\"\");\n" +

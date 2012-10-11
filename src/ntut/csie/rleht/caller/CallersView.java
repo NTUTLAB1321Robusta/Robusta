@@ -1,5 +1,8 @@
 package ntut.csie.rleht.caller;
 
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 import net.java.amateras.uml.action.SaveAsImageAction;
 import ntut.csie.rleht.RLEHTPlugin;
 import ntut.csie.rleht.common.ConsoleLog;
@@ -92,6 +95,8 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 	
 	private boolean isShowRLInfo = false;
 	
+	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
+	
 	/**
 	 * The constructor.
 	 */
@@ -148,7 +153,7 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
         treeviewer.setAutoExpandLevel(2);
 
 		TreeColumn column1 = new TreeColumn(tree, SWT.LEFT);
-		column1.setText("呼叫階層");
+		column1.setText(resource.getString("call.chain"));
 		column1.setWidth(400);
 		treeviewer.addFilter(new CallersViewerFilter());
 
@@ -163,11 +168,11 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 	 */
 	private void createRLColumn(Tree tree) {
 		TreeColumn column2 = new TreeColumn(tree, SWT.LEFT);
-		column2.setText("@Tag{Level,Exception}");
+		column2.setText(resource.getString("tag"));
 		column2.setWidth(250);
 
 		TreeColumn column3 = new TreeColumn(tree, SWT.LEFT);
-		column3.setText("例外");
+		column3.setText(resource.getString("ex"));
 		column3.setWidth(350);
 	}
 
@@ -488,7 +493,7 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 				MethodWrapper activeMW = (MethodWrapper) activeItem.getData();
 				if(item.getChecked() && (activeMW.getLevel() == mwobj.getLevel()) && (item.getData() != activeItem.getData())){
 					if(!checkFlag){						
-						EditorUtils.showMessage("一次只能選擇一條路徑！！");
+						EditorUtils.showMessage(resource.getString("only.one.path"));
 					}
 					checkFlag = true;
 					activeItem.setChecked(false);

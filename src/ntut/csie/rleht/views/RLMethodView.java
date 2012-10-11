@@ -2,13 +2,15 @@ package ntut.csie.rleht.views;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import ntut.csie.rleht.common.ConsoleLog;
 import ntut.csie.rleht.common.EditorUtils;
 import ntut.csie.rleht.common.ErrorLog;
 import ntut.csie.rleht.common.ImageManager;
 import ntut.csie.rleht.common.RLUtils;
-import ntut.csie.robusta.agile.exception.RTag;
+import ntut.csie.robusta.agile.exception.Tag;
 
 import org.eclipse.core.filebuffers.FileBuffers;
 import org.eclipse.core.resources.IFile;
@@ -123,6 +125,8 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 	// *************************************************************************
 	// initiation
 	// *************************************************************************
+	
+	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
 
 	/**
 	 * The constructor.
@@ -203,15 +207,15 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 
 		final TableColumn colRLevel = new TableColumn(tableRLList, SWT.CENTER);
 		colRLevel.setWidth(40);
-		colRLevel.setText("等級");
+		colRLevel.setText(resource.getString("level"));
 
 		final TableColumn colExceptionName = new TableColumn(tableRLList, SWT.NONE);
 		colExceptionName.setWidth(400);
-		colExceptionName.setText("例外類型");
+		colExceptionName.setText(resource.getString("ex.type"));
 
 		final TableColumn colMemo = new TableColumn(tableRLList, SWT.NONE);
 		colMemo.setWidth(200);
-		colMemo.setText("備註");
+		colMemo.setText(resource.getString("remark"));
 
 	}
 
@@ -226,19 +230,19 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 
 		final TableColumn colRLevel = new TableColumn(tableExList, SWT.CENTER);
 		colRLevel.setWidth(40);
-		colRLevel.setText("等級");
+		colRLevel.setText(resource.getString("level"));
 
 		final TableColumn colExceptionName = new TableColumn(tableExList, SWT.NONE);
 		colExceptionName.setWidth(200);
-		colExceptionName.setText("例外類型");
+		colExceptionName.setText(resource.getString("ex.type"));
 
 		final TableColumn colMethodName = new TableColumn(tableExList, SWT.NONE);
 		colMethodName.setWidth(400);
-		colMethodName.setText("方法名稱");
+		colMethodName.setText(resource.getString("method.name"));
 
 		final TableColumn colLineNum = new TableColumn(tableExList, SWT.NONE);
 		colLineNum.setWidth(400);
-		colLineNum.setText("行數");
+		colLineNum.setText(resource.getString("LOC"));
 
 		colorError = parent.getDisplay().getSystemColor(SWT.COLOR_RED);
 		colorWarning = parent.getDisplay().getSystemColor(SWT.COLOR_BLUE);
@@ -343,7 +347,7 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 			}
 
 			if (msg.getRLData().getExceptionType() == null || msg.getRLData().getExceptionType().equals("")) {
-				item.setText(2, "無法識別的例外類別！");
+				item.setText(2, resource.getString("error.ex.type"));
 				item.setForeground(2, colorError);
 			} else {
 				item.setText(2, msg.getRLData().getExceptionType());
@@ -353,7 +357,7 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 
 			if (msg.isEdited()) {
 				item.setForeground(colorWarning);
-				item.setText(3, "<--已修改，請更新");
+				item.setText(3, resource.getString("update.message"));
 			}
 
 		}
@@ -464,8 +468,8 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 				actEditor.setFocus();
 			}
 		};
-		actionShowAll.setText("顯示所有例外");
-		actionShowAll.setToolTipText("顯示方法內所有的例外");
+		actionShowAll.setText(resource.getString("display.all"));
+		actionShowAll.setToolTipText(resource.getString("display.all.in.method"));
 		actionShowAll.setImageDescriptor(ImageManager.getInstance().getDescriptor("showall"));
 		actionShowAll.setChecked(false);
 	}
@@ -484,8 +488,8 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 				actEditor.setFocus();
 			}
 		};
-		actionShowRL.setText("顯示強健度等級例外");
-		actionShowRL.setToolTipText("顯示方法內呼叫物件方法之定義強健度等級的例外");
+		actionShowRL.setText(resource.getString("display.rl"));
+		actionShowRL.setToolTipText(resource.getString("display.rl.in.method"));
 		actionShowRL.setImageDescriptor(ImageManager.getInstance().getDescriptor("annotation"));
 		actionShowRL.setChecked(false);
 	}
@@ -506,8 +510,8 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 				actEditor.setFocus();
 			}
 		};
-		actionShowThrow.setText("顯示未處理例外");
-		actionShowThrow.setToolTipText("顯示方法內未被處理(Catch)的例外，會傳播至呼叫者");
+		actionShowThrow.setText(resource.getString("display.undealt.ex"));
+		actionShowThrow.setToolTipText(resource.getString("display.undealt.ex.in.catch"));
 		actionShowThrow.setImageDescriptor(ImageManager.getInstance().getDescriptor("showthrow"));
 
 		actionShowThrow.setChecked(true);
@@ -532,8 +536,8 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 
 			}
 		};
-		actionShowCatch.setText("顯示已處理例外");
-		actionShowCatch.setToolTipText("顯示方法內已經處理(Catch)的例外");
+		actionShowCatch.setText(resource.getString("display.deal.ex"));
+		actionShowCatch.setToolTipText(resource.getString("display.deal.ex.in.catch"));
 		actionShowCatch.setImageDescriptor(ImageManager.getInstance().getDescriptor("showcatch"));
 		actionShowCatch.setChecked(false);
 	}
@@ -543,8 +547,8 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 			public void run() {
 			}
 		};
-		actionGotoSource.setText("跳至該行源碼");
-		actionGotoSource.setToolTipText("點選表格例外項目可跳至該行源碼");
+		actionGotoSource.setText(resource.getString("skip.to.line.number"));
+		actionGotoSource.setToolTipText(resource.getString("select.item.skip.to.line.number"));
 		actionGotoSource.setImageDescriptor(ImageManager.getInstance().getDescriptor("link"));
 		actionGotoSource.setChecked(false);
 
@@ -556,8 +560,8 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 			public void run() {
 			}
 		};
-		actionAddRLAnnotation.setText("加到方法之@Tag Annotation上");
-		actionAddRLAnnotation.setToolTipText("加到方法之@Tag Annotation上");
+		actionAddRLAnnotation.setText(resource.getString("add.tag.on.method"));
+		actionAddRLAnnotation.setToolTipText(resource.getString("add.tag.on.method"));
 		actionAddRLAnnotation.setImageDescriptor(ImageManager.getInstance().getDescriptor("link"));
 		actionAddRLAnnotation.setChecked(false);
 
@@ -567,7 +571,7 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 		Menu popupMenu = new Menu(this.tableExList);
 
 		MenuItem itemAddRL = new MenuItem(popupMenu, SWT.NONE);
-		itemAddRL.setText("增加 @Tag Annotation");
+		itemAddRL.setText(resource.getString("add.tag"));
 		itemAddRL.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				TableItem[] selection = tableExList.getSelection();
@@ -595,7 +599,7 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 		Menu popupMenu = new Menu(this.tableRLList);
 
 		MenuItem itemRemoveRL = new MenuItem(popupMenu, SWT.NONE);
-		itemRemoveRL.setText("移除 @Tag Annotation");
+		itemRemoveRL.setText(resource.getString("remove.tag"));
 		itemRemoveRL.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				TableItem[] selection = tableRLList.getSelection();
@@ -613,7 +617,7 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 		});
 
 		MenuItem itemUpdateRL = new MenuItem(popupMenu, SWT.NONE);
-		itemUpdateRL.setText("更新 @Tag Annotation");
+		itemUpdateRL.setText(resource.getString("update.tag"));
 		itemUpdateRL.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				List<RLData> rlmsgList = new ArrayList<RLData>();
@@ -631,7 +635,7 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 		new MenuItem(popupMenu, SWT.SEPARATOR);
 
 		MenuItem itemUpRL = new MenuItem(popupMenu, SWT.NONE);
-		itemUpRL.setText("向上移一筆");
+		itemUpRL.setText(resource.getString("up"));
 		itemUpRL.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				TableItem[] selection = tableRLList.getSelection();
@@ -644,7 +648,7 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 		});
 
 		MenuItem itemDownRL = new MenuItem(popupMenu, SWT.NONE);
-		itemDownRL.setText("向下移一筆");
+		itemDownRL.setText(resource.getString("down"));
 		itemDownRL.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				TableItem[] selection = tableRLList.getSelection();
@@ -801,7 +805,7 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 								RLMessage msg = model.getRLAnnotationList().get(pos);
 								msg.setEdited(true);
 								if (col == 1) {
-									msg.getRLData().setLevel(RLUtils.str2int(inputVal, RTag.LEVEL_1_ERR_REPORTING));
+									msg.getRLData().setLevel(RLUtils.str2int(inputVal, Tag.LEVEL_1_ERR_REPORTING));
 								}
 								if (col == 2) {
 									msg.getRLData().setExceptionType(inputVal);

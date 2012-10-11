@@ -10,7 +10,7 @@ import ntut.csie.rleht.views.RLChecker;
 import ntut.csie.rleht.views.RLData;
 import ntut.csie.rleht.views.RLMessage;
 import ntut.csie.robusta.agile.exception.Robustness;
-import ntut.csie.robusta.agile.exception.RTag;
+import ntut.csie.robusta.agile.exception.Tag;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -197,7 +197,7 @@ public class RLQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 		}
 		if (!isImportRLClass) {
 			ImportDeclaration imp = rootAst.newImportDeclaration();
-			imp.setName(rootAst.newName(RTag.class.getName()));
+			imp.setName(rootAst.newName(Tag.class.getName()));
 			this.actRoot.imports().add(imp);
 		}
 	}
@@ -234,7 +234,7 @@ public class RLQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 
 				// 增加現在所選Exception的@Tag Annotation
 				rlary.expressions().add(
-						getRLAnnotation(ast, msg.getRLData().getLevel() <= 0 ? RTag.LEVEL_1_ERR_REPORTING : msg
+						getRLAnnotation(ast, msg.getRLData().getLevel() <= 0 ? Tag.LEVEL_1_ERR_REPORTING : msg
 								.getRLData().getLevel(), msg.getRLData().getExceptionType()));
 			}
 

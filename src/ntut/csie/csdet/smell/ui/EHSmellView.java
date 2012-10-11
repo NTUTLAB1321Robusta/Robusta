@@ -1,5 +1,8 @@
 package ntut.csie.csdet.smell.ui;
 
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.rleht.common.ConsoleLog;
 import ntut.csie.rleht.common.EditorUtils;
@@ -66,6 +69,8 @@ public class EHSmellView extends ViewPart implements IShowInSource {
 	// *************************************************************************
 	// initiation
 	// *************************************************************************
+	
+	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
 	
 	public EHSmellView(){
 		model = new EHSmellModel();
@@ -152,10 +157,10 @@ public class EHSmellView extends ViewPart implements IShowInSource {
 		smellList.setHeaderVisible(true);
 		final TableColumn colLineNum = new TableColumn(smellList, SWT.NONE);
 		colLineNum.setWidth(100);
-		colLineNum.setText("¦æ¼Æ");
+		colLineNum.setText(resource.getString("LOC"));
 		final TableColumn colMethodName = new TableColumn(smellList, SWT.NONE);
 		colMethodName.setWidth(400);
-		colMethodName.setText("EH Smell Type");
+		colMethodName.setText(resource.getString("smell.type"));
 	}
 
 	/**

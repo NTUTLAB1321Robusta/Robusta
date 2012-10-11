@@ -1,11 +1,13 @@
 package ntut.csie.csdet.views;
 
 import java.util.Iterator;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.TreeMap;
 
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
-import ntut.csie.robusta.agile.exception.RTag;
+import ntut.csie.robusta.agile.exception.Tag;
 import ntut.csie.robusta.agile.exception.Robustness;
 
 import org.eclipse.swt.SWT;
@@ -38,9 +40,11 @@ public class CarelessCleanUpPage  extends APropertyPage {
 	// Library Data
 	private TreeMap<String, Boolean> userDefinedCode = new TreeMap<String, Boolean>();
 	// 負責處理讀寫XML
-	SmellSettings smellSettings;
+	private SmellSettings smellSettings;
+
+	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
 	
-	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
 	public CarelessCleanUpPage(Composite composite, CSPropertyPage page, SmellSettings smellSettings){
 		super(composite,page);
 		//不偵測時,TextBox的內容
@@ -76,15 +80,14 @@ public class CarelessCleanUpPage  extends APropertyPage {
 	 */
 	private void addFirstSection(final Composite CarelessCleanUpPage){
 		userDefinedCode = smellSettings.getSemllPatterns(SmellSettings.SMELL_CARELESSCLEANUP);
-		
 		// 偵測條件
 		final Label detectSettingsLabel = new Label(CarelessCleanUpPage, SWT.NONE);
-		detectSettingsLabel.setText("偵測條件(打勾偵測,不打勾不偵測):");
+		detectSettingsLabel.setText(resource.getString("detect.rule"));
 		detectSettingsLabel.setLocation(10, 10);
 		detectSettingsLabel.pack();
 		//Release Method Button
 		btnIsDetectReleaseResourceCodeInClass = new Button(CarelessCleanUpPage,SWT.CHECK);
-		btnIsDetectReleaseResourceCodeInClass.setText("另外偵測釋放資源的程式碼是否在函式中");
+		btnIsDetectReleaseResourceCodeInClass.setText(resource.getString("detect.release.resource.in.method"));
 		btnIsDetectReleaseResourceCodeInClass.setLocation(
 				detectSettingsLabel.getLocation().x + 10,
 				getBoundsPoint(detectSettingsLabel).y + 5);
@@ -99,12 +102,12 @@ public class CarelessCleanUpPage  extends APropertyPage {
 
 		/// Customize Rule ///
 		final Label detectSettingsLabel2 = new Label(CarelessCleanUpPage, SWT.NONE);
-		detectSettingsLabel2.setText("自行定義偵測條件:");
+		detectSettingsLabel2.setText(resource.getString("customize.rule"));
 		detectSettingsLabel2.setLocation(getBoundsPoint(btnIsDetectReleaseResourceCodeInClass).x+25, 10);
 		detectSettingsLabel2.pack();
 		//Open Dialog Button
 		extraRuleBtn = new Button(CarelessCleanUpPage, SWT.NONE);
-		extraRuleBtn.setText("開啟");
+		extraRuleBtn.setText(resource.getString("extra.rule"));
 		extraRuleBtn.setLocation(detectSettingsLabel2.getLocation().x+5, getBoundsPoint(detectSettingsLabel2).y+5);
 		extraRuleBtn.pack();
 		extraRuleBtn.addSelectionListener(new SelectionAdapter() {
@@ -128,7 +131,7 @@ public class CarelessCleanUpPage  extends APropertyPage {
 		
 		/// Template Label ///
 		final Label detBeforeLbl = new Label(CarelessCleanUpPage, SWT.NONE);
-		detBeforeLbl.setText("偵測範例:");
+		detBeforeLbl.setText(resource.getString("detect.example"));
 		detBeforeLbl.setLocation(10, getBoundsPoint(separateLabel2).y+10);
 		detBeforeLbl.pack();
 		//TextBox
@@ -243,7 +246,7 @@ public class CarelessCleanUpPage  extends APropertyPage {
 	 * 調整TextBox的文字的字型和顏色
 	 */
 	private void adjustFont(){
-		//若Botton沒有被勾選
+		//若Button沒有被勾選
 		if(!btnIsDetectReleaseResourceCodeInClass.getSelection()){
 			//不偵測時,Template的字型風格的位置範圍
 			int[] beforeRange=new int[]{21,4,27,3,75,23,115,19,137,5};
@@ -256,7 +259,7 @@ public class CarelessCleanUpPage  extends APropertyPage {
 			templateArea.setStyleRanges(beforeRange, beforeStyles);
 		}
 		
-		//若Botton有被勾選
+		//若Button有被勾選
 		if(btnIsDetectReleaseResourceCodeInClass.getSelection()){
 			//偵測時,Template的字型風格的位置範圍
 			int[] afterRange=new int[]{21,4,27,3,75,23,104,22,143,18,164,5,192,6,199,4,236,20};
@@ -273,7 +276,7 @@ public class CarelessCleanUpPage  extends APropertyPage {
 	/**
 	 * 儲存使用者設定
 	 */
-	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
 	@Override
 	public boolean storeSettings() {
 		smellSettings.removePatterns(SmellSettings.SMELL_CARELESSCLEANUP);

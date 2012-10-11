@@ -1,5 +1,8 @@
 package ntut.csie.csdet.views;
 
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 import ntut.csie.rleht.common.ImageManager;
 
 import org.eclipse.jface.dialogs.Dialog;
@@ -29,6 +32,8 @@ public class EditRuleDialog  extends Dialog{
 	//警告圖示和文字
 	private Label warningLabel;
 	private Label picLabel;
+
+	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
 
 	/**
 	 * Create the dialog
@@ -90,8 +95,7 @@ public class EditRuleDialog  extends Dialog{
 	}
 
 	@Override
-	protected void okPressed()
-	{
+	protected void okPressed() {
 		String temp = tempText.getText().trim();
 		if (temp.length() > 0)
 		{
@@ -109,7 +113,7 @@ public class EditRuleDialog  extends Dialog{
 			//若重複就出現警告訊息，否則修改Key
 			if (isWarning){
 				tempText.setText(temp);
-				showWarningText("Rule已存在");
+				showWarningText(resource.getString("rule.exist"));
 			//沒有重複就修改
 			}else{
 				ruleTable.getItem(ruleTable.getSelectionIndex()).setText(temp);
@@ -117,11 +121,11 @@ public class EditRuleDialog  extends Dialog{
 			}
 		}
 		else
-			showWarningText("Rule不得為空");
+			showWarningText(resource.getString("empty"));
 	}
+	
 	@Override
-	protected void cancelPressed()
-	{
+	protected void cancelPressed() {
 		super.cancelPressed();
 	}
 
@@ -129,20 +133,19 @@ public class EditRuleDialog  extends Dialog{
 	 * Return the initial size of the dialog
 	 */
 	@Override
-	protected Point getInitialSize()
-	{
+	protected Point getInitialSize() {
 		return new Point(345, 130);
 	}
-	protected void configureShell(Shell newShell)
-	{
+	
+	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("Edit Rules Dialog");
+		newShell.setText(resource.getString("edit.rules.dialog.title"));
 	}
+	
 	/**
 	 * 更改警告標語並顯示
 	 */
-	protected void showWarningText(String warningInf)
-	{
+	protected void showWarningText(String warningInf) {
 		warningLabel.setText(warningInf);
 		picLabel.setVisible(true);
 		warningLabel.setVisible(true);

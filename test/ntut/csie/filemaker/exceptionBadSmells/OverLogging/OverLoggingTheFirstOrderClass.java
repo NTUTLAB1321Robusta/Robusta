@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 
 import org.slf4j.LoggerFactory;
 
-import ntut.csie.robusta.agile.exception.RTag;
+import ntut.csie.robusta.agile.exception.Tag;
 import ntut.csie.robusta.agile.exception.Robustness;
 
 public class OverLoggingTheFirstOrderClass {
@@ -14,7 +14,7 @@ public class OverLoggingTheFirstOrderClass {
 	org.apache.log4j.Logger log4jLogger = org.apache.log4j.Logger.getLogger(this.getClass());
 	org.slf4j.Logger slf4jLogger = LoggerFactory.getLogger(this.getClass());
 	
-	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
 	public void calleeWithJavaLog() throws IOException {
 		try {
 			OverLoggingTheSecondOrderClass outer = new OverLoggingTheSecondOrderClass();
@@ -27,7 +27,7 @@ public class OverLoggingTheFirstOrderClass {
 		}
 	}
 	
-	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
 	public void calleeWithLog4J() throws IOException {
 		try {
 			OverLoggingTheSecondOrderClass outer = new OverLoggingTheSecondOrderClass();
@@ -40,7 +40,7 @@ public class OverLoggingTheFirstOrderClass {
 		}
 	}
 	
-	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
 	public void calleeWithSelf4J() throws IOException {
 		try {
 			OverLoggingTheSecondOrderClass outer = new OverLoggingTheSecondOrderClass();

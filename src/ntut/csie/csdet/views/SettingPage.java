@@ -1,5 +1,8 @@
 package ntut.csie.csdet.views;
 
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
@@ -43,7 +46,9 @@ public class SettingPage extends APropertyPage {
 	private TemplateText[] tempText;
 	private String[] descText;
 	// 負責處理讀寫XML
-	SmellSettings smellSettings;
+	private SmellSettings smellSettings;
+	
+	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
 
 	public SettingPage(Composite composite, CSPropertyPage page, SmellSettings smellSettings) {
 		super(composite, page);
@@ -140,12 +145,12 @@ public class SettingPage extends APropertyPage {
 		tempText[5] = new TemplateText(temp, isShowWarning);
 		
 		descText = new String[RLMarkerAttribute.CS_TOTAL_TYPE.length];
-		descText[0] = "捕捉到例外後，Catch Block沒有做任何處理";
-		descText[1] = "捕捉到例外後，僅只是將例外資訊列印或紀錄下來";
-		descText[2] = "Try Block中出巢狀區塊";
-		descText[3] = "Main Program中沒有補捉最上層的例外";
-		descText[4] = "釋放資源的程式不是放在Finally Blcok";
-		descText[5] = "一條Call Chain中出現重複的Logging動作";
+		descText[0] = resource.getString("ignore.checked.description");
+		descText[1] = resource.getString("dummy.handler.description");
+		descText[2] = resource.getString("nested.try.statement.description");
+		descText[3] = resource.getString("unprotected.main.program.description");
+		descText[4] = resource.getString("careless.cleanup.description");
+		descText[5] = resource.getString("over.logging.description");
 	}
 
 	/**
@@ -172,7 +177,7 @@ public class SettingPage extends APropertyPage {
 	private void buildPage(Composite composite) {
 		//是否要選擇性偵測的Button
 		detAllBtn = new Button(composite, SWT.CHECK);
-		detAllBtn.setText("Check All Smell");
+		detAllBtn.setText(resource.getString("check.all.smell"));
 		detAllBtn.setLocation(10, 5);
 		detAllBtn.pack();
 		detAllBtn.setSelection(isDetAll);
@@ -226,7 +231,7 @@ public class SettingPage extends APropertyPage {
 		selectComposite.setBounds(0, getBoundsPoint(label).y + 5, 550, 402);
 
 		final Label label1 = new Label(selectComposite, SWT.NONE);
-		label1.setText("Detect EH Smell Type:");
+		label1.setText(resource.getString("detect.smell.type"));
 		label1.setLocation(10, 15);
 		label1.pack();
 
@@ -240,10 +245,10 @@ public class SettingPage extends APropertyPage {
 		smellList.pack();
 
 		final TableColumn smellColumn = new TableColumn(smellList, SWT.NONE);
-		smellColumn.setText("EH Smell Type");
+		smellColumn.setText(resource.getString("smell.type"));
 		smellColumn.setWidth(220);
 		final TableColumn descColumn = new TableColumn(smellList, SWT.NONE);
-		descColumn.setText("Description");
+		descColumn.setText(resource.getString("description"));
 
 		for (int i =0; i < RLMarkerAttribute.CS_TOTAL_TYPE.length; i++) {
 			TableItem item = smellList.getItem(i);
@@ -256,12 +261,12 @@ public class SettingPage extends APropertyPage {
 		
 		//Template Group
 		templateGroup = new Group(selectComposite, SWT.NONE);
-		templateGroup.setText("Detail");
+		templateGroup.setText(resource.getString("detail"));
 		templateGroup.setLocation(10, getBoundsPoint(smellList).y + 10);
 
 		//是否要選擇性偵測的Button
 		showWarningBtn = new Button(templateGroup, SWT.CHECK);
-		showWarningBtn.setText("Show EH Smell Code");
+		showWarningBtn.setText(resource.getString("show.smell.code"));
 		showWarningBtn.setLocation(10, 15);
 		showWarningBtn.pack();
 		showWarningBtn.addSelectionListener(new SelectionAdapter() {

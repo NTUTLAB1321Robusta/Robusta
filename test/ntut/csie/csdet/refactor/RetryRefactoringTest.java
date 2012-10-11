@@ -339,7 +339,7 @@ public class RetryRefactoringTest {
 		assertEquals("import java.util.logging.Level;\n", importList.get(4).toString());
 		assertEquals("import org.apache.log4j.Logger;\n", importList.get(5).toString());
 		assertEquals("import ntut.csie.robusta.agile.exception.Robustness;\n", importList.get(6).toString());
-		assertEquals("import ntut.csie.robusta.agile.exception.RTag;\n", importList.get(7).toString());
+		assertEquals("import ntut.csie.robusta.agile.exception.Tag;\n", importList.get(7).toString());
 	}
 	
 	@Test
@@ -526,7 +526,7 @@ public class RetryRefactoringTest {
 				"  e.printStackTrace();\n" +
 				"}\n");
 		// 家览はフ狦
-		TextSelection textSelection = new TextSelection(document, 1106, 231);
+		TextSelection textSelection = new TextSelection(document, 1105, 231);
 		NodeFinder nodeFinder = new NodeFinder(textSelection.getOffset(), textSelection.getLength());
 		nestedTryStatementUnit.accept(nodeFinder);
 		ASTNode selectNode = nodeFinder.getCoveringNode();
@@ -603,7 +603,7 @@ public class RetryRefactoringTest {
 				"  e.printStackTrace();\n" +
 				"}\n");
 		// 家览はフ狦
-		TextSelection textSelection = new TextSelection(document, 1106, 231);
+		TextSelection textSelection = new TextSelection(document, 1105, 231);
 		NodeFinder nodeFinder = new NodeFinder(textSelection.getOffset(), textSelection.getLength());
 		nestedTryStatementUnit.accept(nodeFinder);
 		ASTNode selectNode = nodeFinder.getCoveringNode();
@@ -663,7 +663,7 @@ public class RetryRefactoringTest {
 				"  e.printStackTrace();\n" +
 				"}\n");
 		// 家览はフ狦
-		TextSelection textSelection = new TextSelection(document, 1106, 231);
+		TextSelection textSelection = new TextSelection(document, 1105, 231);
 		NodeFinder nodeFinder = new NodeFinder(textSelection.getOffset(), textSelection.getLength());
 		nestedTryStatementUnit.accept(nodeFinder);
 		ASTNode selectNode = nodeFinder.getCoveringNode();
@@ -739,7 +739,7 @@ public class RetryRefactoringTest {
 				"  e.printStackTrace();\n" +
 				"}\n");
 		// 家览はフ狦
-		TextSelection textSelection = new TextSelection(document, 1106, 231);
+		TextSelection textSelection = new TextSelection(document, 1105, 231);
 		NodeFinder nodeFinder = new NodeFinder(textSelection.getOffset(), textSelection.getLength());
 		nestedTryStatementUnit.accept(nodeFinder);
 		ASTNode selectNode = nodeFinder.getCoveringNode();

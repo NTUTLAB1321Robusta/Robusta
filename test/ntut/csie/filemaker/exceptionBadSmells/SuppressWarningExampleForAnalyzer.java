@@ -12,7 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithoutTryExample;
-import ntut.csie.robusta.agile.exception.RTag;
+import ntut.csie.robusta.agile.exception.Tag;
 import ntut.csie.robusta.agile.exception.Robustness;
 import ntut.csie.robusta.agile.exception.SuppressSmell;
 
@@ -134,7 +134,7 @@ public class SuppressWarningExampleForAnalyzer {
 	 * 有 suppress waring 的 careless cleanup
 	 */
 	@SuppressSmell("Careless_CleanUp")
-	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
 	public void withSuppressWaringCarelessCleanup(byte[] context, File outputFile) {
 		FileOutputStream fileOutputStream  = null;
 		try {
@@ -155,7 +155,7 @@ public class SuppressWarningExampleForAnalyzer {
 	 * @param outputFile
 	 */
 	@SuppressSmell("Careless_CleanUp")
-	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
 	public void withSuppressWaringCarelessCleanupCloseInTry(byte[] context, File outputFile) {
 		FileOutputStream fileOutputStream  = null;
 		try {
@@ -173,7 +173,7 @@ public class SuppressWarningExampleForAnalyzer {
 	 * 有 suppress waring 的 careless cleanup 加上 finally block
 	 */
 	@SuppressSmell("Careless_CleanUp")
-	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.lang.RuntimeException.class) })
 	public void withSuppressWaringCarelessCleanupCloseInTryAddFinlly(byte[] context, File outputFile) {
 		FileOutputStream fileOutputStream  = null;
 		try {
@@ -205,7 +205,7 @@ public class SuppressWarningExampleForAnalyzer {
 	 * @SuppressSmell("Over_Logging")在 method 上
 	 */
 	@SuppressSmell("Over_Logging")
-	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
 	public void theSecondOrderInTheSameClass() throws IOException {
 		try {
 			theThirdOrderInTheSameClass();
@@ -218,7 +218,7 @@ public class SuppressWarningExampleForAnalyzer {
 	/**
 	 * @SuppressSmell("Over_Logging")在 catch 上
 	 */
-	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
 	public void theThirdOrderInTheSameClass() throws IOException {
 		try {
 			theFourthOrderInTheSameClass();
@@ -233,7 +233,7 @@ public class SuppressWarningExampleForAnalyzer {
 	 * 反觀在 method 上 suppress bad smell 時可以正確的被 suppress
 	 */
 	@SuppressSmell({ "Careless_CleanUp", "Nested_Try_Block" })
-	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = java.io.IOException.class) })
 	public void theFourthOrderInTheSameClass() throws IOException {
 		FileOutputStream fileOutputStream = null;
 		FileInputStream fileInputStream = null;

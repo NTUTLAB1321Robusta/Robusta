@@ -1,6 +1,8 @@
 package ntut.csie.csdet.views;
 
 import java.util.ArrayList;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
@@ -17,7 +19,8 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage{
 
 	//儲存每一個page
 	private ArrayList<APropertyPage> tabPages;
-	SmellSettings smellSettings;
+	private SmellSettings smellSettings;
+	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
 
 	public CSPropertyPage(){
 		super();
@@ -46,7 +49,7 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage{
 	private void addPage(TabFolder tabFolder){
 		//add Main Page
 		final TabItem mainTabItem = new TabItem(tabFolder, SWT.NONE);
-		mainTabItem.setText("Setting Page");
+		mainTabItem.setText(resource.getString("setting.page"));
 		final Composite mainComposite = new Composite(tabFolder, SWT.NONE);
 		APropertyPage mainPage = new SettingPage(mainComposite, this, smellSettings);
 		mainTabItem.setControl(mainComposite);
@@ -54,7 +57,7 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage{
 
 		//add Dummy Handler Page
 		final TabItem dummyHandlerTabItem = new TabItem(tabFolder, SWT.NONE);
-		dummyHandlerTabItem.setText("Dummy Handler");
+		dummyHandlerTabItem.setText(resource.getString("dummy.handler"));
 		final Composite dummyHandlerComposite = new Composite(tabFolder, SWT.NONE);
 		APropertyPage dummyHandlerPage = new DummyHandlerPage(dummyHandlerComposite, this, smellSettings);
 		dummyHandlerTabItem.setControl(dummyHandlerComposite);
@@ -62,7 +65,7 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage{
 
 		//add OverLogging Page
 		final TabItem overLoggingTabItem = new TabItem(tabFolder, SWT.NONE);
-		overLoggingTabItem.setText("OverLogging");
+		overLoggingTabItem.setText(resource.getString("over.logging"));
 		final Composite overLoggingComposite = new Composite(tabFolder, SWT.NONE);
 		APropertyPage overLoggingPage = new OverLoggingPage(overLoggingComposite, this, smellSettings);
 		overLoggingTabItem.setControl(overLoggingComposite);
@@ -70,7 +73,7 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage{
 		
 		//add CarelessCleanUp Page
 		final TabItem carelessCleanUpTabItem=new TabItem(tabFolder,SWT.NONE);
-		carelessCleanUpTabItem.setText("Careless CleanUp");
+		carelessCleanUpTabItem.setText(resource.getString("careless.cleanup"));
 		final Composite carelessCleanUpPage=new Composite(tabFolder,SWT.NONE);
 		APropertyPage cleanUpPage = new CarelessCleanUpPage(carelessCleanUpPage, this, smellSettings);
 		carelessCleanUpTabItem.setControl(carelessCleanUpPage);

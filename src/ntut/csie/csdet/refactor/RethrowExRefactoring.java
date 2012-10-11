@@ -13,7 +13,7 @@ import ntut.csie.rleht.common.EditorUtils;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLData;
 import ntut.csie.rleht.views.RLMessage;
-import ntut.csie.robusta.agile.exception.RTag;
+import ntut.csie.robusta.agile.exception.Tag;
 import ntut.csie.robusta.agile.exception.Robustness;
 
 import org.eclipse.core.resources.IFile;
@@ -234,7 +234,7 @@ public class RethrowExRefactoring extends Refactoring {
 	/**
 	 *建立Throw Exception的資訊 
 	 */
-	@Robustness(value = { @RTag(level = 1, exception = RuntimeException.class) })
+	@Robustness(value = { @Tag(level = 1, exception = RuntimeException.class) })
 	private void rethrowException() {
 		try {
 			actRoot.recordModifications();
@@ -480,7 +480,7 @@ public class RethrowExRefactoring extends Refactoring {
 		}
 		if (!isImportRLClass) {
 			ImportDeclaration imp = rootAst.newImportDeclaration();
-			imp.setName(rootAst.newName(RTag.class.getName()));
+			imp.setName(rootAst.newName(Tag.class.getName()));
 			actRoot.imports().add(imp);
 		}
 	}

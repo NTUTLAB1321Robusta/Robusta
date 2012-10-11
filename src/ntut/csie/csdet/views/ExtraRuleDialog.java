@@ -1,6 +1,8 @@
 package ntut.csie.csdet.views;
 
 import java.util.Iterator;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.TreeMap;
 import ntut.csie.rleht.common.ImageManager;
 import org.eclipse.jface.dialogs.Dialog;
@@ -45,6 +47,8 @@ public class ExtraRuleDialog extends Dialog{
 	private TreeMap<String, Boolean> ruleMap;
 	//為放置所有Button的Composite
 	private Composite btnComposite;
+
+	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
 	
 	/**
 	 * Create the dialog
@@ -62,8 +66,7 @@ public class ExtraRuleDialog extends Dialog{
 	 * @param parent
 	 */
 	@Override
-	protected Control createDialogArea(Composite parent)
-	{
+	protected Control createDialogArea(Composite parent) {
 		final Composite container = (Composite) super.createDialogArea(parent);
 		//若改變視窗大小
 		container.addControlListener(new ControlAdapter() {
@@ -101,8 +104,7 @@ public class ExtraRuleDialog extends Dialog{
 		displayTable.addMouseListener(new MouseAdapter() {
 			public void mouseDoubleClick(final MouseEvent e) {
 				int selectionIndex = displayTable.getSelectionIndex();
-				if (selectionIndex >= 0)
-				{
+				if (selectionIndex >= 0) {
 					String temp = displayTable.getItem(selectionIndex).getText();
 					//呼叫修改Dialog
 					EditRuleDialog dialog = new EditRuleDialog(new Shell(),temp,displayTable);
@@ -121,7 +123,7 @@ public class ExtraRuleDialog extends Dialog{
 		picLabel.setVisible(false);
 		picLabel.setImage(ImageManager.getInstance().get("warning"));
 		final Label warningLabel = new Label(container, SWT.NONE);
-		warningLabel.setText("Library已存在");
+		warningLabel.setText(resource.getString("lib.exist"));
 		warningLabel.setVisible(false);
 		warningLabel.setBounds(32, 222, 85, 12);
 
@@ -140,16 +142,15 @@ public class ExtraRuleDialog extends Dialog{
 		Label nameLabel = new Label(container, SWT.NONE);
 		nameLabel.setBounds(10, 10, 97, 22);
 		//依是否為library或statement來改變不同的範例
-		nameLabel.setText("偵測條件: ");
+		nameLabel.setText(resource.getString("detect.rule"));
 
 		//全取消按鈕
 		final Button clearBtn = new Button(btnComposite, SWT.NONE);
 		clearBtn.setBounds(0, 112, 68, 22);
-		clearBtn.setText("Deselect All");
+		clearBtn.setText(resource.getString("deselect.all"));
 		clearBtn.pack();
 		clearBtn.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(final SelectionEvent e)
-			{
+			public void widgetSelected(final SelectionEvent e) {
 				//取消全部的Item
 				for (int i=0;i<displayTable.getItemCount();i++) {
 					TableItem item = displayTable.getItem(i);
@@ -162,10 +163,9 @@ public class ExtraRuleDialog extends Dialog{
 		//全選按鈕
 		final Button selectBtn = new Button(btnComposite, SWT.NONE);
 		selectBtn.setBounds(0, 84, maxButtonWidth, 22);
-		selectBtn.setText("Select All");
+		selectBtn.setText(resource.getString("select.all"));
 		selectBtn.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(final SelectionEvent e)
-			{
+			public void widgetSelected(final SelectionEvent e) {
 				//選擇全部的Item
 				for (int i=0;i<displayTable.getItemCount();i++) {
 					TableItem item = displayTable.getItem(i);
@@ -177,7 +177,7 @@ public class ExtraRuleDialog extends Dialog{
 		//新增按鈕
 		Button addBtn = new Button(btnComposite, SWT.NONE);
 		addBtn.setBounds(0, 0, maxButtonWidth, 22);
-		addBtn.setText("Add");
+		addBtn.setText(resource.getString("add"));
 		addBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
 				boolean isWarning = addRule();
@@ -203,7 +203,7 @@ public class ExtraRuleDialog extends Dialog{
 				}
 			}
 		});
-		removeButton.setText("Remove");
+		removeButton.setText(resource.getString("remove"));
 
 		//修改的按鈕
 		editBtn = new Button(btnComposite, SWT.NONE);
@@ -211,8 +211,7 @@ public class ExtraRuleDialog extends Dialog{
 		editBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
 				int selectionIndex = displayTable.getSelectionIndex();
-				if (selectionIndex >= 0)
-				{
+				if (selectionIndex >= 0) {
 					String temp = displayTable.getItem(selectionIndex).getText();
 					//呼叫修改Dialog
 					EditRuleDialog dialog = new EditRuleDialog(new Shell(),temp,displayTable);
@@ -221,7 +220,7 @@ public class ExtraRuleDialog extends Dialog{
 				}
 			}
 		});
-		editBtn.setText("Edit");
+		editBtn.setText(resource.getString("edit"));
 		editBtn.setEnabled(false);
 
 		//說明視窗
@@ -232,17 +231,11 @@ public class ExtraRuleDialog extends Dialog{
 				//跳出說明的Dialog
 				MessageDialog.openInformation(
 						new Shell(),
-						"說明",
-						"1.偵測Class: Class名稱 + .* \n" +
-						"   (eg. 'java.lang.String.*' -> 偵測所有使用到java.lang.String的Class)\n\n" +
-						"2.偵測Statement: *. + Statement名稱 \n" +
-						"   (eg. '*.toString' -> 偵測任意包含toString的Statement)\n\n" +
-						"3.偵測方法: Class名稱 + . + Statement名稱 \n" +
-						"   (eg. 'java.lang.String.toString' -> \n" +
-						"   偵測有使用java.lang.String的Library且有包含toString的Statement)");
+						resource.getString("caption"),
+						resource.getString("help.description"));
 			}
 		});
-		explainBtn.setText("HELP");
+		explainBtn.setText(resource.getString("help"));
 		explainBtn.setImage(ImageManager.getInstance().get("help"));
 		
 		btnComposite.setBounds(259, 38, maxButtonWidth, 199);
@@ -260,8 +253,7 @@ public class ExtraRuleDialog extends Dialog{
 	}
 		
 	@Override
-	protected void okPressed()
-	{
+	protected void okPressed() {
 		//增加Rule
 		addRule();
 		//清除掉原本的Rule
@@ -276,15 +268,14 @@ public class ExtraRuleDialog extends Dialog{
 	}
 
 	@Override
-	protected Point getInitialSize()
-	{
+	protected Point getInitialSize() {
 		return new Point(350, 325);
 	}
-	protected void configureShell(Shell newShell)
-	{
+	
+	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
 		//顯示Dialog標題
-		newShell.setText("Extra Rules Dialog");
+		newShell.setText(resource.getString("extra.rules.dialog.title"));
 	}
 
 	/**
@@ -295,42 +286,42 @@ public class ExtraRuleDialog extends Dialog{
 		//刪除Text前後空格部份
 		String temp = tempText.getText().trim();
 
-		if (tempText.getText().length() != 0)
-		{			
+		if (tempText.getText().length() != 0) {			
 			//若沒有"."表示為Method，自行幫使用者加"*."
 			if (!temp.contains("."))
 				temp = "*." + temp;
 
 			boolean isExist = false;
 			//看Library的Name有沒有重複
-			for(int i=0;i<displayTable.getItemCount();i++)
-			{
+			for(int i=0;i<displayTable.getItemCount();i++) {
 				if(temp.equals(displayTable.getItem(i).getText()))
 					isExist = true;
 			}
 			//沒有重複就加入新的Library
-			if (!isExist){
+			if (!isExist) {
 				TableItem item = new TableItem(displayTable,SWT.NONE);
 				item.setText(temp);
 				item.setChecked(true);
 				tempText.setText("");
-			}else{
+			}else {
 				tempText.setText(temp);
 				isWarning = true;
 			}
 		}
 		return isWarning;
 	}
+	
 	/**
 	 * 取得設定偵測的Library資料
 	 */
 	public TreeMap<String, Boolean> getLibMap() {
 		return ruleMap;
 	}
+	
 	/**
 	 * 將所有偵測案例顯示在table中
 	 */
-	private void setInput(){
+	private void setInput() {
 		Iterator<String> libIt = ruleMap.keySet().iterator();
 		while(libIt.hasNext()){
 			String temp = libIt.next();

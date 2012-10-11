@@ -246,7 +246,7 @@ public class RethrowExRefactoringTest {
 		assertEquals("import java.util.logging.Level;\n", imports.get(4).toString());
 		assertEquals("import org.apache.log4j.Logger;\n", imports.get(5).toString());
 		assertEquals("import ntut.csie.robusta.agile.exception.Robustness;\n", imports.get(6).toString());
-		assertEquals("import ntut.csie.robusta.agile.exception.RTag;\n", imports.get(7).toString());
+		assertEquals("import ntut.csie.robusta.agile.exception.Tag;\n", imports.get(7).toString());
 		
 		/** 第二次import，RL和Robustness已經有了，故不會再import一次 */
 		addImportRLDeclaration.invoke(refactoring);
@@ -260,7 +260,7 @@ public class RethrowExRefactoringTest {
 		assertEquals("import java.util.logging.Level;\n", imports.get(4).toString());
 		assertEquals("import org.apache.log4j.Logger;\n", imports.get(5).toString());
 		assertEquals("import ntut.csie.robusta.agile.exception.Robustness;\n", imports.get(6).toString());
-		assertEquals("import ntut.csie.robusta.agile.exception.RTag;\n", imports.get(7).toString());
+		assertEquals("import ntut.csie.robusta.agile.exception.Tag;\n", imports.get(7).toString());
 	}
 	
 	@Test

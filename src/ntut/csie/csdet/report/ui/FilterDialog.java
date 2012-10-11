@@ -3,6 +3,8 @@ package ntut.csie.csdet.report.ui;
 import java.io.File;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.TreeMap;
 
 import ntut.csie.csdet.preference.JDomUtil;
@@ -46,6 +48,7 @@ public class FilterDialog extends Dialog {
 	private Composite btnComposite;
 	private Table displayTable;
 	private Text tempText;
+	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
 
 	public FilterDialog(Shell parentShell) {
 		super(parentShell);
@@ -53,7 +56,7 @@ public class FilterDialog extends Dialog {
 
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("EH Smell Filter");		
+		newShell.setText(resource.getString("filter.title"));		
 	}
 	
 	@Override
@@ -73,7 +76,7 @@ public class FilterDialog extends Dialog {
 			}
 		});
 		AllRadBtn.setLocation(10, 10);
-		AllRadBtn.setText("Detect All Project");
+		AllRadBtn.setText(resource.getString("detect.all"));
 		AllRadBtn.pack();
 
 		///選擇Package的Button///
@@ -84,7 +87,7 @@ public class FilterDialog extends Dialog {
 			}
 		});
 		selectRadBtn.setLocation(10, 30);
-		selectRadBtn.setText("Detect Select Package");
+		selectRadBtn.setText(resource.getString("detect.select.package"));
 		selectRadBtn.pack();
 
 		///Filter相關的Composite///
@@ -94,14 +97,14 @@ public class FilterDialog extends Dialog {
 		///顯示文字的Label///
 		final Label nameLabel = new Label(filterComposite, SWT.NONE);
 		nameLabel.setLocation(7, 10);
-		nameLabel.setText("Filter Rule: ");
+		nameLabel.setText(resource.getString("filter.rule"));
 		nameLabel.pack();
 
 		///錯誤圖示與錯誤訊息///
 		final Label warningLabel = new Label(filterComposite, SWT.NONE);
 		warningLabel.setLocation(32, 212);
 		warningLabel.setVisible(false);
-		warningLabel.setText("Filter Rule已存在");
+		warningLabel.setText(resource.getString("filter.exist"));
 		warningLabel.pack();
 		final Label picLabel = new Label(filterComposite, SWT.NONE);
 		picLabel.setLocation(10, 212);
@@ -159,7 +162,7 @@ public class FilterDialog extends Dialog {
 		///增加Rule的Button///
 		final Button addBtn = new Button(btnComposite, SWT.NONE);
 		addBtn.setBounds(0, 0, 68, 22);
-		addBtn.setText("Add");
+		addBtn.setText(resource.getString("add"));
 		addBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
 				boolean isWarning = addRule();
@@ -172,7 +175,7 @@ public class FilterDialog extends Dialog {
 		///刪除Rule的Button///
 		final Button removeButton = new Button(btnComposite, SWT.NONE);
 		removeButton.setBounds(0, 28, 68, 22);
-		removeButton.setText("Remove");
+		removeButton.setText(resource.getString("remove"));
 		removeButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
 				//Table不為空的且有選到Library 就把選擇的Library給刪掉
@@ -188,7 +191,7 @@ public class FilterDialog extends Dialog {
 		editBtn = new Button(btnComposite, SWT.NONE);
 		editBtn.setEnabled(false);
 		editBtn.setBounds(0, 56, 68, 22);
-		editBtn.setText("Edit");
+		editBtn.setText(resource.getString("edit"));
 		editBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
 				int selectionIndex = displayTable.getSelectionIndex();
@@ -205,7 +208,7 @@ public class FilterDialog extends Dialog {
 		///選擇全部Item的Button///
 		final Button selectBtn = new Button(btnComposite, SWT.NONE);
 		selectBtn.setBounds(0, 84, 68, 22);
-		selectBtn.setText("Select All");
+		selectBtn.setText(resource.getString("select.all"));
 		selectBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
 				//選擇全部的Item
@@ -219,7 +222,7 @@ public class FilterDialog extends Dialog {
 		///全部不選擇的Button///
 		final Button clearBtn = new Button(btnComposite, SWT.NONE);
 		clearBtn.setBounds(0, 112, 68, 22);
-		clearBtn.setText("Deselect All");
+		clearBtn.setText(resource.getString("deselect.all"));
 		clearBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
 				//取消全部的Item
@@ -238,20 +241,11 @@ public class FilterDialog extends Dialog {
 				//跳出說明的Dialog
 				MessageDialog.openInformation(
 						new Shell(),
-						"說明",
-						"1.Package \n" +
-						"   (eg. 'sample.test' -> 只偵測特定Package名稱的Package)\n\n" +
-						"2.Package + .* \n" +
-						"   (eg. 'sample.*' -> 偵測任意開頭有sample的Package \n" +
-						"                              如: 'sample.test' 、 'sample.test.example'... ) \n\n" +
-						"3.[Folder] + Package \n" +
-						"   (eg. '[src]sample' -> Detect 'sample' package that 'src' folder contains. \n\n " +
-						"4.[Folder] + Package + .* \n"+
-						"   (eg. '[src]sample.*' -> Detect all packages in 'sample' that 'src' folder contains. \n\n" +
-						"");
+						resource.getString("caption"),
+						resource.getString("help.package.description"));
 			}
 		});
-		explainBtn.setText("HELP");
+		explainBtn.setText(resource.getString("help"));
 		explainBtn.setImage(ImageManager.getInstance().get("help"));
 		
 

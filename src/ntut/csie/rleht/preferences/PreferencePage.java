@@ -1,5 +1,8 @@
 package ntut.csie.rleht.preferences;
 
+import java.util.Locale;
+import java.util.ResourceBundle;
+
 import org.eclipse.jface.preference.*;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.ui.IWorkbenchPreferencePage;
@@ -18,12 +21,12 @@ import ntut.csie.rleht.RLEHTPlugin;
  */
 
 public class PreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
-
+	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
+	
 	public PreferencePage() {
 		super(GRID);
 		setPreferenceStore(RLEHTPlugin.getDefault().getPreferenceStore());
-		setDescription("請輸入RL呼叫階層Package過濾字串(請用,分隔)：");
-		
+		setDescription(resource.getString("filter.description"));
 	}
 
 	/**
@@ -32,8 +35,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements IWorkbe
 	 * editor knows how to save and restore itself.
 	 */
 	public void createFieldEditors() {
-
-		addField(new StringFieldEditor(PreferenceConstants.P_RLCHPF_STRING, "Tag Call Hierarchy Package Filiter:", getFieldEditorParent()));
+		addField(new StringFieldEditor(PreferenceConstants.P_RLCHPF_STRING, resource.getString("filter.text"), getFieldEditorParent()));
 	}
 
 	@Override

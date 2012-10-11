@@ -2,6 +2,8 @@ package ntut.csie.csdet.report.ui;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.report.ReportModel;
@@ -49,6 +51,8 @@ public class EHSmellReportView extends ViewPart {
 	private Action filterAction;
 	//Select Report的按鍵動作
 	private Action selectAction;
+	
+	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -78,11 +82,10 @@ public class EHSmellReportView extends ViewPart {
 		browserForm.left = new FormAttachment(0, 0);
 		browserForm.right = new FormAttachment(100, 0);
 		browserForm.top = new FormAttachment(toolbar, 5, SWT.DEFAULT);
-
 		browser = new Browser(parent, SWT.NONE);
 		browser.setLayoutData(browserForm);
 		//預設Browser開始時的訊息
-		browser.setText("There is no report now !");
+		browser.setText(resource.getString("browser.default"));
 		browser.addLocationListener(new BrowserControl());
 	}
 
@@ -120,7 +123,7 @@ public class EHSmellReportView extends ViewPart {
 				}
 			}
 		});
-		itemGenerate.setText("Generate");
+		itemGenerate.setText(resource.getString("generate"));
 		itemGenerate.setImage(ImageManager.getInstance().get("unchecked"));
 
 		///建置Refresh ToolItem///
@@ -133,7 +136,7 @@ public class EHSmellReportView extends ViewPart {
 				projectCombo.setFocus();
 			}
 		});
-		itemRefresh.setText("Refresh");
+		itemRefresh.setText(resource.getString("refresh"));
 		itemRefresh.setImage(ImageManager.getInstance().get("refresh"));
 
 		projectCombo = new Combo(parent, SWT.NONE);
@@ -190,7 +193,7 @@ public class EHSmellReportView extends ViewPart {
 	 * 建置View上的ToolBar
 	 * @param parent 
 	 */
-	private void buildToolBar(Composite parent) {		
+	private void buildToolBar(Composite parent) {
 		IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
 		filterAction = new Action() {
 			public void run() {
@@ -199,7 +202,7 @@ public class EHSmellReportView extends ViewPart {
 				filter.open();
 			}
 		};
-		filterAction.setText("Filter");		
+		filterAction.setText(resource.getString("filter"));		
 		filterAction.setImageDescriptor(ImageManager.getInstance().getDescriptor("filter"));
 		toolBarManager.add(filterAction);
 
@@ -213,7 +216,7 @@ public class EHSmellReportView extends ViewPart {
 				}
 			}
 		};
-		selectAction.setText("Open Report");
+		selectAction.setText(resource.getString("open.report"));
 		selectAction.setImageDescriptor(ImageManager.getInstance().getDescriptor("note_view"));		
 		toolBarManager.add(selectAction);
 	}

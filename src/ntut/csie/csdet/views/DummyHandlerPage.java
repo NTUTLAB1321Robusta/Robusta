@@ -1,6 +1,8 @@
 package ntut.csie.csdet.views;
 
 import java.util.Iterator;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.TreeMap;
 
 import ntut.csie.csdet.preference.SmellSettings;
@@ -52,7 +54,9 @@ public class DummyHandlerPage extends APropertyPage{
 	// Library Data
 	private TreeMap<String, Boolean> libMap = new TreeMap<String, Boolean>();
 	// 負責處理讀寫XML
-	SmellSettings smellSettings;
+	private SmellSettings smellSettings;
+
+	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
 	
 	public DummyHandlerPage(Composite composite, CSPropertyPage page, SmellSettings smellSettings) {
 		super(composite,page);
@@ -76,15 +80,14 @@ public class DummyHandlerPage extends APropertyPage{
 	
 	private void addFirstSection(final Composite dummyHandlerPage) {
 		libMap = smellSettings.getSemllPatterns(SmellSettings.SMELL_DUMMYHANDLER);
-
 		/// 預設偵測條件  ///
 		final Label detectSettingsLabel = new Label(dummyHandlerPage, SWT.NONE);
-		detectSettingsLabel.setText("偵測條件(打勾偵測,不打勾不偵測):");
+		detectSettingsLabel.setText(resource.getString("detect.rule"));
 		detectSettingsLabel.setLocation(10, 10);
 		detectSettingsLabel.pack();
 		//是否偵測e.printStackTrace的按鈕
 		eprintBtn = new Button(dummyHandlerPage, SWT.CHECK);
-		eprintBtn.setText("e.printStackTrace();");
+		eprintBtn.setText(resource.getString("print.stack.trace"));
 		eprintBtn.setLocation(detectSettingsLabel.getLocation().x+10, getBoundsPoint(detectSettingsLabel).y+5);
 		eprintBtn.pack();
 		eprintBtn.addSelectionListener(new SelectionAdapter() {
@@ -98,7 +101,7 @@ public class DummyHandlerPage extends APropertyPage{
 		
 		//是否偵測System.out.print的按鈕
 		sysoBtn = new Button(dummyHandlerPage, SWT.CHECK);
-		sysoBtn.setText("System.out.print();");
+		sysoBtn.setText(resource.getString("system.out.print"));
 		sysoBtn.setLocation(detectSettingsLabel.getLocation().x+10, getBoundsPoint(eprintBtn).y+5);
 		sysoBtn.pack();
 		sysoBtn.addSelectionListener(new SelectionAdapter() {
@@ -112,7 +115,7 @@ public class DummyHandlerPage extends APropertyPage{
 		
 		//是否偵測Log4j的按鈕
 		log4jBtn = new Button(dummyHandlerPage, SWT.CHECK);
-		log4jBtn.setText("Detect using org.apache.log4j");
+		log4jBtn.setText(resource.getString("detect.log4j"));
 		log4jBtn.setLocation(detectSettingsLabel.getLocation().x+10, getBoundsPoint(sysoBtn).y+5);
 		log4jBtn.pack();
 		log4jBtn.addSelectionListener(new SelectionAdapter() {
@@ -126,7 +129,7 @@ public class DummyHandlerPage extends APropertyPage{
 		
 		//是否偵測JavaUtillog的按鈕
 		javaUtillogBtn = new Button(dummyHandlerPage, SWT.CHECK);
-		javaUtillogBtn.setText("Detect using java.util.logging.Logger");
+		javaUtillogBtn.setText(resource.getString("detect.logger"));
 		javaUtillogBtn.setLocation(detectSettingsLabel.getLocation().x+10, getBoundsPoint(log4jBtn).y+5);
 		javaUtillogBtn.pack();
 		javaUtillogBtn.addSelectionListener(new SelectionAdapter() {
@@ -140,12 +143,12 @@ public class DummyHandlerPage extends APropertyPage{
 
 		/// Customize Rule ///
 		final Label detectSettingsLabel2 = new Label(dummyHandlerPage, SWT.NONE);
-		detectSettingsLabel2.setText("自行定義偵測條件:");
+		detectSettingsLabel2.setText(resource.getString("customize.rule"));
 		detectSettingsLabel2.setLocation(getBoundsPoint(javaUtillogBtn).x+43, 10);
 		detectSettingsLabel2.pack();
 		//Customize Rule Button
 		extraRuleBtn = new Button(dummyHandlerPage, SWT.NONE);
-		extraRuleBtn.setText("開啟");
+		extraRuleBtn.setText(resource.getString("extra.rule"));
 		extraRuleBtn.setLocation(detectSettingsLabel2.getLocation().x+10, getBoundsPoint(detectSettingsLabel2).y+5);
 		extraRuleBtn.pack();
 		extraRuleBtn.addSelectionListener(new SelectionAdapter() {
@@ -166,7 +169,7 @@ public class DummyHandlerPage extends APropertyPage{
 
 		/// Template ///
 		final Label codeTemplateLabel = new Label(dummyHandlerPage, SWT.NONE);
-		codeTemplateLabel.setText("偵測範例:");
+		codeTemplateLabel.setText(resource.getString("detect.example"));
 		codeTemplateLabel.setLocation(10, getBoundsPoint(separateLabel2).y+10);
 		codeTemplateLabel.pack();
 		//Detect Template

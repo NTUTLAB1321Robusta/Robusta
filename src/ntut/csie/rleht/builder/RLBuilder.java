@@ -2,7 +2,9 @@ package ntut.csie.rleht.builder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.TreeMap;
 
 import ntut.csie.csdet.data.MarkerInfo;
@@ -54,6 +56,8 @@ public class RLBuilder extends IncrementalProjectBuilder {
 
 	// 使用者所設定的是否偵測EH Smell設定
 	private TreeMap<String, Boolean> detSmellSetting = new TreeMap<String, Boolean>();
+	
+	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
 
 	/**
 	 * 將相關例外資訊貼上marker(RLMessage)
@@ -96,7 +100,6 @@ public class RLBuilder extends IncrementalProjectBuilder {
 		IMarker marker;
 		try{
 			marker = file.createMarker(MARKER_TYPE);
-			System.out.println("CCU馬克哀低：" + marker.getId());
 			marker.setAttribute(IMarker.MESSAGE, errmsg);
 			marker.setAttribute(IMarker.SEVERITY, severityLevel);
 			if (markerInfo.getLineNumber() == -1) {
@@ -322,7 +325,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 							//判斷使用者有沒有在Catch內貼Annotation，抑制Smell Marker
 							if (suppressMarker(posList, markerInfo.getPosition()))
 								continue;
-							String errmsg = "EH Smell Type:["+ markerInfo.getCodeSmellType() + "]未處理!!!";
+							String errmsg = this.resource.getString("ex.smell.type.undealt") + markerInfo.getCodeSmellType() + this.resource.getString("ex.smell.type");
 							this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, markerInfo, csIdx, methodIdx);
 						}
 					}
@@ -341,7 +344,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 							//判斷使用者有沒有在Catch內貼Annotation，抑制Smell Marker
 							if (suppressMarker(posList, markerInfo.getPosition()))
 								continue;
-							String errmsg = "EH Smell Type:["+ markerInfo.getCodeSmellType() + "]未處理!!!";
+							String errmsg = this.resource.getString("ex.smell.type.undealt") + markerInfo.getCodeSmellType() + this.resource.getString("ex.smell.type");
 							//貼marker
 							this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, markerInfo, csIdx, methodIdx);
 						}
@@ -355,7 +358,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 					if(nestedTryList != null && detMethodSmell.get(RLMarkerAttribute.CS_NESTED_TRY_BLOCK)) {
 						for(MarkerInfo markerInfo : nestedTryList) {
 							nestedTryStatementIndex ++;
-							String errmsg = "EH Smell Type:["+ markerInfo.getCodeSmellType() + "]未處理!!!";
+							String errmsg = this.resource.getString("ex.smell.type.undealt") + markerInfo.getCodeSmellType() + this.resource.getString("ex.smell.type");
 							//貼marker
 							this.addMarker(file, errmsg, markerInfo.getLineNumber(), IMarker.SEVERITY_WARNING,
 									markerInfo.getCodeSmellType(), markerInfo, csIdx, methodIdx);	
@@ -370,7 +373,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 					if(carelessCleanupList != null && detMethodSmell.get(RLMarkerAttribute.CS_CARELESS_CLEANUP)) {
 						for(MarkerInfo markerInfo : carelessCleanupList) {
 							csIdx++;
-							String errmsg = "EH Smell Type:["+ markerInfo.getCodeSmellType() + "]未處理char!!!";
+							String errmsg = this.resource.getString("ex.smell.type.undealt") + markerInfo.getCodeSmellType() + this.resource.getString("ex.smell.type");
 							// 貼Marker
 							this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, markerInfo, csIdx, methodIdx);
 						}
@@ -414,7 +417,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 							//判斷使用者有沒有在Catch內貼Annotation，抑制Smell Marker
 							if (suppressMarker(posList, msg.getPosition()))
 								continue;
-							String errmsg = "EH Smell Type:["+ msg.getCodeSmellType() + "]未處理!!!";
+							String errmsg = this.resource.getString("ex.smell.type.undealt") + msg.getCodeSmellType() + this.resource.getString("ex.smell.type");
 							//貼marker
 							this.addMarker(file, errmsg, msg.getLineNumber(), IMarker.SEVERITY_WARNING,
 									msg.getCodeSmellType(), msg, csIdx, methodIdx);	
@@ -432,7 +435,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 					if(unprotectedMain != null && detMethodSmell.get(RLMarkerAttribute.CS_UNPROTECTED_MAIN)) {
 						for (MarkerInfo msg : unprotectedMain) {
 							csIdx++;
-							String errmsg = "EH Smell Type:["+ msg.getCodeSmellType() + "]未處理!!!";
+							String errmsg = this.resource.getString("ex.smell.type.undealt") + msg.getCodeSmellType() + this.resource.getString("ex.smell.type");
 							//貼marker
 							this.addMarker(file, errmsg, msg.getLineNumber(), IMarker.SEVERITY_WARNING,
 									msg.getCodeSmellType(), msg, csIdx, methodIdx);	
@@ -450,7 +453,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 						msgIdx++;
 						if (msg.getRLData().getLevel() >= 0) {
 							if (!msg.isHandling()) {
-								String errmsg = "*例外[" + msg.getRLData().getExceptionType() + "] 未定義@Tag！";
+								String errmsg = this.resource.getString("tag.undefine1") + msg.getRLData().getExceptionType() + this.resource.getString("tag.undefine2");
 								this.addMarker(file, errmsg.toString(), msg.getLineNumber(), IMarker.SEVERITY_WARNING,
 										RLMarkerAttribute.ERR_NO_RL, msg, msgIdx, methodIdx);
 							}
@@ -462,13 +465,13 @@ public class RLBuilder extends IncrementalProjectBuilder {
 						ssIdx++;
 						//Smell名稱錯誤
 						if (msg.isFaultName()) {
-							String errmsg = "Error EH Smell Name!";
+							String errmsg = this.resource.getString("error.smell.name");
 							this.addMarker(file, errmsg, msg.getLineNumber(),
 									IMarker.SEVERITY_ERROR, RLMarkerAttribute.ERR_SS_FAULT_NAME, msg, ssIdx,
 									methodIdx);
 						//沒有任何Smell
 						} else if (msg.getSmellList().size() == 0) {
-							String errmsg = "Null EH Smell Name!";
+							String errmsg = this.resource.getString("null.smell.name");
 							this.addMarker(file, errmsg, msg.getLineNumber(),
 									IMarker.SEVERITY_ERROR, RLMarkerAttribute.ERR_SS_NO_SMELL, msg, ssIdx,
 									methodIdx);
@@ -483,12 +486,11 @@ public class RLBuilder extends IncrementalProjectBuilder {
 
 						// 檢查@RL清單內的level是否正確
 						if (!RLData.validLevel(msg.getRLData().getLevel())) {
-							StringBuffer errmsg = new StringBuffer();
-							errmsg.append("@Tag( level=").append(msg.getRLData().getLevel());
-							errmsg.append(" , exception=");
-							errmsg.append(msg.getRLData().getExceptionType() + ") level值錯誤！");
+							String errmsg = this.resource.getString("tag.level1") + msg.getRLData().getLevel() + 
+											this.resource.getString("tag.level2") + msg.getRLData().getExceptionType() + 
+											this.resource.getString("tag.level3");
 
-							this.addMarker(file, errmsg.toString(), lineNumber, IMarker.SEVERITY_ERROR,
+							this.addMarker(file, errmsg, lineNumber, IMarker.SEVERITY_ERROR,
 									RLMarkerAttribute.ERR_RL_LEVEL, msg, msgIdx, methodIdx);
 						}
 
@@ -500,17 +502,17 @@ public class RLBuilder extends IncrementalProjectBuilder {
 							}
 
 							if (msg.getRLData().getExceptionType().equals(msg2.getRLData().getExceptionType())) {
-								this.addMarker(file, "@Tag(level=" + msg.getRLData().getLevel() + ",exception="
-										+ msg.getRLData().getExceptionType() + ") 重覆！", lineNumber,
+								this.addMarker(file, this.resource.getString("tag.level1") + msg.getRLData().getLevel() + this.resource.getString("tag.level2")
+										+ msg.getRLData().getExceptionType() + this.resource.getString("tag.level4"), lineNumber,
 										IMarker.SEVERITY_ERROR, RLMarkerAttribute.ERR_RL_DUPLICATE, msg, msgIdx,
 										methodIdx);
 							}
 							else if (ASTHandler.isInstance(msg2.getTypeBinding(), msg.getTypeBinding()
 									.getQualifiedName())) {
-								this.addMarker(file, "@Tag(level=" + msg.getRLData().getLevel() + ",exception="
-										+ msg.getRLData().getExceptionType() + ") 為 @Tag(level="
-										+ msg2.getRLData().getLevel() + ",exception="
-										+ msg2.getRLData().getExceptionType() + ")之父類別(子類別順序應在前)！", lineNumber,
+								this.addMarker(file, this.resource.getString("tag.level1") + msg.getRLData().getLevel() + this.resource.getString("tag.level2")
+										+ msg.getRLData().getExceptionType() + this.resource.getString("tag.level5")
+										+ msg2.getRLData().getLevel() + this.resource.getString("tag.level2")
+										+ msg2.getRLData().getExceptionType() + this.resource.getString("tag.level6"), lineNumber,
 										IMarker.SEVERITY_ERROR, RLMarkerAttribute.ERR_RL_INSTANCE, msg, msgIdx,
 										methodIdx);
 							}

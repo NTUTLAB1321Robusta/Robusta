@@ -1,12 +1,12 @@
 package ntut.csie.rleht.views;
 
-import ntut.csie.robusta.agile.exception.RTag;
+import ntut.csie.robusta.agile.exception.Tag;
 import ntut.csie.robusta.agile.exception.Robustness;
 
 public class RLData {
 	public static final String CLASS_ROBUSTNESS = Robustness.class.getName();
 
-	public static final String CLASS_RL = RTag.class.getName();
+	public static final String CLASS_RL = Tag.class.getName();
 	
 	public static final int LEVEL_MIN = 1;
 
@@ -14,7 +14,7 @@ public class RLData {
 
 	public static final int LEVEL_MAX = 3;
 	
-	private int level = RTag.LEVEL_1_ERR_REPORTING;
+	private int level = Tag.LEVEL_1_ERR_REPORTING;
 
 	private String exceptionType;
 

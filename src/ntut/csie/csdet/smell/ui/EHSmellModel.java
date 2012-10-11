@@ -116,7 +116,6 @@ public class EHSmellModel {
 		//防止沒點method出現NullPoint錯誤
 		if (methodNode != null) {
 			//找出這個method的code smell
-//			CodeSmellAnalyzer visitor = new CodeSmellAnalyzer(this.actRoot);
 			DummyHandlerVisitor dhVisitor = new DummyHandlerVisitor(actRoot);
 			IgnoreExceptionVisitor ieVisitor = new IgnoreExceptionVisitor(actRoot);
 			this.methodNode.accept(dhVisitor);

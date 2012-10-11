@@ -86,6 +86,12 @@
 		<copy includeemptydirs="false" todir="${bin-folder}/lib">
 			<fileset dir="${lib-folder}"/>
 		</copy>
+    	<copy includeemptydirs="false" todir="${bin-folder}">
+			<fileset dir="${basedir}/language"/>
+		</copy>
+    	<copy includeemptydirs="false" todir="${bin-folder}/META-INF">
+			<fileset dir="${basedir}/META-INF"/>
+		</copy>
 		<copy todir="${plugin-folder}">
 			<fileset dir="${lib-folder}">
 				<include name="net.java.amateras.umleditor.java_1.3.1.jar"/>
@@ -97,6 +103,8 @@
 			</fileset>
 		</copy>
 		<copy file="${basedir}/plugin.xml" tofile="${bin-folder}/plugin.xml"/>
+    	<copy file="${basedir}/plugin.properties" tofile="${bin-folder}/plugin.properties"/>
+    	<copy file="${basedir}/build.properties" tofile="${bin-folder}/build.properties"/>
     </target>
 	
 	<!-- compile project -->
@@ -152,10 +160,10 @@
 	<!-- wrap bin folder to jar file -->
 	<target name="product-jar">
 		<jar destfile="${plugin-folder}/${jar-file-name}" filesetmanifest="mergewithoutmain" basedir="${bin-folder}" excludes="**/filemaker/, **/*Test.class">
-			<manifest>
+			<!--<manifest>
 				<attribute name="Bundle-ManifestVersion" value="2"/>
-				<attribute name="Bundle-Name" value="RLEHT Plug-in"/>
-				<attribute name="Bundle-SymbolicName" value="RLEHT; singleton:=true"/>
+				<attribute name="Bundle-Name" value="Robusta Plug-in"/>
+				<attribute name="Bundle-SymbolicName" value="Robusta; singleton:=true"/>
 				<attribute name="Bundle-Version" value="2.0.0"/>
 				<attribute name="Bundle-Activator" value="ntut.csie.rleht.RLEHTPlugin"/>
 				<attribute name="Bundle-Vendor" value="Ntut.Csie.Lab1321.Robusta"/>
@@ -163,7 +171,7 @@
 				<attribute name="Bundle-ClassPath" value=".,./bin,lib/commons-lang-2.3.jar,lib/slf4j-log4j12-1.5.0.jar,lib/slf4j-api-1.5.0.jar,lib/log4j-1.2.15.jar,lib/jdom.jar,lib/jfreechart-1.0.8a.jar,lib/jcommon-1.0.12.jar,lib/loc_counter.jar,lib/"/>
 				<attribute name="Require-Bundle" value="org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.jdt,org.eclipse.jdt.core,org.eclipse.core.resources,org.eclipse.ltk.core.refactoring,org.eclipse.ltk.ui.refactoring,org.eclipse.jface.text,org.eclipse.ui.editors,org.eclipse.jdt.ui,org.eclipse.ui.workbench.texteditor,org.eclipse.ui.console,org.eclipse.ui.ide,org.eclipse.compare,org.eclipse.jdt.junit,net.java.amateras.umleditor,net.java.amateras.umleditor.java,net.java.amateras.xstream,org.eclipse.draw2d,org.eclipse.gef,org.eclipse.jdt.launching,org.junit,org.eclipse.jdt.astview,org.eclipse.jdt.core.manipulation"/>
 				<attribute name="Eclipse-LazyStart" value="true"/>
-		    </manifest>
+		    </manifest>-->
 		</jar>
     </target>
 
@@ -197,7 +205,7 @@
 				<license url="http://www.gnu.org/licenses/gpl.txt"/>
  
 				<url>
-					<update label="updates" url="这里填你最后发布的update地址"/>
+					<update label="updates" url="這裡填你最後發布的update地址"/>
 				</url>
 			 	
 				<requires>

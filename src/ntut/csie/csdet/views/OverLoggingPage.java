@@ -1,6 +1,8 @@
 package ntut.csie.csdet.views;
 
 import java.util.Iterator;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.TreeMap;
 
 import ntut.csie.csdet.preference.SmellSettings;
@@ -40,14 +42,16 @@ public class OverLoggingPage extends APropertyPage {
 	private StyledText calleeTemplate;
 
 	//CalleeTamplate和CallerTamplate的內容 和 字型風格
-	TemplateText calleeText = new TemplateText("", false);
-	TemplateText callerText = new TemplateText("", false);
+	private TemplateText calleeText = new TemplateText("", false);
+	private TemplateText callerText = new TemplateText("", false);
 
 	//CalleeTamplate和CallerTamplate的內容
-	String callee, calleeOrg, calleeTrans;
-	String callerHead, callerOrg, callerTrans, callerTail;
+	private String callee, calleeOrg, calleeTrans;
+	private String callerHead, callerOrg, callerTrans, callerTail;
 	// 負責處理讀寫XML
-	SmellSettings smellSettings;
+	private SmellSettings smellSettings;
+	
+	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
 		
 	public OverLoggingPage(Composite composite, CSPropertyPage page, SmellSettings smellSettings) {
 		super(composite, page);
@@ -104,15 +108,14 @@ public class OverLoggingPage extends APropertyPage {
 	 */
 	private void addFirstSection(final Composite overLoggingPage) {
 		libMap = smellSettings.getSemllPatterns(SmellSettings.SMELL_OVERLOGGING);
-		
-		/// 偵測條件Label ///
+		// 偵測條件Label
 		final Label detectSettingsLabel = new Label(overLoggingPage, SWT.NONE);
-		detectSettingsLabel.setText("偵測條件：");
+		detectSettingsLabel.setText(resource.getString("detect.rule"));
 		detectSettingsLabel.setLocation(10, 10);
 		detectSettingsLabel.pack();
 		//是否即使轉型仍偵測的按鈕
 		detectTransExBtn = new Button(overLoggingPage, SWT.CHECK);
-		detectTransExBtn.setText("Excpetion轉型後繼續偵測");
+		detectTransExBtn.setText(resource.getString("cast.exception"));
 		detectTransExBtn.setLocation(detectSettingsLabel.getLocation().x+10, getBoundsPoint(detectSettingsLabel).y + 5);
 		detectTransExBtn.pack();
 		detectTransExBtn.addSelectionListener(new SelectionAdapter() {
@@ -126,26 +129,26 @@ public class OverLoggingPage extends APropertyPage {
 
 		/// Customize定義偵測條件 Label ///
 		final Label detectSettingsLabel2 = new Label(overLoggingPage, SWT.NONE);
-		detectSettingsLabel2.setText("自行定義偵測條件:");
+		detectSettingsLabel2.setText(resource.getString("customize.rule"));
 		detectSettingsLabel2.setLocation(getBoundsPoint(detectTransExBtn).x + 85, 11);
 		detectSettingsLabel2.pack();
 		//是否偵測Log4j的按鈕
 		log4jBtn = new Button(overLoggingPage, SWT.CHECK);
 		log4jBtn.setLocation(detectSettingsLabel2.getLocation().x+10, getBoundsPoint(detectSettingsLabel2).y + 5);
-		log4jBtn.setText("Detect using org.apache.log4j");
+		log4jBtn.setText(resource.getString("detect.log4j"));
 		log4jBtn.pack();
 		log4jBtn.setSelection(smellSettings.isExtraRuleExist(SmellSettings.SMELL_OVERLOGGING, SmellSettings.EXTRARULE_OrgApacheLog4j));
 		
 		//是否偵測JavaUtillog的按鈕
 		javaUtillogBtn = new Button(overLoggingPage, SWT.CHECK);
-		javaUtillogBtn.setText("Detect using java.util.logging.Logger");
+		javaUtillogBtn.setText(resource.getString("detect.logger"));
 		javaUtillogBtn.setLocation(detectSettingsLabel2.getLocation().x+10, getBoundsPoint(log4jBtn).y + 5);
 		javaUtillogBtn.pack();
 		javaUtillogBtn.setSelection(smellSettings.isExtraRuleExist(SmellSettings.SMELL_OVERLOGGING, SmellSettings.EXTRARULE_JavaUtilLoggingLogger));
 		
 		//Customize Rule Button
 		extraRuleBtn = new Button(overLoggingPage, SWT.NONE);
-		extraRuleBtn.setText("開啟");
+		extraRuleBtn.setText(resource.getString("extra.rule"));
 		extraRuleBtn.setLocation(detectSettingsLabel2.getLocation().x+10, getBoundsPoint(javaUtillogBtn).y + 5);
 		extraRuleBtn.pack();
 		extraRuleBtn.addSelectionListener(new SelectionAdapter() {
@@ -166,7 +169,7 @@ public class OverLoggingPage extends APropertyPage {
 
 		/// Template ///
 		final Label callerLabel = new Label(overLoggingPage, SWT.NONE);
-		callerLabel.setText("Call Chain Example:");
+		callerLabel.setText(resource.getString("call.chain.example"));
 		callerLabel.setLocation(detectSettingsLabel.getLocation().x, getBoundsPoint(separateLabel2).y + 5);
 		callerLabel.pack();
 		Font templateFont = new Font(overLoggingPage.getDisplay(),"Courier New",9,SWT.NORMAL);		

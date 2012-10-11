@@ -17,11 +17,11 @@
             id="ntut.csie.rleht.views.RLView">
       </view>
       <view
-            class="ntut.csie.rleht.caller.CallersView"
-            id="ntut.csie.rleht.caller.CallersView"
             name="≡ RL Call Hierarchy ≡"
             icon="icons/showwarn_tsk.gif"
             category="RLEHT"
+            class="ntut.csie.rleht.caller.CallersView"
+            id="ntut.csie.rleht.caller.CallersView"
             />
       <view
             name="≡ EH Smell View ≡"
@@ -61,7 +61,7 @@
          id="ntut.csie.rleht.builder.RLBuilder"
          name="RLMethodBuilder"
          point="org.eclipse.core.resources.builders">
-      <builder hasNature="true">
+  	  <builder hasNature="true">
          <run class="ntut.csie.rleht.builder.RLBuilder"/>
       </builder>
    </extension>   
@@ -164,7 +164,7 @@
       <page
             class="ntut.csie.rleht.preferences.PreferencePage"
             id="ntut.csie.rleht.preferences.PreferencePage"
-            name="RLEHT設定">
+            name="Robusta Filter">
       </page>
    </extension>
    <extension

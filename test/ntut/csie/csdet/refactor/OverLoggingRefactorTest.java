@@ -467,7 +467,7 @@ public class OverLoggingRefactorTest {
 		currentLogList = (List)currentLoggingList.get(overLoggingRefactor);
 		methodList = (List)methodNodeList.get(overLoggingRefactor);
 		logList = (List)loggingList.get(overLoggingRefactor);
-		assertEquals(	"@Robustness(value={@RTag(level=1,exception=java.io.IOException.class)}) " +
+		assertEquals(	"@Robustness(value={@Tag(level=1,exception=java.io.IOException.class)}) " +
 						"public void theSecondOrderInTheSameClassWithJavaLog() throws IOException {\n" +
 						"  try {\n" +
 						"    theThirdOrderInTheSameClassWithJavaLog();\n" +
@@ -524,7 +524,7 @@ public class OverLoggingRefactorTest {
 		currentLogList = (List)currentLoggingList.get(overLoggingRefactor);
 		methodList = (List)methodNodeList.get(overLoggingRefactor);
 		logList = (List)loggingList.get(overLoggingRefactor);
-		assertEquals(	"@Robustness(value={@RTag(level=1,exception=java.io.IOException.class)}) " +
+		assertEquals(	"@Robustness(value={@Tag(level=1,exception=java.io.IOException.class)}) " +
 						"public void theSecondOrderInTheSameClassWithJavaLog() throws IOException {\n" +
 						"  try {\n" +
 						"    theThirdOrderInTheSameClassWithJavaLog();\n" +
@@ -603,7 +603,7 @@ public class OverLoggingRefactorTest {
 		methodList = (List)methodNodeList.get(overLoggingRefactor);
 		logList = (List)loggingList.get(overLoggingRefactor);
 		assertEquals(1, methodList.size());
-		assertEquals(	"@Robustness(value={@RTag(level=1,exception=java.io.IOException.class)}) " +
+		assertEquals(	"@Robustness(value={@Tag(level=1,exception=java.io.IOException.class)}) " +
 						"public void theSecondOrderInTheSameClassWithLog4J() throws IOException {\n" +
 						"  try {\n" +
 						"    theThirdOrderInTheSameClassWithLog4J();\n" +
@@ -645,7 +645,7 @@ public class OverLoggingRefactorTest {
 		methodList = (List)methodNodeList.get(overLoggingRefactor);
 		logList = (List)loggingList.get(overLoggingRefactor);
 		assertEquals(1, methodList.size());
-		assertEquals(	"@Robustness(value={@RTag(level=1,exception=java.io.IOException.class)}) public void theFourthOrderInTheSameClassWithLog4J() throws IOException {\n" +
+		assertEquals(	"@Robustness(value={@Tag(level=1,exception=java.io.IOException.class)}) public void theFourthOrderInTheSameClassWithLog4J() throws IOException {\n" +
 						"  try {\n" +
 						"    throw new IOException(\"IOException throws in callee\");\n" +
 						"  }\n" +
