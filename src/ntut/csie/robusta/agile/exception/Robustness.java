@@ -14,7 +14,7 @@ import static java.lang.annotation.ElementType.CONSTRUCTOR;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Robustness {
 
-	Tag[] value();
+	RTag[] value();
 	
 }
 
