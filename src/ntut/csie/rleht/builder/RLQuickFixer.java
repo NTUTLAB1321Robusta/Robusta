@@ -93,23 +93,23 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				markerList.add(new DHQuickFix("Quick Fix==>Rethrow Unchecked Exception"));
 				markerList.add(new RethrowUncheckExAction("Refactor==>Rethrow Unchecked Excetpion"));
 				markerList.add(new TEQuickFix("Quick Fix==>Throw Checked Exception"));
-				markerList.add(new CSQuickFix(resource.getString("add.suppress.smell") + problem + "' on Method", false));
-				markerList.add(new CSQuickFix(resource.getString("add.suppress.smell") + problem + "' on Catch", true));
+				markerList.add(new CSQuickFix(resource.getString("add.suppress.smell") + problem + resource.getString("add.suppress.smell.on.method"), false));
+				markerList.add(new CSQuickFix(resource.getString("add.suppress.smell") + problem + resource.getString("add.suppress.smell.on.catch"), true));
 				// 碰到Dummy Handler的Quick fix and refactor方法
 			} else if(problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)) {
 				markerList.add(new DHQuickFix("Quick Fix==>Rethrow Unchecked Exception"));
 				markerList.add(new RethrowUncheckExAction("Refactor==>Rethrow Unchecked Excetpion"));
 				markerList.add(new TEQuickFix("Quick Fix==>Throw Checked Exception"));
-				markerList.add(new CSQuickFix(resource.getString("add.suppress.smell") + problem + "' on Method", false));
-				markerList.add(new CSQuickFix(resource.getString("add.suppress.smell") + problem + "' on Catch", true));
+				markerList.add(new CSQuickFix(resource.getString("add.suppress.smell") + problem + resource.getString("add.suppress.smell.on.method"), false));
+				markerList.add(new CSQuickFix(resource.getString("add.suppress.smell") + problem + resource.getString("add.suppress.smell.on.catch"), true));
 				// 碰到Nested Try block的refactor
 			} else if(problem.equals(RLMarkerAttribute.CS_NESTED_TRY_BLOCK)) {
 				markerList.add(new NTQuickFix("Please use Eclipse refactor==>Extract Method"));
-				markerList.add(new CSQuickFix(resource.getString("add.suppress.smell") + problem + "' on Method", false));
+				markerList.add(new CSQuickFix(resource.getString("add.suppress.smell") + problem + resource.getString("add.suppress.smell.on.method"), false));
 				// 碰到Unprotected Main program的Quick fix
 			} else if(problem.equals(RLMarkerAttribute.CS_UNPROTECTED_MAIN)) {
 				markerList.add(new UMQuickFix("Quick Fix==>Add Big outer try block"));
-				markerList.add(new CSQuickFix(resource.getString("add.suppress.smell") + problem + "' on Method", false));
+				markerList.add(new CSQuickFix(resource.getString("add.suppress.smell") + problem + resource.getString("add.suppress.smell.on.method"), false));
 				// 碰到Careless CleanUp的Quick fix and refactor方法
 			} else if(problem.equals(RLMarkerAttribute.CS_CARELESS_CLEANUP)){
 				//只有CCMessage才會有這個，所以只能在這邊get
@@ -129,19 +129,19 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				}else if(exceptionType != null && withTryBlock){
 					markerList.add(new CarelessCleanUpAction("Refactor==>Use Extract Method"));
 				}
-				markerList.add(new CSQuickFix(resource.getString("add.suppress.smell") + problem + "' on Method", false));
+				markerList.add(new CSQuickFix(resource.getString("add.suppress.smell") + problem + resource.getString("add.suppress.smell.on.method"), false));
 				// 碰到OverLogging的Quick fix and refactor方法
 			}else if(problem.equals(RLMarkerAttribute.CS_OVER_LOGGING)){
 				markerList.add(new OLQuickFix("Quick Fix==>Remove Logging"));
 //				markerList.add(new OLRefactoring("Refactor==>Remove Reference Logging"));
 				markerList.add(new OverLoggingAction("Refactor==>Remove Reference Logging"));
-				markerList.add(new CSQuickFix(resource.getString("add.suppress.smell") + problem + "' on Method", false));
-				markerList.add(new CSQuickFix(resource.getString("add.suppress.smell") + problem + "' on Catch", true));
+				markerList.add(new CSQuickFix(resource.getString("add.suppress.smell") + problem + resource.getString("add.suppress.smell.on.method"), false));
+				markerList.add(new CSQuickFix(resource.getString("add.suppress.smell") + problem + resource.getString("add.suppress.smell.on.catch"), true));
 				//遇到可以建議的方法
 			}else if(problem.equals(RLMarkerAttribute.CS_EXCEPTION_RLADVICE)){
 				String advice = (String) marker.getAttribute(IMarker.MESSAGE);
 				//有RL annotation，才是有拋出這個例外(我有偷偷幫throw e的都硬上RL)
-				if(advice.contains("Tag")){
+				if(advice.contains(RTag.class.getSimpleName())){
 					markerList.add(new AchieveRL1QuickFix("RL1 quick gene ==> Rethrow Unckecked Exception"));
 				}
 			}
