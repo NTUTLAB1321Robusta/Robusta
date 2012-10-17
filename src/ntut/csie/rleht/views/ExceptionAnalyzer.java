@@ -161,7 +161,6 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 				}
 			}
 		}
-		
 	}
 
 	private String createParentId() {

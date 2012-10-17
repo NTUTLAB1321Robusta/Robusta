@@ -8,7 +8,7 @@
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.6"/>
     <property name="source" value="1.6"/>
-    <property name="jar-file-name" value="ntut.csie.robusta_2.0.0.jar"/>
+    <property name="jar-file-name" value="ntut.csie.robusta_1.1.0.jar"/>
 	<property name="rl-jar-file-name" value="ntut.csie.robusta.agile.exception_1.0.0.jar"/>
 	<property name="result-folder" value="${basedir}/result"/>
 	<property name="xml-folder" value="${result-folder}/xml"/>
@@ -20,7 +20,7 @@
 	<property name="test-folder" value="${basedir}/test"/>
 	<property name="bin-folder" value="${basedir}/bin"/>
 	<property name="lib-folder" value="${basedir}/lib"/>
-	<property name="update-id" value="ntut.csie.robusta_2.0.0"/>
+	<property name="update-id" value="ntut.csie.robusta_1.1.0"/>
 	<property name="eclipse-public-license" value="epl-v10.html"/>
 	<property name="notice" value="notice.html"/>
 	
@@ -164,7 +164,7 @@
 				<attribute name="Bundle-ManifestVersion" value="2"/>
 				<attribute name="Bundle-Name" value="Robusta Plug-in"/>
 				<attribute name="Bundle-SymbolicName" value="Robusta; singleton:=true"/>
-				<attribute name="Bundle-Version" value="2.0.0"/>
+				<attribute name="Bundle-Version" value="1.1.0"/>
 				<attribute name="Bundle-Activator" value="ntut.csie.rleht.RLEHTPlugin"/>
 				<attribute name="Bundle-Vendor" value="Ntut.Csie.Lab1321.Robusta"/>
 				<attribute name="Bundle-Localization" value="plugin"/>
@@ -179,7 +179,7 @@
 	<target name="write-site-xml">
 		<echoxml file="${update-folder}/site.xml">
 			<site>
-				<feature url="features/${jar-file-name}" id="${update-id}" version="2.0.0"/>
+				<feature url="features/${jar-file-name}" id="${update-id}" version="1.1.0"/>
 			</site>
 		</echoxml>
 	</target>
@@ -190,7 +190,7 @@
 			<feature
 				id="${update-id}"
 				label="RLEHTeclipse"
-				version="2.0.0"
+				version="1.1.0"
 				provider-name="Software System Lab."
 				plugin="${update-id}">
  
@@ -227,7 +227,7 @@
 					id="${update-id}"
 					download-size="0"
 					install-size="0"
-					version="1.0.0"/>
+					version="1.1.0"/>
 			</feature>
 		</echoxml>
 	</target>

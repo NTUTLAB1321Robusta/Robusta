@@ -20,7 +20,7 @@ public class RLChecker {
 
 	public List<RLMessage> check(ExceptionAnalyzer visitor) {
 
-		long t1 = System.currentTimeMillis();
+//		long t1 = System.currentTimeMillis();
 
 		int maxKeySize = 0;
 		this.exList = visitor.getExceptionList();
@@ -160,7 +160,6 @@ public class RLChecker {
 							this.exList.set(throwIdx, throwMsg);
 						}
 					}
-
 				}
 			}
 

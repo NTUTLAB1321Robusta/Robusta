@@ -8,6 +8,7 @@ import java.util.List;
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.visitor.DummyHandlerVisitor;
 import ntut.csie.csdet.visitor.IgnoreExceptionVisitor;
+import ntut.csie.csdet.visitor.NestedTryStatementVisitor;
 import ntut.csie.csdet.visitor.UnprotectedMainProgramVisitor;
 import ntut.csie.rleht.RLEHTPlugin;
 import ntut.csie.rleht.common.ASTHandler;
@@ -124,7 +125,9 @@ public class EHSmellModel {
 			ignoreExList = ieVisitor.getIgnoreList();
 	
 			//取得專案中的Nested Try Block
-			nestedTryList = exVisitor.getNestedTryList();
+			NestedTryStatementVisitor ntVisitor = new NestedTryStatementVisitor(actRoot);
+			methodNode.accept(ntVisitor);
+			nestedTryList = ntVisitor.getNestedTryStatementList();
 			
 			//尋找該method內的unprotected main program
 			UnprotectedMainProgramVisitor mainVisitor = new UnprotectedMainProgramVisitor(actRoot);

@@ -135,7 +135,6 @@ public class ReportBuilder {
 		List<SSMessage> suppressSmellList = null;
 
 		ExceptionAnalyzer visitor = null;
-//		CodeSmellAnalyzer csVisitor = null;
 		IgnoreExceptionVisitor ieVisitor = null;
 		DummyHandlerVisitor dhVisitor = null;
 		NestedTryStatementVisitor ntsVisitor = null;
@@ -179,8 +178,6 @@ public class ReportBuilder {
 			TreeMap<String, List<Integer>> detCatchSmell = new TreeMap<String, List<Integer>>();
 			inputSuppressData(suppressSmellList, detMethodSmell, detCatchSmell);
 
-			// 找尋專案中所有的ignore Exception
-//			csVisitor = new CodeSmellAnalyzer(root);
 			// 取得專案中的ignore Exception
 			if (detMethodSmell.get(RLMarkerAttribute.CS_INGNORE_EXCEPTION)) {
 				ieVisitor = new IgnoreExceptionVisitor(root);
@@ -210,7 +207,7 @@ public class ReportBuilder {
 				List<MarkerInfo> nestedTryList = checkCatchSmell(ntsVisitor.getNestedTryStatementList()
 						, detCatchSmell
 						.get(RLMarkerAttribute.CS_NESTED_TRY_BLOCK));
-				newClassModel.setDummyList(nestedTryList, methodName.getName()
+				newClassModel.setNestedTryList(nestedTryList, methodName.getName()
 						.toString());
 				model.addNestedTotalTrySize(nestedTryList.size());
 			}
