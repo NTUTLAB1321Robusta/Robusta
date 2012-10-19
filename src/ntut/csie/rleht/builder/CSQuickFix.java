@@ -6,7 +6,6 @@ import ntut.csie.csdet.quickfix.BaseQuickFix;
 import ntut.csie.csdet.visitor.ASTCatchCollect;
 import ntut.csie.rleht.common.EditorUtils;
 import ntut.csie.rleht.common.ErrorLog;
-import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.robusta.agile.exception.SuppressSmell;
 
 import org.eclipse.core.resources.IFile;
@@ -177,15 +176,8 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 				actRoot.accept(methodCollector);
 				List<MethodDeclaration> methodList = methodCollector.getMethodList();
 
-				MethodDeclaration method = methodList.get(methodIdx);
-				if (method != null) {
-					ExceptionAnalyzer visitor = new ExceptionAnalyzer(actRoot, method.getStartPosition(), 0);
-					method.accept(visitor);
-					currentMethodNode = visitor.getCurrentMethodNode();
-
-					if (currentMethodNode != null)
-						return true;
-				}
+				currentMethodNode = methodList.get(methodIdx);
+				return true;
 			}
 			catch (Exception ex) {
 				logger.error("[findMethod] EXCEPTION ",ex);

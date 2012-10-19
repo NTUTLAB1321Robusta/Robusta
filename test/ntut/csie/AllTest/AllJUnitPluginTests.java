@@ -16,6 +16,7 @@ import ntut.csie.csdet.visitor.IgnoreExceptionVisitorTest;
 import ntut.csie.csdet.visitor.NestedTryStatementVisitorTest;
 import ntut.csie.csdet.visitor.OverLoggingVisitorTest;
 import ntut.csie.csdet.visitor.SpareHandlerVisitorTest;
+import ntut.csie.csdet.visitor.SuppressWarningVisitorTest;
 import ntut.csie.csdet.visitor.TryStatementCounterVisitorTest;
 import ntut.csie.csdet.visitor.UnprotectedMainProgramVisitorTest;
 import ntut.csie.filemaker.test.ASTNodeFinderTest;
@@ -49,6 +50,7 @@ import org.junit.runners.Suite;
 	SpareHandlerVisitorTest.class,
 	UnprotectedMainProgramVisitorTest.class,
 	TryStatementCounterVisitorTest.class,
+	SuppressWarningVisitorTest.class,
 	
 	ASTNodeFinderTest.class,
 	

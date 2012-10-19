@@ -10,6 +10,7 @@ import ntut.csie.csdet.visitor.DummyHandlerVisitor;
 import ntut.csie.csdet.visitor.IgnoreExceptionVisitor;
 import ntut.csie.csdet.visitor.NestedTryStatementVisitor;
 import ntut.csie.csdet.visitor.UnprotectedMainProgramVisitor;
+import ntut.csie.jdt.util.NodeUtils;
 import ntut.csie.rleht.RLEHTPlugin;
 import ntut.csie.rleht.common.ASTHandler;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
@@ -17,6 +18,7 @@ import ntut.csie.rleht.views.ExceptionAnalyzer;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jdt.astview.NodeFinder;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IOpenable;
@@ -110,9 +112,7 @@ public class EHSmellModel {
 	 * @param length
 	 */
 	public void parseDocument(int offset, int length) {
-		ExceptionAnalyzer exVisitor = new ExceptionAnalyzer(actRoot, offset, length);
-		this.actRoot.accept(exVisitor);
-		this.methodNode = exVisitor.getCurrentMethodNode();
+		this.methodNode = NodeUtils.getSpecifiedParentNode(NodeFinder.perform(actRoot, offset, length), ASTNode.METHOD_DECLARATION);
 		
 		//防止沒點method出現NullPoint錯誤
 		if (methodNode != null) {

@@ -10,7 +10,6 @@ import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.exceptionBadSmells.DummyAndIgnoreExample;
 import ntut.csie.filemaker.exceptionBadSmells.UserDefineDummyHandlerFish;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.CarelessCleanupExample;
 import ntut.csie.robusta.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;

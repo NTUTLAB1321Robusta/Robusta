@@ -263,7 +263,7 @@ public class OverLoggingRefactor {
 	
 	/**
 	 * 往下一層Trace，找出Caller的OverLogging資訊
-	 * @param currentMethodNode
+	 * @param methodDeclaration
 	 */
 	private void traceCalleeMethod(MethodDeclaration methodDeclaration) {
 		// 從MethodDeclaration取得IMthod

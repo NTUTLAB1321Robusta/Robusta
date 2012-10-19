@@ -27,10 +27,6 @@ public class DummyHandlerVisitor extends ASTVisitor {
 	private TreeMap<String, UserDefinedConstraintsType> libMap;// = new TreeMap<String, UserDefinedConstraintsType>();
 	private boolean isDetectingDummyHandlerSmell;
 	private CompilationUnit root;
-	// Code Information Counter //
-	private int tryCounter = 0;
-	private int catchCounter = 0;
-	private int finallyCounter = 0;
 	
 	public DummyHandlerVisitor(CompilationUnit root) {
 		super();
@@ -42,11 +38,6 @@ public class DummyHandlerVisitor extends ASTVisitor {
 	}
 	
 	public boolean visit(TryStatement node) {
-		tryCounter++;
-		if(node.getFinally() != null)
-			finallyCounter++;
-		if(node.catchClauses().size() != 0)
-			catchCounter+= node.catchClauses().size();
 		ASTNode parent = NodeUtils.getSpecifiedParentNode(node, ASTNode.TRY_STATEMENT);
 		if(parent == null) {
 			/*
@@ -162,17 +153,5 @@ public class DummyHandlerVisitor extends ASTVisitor {
 			}
 		}
 		return false;
-	}
-	
-	public int getTryCounter() {
-		return tryCounter;
-	}
-
-	public int getCatchCounter() {
-		return catchCounter;
-	}
-
-	public int getFinallyCounter() {
-		return finallyCounter;
 	}
 }

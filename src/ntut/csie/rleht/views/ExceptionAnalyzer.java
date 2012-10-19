@@ -4,15 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ntut.csie.csdet.data.MarkerInfo;
-import ntut.csie.csdet.data.SSMessage;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.rleht.common.RLBaseVisitor;
 import ntut.csie.robusta.agile.exception.Robustness;
-import ntut.csie.robusta.agile.exception.SuppressSmell;
 
 import org.apache.commons.lang.text.StrTokenizer;
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
@@ -61,10 +58,10 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 
 	private List<RLMessage> methodRLList;
 
-	private List<SSMessage> suppressList;
+//	private List<SSMessage> suppressList;
 	
 	// 紀錄Nested Try Block的位置
-	private List<MarkerInfo> nestedTryList;
+//	private List<MarkerInfo> nestedTryList;
 
 	private ASTNode currentRLAnnotationNode;
 
@@ -86,8 +83,8 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		this.root = root;
 		exceptionList = new ArrayList<RLMessage>();
 		methodRLList = new ArrayList<RLMessage>();
-		suppressList = new ArrayList<SSMessage>();
-		nestedTryList = new ArrayList<MarkerInfo>();
+//		suppressList = new ArrayList<SSMessage>();
+//		nestedTryList = new ArrayList<MarkerInfo>();
 	}
 
 	protected ExceptionAnalyzer(CompilationUnit root, boolean currentMethodFound, String parentId) {
@@ -98,8 +95,8 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		idxTry = 0;
 		idxCatch = 0;
 		exceptionList = new ArrayList<RLMessage>();
-		suppressList = new ArrayList<SSMessage>();
-		nestedTryList = new ArrayList<MarkerInfo>();
+//		suppressList = new ArrayList<SSMessage>();
+//		nestedTryList = new ArrayList<MarkerInfo>();
 	}
 
 	/**
@@ -114,25 +111,25 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		IAnnotationBinding[] annoBinding = method.resolveBinding().getAnnotations();
 		
 		for (int i = 0, size = annoBinding.length; i < size; i++) {
-			//取得Method上的SuppressSmell資訊
-			if (annoBinding[i].getAnnotationType().getQualifiedName().equals(SuppressSmell.class.getName())) {
-				IMemberValuePairBinding[] mvpb = annoBinding[i].getAllMemberValuePairs();
-
-				SSMessage ssmsg = new SSMessage(node.getStartPosition(),
-												getLineNumber(node.getStartPosition()));
-				//若SuppressSmell內為String
-				if (mvpb[0].getValue() instanceof String) {
-					ssmsg.addSmellList((String) mvpb[0].getValue());
-				//若SuppressSmell內為Array
-				} else if (mvpb[0].getValue() instanceof Object[]) {
-					Object[] values = (Object[]) mvpb[0].getValue();
-					for (Object obj : values) {
-						if (obj instanceof String)
-							ssmsg.addSmellList((String) obj);
-					}
-				}
-				suppressList.add(ssmsg);
-			}			
+//			//取得Method上的SuppressSmell資訊
+//			if (annoBinding[i].getAnnotationType().getQualifiedName().equals(SuppressSmell.class.getName())) {
+//				IMemberValuePairBinding[] mvpb = annoBinding[i].getAllMemberValuePairs();
+//
+//				SSMessage ssmsg = new SSMessage(node.getStartPosition(),
+//												getLineNumber(node.getStartPosition()));
+//				//若SuppressSmell內為String
+//				if (mvpb[0].getValue() instanceof String) {
+//					ssmsg.addSmellList((String) mvpb[0].getValue());
+//				//若SuppressSmell內為Array
+//				} else if (mvpb[0].getValue() instanceof Object[]) {
+//					Object[] values = (Object[]) mvpb[0].getValue();
+//					for (Object obj : values) {
+//						if (obj instanceof String)
+//							ssmsg.addSmellList((String) obj);
+//					}
+//				}
+//				suppressList.add(ssmsg);
+//			}		
 			//取得Method上的Robustness資訊
 			if (annoBinding[i].getAnnotationType().getQualifiedName().equals(Robustness.class.getName())) {
 				IMemberValuePairBinding[] mvpb = annoBinding[i].getAllMemberValuePairs();
@@ -228,7 +225,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 				case ASTNode.TRY_STATEMENT:
 					// currentMethodFound + ":" + node);
 					if (currentMethodFound) {
-						processTryStatement(node);
+//						processTryStatement(node);
 						return false;
 					}
 					return true;
@@ -329,14 +326,14 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 			MarkerInfo csmsg = new MarkerInfo(	RLMarkerAttribute.CS_NESTED_TRY_BLOCK, null,											
 												trystat.toString(), trystat.getStartPosition(),
 												getLineNumber(trystat.getStartPosition()), trystat.toString());
-			nestedTryList.add(csmsg);	
+//			nestedTryList.add(csmsg);	
 		}
 		
 		// 處理Try Block
 		ExceptionAnalyzer visitor = new ExceptionAnalyzer(root, true, createParentId());
 		trystat.getBody().accept(visitor);
 		
-		mergeCS(visitor.getNestedTryList());
+//		mergeCS(visitor.getNestedTryList());
 		mergeRL(visitor.getExceptionList());
 		visitor.clear();
 
@@ -362,31 +359,31 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 			}
 			
 			//取得Catch內的SuppressSmell Annotation
-			List<?> modifyList = svd.modifiers();
-			for (int j = 0; j < modifyList.size(); j++) {
-				if (modifyList.get(j) instanceof Annotation) {
-					Annotation annotation = (Annotation) modifyList.get(j);
-					IAnnotationBinding iab  = annotation.resolveAnnotationBinding();
-					//判斷Annotation Type是否為SuppressSmell
-					if (iab.getAnnotationType().getQualifiedName().equals(SuppressSmell.class.getName())) {
-						IMemberValuePairBinding[] mvpb = iab.getAllMemberValuePairs();
-
-						SSMessage ssmsg = new SSMessage(cc.getStartPosition(), getLineNumber(cc.getStartPosition()), i);
-						//若Annotation內容為String
-						if (mvpb[0].getValue() instanceof String) {
-							ssmsg.addSmellList((String) mvpb[0].getValue());
-						//若Annotation內容為Array
-						} else if (mvpb[0].getValue() instanceof Object[]) {
-							Object[] values = (Object[]) mvpb[0].getValue();
-							for (Object obj : values) {
-								if (obj instanceof String)
-									ssmsg.addSmellList((String) obj);
-							}
-						}
-						suppressList.add(ssmsg);
-					}
-				}
-			}
+//			List<?> modifyList = svd.modifiers();
+//			for (int j = 0; j < modifyList.size(); j++) {
+//				if (modifyList.get(j) instanceof Annotation) {
+//					Annotation annotation = (Annotation) modifyList.get(j);
+//					IAnnotationBinding iab  = annotation.resolveAnnotationBinding();
+//					//判斷Annotation Type是否為SuppressSmell
+//					if (iab.getAnnotationType().getQualifiedName().equals(SuppressSmell.class.getName())) {
+//						IMemberValuePairBinding[] mvpb = iab.getAllMemberValuePairs();
+//
+//						SSMessage ssmsg = new SSMessage(cc.getStartPosition(), getLineNumber(cc.getStartPosition()), i);
+//						//若Annotation內容為String
+//						if (mvpb[0].getValue() instanceof String) {
+//							ssmsg.addSmellList((String) mvpb[0].getValue());
+//						//若Annotation內容為Array
+//						} else if (mvpb[0].getValue() instanceof Object[]) {
+//							Object[] values = (Object[]) mvpb[0].getValue();
+//							for (Object obj : values) {
+//								if (obj instanceof String)
+//									ssmsg.addSmellList((String) obj);
+//							}
+//						}
+//						suppressList.add(ssmsg);
+//					}
+//				}
+//			}
 
 			RLMessage rlmsg = new RLMessage(-1, svd.resolveBinding().getType(), cc.toString(),
 											cc.getStartPosition(), this.getLineNumber(cc.getStartPosition()));
@@ -403,7 +400,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 			
 			cc.getBody().accept(visitor);
 			mergeRL(visitor.getExceptionList());
-			mergeCS(visitor.getNestedTryList());
+//			mergeCS(visitor.getNestedTryList());
 			visitor.clear();
 
 			// ConsoleLog.debug(i + ") CATCH===>" + idxTry + ":" + idxCatch +
@@ -419,7 +416,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 			visitor = new ExceptionAnalyzer(root, true, createParentId());
 			finallyBlock.accept(visitor);
 			mergeRL(visitor.getExceptionList());
-			mergeCS(visitor.getNestedTryList());
+//			mergeCS(visitor.getNestedTryList());
 			visitor.clear();
 		}
 
@@ -519,19 +516,19 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		}
 	}
 	
-	private void mergeCS(List<MarkerInfo> childInfo) {
-		if (childInfo == null || childInfo.size() == 0) {
-			return;
-		}
-		for(MarkerInfo msg : childInfo){
-			nestedTryList.add(msg);
-		}
-	}
+//	private void mergeCS(List<MarkerInfo> childInfo) {
+//		if (childInfo == null || childInfo.size() == 0) {
+//			return;
+//		}
+//		for(MarkerInfo msg : childInfo){
+//			nestedTryList.add(msg);
+//		}
+//	}
 	
 	public void clear() {
 		if(exceptionList != null) {
 			exceptionList.clear();
-			nestedTryList.clear();
+//			nestedTryList.clear();
 		}
 		
 		if(methodRLList != null) {
@@ -545,9 +542,9 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 	/**
 	 * 紀錄Nested Try Block的位置
 	 */
-	public List<MarkerInfo> getNestedTryList() {
-		return nestedTryList;
-	}
+//	public List<MarkerInfo> getNestedTryList() {
+//		return nestedTryList;
+//	}
 	
 	public MethodDeclaration getCurrentMethodNode() {
 		return currentMethodNode;
@@ -579,7 +576,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 	 * 取得SuppressSmell資訊(包含Method上與Catch內)
 	 * @return
 	 */
-	public List<SSMessage> getSuppressSemllAnnotationList() {
-		return suppressList;
-	}
+//	public List<SSMessage> getSuppressSemllAnnotationList() {
+//		return suppressList;
+//	}
 }

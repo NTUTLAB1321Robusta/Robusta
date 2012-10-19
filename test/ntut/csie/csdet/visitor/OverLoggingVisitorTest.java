@@ -17,7 +17,6 @@ import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.ASTNodeFinder;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.CarelessCleanupExample;
 import ntut.csie.filemaker.exceptionBadSmells.OverLogging.OverLoggingIntegrationExample;
 import ntut.csie.filemaker.exceptionBadSmells.OverLogging.OverLoggingJavaLogExample;
 import ntut.csie.filemaker.exceptionBadSmells.OverLogging.OverLoggingLog4JExample;

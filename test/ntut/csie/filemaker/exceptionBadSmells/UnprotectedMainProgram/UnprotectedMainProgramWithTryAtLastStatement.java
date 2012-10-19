@@ -2,7 +2,7 @@ package ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram;
 
 public class UnprotectedMainProgramWithTryAtLastStatement {
 	public static void main(String[] args) {
-		UnprotectedMainProgramWithoutCatchExceptionExample test = new UnprotectedMainProgramWithoutCatchExceptionExample();
+		UnprotectedMainProgramWithCatchRuntimeExceptionExample test = new UnprotectedMainProgramWithCatchRuntimeExceptionExample();
 		test.toString();
 		try {
 			int i = 0;

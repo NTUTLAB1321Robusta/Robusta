@@ -1,8 +1,10 @@
 package ntut.csie.csdet.visitor;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -13,7 +15,6 @@ import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.exceptionBadSmells.DummyAndIgnoreExample;
 import ntut.csie.filemaker.exceptionBadSmells.DummyHandlerExampleWithTryStatementInNonTryStatement;
 import ntut.csie.filemaker.exceptionBadSmells.UserDefineDummyHandlerFish;
-import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramExample;
 import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.robusta.util.PathUtils;
 
@@ -25,7 +26,6 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.TryStatement;
@@ -61,7 +61,7 @@ public class DummyHandlerVisitorTest {
 		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(
 				JavaProjectMaker.FOLDERNAME_LIB_JAR,
 				JavaProjectMaker.FOLDERNAME_BIN_CLASS);
-		javaProjectMaker.addJarFromTestProjectToBuildPath("/" + JavaProjectMaker.FOLDERNAME_LIB_JAR + JavaProjectMaker.FOLDERNAME_LIB_JAR);
+		javaProjectMaker.addJarFromTestProjectToBuildPath("/" + JavaProjectMaker.RL_LIBRARY_PATH);
 
 		// 建立新的檔案DummyAndIgnoreExample
 		javaFile2String = new JavaFileToString();
@@ -110,19 +110,6 @@ public class DummyHandlerVisitorTest {
 	}
 	
 	@Test
-	public void testVisitMemberData() {
-		int dummy = 0;
-		compilationUnit.accept(dummyHandlerVisitor);
-		dummy = dummyHandlerVisitor.getDummyList().size();
-		
-		// 驗證總共抓到幾個bad smell
-		assertEquals(16, dummy);
-		assertEquals(2, dummyHandlerVisitor.getFinallyCounter());
-		assertEquals(25, dummyHandlerVisitor.getCatchCounter());
-		assertEquals(25, dummyHandlerVisitor.getTryCounter());
-	}
-	
-	@Test
 	public void testVisitReturnValue() throws Exception {
 		MethodDeclaration md = null;
 		TryStatement tryStatement = null;
@@ -154,20 +141,6 @@ public class DummyHandlerVisitorTest {
 		CatchClause catchStatement = (CatchClause) tryStatement.catchClauses().get(0);
 		tryStatement = (TryStatement) catchStatement.getBody().statements().get(1);
 		assertFalse(dummyHandlerVisitor.visit(tryStatement));
-	}
-
-	@Test
-	public void testVisitTryStatementfinallyCounter() {
-		MethodDeclaration md = ASTNodeFinder.getMethodDeclarationNodeByName(
-				compilationUnit, "true_DummyHandlerFinallyNestedTry");	
-		TryStatement tryStatement = (TryStatement) md.getBody().statements().get(1);
-		assertEquals(0, dummyHandlerVisitor.getFinallyCounter());
-		assertEquals(0, dummyHandlerVisitor.getCatchCounter());
-		assertEquals(0, dummyHandlerVisitor.getTryCounter());
-		assertTrue(dummyHandlerVisitor.visit(tryStatement));
-		assertEquals(1, dummyHandlerVisitor.getFinallyCounter());
-		assertEquals(1, dummyHandlerVisitor.getCatchCounter());
-		assertEquals(1, dummyHandlerVisitor.getTryCounter());
 	}
 	
 	@Test

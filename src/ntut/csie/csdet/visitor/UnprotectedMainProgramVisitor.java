@@ -68,7 +68,8 @@ public class UnprotectedMainProgramVisitor extends ASTVisitor {
 				for (int i = 0; i < catchList.size(); i++) {
 					SingleVariableDeclaration svd = ((CatchClause)catchList.get(i)).getException();
 					// 如果有try還要判斷catch是否為catch(Exception ..)
-					if (svd.getType().toString().equals("Exception")) {
+					if (svd.getType().resolveBinding().getQualifiedName().equals(Exception.class.getName()) ||
+						svd.getType().resolveBinding().getQualifiedName().equals(RuntimeException.class.getName())) {
 						//如果有catch(Exception ..)就不算code smell
 						return false;
 					}

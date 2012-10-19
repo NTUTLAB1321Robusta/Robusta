@@ -125,8 +125,8 @@ public class ASTNodeFinderTest {
 		//取得該行內容
 		ASTMethodCollector methodCollector = new ASTMethodCollector();
 		compilationUnit.accept(methodCollector);
-		List<MethodDeclaration> list = methodCollector.getMethodList();
-		MethodDeclaration mDeclaration = list.get(1);
+//		List<MethodDeclaration> list = methodCollector.getMethodList();
+//		MethodDeclaration mDeclaration = list.get(1);
 		
 		//輸入class指定行數
 		int lineNumber = 20;

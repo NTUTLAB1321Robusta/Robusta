@@ -17,7 +17,7 @@ import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.Unprotected
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithTry;
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithTryAtLastStatement;
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithTryAtMiddleStatement;
-import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithoutCatchExceptionExample;
+import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithCatchRuntimeExceptionExample;
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithoutStatementExample;
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithoutTryExample;
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedmainProgramWithTryAtFirstStatement;
@@ -66,11 +66,11 @@ public class UMQuickFixTest {
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		// unit2
-		javaFile2String.read(UnprotectedMainProgramWithoutCatchExceptionExample.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaFile2String.read(UnprotectedMainProgramWithCatchRuntimeExceptionExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
-				UnprotectedMainProgramWithoutCatchExceptionExample.class.getPackage().getName()
-				, UnprotectedMainProgramWithoutCatchExceptionExample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION
-				, "package " + UnprotectedMainProgramWithoutCatchExceptionExample.class.getPackage().getName() + ";\n"
+				UnprotectedMainProgramWithCatchRuntimeExceptionExample.class.getPackage().getName()
+				, UnprotectedMainProgramWithCatchRuntimeExceptionExample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION
+				, "package " + UnprotectedMainProgramWithCatchRuntimeExceptionExample.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		// unit3
@@ -135,7 +135,7 @@ public class UMQuickFixTest {
 		unit1 = (CompilationUnit) parser.createAST(null); 
 		unit1.recordModifications();
 		/** unit2 */
-		Path path2 = new Path(PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithoutCatchExceptionExample.class, projectNameString));
+		Path path2 = new Path(PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithCatchRuntimeExceptionExample.class, projectNameString));
 		//Create AST to parse
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -247,7 +247,7 @@ public class UMQuickFixTest {
 						"  }\n" +
 					 	" catch (  Exception ex) {\n" +
 					 	"  }\n" +
-					 	"  UnprotectedMainProgramWithoutCatchExceptionExample test=new UnprotectedMainProgramWithoutCatchExceptionExample();\n" +
+					 	"  UnprotectedMainProgramWithCatchRuntimeExceptionExample test=new UnprotectedMainProgramWithCatchRuntimeExceptionExample();\n" +
 					 	"  test.toString();\n" +
 						"}\n", md.toString());
 		// test target
@@ -269,7 +269,7 @@ public class UMQuickFixTest {
 		// check precondition
 		assertEquals(	"public static void main(String[] args){\n" +
 						"  try {\n" +
-						"    UnprotectedMainProgramWithoutCatchExceptionExample test=new UnprotectedMainProgramWithoutCatchExceptionExample();\n" +
+						"    UnprotectedMainProgramWithCatchRuntimeExceptionExample test=new UnprotectedMainProgramWithCatchRuntimeExceptionExample();\n" +
 						"    test.toString();\n" +
 						"  }\n" +
 						" catch (  RuntimeException ex) {\n" +
@@ -406,7 +406,7 @@ public class UMQuickFixTest {
 						"  }\n" +
 						" catch (  RuntimeException ex) {\n" +
 						"  }\n" +
-						"  UnprotectedMainProgramWithoutCatchExceptionExample test=new UnprotectedMainProgramWithoutCatchExceptionExample();\n" +
+						"  UnprotectedMainProgramWithCatchRuntimeExceptionExample test=new UnprotectedMainProgramWithCatchRuntimeExceptionExample();\n" +
 						"  try {\n" +
 						"    j=j++;\n" +
 						"  }\n" +

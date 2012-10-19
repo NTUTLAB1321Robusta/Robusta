@@ -7,7 +7,7 @@ public class UnprotectedMainProgramWithTry {
 			i = i++;
 		} catch (RuntimeException ex) {
 		}
-		UnprotectedMainProgramWithoutCatchExceptionExample test = new UnprotectedMainProgramWithoutCatchExceptionExample();
+		UnprotectedMainProgramWithCatchRuntimeExceptionExample test = new UnprotectedMainProgramWithCatchRuntimeExceptionExample();
 		try {
 			j = j++;
 		} catch (RuntimeException ex) {

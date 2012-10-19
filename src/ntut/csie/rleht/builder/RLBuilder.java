@@ -15,6 +15,7 @@ import ntut.csie.csdet.visitor.DummyHandlerVisitor;
 import ntut.csie.csdet.visitor.IgnoreExceptionVisitor;
 import ntut.csie.csdet.visitor.NestedTryStatementVisitor;
 import ntut.csie.csdet.visitor.OverLoggingDetector;
+import ntut.csie.csdet.visitor.SuppressWarningVisitor;
 import ntut.csie.csdet.visitor.UnprotectedMainProgramVisitor;
 import ntut.csie.java.util.CastingObject;
 import ntut.csie.rleht.common.ASTHandler;
@@ -292,17 +293,16 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				// 目前method內的OverLogging資訊
 				List<MarkerInfo> overLoggingList = null;
 				
-				// 目前的Method AST Node
-				ASTNode currentMethodNode = null;
 				int methodIdx = -1;
 				for (MethodDeclaration method : methodList) {
 					methodIdx++;
 
 					visitor = new ExceptionAnalyzer(root, method.getStartPosition(), 0);
 					method.accept(visitor);
-					currentMethodNode = visitor.getCurrentMethodNode();
 					currentMethodRLList = visitor.getMethodRLAnnotationList();
-					suppressSmellList = visitor.getSuppressSemllAnnotationList();
+					SuppressWarningVisitor swVisitor = new SuppressWarningVisitor(root);
+					method.accept(swVisitor);
+					suppressSmellList = swVisitor.getSuppressWarningList();
 
 					//SuppressSmell
 					TreeMap<String,Boolean> detMethodSmell = new TreeMap<String,Boolean>();
@@ -442,10 +442,8 @@ public class RLBuilder extends IncrementalProjectBuilder {
 						}
 					}
 							
-					if (currentMethodNode != null) {
-						RLChecker checker = new RLChecker();
-						currentMethodExList = checker.check(visitor);
-					}					
+					RLChecker checker = new RLChecker();
+					currentMethodExList = checker.check(visitor);
 					
 					// 檢查@RL是否存在(丟出的例外是否被註記)
 					int msgIdx = -1;

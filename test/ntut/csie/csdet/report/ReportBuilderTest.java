@@ -17,13 +17,13 @@ import ntut.csie.csdet.data.SSMessage;
 import ntut.csie.csdet.preference.JDomUtil;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.visitor.DummyHandlerVisitor;
+import ntut.csie.csdet.visitor.SuppressWarningVisitor;
 import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.exceptionBadSmells.DummyAndIgnoreExample;
 import ntut.csie.filemaker.exceptionBadSmells.UserDefineDummyHandlerFish;
 import ntut.csie.rleht.builder.ASTMethodCollector;
-import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.robusta.util.PathUtils;
 
 import org.eclipse.core.resources.IProject;
@@ -401,9 +401,9 @@ public class ReportBuilderTest {
 		List<MethodDeclaration> methodList = methodCollector.getMethodList();
 		
 		for(int i = 0; i < methodList.size(); i++) {
-			ExceptionAnalyzer visitor = new ExceptionAnalyzer(compilationUnit, methodList.get(i).getStartPosition(), 0);
+			SuppressWarningVisitor visitor = new SuppressWarningVisitor(compilationUnit);
 			methodList.get(i).accept(visitor);
-			List<SSMessage> suppressSmellList = visitor.getSuppressSemllAnnotationList();
+			List<SSMessage> suppressSmellList = visitor.getSuppressWarningList();
 			TreeMap<String, Boolean> detMethodSmell = new TreeMap<String, Boolean>();
 			TreeMap<String, List<Integer>> detCatchSmell = new TreeMap<String, List<Integer>>();
 			inputSuppressData.invoke(reportBuilder, suppressSmellList, detMethodSmell, detCatchSmell);

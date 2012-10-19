@@ -12,10 +12,11 @@ import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramExample;
+import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithCatchRuntimeExceptionExample;
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithTry;
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithTryAtLastStatement;
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithTryAtMiddleStatement;
-import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithoutCatchExceptionExample;
+import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithoutCatchRightExceptionExample;
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithoutStatementExample;
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithoutTryExample;
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedmainProgramWithTryAtFirstStatement;
@@ -36,7 +37,7 @@ import org.junit.Test;
 public class UnprotectedMainProgramVisitorTest {
 	JavaFileToString javaFile2String;
 	JavaProjectMaker javaProjectMaker;
-	CompilationUnit unit1, unit2, unit3, unit4, unit5, unit6, unit7, unit8;
+	CompilationUnit unit1, unit2, unit3, unit4, unit5, unit6, unit7, unit8, unit9;
 	SmellSettings smellSettings;
 	UnprotectedMainProgramVisitor mainVisitor;
 	
@@ -58,13 +59,13 @@ public class UnprotectedMainProgramVisitorTest {
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		// unit2
-		javaFile2String.read(UnprotectedMainProgramWithoutCatchExceptionExample.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaFile2String.read(UnprotectedMainProgramWithCatchRuntimeExceptionExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker
 				.createJavaFile(
-						UnprotectedMainProgramWithoutCatchExceptionExample.class.getPackage().getName(),
-						UnprotectedMainProgramWithoutCatchExceptionExample.class.getSimpleName()
+						UnprotectedMainProgramWithCatchRuntimeExceptionExample.class.getPackage().getName(),
+						UnprotectedMainProgramWithCatchRuntimeExceptionExample.class.getSimpleName()
 						+ JavaProjectMaker.JAVA_FILE_EXTENSION,	"package "
-						+ UnprotectedMainProgramWithoutCatchExceptionExample.class.getPackage().getName() + ";\n"
+						+ UnprotectedMainProgramWithCatchRuntimeExceptionExample.class.getPackage().getName() + ";\n"
 						+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		// unit3
@@ -115,6 +116,14 @@ public class UnprotectedMainProgramVisitorTest {
 				, "package " + UnprotectedMainProgramWithTry.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
+		// unit9
+		javaFile2String.read(UnprotectedMainProgramWithoutCatchRightExceptionExample.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaProjectMaker.createJavaFile(
+				UnprotectedMainProgramWithoutCatchRightExceptionExample.class.getPackage().getName()
+				, UnprotectedMainProgramWithoutCatchRightExceptionExample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION
+				, "package " + UnprotectedMainProgramWithoutCatchRightExceptionExample.class.getPackage().getName() + ";\n"
+				+ javaFile2String.getFileContent());
+		javaFile2String.clear();
 		// 建立XML
 		CreateSettings();
 		/** unit1 */ 
@@ -129,7 +138,7 @@ public class UnprotectedMainProgramVisitorTest {
 		unit1 = (CompilationUnit) parser.createAST(null); 
 		unit1.recordModifications();
 		/** unit2 */
-		Path path2 = new Path(PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithoutCatchExceptionExample.class, testProjectName));
+		Path path2 = new Path(PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithCatchRuntimeExceptionExample.class, testProjectName));
 		//Create AST to parse
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -205,6 +214,17 @@ public class UnprotectedMainProgramVisitorTest {
 		// 取得AST
 		unit8 = (CompilationUnit) parser.createAST(null);
 		unit8.recordModifications();
+		/** unit9 */
+		Path path9 = new Path(PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithoutCatchRightExceptionExample.class, testProjectName));
+		//Create AST to parse
+		parser = ASTParser.newParser(AST.JLS3);
+		parser.setKind(ASTParser.K_COMPILATION_UNIT);
+		// 設定要被建立AST的檔案
+		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path9)));
+		parser.setResolveBindings(true);
+		// 取得AST
+		unit9 = (CompilationUnit) parser.createAST(null);
+		unit9.recordModifications();
 	}
 
 	@After
@@ -235,8 +255,8 @@ public class UnprotectedMainProgramVisitorTest {
 		
 		// case 2 : main body with try block but not catch Exception.class
 		methodCollector = new ASTMethodCollector();
-		unit2.accept(methodCollector);
-		mainVisitor = new UnprotectedMainProgramVisitor(unit2);
+		unit9.accept(methodCollector);
+		mainVisitor = new UnprotectedMainProgramVisitor(unit9);
 		list = methodCollector.getMethodList();
 		md = list.get(0);
 		// check precondition
@@ -338,9 +358,16 @@ public class UnprotectedMainProgramVisitorTest {
 	}
 	
 	@Test
-	public void testUnprotectedMainProgramWithoutCatchExceptionExample() {
+	public void testUnprotectedMainProgramWithCatchRuntimeExceptionExample() {
 		mainVisitor = new UnprotectedMainProgramVisitor(unit2);
 		unit2.accept(mainVisitor);
+		assertEquals(0, mainVisitor.getUnprotedMainList().size());
+	}
+	
+	@Test
+	public void testUnprotectedMainProgramWithoutCatchExceptionExample() {
+		mainVisitor = new UnprotectedMainProgramVisitor(unit9);
+		unit9.accept(mainVisitor);
 		assertEquals(1, mainVisitor.getUnprotedMainList().size());
 	}
 	

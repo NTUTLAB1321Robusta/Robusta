@@ -3,7 +3,6 @@ package ntut.csie.csdet.visitor;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.util.List;
@@ -12,7 +11,6 @@ import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
-import ntut.csie.filemaker.exceptionBadSmells.DummyAndIgnoreExample;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.CarelessCleanupExample;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.ClassImplementCloseable;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.ClassImplementCloseableWithoutThrowException;

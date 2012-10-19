@@ -13,14 +13,14 @@ import ntut.csie.csdet.visitor.CarelessCleanupVisitor;
 import ntut.csie.csdet.visitor.DummyHandlerVisitor;
 import ntut.csie.csdet.visitor.IgnoreExceptionVisitor;
 import ntut.csie.csdet.visitor.NestedTryStatementVisitor;
+import ntut.csie.csdet.visitor.OverLoggingDetector;
+import ntut.csie.csdet.visitor.SuppressWarningVisitor;
 import ntut.csie.csdet.visitor.TryStatementCounterVisitor;
 import ntut.csie.csdet.visitor.UnprotectedMainProgramVisitor;
-import ntut.csie.csdet.visitor.OverLoggingDetector;
 import ntut.csie.jcis.builder.core.internal.support.LOCCounter;
 import ntut.csie.jcis.builder.core.internal.support.LOCData;
 import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
-import ntut.csie.rleht.views.ExceptionAnalyzer;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -134,7 +134,6 @@ public class ReportBuilder {
 			PackageModel newPackageModel, String pkPath) {
 		List<SSMessage> suppressSmellList = null;
 
-		ExceptionAnalyzer visitor = null;
 		IgnoreExceptionVisitor ieVisitor = null;
 		DummyHandlerVisitor dhVisitor = null;
 		NestedTryStatementVisitor ntsVisitor = null;
@@ -161,18 +160,13 @@ public class ReportBuilder {
 		newClassModel.setClassPath(pkPath);
 
 		// 目前的Method AST Node
-		MethodDeclaration currentMethodNode = null;
 		int methodIdx = -1;
 		for (MethodDeclaration method : methodList) {
 			methodIdx++;
-
-			visitor = new ExceptionAnalyzer(root, method.getStartPosition(), 0);
-			method.accept(visitor);
-			currentMethodNode = visitor.getCurrentMethodNode();
-			suppressSmellList = visitor.getSuppressSemllAnnotationList();
-
-			MethodDeclaration methodName = currentMethodNode;
-
+			SuppressWarningVisitor swVisitor = new SuppressWarningVisitor(root);
+			method.accept(swVisitor);
+			suppressSmellList = swVisitor.getSuppressWarningList();
+			
 			// SuppressSmell
 			TreeMap<String, Boolean> detMethodSmell = new TreeMap<String, Boolean>();
 			TreeMap<String, List<Integer>> detCatchSmell = new TreeMap<String, List<Integer>>();
@@ -185,7 +179,7 @@ public class ReportBuilder {
 				List<MarkerInfo> ignoreExList = checkCatchSmell(ieVisitor.getIgnoreList()
 						, detCatchSmell
 						.get(RLMarkerAttribute.CS_INGNORE_EXCEPTION));
-				newClassModel.setIgnoreExList(ignoreExList, methodName
+				newClassModel.setIgnoreExList(ignoreExList, method
 						.getName().toString());
 				model.addIgnoreTotalSize(ignoreExList.size());
 			}
@@ -196,7 +190,7 @@ public class ReportBuilder {
 				List<MarkerInfo> dummyList = checkCatchSmell(dhVisitor.getDummyList()
 						, detCatchSmell
 						.get(RLMarkerAttribute.CS_DUMMY_HANDLER));
-				newClassModel.setDummyList(dummyList, methodName.getName()
+				newClassModel.setDummyList(dummyList, method.getName()
 						.toString());
 				model.addDummyTotalSize(dummyList.size());
 			}
@@ -207,7 +201,7 @@ public class ReportBuilder {
 				List<MarkerInfo> nestedTryList = checkCatchSmell(ntsVisitor.getNestedTryStatementList()
 						, detCatchSmell
 						.get(RLMarkerAttribute.CS_NESTED_TRY_BLOCK));
-				newClassModel.setNestedTryList(nestedTryList, methodName.getName()
+				newClassModel.setNestedTryList(nestedTryList, method.getName()
 						.toString());
 				model.addNestedTotalTrySize(nestedTryList.size());
 			}
@@ -217,7 +211,7 @@ public class ReportBuilder {
 			if (detMethodSmell.get(RLMarkerAttribute.CS_UNPROTECTED_MAIN)) {
 				newClassModel
 						.setUnprotectedMain(mainVisitor.getUnprotedMainList(),
-								methodName.getName().toString());
+								method.getName().toString());
 				model.addUnMainTotalSize(mainVisitor.getUnprotedMainList()
 						.size());
 			}
@@ -225,7 +219,7 @@ public class ReportBuilder {
 			ccVisitor = new CarelessCleanupVisitor(root);
 			method.accept(ccVisitor);
 			if (detMethodSmell.get(RLMarkerAttribute.CS_CARELESS_CLEANUP)) {
-				newClassModel.setCarelessCleanUp(ccVisitor.getCarelessCleanupList(), methodName.getName().toString());
+				newClassModel.setCarelessCleanUp(ccVisitor.getCarelessCleanupList(), method.getName().toString());
 				model.addCarelessCleanUpSize(ccVisitor.getCarelessCleanupList().size());
 			}
 			// 尋找該method內的OverLogging
@@ -235,7 +229,7 @@ public class ReportBuilder {
 				List<MarkerInfo> olList = checkCatchSmell(loggingDetector
 						.getOverLoggingList(), detCatchSmell
 						.get(RLMarkerAttribute.CS_OVER_LOGGING));
-				newClassModel.setOverLogging(olList, methodName.getName()
+				newClassModel.setOverLogging(olList, method.getName()
 						.toString());
 				model.addOverLoggingSize(olList.size());
 			}

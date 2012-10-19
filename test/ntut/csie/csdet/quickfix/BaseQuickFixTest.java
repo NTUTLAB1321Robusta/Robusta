@@ -16,7 +16,6 @@ import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.RuntimeEnvironmentProjectReader;
 import ntut.csie.filemaker.exceptionBadSmells.DummyAndIgnoreExample;
-import ntut.csie.filemaker.exceptionBadSmells.OverLogging.OverLoggingJavaLogExample;
 import ntut.csie.robusta.util.PathUtils;
 
 import org.eclipse.core.resources.IResource;

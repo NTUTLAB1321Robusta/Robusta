@@ -1,7 +1,7 @@
 package ntut.csie.rleht.builder;
 
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -11,15 +11,12 @@ import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
-import ntut.csie.filemaker.RuntimeEnvironmentProjectReader;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.CarelessCleanupExample;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.ClassImplementCloseable;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.ClassWithNotThrowingExceptionCloseable;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.UserDefinedCarelessCleanupDog;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.UserDefinedCarelessCleanupWeather;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -115,9 +112,9 @@ public class RLBuilderTest {
 
 	@Test
 	public void testCheckBadSmells() throws Exception {	
-		IResource resource = RuntimeEnvironmentProjectReader.getIResource(
-				projectName, CarelessCleanupExample.class.getPackage().getName(),
-				CarelessCleanupExample.class.getSimpleName());
+//		IResource resource = RuntimeEnvironmentProjectReader.getIResource(
+//				projectName, CarelessCleanupExample.class.getPackage().getName(),
+//				CarelessCleanupExample.class.getSimpleName());
 
 		Method getDetectSettings = RLBuilder.class.getDeclaredMethod("getDetectSettings");
 		getDetectSettings.setAccessible(true);
@@ -127,7 +124,7 @@ public class RLBuilderTest {
 		checkBadSmells.setAccessible(true);
 //		checkBadSmells.invoke(rlBuilder, resource); // ---> throws Exception
 		
-		IFile iFile = (IFile)resource;
+//		IFile iFile = (IFile)resource;
 //		for (int i = 0; i < 24; i++) {
 //			IMarker im = iFile.getMarker(Long.valueOf(i));
 //			assertTrue("第" + String.valueOf(i) + "個Marker有問題。", im.exists());

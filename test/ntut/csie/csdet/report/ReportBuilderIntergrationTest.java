@@ -27,7 +27,7 @@ import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.Unprotected
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithTry;
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithTryAtLastStatement;
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithTryAtMiddleStatement;
-import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithoutCatchExceptionExample;
+import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithCatchRuntimeExceptionExample;
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithoutStatementExample;
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithoutTryExample;
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedmainProgramWithTryAtFirstStatement;
@@ -210,12 +210,12 @@ public class ReportBuilderIntergrationTest {
 				+ ";\n" + javaFileToString.getFileContent());
 		javaFileToString.clear();
 		
-		javaFileToString.read(UnprotectedMainProgramWithoutCatchExceptionExample.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaFileToString.read(UnprotectedMainProgramWithCatchRuntimeExceptionExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
-				UnprotectedMainProgramWithoutCatchExceptionExample.class.getPackage().getName(),
-				UnprotectedMainProgramWithoutCatchExceptionExample.class.getSimpleName()
+				UnprotectedMainProgramWithCatchRuntimeExceptionExample.class.getPackage().getName(),
+				UnprotectedMainProgramWithCatchRuntimeExceptionExample.class.getSimpleName()
 				+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
-				+ UnprotectedMainProgramWithoutCatchExceptionExample.class.getPackage().getName()
+				+ UnprotectedMainProgramWithCatchRuntimeExceptionExample.class.getPackage().getName()
 				+ ";\n" + javaFileToString.getFileContent());
 		javaFileToString.clear();
 		
@@ -406,7 +406,7 @@ public class ReportBuilderIntergrationTest {
 		assertEquals(55, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(OverLoggingTheSecondOrderClass.class, projectName)));
 		assertEquals(52, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(OverLoggingTheThirdOrderClass.class, projectName)));
 		assertEquals(17, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramExample.class, projectName)));
-		assertEquals(11, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithoutCatchExceptionExample.class, projectName)));
+		assertEquals(11, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithCatchRuntimeExceptionExample.class, projectName)));
 		assertEquals(6, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithoutStatementExample.class, projectName)));
 		assertEquals(8, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithoutTryExample.class, projectName)));
 		assertEquals(21, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithTry.class, projectName)));
