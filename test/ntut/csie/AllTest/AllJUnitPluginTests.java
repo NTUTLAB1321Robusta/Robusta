@@ -21,7 +21,6 @@ import ntut.csie.rleht.builder.RLBuilderTest;
 import ntut.csie.rleht.views.ExceptionAnalyzerTest;
 import ntut.csie.robusta.codegen.CatchClauseFinderVisitorTest;
 import ntut.csie.robusta.codegen.ExpressionStatementStringFinderVisitorTest;
-import ntut.csie.robusta.codegen.QuickFixCoreTest;
 import ntut.csie.robusta.codegen.StatementFinderVisitorTest;
 import ntut.csie.robusta.codegen.VariableDeclarationStatementFinderVisitorTest;
 
@@ -31,7 +30,6 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
 	BaseQuickFixTest.class,
-	ExpressionStatementStringFinderVisitorTest.class,
 	CarelessCleanUpRefactorTest.class,
 	RethrowExRefactoringTest.class,
 	RetryRefactoringTest.class,
