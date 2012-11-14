@@ -116,7 +116,7 @@ public class OverLoggingPage extends APropertyPage {
 		//是否即使轉型仍偵測的按鈕
 		detectTransExBtn = new Button(overLoggingPage, SWT.CHECK);
 		detectTransExBtn.setText(resource.getString("cast.exception"));
-		detectTransExBtn.setLocation(detectSettingsLabel.getLocation().x+10, getBoundsPoint(detectSettingsLabel).y + 5);
+		detectTransExBtn.setLocation(detectSettingsLabel.getLocation().x+10, getLowerRightCoordinate(detectSettingsLabel).y + 5);
 		detectTransExBtn.pack();
 		detectTransExBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
@@ -130,11 +130,11 @@ public class OverLoggingPage extends APropertyPage {
 		/// Customize定義偵測條件 Label ///
 		final Label detectSettingsLabel2 = new Label(overLoggingPage, SWT.NONE);
 		detectSettingsLabel2.setText(resource.getString("customize.rule"));
-		detectSettingsLabel2.setLocation(getBoundsPoint(detectTransExBtn).x + 85, 11);
+		detectSettingsLabel2.setLocation(getLowerRightCoordinate(detectTransExBtn).x + 85, 11);
 		detectSettingsLabel2.pack();
 		//是否偵測Log4j的按鈕
 		log4jBtn = new Button(overLoggingPage, SWT.CHECK);
-		log4jBtn.setLocation(detectSettingsLabel2.getLocation().x+10, getBoundsPoint(detectSettingsLabel2).y + 5);
+		log4jBtn.setLocation(detectSettingsLabel2.getLocation().x+10, getLowerRightCoordinate(detectSettingsLabel2).y + 5);
 		log4jBtn.setText(resource.getString("detect.log4j"));
 		log4jBtn.pack();
 		log4jBtn.setSelection(smellSettings.isExtraRuleExist(SmellSettings.SMELL_OVERLOGGING, SmellSettings.EXTRARULE_OrgApacheLog4j));
@@ -142,14 +142,14 @@ public class OverLoggingPage extends APropertyPage {
 		//是否偵測JavaUtillog的按鈕
 		javaUtillogBtn = new Button(overLoggingPage, SWT.CHECK);
 		javaUtillogBtn.setText(resource.getString("detect.logger"));
-		javaUtillogBtn.setLocation(detectSettingsLabel2.getLocation().x+10, getBoundsPoint(log4jBtn).y + 5);
+		javaUtillogBtn.setLocation(detectSettingsLabel2.getLocation().x+10, getLowerRightCoordinate(log4jBtn).y + 5);
 		javaUtillogBtn.pack();
 		javaUtillogBtn.setSelection(smellSettings.isExtraRuleExist(SmellSettings.SMELL_OVERLOGGING, SmellSettings.EXTRARULE_JavaUtilLoggingLogger));
 		
 		//Customize Rule Button
 		extraRuleBtn = new Button(overLoggingPage, SWT.NONE);
 		extraRuleBtn.setText(resource.getString("extra.rule"));
-		extraRuleBtn.setLocation(detectSettingsLabel2.getLocation().x+10, getBoundsPoint(javaUtillogBtn).y + 5);
+		extraRuleBtn.setLocation(detectSettingsLabel2.getLocation().x+10, getLowerRightCoordinate(javaUtillogBtn).y + 5);
 		extraRuleBtn.pack();
 		extraRuleBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
@@ -161,35 +161,35 @@ public class OverLoggingPage extends APropertyPage {
 
 		/// 分隔線 ///
 		final Label separateLabel1 = new Label(overLoggingPage, SWT.VERTICAL | SWT.SEPARATOR);
-		separateLabel1.setLocation(getBoundsPoint(detectTransExBtn).x+70, 5);
-		separateLabel1.setSize(1, getBoundsPoint(extraRuleBtn).y - 5);
+		separateLabel1.setLocation(getLowerRightCoordinate(detectTransExBtn).x+70, 5);
+		separateLabel1.setSize(1, getLowerRightCoordinate(extraRuleBtn).y - 5);
 		final Label separateLabel2 = new Label(overLoggingPage,SWT.SEPARATOR| SWT.HORIZONTAL);
-		separateLabel2.setLocation(5, this.getBoundsPoint(extraRuleBtn).y+5);
-		separateLabel2.setSize(getBoundsPoint(javaUtillogBtn).x -5, 1);
+		separateLabel2.setLocation(5, this.getLowerRightCoordinate(extraRuleBtn).y+5);
+		separateLabel2.setSize(getLowerRightCoordinate(javaUtillogBtn).x -5, 1);
 
 		/// Template ///
 		final Label callerLabel = new Label(overLoggingPage, SWT.NONE);
 		callerLabel.setText(resource.getString("call.chain.example"));
-		callerLabel.setLocation(detectSettingsLabel.getLocation().x, getBoundsPoint(separateLabel2).y + 5);
+		callerLabel.setLocation(detectSettingsLabel.getLocation().x, getLowerRightCoordinate(separateLabel2).y + 5);
 		callerLabel.pack();
 		Font templateFont = new Font(overLoggingPage.getDisplay(),"Courier New",9,SWT.NORMAL);		
 		//Callee Template
 		calleeTemplate = new StyledText(overLoggingPage, SWT.BORDER);
 		calleeTemplate.setFont(templateFont);
-		calleeTemplate.setBounds(detectSettingsLabel.getLocation().x, getBoundsPoint(callerLabel).y+5, 485, 132);
+		calleeTemplate.setBounds(detectSettingsLabel.getLocation().x, getLowerRightCoordinate(callerLabel).y+5, 485, 132);
 		calleeTemplate.setEditable(false);
 		//Caller Template
 		callerTemplate = new StyledText(overLoggingPage, SWT.BORDER);
 		callerTemplate.setFont(templateFont);
-		callerTemplate.setBounds(detectSettingsLabel.getLocation().x, getBoundsPoint(calleeTemplate).y+10, 485, 132);
+		callerTemplate.setBounds(detectSettingsLabel.getLocation().x, getLowerRightCoordinate(calleeTemplate).y+10, 485, 132);
 		callerTemplate.setEditable(false);
 
 		//分隔線與Template等長(取最長的)
-		if (getBoundsPoint(separateLabel2).x < 485)
+		if (getLowerRightCoordinate(separateLabel2).x < 485)
 			separateLabel2.setSize(485, 1);
 		else {
-			calleeTemplate.setSize(getBoundsPoint(separateLabel2).x, 132);
-			callerTemplate.setSize(getBoundsPoint(separateLabel2).x, 132);
+			calleeTemplate.setSize(getLowerRightCoordinate(separateLabel2).x, 132);
+			callerTemplate.setSize(getLowerRightCoordinate(separateLabel2).x, 132);
 		}
 
 		//調整Text的文字

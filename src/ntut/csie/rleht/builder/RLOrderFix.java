@@ -4,6 +4,8 @@ import java.util.List;
 
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLMessage;
+import ntut.csie.robusta.agile.exception.RTag;
+import ntut.csie.robusta.agile.exception.Robustness;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -251,10 +253,10 @@ public class RLOrderFix {
 			AST ast = currentMethodNode.getAST();
 
 			NormalAnnotation root = ast.newNormalAnnotation();
-			root.setTypeName(ast.newSimpleName("Robustness"));
+			root.setTypeName(ast.newSimpleName(Robustness.class.getSimpleName()));
 
 			MemberValuePair value = ast.newMemberValuePair();
-			value.setName(ast.newSimpleName("value"));
+			value.setName(ast.newSimpleName(Robustness.VALUE));
 
 			root.values().add(value);
 
@@ -306,16 +308,16 @@ public class RLOrderFix {
 	@SuppressWarnings("unchecked")
 	private NormalAnnotation getRLAnnotation(AST ast, int levelVal, String exClass) {
 		NormalAnnotation rl = ast.newNormalAnnotation();
-		rl.setTypeName(ast.newSimpleName("Tag"));
+		rl.setTypeName(ast.newSimpleName(RTag.class.getSimpleName()));
 
 		MemberValuePair level = ast.newMemberValuePair();
-		level.setName(ast.newSimpleName("level"));
+		level.setName(ast.newSimpleName(RTag.LEVEL));
 		level.setValue(ast.newNumberLiteral(String.valueOf(levelVal)));
 
 		rl.values().add(level);
 
 		MemberValuePair exception = ast.newMemberValuePair();
-		exception.setName(ast.newSimpleName("exception"));
+		exception.setName(ast.newSimpleName(RTag.EXCEPTION));
 		TypeLiteral exclass = ast.newTypeLiteral();
 		exclass.setType(ast.newSimpleType(ast.newName(exClass)));
 		exception.setValue(exclass);

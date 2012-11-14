@@ -90,7 +90,7 @@ public class CarelessCleanUpPage  extends APropertyPage {
 		btnIsDetectReleaseResourceCodeInClass.setText(resource.getString("detect.release.resource.in.method"));
 		btnIsDetectReleaseResourceCodeInClass.setLocation(
 				detectSettingsLabel.getLocation().x + 10,
-				getBoundsPoint(detectSettingsLabel).y + 5);
+				getLowerRightCoordinate(detectSettingsLabel).y + 5);
 		btnIsDetectReleaseResourceCodeInClass.pack();
 		btnIsDetectReleaseResourceCodeInClass.addSelectionListener(new SelectionAdapter(){
 			public void widgetSelected(final SelectionEvent e1){
@@ -103,12 +103,12 @@ public class CarelessCleanUpPage  extends APropertyPage {
 		/// Customize Rule ///
 		final Label detectSettingsLabel2 = new Label(CarelessCleanUpPage, SWT.NONE);
 		detectSettingsLabel2.setText(resource.getString("customize.rule"));
-		detectSettingsLabel2.setLocation(getBoundsPoint(btnIsDetectReleaseResourceCodeInClass).x+25, 10);
+		detectSettingsLabel2.setLocation(getLowerRightCoordinate(btnIsDetectReleaseResourceCodeInClass).x+25, 10);
 		detectSettingsLabel2.pack();
 		//Open Dialog Button
 		extraRuleBtn = new Button(CarelessCleanUpPage, SWT.NONE);
 		extraRuleBtn.setText(resource.getString("extra.rule"));
-		extraRuleBtn.setLocation(detectSettingsLabel2.getLocation().x+5, getBoundsPoint(detectSettingsLabel2).y+5);
+		extraRuleBtn.setLocation(detectSettingsLabel2.getLocation().x+5, getLowerRightCoordinate(detectSettingsLabel2).y+5);
 		extraRuleBtn.pack();
 		extraRuleBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
@@ -123,31 +123,31 @@ public class CarelessCleanUpPage  extends APropertyPage {
 
 		/// 分隔線 ///
 		final Label separateLabel1 = new Label(CarelessCleanUpPage, SWT.VERTICAL | SWT.SEPARATOR);
-		separateLabel1.setLocation(getBoundsPoint(btnIsDetectReleaseResourceCodeInClass).x+10, 5);
-		separateLabel1.setSize(1, getBoundsPoint(btnIsDetectReleaseResourceCodeInClass).y+5);
+		separateLabel1.setLocation(getLowerRightCoordinate(btnIsDetectReleaseResourceCodeInClass).x+10, 5);
+		separateLabel1.setSize(1, getLowerRightCoordinate(btnIsDetectReleaseResourceCodeInClass).y+5);
 		final Label separateLabel2 = new Label(CarelessCleanUpPage,SWT.SEPARATOR | SWT.HORIZONTAL);
-		separateLabel2.setLocation(10, getBoundsPoint(extraRuleBtn).y+10);
-		separateLabel2.setSize(getBoundsPoint(detectSettingsLabel2).x-10, 1);
+		separateLabel2.setLocation(10, getLowerRightCoordinate(extraRuleBtn).y+10);
+		separateLabel2.setSize(getLowerRightCoordinate(detectSettingsLabel2).x-10, 1);
 		
 		/// Template Label ///
 		final Label detBeforeLbl = new Label(CarelessCleanUpPage, SWT.NONE);
 		detBeforeLbl.setText(resource.getString("detect.example"));
-		detBeforeLbl.setLocation(10, getBoundsPoint(separateLabel2).y+10);
+		detBeforeLbl.setLocation(10, getLowerRightCoordinate(separateLabel2).y+10);
 		detBeforeLbl.pack();
 		//TextBox
 		templateArea = new StyledText(CarelessCleanUpPage, SWT.BORDER);
 		Font font = new Font(CarelessCleanUpPage.getDisplay(),"Courier New",14,SWT.NORMAL);		
 		templateArea.setFont(font);
-		templateArea.setLocation(10, getBoundsPoint(detBeforeLbl).y+5);
+		templateArea.setLocation(10, getLowerRightCoordinate(detBeforeLbl).y+5);
 		templateArea.setSize(458, 300);
 		templateArea.setEditable(false);
 		templateArea.setText(beforeText);
 		
 		//分隔線與Template等長(取最長的)
-		if (getBoundsPoint(separateLabel2).x < 458)
+		if (getLowerRightCoordinate(separateLabel2).x < 458)
 			separateLabel2.setSize(458, 1);
 		else
-			templateArea.setSize(getBoundsPoint(separateLabel2).x, 300);
+			templateArea.setSize(getLowerRightCoordinate(separateLabel2).x, 300);
 		
 		//載入預定的字型、顏色
 		addBeforeSampleStyle(CarelessCleanUpPage.getDisplay());	

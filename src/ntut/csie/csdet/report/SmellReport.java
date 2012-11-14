@@ -379,8 +379,8 @@ public class SmellReport {
 		} catch (TransformerException ex) {
 			logger.error("[Transformer Exception] EXCEPTION ",ex);
 		} finally {
-			inputStream.close();
-			outputSteam.close();			
+			closeStream(inputStream);
+			closeStream(outputSteam);
 		}
 	}
 }

@@ -85,7 +85,7 @@ public class EHSmellReportView extends ViewPart {
 		browser = new Browser(parent, SWT.NONE);
 		browser.setLayoutData(browserForm);
 		//預設Browser開始時的訊息
-		browser.setText(resource.getString("browser.default"));
+		browser.setText(resource.getString("SmellReport.browser.default"));
 		browser.addLocationListener(new BrowserControl());
 	}
 
@@ -123,7 +123,7 @@ public class EHSmellReportView extends ViewPart {
 				}
 			}
 		});
-		itemGenerate.setText(resource.getString("generate"));
+		itemGenerate.setText(resource.getString("SmellReport.generate"));
 		itemGenerate.setImage(ImageManager.getInstance().get("unchecked"));
 
 		///建置Refresh ToolItem///
@@ -136,7 +136,7 @@ public class EHSmellReportView extends ViewPart {
 				projectCombo.setFocus();
 			}
 		});
-		itemRefresh.setText(resource.getString("refresh"));
+		itemRefresh.setText(resource.getString("SmellReport.refresh"));
 		itemRefresh.setImage(ImageManager.getInstance().get("refresh"));
 
 		projectCombo = new Combo(parent, SWT.NONE);
@@ -159,7 +159,7 @@ public class EHSmellReportView extends ViewPart {
 	private void buildReport(IProject project) {
 		//先出現提示訊息給user,因為算coverage要花一段時間
 		//先讓job去跑builder,計算code coverage
-		final ProgressActionJob job = new ProgressActionJob("Generate EH Smell Report",project, data);
+		final ProgressActionJob job = new ProgressActionJob(resource.getString("SmellReport.generateReportProgressBarTitle"), project, data);
 		
 		//設定優先順序
 		job.setPriority(Job.SHORT);
@@ -202,7 +202,7 @@ public class EHSmellReportView extends ViewPart {
 				filter.open();
 			}
 		};
-		filterAction.setText(resource.getString("filter"));		
+		filterAction.setText(resource.getString("SmellReport.filter"));		
 		filterAction.setImageDescriptor(ImageManager.getInstance().getDescriptor("filter"));
 		toolBarManager.add(filterAction);
 
@@ -216,7 +216,7 @@ public class EHSmellReportView extends ViewPart {
 				}
 			}
 		};
-		selectAction.setText(resource.getString("open.report"));
+		selectAction.setText(resource.getString("SmellReport.open.report"));
 		selectAction.setImageDescriptor(ImageManager.getInstance().getDescriptor("note_view"));		
 		toolBarManager.add(selectAction);
 	}

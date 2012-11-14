@@ -17,6 +17,16 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
 
+/**
+ * &lt;CodeSmells&gt;<br />
+ * &nbsp;&nbsp;&lt;SmellTypes name="DummyHandler" isDetecting="true"&gt;<br />
+ * &nbsp;&nbsp;&nbsp;&nbsp;&lt;pattern name="" isDetecting="" /&gt;<br />
+ * &nbsp;&nbsp;&nbsp;&nbsp;&lt;extraRule name="EXTRARULE_ePrintStackTrace" /&gt;<br />
+ * &nbsp;&nbsp;&lt;/SmellTypes&gt;<br />
+ * &nbsp;&nbsp;&lt;SmellTypes name="NestedTryBlock" isDetecting="false" /&gt;<br />
+ * &nbsp;&nbsp;&lt;AnnotationTypes name="RobusnessLevel" enable="false" /&gt;<br />
+ * &lt;/CodeSmells&gt; <br />
+ */
 public class SmellSettings {
 	/*
 	 * <CodeSmells>
@@ -25,15 +35,18 @@ public class SmellSettings {
 	 * 		<extraRule name="EXTRARULE_ePrintStackTrace" />
 	 * 	</SmellTypes>
 	 * 	<SmellTypes name="NestedTryBlock" isDetecting="false" />
+	 *  <AnnotationTypes name="RobusnessLevel" enable="false" />
 	 * </CodeSmells> 
 	 */
 	public final static String SETTING_FILENAME = "SmellSetting.xml";
 	public final static String TAG_ROOT = "CodeSmells";
 	public final static String TAG_SMELLTYPE4DETECTING = "SmellTypes";
+	public final static String TAG_ANNOTATIONTYPE = "AnnotationTypes";
 	public final static String TAG_PATTERN = "pattern";
 	public final static String TAG_EXTRARULE = "extraRule";
 	public final static String ATTRIBUTE_NAME = "name";
 	public final static String ATTRIBUTE_ISDETECTING = "isDetecting";	
+	public final static String ATTRIBUTE_ENABLE = "enable";	
 	
 	public final static String SMELL_IGNORECHECKEDEXCEPTION = "IgnoreCheckedException";
 	public final static String SMELL_DUMMYHANDLER = "DummyHandler";
@@ -41,6 +54,7 @@ public class SmellSettings {
 	public final static String SMELL_UNPROTECTEDMAINPROGRAM = "UnprotectedMainProgram";
 	public final static String SMELL_OVERLOGGING = "OverLogging";
 	public final static String SMELL_CARELESSCLEANUP = "CarelessCleanup";
+	public final static String ANNOTATION_ROBUSTNESSLEVEL = "RobustnessLevel";
 	/** 例外轉型後繼續偵測 */
 	public final static String EXTRARULE_OVERLOGGING_DETECTWRAPPINGEXCEPTION = "DetectWrappingExcetion";
 	/** 偵測釋放資源的程式碼是否在函式中 */
@@ -97,6 +111,15 @@ public class SmellSettings {
 		}
 		return false;
 	}
+	
+	/**
+	 * 是否要使用強健度等級註記
+	 * @return
+	 */
+	public boolean isAddingRobustnessAnnotation() {
+		Element annotationType = getAnnotationType(TAG_ANNOTATIONTYPE);
+		return Boolean.parseBoolean(annotationType.getAttributeValue(ATTRIBUTE_ENABLE));
+	}
 
 	/**
 	 * 如果想取得的bad smell name不存在，
@@ -108,26 +131,52 @@ public class SmellSettings {
 	public Element getSmellType(String badSmellName) {
 		Element root = settingDoc.getRootElement();
 		List<?> elements = root.getChildren(TAG_SMELLTYPE4DETECTING);
-		Element badSmellElement = null;
+		Element tagSmellTypeElement = null;
 		
 		for (Object s : elements) {
 			Element smellTypeElement = (Element)s;
 			if(smellTypeElement.getAttribute(ATTRIBUTE_NAME).getValue().equals(badSmellName)) {
-				badSmellElement = smellTypeElement;
-				return badSmellElement;
+				tagSmellTypeElement = smellTypeElement;
+				return tagSmellTypeElement;
 			}
 		}
 					
-		if(badSmellElement==null) {
-			badSmellElement = new Element(TAG_SMELLTYPE4DETECTING);
-			badSmellElement.setAttribute(ATTRIBUTE_NAME, badSmellName);
-			badSmellElement.setAttribute(ATTRIBUTE_ISDETECTING, String.valueOf(true));
-			root.addContent(badSmellElement);
+		if(tagSmellTypeElement==null) {
+			tagSmellTypeElement = new Element(TAG_SMELLTYPE4DETECTING);
+			tagSmellTypeElement.setAttribute(ATTRIBUTE_NAME, badSmellName);
+			tagSmellTypeElement.setAttribute(ATTRIBUTE_ISDETECTING, String.valueOf(true));
+			root.addContent(tagSmellTypeElement);
 		}
-		
-		return badSmellElement;
+		return tagSmellTypeElement;
 	}
 	
+	/**
+	 * 取得強健度等級的節點。
+	 * 如果節點不存在，就會自動產生一個enable為false的強健度等級節點。
+	 * @param annotationName
+	 * @return
+	 */
+	public Element getAnnotationType(String annotationName) {
+		Element root = settingDoc.getRootElement();
+		List<?> elements = root.getChildren(TAG_ANNOTATIONTYPE);
+		Element tagAnnotationTypeElement = null;
+		for (Object s : elements) {
+			Element annotationTypeElement = (Element)s;
+			if(annotationTypeElement.getAttribute(ATTRIBUTE_NAME).getValue().equals(annotationName)) {
+				tagAnnotationTypeElement = annotationTypeElement;
+				return tagAnnotationTypeElement;
+			}
+		}
+		
+		if(tagAnnotationTypeElement == null) {
+			tagAnnotationTypeElement = new Element(TAG_ANNOTATIONTYPE);
+			tagAnnotationTypeElement.setAttribute(ATTRIBUTE_NAME, annotationName);
+			tagAnnotationTypeElement.setAttribute(ATTRIBUTE_ENABLE, String.valueOf(false));
+			root.addContent(tagAnnotationTypeElement);
+		}
+		return tagAnnotationTypeElement;
+	}
+		
 	public void setSmellTypeAttribute(String badSmellName, String attributeName, Boolean attributeValue) {
 		Element badSmellElement = getSmellType(badSmellName);
 		badSmellElement.setAttribute(attributeName, String.valueOf(attributeValue));

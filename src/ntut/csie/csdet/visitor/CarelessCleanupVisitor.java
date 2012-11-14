@@ -11,12 +11,12 @@ import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.robusta.agile.exception.RTag;
 import ntut.csie.robusta.agile.exception.Robustness;
 
-import org.eclipse.compare.internal.NullViewer;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
@@ -232,13 +232,41 @@ public class CarelessCleanupVisitor extends ASTVisitor {
 	}
 	
 	private void collectSmell(MethodInvocation node) {
+		StringBuilder exceptions = new StringBuilder();
+		ITypeBinding[] exceptionTypes = collectMethodInvocationThrownException(node);
+		if (exceptionTypes != null) {
+			for (ITypeBinding itb : exceptionTypes) {
+				exceptions.append(itb.toString());
+				exceptions.append(",");
+			}
+		}
 		ASTNode parentNode = NodeUtils.getSpecifiedParentNode(node, ASTNode.TRY_STATEMENT);
 		MarkerInfo markerInfo = new MarkerInfo(RLMarkerAttribute.CS_CARELESS_CLEANUP,
 			(node.getExpression() != null)? node.getExpression().resolveTypeBinding() : null,
 			node.toString(), node.getStartPosition(),
 			root.getLineNumber(node.getStartPosition()),
-			(node.getExpression() != null)? node.getExpression().resolveTypeBinding().toString() : null);
+			(exceptionTypes != null)? exceptions.toString() : null);
 		markerInfo.setIsInTry((parentNode != null)? true:false);
 		carelessCleanupList.add(markerInfo);
+	}
+	
+	/**
+	 * 蒐集MethodInvocation上所有拋出的例外。
+	 * 通常只能蒐集到Checked Exception，因為只有它們會被強制要求寫在MethodDeclaration上。
+	 * @param node 你想蒐集例外的MethodInvocation
+	 * @return
+	 */
+	private ITypeBinding[] collectMethodInvocationThrownException(MethodInvocation node) {
+		// 如果使用者進行了快速修復，則會蒐集到ListRewrite的資訊，node.resolveMethodBinding()會變成null
+		if(node.resolveMethodBinding() == null) {
+			return null;
+		}
+		
+		// visit原始程式碼的時候，可以蒐集到node.resolveMethodBinding()
+		if(node.resolveMethodBinding().getExceptionTypes().length <= 0) {
+			return null;
+		}
+		
+		return node.resolveMethodBinding().getExceptionTypes();
 	}
 }

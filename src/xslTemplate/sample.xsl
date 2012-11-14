@@ -3,7 +3,7 @@
 <xsl:template match="/EHSmellReport">
 <html>
 <head>
-<title>EH Smells Results</title>
+<title>Exception Handling Code Smells Report</title>
 <LINK href="../styles.css" type="text/css" rel="stylesheet"></LINK>
 </head>
 
@@ -36,12 +36,12 @@
 
 <body >
 	<table cellSpacing="0" cellPadding="0" width="100%" border="0" align="center"><tr><td>
-	<span class="supertitle">EH Smells Report </span><a name="top"></a><div align="left" class="description"></div><h2 class="bigtitle">Summary<a name="Summary"></a></h2>
-	<p>[<a class="menulink" href="#Summary">Summary</a>] [<a class="menulink" href="#EH_Smells_List">EH Smells List</a>] [<a class="menulink" href="#Code_Info_List">Code Information List</a>] [<a class="menulink" href="#Package_List">Package List</a>] </p>
+	<span class="supertitle">Exception Handling Code Smells Report</span><a name="top"></a><div align="left" class="description"></div><h2 class="bigtitle">Summary<a name="Summary"></a></h2>
+	<p>[<a class="menulink" href="#Summary">Summary</a>] [<a class="menulink" href="#EH_Smells_List">Exception Handling Code Smells List</a>] [<a class="menulink" href="#Code_Info_List">Code Information List</a>] [<a class="menulink" href="#Package_List">Package List</a>] </p>
 		<div align="left" class="menutext"> <b><font size="3">Project Name: <xsl:value-of select="Summary/ProjectName"></xsl:value-of></font></b></div>
 		<div align="left" class="menutext"> <b><font size="3">Generation Time : <xsl:value-of select="Summary/DateTime"></xsl:value-of></font></b></div>
 		<div align="left" class="menutext"> <b><font size="3">Filter conditions : <xsl:value-of select="Summary/Filter"></xsl:value-of></font></b></div>
-	<h2 class="smalltitle">EH Smells Summary</h2>
+	<h2 class="smalltitle">Exception Handling Code Smells Summary</h2>
 	<div align="center" id="reportSrcDiv">
 	<img>
 	<xsl:attribute name="src">
@@ -49,12 +49,12 @@
 	</xsl:attribute>
 	</img>
 	</div>
-	<h2 class="bigtitle">EH Smells List<a name="EH_Smells_List"></a></h2>
-	<p>[<a class="menulink" href="#Summary">Summary</a>] [<a class="menulink" href="#EH_Smells_List">EH Smells List</a>] [<a class="menulink" href="#Code_Info_List">Code Information List</a>] [<a class="menulink" href="#Package_List">Package List</a>] </p>
+	<h2 class="bigtitle">Exception Handling Code Smells List<a name="EH_Smells_List"></a></h2>
+	<p>[<a class="menulink" href="#Summary">Summary</a>] [<a class="menulink" href="#EH_Smells_List">Code Smells List</a>] [<a class="menulink" href="#Code_Info_List">Code Information List</a>] [<a class="menulink" href="#Package_List">Package List</a>] </p>
 	<table width="100%" border="0" cellpadding="2" cellspacing="1" class="forumline" id="table3"><thead>
-  <tr bgcolor="#EAEADA" class="bigbluetext"><th>Ignore Checked Exception</th><th>
+  <tr bgcolor="#EAEADA" class="bigbluetext"><th>Ignored Checked Exception</th><th>
 	Dummy Handler</th><th>Unprotected Main Program</th><th>
-	Nested Try Block</th><th>Careless CleanUp</th><th>OverLogging</th><th>Total EH Smells</th></tr></thead>
+	Nested TryStatement</th><th>Careless Cleanup</th><th>Over Logging</th><th>Total Code Smells</th></tr></thead>
 	<tr bgcolor="#F7F7F7" class="text" align="right">
 		<td> <xsl:value-of select="EHSmellList/IgnoreCheckedException"></xsl:value-of> </td>
 		<td><xsl:value-of select="EHSmellList/DummyHandler"></xsl:value-of></td>
@@ -68,7 +68,7 @@
 	<p></p>
 	<p></p>
 		<h2 class="bigtitle">Code Information List<a name="Code_Info_List"></a></h2>
-	<p>[<a class="menulink" href="#Summary">Summary</a>] [<a class="menulink" href="#EH_Smells_List">EH Smells List</a>] [<a class="menulink" href="#Code_Info_List">Code Information List</a>] [<a class="menulink" href="#Package_List">Package List</a>] </p>
+	<p>[<a class="menulink" href="#Summary">Summary</a>] [<a class="menulink" href="#EH_Smells_List">Exception Handling Code Smells List</a>] [<a class="menulink" href="#Code_Info_List">Code Information List</a>] [<a class="menulink" href="#Package_List">Package List</a>] </p>
 	<table width="100%" border="0" cellpadding="2" cellspacing="1" class="forumline" id="table3"><thead>
   <tr bgcolor="#EAEADA" class="bigbluetext"><th>Lines Of Code (LOC)</th><th>
 	Number Of Try Block</th><th>Number Of Catch Clause</th><th>
@@ -84,7 +84,7 @@
 	<hr></hr>
 	<p></p>
 	<h2 class="bigtitle">Package List<a name="Package_List"></a></h2>
-	<p>[<a class="menulink" href="#Summary">Summary</a>] [<a class="menulink" href="#EH_Smells_List">EH Smells List</a>] [<a class="menulink" href="#Code_Info_List">Code Information List</a>] [<a class="menulink" href="#Package_List">Package List</a>] </p>
+	<p>[<a class="menulink" href="#Summary">Summary</a>] [<a class="menulink" href="#EH_Smells_List">Exception Handling Code Smells List</a>] [<a class="menulink" href="#Code_Info_List">Code Information List</a>] [<a class="menulink" href="#Package_List">Package List</a>] </p>
 	<div align="center" id="reportSrcDiv"> <img>
 	<xsl:attribute name="src">
 	<xsl:value-of select="AllPackageList/JPGPath"></xsl:value-of>
@@ -98,13 +98,13 @@
 		<th class="forumline1" width="10">ID</th>
   		<th class="forumline1" width="133">Package Name</th>
   		<th>Lines Of Code (LOC)</th>
-		<th>Ignore Checked Exception</th>
+		<th>Ignored Checked Exception</th>
 		<th>Dummy Handler</th>
 		<th>Unprotected Main Program</th>
-		<th>Nested Try Block</th>
-		<th>Careless Clean Up</th>
-		<th>OverLogging</th>
-		<th>Total EH Smells</th></tr>
+		<th>Nested Try Statement</th>
+		<th>Careless Cleanup</th>
+		<th>Over Logging</th>
+		<th>Total Code Smells</th></tr>
 	</thead>
 	<!-- PackageList內容 -->
 	<xsl:for-each select="AllPackageList/Package">
@@ -183,7 +183,7 @@
 				<tr style="text-align: center" bgcolor="#EAEADA" class="bigbluetext">
 				<th style="text-align: center" class="forumline1">Class Name</th>
 				<th style="text-align: center" class="forumline1" width="229">Method</th>
-				<th style="text-align: center" class="forumline1" width="237">EH Smell Type</th>
+				<th style="text-align: center" class="forumline1" width="237">Code Smell Type</th>
 				<th style="text-align: center" class="forumline1" width="267"> Line</th>
 				</tr>
 			</thead>
@@ -211,7 +211,7 @@
 			</xsl:for-each>
 			<!-- (Class Level)Smell List統計 -->
 			<tr bgcolor="#E5E5E5" class="text" align="right">
-				<td style="text-align: left" class="forumline1" colspan="2"><span class="text2"><strong>Total EH Smell</strong></span></td>
+				<td style="text-align: left" class="forumline1" colspan="2"><span class="text2"><strong>Total Code Smell</strong></span></td>
 				<td align="left" colspan="2"><span class="text2"><xsl:value-of select="Total"></xsl:value-of></span></td>
 			</tr>
 		</table>
@@ -219,8 +219,8 @@
 		<div align="right"><a href="#top">Top</a></div>
 		<hr></hr>
 	</xsl:for-each>
-
-	<div align="center"><span class="orangetext">@ copy; 2009, <a href="http://pl.csie.ntut.edu.tw/ntutlab306/index.php" >Software Systems Lab</a> at <a href="http://www.ntut.edu.tw/" >NTUT</a></span></div></td></tr></table>
+	<!-- &#169;就是 &copy;，但是在xsl裡面，不能用&copy;，詳情可以參考 http://onjava.com/pub/a/oreilly/java/news/javaxslt_0801.html -->
+	<div align="center"><span class="orangetext">copyright &#169; 2009, <a href="http://pl.csie.ntut.edu.tw/ntutlab306/index.php" >Software Systems Lab</a> at <a href="http://www.ntut.edu.tw/" >NTUT</a></span></div></td></tr></table>
 </body>
 </html>
 </xsl:template>

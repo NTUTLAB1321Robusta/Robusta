@@ -53,7 +53,7 @@ public class BarChart {
 			//建立Project Summary的Smell資訊
 	        CategoryDataset dataset = createProjectDataset();
 	        //產生Chart
-	        JFreeChart chart = createChart(dataset, "EH Smells Chart", "", true);
+	        JFreeChart chart = createChart(dataset, "Exception Handling Code Smells Chart", "", true);
 	        //輸出成JPG
 	        outputJPGFile(chart, "Report", 800, 500);
 
@@ -84,12 +84,12 @@ public class BarChart {
 		if(model.getTotalSmellCount() == 0){
 			return null;
 		}
-		data.addValue(model.getIgnoreTotalSize() , "", "Ignore checked exception");
+		data.addValue(model.getIgnoreTotalSize() , "", "Ignored checked exception");
 		data.addValue(model.getDummyTotalSize(), "", "Dummy handler");
 		data.addValue(model.getUnMainTotalSize(), "", "Unprotected main program");
-		data.addValue(model.getNestedTryTotalSize(), "", "Nested try block");
-		data.addValue(model.getCarelessCleanUpTotalSize(), "", "Careless Clean Up");
-		data.addValue(model.getOverLoggingTotalSize(), "", "OverLogging");
+		data.addValue(model.getNestedTryTotalSize(), "", "Nested try statemet");
+		data.addValue(model.getCarelessCleanUpTotalSize(), "", "Careless Cleanup");
+		data.addValue(model.getOverLoggingTotalSize(), "", "Over Logging");
 		return data;				
 	}
 	
@@ -135,7 +135,7 @@ public class BarChart {
 		final JFreeChart chart = ChartFactory.createBarChart(
 			title,			        	// chart title
 			level,						// domain axis label
-			"Number of EH Smells",		// range axis label
+			"Number of Code Smells",	// range axis label
 			dataset,                    // data
 			PlotOrientation.VERTICAL,   // the plot orientation
 			false,						// legend

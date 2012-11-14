@@ -88,7 +88,7 @@ public class DummyHandlerPage extends APropertyPage{
 		//琌盎代e.printStackTrace秙
 		eprintBtn = new Button(dummyHandlerPage, SWT.CHECK);
 		eprintBtn.setText(resource.getString("print.stack.trace"));
-		eprintBtn.setLocation(detectSettingsLabel.getLocation().x+10, getBoundsPoint(detectSettingsLabel).y+5);
+		eprintBtn.setLocation(detectSettingsLabel.getLocation().x+10, getLowerRightCoordinate(detectSettingsLabel).y+5);
 		eprintBtn.pack();
 		eprintBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
@@ -102,7 +102,7 @@ public class DummyHandlerPage extends APropertyPage{
 		//琌盎代System.out.print秙
 		sysoBtn = new Button(dummyHandlerPage, SWT.CHECK);
 		sysoBtn.setText(resource.getString("system.out.print"));
-		sysoBtn.setLocation(detectSettingsLabel.getLocation().x+10, getBoundsPoint(eprintBtn).y+5);
+		sysoBtn.setLocation(detectSettingsLabel.getLocation().x+10, getLowerRightCoordinate(eprintBtn).y+5);
 		sysoBtn.pack();
 		sysoBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
@@ -116,7 +116,7 @@ public class DummyHandlerPage extends APropertyPage{
 		//琌盎代Log4j秙
 		log4jBtn = new Button(dummyHandlerPage, SWT.CHECK);
 		log4jBtn.setText(resource.getString("detect.log4j"));
-		log4jBtn.setLocation(detectSettingsLabel.getLocation().x+10, getBoundsPoint(sysoBtn).y+5);
+		log4jBtn.setLocation(detectSettingsLabel.getLocation().x+10, getLowerRightCoordinate(sysoBtn).y+5);
 		log4jBtn.pack();
 		log4jBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
@@ -130,7 +130,7 @@ public class DummyHandlerPage extends APropertyPage{
 		//琌盎代JavaUtillog秙
 		javaUtillogBtn = new Button(dummyHandlerPage, SWT.CHECK);
 		javaUtillogBtn.setText(resource.getString("detect.logger"));
-		javaUtillogBtn.setLocation(detectSettingsLabel.getLocation().x+10, getBoundsPoint(log4jBtn).y+5);
+		javaUtillogBtn.setLocation(detectSettingsLabel.getLocation().x+10, getLowerRightCoordinate(log4jBtn).y+5);
 		javaUtillogBtn.pack();
 		javaUtillogBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
@@ -144,12 +144,12 @@ public class DummyHandlerPage extends APropertyPage{
 		/// Customize Rule ///
 		final Label detectSettingsLabel2 = new Label(dummyHandlerPage, SWT.NONE);
 		detectSettingsLabel2.setText(resource.getString("customize.rule"));
-		detectSettingsLabel2.setLocation(getBoundsPoint(javaUtillogBtn).x+43, 10);
+		detectSettingsLabel2.setLocation(getLowerRightCoordinate(javaUtillogBtn).x+43, 10);
 		detectSettingsLabel2.pack();
 		//Customize Rule Button
 		extraRuleBtn = new Button(dummyHandlerPage, SWT.NONE);
 		extraRuleBtn.setText(resource.getString("extra.rule"));
-		extraRuleBtn.setLocation(detectSettingsLabel2.getLocation().x+10, getBoundsPoint(detectSettingsLabel2).y+5);
+		extraRuleBtn.setLocation(detectSettingsLabel2.getLocation().x+10, getLowerRightCoordinate(detectSettingsLabel2).y+5);
 		extraRuleBtn.pack();
 		extraRuleBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
@@ -161,30 +161,30 @@ public class DummyHandlerPage extends APropertyPage{
 
 		/// だ筳絬 ///
 		final Label separateLabel1 = new Label(dummyHandlerPage, SWT.VERTICAL | SWT.SEPARATOR);
-		separateLabel1.setLocation(getBoundsPoint(javaUtillogBtn).x+28, 5);
-		separateLabel1.setSize(1, getBoundsPoint(javaUtillogBtn).y-5);
+		separateLabel1.setLocation(getLowerRightCoordinate(javaUtillogBtn).x+28, 5);
+		separateLabel1.setSize(1, getLowerRightCoordinate(javaUtillogBtn).y-5);
 		final Label separateLabel2 = new Label(dummyHandlerPage,SWT.SEPARATOR| SWT.HORIZONTAL);
-		separateLabel2.setLocation(10, getBoundsPoint(javaUtillogBtn).y+5);
-		separateLabel2.setSize(getBoundsPoint(detectSettingsLabel2).x, 1);
+		separateLabel2.setLocation(10, getLowerRightCoordinate(javaUtillogBtn).y+5);
+		separateLabel2.setSize(getLowerRightCoordinate(detectSettingsLabel2).x, 1);
 
 		/// Template ///
 		final Label codeTemplateLabel = new Label(dummyHandlerPage, SWT.NONE);
 		codeTemplateLabel.setText(resource.getString("detect.example"));
-		codeTemplateLabel.setLocation(10, getBoundsPoint(separateLabel2).y+10);
+		codeTemplateLabel.setLocation(10, getLowerRightCoordinate(separateLabel2).y+10);
 		codeTemplateLabel.pack();
 		//Detect Template
 		templateArea = new StyledText(dummyHandlerPage, SWT.BORDER);
 		Font font = new Font(dummyHandlerPage.getDisplay(),"Courier New", 14,SWT.NORMAL);		
 		templateArea.setFont(font);
-		templateArea.setLocation(10, getBoundsPoint(codeTemplateLabel).y+5);
+		templateArea.setLocation(10, getLowerRightCoordinate(codeTemplateLabel).y+5);
 		templateArea.setSize(458, 263);
 		templateArea.setEditable(false);
 
 		//だ筳絬籔Template单(程)
-		if (getBoundsPoint(separateLabel2).x < 458)
+		if (getLowerRightCoordinate(separateLabel2).x < 458)
 			separateLabel2.setSize(458, 1);
 		else
-			templateArea.setSize(getBoundsPoint(separateLabel2).x, 263);
+			templateArea.setSize(getLowerRightCoordinate(separateLabel2).x, 263);
 
 		//更箇﹚肅︹
 		addSampleStyle(dummyHandlerPage.getDisplay());

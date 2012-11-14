@@ -3,7 +3,9 @@ package ntut.csie.csdet.refactor;
 import java.util.ArrayList;
 import java.util.List;
 
+import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.visitor.SpareHandlerVisitor;
+import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLData;
@@ -101,11 +103,14 @@ public class RetryRefactoring extends Refactoring {
 	
 	private ASTRewrite rewrite;
 	
+	private SmellSettings smellSettings;
+	
 	public RetryRefactoring(IJavaProject project,IJavaElement element,ITextSelection sele,String retryType){
 		this.project = project;
 		this.element = element;
 		this.iTSelection = sele;
 		this.RETRY_TYPE = retryType;
+		smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 	}	
 	
 	@Override
@@ -253,7 +258,9 @@ public class RetryRefactoring extends Refactoring {
 				ts.setFinally((Block) ASTNode.copySubtree(ast, original.getFinally()));
 			}
 			//建立RL Annotation
-			addAnnotationRoot(ast);
+			if(smellSettings.isAddingRobustnessAnnotation()) {
+				addAnnotationRoot(ast);
+			}
 			//寫回Edit中
 			applyChange();
 		}

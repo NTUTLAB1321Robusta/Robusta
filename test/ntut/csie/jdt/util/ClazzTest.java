@@ -26,4 +26,10 @@ public class ClazzTest {
 		// 沒有實作Closeable的interface
 		assertFalse(Clazz.isImplemented(Serializable.class, Closeable.class));
 	}
+	
+	@Test
+	public void testIsUncheckedException() {
+		assertTrue(Clazz.isUncheckedException(ArrayIndexOutOfBoundsException.class.getName()));
+		assertFalse(Clazz.isUncheckedException(ArrayIndexOutOfBoundsException.class.getSimpleName()));
+	}
 }

@@ -22,7 +22,7 @@ public abstract class APropertyPage {
 	 * @param control
 	 * @return			¥k¤U¨¤®y¼Ð
 	 */
-	protected Point getBoundsPoint(Control control) {
+	protected Point getLowerRightCoordinate(Control control) {
 		if (control == null) return new Point(0,0);
 
 		return new Point(control.getBounds().x + control.getBounds().width ,

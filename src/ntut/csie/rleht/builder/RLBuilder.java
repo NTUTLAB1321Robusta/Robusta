@@ -38,7 +38,6 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
-import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
@@ -403,24 +402,26 @@ public class RLBuilder extends IncrementalProjectBuilder {
 					
 					//尋找該method內的OverLogging
 					loggingDetector = new OverLoggingDetector(root, method);
-					loggingDetector.detect();
-					//取得專案中OverLogging
-					overLoggingList = loggingDetector.getOverLoggingList();
-
-					//依據所取得的code smell來貼Marker
-					csIdx = -1;
-					//OverLogging List不為Null，且使用者沒有抑制Method內所有的OverLogging Marker
-					if(overLoggingList != null && detMethodSmell.get(RLMarkerAttribute.CS_OVER_LOGGING)){
-						List<Integer> posList = detCatchSmell.get(RLMarkerAttribute.CS_OVER_LOGGING);
-						for(MarkerInfo msg : overLoggingList) {
-							csIdx++;
-							//判斷使用者有沒有在Catch內貼Annotation，抑制Smell Marker
-							if (suppressMarker(posList, msg.getPosition()))
-								continue;
-							String errmsg = this.resource.getString("ex.smell.type.undealt") + msg.getCodeSmellType() + this.resource.getString("ex.smell.type");
-							//貼marker
-							this.addMarker(file, errmsg, msg.getLineNumber(), IMarker.SEVERITY_WARNING,
-									msg.getCodeSmellType(), msg, csIdx, methodIdx);	
+					if(loggingDetector != null) {
+						loggingDetector.detect();
+						//取得專案中OverLogging
+						overLoggingList = loggingDetector.getOverLoggingList();
+	
+						//依據所取得的code smell來貼Marker
+						csIdx = -1;
+						//OverLogging List不為Null，且使用者沒有抑制Method內所有的OverLogging Marker
+						if(overLoggingList != null && detMethodSmell.get(RLMarkerAttribute.CS_OVER_LOGGING)){
+							List<Integer> posList = detCatchSmell.get(RLMarkerAttribute.CS_OVER_LOGGING);
+							for(MarkerInfo msg : overLoggingList) {
+								csIdx++;
+								//判斷使用者有沒有在Catch內貼Annotation，抑制Smell Marker
+								if (suppressMarker(posList, msg.getPosition()))
+									continue;
+								String errmsg = this.resource.getString("ex.smell.type.undealt") + msg.getCodeSmellType() + this.resource.getString("ex.smell.type");
+								//貼marker
+								this.addMarker(file, errmsg, msg.getLineNumber(), IMarker.SEVERITY_WARNING,
+										msg.getCodeSmellType(), msg, csIdx, methodIdx);	
+							}
 						}
 					}
 					

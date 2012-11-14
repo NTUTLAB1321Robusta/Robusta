@@ -3,9 +3,11 @@ package ntut.csie.csdet.refactor;
 import java.util.List;
 
 import ntut.csie.csdet.data.MarkerInfo;
+import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.visitor.ASTCatchCollect;
 import ntut.csie.csdet.visitor.DummyHandlerVisitor;
 import ntut.csie.csdet.visitor.IgnoreExceptionVisitor;
+import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.rleht.builder.RLOrderFix;
@@ -102,6 +104,12 @@ public class RethrowExRefactoring extends Refactoring {
 	private String msgIdx;
 	String methodIdx;
 	int catchIdx = -1;
+	
+	private SmellSettings smellSettings;
+	
+	public RethrowExRefactoring() {
+		smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+	}
 	
 	@Override
 	public RefactoringStatus checkFinalConditions(IProgressMonitor pm)
@@ -255,8 +263,10 @@ public class RethrowExRefactoring extends Refactoring {
 					catchIdx = i;
 					// 在catch clause中建立throw statement
 					addThrowStatement(catchList.get(i), ast);
-					// 建立RL Annotation
-					addAnnotationRoot(ast);
+					if(smellSettings.isAddingRobustnessAnnotation()) {
+						// 建立RLAnnotation
+						addAnnotationRoot(ast);
+					}
 					// 加入未import的Library(遇到RuntimeException就不用加Library)
 					if (!exceptionType.equals("RuntimeException")) {
 						addImportDeclaration();
@@ -459,7 +469,7 @@ public class RethrowExRefactoring extends Refactoring {
 			actRoot.imports().add(imp);
 		}
 	}
-	
+
 	private void addImportRLDeclaration() {
 		// 判斷是否已經Import Robustness及RL的宣告
 		List<ImportDeclaration> importList = actRoot.imports();

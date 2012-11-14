@@ -15,7 +15,7 @@ public class RLEHTPlugin extends AbstractUIPlugin {
 	private static Logger logger = LoggerFactory.getLogger(RLEHTPlugin.class);
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "RLEHT";
+	public static final String PLUGIN_ID = "Robusta";
 
 	// The shared instance
 	private static RLEHTPlugin plugin;

@@ -35,19 +35,19 @@ public interface RLMarkerAttribute {
 
 
 	/** ignore exceptionªºtype */
-	public static final String CS_INGNORE_EXCEPTION = "Ignore_Checked_Exception";
+	public static final String CS_INGNORE_EXCEPTION = "Ignored_Checked_Exception";
 	
 	/** Dummy Handlerªºtype */
 	public static final String CS_DUMMY_HANDLER = "Dummy_Handler";
 	
 	/** Nested Try Blockªºtype */
-	public static final String CS_NESTED_TRY_BLOCK = "Nested_Try_Block";
+	public static final String CS_NESTED_TRY_BLOCK = "Nested_TryStatement";
 	
 	/** Unprotected Main Program */
 	public static final String CS_UNPROTECTED_MAIN = "Unprotected_Main_Program";
 	
 	/** Careless CleanUp */
-	public static final String CS_CARELESS_CLEANUP = "Careless_CleanUp";
+	public static final String CS_CARELESS_CLEANUP = "Careless_Cleanup";
 	
 	/** Over Logging */
 	public static final String CS_OVER_LOGGING = "Over_Logging";

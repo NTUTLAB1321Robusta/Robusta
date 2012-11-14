@@ -5,12 +5,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import ntut.csie.csdet.quickfix.CCUQuickFix;
-import ntut.csie.csdet.quickfix.DHQuickFix;
 import ntut.csie.csdet.quickfix.NTQuickFix;
-import ntut.csie.csdet.quickfix.OLQuickFix;
-import ntut.csie.csdet.quickfix.TEQuickFix;
-import ntut.csie.csdet.quickfix.UMQuickFix;
 import ntut.csie.csdet.refactor.CarelessCleanUpAction;
 import ntut.csie.csdet.refactor.OverLoggingAction;
 import ntut.csie.csdet.refactor.RethrowUncheckExAction;
@@ -18,6 +13,11 @@ import ntut.csie.rleht.common.RLUtils;
 import ntut.csie.rleht.rlAdvice.AchieveRL1QuickFix;
 import ntut.csie.rleht.views.RLData;
 import ntut.csie.robusta.agile.exception.RTag;
+import ntut.csie.robusta.codegen.markerresolution.MoveCloseResouceFromTryCatchToFinallyBlockQuickFix;
+import ntut.csie.robusta.codegen.markerresolution.MoveCodeIntoBigOuterTryQuickFix;
+import ntut.csie.robusta.codegen.markerresolution.RefineRuntimeExceptionQuickFix;
+import ntut.csie.robusta.codegen.markerresolution.RemoveOverLoggingStatementQuickFix;
+import ntut.csie.robusta.codegen.markerresolution.ThrowCheckedExceptionQuickFix;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
@@ -86,30 +86,24 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				for (String type : smellList) {
 					boolean isDetect  = Boolean.valueOf((String) marker.getAttribute(type));
 					if (!isDetect)
-						markerList.add(new CSQuickFix(resource.getString("err.ss.fault.name1") + faultName + resource.getString("err.ss.fault.name2") + type, type, inCatch));
+						markerList.add(new CSQuickFix(resource.getString("err.ss.fault.name1") + " " + faultName + " " + resource.getString("err.ss.fault.name2") + " " + type, type, inCatch));
 				}
 				// 碰到Ignore Exception的Quick fix and refactor方法
 			} else if(problem.equals(RLMarkerAttribute.CS_INGNORE_EXCEPTION)) {
-				markerList.add(new DHQuickFix("Quick Fix==>Rethrow Unchecked Exception"));
+				markerList.add(new RefineRuntimeExceptionQuickFix("Quick Fix==>Rethrow RuntimeException"));
 				markerList.add(new RethrowUncheckExAction("Refactor==>Rethrow Unchecked Excetpion"));
-				markerList.add(new TEQuickFix("Quick Fix==>Throw Checked Exception"));
-				markerList.add(new CSQuickFix(resource.getString("add.suppress.smell") + problem + resource.getString("add.suppress.smell.on.method"), false));
-				markerList.add(new CSQuickFix(resource.getString("add.suppress.smell") + problem + resource.getString("add.suppress.smell.on.catch"), true));
+				markerList.add(new ThrowCheckedExceptionQuickFix("Quick Fix==>Throw Checked Exception"));
 				// 碰到Dummy Handler的Quick fix and refactor方法
 			} else if(problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)) {
-				markerList.add(new DHQuickFix("Quick Fix==>Rethrow Unchecked Exception"));
+				markerList.add(new RefineRuntimeExceptionQuickFix("Quick Fix==>Refine to RuntimeException"));
 				markerList.add(new RethrowUncheckExAction("Refactor==>Rethrow Unchecked Excetpion"));
-				markerList.add(new TEQuickFix("Quick Fix==>Throw Checked Exception"));
-				markerList.add(new CSQuickFix(resource.getString("add.suppress.smell") + problem + resource.getString("add.suppress.smell.on.method"), false));
-				markerList.add(new CSQuickFix(resource.getString("add.suppress.smell") + problem + resource.getString("add.suppress.smell.on.catch"), true));
+				markerList.add(new ThrowCheckedExceptionQuickFix("Quick Fix==>Throw Checked Exception"));
 				// 碰到Nested Try block的refactor
 			} else if(problem.equals(RLMarkerAttribute.CS_NESTED_TRY_BLOCK)) {
 				markerList.add(new NTQuickFix("Please use Eclipse refactor==>Extract Method"));
-				markerList.add(new CSQuickFix(resource.getString("add.suppress.smell") + problem + resource.getString("add.suppress.smell.on.method"), false));
 				// 碰到Unprotected Main program的Quick fix
 			} else if(problem.equals(RLMarkerAttribute.CS_UNPROTECTED_MAIN)) {
-				markerList.add(new UMQuickFix("Quick Fix==>Add Big outer try block"));
-				markerList.add(new CSQuickFix(resource.getString("add.suppress.smell") + problem + resource.getString("add.suppress.smell.on.method"), false));
+				markerList.add(new MoveCodeIntoBigOuterTryQuickFix("Quick Fix==>Add Big outer try block"));
 				// 碰到Careless CleanUp的Quick fix and refactor方法
 			} else if(problem.equals(RLMarkerAttribute.CS_CARELESS_CLEANUP)){
 				//只有CCMessage才會有這個，所以只能在這邊get
@@ -118,25 +112,27 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 					withTryBlock = (Boolean) marker.getAttribute(RLMarkerAttribute.CCU_WITH_TRY);
 				}
 				
+				
 				//MethodInv. won't throw exceptions will only offer "quick fix"
-				if(exceptionType == null){
-					markerList.add(new CCUQuickFix("Quick Fix==>Move code to finally block"));
-				}
-				//FIXME - MethodInv. not in try block, should use "Three steps to refactor" 左邊說明為原本構想，目前對應方法為不提供任何功能
-				if(!withTryBlock){
-					
+				if ((withTryBlock) && (exceptionType == null)) {
+					markerList.add(new MoveCloseResouceFromTryCatchToFinallyBlockQuickFix("Quick Fix==>Move code to finally block"));
+
+				// FIXME - MethodInv. not in try block, should use "Three steps to refactor" 左邊說明為原本構想，目前對應方法為不提供任何功能
+				} else if ((!withTryBlock) && (exceptionType == null)) {
+					//  Surround MethodDeclaration Body with big outer Try and close in finally
+
 				//MethodInv. will throw exceptions and in try block
-				}else if(exceptionType != null && withTryBlock){
+				} else if ((withTryBlock) && (exceptionType != null)) {
 					markerList.add(new CarelessCleanUpAction("Refactor==>Use Extract Method"));
+				} else {
+					// 需要提供Refactoring的功能
 				}
-				markerList.add(new CSQuickFix(resource.getString("add.suppress.smell") + problem + resource.getString("add.suppress.smell.on.method"), false));
+					
 				// 碰到OverLogging的Quick fix and refactor方法
 			}else if(problem.equals(RLMarkerAttribute.CS_OVER_LOGGING)){
-				markerList.add(new OLQuickFix("Quick Fix==>Remove Logging"));
+				markerList.add(new RemoveOverLoggingStatementQuickFix("Quick Fix==>Remove Logging"));
 //				markerList.add(new OLRefactoring("Refactor==>Remove Reference Logging"));
 				markerList.add(new OverLoggingAction("Refactor==>Remove Reference Logging"));
-				markerList.add(new CSQuickFix(resource.getString("add.suppress.smell") + problem + resource.getString("add.suppress.smell.on.method"), false));
-				markerList.add(new CSQuickFix(resource.getString("add.suppress.smell") + problem + resource.getString("add.suppress.smell.on.catch"), true));
 				//遇到可以建議的方法
 			}else if(problem.equals(RLMarkerAttribute.CS_EXCEPTION_RLADVICE)){
 				String advice = (String) marker.getAttribute(IMarker.MESSAGE);

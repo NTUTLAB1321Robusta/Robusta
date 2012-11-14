@@ -59,6 +59,10 @@ public class DummyHandlerVisitor extends ASTVisitor {
 	 * 根據設定檔的資訊，決定要不要拜訪整棵樹。
 	 */
 	public boolean visit(MethodDeclaration node) {
+		// 如果是Main Program，就不拜訪
+		if(node.getName().toString().equals("main")) {
+			return false;
+		}
 		return isDetectingDummyHandlerSmell;
 	}
 	

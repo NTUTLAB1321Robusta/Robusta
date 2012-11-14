@@ -150,7 +150,7 @@
 	</target>
 	
 	<target name="agile-jar">
-		<jar destfile="${update-folder}/${rl-jar-file-name}" filesetmanifest="mergewithoutmain" basedir="${bin-folder}" includes="**/Tag.class, **/Robustness.class, **/SuppressSmell.class">
+		<jar destfile="${update-folder}/${rl-jar-file-name}" filesetmanifest="mergewithoutmain" basedir="${bin-folder}" includes="**/RTag.class, **/Robustness.class, **/SuppressSmell.class">
 			<manifest>
 				<attribute name="ClassPath" value="."/>
 			</manifest>
@@ -166,7 +166,7 @@
 				<attribute name="Bundle-SymbolicName" value="Robusta; singleton:=true"/>
 				<attribute name="Bundle-Version" value="1.1.0"/>
 				<attribute name="Bundle-Activator" value="ntut.csie.rleht.RLEHTPlugin"/>
-				<attribute name="Bundle-Vendor" value="Ntut.Csie.Lab1321.Robusta"/>
+				<attribute name="Bundle-Vendor" value="NTUT CSIE, Taipei Tech, Software Systems Lab"/>
 				<attribute name="Bundle-Localization" value="plugin"/>
 				<attribute name="Bundle-ClassPath" value=".,./bin,lib/commons-lang-2.3.jar,lib/slf4j-log4j12-1.5.0.jar,lib/slf4j-api-1.5.0.jar,lib/log4j-1.2.15.jar,lib/jdom.jar,lib/jfreechart-1.0.8a.jar,lib/jcommon-1.0.12.jar,lib/loc_counter.jar,lib/"/>
 				<attribute name="Require-Bundle" value="org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.jdt,org.eclipse.jdt.core,org.eclipse.core.resources,org.eclipse.ltk.core.refactoring,org.eclipse.ltk.ui.refactoring,org.eclipse.jface.text,org.eclipse.ui.editors,org.eclipse.jdt.ui,org.eclipse.ui.workbench.texteditor,org.eclipse.ui.console,org.eclipse.ui.ide,org.eclipse.compare,org.eclipse.jdt.junit,net.java.amateras.umleditor,net.java.amateras.umleditor.java,net.java.amateras.xstream,org.eclipse.draw2d,org.eclipse.gef,org.eclipse.jdt.launching,org.junit,org.eclipse.jdt.astview,org.eclipse.jdt.core.manipulation"/>
@@ -189,13 +189,13 @@
 		<echoxml file="${feature-folder}/feature.xml">
 			<feature
 				id="${update-id}"
-				label="RLEHTeclipse"
+				label="Robustaclipse"
 				version="1.1.0"
-				provider-name="Software System Lab."
+				provider-name="NTUT CSIE, Taipei Tech, Software Systems Lab."
 				plugin="${update-id}">
  
 				<description>
-					Release for ezScrum.
+					Release for free.
 				</description>
 
 				<copyright>

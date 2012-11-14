@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
-Bundle-SymbolicName: RLEHT;singleton:=true
+Bundle-SymbolicName: Robusta;singleton:=true
 Bundle-Version: 1.1.0
 Bundle-Activator: ntut.csie.rleht.RLEHTPlugin
 Bundle-Vendor: %Bundle-Vendor
@@ -56,7 +56,6 @@ Export-Package: .,
  ntut.csie.csdet.views,
  ntut.csie.csdet.visitor,
  ntut.csie.java.util,
- ntut.csie.jcis.builder.core.internal.support;x-internal:=true,
  ntut.csie.jdt.util,
  ntut.csie.rleht,
  ntut.csie.rleht.builder,

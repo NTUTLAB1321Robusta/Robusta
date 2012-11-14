@@ -23,4 +23,38 @@ public class Clazz {
 		}
 		return isImplemented(clazz.getSuperclass(), looking4interface);
 	}
+	
+	/**
+	 * 從類別名稱去尋找類別是否存在
+	 * @param className
+	 * @return
+	 */
+	public static boolean isClassExisted(String className) {
+		try {
+			Class.forName(className);
+			return true;
+		} catch (ClassNotFoundException e) {
+			return false;
+		}
+	}
+	
+	/**
+	 * 判斷是不是非受檢例外
+	 * @param exceptionName 包含package name的類別名稱
+	 * @return
+	 */
+	public static boolean isUncheckedException(String exceptionName) {
+		try {
+			Class<?> exception = Class.forName(exceptionName);
+			if(exception.equals(RuntimeException.class)) {			
+				return true;
+			}
+			exception.asSubclass(RuntimeException.class);
+			return true;
+		} catch (ClassNotFoundException e) {
+			return false;
+		} catch (ClassCastException e) {
+			return false;
+		}
+	}
 }

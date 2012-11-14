@@ -702,4 +702,26 @@ public class SmellSettingsTest {
 				"</SmellTypes></CodeSmells>",
 				fileContent);
 	}
+	
+	@Test
+	public void testGetAnnotationType() throws Exception {
+		assertFalse(smellSettingFile.exists());
+		smellSettings.getAnnotationType(SmellSettings.ANNOTATION_ROBUSTNESSLEVEL);;
+		smellSettings.writeXMLFile(smellSettingFile.getPath());
+		assertTrue(smellSettingFile.exists());
+		String fileContent = readFileContents(smellSettingFile);
+		assertEquals(
+				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+				"<CodeSmells><AnnotationTypes name=\"RobustnessLevel\" enable=\"false\" />" +
+				"</CodeSmells>", fileContent);	
+	}
+	
+	@Test
+	public void testGetAnnotationTypeAttribute() throws Exception {
+		assertFalse(smellSettingFile.exists());
+		smellSettings.getAnnotationType(SmellSettings.ANNOTATION_ROBUSTNESSLEVEL);;
+		smellSettings.writeXMLFile(smellSettingFile.getPath());
+		assertTrue(smellSettingFile.exists());
+		assertFalse(smellSettings.isAddingRobustnessAnnotation());
+	}
 }

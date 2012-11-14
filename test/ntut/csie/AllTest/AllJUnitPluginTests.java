@@ -1,10 +1,6 @@
 package ntut.csie.AllTest;
 
 import ntut.csie.csdet.quickfix.BaseQuickFixTest;
-import ntut.csie.csdet.quickfix.CCUQuickFixTest;
-import ntut.csie.csdet.quickfix.DHQuickFixTest;
-import ntut.csie.csdet.quickfix.OLQuickFixTest;
-import ntut.csie.csdet.quickfix.UMQuickFixTest;
 import ntut.csie.csdet.refactor.CarelessCleanUpRefactorTest;
 import ntut.csie.csdet.refactor.OverLoggingRefactorTest;
 import ntut.csie.csdet.refactor.RethrowExRefactoringTest;
@@ -23,6 +19,11 @@ import ntut.csie.filemaker.test.ASTNodeFinderTest;
 import ntut.csie.jdt.util.NodeUtilsTest;
 import ntut.csie.rleht.builder.RLBuilderTest;
 import ntut.csie.rleht.views.ExceptionAnalyzerTest;
+import ntut.csie.robusta.codegen.CatchClauseFinderVisitorTest;
+import ntut.csie.robusta.codegen.ExpressionStatementStringFinderVisitorTest;
+import ntut.csie.robusta.codegen.QuickFixCoreTest;
+import ntut.csie.robusta.codegen.StatementFinderVisitorTest;
+import ntut.csie.robusta.codegen.VariableDeclarationStatementFinderVisitorTest;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -30,11 +31,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
 	BaseQuickFixTest.class,
-	CCUQuickFixTest.class,
-	DHQuickFixTest.class,
-	OLQuickFixTest.class,
-	UMQuickFixTest.class,
-	
+	ExpressionStatementStringFinderVisitorTest.class,
 	CarelessCleanUpRefactorTest.class,
 	RethrowExRefactoringTest.class,
 	RetryRefactoringTest.class,
@@ -57,7 +54,11 @@ import org.junit.runners.Suite;
 	NodeUtilsTest.class,
 	
 	RLBuilderTest.class,
-	ExceptionAnalyzerTest.class
+	ExceptionAnalyzerTest.class,
+	CatchClauseFinderVisitorTest.class,
+	ExpressionStatementStringFinderVisitorTest.class,
+	StatementFinderVisitorTest.class,
+	VariableDeclarationStatementFinderVisitorTest.class
 })
 public class AllJUnitPluginTests {
 }

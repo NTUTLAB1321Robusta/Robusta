@@ -16,7 +16,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -31,15 +30,22 @@ import org.jdom.Element;
 public class SettingPage extends APropertyPage {
 	
 	private Composite mainPageComposite;
-	private Table smellList;
-	private StyledText templateArea;
-	private Group templateGroup;
+	/** 例外處理壞味道設定主畫面的Container */
 	private Composite selectComposite;
-	private Button detAllBtn;
-	private Button showWarningBtn;
-//	private Button addLibBtn;
+	/** Frame，例外處理壞味道類型外框 */
+	private Group smellTypeGroup;
+	/** 例外處理壞味道清單 */
+	private Table smellList;
+	/** Frame，壞味道範例程式碼外框 */
+	private Group templateCodeGroup;
+	/** 例外處理壞味道程式碼*/
+	private StyledText templateCode;
+	/** Checkbox，選擇偵測所有例外處理壞味道 */
+	private Button checkbox_DetectAllSmells;
+	/** Checkbox，選擇是否要將壞味道程式碼反白 */
+	private Button checkbox_HighlightSmellCode;
 	
-	private boolean isDetAll = false;
+	private boolean isDetectingAllSmells = false;
 	private boolean[] detSmellList;
 	private boolean isShowWarning = false;
 	
@@ -73,8 +79,8 @@ public class SettingPage extends APropertyPage {
 				TableItem[] item = smellList.getItems();
 				for (int i=0; i < item.length; i++) {
 					if(!item[i].getChecked()) {
-						isDetAll = false;
-						detAllBtn.setSelection(isDetAll);
+						isDetectingAllSmells = false;
+						checkbox_DetectAllSmells.setSelection(isDetectingAllSmells);
 						return;
 					}
 				}
@@ -175,18 +181,7 @@ public class SettingPage extends APropertyPage {
 	 * @param composite
 	 */
 	private void buildPage(Composite composite) {
-		//是否要選擇性偵測的Button
-		detAllBtn = new Button(composite, SWT.CHECK);
-		detAllBtn.setText(resource.getString("check.all.smell"));
-		detAllBtn.setLocation(10, 5);
-		detAllBtn.pack();
-		detAllBtn.setSelection(isDetAll);
-		detAllBtn.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(final SelectionEvent e) {
-				isDetAll = !isDetAll;
-				setUserSetting();
-			}
-		});
+		selectComposite = new Composite(composite, SWT.NONE);
 		
 //		addLibBtn = new Button(composite, SWT.PUSH);
 //		addLibBtn.setText("Add Tag Library");
@@ -223,32 +218,40 @@ public class SettingPage extends APropertyPage {
 //			}
 //		});
 
-		//分隔線
-		final Label label = new Label(composite, SWT.HORIZONTAL | SWT.SEPARATOR);
-//		label.setBounds(0, getBoundsPoint(addLibBtn).y + 5, 550, 1);
+		// 上半部，選擇要偵測的Smell群組
+		smellTypeGroup = new Group(selectComposite, SWT.NONE);
+		smellTypeGroup.setText(resource.getString("settingPage.smell.type"));
+		smellTypeGroup.setLocation(10, 5);
 
-		selectComposite = new Composite(composite, SWT.NONE);
-		selectComposite.setBounds(0, getBoundsPoint(label).y + 5, 550, 402);
-
-		final Label label1 = new Label(selectComposite, SWT.NONE);
-		label1.setText(resource.getString("detect.smell.type"));
-		label1.setLocation(10, 15);
-		label1.pack();
-
+		//是否要選擇性偵測的Button
+		checkbox_DetectAllSmells = new Button(smellTypeGroup, SWT.CHECK);
+		checkbox_DetectAllSmells.setText(resource.getString("check.all.smell"));
+		checkbox_DetectAllSmells.setLocation(10, 20);
+		checkbox_DetectAllSmells.pack();
+		checkbox_DetectAllSmells.setSelection(isDetectingAllSmells);
+		checkbox_DetectAllSmells.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(final SelectionEvent e) {
+				isDetectingAllSmells = !isDetectingAllSmells;
+				setUserSetting();
+			}
+		});
+		
 		//選擇EH Smell List
-		smellList = new Table(selectComposite, SWT.CHECK | SWT.SINGLE | SWT.FULL_SELECTION | SWT.BORDER | SWT.HIDE_SELECTION );
-		smellList.setLocation(10, getBoundsPoint(label1).y + 5);
+		smellList = new Table(smellTypeGroup, SWT.CHECK | SWT.SINGLE | SWT.FULL_SELECTION | SWT.BORDER | SWT.HIDE_SELECTION );
+		smellList.setLocation(checkbox_DetectAllSmells.getBounds().x, checkbox_DetectAllSmells.getBounds().y + checkbox_DetectAllSmells.getBounds().height);
 		smellList.setFont(new Font(composite.getDisplay(),"Arial", 11, SWT.NONE));
 		smellList.setLinesVisible(true);
 		smellList.setHeaderVisible(true);
 		smellList.setItemCount(6);
-		smellList.pack();
 
 		final TableColumn smellColumn = new TableColumn(smellList, SWT.NONE);
-		smellColumn.setText(resource.getString("smell.type"));
-		smellColumn.setWidth(220);
+		String smellColumnDisplayText = resource.getString("settingPage.smell.type");
+		smellColumn.setText(smellColumnDisplayText);
+		smellColumn.setWidth(smellColumnDisplayText.length() * 9);
+		// 自動調整bad smell Type Column的大小
+		smellColumn.pack();
 		final TableColumn descColumn = new TableColumn(smellList, SWT.NONE);
-		descColumn.setText(resource.getString("description"));
+		descColumn.setText(resource.getString("settingPage.smell.description"));
 
 		for (int i =0; i < RLMarkerAttribute.CS_TOTAL_TYPE.length; i++) {
 			TableItem item = smellList.getItem(i);
@@ -256,22 +259,26 @@ public class SettingPage extends APropertyPage {
 			item.setFont(0, new Font(composite.getDisplay(),"Arial", 11, SWT.BOLD));			
 			item.setText(1, descText[i]);
 		}
+		// 自動調整bad smell Description Column的大小
 		descColumn.pack();
-		smellList.setSize(500 , smellList.getSize().y);
 		
-		//Template Group
-		templateGroup = new Group(selectComposite, SWT.NONE);
-		templateGroup.setText(resource.getString("detail"));
-		templateGroup.setLocation(10, getBoundsPoint(smellList).y + 10);
+		// 自動調整設定主頁面上半部視窗的大小
+		smellList.pack();
+		smellTypeGroup.pack();
 
-		//是否要選擇性偵測的Button
-		showWarningBtn = new Button(templateGroup, SWT.CHECK);
-		showWarningBtn.setText(resource.getString("show.smell.code"));
-		showWarningBtn.setLocation(10, 15);
-		showWarningBtn.pack();
-		showWarningBtn.addSelectionListener(new SelectionAdapter() {
+		//Template Group
+		templateCodeGroup = new Group(selectComposite, SWT.NONE);
+		templateCodeGroup.setText(resource.getString("settingPage.codeExample"));
+		templateCodeGroup.setLocation(10, getLowerRightCoordinate(smellTypeGroup).y + 5);
+
+		//是否要醒目標記程式碼
+		checkbox_HighlightSmellCode = new Button(templateCodeGroup, SWT.CHECK);
+		checkbox_HighlightSmellCode.setText(resource.getString("settingPage.codeExample.highlight"));
+		checkbox_HighlightSmellCode.setLocation(10, 20);
+		checkbox_HighlightSmellCode.pack();
+		checkbox_HighlightSmellCode.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
-				isShowWarning = showWarningBtn.getSelection();
+				isShowWarning = checkbox_HighlightSmellCode.getSelection();
 
 				int index = smellList.getSelectionIndex();
 				if (index != -1) {
@@ -281,31 +288,34 @@ public class SettingPage extends APropertyPage {
 		});
 		
 		//Template Text
-		templateArea = new StyledText(templateGroup, SWT.BORDER | SWT.V_SCROLL);
-		templateArea.setBounds(10, this.getBoundsPoint(showWarningBtn).y +5, 500, 170);
-		templateArea.setText("");
+		templateCode = new StyledText(templateCodeGroup, SWT.BORDER | SWT.V_SCROLL);
+		templateCode.setBounds(10, this.getLowerRightCoordinate(checkbox_HighlightSmellCode).y, 500, 170);
+		templateCode.setText("");
 		Font font = new Font(composite.getDisplay(),"Courier New", 14,SWT.NORMAL);		
-		templateArea.setFont(font);
-
-		templateGroup.pack();
+		templateCode.setFont(font);
+		templateCodeGroup.pack();
+		
+		// 自動調整設定主頁面Container的大小
+		selectComposite.pack();
+		selectComposite.setSize(getLowerRightCoordinate(smellTypeGroup).x + 15, selectComposite.getBounds().height);
 	}
 
 	private void setUserSetting() {
 		TableItem[] item = smellList.getItems();
 		//去traverse整個table看item的Text和是否被勾選到
 		for (int i=0; i < item.length; i++) {
-			if(isDetAll)
-				detSmellList[i] = isDetAll;
+			if(isDetectingAllSmells)
+				detSmellList[i] = isDetectingAllSmells;
 			item[i].setChecked(detSmellList[i]);
 		}
 	}
 	
 	private void changeTemplateText(int index) {
 		if (index != -1) {
-			templateArea.setText(tempText[index].getText());
+			templateCode.setText(tempText[index].getText());
 			tempText[index].setShowWarning(isShowWarning);
 			tempText[index].setTemplateStyle(mainPageComposite.getDisplay(), 0);
-			templateArea.setStyleRanges(tempText[index].getLocationArray(), tempText[index].getStyleArrray());
+			templateCode.setStyleRanges(tempText[index].getLocationArray(), tempText[index].getStyleArrray());
 		}
 	}
 
@@ -313,15 +323,16 @@ public class SettingPage extends APropertyPage {
 	 * 
 	 */
 	private void changeTemplateSize() {
-		templateArea.pack();
+		templateCode.pack();
 		Font font;
-		if (templateArea.getBounds().height > templateGroup.getBounds().height)
+		if (templateCode.getBounds().height > templateCodeGroup.getBounds().height)
 			font = new Font(mainPageComposite.getDisplay(),"Courier New", 10,SWT.NORMAL);
 		else
 			font = new Font(mainPageComposite.getDisplay(),"Courier New", 14,SWT.NORMAL);	
 
-		templateArea.setFont(font);
-		templateArea.setBounds(10, this.getBoundsPoint(showWarningBtn).y +5, 500, 170);
+		templateCode.setFont(font);
+		templateCode.setBounds(10, this.getLowerRightCoordinate(checkbox_HighlightSmellCode).y +5, 500, 170);
+		selectComposite.pack();
 	}
 
 	@Override

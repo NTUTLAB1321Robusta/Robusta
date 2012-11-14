@@ -13,8 +13,7 @@ import static java.lang.annotation.ElementType.CONSTRUCTOR;
 @Target( { METHOD, CONSTRUCTOR })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Robustness {
-
+	static final String VALUE = "value"; 
 	RTag[] value();
-	
 }
 

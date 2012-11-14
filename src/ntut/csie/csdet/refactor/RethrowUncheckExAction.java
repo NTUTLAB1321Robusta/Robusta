@@ -4,7 +4,6 @@ import ntut.csie.csdet.refactor.ui.RethrowExWizard;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizardOpenOperation;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IMarkerResolution;
