@@ -562,4 +562,77 @@ public class CarelessCleanupExample {
 		} finally {
 		}
 	}
+	
+	/*=================================================================================
+	 * 其他可能出現 Careless Cleanup 壞味道的程式碼結構。
+	 * 發想靈感來自jfreechart。
+	 =================================================================================*/
+	
+	/**
+	 * 同一個instance，在MethodDeclaration上面有拋出例外，
+	 * 又用了try-catch去捕捉這個這個instance其他method，並在finally裡面關閉。
+	 * 這種也是careless cleanup的一種。
+	 * @throws IOException
+	 */
+	public void y_thrownExceptionOnMethodDeclarationWithTryStatementWith2KindsInstance(
+			File file1, File file2) throws IOException {
+		if((file1 == null) || (file2 == null)) {
+			throw new IllegalArgumentException("Null 'file' argument.");
+		}
+		FileInputStream fis = new FileInputStream(file1);
+		
+		// 如果out發生例外，則fis依然會有 careless cleanup 的壞味道
+		java.io.OutputStream out = new java.io.BufferedOutputStream(new FileOutputStream(file2));
+		try {
+			while(fis.available() != 0) {
+				out.write(fis.read());
+			}
+		} finally {
+			fis.close();
+			out.close();
+		}
+	}
+	
+	/**
+	 * 同一個instance，在MethodDeclaration上面有拋出例外，
+	 * 又用了try-catch去捕捉這個這個instance其他method，沒有任何關閉的動作在finally裡面。
+	 * 就不算是careless cleanup的一種。
+	 * @throws IOException
+	 */
+	public void y_thrownExceptionOnMethodDeclarationWithTryStatement(File file1, File file2) throws IOException {
+		if((file1 == null) || (file2 == null)) {
+			throw new IllegalArgumentException("Null 'file' argument.");
+		}
+		FileInputStream fis = new FileInputStream(file1);
+		
+		// 如果out發生例外，則fis依然會有 careless cleanup 的壞味道
+		java.io.OutputStream out = new java.io.BufferedOutputStream(new FileOutputStream(file2));
+		try {
+			out.write(fis.read());
+		} finally {
+			System.out.println(fis.available());
+		}
+	}
+	
+	/**
+	 * 同一個instance，在MethodDeclaration上面有拋出例外，
+	 * 又用了try-catch去捕捉這個這個instance其他method，沒有任何關閉的動作在finally裡面。
+	 * 就不算是careless cleanup的一種。
+	 * @throws IOException
+	 */
+	public void thrownExceptionOnMethodDeclarationWithTryStatement() throws IOException {
+		int a = 10;
+		FileInputStream fis = new FileInputStream("");
+		for(int i = 1; i<a; i++) {
+			if(fis.available() != 0) {
+				fis.reset();	//會拋出例外
+				break;
+			}
+		}
+		try {
+			fis.read();	//會拋出例外
+		} finally {
+			System.out.println(fis.getChannel());
+		}
+	}
 }
