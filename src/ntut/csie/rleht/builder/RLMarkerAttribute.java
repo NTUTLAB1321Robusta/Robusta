@@ -52,6 +52,9 @@ public interface RLMarkerAttribute {
 	/** Over Logging */
 	public static final String CS_OVER_LOGGING = "Over_Logging";
 	
+	/** Overwritten Lead */
+	public static final String CS_OVERWRITTEN_LEAD_EXCEPTION = "Overwritten_Lead_Exception";
+	
 	/** Exception Robustness Level Advice */
 	public static final String CS_EXCEPTION_RLADVICE  = "Exception_RL_Advice";
 
@@ -64,7 +67,7 @@ public interface RLMarkerAttribute {
 	
 	/** Total Code Smell Type */
 	public static final String[] CS_TOTAL_TYPE = new String[]{ CS_INGNORE_EXCEPTION,
-		CS_DUMMY_HANDLER, CS_NESTED_TRY_BLOCK, CS_UNPROTECTED_MAIN, CS_CARELESS_CLEANUP, CS_OVER_LOGGING};
+		CS_DUMMY_HANDLER, CS_NESTED_TRY_BLOCK, CS_UNPROTECTED_MAIN, CS_CARELESS_CLEANUP, CS_OVER_LOGGING, CS_OVERWRITTEN_LEAD_EXCEPTION};
 
 	/** Total Smell Type In Catch */
 	public static final String[] CS_CATCH_TYPE = new String[]{ CS_INGNORE_EXCEPTION,

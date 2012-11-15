@@ -31,7 +31,9 @@ public class MarkerInfo {
 	
 	private boolean inTry;
 	
-	public MarkerInfo(String type, ITypeBinding typeBinding, String statement, int pos, int lineNumber, String exceptionType){
+	private ITypeBinding[] methodThrownExceptions;
+	
+	public MarkerInfo(String type, ITypeBinding typeBinding, String statement, int pos, int lineNumber, String exceptionType) {
 		this.cstype = type;
 		this.typeBinding = typeBinding;
 		this.statement = statement;
@@ -75,6 +77,10 @@ public class MarkerInfo {
 		return position;
 	}
 	
+	public ITypeBinding[] getMethodThrownExceptions() {
+		return methodThrownExceptions;
+	}
+	
 	/**
 	 * 此bad smell是否在try statement中
 	 * false表示不在try裡面， true反之
@@ -94,6 +100,10 @@ public class MarkerInfo {
 	
 	public void setLineNumber(int lineNumber) {
 		this.lineNumber = lineNumber;
+	}
+	
+	public void setMethodThrownExceptions(ITypeBinding[] exceptions) {
+		this.methodThrownExceptions = exceptions;
 	}
 
 	/**

@@ -54,7 +54,9 @@ public class SmellSettings {
 	public final static String SMELL_UNPROTECTEDMAINPROGRAM = "UnprotectedMainProgram";
 	public final static String SMELL_OVERLOGGING = "OverLogging";
 	public final static String SMELL_CARELESSCLEANUP = "CarelessCleanup";
+	public final static String SMELL_OVERWRITTENLEADEXCEPTION = "OverwrittenLeadException";
 	public final static String ANNOTATION_ROBUSTNESSLEVEL = "RobustnessLevel";
+
 	/** 例外轉型後繼續偵測 */
 	public final static String EXTRARULE_OVERLOGGING_DETECTWRAPPINGEXCEPTION = "DetectWrappingExcetion";
 	/** 偵測釋放資源的程式碼是否在函式中 */
