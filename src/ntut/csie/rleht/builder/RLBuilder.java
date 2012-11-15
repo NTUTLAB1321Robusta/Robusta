@@ -15,6 +15,7 @@ import ntut.csie.csdet.visitor.DummyHandlerVisitor;
 import ntut.csie.csdet.visitor.IgnoreExceptionVisitor;
 import ntut.csie.csdet.visitor.NestedTryStatementVisitor;
 import ntut.csie.csdet.visitor.OverLoggingDetector;
+import ntut.csie.csdet.visitor.OverwrittenLeadExceptionVisitor;
 import ntut.csie.csdet.visitor.SuppressWarningVisitor;
 import ntut.csie.csdet.visitor.UnprotectedMainProgramVisitor;
 import ntut.csie.java.util.CastingObject;
@@ -311,12 +312,28 @@ public class RLBuilder extends IncrementalProjectBuilder {
 
 					//儲存SuppressSmell設定
 					inputSuppressData(suppressSmellList, detMethodSmell, detCatchSmell);
-
+					// 找尋專案中所有的Overwritten Lead Exception
+					OverwrittenLeadExceptionVisitor olVisitor = new OverwrittenLeadExceptionVisitor(root);
+					method.accept(olVisitor);
+					List<MarkerInfo> overwrittenList = olVisitor.getOverwrittenList();
+					int csIdx = -1;
+					if(overwrittenList != null /*&& detMethodSmell.get(RLMarkerAttribute.CS_OVERWRITTEN_LEAD_EXCEPTION)*/) {
+						List<Integer> posList = detCatchSmell.get(RLMarkerAttribute.CS_OVERWRITTEN_LEAD_EXCEPTION);
+						for(MarkerInfo markerInfo : overwrittenList) {
+							csIdx++;
+							//判斷使用者有沒有在Catch內貼Annotation，抑制Smell Marker
+							if (suppressMarker(posList, markerInfo.getPosition()))
+								continue;
+							String errmsg = this.resource.getString("ex.smell.type.undealt") + markerInfo.getCodeSmellType() + this.resource.getString("ex.smell.type");
+							this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, markerInfo, csIdx, methodIdx);
+						}
+					}
+					
 					// 找尋專案中所有的ignore Exception
 					IgnoreExceptionVisitor ieVisitor = new IgnoreExceptionVisitor(root);
 					method.accept(ieVisitor);
 					List<MarkerInfo> ignoreList = ieVisitor.getIgnoreList();
-					int csIdx = -1;
+					csIdx = -1;
 					if(ignoreList != null && detMethodSmell.get(RLMarkerAttribute.CS_INGNORE_EXCEPTION)) {
 						List<Integer> posList = detCatchSmell.get(RLMarkerAttribute.CS_INGNORE_EXCEPTION);
 						for(MarkerInfo markerInfo : ignoreList) {
@@ -569,11 +586,12 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	 * @return
 	 */
 	private boolean suppressMarker(List<Integer> smellPosList, int pos) {
-		for (Integer index : smellPosList)
-			//若Catch位置相同，表示要抑制的Marker為同一個Marker
-			if (pos == index)
-				return true;
-
+		if(smellPosList != null) {
+			for (Integer index : smellPosList)
+				//若Catch位置相同，表示要抑制的Marker為同一個Marker
+				if (pos == index)
+					return true;
+		}
 		return false;
 	}
 
