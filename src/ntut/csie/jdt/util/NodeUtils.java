@@ -5,6 +5,7 @@ import java.util.List;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.TryStatement;
@@ -95,5 +96,34 @@ public class NodeUtils {
 			resultNode = parentNode; 
 		}
 		return resultNode;
+	}
+	
+	public static boolean isMethodDeclarationThrowException(ASTNode node) {
+		if(node.getNodeType() == ASTNode.COMPILATION_UNIT) {
+			throw new RuntimeException("Abatract Syntax Tree traversing error. by Charles.");
+		}
+		
+		if(node.getNodeType() == ASTNode.METHOD_DECLARATION) {
+			if(((MethodDeclaration)node).thrownExceptions().size() == 0)
+				return false;
+			else
+				return true;  
+		}
+		
+		return(isMethodDeclarationThrowException(node.getParent()));
+	}
+	
+	public static ITypeBinding[] getMethodInvocationThrownCheckedExceptions(MethodInvocation node) {
+		// 如果使用者進行了快速修復，則會蒐集到ListRewrite的資訊，node.resolveMethodBinding()會變成null
+		if(node.resolveMethodBinding() == null) {
+			return null;
+		}
+		
+		// visit原始程式碼的時候，可以蒐集到node.resolveMethodBinding()
+		if(node.resolveMethodBinding().getExceptionTypes().length <= 0) {
+			return null;
+		}
+		
+		return node.resolveMethodBinding().getExceptionTypes();
 	}
 }

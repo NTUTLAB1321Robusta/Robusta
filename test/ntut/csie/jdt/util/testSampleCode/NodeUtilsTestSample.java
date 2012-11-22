@@ -2,6 +2,7 @@ package ntut.csie.jdt.util.testSampleCode;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -42,7 +43,25 @@ public class NodeUtilsTestSample {
 		// NodeUtils不會抓出他是實作Closeable的
 		fis.toString();
 		// NodeUtils會抓出他是實作Closeable的
-		fis.close()
-		;
+		fis.close();
+	}
+	
+	public void readFile() throws Exception {
+		FileInputStream fis = null;
+		StringBuilder sb = new StringBuilder();
+		try {
+			fis = new FileInputStream("C:\\123.txt");
+			sb.append(fis.read());
+		} finally {
+			fis.close();
+		}
+		
+		FileOutputStream fos = null;
+		try {
+			fos = new FileOutputStream("C:\\456.txt");
+			fos.write(sb.toString().length());
+		} finally {
+			fos.close();
+		}
 	}
 }
