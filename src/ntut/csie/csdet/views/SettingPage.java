@@ -149,6 +149,19 @@ public class SettingPage extends APropertyPage {
 				"\t}\n" +
 				"}";
 		tempText[5] = new TemplateText(temp, isShowWarning);
+		temp =	"public void A(String path) throws FileNotFoundException {\n" +
+				"\tFileOutputStream fos = null;\n" +
+				"\ttry {\n" +
+				"\t\tfos = new FileOutputStream(path);\n" +
+				"\t\tfos.write();\t//it throws lead exception\n" +
+				"\t} catch (FileNotFoundException e) {\n" +
+				"\t\tthrow e;\n" +
+				"\t} finally {\n" +
+				"\t\t$fos.close();$\t//it throws exception too\n" +
+				"\t}\n" +
+				"}\n";
+				
+		tempText[6] = new TemplateText(temp, isShowWarning);
 		
 		descText = new String[RLMarkerAttribute.CS_TOTAL_TYPE.length];
 		descText[0] = resource.getString("ignore.checked.description");
@@ -157,6 +170,7 @@ public class SettingPage extends APropertyPage {
 		descText[3] = resource.getString("unprotected.main.program.description");
 		descText[4] = resource.getString("careless.cleanup.description");
 		descText[5] = resource.getString("over.logging.description");
+		descText[6] = resource.getString("overwritten.lead.description");
 	}
 
 	/**
@@ -170,6 +184,7 @@ public class SettingPage extends APropertyPage {
 		smellElements[3] = smellSettings.getSmellType(SmellSettings.SMELL_UNPROTECTEDMAINPROGRAM);
 		smellElements[4] = smellSettings.getSmellType(SmellSettings.SMELL_CARELESSCLEANUP);
 		smellElements[5] = smellSettings.getSmellType(SmellSettings.SMELL_OVERLOGGING);
+		smellElements[6] = smellSettings.getSmellType(SmellSettings.SMELL_OVERWRITTENLEADEXCEPTION);
 		
 		for(int i = 0; i < RLMarkerAttribute.CS_TOTAL_TYPE.length; i++) {
 			detSmellList[i] = Boolean.parseBoolean(smellElements[i].getAttributeValue(SmellSettings.ATTRIBUTE_ISDETECTING));
@@ -242,7 +257,7 @@ public class SettingPage extends APropertyPage {
 		smellList.setFont(new Font(composite.getDisplay(),"Arial", 11, SWT.NONE));
 		smellList.setLinesVisible(true);
 		smellList.setHeaderVisible(true);
-		smellList.setItemCount(6);
+		smellList.setItemCount(7);
 
 		final TableColumn smellColumn = new TableColumn(smellList, SWT.NONE);
 		String smellColumnDisplayText = resource.getString("settingPage.smell.type");
@@ -346,6 +361,7 @@ public class SettingPage extends APropertyPage {
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_UNPROTECTEDMAINPROGRAM, SmellSettings.ATTRIBUTE_ISDETECTING, item[3].getChecked());
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.ATTRIBUTE_ISDETECTING, item[4].getChecked());
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_OVERLOGGING, SmellSettings.ATTRIBUTE_ISDETECTING, item[5].getChecked());
+		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_OVERWRITTENLEADEXCEPTION, SmellSettings.ATTRIBUTE_ISDETECTING, item[6].getChecked());
 
 		//±NÀÉ®×¼g¦^
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
