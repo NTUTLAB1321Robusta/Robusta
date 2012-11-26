@@ -71,6 +71,10 @@ public class CarelessClenupRaisedExceptionNotInTryCausedVisitor extends	ASTVisit
 	
 	public boolean visit(MethodInvocation node) {
 		SimpleName nodeVariable = getDeclaredInstanceSimpleName(node.getExpression());
+		// System.out.println(fis.toString()); 這種Node可能就會NULL
+		if(nodeVariable == null) {
+			return true;
+		}
 		int checkedExceptionLength = node.resolveMethodBinding().getExceptionTypes().length;
 		for(int i = 0; i<closeResourcesInstanceBinding.size(); i++) {
 			if((nodeVariable.resolveBinding().equals(closeResourcesInstanceBinding.get(i))) &&

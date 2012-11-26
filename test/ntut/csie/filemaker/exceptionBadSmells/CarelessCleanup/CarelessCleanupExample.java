@@ -589,8 +589,8 @@ public class CarelessCleanupExample {
 				out.write(fis.read());
 			}
 		} finally {
-			fis.close();
-			out.close();
+			fis.close();	// 因為new FileOutputStream會拋出例外，造成fis.close()變成careless cleanup
+			out.close();	// 因為fis.close()會拋出例外，造成out.close()變成careless cleanup
 		}
 	}
 	
@@ -608,7 +608,24 @@ public class CarelessCleanupExample {
 			uccw2.rain();
 		} finally {
 			uccw1.Shine();
-			uccw2.Shine();
+			uccw2.Shine();	// 定義shine為close
+		}
+	}
+	
+	/**
+	 * 傳進來的資源，要在此處關閉。
+	 * @param fis
+	 * @throws IOException
+	 */
+	public void y_inputResource(FileInputStream fis) throws IOException {
+		FileOutputStream fos = new FileOutputStream("C:\\123.txt");
+		fis.reset();	// 會拋例外
+		try {
+			while(fis.available() != 0) {
+				fos.write(fis.read());
+			}
+		} finally {
+			fos.close();	// 因為fis.reset();會拋例外，所以fos.close()是careless cleanup
 		}
 	}
 	
@@ -617,7 +634,7 @@ public class CarelessCleanupExample {
 	 * 又用了try-catch去捕捉這個這個instance其他method，並在finally裡面關閉。
 	 * 這種也是careless cleanup的一種。
 	 * 
-	 * finally裡面兩個關閉串流的動作，第一個可能會拋例外，倒置第二個動作可能執行不到。
+	 * finally裡面兩個關閉串流的動作，第一個可能會拋例外，導致第二個動作可能執行不到。
 	 * @throws IOException
 	 */
 	public void y_thrownExceptionOnMethodDeclarationWithTryStatementWith2KindsInstanceAndLastOneNotThrowsException(
@@ -634,7 +651,7 @@ public class CarelessCleanupExample {
 				out.write(fis.read());
 			}
 		} finally {
-			fis.close();
+			fis.close(); // 如果out發生例外，則fis依然會有 careless cleanup 的壞味道	
 			close(out);
 		}
 	}
@@ -646,6 +663,21 @@ public class CarelessCleanupExample {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		}
+	}
+	
+	public void y_thrownExceptionOnMethodDeclarationWithoutTryStatement(File file1, File file2) throws IOException {
+		int a = 10;
+		FileInputStream fis = new FileInputStream("");
+		for(int i = 1; i<a; i++) {
+			while(fis.available() != 0) {	// 會拋例外
+				fis.reset();				// 會拋例外
+			}
+		}
+		try {
+			fis.read();	//會拋出例外
+		} finally {
+			fis.close();
 		}
 	}
 	
@@ -680,14 +712,31 @@ public class CarelessCleanupExample {
 		int a = 10;
 		FileInputStream fis = new FileInputStream("");
 		for(int i = 1; i<a; i++) {
-			if(fis.available() != 0) {
-				fis.reset();	//會拋出例外
-				break;
-			}
+			fis.mark(1);
+			System.out.println(fis.toString());
 		}
 		try {
 			fis.read();	//會拋出例外
 		} finally {
+			fis.close();
+		}
+	}
+	
+	public void throwExceptionBeforeCreation(FileOutputStream fos) throws IOException {
+		fos.write(10);
+		int a = 10;
+		FileInputStream fis = new FileInputStream("");
+		for(int i = 1; i<a; i++) {
+			fis.mark(1);
+			System.out.println(fis.toString());
+		}
+		try {
+			fis.read();
+		} finally {
+			/*
+			 * 雖然fos.write(10);會拋出例外，但是發生時fis尚未被建立，所以無需關閉。
+			 * 所以不算是careless cleanup
+			 */
 			fis.close();
 		}
 	}

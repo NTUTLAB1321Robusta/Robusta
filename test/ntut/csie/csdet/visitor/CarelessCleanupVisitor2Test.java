@@ -146,7 +146,7 @@ public class CarelessCleanupVisitor2Test {
 		}
 		assertEquals(
 				colloectBadSmellListContent(carelessCleanupVisitor.getCarelessCleanupList()),
-				24, carelessCleanupSmellCount);
+				26, carelessCleanupSmellCount);
 	}
 	
 	@Test
@@ -160,7 +160,7 @@ public class CarelessCleanupVisitor2Test {
 		}
 		assertEquals(
 				colloectBadSmellListContent(carelessCleanupVisitor.getCarelessCleanupList()),
-				27, carelessCleanupSmellCount);
+				29, carelessCleanupSmellCount);
 	}
 	
 	@Test
@@ -183,7 +183,7 @@ public class CarelessCleanupVisitor2Test {
 		}
 		assertEquals(
 				colloectBadSmellListContent(carelessCleanupVisitor.getCarelessCleanupList()),
-				33, carelessCleanupSmellCount);
+				35, carelessCleanupSmellCount);
 	}
 	
 	@Test
@@ -206,7 +206,7 @@ public class CarelessCleanupVisitor2Test {
 		}
 		assertEquals(
 				colloectBadSmellListContent(carelessCleanupVisitor.getCarelessCleanupList()),
-				29, carelessCleanupSmellCount);
+				31, carelessCleanupSmellCount);
 	}
 	
 	@Test
@@ -229,7 +229,7 @@ public class CarelessCleanupVisitor2Test {
 		}
 		assertEquals(
 				colloectBadSmellListContent(carelessCleanupVisitor.getCarelessCleanupList()),
-				30, carelessCleanupSmellCount);
+				32, carelessCleanupSmellCount);
 	}
 	
 	@Test
@@ -252,7 +252,7 @@ public class CarelessCleanupVisitor2Test {
 		}
 		assertEquals(
 				colloectBadSmellListContent(carelessCleanupVisitor.getCarelessCleanupList()),
-				29, carelessCleanupSmellCount);
+				31, carelessCleanupSmellCount);
 	}
 	
 	/**
