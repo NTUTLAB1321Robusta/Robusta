@@ -6,7 +6,7 @@ import ntut.csie.csdet.refactor.OverLoggingRefactorTest;
 import ntut.csie.csdet.refactor.RethrowExRefactoringTest;
 import ntut.csie.csdet.refactor.RetryRefactoringTest;
 import ntut.csie.csdet.report.ReportBuilderTest;
-import ntut.csie.csdet.visitor.CarelessCleanupVisitorTest;
+import ntut.csie.csdet.visitor.CarelessCleanupVisitor2Test;
 import ntut.csie.csdet.visitor.DummyHandlerVisitorTest;
 import ntut.csie.csdet.visitor.IgnoreExceptionVisitorTest;
 import ntut.csie.csdet.visitor.NestedTryStatementVisitorTest;
@@ -16,6 +16,8 @@ import ntut.csie.csdet.visitor.SpareHandlerVisitorTest;
 import ntut.csie.csdet.visitor.SuppressWarningVisitorTest;
 import ntut.csie.csdet.visitor.TryStatementCounterVisitorTest;
 import ntut.csie.csdet.visitor.UnprotectedMainProgramVisitorTest;
+import ntut.csie.csdet.visitor.aidvisitor.CarelessCleanupToleranceVisitorTest;
+import ntut.csie.csdet.visitor.aidvisitor.CarelessClenupRaisedExceptionNotInTryCausedVisitorTest;
 import ntut.csie.filemaker.test.ASTNodeFinderTest;
 import ntut.csie.jdt.util.NodeUtilsTest;
 import ntut.csie.rleht.builder.RLBuilderTest;
@@ -38,7 +40,7 @@ import org.junit.runners.Suite;
 	
 	ReportBuilderTest.class,
 	
-	CarelessCleanupVisitorTest.class,
+	CarelessCleanupVisitor2Test.class,
 	DummyHandlerVisitorTest.class,
 	IgnoreExceptionVisitorTest.class,
 	NestedTryStatementVisitorTest.class,
@@ -48,6 +50,9 @@ import org.junit.runners.Suite;
 	UnprotectedMainProgramVisitorTest.class,
 	TryStatementCounterVisitorTest.class,
 	SuppressWarningVisitorTest.class,
+	
+	CarelessCleanupToleranceVisitorTest.class,
+	CarelessClenupRaisedExceptionNotInTryCausedVisitorTest.class,
 	
 	ASTNodeFinderTest.class,
 	

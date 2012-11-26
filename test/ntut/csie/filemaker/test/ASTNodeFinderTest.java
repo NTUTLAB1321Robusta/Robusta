@@ -23,6 +23,7 @@ import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ASTNodeFinderTest {
@@ -44,7 +45,7 @@ public class ASTNodeFinderTest {
 		javaFileToString.read(NodeUtilsTestSample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(NodeUtilsTestSample.class.getPackage().getName(),
 				NodeUtilsTestSample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + NodeUtilsTestSample.class.getPackage().getName() + ";\n"
+				"package " + NodeUtilsTestSample.class.getPackage().getName() + ";" + String.format("%n")
 						+ javaFileToString.getFileContent());
 		javaFileToString.clear();
 		
@@ -89,7 +90,7 @@ public class ASTNodeFinderTest {
 		ExpressionStatement statement = (ExpressionStatement) mDeclaration.getBody().statements().get(1);
 		
 		//輸入class指定行數
-		int lineNumber = 20;
+		int lineNumber = 21;
 		
 		//case#1:一般情況
 		ASTNode astNode = ASTNodeFinder.getNodeFromSpecifiedClass(NodeUtilsTestSample.class, projectName, lineNumber);
@@ -98,19 +99,19 @@ public class ASTNodeFinderTest {
 		assertEquals(astNode.toString(), statement.toString());
 		
 		//case#2:指向註解
-		lineNumber = 9;
+		lineNumber = 10;
 		astNode = ASTNodeFinder.getNodeFromSpecifiedClass(NodeUtilsTestSample.class, projectName, lineNumber);
 		assertNull(astNode);
 		
 		//case#3:指向method
-		lineNumber = 17;
+		lineNumber = 18;
 		astNode = ASTNodeFinder.getNodeFromSpecifiedClass(NodeUtilsTestSample.class, projectName, lineNumber);
 		assertEquals(ASTNode.METHOD_DECLARATION, astNode.getNodeType());
 		assertEquals(lineNumber, compilationUnit.getLineNumber(astNode.getStartPosition()));
 		assertEquals(astNode.toString(), mDeclaration.toString());
 		
 		//case#4:指向空白
-		lineNumber = 49;
+		lineNumber = 48;
 		astNode = ASTNodeFinder.getNodeFromSpecifiedClass(NodeUtilsTestSample.class, projectName, lineNumber);
 		assertNull(astNode);
 		
@@ -120,7 +121,7 @@ public class ASTNodeFinderTest {
 		assertNull(astNode);
 	}
 	
-//	@Test
+	@Ignore
 	public void testGetNodeFromSpecifiedClass_caseSemicolonParentheses() throws Exception {
 		//取得該行內容
 		ASTMethodCollector methodCollector = new ASTMethodCollector();

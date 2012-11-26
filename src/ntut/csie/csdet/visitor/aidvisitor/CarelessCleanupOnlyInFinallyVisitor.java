@@ -3,9 +3,7 @@ package ntut.csie.csdet.visitor.aidvisitor;
 import java.util.ArrayList;
 import java.util.List;
 
-import ntut.csie.csdet.preference.SmellSettings;
-import ntut.csie.csdet.visitor.CarelessCleanupVisitor2;
-import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
+import ntut.csie.jdt.util.NodeUtils;
 
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -24,10 +22,14 @@ public class CarelessCleanupOnlyInFinallyVisitor extends ASTVisitor {
 	private boolean isExceptionRisable;
 	private List<MethodInvocation> carelessCleanupNodes;
 	
+	/** 蒐集不是careless cleanup，但是是關閉串流的程式碼 */
+	private List<MethodInvocation> fineCleanupNodes;
+	
 	public CarelessCleanupOnlyInFinallyVisitor(CompilationUnit compilationUnit) {
 		root = compilationUnit;
 		isExceptionRisable = false;
 		carelessCleanupNodes = new ArrayList<MethodInvocation>();
+		fineCleanupNodes = new ArrayList<MethodInvocation>();
 	}
 	
 	public boolean visit(ThrowStatement node) {
@@ -35,33 +37,13 @@ public class CarelessCleanupOnlyInFinallyVisitor extends ASTVisitor {
 		return true;
 	}
 	
-	public boolean visit(MethodInvocation node) {	
-		boolean userDefinedLibResult = false;
-		boolean userDefinedResult = false;
-		boolean userDefinedExtraRule = false;
-		boolean defaultResult = false;
-		
-		UserDefinedMethodAnalyzer userDefinedMethodAnalyzer = new UserDefinedMethodAnalyzer(SmellSettings.SMELL_CARELESSCLEANUP);
-		if(userDefinedMethodAnalyzer.analyzeLibrary(node)) {
-			userDefinedLibResult = true;
-		}
-		
-		if(userDefinedMethodAnalyzer.analyzeMethods(node)) {
-			userDefinedResult = true;
-		}
-		
-		if(userDefinedMethodAnalyzer.analyzeExtraRule(node, root)) {
-			userDefinedExtraRule = true;
-		}
-		
-		if(userDefinedMethodAnalyzer.getEnable()) {
-			defaultResult = CarelessCleanupVisitor2.isNodeACloseCodeAndImplementatedCloseable(node);
-		}
-		
-		if(userDefinedLibResult || userDefinedResult || userDefinedExtraRule || defaultResult) {
+	public boolean visit(MethodInvocation node) {
+		if(NodeUtils.isCloseResourceMethodInvocation(root, node)) {
 			// 如果前面已經有程式碼會發生例外，則這個關閉串流的程式碼就是careless cleanup
 			if(isExceptionRisable) {
 				carelessCleanupNodes.add(node);
+			} else {
+				fineCleanupNodes.add(node);
 			}
 		}
 		
@@ -74,5 +56,13 @@ public class CarelessCleanupOnlyInFinallyVisitor extends ASTVisitor {
 	
 	public List<MethodInvocation> getCarelessCleanupNodes() {
 		return carelessCleanupNodes;
+	}
+	
+	/**
+	 * 不被這個Visitor認定careless cleanup 的關閉資源動作。
+	 * @return
+	 */
+	public List<MethodInvocation> getfineCleanupNodes() {
+		return fineCleanupNodes;
 	}
 }
