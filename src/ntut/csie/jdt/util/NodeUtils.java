@@ -12,6 +12,7 @@ import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.TryStatement;
 
@@ -184,5 +185,26 @@ public class NodeUtils {
 		}
 
 		return false;
+	}
+	
+	/**
+	 * 如果是xx.close()的形式，則可以從xx的SimpleName取得Binding的變數名稱
+	 * @param expression
+	 * @return
+	 */
+	public static SimpleName getMethodInvocationBindingVariableSimpleName(Expression expression) {
+		// 如果是close(xxx)的形式，則傳進來的expression為null
+		if(expression == null) {
+			return null;
+		}
+		
+		if(expression.getNodeType() == ASTNode.METHOD_INVOCATION) {
+			MethodInvocation expressionChild = (MethodInvocation) expression;
+			return getMethodInvocationBindingVariableSimpleName(expressionChild.getExpression());
+		} else if (expression.getNodeType() == ASTNode.SIMPLE_NAME) {
+			return (SimpleName) expression;
+		}
+		
+		return null;
 	}
 }

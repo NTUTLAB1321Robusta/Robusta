@@ -86,8 +86,8 @@ public class CarelessClenupRaisedExceptionNotInTryCausedVisitorTest {
 
 	@Test
 	public void testCloseResourceInFinallyRaisedExceptionNotInTry() throws Exception {
-		MethodDeclaration md = (MethodDeclaration) NodeFinder.perform(compilationUnit, 210, 445);
-		MethodInvocation methodInvocation = (MethodInvocation) NodeFinder.perform(compilationUnit, 634, 11);
+		MethodDeclaration md = (MethodDeclaration) NodeFinder.perform(compilationUnit, 266, 448);
+		MethodInvocation methodInvocation = (MethodInvocation) NodeFinder.perform(compilationUnit, 693, 11);
 		List<MethodInvocation> miList = new ArrayList<MethodInvocation>();
 		miList.add(methodInvocation);
 		visitor = new CarelessClenupRaisedExceptionNotInTryCausedVisitor(miList);
@@ -98,8 +98,33 @@ public class CarelessClenupRaisedExceptionNotInTryCausedVisitorTest {
 	
 	@Test
 	public void testCloseResourceInFinallyRaisedExceptionNotInTry_normalCase() throws Exception {
-		MethodDeclaration md = (MethodDeclaration) NodeFinder.perform(compilationUnit, 661, 396);
-		MethodInvocation methodInvocation = (MethodInvocation) NodeFinder.perform(compilationUnit, 1036, 11);
+		MethodDeclaration md = (MethodDeclaration) NodeFinder.perform(compilationUnit, 720, 396);
+		MethodInvocation methodInvocation = (MethodInvocation) NodeFinder.perform(compilationUnit, 1095, 11);
+		List<MethodInvocation> miList = new ArrayList<MethodInvocation>();
+		miList.add(methodInvocation);
+		visitor = new CarelessClenupRaisedExceptionNotInTryCausedVisitor(miList);
+		md.accept(visitor);
+		assertEquals(0, visitor.getCarelessCleanupNodes().size());
+	}
+	
+	@Test
+	public void testCloseResourceInFinallyRaisedExceptionNotInTry_Dual() throws Exception {
+		MethodDeclaration md = (MethodDeclaration) NodeFinder.perform(compilationUnit, 1122, 1162);
+		MethodInvocation methodInvocation1 = (MethodInvocation) NodeFinder.perform(compilationUnit, 2129, 11);
+		MethodInvocation methodInvocation2 = (MethodInvocation) NodeFinder.perform(compilationUnit, 2209, 11);
+		List<MethodInvocation> miList = new ArrayList<MethodInvocation>();
+		miList.add(methodInvocation1);
+		miList.add(methodInvocation2);
+		visitor = new CarelessClenupRaisedExceptionNotInTryCausedVisitor(miList);
+		md.accept(visitor);
+		assertEquals(1, visitor.getCarelessCleanupNodes().size());
+		assertEquals(methodInvocation1 ,visitor.getCarelessCleanupNodes().get(0));
+	}
+	
+	@Test
+	public void testCloseResourceInFinallyRaisedExceptionNotInTry_NextInstanceExceptionNotRaised() throws Exception {
+		MethodDeclaration md = (MethodDeclaration) NodeFinder.perform(compilationUnit, 2290, 405);
+		MethodInvocation methodInvocation = (MethodInvocation) NodeFinder.perform(compilationUnit, 2674, 11);
 		List<MethodInvocation> miList = new ArrayList<MethodInvocation>();
 		miList.add(methodInvocation);
 		visitor = new CarelessClenupRaisedExceptionNotInTryCausedVisitor(miList);

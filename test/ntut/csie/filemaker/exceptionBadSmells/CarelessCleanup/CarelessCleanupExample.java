@@ -607,7 +607,7 @@ public class CarelessCleanupExample {
 			uccw1.bark();
 			uccw2.rain();
 		} finally {
-			uccw1.Shine();
+			uccw1.Shine();	// 在這個例子中，uccw1怎樣都不會被當作careless cleanup
 			uccw2.Shine();	// 定義shine為close
 		}
 	}
