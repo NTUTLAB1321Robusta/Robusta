@@ -74,7 +74,7 @@ public class CarelessCleanUpRefactorTest {
 		javaProjectMaker.createJavaFile(
 				CarelessCleanupExample.class.getPackage().getName(),
 				CarelessCleanupExample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + CarelessCleanupExample.class.getPackage().getName() + ";\n"
+				"package " + CarelessCleanupExample.class.getPackage().getName() + ";" + String.format("%n")
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
@@ -82,7 +82,7 @@ public class CarelessCleanUpRefactorTest {
 		javaProjectMaker.createJavaFile(
 				ClassWithNotThrowingExceptionCloseable.class.getPackage().getName(),
 				ClassWithNotThrowingExceptionCloseable.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + ClassWithNotThrowingExceptionCloseable.class.getPackage().getName() + ";\n"
+				"package " + ClassWithNotThrowingExceptionCloseable.class.getPackage().getName() + ";" + String.format("%n")
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
@@ -90,7 +90,7 @@ public class CarelessCleanUpRefactorTest {
 		javaProjectMaker.createJavaFile(
 				ClassImplementCloseable.class.getPackage().getName(),
 				ClassImplementCloseable.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + ClassImplementCloseable.class.getPackage().getName() + ";\n"
+				"package " + ClassImplementCloseable.class.getPackage().getName() + ";" + String.format("%n")
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
@@ -99,7 +99,7 @@ public class CarelessCleanUpRefactorTest {
 		javaProjectMaker.createJavaFile(
 				UserDefinedCarelessCleanupWeather.class.getPackage().getName(),
 				UserDefinedCarelessCleanupWeather.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + UserDefinedCarelessCleanupWeather.class.getPackage().getName() + ";\n"
+				"package " + UserDefinedCarelessCleanupWeather.class.getPackage().getName() + ";" + String.format("%n")
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
@@ -107,7 +107,7 @@ public class CarelessCleanUpRefactorTest {
 		javaProjectMaker.createJavaFile(
 				UserDefinedCarelessCleanupDog.class.getPackage().getName(),
 				UserDefinedCarelessCleanupDog.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + UserDefinedCarelessCleanupDog.class.getPackage().getName() + ";\n"
+				"package " + UserDefinedCarelessCleanupDog.class.getPackage().getName() + ";" + String.format("%n")
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
@@ -115,7 +115,7 @@ public class CarelessCleanUpRefactorTest {
 		javaProjectMaker.createJavaFile(
 				ClassImplementCloseableWithoutThrowException.class.getPackage().getName(),
 				ClassImplementCloseableWithoutThrowException.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + ClassImplementCloseableWithoutThrowException.class.getPackage().getName() + ";\n"
+				"package " + ClassImplementCloseableWithoutThrowException.class.getPackage().getName() + ";" + String.format("%n")
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
@@ -486,9 +486,9 @@ public class CarelessCleanUpRefactorTest {
 		MethodDeclaration md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, nameOfWillBeTestedMethod);
 		TryStatement tryStatement = ASTNodeFinder.getTryStatementNodeListByMethodDeclarationName(compilationUnit, nameOfWillBeTestedMethod).get(0);
 		/**
-		 * 關閉串流的程式碼startposition是1550, 但是測試的時候是1550-1
+		 * 關閉串流的程式碼startposition是1580
 		 */
-		MarkerInfo marker = new MarkerInfo(null, null, null, 1552, 53, null);
+		MarkerInfo marker = new MarkerInfo(null, null, null, 1580, 54, null);
 		Field smellMessage = CarelessCleanUpRefactor.class.getDeclaredField("smellMessage");
 		smellMessage.setAccessible(true);
 		smellMessage.set(refactor, marker);
@@ -504,7 +504,7 @@ public class CarelessCleanUpRefactorTest {
 		MethodDeclaration md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, nameOfWillBeTestedMethod);
 		TryStatement tryStatement = ASTNodeFinder.getTryStatementNodeListByMethodDeclarationName(compilationUnit, nameOfWillBeTestedMethod).get(0);
 		
-		MarkerInfo marker = new MarkerInfo(null, null, null, 7813, 255, null);
+		MarkerInfo marker = new MarkerInfo(null, null, null, 7854-1, 256, null);
 		Field smellMessage = CarelessCleanUpRefactor.class.getDeclaredField("smellMessage");
 		smellMessage.setAccessible(true);
 		smellMessage.set(refactor, marker);
@@ -535,7 +535,7 @@ public class CarelessCleanUpRefactorTest {
 		nameOfWillBeTestedMethod = "y2_closeStreamInCatchClause";
 		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, nameOfWillBeTestedMethod);
 		tryStatement = ASTNodeFinder.getTryStatementNodeListByMethodDeclarationName(compilationUnit, nameOfWillBeTestedMethod).get(0);
-		marker = new MarkerInfo(null, null, null, (5052 - 1), 160, null);
+		marker = new MarkerInfo(null, null, null, 5079, 161, null);
 		smellMessage.set(refactor, marker);
 		
 		// check precondition
@@ -577,7 +577,7 @@ public class CarelessCleanUpRefactorTest {
 		nameOfWillBeTestedMethod = "y_closeStreamInFinallyButThrowsExceptionInCatchAndFinally";
 		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, nameOfWillBeTestedMethod);
 		tryStatement = ASTNodeFinder.getTryStatementNodeListByMethodDeclarationName(compilationUnit, nameOfWillBeTestedMethod).get(0);
-		marker = new MarkerInfo(null, null, null, (13539 - 1), 470, null);
+		marker = new MarkerInfo(null, null, null, 13566, 471, null);
 		smellMessage.set(refactor, marker);
 		
 		// check precondition
@@ -674,15 +674,16 @@ public class CarelessCleanUpRefactorTest {
 		
 		// check precondition
 		List<?> imports = compilationUnit.imports();
-		assertEquals(8, imports.size());
-		assertEquals("import java.io.File;\n", imports.get(0).toString());
-		assertEquals("import java.io.FileInputStream;\n", imports.get(1).toString());
-		assertEquals("import java.io.FileNotFoundException;\n", imports.get(2).toString());
-		assertEquals("import java.io.FileOutputStream;\n", imports.get(3).toString());
-		assertEquals("import java.io.FileWriter;\n", imports.get(4).toString());
-		assertEquals("import java.io.IOException;\n", imports.get(5).toString());
-		assertEquals("import ntut.csie.robusta.agile.exception.RTag;\n", imports.get(6).toString());
-		assertEquals("import ntut.csie.robusta.agile.exception.Robustness;\n", imports.get(7).toString());
+		assertEquals(9, imports.size());
+		assertEquals("import java.io.Closeable;\n", imports.get(0).toString());
+		assertEquals("import java.io.File;\n", imports.get(1).toString());
+		assertEquals("import java.io.FileInputStream;\n", imports.get(2).toString());
+		assertEquals("import java.io.FileNotFoundException;\n", imports.get(3).toString());
+		assertEquals("import java.io.FileOutputStream;\n", imports.get(4).toString());
+		assertEquals("import java.io.FileWriter;\n", imports.get(5).toString());
+		assertEquals("import java.io.IOException;\n", imports.get(6).toString());
+		assertEquals("import ntut.csie.robusta.agile.exception.RTag;\n", imports.get(7).toString());
+		assertEquals("import ntut.csie.robusta.agile.exception.Robustness;\n", imports.get(8).toString());
 		
 		// 模擬加入一個method，而需要import原本沒有的package
 		ImportDeclaration imp = compilationUnit.getAST().newImportDeclaration();
@@ -693,16 +694,17 @@ public class CarelessCleanUpRefactorTest {
 		addImportPackage.setAccessible(true);
 		addImportPackage.invoke(refactor, RuntimeEnvironmentProjectReader.getType(javaProjectMaker.getProjectName(), UserDefinedCarelessCleanupDog.class.getPackage().getName(), UserDefinedCarelessCleanupDog.class.getSimpleName()));
 		// check postcondition
-		assertEquals(9, imports.size());
-		assertEquals("import java.io.File;\n", imports.get(0).toString());
-		assertEquals("import java.io.FileInputStream;\n", imports.get(1).toString());
-		assertEquals("import java.io.FileNotFoundException;\n", imports.get(2).toString());
-		assertEquals("import java.io.FileOutputStream;\n", imports.get(3).toString());
-		assertEquals("import java.io.FileWriter;\n", imports.get(4).toString());
-		assertEquals("import java.io.IOException;\n", imports.get(5).toString());
-		assertEquals("import ntut.csie.robusta.agile.exception.RTag;\n", imports.get(6).toString());
-		assertEquals("import ntut.csie.robusta.agile.exception.Robustness;\n", imports.get(7).toString());
-		assertEquals("import java.io.IOError;\n", imports.get(8).toString());
+		assertEquals(10, imports.size());
+		assertEquals("import java.io.Closeable;\n", imports.get(0).toString());
+		assertEquals("import java.io.File;\n", imports.get(1).toString());
+		assertEquals("import java.io.FileInputStream;\n", imports.get(2).toString());
+		assertEquals("import java.io.FileNotFoundException;\n", imports.get(3).toString());
+		assertEquals("import java.io.FileOutputStream;\n", imports.get(4).toString());
+		assertEquals("import java.io.FileWriter;\n", imports.get(5).toString());
+		assertEquals("import java.io.IOException;\n", imports.get(6).toString());
+		assertEquals("import ntut.csie.robusta.agile.exception.RTag;\n", imports.get(7).toString());
+		assertEquals("import ntut.csie.robusta.agile.exception.Robustness;\n", imports.get(8).toString());
+		assertEquals("import java.io.IOError;\n", imports.get(9).toString());
 	}
 	
 //	@Test
