@@ -57,6 +57,15 @@ public class CarelessCleanupVisitor2 extends ASTVisitor {
 		return carelessCleanupList;
 	}
 	
+	public boolean visit(TryStatement node) {
+		// 不幫Nested TryStatement的程式碼結構檢查Careless Cleanup
+		ASTNode outerTryStatement = NodeUtils.getSpecifiedParentNode(node, ASTNode.TRY_STATEMENT);
+		if(outerTryStatement != null) {
+			return false;
+		}
+		return true;
+	}
+	
 	public boolean visit(MethodInvocation node) {
 		// 在finally裡面的close動作，將不會進到這裡處理
 		if(NodeUtils.isMethodInvocationInFinally(node)) {
@@ -78,8 +87,7 @@ public class CarelessCleanupVisitor2 extends ASTVisitor {
 		if(tryStatement != null) {
 			Block finallyBlock = tryStatement.getFinally();
 			// 這個Block是Finally
-			if ((finallyBlock != null) && (finallyBlock.equals(node))) {
-				
+			if ((finallyBlock != null) && (finallyBlock.equals(node))) {			
 				// 先蒐集Finally裡面的Careless Cleanup
 				CarelessCleanupOnlyInFinallyVisitor ccoifv = new CarelessCleanupOnlyInFinallyVisitor(root);
 				node.accept(ccoifv);

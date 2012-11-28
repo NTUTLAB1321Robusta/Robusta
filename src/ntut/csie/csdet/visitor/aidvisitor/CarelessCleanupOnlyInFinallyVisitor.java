@@ -9,9 +9,11 @@ import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.ThrowStatement;
+import org.eclipse.jdt.core.dom.TryStatement;
 
 /**
- * 檢查特定的Block最先在哪個Node會拋出例外。
+ * 檢查特定的Finally Block最先在哪個Node會拋出例外。
+ * 如果裡面還有TryStatement，一律不檢查。
  * 
  * 注意：不是只有Finally的節點叫做Block。
  * @author charles
@@ -30,6 +32,10 @@ public class CarelessCleanupOnlyInFinallyVisitor extends ASTVisitor {
 		isExceptionRisable = false;
 		carelessCleanupNodes = new ArrayList<MethodInvocation>();
 		fineCleanupNodes = new ArrayList<MethodInvocation>();
+	}
+	
+	public boolean visit(TryStatement node) {
+		return false;
 	}
 	
 	public boolean visit(ThrowStatement node) {

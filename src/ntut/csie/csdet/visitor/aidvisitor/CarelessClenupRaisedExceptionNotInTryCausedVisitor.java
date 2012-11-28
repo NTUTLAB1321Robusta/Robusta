@@ -20,6 +20,8 @@ import org.eclipse.jdt.core.dom.TryStatement;
  * 
  * 用MethodDeclaration去accept，並且傳入已經知道的close清單進來。
  * MethodInvocation再去比對，看是不是有match的instance
+ * 
+ * 如果裡面還有TryStatement，一律不檢查。
  * @author charles
  *
  */
