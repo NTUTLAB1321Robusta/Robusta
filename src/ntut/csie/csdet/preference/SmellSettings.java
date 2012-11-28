@@ -164,7 +164,7 @@ public class SmellSettings {
 		Element tagAnnotationTypeElement = null;
 		for (Object s : elements) {
 			Element annotationTypeElement = (Element)s;
-			if(annotationTypeElement.getAttribute(ATTRIBUTE_NAME).getValue().equals(annotationName)) {
+			if(annotationTypeElement.getName().equals(annotationName)) {
 				tagAnnotationTypeElement = annotationTypeElement;
 				return tagAnnotationTypeElement;
 			}

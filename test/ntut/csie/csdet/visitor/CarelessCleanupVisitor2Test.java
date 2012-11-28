@@ -29,11 +29,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class CarelessCleanupVisitorTest {
+public class CarelessCleanupVisitor2Test {
 	JavaFileToString javaFile2String;
 	JavaProjectMaker javaProjectMaker;
 	CompilationUnit compilationUnit;
-	CarelessCleanupVisitor carelessCleanupVisitor;
+	CarelessCleanupVisitor2 carelessCleanupVisitor;
 	SmellSettings smellSettings;
 
 	@Before
@@ -49,7 +49,7 @@ public class CarelessCleanupVisitorTest {
 		javaProjectMaker.createJavaFile(
 				CarelessCleanupExample.class.getPackage().getName(),
 				CarelessCleanupExample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + CarelessCleanupExample.class.getPackage().getName() + ";%n"
+				"package " + CarelessCleanupExample.class.getPackage().getName() + ";" + String.format("%n")
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
@@ -57,7 +57,7 @@ public class CarelessCleanupVisitorTest {
 		javaProjectMaker.createJavaFile(
 				ClassWithNotThrowingExceptionCloseable.class.getPackage().getName(),
 				ClassWithNotThrowingExceptionCloseable.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + ClassWithNotThrowingExceptionCloseable.class.getPackage().getName() + ";%n"
+				"package " + ClassWithNotThrowingExceptionCloseable.class.getPackage().getName() + ";" + System.getProperty("line.separator")
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
@@ -65,7 +65,7 @@ public class CarelessCleanupVisitorTest {
 		javaProjectMaker.createJavaFile(
 				ClassImplementCloseable.class.getPackage().getName(),
 				ClassImplementCloseable.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + ClassImplementCloseable.class.getPackage().getName() + ";%n"
+				"package " + ClassImplementCloseable.class.getPackage().getName() + ";" + System.getProperty("line.separator")
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
@@ -74,7 +74,7 @@ public class CarelessCleanupVisitorTest {
 		javaProjectMaker.createJavaFile(
 				UserDefinedCarelessCleanupWeather.class.getPackage().getName(),
 				UserDefinedCarelessCleanupWeather.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + UserDefinedCarelessCleanupWeather.class.getPackage().getName() + ";%n"
+				"package " + UserDefinedCarelessCleanupWeather.class.getPackage().getName() + ";" + System.getProperty("line.separator")
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
@@ -82,7 +82,7 @@ public class CarelessCleanupVisitorTest {
 		javaProjectMaker.createJavaFile(
 				UserDefinedCarelessCleanupDog.class.getPackage().getName(),
 				UserDefinedCarelessCleanupDog.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + UserDefinedCarelessCleanupDog.class.getPackage().getName() + ";%n"
+				"package " + UserDefinedCarelessCleanupDog.class.getPackage().getName() + ";" + System.getProperty("line.separator")
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
@@ -90,7 +90,7 @@ public class CarelessCleanupVisitorTest {
 		javaProjectMaker.createJavaFile(
 				ClassImplementCloseableWithoutThrowException.class.getPackage().getName(),
 				ClassImplementCloseableWithoutThrowException.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + ClassImplementCloseableWithoutThrowException.class.getPackage().getName() + ";%n"
+				"package " + ClassImplementCloseableWithoutThrowException.class.getPackage().getName() + ";" + System.getProperty("line.separator")
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
@@ -110,7 +110,7 @@ public class CarelessCleanupVisitorTest {
 		// 取得AST
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
-		carelessCleanupVisitor = new CarelessCleanupVisitor(compilationUnit);
+		carelessCleanupVisitor = new CarelessCleanupVisitor2(compilationUnit);
 	}
 
 	@After
@@ -135,45 +135,8 @@ public class CarelessCleanupVisitorTest {
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		
 		// 重新產生Visitor，使得設定值有存入CarelessCleaupVisitor
-		carelessCleanupVisitor = new CarelessCleanupVisitor(compilationUnit);
+		carelessCleanupVisitor = new CarelessCleanupVisitor2(compilationUnit);
 		
-		int carelessCleanupSmellCount = 0;
-		assertNotNull(compilationUnit);
-		assertNotNull(carelessCleanupVisitor);
-		compilationUnit.accept(carelessCleanupVisitor);
-		if (carelessCleanupVisitor.getCarelessCleanupList() != null) {
-			carelessCleanupSmellCount = carelessCleanupVisitor.getCarelessCleanupList().size();
-		}
-		assertEquals(
-				colloectBadSmellListContent(carelessCleanupVisitor.getCarelessCleanupList()),
-				22, carelessCleanupSmellCount);
-	}
-	
-	@Test
-	public void testGetCarelessCleanupList() {
-		int carelessCleanupSmellCount = 0;
-		assertNotNull(compilationUnit);
-		assertNotNull(carelessCleanupVisitor);
-		compilationUnit.accept(carelessCleanupVisitor);
-		if (carelessCleanupVisitor.getCarelessCleanupList() != null) {
-			carelessCleanupSmellCount = carelessCleanupVisitor.getCarelessCleanupList().size();
-		}
-		assertEquals(
-				colloectBadSmellListContent(carelessCleanupVisitor.getCarelessCleanupList()),
-				24, carelessCleanupSmellCount);
-	}
-	
-	@Test
-	public void testGetCarelessCleanupListWithUserDefiendLibs() throws Exception {	
-		// 產生設定檔
-		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		smellSettings.addCarelessCleanupPattern(UserDefinedCarelessCleanupWeather.class.getName() + ".*", true);
-		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-
-		// 重新產生Visitor，使得設定值有存入CarelessCleaupVisitor
-		carelessCleanupVisitor = new CarelessCleanupVisitor(compilationUnit);
-		
-		// 偵測結果
 		int carelessCleanupSmellCount = 0;
 		assertNotNull(compilationUnit);
 		assertNotNull(carelessCleanupVisitor);
@@ -187,14 +150,28 @@ public class CarelessCleanupVisitorTest {
 	}
 	
 	@Test
-	public void testGetCarelessCleanupListWithUserDefiendFullQualifiedMethods() throws Exception {	
+	public void testGetCarelessCleanupList() {
+		int carelessCleanupSmellCount = 0;
+		assertNotNull(compilationUnit);
+		assertNotNull(carelessCleanupVisitor);
+		compilationUnit.accept(carelessCleanupVisitor);
+		if (carelessCleanupVisitor.getCarelessCleanupList() != null) {
+			carelessCleanupSmellCount = carelessCleanupVisitor.getCarelessCleanupList().size();
+		}
+		assertEquals(
+				colloectBadSmellListContent(carelessCleanupVisitor.getCarelessCleanupList()),
+				30, carelessCleanupSmellCount);
+	}
+	
+	@Test
+	public void testGetCarelessCleanupListWithUserDefiendLibs() throws Exception {	
 		// 產生設定檔
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		smellSettings.addCarelessCleanupPattern(UserDefinedCarelessCleanupWeather.class.getName() + ".bark", true);
+		smellSettings.addCarelessCleanupPattern(UserDefinedCarelessCleanupWeather.class.getName() + ".*", true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		
+
 		// 重新產生Visitor，使得設定值有存入CarelessCleaupVisitor
-		carelessCleanupVisitor = new CarelessCleanupVisitor(compilationUnit);
+		carelessCleanupVisitor = new CarelessCleanupVisitor2(compilationUnit);
 		
 		// 偵測結果
 		int carelessCleanupSmellCount = 0;
@@ -206,7 +183,30 @@ public class CarelessCleanupVisitorTest {
 		}
 		assertEquals(
 				colloectBadSmellListContent(carelessCleanupVisitor.getCarelessCleanupList()),
-				25, carelessCleanupSmellCount);
+				36, carelessCleanupSmellCount);
+	}
+	
+	@Test
+	public void testGetCarelessCleanupListWithUserDefiendFullQualifiedMethods() throws Exception {	
+		// 產生設定檔
+		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		smellSettings.addCarelessCleanupPattern(UserDefinedCarelessCleanupWeather.class.getName() + ".bark", true);
+		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		
+		// 重新產生Visitor，使得設定值有存入CarelessCleaupVisitor
+		carelessCleanupVisitor = new CarelessCleanupVisitor2(compilationUnit);
+		
+		// 偵測結果
+		int carelessCleanupSmellCount = 0;
+		assertNotNull(compilationUnit);
+		assertNotNull(carelessCleanupVisitor);
+		compilationUnit.accept(carelessCleanupVisitor);
+		if (carelessCleanupVisitor.getCarelessCleanupList() != null) {
+			carelessCleanupSmellCount = carelessCleanupVisitor.getCarelessCleanupList().size();
+		}
+		assertEquals(
+				colloectBadSmellListContent(carelessCleanupVisitor.getCarelessCleanupList()),
+				32, carelessCleanupSmellCount);
 	}
 	
 	@Test
@@ -217,7 +217,7 @@ public class CarelessCleanupVisitorTest {
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		
 		// 重新產生Visitor，使得設定值有存入CarelessCleaupVisitor
-		carelessCleanupVisitor = new CarelessCleanupVisitor(compilationUnit);
+		carelessCleanupVisitor = new CarelessCleanupVisitor2(compilationUnit);
 		
 		// 偵測結果
 		int carelessCleanupSmellCount = 0;
@@ -229,7 +229,7 @@ public class CarelessCleanupVisitorTest {
 		}
 		assertEquals(
 				colloectBadSmellListContent(carelessCleanupVisitor.getCarelessCleanupList()),
-				26, carelessCleanupSmellCount);
+				33, carelessCleanupSmellCount);
 	}
 	
 	@Test
@@ -240,7 +240,7 @@ public class CarelessCleanupVisitorTest {
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		
 		// 重新產生Visitor，使得設定值有存入CarelessCleaupVisitor
-		carelessCleanupVisitor = new CarelessCleanupVisitor(compilationUnit);
+		carelessCleanupVisitor = new CarelessCleanupVisitor2(compilationUnit);
 		
 		// 偵測結果
 		int carelessCleanupSmellCount = 0;
@@ -252,7 +252,7 @@ public class CarelessCleanupVisitorTest {
 		}
 		assertEquals(
 				colloectBadSmellListContent(carelessCleanupVisitor.getCarelessCleanupList()),
-				25, carelessCleanupSmellCount);
+				32, carelessCleanupSmellCount);
 	}
 	
 	/**

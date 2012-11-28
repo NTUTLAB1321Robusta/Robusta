@@ -409,7 +409,7 @@ public class ReportBuilderTest {
 			inputSuppressData.invoke(reportBuilder, suppressSmellList, detMethodSmell, detCatchSmell);
 			// FIXME - 由於目前測試範本沒有suppress marker範例，故suppressSmellList為0
 			assertEquals(0, suppressSmellList.size());
-			assertEquals(6, detMethodSmell.size());
+			assertEquals(7, detMethodSmell.size());
 			assertEquals(3, detCatchSmell.size());
 		}
 	}

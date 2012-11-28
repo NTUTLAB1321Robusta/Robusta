@@ -1,7 +1,9 @@
 package ntut.csie.jdt.util;
 
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.Closeable;
 
@@ -17,6 +19,8 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.NodeFinder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +45,7 @@ public class NodeUtilsTest {
 		javaFile2String.read(NodeUtilsTestSample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(NodeUtilsTestSample.class.getPackage().getName(),
 				NodeUtilsTestSample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + NodeUtilsTestSample.class.getPackage().getName() + ";\n"
+				"package " + NodeUtilsTestSample.class.getPackage().getName() + ";" + String.format("%n")
 						+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
@@ -70,7 +74,7 @@ public class NodeUtilsTest {
 		assertFalse(NodeUtils.isITypeBindingImplemented(null, Closeable.class));
 		
 		compilationUnit.accept(miVisitor);
-		assertEquals(6, miVisitor.countMethodInvocations());
+		assertEquals(10, miVisitor.countMethodInvocations());
 		
 		// ITypeBinding¬°Objectªº±¡ªp
 		assertFalse(NodeUtils.isITypeBindingImplemented(miVisitor
@@ -103,4 +107,10 @@ public class NodeUtilsTest {
 				.getDeclaringClass(), Closeable.class));
 	}
 
+	@Test
+	public void testIsMethodInvocationInFinally() {
+		//public void readFile() throws Exception - fos.close();
+		MethodInvocation node = (MethodInvocation)NodeFinder.perform(compilationUnit, 1526, 11);
+		assertTrue(NodeUtils.isMethodInvocationInFinally(node));
+	}
 }

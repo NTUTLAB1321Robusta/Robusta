@@ -269,4 +269,24 @@ public class CarelessCleanupVisitor extends ASTVisitor {
 		
 		return node.resolveMethodBinding().getExceptionTypes();
 	}
+	
+	/**
+	 * 如果是finally block就不檢查
+	 */
+	public boolean visit(Block node) {
+		ASTNode tryStatement = NodeUtils.getSpecifiedParentNode(node, ASTNode.TRY_STATEMENT);
+		if(tryStatement == null) {
+			return true;
+		}
+		
+		if(((TryStatement)tryStatement).getFinally() == null) {
+			return true;
+		}
+		
+		if(((TryStatement)tryStatement).getFinally().equals(node)) {
+			return false;
+		}
+		
+		return true;
+	}
 }

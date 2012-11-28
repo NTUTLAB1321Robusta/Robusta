@@ -117,9 +117,9 @@ public class UserDefinedMethodAnalyzer {
 			return false;
 		}
 		
-		// 檢查MethodInvocation是否在finally裡面
-		if(NodeUtils.isMethodInvocationInFinally(node))
-			return false;
+//		// 檢查MethodInvocation是否在finally裡面
+//		if(NodeUtils.isMethodInvocationInFinally(node))
+//			return false;
 		
 		//  檢查傳入的參數是否有實作closeable的
 		boolean isCloseable = NodeUtils.isParameterImplemented(node, Closeable.class);
