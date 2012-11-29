@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 
 public class SmellReport {
 	private static Logger logger = LoggerFactory.getLogger(SmellReport.class);
-	
 	//Report資料
 	ReportModel model;
 
@@ -66,16 +65,12 @@ public class SmellReport {
 	private String createXML() {
 		Element root = new Element("EHSmellReport");
 		Document myDocument = new Document(root);
-
 		//把Summary資料加至XML Root
 		printSummary(root);
-		
 		//把Code Information加至XML Root
 		printCodeInfo(root);
-
 		//把Packages總覽資料加至XML Root
 		printAllPackageList(root);
-
 		//把Package資料加至XML Root
 		printPackageList(root);
 
@@ -128,6 +123,7 @@ public class SmellReport {
 		smellList.addContent(new Element("NestedTryBlock").addContent(String.valueOf(model.getNestedTryTotalSize())));
 		smellList.addContent(new Element("CarelessCleanUp").addContent(String.valueOf(model.getCarelessCleanUpTotalSize())));
 		smellList.addContent(new Element("OverLogging").addContent(String.valueOf(model.getOverLoggingTotalSize())));
+		smellList.addContent(new Element("OverwrittenLeadException").addContent(String.valueOf(model.getOverwrittenTotalSize())));
 		smellList.addContent(new Element("Total").addContent(String.valueOf(model.getTotalSmellCount())));
 		root.addContent(smellList);
 	}
@@ -156,7 +152,6 @@ public class SmellReport {
 		allPackageList.addContent(new Element("JPGPath").addContent("file:///" + model.getFilePath("PackageReport.jpg", true)));
 		for (int i=0; i < model.getPackagesSize(); i++) {
 			PackageModel packageModel = model.getPackage(i);
-
 			Element packages = new Element("Package");
 			packages.addContent(new Element("ID").addContent(String.valueOf(i)));
 			//第一欄書籤連結和Package名稱
@@ -167,22 +162,15 @@ public class SmellReport {
 				packages.addContent(new Element("HrefPackageName").addContent("#" + packageModel.getPackageName()));
 				packages.addContent(new Element("PackageName").addContent(packageModel.getPackageName()));
 			}
-			packages.addContent(new Element("LOC")
-								.addContent(String.valueOf(packageModel.getTotalLine())));
-			packages.addContent(new Element("IgnoreCheckedException")
-								.addContent(String.valueOf(packageModel.getIgnoreSize())));
-			packages.addContent(new Element("DummyHandler")
-								.addContent(String.valueOf(packageModel.getDummySize())));
-			packages.addContent(new Element("UnprotectedMainProgram")
-								.addContent(String.valueOf(packageModel.getUnMainSize())));
-			packages.addContent(new Element("NestedTryBlock")
-								.addContent(String.valueOf(packageModel.getNestedTrySize())));
-			packages.addContent(new Element("CarelessCleanUp")
-								.addContent(String.valueOf(packageModel.getCarelessCleanUpSize())));
-			packages.addContent(new Element("OverLogging")
-								.addContent(String.valueOf(packageModel.getOverLoggingSize())));
-			packages.addContent(new Element("PackageTotal")
-								.addContent(String.valueOf(packageModel.getTotalSmellSize())));
+			packages.addContent(new Element("LOC").addContent(String.valueOf(packageModel.getTotalLine())));
+			packages.addContent(new Element("IgnoreCheckedException").addContent(String.valueOf(packageModel.getIgnoreSize())));
+			packages.addContent(new Element("DummyHandler").addContent(String.valueOf(packageModel.getDummySize())));
+			packages.addContent(new Element("UnprotectedMainProgram").addContent(String.valueOf(packageModel.getUnMainSize())));
+			packages.addContent(new Element("NestedTryBlock").addContent(String.valueOf(packageModel.getNestedTrySize())));
+			packages.addContent(new Element("CarelessCleanUp").addContent(String.valueOf(packageModel.getCarelessCleanUpSize())));
+			packages.addContent(new Element("OverLogging").addContent(String.valueOf(packageModel.getOverLoggingSize())));
+			packages.addContent(new Element("OverwrittenLeadException").addContent(String.valueOf(packageModel.getOverwrittenSize())));
+			packages.addContent(new Element("PackageTotal").addContent(String.valueOf(packageModel.getTotalSmellSize())));
 			allPackageList.addContent(packages);
 		}
 		///AllPackage List 總和資料輸出///
@@ -194,6 +182,7 @@ public class SmellReport {
 		total.addContent(new Element("NestedTrTotal").addContent(String.valueOf(model.getNestedTryTotalSize())));
 		total.addContent(new Element("CCUpTotal").addContent(String.valueOf(model.getCarelessCleanUpTotalSize())));
 		total.addContent(new Element("OLTotal").addContent(String.valueOf(model.getOverLoggingTotalSize())));
+		total.addContent(new Element("OWTotal").addContent(String.valueOf(model.getOverwrittenTotalSize())));
 		total.addContent(new Element("AllTotal").addContent(String.valueOf(model.getTotalSmellCount())));
 		allPackageList.addContent(total);
 		root.addContent(allPackageList);
@@ -238,11 +227,9 @@ public class SmellReport {
 						Element smell = new Element("SmellData");
 						smell.addContent(new Element("ClassName").addContent(clTemp.getClassName()));
 						smell.addContent(new Element("State").addContent("0"));
-						
 						//欲連結的SourceCode資訊格式
 						String codeLine = "#" + clTemp.getClassPath() + "#" + clTemp.getSmellLine(k) + "#";
 						smell.addContent(new Element("LinkCode").addContent(codeLine));
-
 						smell.addContent(new Element("MethodName").addContent(clTemp.getMethodName(k)));
 						smell.addContent(new Element("SmellType").addContent(clTemp.getSmellType(k).replace("_", " ")));
 						smell.addContent(new Element("Line").addContent(String.valueOf(clTemp.getSmellLine(k))));
@@ -261,7 +248,6 @@ public class SmellReport {
 			}
 			packages.addContent(classList);
 			packages.addContent(new Element("Total").addContent(String.valueOf(pkTemp.getTotalSmellSize())));
-			
 			packageList.addContent(packages);
 		}
 		root.addContent(packageList);
@@ -277,23 +263,19 @@ public class SmellReport {
 		FileWriter fw = null;
 		try {
 			inputStyle = this.getClass().getResourceAsStream("/xslTemplate/styles.css");
-
 			bReader = new BufferedReader(new InputStreamReader(inputStyle, "UTF-8"));
-			
 			File stylePath = new File(model.getFilePath("styles.css", false));
-
 			//若沒有路徑就建立路徑
 			if(!stylePath.exists()) {
 				fw = new FileWriter(model.getFilePath("styles.css", false));
-
 				//把讀取到的資料輸出
 				String thisLine = null;
 				while ((thisLine = bReader.readLine()) != null) {
 					fw.write(thisLine);
 				}
 			}
-		} catch (IOException ex) {
-			logger.error("[IOException] EXCEPTION ",ex);
+		} catch (IOException e) {
+			logger.error("[IOException] EXCEPTION ", e);
 		} finally {
 			closeStream(inputStyle);
 			closeStream(bReader);
@@ -320,7 +302,6 @@ public class SmellReport {
 				out = new FileOutputStream(model.getFilePath("open.gif", false));
 				ImageIO.write(image, "gif", out);
 			}
-
 			//Close.gif
 			input = this.getClass().getResourceAsStream("/xslTemplate/close.gif");
 			image = ImageIO.read(input);
@@ -348,7 +329,7 @@ public class SmellReport {
 			if (io != null)
 				io.close();
 		} catch (IOException e) {
-			logger.error("[IOException] EXCEPTION ", e);;
+			logger.error("[IOException] EXCEPTION ", e);
 		}
 	}
 	
@@ -362,22 +343,18 @@ public class SmellReport {
 		FileOutputStream outputSteam = null;
 		try {
 			inputStream = this.getClass().getResourceAsStream("/xslTemplate/sample.xsl");
-
 			Source xslSource = new StreamSource(inputStream);
-
 			TransformerFactory tf = TransformerFactory.newInstance();
 			Transformer transformer = null;
 			transformer = tf.newTransformer(xslSource);
 			Source xmlSource = new StreamSource(new StringReader(xmlString));
-
 			outputSteam = new FileOutputStream(model.getFilePath("sample.html", true));
-
 			Result htmlResult = new StreamResult(outputSteam);
 			transformer.transform(xmlSource, htmlResult);
-		} catch (TransformerConfigurationException ex) {
-			logger.error("[Transformer Configuration Exception] EXCEPTION ",ex);
-		} catch (TransformerException ex) {
-			logger.error("[Transformer Exception] EXCEPTION ",ex);
+		} catch (TransformerConfigurationException e) {
+			logger.error("[Transformer Configuration Exception] EXCEPTION ", e);
+		} catch (TransformerException e) {
+			logger.error("[Transformer Exception] EXCEPTION ", e);
 		} finally {
 			closeStream(inputStream);
 			closeStream(outputSteam);

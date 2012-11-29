@@ -95,9 +95,16 @@ public class PackageModel {
 
 		return overLoggingSize;
 	}
+	public int getOverwrittenSize() {
+		int overwrittenSize = 0;
+		for (ClassModel cm : classModel)
+			overwrittenSize += cm.getOverwrittenSize();
+
+		return overwrittenSize;
+	}
 	public int getTotalSmellSize() {
 		return getIgnoreSize() + getDummySize() + getNestedTrySize() + getUnMainSize() +
-			   getCarelessCleanUpSize() + getOverLoggingSize();
+			   getCarelessCleanUpSize() + getOverLoggingSize() + getOverwrittenSize();
 	}
 	
 	//存取程式的LOC

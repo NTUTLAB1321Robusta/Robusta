@@ -14,21 +14,16 @@ import java.util.List;
 public class ReportModel {
 	//Smell資訊
 	private List<PackageModel> smellList = new ArrayList<PackageModel>();
-	
 	//Filter條綿是否為全偵測
 	private boolean derectAllproject;
 	
 	private Date buildTime;
-	
 	//Filter條件
 	private List<String> filterRuleList = new ArrayList<String>();
-
 	//專案名稱
 	private String projectName = "";
-
 	//儲存路徑
 	private String projectPath = "";
-
 	//Smell總數
 	private int ignoreTotalSize = 0;
 	private int dummyTotalSize = 0;
@@ -36,7 +31,7 @@ public class ReportModel {
 	private int nestedTryTotalSize = 0;
 	private int carelessCleanUpSize = 0;
 	private int overLoggingSize = 0;
-
+	private int overwrittenSize = 0;
 	//取得code counter
 	private int tryCounter = 0;
 	private int catchCounter = 0;
@@ -55,7 +50,7 @@ public class ReportModel {
 
         return df.format(buildTime);
 	}
-
+	
 	///增加Smell的總數///
 	public void addIgnoreTotalSize(int ignoreSize) {
 		this.ignoreTotalSize += ignoreSize;
@@ -74,6 +69,9 @@ public class ReportModel {
 	}
 	public void addCarelessCleanUpSize(int carelessCleanUpSize) {
 		this.carelessCleanUpSize += carelessCleanUpSize;
+	}
+	public void addOverwrittenSize(int overwrittenSize) {
+		this.overwrittenSize += overwrittenSize;
 	}
 	
 	///取得Smell的總數///
@@ -95,9 +93,12 @@ public class ReportModel {
 	public int getCarelessCleanUpTotalSize() {
 		return carelessCleanUpSize;
 	}
+	public int getOverwrittenTotalSize() {
+		return overwrittenSize;
+	}
 	public int getTotalSmellCount() {
 		return getIgnoreTotalSize() + getDummyTotalSize() + getUnMainTotalSize() + getNestedTryTotalSize()
-				+ getCarelessCleanUpTotalSize() + getOverLoggingTotalSize();
+				+ getCarelessCleanUpTotalSize() + getOverLoggingTotalSize() + getOverwrittenTotalSize();
 	}
 
 	///設定或取得Project的名稱///
@@ -114,13 +115,10 @@ public class ReportModel {
 	}
 	public void setProjectPath(String workspacePath) {
 		this.projectPath = workspacePath + "/" + getProjectName() + "_Report";
-
 		File metadataPath = new File(projectPath);
-
 		//若沒有路徑就建立路徑
 		if(!metadataPath.exists())
 			metadataPath.mkdir();
-
 		File htmlPath = new File(projectPath + "/" + buildTime.getTime());
 		htmlPath.mkdir();
 	}
@@ -187,7 +185,6 @@ public class ReportModel {
 			temp = temp.replace("EH_STAR", "*");
 			temp = temp.replace("EH_LEFT", "");
 			temp = temp.replace("EH_RIGHT", "");
-
 			filterRuleList.add(temp);
 		}
 	}

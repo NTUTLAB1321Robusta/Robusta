@@ -56,7 +56,6 @@ public class BarChart {
 	        JFreeChart chart = createChart(dataset, "Exception Handling Code Smells Chart", "", true);
 	        //輸出成JPG
 	        outputJPGFile(chart, "Report", 800, 500);
-
 	        //建立Package Level的Smell資訊
 	        dataset = createPackageDataset();
 	        //產生Chart
@@ -64,7 +63,7 @@ public class BarChart {
 	        //輸出成JPG
 	        outputJPGFile(chart, "PackageReport", 800, 420);
 
-	        for (int i=0; i<model.getPackagesSize(); i++) {
+	        for (int i = 0; i < model.getPackagesSize(); i++) {
 		        //建立Class Level的Smell資訊
 		        dataset = createClassDataset(model.getPackage(i));
 		        //產生Chart
@@ -90,6 +89,7 @@ public class BarChart {
 		data.addValue(model.getNestedTryTotalSize(), "", "Nested try statemet");
 		data.addValue(model.getCarelessCleanUpTotalSize(), "", "Careless Cleanup");
 		data.addValue(model.getOverLoggingTotalSize(), "", "Over Logging");
+		data.addValue(model.getOverwrittenTotalSize(), "", "Overwritten lead exception");
 		return data;				
 	}
 	
@@ -103,7 +103,6 @@ public class BarChart {
 		}
 		for (int i=0; i < model.getPackagesSize(); i++) {
 			PackageModel packageModel = model.getPackage(i);
-
 			//Package 名稱太常所以使用代碼
 			//data.addValue(packageModel.getTotalSmellSize(), "", packageModel.getPackageName());
 			//新增資料(""是為了設定同一欄位用相同名稱)
@@ -145,7 +144,6 @@ public class BarChart {
 
 		CategoryPlot plot = chart.getCategoryPlot();
 		plot.setNoDataMessage("No data available");
-
 		///Chart的顏色設定///
 		chart.setBackgroundPaint(Color.white);
 		plot.setBackgroundPaint(Color.lightGray);
@@ -153,24 +151,21 @@ public class BarChart {
 		plot.setRangeGridlinePaint(Color.white);
 		//每條Bar的顏色
 		CategoryItemRenderer renderer;
-		if (isDifferColor)
-			renderer = new CustomRenderer(new Paint[] {Color.red, Color.blue, Color.green,
-					Color.yellow, Color.magenta, Color.cyan,
-					Color.pink, Color.YELLOW});
-		else
+		if (isDifferColor) {
+			renderer = new CustomRenderer(new Paint[] {	Color.red, Color.blue, Color.green,
+														Color.yellow, Color.magenta, Color.cyan,
+														Color.pink, Color.YELLOW});
+		} else
 			renderer = new CustomRenderer(new Paint[] {Color.red});
 
 		renderer.setBaseItemLabelGenerator(new LabelGenerator(null));
 		renderer.setBaseItemLabelsVisible(true);
-		        
 		//調整使圖表間距不出現小數點
 		NumberAxis numberaxis = (NumberAxis)plot.getRangeAxis();
 		numberaxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-		        
 		//設定每條Bar上面的字樣
-		renderer.setBaseItemLabelFont(new Font("Arial",Font.BOLD,14));
-		renderer.setBasePositiveItemLabelPosition(new ItemLabelPosition(
-				ItemLabelAnchor.OUTSIDE12, TextAnchor.BASELINE_CENTER));
+		renderer.setBaseItemLabelFont(new Font("Arial", Font.BOLD, 14));
+		renderer.setBasePositiveItemLabelPosition(new ItemLabelPosition(ItemLabelAnchor.OUTSIDE12, TextAnchor.BASELINE_CENTER));
 		plot.setRenderer(renderer);
 		
 		CategoryAxis domainAxis = plot.getDomainAxis();
@@ -200,7 +195,6 @@ public class BarChart {
     	FileOutputStream fos_jpg = null;
     	try {
 			fos_jpg = new FileOutputStream(model.getFilePath(fileName + ".jpg", true));
-
 			//TODO 試著將圖片改為Class欄改為縱座標
 			//若為Class Level，當Class個數超過14個時，將圖片放大
 			if (sizeX == 600 && chart.getCategoryPlot().getCategories() != null)
@@ -210,9 +204,9 @@ public class BarChart {
 			//輸出JPG (註：不失真的長度800X400)
 			ChartUtilities.writeChartAsJPEG(fos_jpg, 1.0f, chart, sizeX, sizeY);
 		} catch (FileNotFoundException e) {
-			logger.error("[File Not Found Exception] EXCEPTION ",e);
+			logger.error("[File Not Found Exception] EXCEPTION ", e);
 		} catch (IOException e) {
-			logger.error("[IOException] EXCEPTION ",e);
+			logger.error("[IOException] EXCEPTION ", e);
     	} finally {
 			closeJPG(fos_jpg);
     	}
@@ -227,7 +221,7 @@ public class BarChart {
 			if(fos_jpg != null)
 				fos_jpg.close();
 		} catch (IOException e) {
-			logger.error("[IOException] EXCEPTION ",e);
+			logger.error("[IOException] EXCEPTION ", e);
 		}
 	}
 
@@ -262,7 +256,7 @@ public class BarChart {
     }
     
     @SuppressWarnings("serial")
-	static class LabelGenerator extends AbstractCategoryItemLabelGenerator implements CategoryItemLabelGenerator{
+	static class LabelGenerator extends AbstractCategoryItemLabelGenerator implements CategoryItemLabelGenerator {
 		private Integer category;
 		private NumberFormat formatter = NumberFormat.getPercentInstance();// a percent format
 		private NumberFormat nf = NumberFormat.getInstance(); 
@@ -272,12 +266,12 @@ public class BarChart {
 		 * specified category.
 		 * @param category
 		 */
-		public LabelGenerator(int category){
+		public LabelGenerator(int category) {
 			this(new Integer(category));
 		}
 		
-		public LabelGenerator(Integer category){
-			super("",NumberFormat.getInstance());
+		public LabelGenerator(Integer category) {
+			super("", NumberFormat.getInstance());
 			this.category = category;
 		}
 		
@@ -292,12 +286,12 @@ public class BarChart {
 				final Number b = dataset.getValue(series, this.category.intValue());
 				base = b.doubleValue();
 			} else {
-				base = calculateSeriesTotal(dataset,series);
+				base = calculateSeriesTotal(dataset, series);
 			}
 
 			Number value = dataset.getValue(series, category);
 			nf.setMaximumFractionDigits(2);
-			if(value !=null){
+			if(value !=null) {
 				double v = value.doubleValue();
 				if (v != 0)
 					//you can apply something format here
@@ -316,7 +310,7 @@ public class BarChart {
 		 * @param series
 		 * @return
 		 */
-		private double calculateSeriesTotal(CategoryDataset dataset, int series){
+		private double calculateSeriesTotal(CategoryDataset dataset, int series) {
 			double result = 0.0;
 			for(int i=0;i<dataset.getColumnCount();i++) {
 				Number value = dataset.getValue(series, i);

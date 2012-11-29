@@ -25,6 +25,7 @@ public class ClassModel {
 	private int unMainSize = 0;
 	private int overLoggingSize = 0;
 	private int carelessSize = 0;
+	private int overwrittenSize = 0;
 
 	///存取Class的名稱///
 	public String getClassName() { 
@@ -87,6 +88,14 @@ public class ClassModel {
 				methodList.add(MethodName);
 		}
 	}
+	public void setOverwrittenLead(List<MarkerInfo> overwrittenList, String MethodName) {
+		if (overwrittenList != null) {
+			overwrittenSize += overwrittenList.size();
+			smellList.addAll(overwrittenList);
+			for (int i=0; i<overwrittenList.size(); i++)
+				methodList.add(MethodName);
+		}
+	}
 
 	///取得Class內的Smell資訊///
 	public int getSmellSize() {
@@ -121,9 +130,12 @@ public class ClassModel {
 	public int getOverLoggingSize() {
 		return overLoggingSize;
 	}
+	public int getOverwrittenSize() {
+		return overwrittenSize;
+	}
 	public int getTotalSmell() {
 		return getIgnoreSize() + getDummySize() + getUnMainSize() + getNestedTrySize() +
-			   getCarelessCleanUpSize() + getOverLoggingSize();
+			   getCarelessCleanUpSize() + getOverLoggingSize() + getOverwrittenSize();
 	}
 	
 	///存取Class的路徑///

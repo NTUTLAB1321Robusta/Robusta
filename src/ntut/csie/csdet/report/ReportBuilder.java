@@ -14,6 +14,7 @@ import ntut.csie.csdet.visitor.DummyHandlerVisitor;
 import ntut.csie.csdet.visitor.IgnoreExceptionVisitor;
 import ntut.csie.csdet.visitor.NestedTryStatementVisitor;
 import ntut.csie.csdet.visitor.OverLoggingDetector;
+import ntut.csie.csdet.visitor.OverwrittenLeadExceptionVisitor;
 import ntut.csie.csdet.visitor.SuppressWarningVisitor;
 import ntut.csie.csdet.visitor.TryStatementCounterVisitor;
 import ntut.csie.csdet.visitor.UnprotectedMainProgramVisitor;
@@ -96,10 +97,8 @@ public class ReportBuilder {
 		if (root.getChild(JDomUtil.EHSmellFilterTaq) != null) {
 
 			// 這裡表示之前使用者已經有設定過preference了,去取得相關偵測設定值
-			Element filter = root.getChild(JDomUtil.EHSmellFilterTaq).getChild(
-					"filter");
-			isAllPackage = Boolean.valueOf(filter.getAttribute("IsAllPackage")
-					.getValue());
+			Element filter = root.getChild(JDomUtil.EHSmellFilterTaq).getChild("filter");
+			isAllPackage = Boolean.valueOf(filter.getAttribute("IsAllPackage").getValue());
 
 			// 若不是偵測全部的Project，則把Rule條件儲存
 			if (!isAllPackage) {
@@ -111,8 +110,7 @@ public class ReportBuilder {
 						continue;
 					// 若Rule設成true才儲存
 					if (Boolean.valueOf(((Attribute)filterList.get(i)).getValue()))
-						filterRuleList
-								.add(((Attribute)filterList.get(i)).getQualifiedName());
+						filterRuleList.add(((Attribute)filterList.get(i)).getQualifiedName());
 				}
 				model.setFilterList(filterRuleList);
 			}
@@ -141,6 +139,7 @@ public class ReportBuilder {
 		CarelessCleanupVisitor ccVisitor = null;
 		OverLoggingDetector loggingDetector = null;
 		TryStatementCounterVisitor counterVisitor = null;
+		OverwrittenLeadExceptionVisitor overwrittenVisitor = null;
 
 		// 建構AST
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
@@ -176,44 +175,32 @@ public class ReportBuilder {
 			if (detMethodSmell.get(RLMarkerAttribute.CS_INGNORE_EXCEPTION)) {
 				ieVisitor = new IgnoreExceptionVisitor(root);
 				method.accept(ieVisitor);
-				List<MarkerInfo> ignoreExList = checkCatchSmell(ieVisitor.getIgnoreList()
-						, detCatchSmell
-						.get(RLMarkerAttribute.CS_INGNORE_EXCEPTION));
-				newClassModel.setIgnoreExList(ignoreExList, method
-						.getName().toString());
+				List<MarkerInfo> ignoreExList = checkCatchSmell(ieVisitor.getIgnoreList(), detCatchSmell.get(RLMarkerAttribute.CS_INGNORE_EXCEPTION));
+				newClassModel.setIgnoreExList(ignoreExList, method.getName().toString());
 				model.addIgnoreTotalSize(ignoreExList.size());
 			}
 			// 取得專案中dummy handler
 			if (detMethodSmell.get(RLMarkerAttribute.CS_DUMMY_HANDLER)) {
 				dhVisitor = new DummyHandlerVisitor(root);
 				method.accept(dhVisitor);
-				List<MarkerInfo> dummyList = checkCatchSmell(dhVisitor.getDummyList()
-						, detCatchSmell
-						.get(RLMarkerAttribute.CS_DUMMY_HANDLER));
-				newClassModel.setDummyList(dummyList, method.getName()
-						.toString());
+				List<MarkerInfo> dummyList = checkCatchSmell(dhVisitor.getDummyList(), detCatchSmell.get(RLMarkerAttribute.CS_DUMMY_HANDLER));
+				newClassModel.setDummyList(dummyList, method.getName().toString());
 				model.addDummyTotalSize(dummyList.size());
 			}
 			// 取得專案中的Nested Try Block
 			if (detMethodSmell.get(RLMarkerAttribute.CS_NESTED_TRY_BLOCK)) {
 				ntsVisitor = new NestedTryStatementVisitor(root);
 				method.accept(ntsVisitor);
-				List<MarkerInfo> nestedTryList = checkCatchSmell(ntsVisitor.getNestedTryStatementList()
-						, detCatchSmell
-						.get(RLMarkerAttribute.CS_NESTED_TRY_BLOCK));
-				newClassModel.setNestedTryList(nestedTryList, method.getName()
-						.toString());
+				List<MarkerInfo> nestedTryList = checkCatchSmell(ntsVisitor.getNestedTryStatementList(), detCatchSmell.get(RLMarkerAttribute.CS_NESTED_TRY_BLOCK));
+				newClassModel.setNestedTryList(nestedTryList, method.getName().toString());
 				model.addNestedTotalTrySize(nestedTryList.size());
 			}
 			// 尋找該method內的unprotected main program
 			mainVisitor = new UnprotectedMainProgramVisitor(root);
 			method.accept(mainVisitor);
 			if (detMethodSmell.get(RLMarkerAttribute.CS_UNPROTECTED_MAIN)) {
-				newClassModel
-						.setUnprotectedMain(mainVisitor.getUnprotedMainList(),
-								method.getName().toString());
-				model.addUnMainTotalSize(mainVisitor.getUnprotedMainList()
-						.size());
+				newClassModel.setUnprotectedMain(mainVisitor.getUnprotedMainList(), method.getName().toString());
+				model.addUnMainTotalSize(mainVisitor.getUnprotedMainList().size());
 			}
 			// 找尋專案中所有的Careless Cleanup
 			ccVisitor = new CarelessCleanupVisitor(root);
@@ -226,12 +213,17 @@ public class ReportBuilder {
 			loggingDetector = new OverLoggingDetector(root, method);
 			loggingDetector.detect();
 			if (detMethodSmell.get(RLMarkerAttribute.CS_OVER_LOGGING)) {
-				List<MarkerInfo> olList = checkCatchSmell(loggingDetector
-						.getOverLoggingList(), detCatchSmell
-						.get(RLMarkerAttribute.CS_OVER_LOGGING));
-				newClassModel.setOverLogging(olList, method.getName()
-						.toString());
+				List<MarkerInfo> olList = checkCatchSmell(loggingDetector.getOverLoggingList(), detCatchSmell.get(RLMarkerAttribute.CS_OVER_LOGGING));
+				newClassModel.setOverLogging(olList, method.getName().toString());
 				model.addOverLoggingSize(olList.size());
+			}
+			// 找尋專案中所有的Overwritten Lead Exception
+			overwrittenVisitor = new OverwrittenLeadExceptionVisitor(root);
+			method.accept(overwrittenVisitor);
+			if(detMethodSmell.get(RLMarkerAttribute.CS_OVERWRITTEN_LEAD_EXCEPTION)) {
+				List<MarkerInfo> owList = checkCatchSmell(overwrittenVisitor.getOverwrittenList(), detCatchSmell.get(RLMarkerAttribute.CS_OVERWRITTEN_LEAD_EXCEPTION));
+				newClassModel.setOverwrittenLead(owList, method.getName().toString());
+				model.addOverwrittenSize(owList.size());
 			}
 			// 記錄Code Information
 			counterVisitor = new TryStatementCounterVisitor();
@@ -250,8 +242,7 @@ public class ReportBuilder {
 	 * @param allSmellList
 	 * @return
 	 */
-	private List<MarkerInfo> checkCatchSmell(List<MarkerInfo> allSmellList,
-			List<Integer> posList) {
+	private List<MarkerInfo> checkCatchSmell(List<MarkerInfo> allSmellList, List<Integer> posList) {
 		List<MarkerInfo> smellList = new ArrayList<MarkerInfo>();
 		if (posList != null && posList.size() == 0)
 			smellList = allSmellList;
@@ -288,9 +279,9 @@ public class ReportBuilder {
 	 * @param detMethodSmell
 	 * @param detCatchSmell
 	 */
-	private void inputSuppressData(List<SSMessage> suppressSmellList,
-			TreeMap<String, Boolean> detMethodSmell,
-			TreeMap<String, List<Integer>> detCatchSmell) {
+	private void inputSuppressData(	List<SSMessage> suppressSmellList,
+									TreeMap<String, Boolean> detMethodSmell,
+									TreeMap<String, List<Integer>> detCatchSmell) {
 		// 初始化設定，預設每個Smell都偵測
 		for (String smellType : RLMarkerAttribute.CS_TOTAL_TYPE)
 			detMethodSmell.put(smellType, true);
@@ -323,8 +314,7 @@ public class ReportBuilder {
 	private void analysisProject(IProject project) {
 		// 取得專案的路徑
 		IJavaProject javaPrj = JavaCore.create(project);
-		String workPath = ResourcesPlugin.getWorkspace().getRoot()
-				.getLocation().toString();
+		String workPath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toString();
 		model.setProjectPath(workPath + javaPrj.getPath());
 
 		try {
@@ -332,7 +322,6 @@ public class ReportBuilder {
 			for (int i = 0; i < root.size(); i++) {
 				// 取得Folder的名稱
 				String folderName = root.get(i).getElementName();
-
 				// 取得Root底下的所有Package
 				IJavaElement[] packages = root.get(i).getChildren();
 
@@ -342,35 +331,27 @@ public class ReportBuilder {
 						IPackageFragment iPackageFgt = (IPackageFragment) iJavaElement;
 
 						// 判斷是否要記錄
-						boolean isRecord = determineRecord(folderName,
-								iPackageFgt);
+						boolean isRecord = determineRecord(folderName, iPackageFgt);
 
 						// 取得Package底下的class
-						ICompilationUnit[] compilationUnits = iPackageFgt
-								.getCompilationUnits();
+						ICompilationUnit[] compilationUnits = iPackageFgt.getCompilationUnits();
 						PackageModel newPackageModel = null;
 
 						// 若要紀錄則新增Package
 						if (isRecord) {
 							if (compilationUnits.length != 0) {
 								// 建立PackageModel
-								newPackageModel = model
-										.addSmellList(iPackageFgt
-												.getElementName());
+								newPackageModel = model.addSmellList(iPackageFgt.getElementName());
 								// 記錄Package的Folder名稱
-								newPackageModel.setFolderName(root.get(i)
-										.getElementName());
+								newPackageModel.setFolderName(root.get(i).getElementName());
 							}
 
 							// 取得Package底下的所有class的smell資訊
 							for (int k = 0; k < compilationUnits.length; k++) {
-								setSmellInfo(compilationUnits[k], isRecord,
-										newPackageModel, iPackageFgt.getPath()
-												.toString());
+								setSmellInfo(compilationUnits[k], isRecord, newPackageModel, iPackageFgt.getPath().toString());
 
 								// 記錄LOC
-								int codeLines = countFileLOC(compilationUnits[k]
-										.getPath().toString());
+								int codeLines = countFileLOC(compilationUnits[k].getPath().toString());
 								// 紀錄到Package中
 								newPackageModel.addTotalLine(codeLines);
 							}
@@ -469,8 +450,7 @@ public class ReportBuilder {
 		int left = filterRule.indexOf(JDomUtil.EH_Left);
 		int right = filterRule.indexOf(JDomUtil.EH_Right);
 		// 使用者會輸入[FolderName]，此處負責扣掉左右[]，取得Folder名字
-		String pkFolder = filterRule.substring(left
-				+ JDomUtil.EH_Left.length(), right);
+		String pkFolder = filterRule.substring(left + JDomUtil.EH_Left.length(), right);
 		return pkFolder;
 	}
 	
@@ -497,18 +477,13 @@ public class ReportBuilder {
 	 * @return String, the string without folder and &quot;square barker&quot;
 	 */
 	private String getTrimFolderName(String filterRule) {
-
-		return filterRule.substring(filterRule
-				.indexOf(JDomUtil.EH_Right)
-				+ JDomUtil.EH_Right.length());
-
+		return filterRule.substring(filterRule.indexOf(JDomUtil.EH_Right) + JDomUtil.EH_Right.length());
 	}
 
 	/**
 	 * 取得PackageFragmentRoot List (過濾jar)
 	 */
-	public List<IPackageFragmentRoot> getSourcePaths(IJavaProject project)
-			throws JavaModelException {
+	public List<IPackageFragmentRoot> getSourcePaths(IJavaProject project) throws JavaModelException {
 		List<IPackageFragmentRoot> sourcePaths = new ArrayList<IPackageFragmentRoot>();
 
 		IPackageFragmentRoot[] roots = project.getAllPackageFragmentRoots();
@@ -524,14 +499,12 @@ public class ReportBuilder {
 	/**
 	 * 計算Class File的LOC
 	 * 
-	 * @param filePath
-	 *            class的File Path
+	 * @param filePath	class的File Path
 	 * @return class的LOC數
 	 */
 	private int countFileLOC(String filePath) {
 		// 取得class路徑
-		String workspace = ResourcesPlugin.getWorkspace().getRoot()
-				.getLocation().toOSString();
+		String workspace = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
 		String path = workspace + filePath;
 
 		File file = new File(path);
@@ -543,8 +516,7 @@ public class ReportBuilder {
 				// 計算LOC
 				noFormatData = noFormatCounter.countFileLOC(file);
 			} catch (FileNotFoundException e) {
-				logger.error(
-						"[File Not Found Exception] FileNotFoundException ", e);
+				logger.error("[File Not Found Exception] FileNotFoundException ", e);
 			}
 			return noFormatData.getTotalLine();
 		}
