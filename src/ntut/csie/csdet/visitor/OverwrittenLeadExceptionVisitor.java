@@ -22,13 +22,14 @@ import org.eclipse.jdt.core.dom.TryStatement;
 public class OverwrittenLeadExceptionVisitor extends ASTVisitor {
 	private CompilationUnit root;
 	private List<MarkerInfo> overwrittenLeadList;
-	private boolean isTarget;
+	private boolean isTarget, inFinally;
 	private boolean isDetectingOverwrittenLeadExceptionSmell;
 	
 	public OverwrittenLeadExceptionVisitor(CompilationUnit compilationUnit) {
 		overwrittenLeadList = new ArrayList<MarkerInfo>();
 		root = compilationUnit;
 		isTarget = false;
+		inFinally = false;
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		isDetectingOverwrittenLeadExceptionSmell = smellSettings.isDetectingSmell(SmellSettings.SMELL_OVERWRITTENLEADEXCEPTION);
 	}
@@ -37,28 +38,28 @@ public class OverwrittenLeadExceptionVisitor extends ASTVisitor {
 	 * 根據設定檔的資訊，決定要不要拜訪整棵樹。
 	 */
 	public boolean visit(MethodDeclaration node) {
+		isTarget = false;
+		inFinally = false;
 		return isDetectingOverwrittenLeadExceptionSmell;
 	}
 	
 	public boolean visit(TryStatement node) {
+		// try statement 沒有 catch clause，就要偵測try block，這條件是用來判斷裡面的try statement用的
 		if(node.catchClauses().size() != 0)
 			isTarget = false;
-		if(NodeUtils.getSpecifiedParentNode(node, ASTNode.TRY_STATEMENT) == null && node.getFinally() == null)
-			return false;
+		
+		// try 外面沒有 try 表示它是最外層，則初始化條件 
+		if(NodeUtils.getSpecifiedParentNode(node, ASTNode.TRY_STATEMENT) == null) {
+			isTarget = false;
+			inFinally = false;
+		}
 		return true;
 	}
 	
 	public boolean visit(CatchClause node) {
-		ASTNode tryParentNode = NodeUtils.getSpecifiedParentNode(node, ASTNode.TRY_STATEMENT);
-		ASTNode tryAncestorNode = NodeUtils.getSpecifiedParentNode(tryParentNode, ASTNode.TRY_STATEMENT);
-		if(tryParentNode != null && tryAncestorNode == null)
-			return true;
-		if(tryParentNode != null && tryAncestorNode != null && tryAncestorNode.getNodeType() == ASTNode.TRY_STATEMENT) {
+		if(inFinally)
 			isTarget = true;
-			return true;
-		}
-		isTarget = false;
-		return false;
+		return true;
 	}
 	
 	public boolean visit(ThrowStatement node) {
@@ -69,22 +70,33 @@ public class OverwrittenLeadExceptionVisitor extends ASTVisitor {
 	
 	public boolean visit(Block node) {
 		ASTNode parentNode = NodeUtils.getSpecifiedParentNode(node, ASTNode.TRY_STATEMENT);
+		// block的父親是try statement
 		if(parentNode != null && parentNode.getNodeType() == ASTNode.TRY_STATEMENT) {
+			// 父親有finally block，且父親的finally block等於這個block，表示這是我們要找的finally block
 			if(((TryStatement) parentNode).getFinally() != null && ((TryStatement) parentNode).getFinally().getStartPosition() == node.getStartPosition()) {
+				inFinally = true;
 				isTarget = true;
 			}
-		} else
-			isTarget = false;
+		}
+		
 		return true;
 	}
 	
 	public boolean visit(MethodInvocation node) {
 		if(isTarget) {
 			ITypeBinding[] exTypes =  node.resolveMethodBinding().getExceptionTypes();
+			// method invocation會拋checked exception的話
 			if(exTypes.length > 0)
 				addMarkerInfo(node);
 		}
 		return true; 
+	}
+	
+	public void endVisit(Block node) {
+		TryStatement parentNode = (node.getParent().getNodeType() == ASTNode.TRY_STATEMENT) ? (TryStatement)node.getParent() : null;
+		if(parentNode != null && parentNode.getFinally() != null && parentNode.getFinally().getStartPosition() == node.getStartPosition()) {
+			isTarget = false;
+		}
 	}
 	
 	private void addMarkerInfo(MethodInvocation node) {

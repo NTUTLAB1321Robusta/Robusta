@@ -1,10 +1,11 @@
-package ntut.csie.csdet.refactor.ui;
+package ntut.csie.robusta.codegen.refactoringui;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import ntut.csie.csdet.refactor.CarelessCleanUpRefactor;
+import ntut.csie.csdet.refactor.ui.ExistingMethodSelectionDialog;
+import ntut.csie.robusta.codegen.refactoring.ExtractMethodRefactoring;
 
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
@@ -35,9 +36,9 @@ import org.slf4j.LoggerFactory;
  * 提供一個介面給user, 讓user可以選擇要Extract什麼樣的Method
  * @author Min, Shiau
  */
-public class ExtractCleanUpMethodInputPage extends UserInputWizardPage {
+public class ExtractMethodInputPage extends UserInputWizardPage {
 
-	private static Logger logger = LoggerFactory.getLogger(ExtractCleanUpMethodInputPage.class);
+	private static Logger logger = LoggerFactory.getLogger(ExtractMethodInputPage.class);
 
 	//Extract Method的變數名稱
 	private Text newMethodText;
@@ -56,7 +57,7 @@ public class ExtractCleanUpMethodInputPage extends UserInputWizardPage {
 	
 	private IMethod existingMethod = null;
 	
-	public ExtractCleanUpMethodInputPage(String name) {
+	public ExtractMethodInputPage(String name) {
 		super(name);		
 	}
 	
@@ -125,7 +126,7 @@ public class ExtractCleanUpMethodInputPage extends UserInputWizardPage {
 	 */
 	private void handleInputChange(){
 		RefactoringStatus status = new RefactoringStatus();
-		CarelessCleanUpRefactor refactoring = getEMRefactoring();
+		ExtractMethodRefactoring refactoring = getEMRefactoring();
 
 		if (existMethodBtn.getSelection()) {
 			status.merge(refactoring.setIsRefactoringMethodExist(true));
@@ -167,8 +168,8 @@ public class ExtractCleanUpMethodInputPage extends UserInputWizardPage {
 	 * 取得Refactoring的物件型態
 	 * @return
 	 */
-	private CarelessCleanUpRefactor getEMRefactoring(){
-		return (CarelessCleanUpRefactor) getRefactoring();
+	private ExtractMethodRefactoring getEMRefactoring(){
+		return (ExtractMethodRefactoring) getRefactoring();
 	}
 
 	/**

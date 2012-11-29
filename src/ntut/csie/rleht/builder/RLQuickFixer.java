@@ -13,6 +13,7 @@ import ntut.csie.rleht.common.RLUtils;
 import ntut.csie.rleht.rlAdvice.AchieveRL1QuickFix;
 import ntut.csie.rleht.views.RLData;
 import ntut.csie.robusta.agile.exception.RTag;
+import ntut.csie.robusta.codegen.markerresolution.ExtractMethodMarkerResolution;
 import ntut.csie.robusta.codegen.markerresolution.MoveCloseResouceFromTryCatchToFinallyBlockQuickFix;
 import ntut.csie.robusta.codegen.markerresolution.MoveCodeIntoBigOuterTryQuickFix;
 import ntut.csie.robusta.codegen.markerresolution.RefineRuntimeExceptionQuickFix;
@@ -140,6 +141,8 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				if(advice.contains(RTag.class.getSimpleName())){
 					markerList.add(new AchieveRL1QuickFix("RL1 quick gene ==> Rethrow Unckecked Exception"));
 				}
+			} else if(problem.equals(RLMarkerAttribute.CS_OVERWRITTEN_LEAD_EXCEPTION)) {
+				markerList.add(new ExtractMethodMarkerResolution("Refactor==>Use Extract Method"));
 			}
 			//ListÂàArray
 			IMarkerResolution[] markerArray = markerList.toArray(new IMarkerResolution[markerList.size()]);

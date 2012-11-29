@@ -1,17 +1,15 @@
 package ntut.csie.robusta.codegen.markerresolution;
 
 import ntut.csie.rleht.builder.RLMarkerAttribute;
-import ntut.csie.robusta.codegen.refactoringui.CodeSmellRefactoringWizard;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.ltk.ui.refactoring.RefactoringWizardOpenOperation;
 import org.eclipse.ui.IMarkerResolution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RemoveCallChainOverLoggingStatementsMarkerResulotion implements IMarkerResolution {
-	private static Logger logger = LoggerFactory.getLogger(RemoveCallChainOverLoggingStatementsMarkerResulotion.class);
+public class RemoveCallChainOverLoggingStatementsMarkerResolution implements IMarkerResolution {
+	private static Logger logger = LoggerFactory.getLogger(RemoveCallChainOverLoggingStatementsMarkerResolution.class);
 	private String label;
 	
 	@Override

@@ -3,7 +3,9 @@ package ntut.csie.csdet.visitor;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.util.List;
 
+import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
@@ -77,7 +79,22 @@ public class OverwrittenLeadExceptionVisitorTest {
 	public void visitWithSettings() throws Exception {
 		overwrittenLeadExceptionVisitor = new OverwrittenLeadExceptionVisitor(compilationUnit);
 		compilationUnit.accept(overwrittenLeadExceptionVisitor);
-		assertEquals(26, overwrittenLeadExceptionVisitor.getOverwrittenList().size());
+		assertEquals(colloectBadSmellListContent(overwrittenLeadExceptionVisitor.getOverwrittenList()), 28, overwrittenLeadExceptionVisitor.getOverwrittenList().size());
+	}
+
+	/**
+	 * 紀錄所有badSmell內容以及行號
+	 * @param badSmellList
+	 * @return
+	 */
+	private String colloectBadSmellListContent(List<MarkerInfo> badSmellList) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("\n");
+		for (int i = 0; i < badSmellList.size(); i++) {
+			MarkerInfo m = badSmellList.get(i);
+			sb.append(m.getLineNumber()).append("\t").append(m.getStatement()).append("\n");
+		}
+		return sb.toString();
 	}
 	
 	private void CreateSettings(boolean isDetecting) {
