@@ -5,16 +5,13 @@ import java.util.List;
 
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.preference.SmellSettings;
-import ntut.csie.jdt.util.NodeUtils;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 
-import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
-import org.eclipse.jdt.core.dom.TryStatement;
 
 public class IgnoreExceptionVisitor extends ASTVisitor {
 	CompilationUnit root;
@@ -36,24 +33,6 @@ public class IgnoreExceptionVisitor extends ASTVisitor {
 		return isDetectingIgnoredExcetion;
 	}
 	
-	public boolean visit(TryStatement node) {
-		ASTNode parent = NodeUtils.getSpecifiedParentNode(node, ASTNode.TRY_STATEMENT);
-		if(parent == null) {
-			/*
-			 * 這個TryStatement不是在TryStatement裡面
-			 */
-			return true;
-		} else {
-			/*
-			 * Try裡面本來就不應該有Try Catch的程式碼(Nested Try Block)。
-			 * 所以如果遇到的TryStatement Node是Try Statement裡面，那就不繼續偵測。
-			 * 
-			 * 避免Close Stream時，不得不Dummy Handler的問題。
-			 */
-			return false;
-		}
-	}
-	
 	public boolean visit(CatchClause node) {
 		List<?> statements  = node.getBody().statements();
 		if(statements.size() ==  0) {
@@ -65,7 +44,7 @@ public class IgnoreExceptionVisitor extends ASTVisitor {
 													svd.getType().toString());
 			ignoreExceptionList.add(markerInfo);
 		}
-		return false;	
+		return true;	
 	}
 	
 	public List<MarkerInfo> getIgnoreList() {

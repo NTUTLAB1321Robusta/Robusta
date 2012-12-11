@@ -8,7 +8,7 @@ import java.io.File;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
-import ntut.csie.filemaker.exceptionBadSmells.DummyAndIgnoreExample;
+import ntut.csie.filemaker.exceptionBadSmells.IgnoredCheckedExceptionExample;
 import ntut.csie.filemaker.exceptionBadSmells.UserDefineDummyHandlerFish;
 import ntut.csie.robusta.util.PathUtils;
 
@@ -42,11 +42,11 @@ public class IgnoreExceptionVisitorTest {
 
 		// 根據測試檔案樣本內容建立新的檔案
 		javaFile2String = new JavaFileToString();
-		javaFile2String.read(DummyAndIgnoreExample.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaFile2String.read(IgnoredCheckedExceptionExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
-				DummyAndIgnoreExample.class.getPackage().getName(),
-				DummyAndIgnoreExample.class.getSimpleName() +  JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + DummyAndIgnoreExample.class.getPackage().getName() + ";\n"
+				IgnoredCheckedExceptionExample.class.getPackage().getName(),
+				IgnoredCheckedExceptionExample.class.getSimpleName() +  JavaProjectMaker.JAVA_FILE_EXTENSION,
+				"package " + IgnoredCheckedExceptionExample.class.getPackage().getName() + ";\n"
 						+ javaFile2String.getFileContent());
 
 		// 繼續建立測試用的UserDefineDummyHandlerFish
@@ -58,7 +58,7 @@ public class IgnoreExceptionVisitorTest {
 				"package " + UserDefineDummyHandlerFish.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		
-		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(DummyAndIgnoreExample.class, testProjectName));
+		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(IgnoredCheckedExceptionExample.class, testProjectName));
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -108,7 +108,7 @@ public class IgnoreExceptionVisitorTest {
 			ignoredSmellCount = ignoreExceptionVisitor.getIgnoreList().size();
 		
 		// 驗證總共抓到幾個bad smell
-		assertEquals(1, ignoredSmellCount);
+		assertEquals(7, ignoredSmellCount);
 	}
 
 	@Test
