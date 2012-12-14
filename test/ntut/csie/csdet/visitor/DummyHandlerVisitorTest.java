@@ -14,6 +14,7 @@ import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.exceptionBadSmells.DummyAndIgnoreExample;
 import ntut.csie.filemaker.exceptionBadSmells.DummyHandlerExampleWithTryStatementInNonTryStatement;
+import ntut.csie.filemaker.exceptionBadSmells.DummyHandlerWithNestedTryStatement;
 import ntut.csie.filemaker.exceptionBadSmells.UserDefineDummyHandlerFish;
 import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.robusta.util.PathUtils;
@@ -110,40 +111,6 @@ public class DummyHandlerVisitorTest {
 	}
 	
 	@Test
-	public void testVisitReturnValue() throws Exception {
-		MethodDeclaration md = null;
-		TryStatement tryStatement = null;
-		
-		// 驗證return true的非巢狀case
-		md = ASTNodeFinder.getMethodDeclarationNodeByName(
-				compilationUnit, "true_printStackTrace_protected");	
-		tryStatement = (TryStatement) md.getBody().statements().get(1);
-		assertTrue(dummyHandlerVisitor.visit(tryStatement)); 
-		
-		// 驗證return false的巢狀final-try case
-		md = ASTNodeFinder.getMethodDeclarationNodeByName(
-				compilationUnit, "true_DummyHandlerFinallyNestedTry");	
-		tryStatement = (TryStatement) md.getBody().statements().get(1);
-		tryStatement = (TryStatement) tryStatement.getFinally().statements().get(0);
-		assertEquals(false, dummyHandlerVisitor.visit(tryStatement));
-
-		// 驗證return false的巢狀try-try case
-		md = ASTNodeFinder.getMethodDeclarationNodeByName(
-				compilationUnit, "true_DummyHandlerTryNestedTry");	
-		tryStatement = (TryStatement) md.getBody().statements().get(1);
-		tryStatement = (TryStatement) tryStatement.getBody().statements().get(2);
-		assertEquals(false, dummyHandlerVisitor.visit(tryStatement));
-		
-		// 驗證return false的巢狀catch-try case
-		md = ASTNodeFinder.getMethodDeclarationNodeByName(
-				compilationUnit, "true_DummyHandlerCatchNestedTry");		
-		tryStatement = (TryStatement) md.getBody().statements().get(1);
-		CatchClause catchStatement = (CatchClause) tryStatement.catchClauses().get(0);
-		tryStatement = (TryStatement) catchStatement.getBody().statements().get(1);
-		assertFalse(dummyHandlerVisitor.visit(tryStatement));
-	}
-	
-	@Test
 	public void testVisitMethodInvocation() {
 		MethodInvocation methodInvocation = ASTNodeFinder
 				.getMethodInvocationByMethodNameAndCode(compilationUnit,
@@ -219,6 +186,41 @@ public class DummyHandlerVisitorTest {
 	}
 	
 	@Test
+	public void testDetectDummyHandlerWithNestedTryStatement() throws Exception {
+		CompilationUnit compilationUnitWithTSINTS;
+		
+		// 新建立測試用的 DummyHandlerWithNestedTryStatement
+		javaFile2String.clear();
+		javaFile2String.read(DummyHandlerWithNestedTryStatement.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaProjectMaker.createJavaFile(
+				DummyHandlerWithNestedTryStatement.class.getPackage().getName(),
+				DummyHandlerWithNestedTryStatement.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
+				"package " + DummyHandlerWithNestedTryStatement.class.getPackage().getName() + ";\n"
+				+ javaFile2String.getFileContent());
+
+		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(DummyHandlerWithNestedTryStatement.class, testProjectName));
+		//Create AST to parse
+		ASTParser parser = ASTParser.newParser(AST.JLS3);
+		parser.setKind(ASTParser.K_COMPILATION_UNIT);
+		// 設定要被建立AST的檔案
+		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
+		parser.setResolveBindings(true);
+		// 取得AST
+		compilationUnitWithTSINTS = (CompilationUnit) parser.createAST(null); 
+		compilationUnitWithTSINTS.recordModifications();
+		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnitWithTSINTS);
+
+		// 確認初始值
+		assertEquals(0, dummyHandlerVisitor.getDummyList().size());
+		
+		// do this test
+		compilationUnitWithTSINTS.accept(dummyHandlerVisitor);
+		
+		// 驗證總共抓到幾個bad smell
+		assertEquals(6, dummyHandlerVisitor.getDummyList().size());
+	}
+	
+	@Test
 	public void testAddDummyHandlerSmellInfoForExtraRule_PrintStackTrace() throws Exception {
 		Method method = DummyHandlerVisitor.class.getDeclaredMethod("addDummyHandlerSmellInfo", MethodInvocation.class);
 		method.setAccessible(true);
@@ -235,12 +237,12 @@ public class DummyHandlerVisitorTest {
 		//   分別測試：全部例子、符合例子、不符合例子 是否有抓出
 		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnit);
 		compilationUnit.accept(dummyHandlerVisitor);
-		assertEquals(7, dummyHandlerVisitor.getDummyList().size());
+		assertEquals(10, dummyHandlerVisitor.getDummyList().size());
 
 		MethodInvocation mi = null;
 		mi = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(compilationUnit, "true_printStackTrace_protected", "e.printStackTrace()").get(0);
 		method.invoke(dummyHandlerVisitor, mi);
-		assertEquals(8, dummyHandlerVisitor.getDummyList().size());
+		assertEquals(11, dummyHandlerVisitor.getDummyList().size());
 	}
 	
 	@Test

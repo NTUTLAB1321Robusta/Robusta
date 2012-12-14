@@ -490,7 +490,7 @@ public class ReportBuilderTest {
 		assertEquals(25, reportModel.getCatchCounter());
 		assertEquals(2, reportModel.getFinallyCounter());
 		assertEquals(0, reportModel.getCarelessCleanUpTotalSize());
-		assertEquals(16, reportModel.getDummyTotalSize());
+		assertEquals(19, reportModel.getDummyTotalSize());
 		assertEquals(0, reportModel.getIgnoreTotalSize());
 		assertEquals(0, reportModel.getNestedTryTotalSize());
 		assertEquals(0, reportModel.getOverLoggingTotalSize());

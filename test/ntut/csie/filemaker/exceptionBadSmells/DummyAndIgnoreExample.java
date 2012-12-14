@@ -172,7 +172,7 @@ public class DummyAndIgnoreExample {
 				fis.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();	//	這個不應該被當作DummyHandler
+				e.printStackTrace();	//	DummyHandler
 			}
 		}
 	}
@@ -243,7 +243,7 @@ public class DummyAndIgnoreExample {
 			try {
 				fis.close();
 			} catch (IOException e) {
-				e.printStackTrace();	//	這個不應該被當作DummyHandler
+				e.printStackTrace();	//	DummyHandler
 			}
 		} catch (IOException e) {
 			e.printStackTrace();	//	DummyHandler
@@ -260,7 +260,7 @@ public class DummyAndIgnoreExample {
 			try {
 				fis.close();
 			} catch (IOException e1) {
-				e1.printStackTrace();	//	這個不應該被當作DummyHandler
+				e1.printStackTrace();	//	DummyHandler
 			}
 		}
 	}

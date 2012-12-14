@@ -37,23 +37,23 @@ public class DummyHandlerVisitor extends ASTVisitor {
 		isDetectingDummyHandlerSmell = smellSettings.isDetectingSmell(SmellSettings.SMELL_DUMMYHANDLER);
 	}
 	
-	public boolean visit(TryStatement node) {
-		ASTNode parent = NodeUtils.getSpecifiedParentNode(node, ASTNode.TRY_STATEMENT);
-		if(parent == null) {
-			/*
-			 * 這個TryStatement不是在TryStatement裡面
-			 */
-			return true;
-		} else {
-			/*
-			 * Try裡面本來就不應該有Try Catch的程式碼(Nested Try Block)。
-			 * 所以如果遇到的TryStatement Node是Try Statement裡面，那就不繼續偵測。
-			 * 
-			 * 避免Close Stream時，不得不Dummy Handler的問題。
-			 */
-			return false;
-		}
-	}
+//	public boolean visit(TryStatement node) {
+//		ASTNode parent = NodeUtils.getSpecifiedParentNode(node, ASTNode.TRY_STATEMENT);
+//		if(parent == null) {
+//			/*
+//			 * 這個TryStatement不是在TryStatement裡面
+//			 */
+//			return true;
+//		} else {
+//			/*
+//			 * Try裡面本來就不應該有Try Catch的程式碼(Nested Try Block)。
+//			 * 所以如果遇到的TryStatement Node是Try Statement裡面，那就不繼續偵測。
+//			 * 
+//			 * 避免Close Stream時，不得不Dummy Handler的問題。
+//			 */
+//			return false;
+//		}
+//	}
 	
 	/**
 	 * 根據設定檔的資訊，決定要不要拜訪整棵樹。
