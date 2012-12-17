@@ -12,8 +12,8 @@ import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TryStatement;
 
 /**
- * 檢查特定的Finally Block最先在哪個Node會拋出例外。
- * 如果裡面還有TryStatement，一律不檢查。
+ * 單純檢查Finally Block裡面的程式碼。
+ * 如果再關閉串流的程式碼之前有程式碼會拋出例外，則關閉串流的程式碼即是careless cleanup。
  * 
  * 注意：不是只有Finally的節點叫做Block。
  * @author charles
@@ -34,7 +34,17 @@ public class CarelessCleanupOnlyInFinallyVisitor extends ASTVisitor {
 		fineCleanupNodes = new ArrayList<MethodInvocation>();
 	}
 	
+	/**
+	 * 考慮Finally Block裡面有TryStatement的情況。
+	 * 透過TryStatementExceptionsVisitor來檢查，以了解finally裡面的 TryStatement會不會拋例外。
+	 * (如果這個會拋例外的TryStatement在關閉串流的程式碼前面，則會造成careless cleanup。)
+	 */
 	public boolean visit(TryStatement node) {
+		TryStatementExceptionsVisitor tryStatementVisitor = new TryStatementExceptionsVisitor(node);
+		node.accept(tryStatementVisitor);
+		if(tryStatementVisitor.getTotalExceptionStrings().length > 0) {
+			isExceptionRisable = true;
+		}
 		return false;
 	}
 	
@@ -44,6 +54,12 @@ public class CarelessCleanupOnlyInFinallyVisitor extends ASTVisitor {
 	}
 	
 	public boolean visit(MethodInvocation node) {
+		/* 
+		 * (對RuntimeException沒轍。)
+		 * 如果是關閉串流的程式碼，要做careless cleanup的檢查：
+		 * 	如果在這行之前可能會發生例外，則這行為careless cleanup。
+		 *  如果在這行之前不會發生例外，則這行就不算careless cleanup
+		 */
 		if(NodeUtils.isCloseResourceMethodInvocation(root, node)) {
 			// 如果前面已經有程式碼會發生例外，則這個關閉串流的程式碼就是careless cleanup
 			if(isExceptionRisable) {
@@ -53,6 +69,10 @@ public class CarelessCleanupOnlyInFinallyVisitor extends ASTVisitor {
 			}
 		}
 		
+		/* 
+		 * 記錄這行程式碼會不會拋出例外：
+		 * 	單純紀錄會不會拋出例外。
+		 */
 		if (node.resolveMethodBinding().getExceptionTypes().length != 0) {
 			isExceptionRisable = true;
 		}

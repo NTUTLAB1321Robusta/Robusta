@@ -21,7 +21,6 @@ import org.eclipse.jdt.core.dom.TryStatement;
  * 用MethodDeclaration去accept，並且傳入已經知道的close清單進來。
  * MethodInvocation再去比對，看是不是有match的instance
  * 
- * 如果裡面還有TryStatement，一律不檢查。
  * @author charles
  *
  */
@@ -52,6 +51,30 @@ public class CarelessClenupRaisedExceptionNotInTryCausedVisitor extends	ASTVisit
 	 * 忽略TryStatement的檢查。
 	 */
 	public boolean visit(TryStatement node) {
+		TryStatementExceptionsVisitor tryStatementVisitor = new TryStatementExceptionsVisitor(node);
+		node.accept(tryStatementVisitor);
+		if(!(tryStatementVisitor.getTotalExceptionStrings().length > 0)) {
+			return false;
+		}
+		
+		for(int i = 0; i<closeResources.size(); i++) {
+			TryStatement closeResourcesTryStatement = (TryStatement) NodeUtils.getSpecifiedParentNode(closeResources.get(i), ASTNode.TRY_STATEMENT);
+			// 如果比到的 TryStatement剛好是關閉資源的程式碼所在的TryStatement，則略過檢查
+			if(node.equals(closeResourcesTryStatement)) {
+				continue;
+			}
+
+			if(isNodeBetweenCreationAndClose(node, closeResources.get(i))) {
+				// 將close的動作加入careless cleanup 清單
+				carelessCleanupMethod.add(closeResources.get(i));
+				
+				/* 將加過的close動作移除掉 */
+				closeResourcesInstanceBinding.remove(i);
+				closeResources.remove(i);
+				break;
+			}
+		}
+		
 		return false;
 	}
 	
@@ -82,17 +105,6 @@ public class CarelessClenupRaisedExceptionNotInTryCausedVisitor extends	ASTVisit
 		return true;
 	}
 	
-//	public boolean visit(VariableDeclarationFragment node) {
-//		for(int i = 0; i<closeResourcesInstanceBinding.size(); i++) {
-//			// 如果宣告的位置跟closeResource是同一個variable，就不繼續往下偵測
-//			if(node.getName().resolveBinding().equals(closeResourcesInstanceBinding.get(i))){
-//				// 這裡return false就不會進去class instance creation
-//				return false;
-//			}
-//		}
-//		return true;
-//	}
-	
 	public boolean visit(ThrowStatement node) {
 		for (int i = 0; i < closeResources.size(); i++) {
 			if (isNodeBetweenCreationAndClose(node, closeResources.get(i))) {
@@ -106,10 +118,6 @@ public class CarelessClenupRaisedExceptionNotInTryCausedVisitor extends	ASTVisit
 	}
 	
 	public boolean visit(ClassInstanceCreation node) {
-		// 在try外面不會拋例外的ClassInstanceCreation，不會造成close為careless cleanup
-//		if(node.resolveConstructorBinding().getExceptionTypes().length == 0) {
-//			return false;
-//		}
 		int nodeExceptionLength = node.resolveConstructorBinding().getExceptionTypes().length;
 		
 		// 在try外面會拋例外的ClassInstanceCreation有可能造成finally裡面的close是careless cleanup

@@ -18,6 +18,8 @@ import ntut.csie.csdet.visitor.TryStatementCounterVisitorTest;
 import ntut.csie.csdet.visitor.UnprotectedMainProgramVisitorTest;
 import ntut.csie.csdet.visitor.aidvisitor.CarelessCleanupToleranceVisitorTest;
 import ntut.csie.csdet.visitor.aidvisitor.CarelessClenupRaisedExceptionNotInTryCausedVisitorTest;
+import ntut.csie.csdet.visitor.aidvisitor.ClassInstanceCreationVisitorTest;
+import ntut.csie.csdet.visitor.aidvisitor.TryStatementExceptionsVisitorTest;
 import ntut.csie.filemaker.test.ASTNodeFinderTest;
 import ntut.csie.jdt.util.NodeUtilsTest;
 import ntut.csie.rleht.builder.RLBuilderTest;
@@ -53,6 +55,8 @@ import org.junit.runners.Suite;
 	
 	CarelessCleanupToleranceVisitorTest.class,
 	CarelessClenupRaisedExceptionNotInTryCausedVisitorTest.class,
+	ClassInstanceCreationVisitorTest.class,
+	TryStatementExceptionsVisitorTest.class,
 	
 	ASTNodeFinderTest.class,
 	

@@ -25,7 +25,6 @@ import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.TryStatement;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
-import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ui.PlatformUI;
 import org.junit.After;
 import org.junit.Before;

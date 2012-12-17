@@ -740,4 +740,24 @@ public class CarelessCleanupExample {
 			fis.close();
 		}
 	}
+	
+	public void y_thrownExceptionInOtherTryStatement(File file1, File file2) throws IOException {
+		int a = 10;
+		FileInputStream fis = new FileInputStream("");
+		try {
+			for(int i = 1; i<a; i++) {
+				while(fis.available() != 0) {	// 會拋例外
+					fis.reset();				// 會拋例外
+				}
+			}
+		} finally {
+			System.out.println(fis.toString());
+		}
+		
+		try {
+			fis.read();	//會拋出例外
+		} finally {
+			fis.close();
+		}
+	}
 }
