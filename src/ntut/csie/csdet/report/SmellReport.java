@@ -11,6 +11,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.xml.transform.Result;
@@ -150,18 +152,12 @@ public class SmellReport {
 		///AllPackage List資料輸出///
 		Element allPackageList = new Element("AllPackageList");
 		allPackageList.addContent(new Element("JPGPath").addContent("file:///" + model.getFilePath("PackageReport.jpg", true)));
+		List<Element> packageList = new ArrayList<Element>(); 
 		for (int i=0; i < model.getPackagesSize(); i++) {
 			PackageModel packageModel = model.getPackage(i);
 			Element packages = new Element("Package");
 			packages.addContent(new Element("ID").addContent(String.valueOf(i)));
 			//第一欄書籤連結和Package名稱
-			if (packageModel.getPackageName() == "") {
-				packages.addContent(new Element("HrefPackageName").addContent("#" + "(default_package)"));
-				packages.addContent(new Element("PackageName").addContent("(default package)"));
-			} else {
-				packages.addContent(new Element("HrefPackageName").addContent("#" + packageModel.getPackageName()));
-				packages.addContent(new Element("PackageName").addContent(packageModel.getPackageName()));
-			}
 			packages.addContent(new Element("LOC").addContent(String.valueOf(packageModel.getTotalLine())));
 			packages.addContent(new Element("IgnoreCheckedException").addContent(String.valueOf(packageModel.getIgnoreSize())));
 			packages.addContent(new Element("DummyHandler").addContent(String.valueOf(packageModel.getDummySize())));
@@ -171,8 +167,30 @@ public class SmellReport {
 			packages.addContent(new Element("OverLogging").addContent(String.valueOf(packageModel.getOverLoggingSize())));
 			packages.addContent(new Element("OverwrittenLeadException").addContent(String.valueOf(packageModel.getOverwrittenSize())));
 			packages.addContent(new Element("PackageTotal").addContent(String.valueOf(packageModel.getTotalSmellSize())));
-			allPackageList.addContent(packages);
+			packages.addContent(new Element("LOC").addContent(String.valueOf(packageModel.getTotalLine())));
+			// only add packageModel what total smell size > 0
+			if(packageModel.getTotalSmellSize() > 0) {
+				if (packageModel.getPackageName() == "") {
+					packages.addContent(new Element("HrefPackageName").addContent("#" + "(default_package)"));
+					packages.addContent(new Element("PackageName").addContent("(default package)"));
+				} else {
+					packages.addContent(new Element("HrefPackageName").addContent("#" + packageModel.getPackageName()));
+					packages.addContent(new Element("PackageName").addContent(packageModel.getPackageName()));
+				}
+				allPackageList.addContent(packages);
+			} else {
+				if (packageModel.getPackageName() == "")
+					packages.addContent(new Element("PackageName").addContent("(default package)"));
+				else
+					packages.addContent(new Element("PackageName").addContent(packageModel.getPackageName()));
+				packages.addContent(new Element("HrefPackageName").addContent("#Package_List"));
+				packageList.add(packages);
+			}
 		}
+		
+		// add remaining packageModel what total smell size is zero
+		allPackageList.addContent(packageList);
+		
 		///AllPackage List 總和資料輸出///
 		Element total = new Element("Total");
 		total.addContent(new Element("LOC").addContent(String.valueOf(model.getTotalLine())));
@@ -210,45 +228,37 @@ public class SmellReport {
 		Element packageList= new Element("PackageList");
 		for (int i=0; i < model.getPackagesSize(); i++) {
 			Element packages = new Element("Package");
-
 			PackageModel pkTemp = model.getPackage(i);
-			packages.addContent(new Element("PackageName").addContent(pkTemp.getPackageName()));
-			packages.addContent(new Element("OpenID").addContent(pkTemp.getPackageName() + "Open"));
-			packages.addContent(new Element("CloseID").addContent(pkTemp.getPackageName() + "Close"));
-			packages.addContent(new Element("TableID").addContent("Table" + pkTemp.getPackageName()));
-			packages.addContent(new Element("ImageID").addContent("Image" + pkTemp.getPackageName()));
-			packages.addContent(new Element("JPGPath").addContent("file:///" + model.getFilePath("ClassReport_" + i + ".jpg", true)));
-			Element classList = new Element("ClassList");
-			for (int j=0; j<pkTemp.getClassSize(); j++) {
-				ClassModel clTemp = pkTemp.getClass(j);
-				//把Smell資訊加至ClassList
-				if (clTemp.getSmellSize() > 0) {
-					for (int k = 0; k < clTemp.getSmellSize(); k++) {
-						Element smell = new Element("SmellData");
-						smell.addContent(new Element("ClassName").addContent(clTemp.getClassName()));
-						smell.addContent(new Element("State").addContent("0"));
-						//欲連結的SourceCode資訊格式
-						String codeLine = "#" + clTemp.getClassPath() + "#" + clTemp.getSmellLine(k) + "#";
-						smell.addContent(new Element("LinkCode").addContent(codeLine));
-						smell.addContent(new Element("MethodName").addContent(clTemp.getMethodName(k)));
-						smell.addContent(new Element("SmellType").addContent(clTemp.getSmellType(k).replace("_", " ")));
-						smell.addContent(new Element("Line").addContent(String.valueOf(clTemp.getSmellLine(k))));
-						classList.addContent(smell);
+			if(pkTemp.getTotalSmellSize() > 0) {
+				packages.addContent(new Element("PackageName").addContent(pkTemp.getPackageName()));
+				packages.addContent(new Element("OpenID").addContent(pkTemp.getPackageName() + "Open"));
+				packages.addContent(new Element("CloseID").addContent(pkTemp.getPackageName() + "Close"));
+				packages.addContent(new Element("TableID").addContent("Table" + pkTemp.getPackageName()));
+				packages.addContent(new Element("ImageID").addContent("Image" + pkTemp.getPackageName()));
+				packages.addContent(new Element("JPGPath").addContent("file:///" + model.getFilePath("ClassReport_" + i + ".jpg", true)));
+				Element classList = new Element("ClassList");
+				for (int j=0; j<pkTemp.getClassSize(); j++) {
+					ClassModel clTemp = pkTemp.getClass(j);
+					//把Smell資訊加至ClassList
+					if (clTemp.getSmellSize() > 0) {
+						for (int k = 0; k < clTemp.getSmellSize(); k++) {
+							Element smell = new Element("SmellData");
+							smell.addContent(new Element("ClassName").addContent(clTemp.getClassName()));
+							smell.addContent(new Element("State").addContent("0"));
+							//欲連結的SourceCode資訊格式
+							String codeLine = "#" + clTemp.getClassPath() + "#" + clTemp.getSmellLine(k) + "#";
+							smell.addContent(new Element("LinkCode").addContent(codeLine));
+							smell.addContent(new Element("MethodName").addContent(clTemp.getMethodName(k)));
+							smell.addContent(new Element("SmellType").addContent(clTemp.getSmellType(k).replace("_", " ")));
+							smell.addContent(new Element("Line").addContent(String.valueOf(clTemp.getSmellLine(k))));
+							classList.addContent(smell);
+						}
 					}
-				//若Class內沒有Smell資料，印出Class名稱，並把Smell資訊設為"None"
-				} else {
-					Element smell = new Element("SmellData");
-					smell.addContent(new Element("ClassName").addContent(clTemp.getClassName()));
-					smell.addContent(new Element("State").addContent("1"));
-					smell.addContent(new Element("MethodName").addContent("None"));
-					smell.addContent(new Element("SmellType").addContent("None"));
-					smell.addContent(new Element("Line").addContent("None"));
-					classList.addContent(smell);
 				}
+				packages.addContent(classList);
+				packages.addContent(new Element("Total").addContent(String.valueOf(pkTemp.getTotalSmellSize())));
+				packageList.addContent(packages);
 			}
-			packages.addContent(classList);
-			packages.addContent(new Element("Total").addContent(String.valueOf(pkTemp.getTotalSmellSize())));
-			packageList.addContent(packages);
 		}
 		root.addContent(packageList);
 	}

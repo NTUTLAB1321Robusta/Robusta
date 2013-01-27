@@ -64,12 +64,14 @@ public class BarChart {
 	        outputJPGFile(chart, "PackageReport", 800, 420);
 
 	        for (int i = 0; i < model.getPackagesSize(); i++) {
-		        //建立Class Level的Smell資訊
-		        dataset = createClassDataset(model.getPackage(i));
-		        //產生Chart
-		        chart = createChart(dataset, model.getPackage(i).getPackageName(), "Class Name", false);
-		        //輸出成JPG
-		        outputJPGFile(chart, "ClassReport_" + i, 600, 420);
+	        	if(model.getPackage(i).getTotalSmellSize() > 0) {
+			        //建立Class Level的Smell資訊
+			        dataset = createClassDataset(model.getPackage(i));
+			        //產生Chart
+			        chart = createChart(dataset, model.getPackage(i).getPackageName(), "Class Name", false);
+			        //輸出成JPG
+			        outputJPGFile(chart, "ClassReport_" + i, 600, 420);
+	        	}
 	        }
 		}
 	}
@@ -103,10 +105,12 @@ public class BarChart {
 		}
 		for (int i=0; i < model.getPackagesSize(); i++) {
 			PackageModel packageModel = model.getPackage(i);
-			//Package 名稱太常所以使用代碼
-			//data.addValue(packageModel.getTotalSmellSize(), "", packageModel.getPackageName());
-			//新增資料(""是為了設定同一欄位用相同名稱)
-			data.addValue(packageModel.getTotalSmellSize(), "", "P" + String.valueOf(i));
+			if(packageModel.getTotalSmellSize() > 0) {
+				//Package 名稱太常所以使用代碼
+				//data.addValue(packageModel.getTotalSmellSize(), "", packageModel.getPackageName());
+				//新增資料(""是為了設定同一欄位用相同名稱)
+				data.addValue(packageModel.getTotalSmellSize(), "", "P" + String.valueOf(i));
+			}
 		}
 		return data;
 	}
@@ -120,8 +124,10 @@ public class BarChart {
 			return null;
 		for (int i=0; i < packageModel.getClassSize(); i++) {
 			ClassModel classModel = packageModel.getClass(i);
-			//新增資料(""是為了設定同一欄位用相同名稱)
-			data.addValue(classModel.getTotalSmell(), "", classModel.getClassName());
+			if(classModel.getTotalSmell() > 0) {
+				//新增資料(""是為了設定同一欄位用相同名稱)
+				data.addValue(classModel.getTotalSmell(), "", classModel.getClassName());
+			}
 		}
 		return data;
 	}
