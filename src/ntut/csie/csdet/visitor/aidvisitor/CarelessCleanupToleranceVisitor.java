@@ -22,7 +22,7 @@ public class CarelessCleanupToleranceVisitor extends ASTVisitor {
 	}
 	
 	public boolean visit(MethodDeclaration node) {
-		if (node.getBody().statements().size() == 1) {	
+		if (node.getBody() != null && node.getBody().statements().size() == 1) {	
 			return true;
 		}
 		return false;
