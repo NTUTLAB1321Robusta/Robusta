@@ -2,6 +2,7 @@ package ntut.csie.csdet.visitor;
 
 import java.io.Closeable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import ntut.csie.csdet.data.MarkerInfo;
@@ -39,6 +40,9 @@ public class CarelessCleanupVisitor extends ASTVisitor {
 	}
 	
 	public List<MarkerInfo> getCarelessCleanupList() {
+		HashSet<MarkerInfo> hashSet = new HashSet<MarkerInfo>(carelessCleanupList);
+		carelessCleanupList.clear();
+		carelessCleanupList.addAll(hashSet);
 		return carelessCleanupList;
 	}
 	

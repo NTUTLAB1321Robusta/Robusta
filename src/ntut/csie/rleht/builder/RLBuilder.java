@@ -11,7 +11,6 @@ import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.data.SSMessage;
 import ntut.csie.csdet.preference.JDomUtil;
 import ntut.csie.csdet.visitor.CarelessCleanupVisitor;
-import ntut.csie.csdet.visitor.CarelessCleanupVisitor2;
 import ntut.csie.csdet.visitor.DummyHandlerVisitor;
 import ntut.csie.csdet.visitor.IgnoreExceptionVisitor;
 import ntut.csie.csdet.visitor.NestedTryStatementVisitor;
@@ -245,7 +244,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	 * @param resource
 	 */
 	private void checkBadSmells(IResource resource) {
-		if (resource instanceof IFile && resource.getName().endsWith(".java")) {
+		if (resource instanceof IFile && resource.getFullPath().segment(1).equals("src") && resource.getFileExtension().equals("java")) {
 			logger.debug("[RLBuilder] START !!");
 
 			IFile file = (IFile) resource;
@@ -379,7 +378,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 					}
 					
 					//找尋專案中所有的Careless Cleanup
-					CarelessCleanupVisitor2 carelessCleanupVisitor = new CarelessCleanupVisitor2(root);
+					CarelessCleanupVisitor carelessCleanupVisitor = new CarelessCleanupVisitor(root);
 					method.accept(carelessCleanupVisitor);
 					List<MarkerInfo> carelessCleanupList = carelessCleanupVisitor.getCarelessCleanupList();
 					csIdx = -1;
