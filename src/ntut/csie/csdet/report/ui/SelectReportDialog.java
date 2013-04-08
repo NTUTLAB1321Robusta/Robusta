@@ -2,6 +2,9 @@ package ntut.csie.csdet.report.ui;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -105,16 +108,16 @@ public class SelectReportDialog  extends Dialog {
 		reportTable.setLinesVisible(true);
 	    reportTable.setHeaderVisible(true);
 
-	    //table col 1 title
+	    //table column 1 title
 	    TableColumn column1 = new TableColumn(reportTable, SWT.NONE);
 	    column1.setText(resource.getString("time"));
 	    column1.setWidth(200);
 	    
-	    //table col 2 title
+	    //table column 2 title
 	    TableColumn column2 = new TableColumn(reportTable, SWT.NONE);
 	    column2.setText("DescriptionContent");
 	    column2.setWidth(200);
-	    
+
 	    //set layout
 	    GridData data = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
 	    data.heightHint = 200;
@@ -155,16 +158,25 @@ public class SelectReportDialog  extends Dialog {
 			Date date = new Date(Long.parseLong(fileName.substring(0,index)));
 			tableItem.setText(date.toString());
 			
+	//		tableItem.setText(1,"hello");
 			//get xml value
 //			Element summary = new Element("Summary");
+//			System.out.println(summary.getContentSize());
 //			Object descContent = summary.getContent().get(3);
-//			Element eleDescContent = (Element) descContent;
-			//description content , (index , content)
-		//	tableItem.setText(1,eleDescContent.getAttributeValue("DescriptionContent"));
-			
+//			Element eleDescContent = (Element) descContent;			
+//			//description content , (index , content)
+//			tableItem.setText(1,eleDescContent.getAttributeValue("DescriptionContent"));					
+			//System.out.println(eleDescContent.getAttributeValue("DescriptionContent"));
+			getXmlData();
 		}
 	}
-
+	
+	/**
+	 * 取得 xml 內的資訊
+	 */
+	public void getXmlData(){
+		
+	}
 	/**
 	 * 取得Project內的Report資訊
 	 * @return
@@ -242,10 +254,25 @@ public class SelectReportDialog  extends Dialog {
 	 */
 	protected void okPressed() {	
 		int index = reportTable.getSelectionIndex();
-
+		//html file 's path
+		//System.out.println(fileList.get(index).getAbsolutePath());
 		if (index != -1)
 			filePath = fileList.get(index).getAbsolutePath();
-
+		
+		
+		try {
+			System.out.println(fileList.get(index).getAbsolutePath());
+			new changeHtml(fileList.get(index).getAbsolutePath()).change();
+			
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		
+		
 		super.okPressed(); 
 	}
 	
