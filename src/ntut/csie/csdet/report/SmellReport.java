@@ -104,15 +104,7 @@ public class SmellReport {
 		summary.addContent(new Element("ProjectName").addContent(model.getProjectName()));		
 		summary.addContent(new Element("DateTime").addContent(model.getBuildTime()));
 		
-		//description
-//		model.setDescription();
-//		summary.addContent(new Element("DescriptionContent").addContent(model.getDescription()));
-		//summary.getcontent(new Element("DescriptionContent").getContent());
-		//summary.getContent().indexOf(new Element("DescriptionContent").getContent());
-		//Object descContent = summary.getContent().get(3);
-		//Element eleDescContent = (Element) descContent;
-		//eleDescContent.getAttributeValue("DescriptionContent");
-		//System.out.println(eleDescContent.getAttributeValue("DescriptionContent"));
+		//summary.addContent(new Element("body").addContent("<!--Des-->"));
 		
 		summary.addContent(new Element("JPGPath").addContent("file:///" + model.getFilePath("Report.jpg", true)));
 		if (model.isDerectAllproject()) {

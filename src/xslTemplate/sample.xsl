@@ -46,7 +46,8 @@
 	<div align="left" class="menutext"> <b><font size="3">Project Name: <xsl:value-of select="Summary/ProjectName"></xsl:value-of></font></b></div>
 	<div align="left" class="menutext"> <b><font size="3">Generation Time : <xsl:value-of select="Summary/DateTime"></xsl:value-of></font></b></div>
 	<div align="left" class="menutext"> <b><font size="3">Filter conditions : <xsl:value-of select="Summary/Filter"></xsl:value-of></font></b></div>
-	<div align="left" class="menutext"> <b><font size="3">Description Content: <xsl:value-of select="Summary/DescriptionContent"></xsl:value-of></font></b></div>
+	<!--Description hello
+	-->
 	<h2 class="smalltitle">Exception Handling Code Smells Summary</h2>
 	<div align="center" id="reportSrcDiv">
 		<img>

@@ -1,6 +1,10 @@
 package ntut.csie.csdet.report.ui;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -31,7 +35,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.jdom.Element;
+
 
 /**
  * 
@@ -150,32 +154,86 @@ public class SelectReportDialog  extends Dialog {
 
 		for (File file : fileList) {
 			String fileName = file.getName();
-			//System.out.println(file.getName());
 			//在Table內加入新的Item
 			TableItem tableItem = new TableItem(reportTable, SWT.NONE);
 			//取得報表名稱的日期
 			int index = fileName.indexOf("_");		
 			Date date = new Date(Long.parseLong(fileName.substring(0,index)));
-			tableItem.setText(date.toString());
+			tableItem.setText(date.toString());		
 			
-	//		tableItem.setText(1,"hello");
-			//get xml value
-//			Element summary = new Element("Summary");
-//			System.out.println(summary.getContentSize());
-//			Object descContent = summary.getContent().get(3);
-//			Element eleDescContent = (Element) descContent;			
-//			//description content , (index , content)
-//			tableItem.setText(1,eleDescContent.getAttributeValue("DescriptionContent"));					
-			//System.out.println(eleDescContent.getAttributeValue("DescriptionContent"));
-			getXmlData();
+			//取得註解的內容
+
+			BufferedReader br = null;
+			FileReader fr = null;
+			//FileWriter fw = null;
+			String getStr = null;
+			StringBuffer SB = null;
+			
+			//String secondfile = file.getName()+"a";			
+			try {
+				System.out.println(file.getPath());
+				fr = new FileReader(file.getPath());
+				br = new BufferedReader(fr);
+				SB = new StringBuffer();
+				boolean isDesExist = false;			
+				
+				//取每一行文字
+				while((getStr = br.readLine()) != null){
+					SB.append(getStr);
+					System.out.println(getStr);
+				}				
+				
+				fr.close();
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	
+
+			//* readLine 迴圈 備份 	*/
+//			while((getStr = br.readLine()) != null){
+//				//fw = new FileWriter(file);
+//				//是描述的註解 
+//				if(getStr.equals("<!--Des")){
+//					//String editStr = "helloEdit";
+//					//fw.write(getStr);
+//					//br.readLine();
+//					//fw.write(editStr);
+//					
+//					isDesExist = true;
+//				}
+//				//不是
+//				else{						
+//					//fw.write(getStr);
+//				}
+//				System.out.println(getStr);
+//			}		
+//			if(!isDesExist){
+//				//fw.write("<!--Des\n\n-->");			
+//			}							
+			
+			tableItem.setText(1,"ADS");		
 		}
-	}
-	
+	}		
 	/**
-	 * 取得 xml 內的資訊
+	 * 
 	 */
-	public void getXmlData(){
-		
+	public void getDescription(String str , FileWriter fw){
+//		boolean isDesExist = false;
+//		while(){
+//			if(str.equals("<!--Des")){
+//				
+//				isDesExist = true;
+//			}
+//			else{
+//				fw.write(str);
+//			}
+//		}		
+//		if(!isDesExist){
+//			fw.write("<!--\n\n-->");			
+//		}
 	}
 	/**
 	 * 取得Project內的Report資訊
@@ -260,18 +318,18 @@ public class SelectReportDialog  extends Dialog {
 			filePath = fileList.get(index).getAbsolutePath();
 		
 		
-		try {
-			System.out.println(fileList.get(index).getAbsolutePath());
-			new changeHtml(fileList.get(index).getAbsolutePath()).change();
-			
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-		
+//		try {
+//			System.out.println(fileList.get(index).getAbsolutePath());
+//			//new changeHtml(fileList.get(index).getAbsolutePath()).change();
+//			
+//		} catch (MalformedURLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} 
+//		
 		
 		super.okPressed(); 
 	}
