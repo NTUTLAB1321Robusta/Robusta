@@ -171,7 +171,7 @@ public class SelectReportDialog  extends Dialog {
 			
 			//String secondfile = file.getName()+"a";			
 			try {
-				System.out.println(file.getPath());
+				//System.out.println(file.getPath());
 				fr = new FileReader(file.getPath());
 				br = new BufferedReader(fr);
 				SB = new StringBuffer();
@@ -217,24 +217,6 @@ public class SelectReportDialog  extends Dialog {
 			tableItem.setText(1,"ADS");		
 		}
 	}		
-	/**
-	 * 
-	 */
-	public void getDescription(String str , FileWriter fw){
-//		boolean isDesExist = false;
-//		while(){
-//			if(str.equals("<!--Des")){
-//				
-//				isDesExist = true;
-//			}
-//			else{
-//				fw.write(str);
-//			}
-//		}		
-//		if(!isDesExist){
-//			fw.write("<!--\n\n-->");			
-//		}
-	}
 	/**
 	 * 取得Project內的Report資訊
 	 * @return
