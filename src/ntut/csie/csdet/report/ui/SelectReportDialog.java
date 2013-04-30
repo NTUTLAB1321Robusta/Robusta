@@ -1,21 +1,12 @@
 package ntut.csie.csdet.report.ui;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.FilenameFilter;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
-
-import ntut.csie.csdet.report.ReportModel;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.dialogs.Dialog;
@@ -36,7 +27,6 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 
-
 /**
  * 
  * @author Shiau
@@ -47,7 +37,7 @@ public class SelectReportDialog  extends Dialog {
 
 	private Combo projectCombo;
 	private Table reportTable;
-	
+
 	//使用者所選擇的Report Path
 	private String filePath;
 	//全部的Project
@@ -57,14 +47,11 @@ public class SelectReportDialog  extends Dialog {
 	
 	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
 	
-	private ReportModel model = new ReportModel();
-	
-	public SelectReportDialog(Shell parentShell, List<String> projctList, ReportModel data) {
+	public SelectReportDialog(Shell parentShell, List<String> projctList) {
 		super(parentShell);
 
 		this.projectList = projctList;
 		filePath = "";
-		this.model = data;
 	}
 	
 	protected void configureShell(Shell newShell) {
@@ -74,7 +61,7 @@ public class SelectReportDialog  extends Dialog {
 	
 	protected Control createDialogArea(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);		
-		composite.setLayout(new GridLayout(1,false));
+		composite.setLayout(new GridLayout(2,false));
 
 		Label label = new Label(composite,SWT.None);
 		label.setText(resource.getString("project.name"));
@@ -112,22 +99,16 @@ public class SelectReportDialog  extends Dialog {
 		reportTable.setLinesVisible(true);
 	    reportTable.setHeaderVisible(true);
 
-	    //table column 1 title
 	    TableColumn column1 = new TableColumn(reportTable, SWT.NONE);
 	    column1.setText(resource.getString("time"));
 	    column1.setWidth(200);
-	    
-	    //table column 2 title
-	    TableColumn column2 = new TableColumn(reportTable, SWT.NONE);
-	    column2.setText("DescriptionContent");
-	    column2.setWidth(200);
 
 	    //set layout
-	    GridData data = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+	    GridData data = new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1);
 	    data.heightHint = 200;
 	    data.widthHint = 300;
 	    reportTable.setLayoutData(data);
-	    
+
 	    //add listener
 	    reportTable.addMouseListener(new MouseAdapter() {
 			public void mouseDoubleClick(MouseEvent e) {
@@ -140,6 +121,7 @@ public class SelectReportDialog  extends Dialog {
 	    //更新Table內容
 	    updateTable();
 	}
+	
 	/**
 	 * 更新Table
 	 */
@@ -154,69 +136,18 @@ public class SelectReportDialog  extends Dialog {
 
 		for (File file : fileList) {
 			String fileName = file.getName();
+
 			//在Table內加入新的Item
 			TableItem tableItem = new TableItem(reportTable, SWT.NONE);
+
 			//取得報表名稱的日期
-			int index = fileName.indexOf("_");		
+			int index = fileName.indexOf("_");
 			Date date = new Date(Long.parseLong(fileName.substring(0,index)));
-			tableItem.setText(date.toString());		
-			
-			//取得註解的內容
 
-			BufferedReader br = null;
-			FileReader fr = null;
-			//FileWriter fw = null;
-			String getStr = null;
-			StringBuffer SB = null;
-			
-			//String secondfile = file.getName()+"a";			
-			try {
-				//System.out.println(file.getPath());
-				fr = new FileReader(file.getPath());
-				br = new BufferedReader(fr);
-				SB = new StringBuffer();
-				boolean isDesExist = false;			
-				
-				//取每一行文字
-				while((getStr = br.readLine()) != null){
-					SB.append(getStr);
-					System.out.println(getStr);
-				}				
-				
-				fr.close();
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}	
-
-			//* readLine 迴圈 備份 	*/
-//			while((getStr = br.readLine()) != null){
-//				//fw = new FileWriter(file);
-//				//是描述的註解 
-//				if(getStr.equals("<!--Des")){
-//					//String editStr = "helloEdit";
-//					//fw.write(getStr);
-//					//br.readLine();
-//					//fw.write(editStr);
-//					
-//					isDesExist = true;
-//				}
-//				//不是
-//				else{						
-//					//fw.write(getStr);
-//				}
-//				System.out.println(getStr);
-//			}		
-//			if(!isDesExist){
-//				//fw.write("<!--Des\n\n-->");			
-//			}							
-			
-			tableItem.setText(1,"ADS");		
+			tableItem.setText(date.toString());
 		}
-	}		
+	}
+
 	/**
 	 * 取得Project內的Report資訊
 	 * @return
@@ -226,7 +157,7 @@ public class SelectReportDialog  extends Dialog {
 		String projectName = projectList.get(projectCombo.getSelectionIndex());
 		//取得WorkSpace
 		String workPath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toString();
-		
+
 		//Report目錄
 		File directory = new File(workPath + "/" + projectName + "/" + projectName + "_Report/");
 		
@@ -294,25 +225,10 @@ public class SelectReportDialog  extends Dialog {
 	 */
 	protected void okPressed() {	
 		int index = reportTable.getSelectionIndex();
-		//html file 's path
-		//System.out.println(fileList.get(index).getAbsolutePath());
+
 		if (index != -1)
 			filePath = fileList.get(index).getAbsolutePath();
-		
-		
-//		try {
-//			System.out.println(fileList.get(index).getAbsolutePath());
-//			//new changeHtml(fileList.get(index).getAbsolutePath()).change();
-//			
-//		} catch (MalformedURLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} 
-//		
-		
+
 		super.okPressed(); 
 	}
 	

@@ -206,12 +206,10 @@ public class EHSmellReportView extends ViewPart {
 		filterAction.setImageDescriptor(ImageManager.getInstance().getDescriptor("filter"));
 		toolBarManager.add(filterAction);
 
-		
-		
 		selectAction = new Action() {
 			public void run() {
 				//«ö¤U«á¸õ¥XSelect Report Dialog
-				SelectReportDialog selectDialog = new SelectReportDialog(new Shell(), getProjectList(), data);
+				SelectReportDialog selectDialog = new SelectReportDialog(new Shell(), getProjectList());
 				selectDialog.open();
 				if(!selectDialog.getReportPath().equals("")){
 					browser.setUrl(selectDialog.getReportPath());

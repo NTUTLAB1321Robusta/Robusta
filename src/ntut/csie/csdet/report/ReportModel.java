@@ -7,8 +7,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.jdom.Element;
-
 /**
  * Report的相關資料
  * @author Shiau
@@ -38,8 +36,6 @@ public class ReportModel {
 	private int tryCounter = 0;
 	private int catchCounter = 0;
 	private int finallyCounter = 0;
-	//描述的內容 
-	private String description = "";
 
 	/**
 	 * 設定、取得建造時間
@@ -219,14 +215,5 @@ public class ReportModel {
 	}	
 	public void addFinallyCounter(int finallyCounter) {
 		this.finallyCounter += finallyCounter;
-	}
-	
-	//設定描述的內容
-	public void setDescription(){
-		description = "hello";			
-	}
-	public String getDescription(){
-		//System.out.println(summary.getContent());
-		return description;
 	}
 }

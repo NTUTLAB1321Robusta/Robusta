@@ -101,11 +101,8 @@ public class SmellReport {
 	private void printSummary(Element root) {
 		///Summary資料輸出///
 		Element summary = new Element("Summary");
-		summary.addContent(new Element("ProjectName").addContent(model.getProjectName()));		
+		summary.addContent(new Element("ProjectName").addContent(model.getProjectName()));
 		summary.addContent(new Element("DateTime").addContent(model.getBuildTime()));
-		
-		//summary.addContent(new Element("body").addContent("<!--Des-->"));
-		
 		summary.addContent(new Element("JPGPath").addContent("file:///" + model.getFilePath("Report.jpg", true)));
 		if (model.isDerectAllproject()) {
 			//若偵測全部則印出
