@@ -214,7 +214,7 @@ public class CarelessCleanupWithExtraRules {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} finally {
-			fis.close();
+			fis.close();	// it's CC
 		}
 	}
 	
@@ -232,8 +232,7 @@ public class CarelessCleanupWithExtraRules {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} finally {
-//			fis.close();
-			FileUtils.close(fis);
+			fis.close();	// it isn't CC
 		}
 	}
 	
@@ -282,14 +281,13 @@ public class CarelessCleanupWithExtraRules {
 				fis.read();
 			}
 		} finally {
-			fis.close();
+			fis.close();	// it isn't CC
 		}
 	}
 	
-	public void test() throws IOException {
+	public void test() throws IOException, InterruptedException {
 		StringBuilder sb = new StringBuilder();
-		if(sb == null)
-			throw new IOException();
+		sb.wait();
 		FileInputStream fis = new FileInputStream("C:\\123123123");
 		try{
 			sb.append("1111");
@@ -297,7 +295,7 @@ public class CarelessCleanupWithExtraRules {
 				fis.read();
 			}
 		} finally {
-			fis.close();
+			fis.close();	// it isn't CC
 		}
 	}
 }
