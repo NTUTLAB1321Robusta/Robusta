@@ -79,7 +79,7 @@ public class OverwrittenLeadExceptionVisitorTest {
 	public void visitWithSettings() throws Exception {
 		overwrittenLeadExceptionVisitor = new OverwrittenLeadExceptionVisitor(compilationUnit);
 		compilationUnit.accept(overwrittenLeadExceptionVisitor);
-		assertEquals(colloectBadSmellListContent(overwrittenLeadExceptionVisitor.getOverwrittenList()), 28, overwrittenLeadExceptionVisitor.getOverwrittenList().size());
+		assertEquals(colloectBadSmellListContent(overwrittenLeadExceptionVisitor.getOverwrittenList()), 34, overwrittenLeadExceptionVisitor.getOverwrittenList().size());
 	}
 
 	/**
