@@ -89,7 +89,7 @@ public class CarelessCleanupVisitor3Test {
 	@Test
 	public void testSettingsWithExtraRules() throws Exception {
 		compilationUnit.accept(carelessCleanupVisitor);
-		assertEquals(4, carelessCleanupVisitor.getCarelessCleanupList().size());
+		assertEquals(7, carelessCleanupVisitor.getCarelessCleanupList().size());
 	}
 	
 	/**

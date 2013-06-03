@@ -142,7 +142,7 @@ public class CarelessClenupRaisedExceptionNotInTryCausedVisitor extends	ASTVisit
 	 * 任意傳進來的node是否在closeResource以及此closeResource宣告的位置之間
 	 * @param node
 	 * @param closeResource
-	 * @return
+	 * @return true 是壞味道
 	 */
 	private boolean isNodeBetweenCreationAndClose(ASTNode node, MethodInvocation closeResource) {
 		boolean isBetween = false;

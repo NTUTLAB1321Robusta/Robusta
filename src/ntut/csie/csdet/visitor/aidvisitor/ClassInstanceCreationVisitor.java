@@ -1,5 +1,7 @@
 package ntut.csie.csdet.visitor.aidvisitor;
 
+import java.util.List;
+
 import ntut.csie.jdt.util.NodeUtils;
 
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -19,15 +21,16 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
  */
 public class ClassInstanceCreationVisitor extends ASTVisitor {
 	/** 尋找建立這個Instance的node (new FileInputStream("")) */
-	private ClassInstanceCreation classInstanceCreation;
-	private SimpleName declaringVariable; 
+	private ClassInstanceCreation cic = null;
+	private SimpleName declaringVariable = null;
+	private List<Expression> argumentsOfMethodInvocation = null;
+	
 	public ClassInstanceCreationVisitor(MethodInvocation methodInvocation) {
-		classInstanceCreation = null;
-		declaringVariable = null;
 		/*
 		 * 找出這個MethodInvocation宣告的變數
 		 */
 		declaringVariable = NodeUtils.getMethodInvocationBindingVariableSimpleName(methodInvocation.getExpression());
+		argumentsOfMethodInvocation = methodInvocation.arguments();
 	}
 	
 //	public boolean visit(VariableDeclarationFragment node) {
@@ -53,7 +56,7 @@ public class ClassInstanceCreationVisitor extends ASTVisitor {
 				VariableDeclarationFragment vdf = (VariableDeclarationFragment)node.getParent();
 				// 如果這個fis = new FileInputStream("")
 				if(vdf.resolveBinding().equals(declaringVariable.resolveBinding())){
-					classInstanceCreation = node;
+					cic = node;
 					return false;
 				}
 				break;
@@ -69,7 +72,14 @@ public class ClassInstanceCreationVisitor extends ASTVisitor {
 				}
 				if (leftSimpleName.resolveBinding().equals(
 						declaringVariable.resolveBinding())) {
-					classInstanceCreation = node;
+					cic = node;
+				}
+				if (argumentsOfMethodInvocation != null) {
+					for(Expression expression : argumentsOfMethodInvocation ) {
+						if(leftSimpleName.toString().equals(expression.toString())) {
+							cic = node;
+						}
+					}
 				}
 				break;
 			default:
@@ -83,6 +93,6 @@ public class ClassInstanceCreationVisitor extends ASTVisitor {
 	 * @return
 	 */
 	public ClassInstanceCreation getClassInstanceCreation() {
-		return classInstanceCreation;
+		return cic;
 	}
 }
