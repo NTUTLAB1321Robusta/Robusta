@@ -75,10 +75,12 @@ public class TryStatementExceptionsVisitor extends ASTVisitor {
 	}
 	
 	public boolean visit(MethodInvocation node) {
-		ITypeBinding[] checkedExceptions = node.resolveMethodBinding().getExceptionTypes();
-		for(ITypeBinding exception : checkedExceptions) {
-			String exceptionQualifiedName = exception.getQualifiedName();
-			addException(exceptionQualifiedName, getNodeExceptionContainer(node));
+		if(node.resolveMethodBinding() != null) {
+			ITypeBinding[] checkedExceptions = node.resolveMethodBinding().getExceptionTypes();
+			for(ITypeBinding exception : checkedExceptions) {
+				String exceptionQualifiedName = exception.getQualifiedName();
+				addException(exceptionQualifiedName, getNodeExceptionContainer(node));
+			}
 		}
 		return true;
 	}

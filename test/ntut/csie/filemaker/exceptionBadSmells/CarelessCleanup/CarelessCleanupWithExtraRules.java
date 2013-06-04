@@ -1,10 +1,17 @@
 package ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URLConnection;
+
+import org.apache.log4j.lf5.util.Resource;
 
 import ntut.csie.robusta.agile.exception.RTag;
 import ntut.csie.robusta.agile.exception.Robustness;
@@ -296,6 +303,67 @@ public class CarelessCleanupWithExtraRules {
 			}
 		} finally {
 			fis.close();	// it isn't CC
+		}
+	}
+
+	public void arbintest1() throws FileNotFoundException, IOException {
+		URLConnection connection = null;
+		InputStream is = null;
+		try {
+			is = connection.getInputStream();
+		} finally {
+			FileUtils.close(is); // it isn't CC
+		}
+	}
+
+	public void arbintest2() throws FileNotFoundException, IOException {
+		OutputStream os = new FileOutputStream("123");
+		URLConnection connection = null;
+		InputStream is = null;
+		try {
+			is = connection.getInputStream();
+		} finally {
+			FileUtils.close(os); // it isn't CC
+			FileUtils.close(is); // it isn't CC
+		}
+	}
+
+	public void arbintest3(boolean trueOrFalse) throws IOException {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		if (trueOrFalse) {
+			throw new IOException("IOException");
+		}
+		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+		try {
+			bais.read();
+		} finally {
+			FileUtils.close(bais); // it isn't CC
+		}
+	}
+
+	/**
+	 * 這例子會讓我們工具拋出 NullPointerException
+	 */
+	public void arbintest4(Resource resource, OutputStream zOut)
+			throws IOException {
+		InputStream rIn = resource.getInputStream();
+		try {
+			rIn.read();
+		} finally {
+			rIn.close(); // it isn't CC
+		}
+	}
+
+	/**
+	 * 這例子會讓我們工具拋出 NullPointerException
+	 */
+	public void arbintest5(Resource resource, OutputStream zOut)
+			throws IOException {
+		InputStream in = null;
+		try {
+			in = resource.getInputStream();
+		} finally {
+			FileUtils.close(in); // it isn't CC
 		}
 	}
 }

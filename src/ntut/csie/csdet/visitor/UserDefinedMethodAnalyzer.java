@@ -124,7 +124,7 @@ public class UserDefinedMethodAnalyzer {
 		//  檢查傳入的參數是否有實作closeable的
 		boolean isCloseable = NodeUtils.isParameterImplemented(node, Closeable.class);
 		
-		ASTNode mdNode = root.findDeclaringNode(node.resolveMethodBinding().getMethodDeclaration());
+		ASTNode mdNode = (node.resolveMethodBinding() != null) ? root.findDeclaringNode(node.resolveMethodBinding().getMethodDeclaration()): null;
 		if(mdNode != null && isCloseable) {
 			DeclaredMethodAnalyzer analyzer = new DeclaredMethodAnalyzer();
 			mdNode.accept(analyzer);

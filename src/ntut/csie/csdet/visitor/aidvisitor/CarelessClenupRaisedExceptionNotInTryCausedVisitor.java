@@ -86,7 +86,7 @@ public class CarelessClenupRaisedExceptionNotInTryCausedVisitor extends	ASTVisit
 		}
 		
 		// 如果這個Node本身不會拋出例外，則不會是造成careless cleanup的原因
-		int checkedExceptionLength = node.resolveMethodBinding().getExceptionTypes().length;
+		int checkedExceptionLength = (node.resolveMethodBinding() != null) ? node.resolveMethodBinding().getExceptionTypes().length : 0;
 		if(checkedExceptionLength == 0) {
 			return true;
 		}
