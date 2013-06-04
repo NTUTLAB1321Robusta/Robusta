@@ -668,7 +668,7 @@ public class RetryRefactoring extends Refactoring {
 	}
 	
 	private void addAnnotationRoot(AST ast){
-		//要建立@Robustness(value={@Tag(level=3, exception=java.lang.RuntimeException.class)})這樣的Annotation
+		//要建立@Robustness(value={@RTag(level=3, exception=java.lang.RuntimeException.class)})這樣的Annotation
 		//建立Annotation root
 		NormalAnnotation root = ast.newNormalAnnotation();
 		root.setTypeName(ast.newSimpleName("Robustness"));
@@ -725,7 +725,7 @@ public class RetryRefactoring extends Refactoring {
 	 * @return NormalAnnotation AST Node
 	 */
 	private NormalAnnotation getRLAnnotation(AST ast, int levelVal,String excption) {
-		//要建立@Robustness(value={@Tag(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
+		//要建立@Robustness(value={@RTag(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
 		NormalAnnotation rl = ast.newNormalAnnotation();
 		rl.setTypeName(ast.newSimpleName(RTag.class.getSimpleName().toString()));
 

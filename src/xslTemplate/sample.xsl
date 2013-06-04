@@ -36,7 +36,7 @@
 
 <body >
 	<table cellSpacing="0" cellPadding="0" width="100%" border="0" align="center"><tr><td>
-	<span class="supertitle">Exception Handling Code Smells Report</span><a name="top"></a><div align="left" class="description"></div><h2 class="bigtitle">Summary<a name="Summary"></a></h2>
+	<span class="supertitle">Exception Handling Code Smells Report</span><div align="left" class="description"></div><h2 class="bigtitle">Summary<a name="Summary"></a></h2>
 	<p>
 		[<a class="menulink" href="#Summary">Summary</a>]
 		[<a class="menulink" href="#EH_Smells_List">Exception Handling Code Smells List</a>]
@@ -113,7 +113,7 @@
 	<br/>
 	<hr></hr>
 	<br/>
-	<h2 class="bigtitle"><a name="Package_List">Package List</a></h2>
+	<h2 class="bigtitle"><a name="Package_List">Package List</a><a name="top"></a></h2>
 	<p>
 		[<a class="menulink" href="#Summary">Summary</a>]
 		[<a class="menulink" href="#EH_Smells_List">Exception Handling Code Smells List</a>]

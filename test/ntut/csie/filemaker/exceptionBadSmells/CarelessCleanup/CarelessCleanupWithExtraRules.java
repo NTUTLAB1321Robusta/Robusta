@@ -263,8 +263,8 @@ public class CarelessCleanupWithExtraRules {
 				out.write(fis.read());
 			}
 		} finally {
-			fis.close();	// 因為new FileOutputStream會拋出例外，造成fis.close()變成careless cleanup
-			out.close();	// 因為fis.close()會拋出例外，造成out.close()變成careless cleanup
+			fis.close();	// 因為new FileOutputStream會拋出例外，造成fis.close()變成careless cleanup, it's CC
+			out.close();	// 因為fis.close()會拋出例外，造成out.close()變成careless cleanup, it's CC
 		}
 	}
 	

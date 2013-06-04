@@ -75,7 +75,7 @@ public class QuickFixUtil {
 	public void addAnnotationRoot(CompilationUnit actRoot,
 			ASTNode currentMethodDeclarationNode, int rlValue,
 			String exceptionClass) {
-		// 要建立@Robustness(value={@Tag(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
+		// 要建立@Robustness(value={@RTag(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
 		// 建立Annotation root
 		
 		AST ast = currentMethodDeclarationNode.getAST();
@@ -162,9 +162,9 @@ public class QuickFixUtil {
 	 * @return NormalAnnotation AST Node
 	 */
 	private NormalAnnotation getRLAnnotation(AST ast, int levelVal,String excption) {
-		//要建立@Robustness(value={@Tag(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
+		//要建立@Robustness(value={@RTag(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
 		NormalAnnotation rl = ast.newNormalAnnotation();
-		rl.setTypeName(ast.newSimpleName("Tag"));
+		rl.setTypeName(ast.newSimpleName("RTag"));
 
 		// level = 1
 		MemberValuePair level = ast.newMemberValuePair();

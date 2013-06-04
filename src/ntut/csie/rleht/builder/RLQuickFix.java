@@ -351,7 +351,7 @@ public class RLQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 	@SuppressWarnings("unchecked")
 	private NormalAnnotation getRLAnnotation(AST ast, int levelVal, String exClass) {
 		NormalAnnotation rl = ast.newNormalAnnotation();
-		rl.setTypeName(ast.newSimpleName("Tag"));
+		rl.setTypeName(ast.newSimpleName("RTag"));
 
 		MemberValuePair level = ast.newMemberValuePair();
 		level.setName(ast.newSimpleName("level"));

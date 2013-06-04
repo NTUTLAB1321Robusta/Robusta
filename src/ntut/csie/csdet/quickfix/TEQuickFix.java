@@ -142,7 +142,7 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 
 	@SuppressWarnings("unchecked")
 	private void addAnnotationRoot(String exception,AST ast) {
-		//要建立@Robustness(value={@Tag(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
+		//要建立@Robustness(value={@RTag(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
 		//建立Annotation root
 		NormalAnnotation root = ast.newNormalAnnotation();
 		root.setTypeName(ast.newSimpleName("Robustness"));
@@ -195,9 +195,9 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 	 * @return NormalAnnotation AST Node
 	 */
 	private NormalAnnotation getRLAnnotation(AST ast, int levelVal,String excption) {
-		//要建立@Robustness(value={@Tag(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
+		//要建立@Robustness(value={@RTag(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
 		NormalAnnotation rl = ast.newNormalAnnotation();
-		rl.setTypeName(ast.newSimpleName("Tag"));
+		rl.setTypeName(ast.newSimpleName("RTag"));
 
 		// level = 1
 		MemberValuePair level = ast.newMemberValuePair();

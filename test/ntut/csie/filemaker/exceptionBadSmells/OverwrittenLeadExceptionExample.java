@@ -1,8 +1,10 @@
 package ntut.csie.filemaker.exceptionBadSmells;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FilterInputStream;
 import java.io.IOException;
 
 import ntut.csie.robusta.agile.exception.RTag;
@@ -517,6 +519,7 @@ public class OverwrittenLeadExceptionExample {
 	 * 
 	 * @Author pig
 	 */
+	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void overwrittenInTryBlock(String filePath, byte[] context)
 			throws IOException {
 		FileOutputStream fis = null;
@@ -537,6 +540,8 @@ public class OverwrittenLeadExceptionExample {
 	 * 但因為偵測上的限制，工具暫時認為是 OW 壞味道
 	 * @Author pig
 	 */
+	@SuppressWarnings("finally")
+	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void throwButWithoutExceptionBeforeWithDH() throws IOException {
 		try {
 		} finally {
@@ -551,6 +556,7 @@ public class OverwrittenLeadExceptionExample {
 	 * 
 	 * @Author pig
 	 */
+	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void throwButWithoutExceptionBeforeWithDH(String filePath,
 			byte[] context) throws IOException {
 		FileOutputStream fis = null;
@@ -571,6 +577,7 @@ public class OverwrittenLeadExceptionExample {
 	 * 
 	 * @Author pig
 	 */
+	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void throwButWithoutExceptionBeforeWithECB(String filePath,
 			byte[] context) throws IOException {
 		FileOutputStream fis = null;
@@ -589,6 +596,7 @@ public class OverwrittenLeadExceptionExample {
 	 * 
 	 * @Author pig
 	 */
+	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void tryWithCatchInTryBlock(String filePath,
 			byte[] context) throws IOException {
 		FileOutputStream fis = null;
@@ -611,6 +619,7 @@ public class OverwrittenLeadExceptionExample {
 	 * 
 	 * @Author pig
 	 */
+	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void tryWithFinallyInTryBlock(String filePath,
 			byte[] context) throws IOException {
 		FileOutputStream fis = null;
@@ -637,6 +646,7 @@ public class OverwrittenLeadExceptionExample {
 	 * 
 	 * @Author pig
 	 */
+	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public static void tryWithFinallyOutOfTryBlock() throws IOException {
 		try {
 		} finally {
@@ -657,6 +667,8 @@ public class OverwrittenLeadExceptionExample {
 	 * 
 	 * @Author pig
 	 */
+	@SuppressWarnings("finally")
+	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public static void multiNestedTryTryWithFinally1() throws IOException {
 		try {
 			try {
@@ -671,5 +683,60 @@ public class OverwrittenLeadExceptionExample {
 			throw new IOException("Second effect wrong overwritten");
 		}
 	}
-
+	
+	/**
+	 * 未找出來的Ground truth例子
+	 * @throws FileNotFoundException 
+	 */
+	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
+	public FilterInputStream antGTExample1() throws FileNotFoundException {
+		return new FilterInputStream(new FileInputStream(new File(""))) {
+	         public void close() throws IOException {
+	         }
+	         protected void finalize() throws Throwable {
+	             try {
+	                 close();
+	             } finally {
+	                 super.finalize();	// Overwritten
+	             }
+	         }
+	     };
+	}
+	
+	/**
+	 * 未找出來的Ground truth例子
+	 * @throws FileNotFoundException 
+	 */
+	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
+	public void antGTExample2(byte[] context, File outputFile) throws IOException {
+		FileOutputStream fileOutputStream = null, fileOutputStream2 = null;
+		try {
+			fileOutputStream = new FileOutputStream(outputFile);
+			fileOutputStream.write(context);
+			try {
+				fileOutputStream2 = new FileOutputStream(outputFile);	
+			} finally {
+				if(fileOutputStream != null)
+					throw new RuntimeException(); // Overwritten
+			}
+		} catch(FileNotFoundException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} finally {
+			FileOutputStream fileOutputStream3 = null;
+			try {
+				fileOutputStream3 = new FileOutputStream(outputFile);
+				fileOutputStream.close();
+				fileOutputStream2 = new FileOutputStream(outputFile);
+				fileOutputStream2.write(context);
+			} catch(IOException e) { 
+				throw new RuntimeException(e);	// Overwritten
+			} finally {
+				fileOutputStream3.close();	// Overwritten
+			}
+			if(fileOutputStream3.hashCode() != 0)
+				throw new IOException();	// Overwritten
+		}
+	}
 }

@@ -245,8 +245,6 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	 */
 	private void checkBadSmells(IResource resource) {
 		if (resource instanceof IFile && resource.getFullPath().segment(1).equals("src") && resource.getFileExtension().equals("java")) {
-			logger.debug("[RLBuilder] START !!");
-
 			IFile file = (IFile) resource;
 			deleteMarkers(file);
 
@@ -536,8 +534,6 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				logger.error("[checkRLAnnotation] EXCEPTION ",ex);
 				throw new RuntimeException(ex);
 			}
-			logger.debug("[RLBuilder] END !!");
-
 		}
 	}
 
@@ -600,16 +596,20 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	}
 
 	protected void fullBuild(final IProgressMonitor monitor) throws CoreException {
+		logger.debug("[RLBuilder] START !!");
 		try {
 			getProject().accept(new RLResourceVisitor());
 		}
 		catch (CoreException e) {
 		}
+		logger.debug("[RLBuilder] END !!");
 	}
 
 	protected void incrementalBuild(IResourceDelta delta, IProgressMonitor monitor) throws CoreException {
 		// the visitor does the work.
+		logger.debug("[RLBuilder] START !!");
 		delta.accept(new RLMethodDeltaVisitor());
+		logger.debug("[RLBuilder] END !!");
 	}
 
 	// =========================================================================

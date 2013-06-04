@@ -16,20 +16,24 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TryStatement;
 
 public class OverwrittenLeadExceptionVisitor extends ASTVisitor {
 	private CompilationUnit root;
 	private List<MarkerInfo> overwrittenLeadList;
-	private boolean isTarget, inFinally;
+	private boolean isTarget; // true:就會被檢查為OW；false:不檢查
+	private boolean inFinally;// true:在目前節點中最上層的finally block裡面；false:在其他任何地方
 	private boolean isDetectingOverwrittenLeadExceptionSmell;
+	private Block outterFinally;
 	
 	public OverwrittenLeadExceptionVisitor(CompilationUnit compilationUnit) {
 		overwrittenLeadList = new ArrayList<MarkerInfo>();
 		root = compilationUnit;
 		isTarget = false;
 		inFinally = false;
+		outterFinally = null;
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		isDetectingOverwrittenLeadExceptionSmell = smellSettings.isDetectingSmell(SmellSettings.SMELL_OVERWRITTENLEADEXCEPTION);
 	}
@@ -40,6 +44,7 @@ public class OverwrittenLeadExceptionVisitor extends ASTVisitor {
 	public boolean visit(MethodDeclaration node) {
 		isTarget = false;
 		inFinally = false;
+		outterFinally = null;
 		return isDetectingOverwrittenLeadExceptionSmell;
 	}
 	
@@ -65,6 +70,8 @@ public class OverwrittenLeadExceptionVisitor extends ASTVisitor {
 	public boolean visit(ThrowStatement node) {
 		if(isTarget)
 			addMarkerInfo(node);
+		else if(inFinally)
+			addMarkerInfo(node);
 		return false;
 	}
 	
@@ -76,6 +83,9 @@ public class OverwrittenLeadExceptionVisitor extends ASTVisitor {
 			if(((TryStatement) parentNode).getFinally() != null && ((TryStatement) parentNode).getFinally().getStartPosition() == node.getStartPosition()) {
 				inFinally = true;
 				isTarget = true;
+				// 紀錄第一層finally block
+				if(outterFinally == null)
+					outterFinally = node;
 			}
 		}
 		
@@ -92,10 +102,26 @@ public class OverwrittenLeadExceptionVisitor extends ASTVisitor {
 		return true; 
 	}
 	
+	public boolean visit(SuperMethodInvocation node) {
+		if(isTarget) {
+			ITypeBinding[] exTypes =  node.resolveMethodBinding().getExceptionTypes();
+			// method invocation會拋checked exception的話
+			if(exTypes.length > 0)
+				addMarkerInfo(node);
+		}
+		return true; 
+	}
+	
 	public void endVisit(Block node) {
 		TryStatement parentNode = (node.getParent().getNodeType() == ASTNode.TRY_STATEMENT) ? (TryStatement)node.getParent() : null;
+		// 判斷是否離開finally block
 		if(parentNode != null && parentNode.getFinally() != null && parentNode.getFinally().getStartPosition() == node.getStartPosition()) {
 			isTarget = false;
+		}
+		// 判斷是否離開第一層finally block
+		if(outterFinally != null && outterFinally.getStartPosition() == node.getStartPosition()) {
+			inFinally = false;
+			outterFinally = null;
 		}
 	}
 	
@@ -103,6 +129,14 @@ public class OverwrittenLeadExceptionVisitor extends ASTVisitor {
 		MarkerInfo markerInfo = new MarkerInfo(RLMarkerAttribute.CS_OVERWRITTEN_LEAD_EXCEPTION,
 				(node.getExpression() != null)? node.getExpression().resolveTypeBinding() : null,
 						node.toString(), node.getStartPosition(),
+				root.getLineNumber(node.getStartPosition()), null);
+		markerInfo.setMethodThrownExceptions(node.resolveMethodBinding().getExceptionTypes());
+		overwrittenLeadList.add(markerInfo);
+	}
+	
+	private void addMarkerInfo(SuperMethodInvocation node) {
+		MarkerInfo markerInfo = new MarkerInfo(RLMarkerAttribute.CS_OVERWRITTEN_LEAD_EXCEPTION,
+				null, node.toString(), node.getStartPosition(),
 				root.getLineNumber(node.getStartPosition()), null);
 		markerInfo.setMethodThrownExceptions(node.resolveMethodBinding().getExceptionTypes());
 		overwrittenLeadList.add(markerInfo);
