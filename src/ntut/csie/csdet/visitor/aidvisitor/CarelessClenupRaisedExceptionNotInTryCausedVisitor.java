@@ -146,7 +146,7 @@ public class CarelessClenupRaisedExceptionNotInTryCausedVisitor extends	ASTVisit
 	 */
 	private boolean isNodeBetweenCreationAndClose(ASTNode node, MethodInvocation closeResource) {
 		boolean isBetween = false;
-		int creationNodeStartPosition = 0;
+		int creationNodeStartPosition = -1;
 		int closeNodeStartPosition = closeResource.getStartPosition();
 		int astNodeStartPosition = node.getStartPosition();
 		
@@ -161,7 +161,8 @@ public class CarelessClenupRaisedExceptionNotInTryCausedVisitor extends	ASTVisit
 			creationNodeStartPosition = creationNode.getStartPosition();
 		}
 		
-		if ((astNodeStartPosition > creationNodeStartPosition) &&
+		if (creationNodeStartPosition != -1 &&
+			(astNodeStartPosition > creationNodeStartPosition) &&
 			(astNodeStartPosition < closeNodeStartPosition)) {
 			isBetween = true;
 		}

@@ -58,6 +58,13 @@ public class ClassInstanceCreationVisitor extends ASTVisitor {
 				if(vdf.resolveBinding().equals(declaringVariable.resolveBinding())){
 					cic = node;
 					return false;
+				} else {
+					for(Expression name : argumentsOfMethodInvocation) {
+						if(name.toString().equalsIgnoreCase(vdf.getName().toString())) {
+							cic = node;
+							return false;
+						}
+					}
 				}
 				break;
 			case ASTNode.ASSIGNMENT:
