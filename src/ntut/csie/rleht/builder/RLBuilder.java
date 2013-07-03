@@ -463,9 +463,10 @@ public class RLBuilder extends IncrementalProjectBuilder {
 						msgIdx++;
 						if (msg.getRLData().getLevel() >= 0) {
 							if (!msg.isHandling()) {
-								String errmsg = this.resource.getString("tag.undefine1") + msg.getRLData().getExceptionType() + this.resource.getString("tag.undefine2");
-								this.addMarker(file, errmsg.toString(), msg.getLineNumber(), IMarker.SEVERITY_WARNING,
-										RLMarkerAttribute.ERR_NO_RL, msg, msgIdx, methodIdx);
+//								pig 修改，將缺少 RL notation 時的警告暫時註解掉
+//								String errmsg = this.resource.getString("tag.undefine1") + msg.getRLData().getExceptionType() + this.resource.getString("tag.undefine2");
+//								this.addMarker(file, errmsg.toString(), msg.getLineNumber(), IMarker.SEVERITY_WARNING,
+//										RLMarkerAttribute.ERR_NO_RL, msg, msgIdx, methodIdx);
 							}
 						}
 					}
