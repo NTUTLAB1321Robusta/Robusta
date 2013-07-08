@@ -56,12 +56,19 @@ public class ClassModel {
 				methodList.add(MethodName);
 		}
 	}
-	public void setNestedTryList(List<MarkerInfo> nestedTryList, String MethodName) {
+	/**
+	 * 將 nestedTryList 加在 ClassModel 收集的 smellList 中
+	 * TODO 刪除 methodList 時直接刪除整個 for statement 即可
+	 * TODO 其他 list 參考此 Method，將 MethodName 參數拿掉
+	 * @param nestedTryList
+	 */
+	public void addNestedTryList(List<MarkerInfo> nestedTryList) {
 		if (nestedTryList != null) {
 			nestedTrySize += nestedTryList.size();
 			smellList.addAll(nestedTryList);
-			for (int i=0; i<nestedTryList.size(); i++)
-				methodList.add(MethodName);
+			for (MarkerInfo markerInfo : nestedTryList) {
+				methodList.add(markerInfo.getMethodName());
+			}
 		}
 	}
 	public void setUnprotectedMain(List<MarkerInfo> unProtectedMain, String MethodName) {
@@ -107,6 +114,10 @@ public class ClassModel {
 	public String getSmellType(int i) {
 		return smellList.get(i).getCodeSmellType();
 	}
+	/*
+	 * TODO MethodName整合到MarkerInfo內，之後可刪除methodList
+	 * by pig
+	 */
 	public String getMethodName(int i) {
 		return methodList.get(i);
 	}

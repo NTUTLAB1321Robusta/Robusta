@@ -174,8 +174,7 @@ public class ReportBuilder {
 		ntsVisitor = new NestedTryStatementVisitor(root);
 		root.accept(ntsVisitor);
 		List<MarkerInfo> nestedTryList = checkCatchSmell(ntsVisitor.getNestedTryStatementList(), detCatchSmell.get(RLMarkerAttribute.CS_NESTED_TRY_BLOCK));
-		// FIXME 後面要帶上Method name, 存在MarkerInfo中
-		newClassModel.setNestedTryList(nestedTryList, "");
+		newClassModel.addNestedTryList(nestedTryList);
 		model.addNestedTotalTrySize(nestedTryList.size());
 		
 		// 目前的Method AST Node

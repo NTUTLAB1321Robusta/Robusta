@@ -16,23 +16,19 @@ import org.eclipse.jdt.core.dom.ITypeBinding;
 public class MarkerInfo {
 	
 	private ITypeBinding typeBinding;
-
 	private String statement;
-	
 	private String cstype;
-
 	private int position;
-
 	private int lineNumber;
-	
 	private String exceptionType;
-	
-	private List<String> specialProperty;
-	
-	private boolean inTry;
-	
+	private List<String> specialProperty = null;
+	private boolean inTry = false;
 	private ITypeBinding[] methodThrownExceptions;
+	private String methodName;
 	
+	/*
+	 * 除了NT以外目前都用這個，未來應改為與NT相同
+	 */
 	public MarkerInfo(String type, ITypeBinding typeBinding, String statement, int pos, int lineNumber, String exceptionType) {
 		this.cstype = type;
 		this.typeBinding = typeBinding;
@@ -40,8 +36,22 @@ public class MarkerInfo {
 		this.position = pos;
 		this.lineNumber = lineNumber;
 		this.exceptionType = exceptionType;
-		this.specialProperty = null;
-		this.inTry = false;
+		// Method Name 未定義，先給空字串
+		methodName = "";
+	}
+
+	/*
+	 * NT 使用，附帶 Method Name 資訊給 Report 用
+	 */
+	public MarkerInfo(String type, ITypeBinding typeBinding, String statement,
+			int pos, int lineNumber, String exceptionType, String methodName) {
+		this.cstype = type;
+		this.typeBinding = typeBinding;
+		this.statement = statement;
+		this.position = pos;
+		this.lineNumber = lineNumber;
+		this.exceptionType = exceptionType;
+		this.methodName = methodName;
 	}
 	
 	public void addSpecialProperty(String str) {
@@ -147,5 +157,9 @@ public class MarkerInfo {
         }
 		
 		return rearrangedMarkerInfo;
+	}
+	
+	public String getMethodName() {
+		return methodName;
 	}
 }
