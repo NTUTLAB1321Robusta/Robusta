@@ -9,6 +9,7 @@
     <property name="target" value="1.6"/>
     <property name="source" value="1.6"/>
     <property name="jar-file-name" value="ntut.csie.robusta_1.1.0.jar"/>
+    <property name="jar-file-test-name" value="ntut.csie.test.robusta_1.1.0.jar"/>
 	<property name="rl-jar-file-name" value="ntut.csie.robusta.agile.exception_1.0.0.jar"/>
 	<property name="result-folder" value="${basedir}/result"/>
 	<property name="xml-folder" value="${result-folder}/xml"/>
@@ -173,6 +174,7 @@
 				<attribute name="Eclipse-LazyStart" value="true"/>
 		    </manifest>-->
 		</jar>
+		<jar destfile="${plugin-folder}/${jar-file-test-name}" filesetmanifest="mergewithoutmain" basedir="${bin-folder}" />
     </target>
 
 	<!-- write a site.xml for eclipse update -->
