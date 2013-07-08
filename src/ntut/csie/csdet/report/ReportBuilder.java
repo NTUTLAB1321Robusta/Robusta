@@ -158,19 +158,28 @@ public class ReportBuilder {
 		newClassModel.setClassName(icu.getElementName());
 		newClassModel.setClassPath(pkPath);
 
-		// 目前的Method AST Node
-		int methodIdx = -1;
+		// 取得標記於各個 Method 的 SuppressSmell
+		TreeMap<String, Boolean> detMethodSmell = new TreeMap<String, Boolean>();
+		TreeMap<String, List<Integer>> detCatchSmell = new TreeMap<String, List<Integer>>();
 		for (MethodDeclaration method : methodList) {
-			methodIdx++;
 			SuppressWarningVisitor swVisitor = new SuppressWarningVisitor(root);
 			method.accept(swVisitor);
 			suppressSmellList = swVisitor.getSuppressWarningList();
 			
 			// SuppressSmell
-			TreeMap<String, Boolean> detMethodSmell = new TreeMap<String, Boolean>();
-			TreeMap<String, List<Integer>> detCatchSmell = new TreeMap<String, List<Integer>>();
 			inputSuppressData(suppressSmellList, detMethodSmell, detCatchSmell);
-
+		}
+		
+		// 取得專案中的Nested Try Block
+		ntsVisitor = new NestedTryStatementVisitor(root);
+		root.accept(ntsVisitor);
+		List<MarkerInfo> nestedTryList = checkCatchSmell(ntsVisitor.getNestedTryStatementList(), detCatchSmell.get(RLMarkerAttribute.CS_NESTED_TRY_BLOCK));
+		// FIXME 後面要帶上Method name, 存在MarkerInfo中
+		newClassModel.setNestedTryList(nestedTryList, "");
+		model.addNestedTotalTrySize(nestedTryList.size());
+		
+		// 目前的Method AST Node
+		for (MethodDeclaration method : methodList) {
 			// 取得專案中的ignore Exception
 			if (detMethodSmell.get(RLMarkerAttribute.CS_INGNORE_EXCEPTION)) {
 				ieVisitor = new IgnoreExceptionVisitor(root);
@@ -186,14 +195,6 @@ public class ReportBuilder {
 				List<MarkerInfo> dummyList = checkCatchSmell(dhVisitor.getDummyList(), detCatchSmell.get(RLMarkerAttribute.CS_DUMMY_HANDLER));
 				newClassModel.setDummyList(dummyList, method.getName().toString());
 				model.addDummyTotalSize(dummyList.size());
-			}
-			// 取得專案中的Nested Try Block
-			if (detMethodSmell.get(RLMarkerAttribute.CS_NESTED_TRY_BLOCK)) {
-				ntsVisitor = new NestedTryStatementVisitor(root);
-				method.accept(ntsVisitor);
-				List<MarkerInfo> nestedTryList = checkCatchSmell(ntsVisitor.getNestedTryStatementList(), detCatchSmell.get(RLMarkerAttribute.CS_NESTED_TRY_BLOCK));
-				newClassModel.setNestedTryList(nestedTryList, method.getName().toString());
-				model.addNestedTotalTrySize(nestedTryList.size());
 			}
 			// 尋找該method內的unprotected main program
 			mainVisitor = new UnprotectedMainProgramVisitor(root);

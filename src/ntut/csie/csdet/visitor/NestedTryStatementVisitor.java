@@ -33,11 +33,13 @@ public class NestedTryStatementVisitor extends ASTVisitor {
 	public List<MarkerInfo> getNestedTryStatementList() {
 		return nestedTryStatementList;
 	}
-	
+
 	/**
 	 * 根據設定檔的資訊，決定要不要拜訪整棵樹。
+	 * @author pig
 	 */
-	public boolean visit(MethodDeclaration node) {
+	@Override
+	public boolean visit(CompilationUnit node) {
 		return isDetectingNestedTryStatementSmell;
 	}
 	

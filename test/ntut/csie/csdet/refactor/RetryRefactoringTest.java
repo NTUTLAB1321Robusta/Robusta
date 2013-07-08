@@ -512,6 +512,9 @@ public class RetryRefactoringTest {
 		retryRefactoring.setMaxAttemptNum("2");
 		retryRefactoring.setRetryVariable("retry");
 		ASTRewrite rw = ASTRewrite.create(nestedTryStatementUnit.getAST());
+		/*
+		 * 對應「NestedTryStatementExample.java」的「nestedCatch_InnerCatchWithParentExceptionTypeOfOuter」method
+		 */
 		Document document = new Document(
 				"try {\n" + 
 				"  throwSocketTimeoutException();\n" + 
@@ -526,7 +529,7 @@ public class RetryRefactoringTest {
 				"  e.printStackTrace();\n" +
 				"}\n");
 		// 模擬反白效果
-		TextSelection textSelection = new TextSelection(document, 1106, 231);
+		TextSelection textSelection = new TextSelection(document, 1242, 231);
 		NodeFinder nodeFinder = new NodeFinder(textSelection.getOffset(), textSelection.getLength());
 		nestedTryStatementUnit.accept(nodeFinder);
 		ASTNode selectNode = nodeFinder.getCoveringNode();
@@ -588,7 +591,10 @@ public class RetryRefactoringTest {
 		Field rewrite = RetryRefactoring.class.getDeclaredField("rewrite");
 		rewrite.setAccessible(true);
 		rewrite.set(retryRefactoring, rw);
-		
+
+		/*
+		 * 對應「NestedTryStatementExample.java」的「nestedCatch_InnerCatchWithParentExceptionTypeOfOuter」method
+		 */
 		Document document = new Document(
 				"try {\n" + 
 				"  throwSocketTimeoutException();\n" + 
@@ -603,7 +609,7 @@ public class RetryRefactoringTest {
 				"  e.printStackTrace();\n" +
 				"}\n");
 		// 模擬反白效果
-		TextSelection textSelection = new TextSelection(document, 1106, 231);
+		TextSelection textSelection = new TextSelection(document, 1242, 231);
 		NodeFinder nodeFinder = new NodeFinder(textSelection.getOffset(), textSelection.getLength());
 		nestedTryStatementUnit.accept(nodeFinder);
 		ASTNode selectNode = nodeFinder.getCoveringNode();
@@ -648,7 +654,10 @@ public class RetryRefactoringTest {
 		Field rewrite = RetryRefactoring.class.getDeclaredField("rewrite");
 		rewrite.setAccessible(true);
 		rewrite.set(retryRefactoring, rw);
-		
+
+		/*
+		 * 對應「NestedTryStatementExample.java」的「nestedCatch_InnerCatchWithParentExceptionTypeOfOuter」method
+		 */
 		Document document = new Document(
 				"try {\n" + 
 				"  throwSocketTimeoutException();\n" + 
@@ -663,7 +672,7 @@ public class RetryRefactoringTest {
 				"  e.printStackTrace();\n" +
 				"}\n");
 		// 模擬反白效果
-		TextSelection textSelection = new TextSelection(document, 1106, 231);
+		TextSelection textSelection = new TextSelection(document, 1242, 231);
 		NodeFinder nodeFinder = new NodeFinder(textSelection.getOffset(), textSelection.getLength());
 		nestedTryStatementUnit.accept(nodeFinder);
 		ASTNode selectNode = nodeFinder.getCoveringNode();
@@ -724,7 +733,10 @@ public class RetryRefactoringTest {
 		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(testProjectName);
 		IType exType = JavaCore.create(project).findType("java.beans.PropertyVetoException");
 		retryRefactoring.setExType(exType);
-		
+
+		/*
+		 * 對應「NestedTryStatementExample.java」的「nestedCatch_InnerCatchWithParentExceptionTypeOfOuter」method
+		 */
 		Document document = new Document(
 				"try {\n" + 
 				"  throwSocketTimeoutException();\n" + 
@@ -739,7 +751,7 @@ public class RetryRefactoringTest {
 				"  e.printStackTrace();\n" +
 				"}\n");
 		// 模擬反白效果
-		TextSelection textSelection = new TextSelection(document, 1106, 231);
+		TextSelection textSelection = new TextSelection(document, 1242, 231);
 		NodeFinder nodeFinder = new NodeFinder(textSelection.getOffset(), textSelection.getLength());
 		nestedTryStatementUnit.accept(nodeFinder);
 		ASTNode selectNode = nodeFinder.getCoveringNode();

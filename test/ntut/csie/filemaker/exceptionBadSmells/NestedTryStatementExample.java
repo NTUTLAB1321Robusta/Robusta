@@ -8,8 +8,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
+import java.lang.reflect.Method;
 import java.net.SocketTimeoutException;
 import java.util.zip.DataFormatException;
+
+import junit.framework.TestCase;
 
 import ntut.csie.robusta.agile.exception.RTag;
 import ntut.csie.robusta.agile.exception.Robustness;
@@ -38,6 +41,7 @@ public class NestedTryStatementExample {
 	/**
 	 * 在catch中出現巢狀try-catch
 	 * 內外層try-catch的exception type為外層Catch的exception type父類別
+	 * 已知於「RetryRefactoringTest」中的「testAddNewVariable」等四個測試會用到，修改時會影響
 	 */
 	public void nestedCatch_InnerCatchWithParentExceptionTypeOfOuter() {
 		try {
@@ -492,4 +496,42 @@ public class NestedTryStatementExample {
 			}
 		}
 	}
+
+	/**
+	 * Example from Ant, 因為 Junit 版本差異而寫出的 code
+	 * Nested try in non-MethodDeclaration node.
+	 * @author pig
+	 */
+    private static Method testCaseMethod = null;
+    static {
+        try {
+            testCaseMethod = TestCase.class.getMethod("getName", new Class[0]);
+        } catch (NoSuchMethodException e) {
+            // pre JUnit 3.7
+            try {
+                testCaseMethod = TestCase.class.getMethod("name", new Class[0]);
+            } catch (NoSuchMethodException ignored) {
+                // ignore
+            }
+        }
+    }
+
+	/**
+	 * Nested try in constructor(It is also MethodDeclaration).
+	 * 內容同 method「nestedFinally」
+	 * @author pig
+	 */
+    public NestedTryStatementExample() {
+		try {
+			throwSocketTimeoutException();
+		} catch (SocketTimeoutException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				throwInterruptedIOException();
+			} catch (InterruptedIOException e) {
+				e.printStackTrace();
+			}
+		}
+    }
 }

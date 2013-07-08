@@ -492,6 +492,7 @@ public class ReportBuilderTest {
 		assertEquals(0, reportModel.getCarelessCleanUpTotalSize());
 		assertEquals(19, reportModel.getDummyTotalSize());
 		assertEquals(0, reportModel.getIgnoreTotalSize());
+		// 例子內其實有三個 NT，但因為設定檔並沒有要偵測 NT，故數量為 0
 		assertEquals(0, reportModel.getNestedTryTotalSize());
 		assertEquals(0, reportModel.getOverLoggingTotalSize());
 	}

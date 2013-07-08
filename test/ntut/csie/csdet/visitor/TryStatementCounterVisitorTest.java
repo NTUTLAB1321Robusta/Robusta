@@ -77,8 +77,8 @@ public class TryStatementCounterVisitorTest {
 	public void visitTryCounter() {
 		TryStatementCounterVisitor visitor = new TryStatementCounterVisitor();
 		compilationUnit.accept(visitor);
-		assertEquals(46, visitor.getTryCount());
-		assertEquals(61, visitor.getCatchCount());
-		assertEquals(12, visitor.getFinallyCount());
+		assertEquals(50, visitor.getTryCount());
+		assertEquals(65, visitor.getCatchCount());
+		assertEquals(13, visitor.getFinallyCount());
 	}
 }
