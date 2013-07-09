@@ -94,7 +94,7 @@ public class RefineRuntimeExceptionQuickFix implements IMarkerResolution {
 			}
 			
 			if(!(problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)) && 
-			   !(problem.equals(RLMarkerAttribute.CS_INGNORE_EXCEPTION))) {
+			   !(problem.equals(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK))) {
 				return methodIdx;
 			}
 			methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);

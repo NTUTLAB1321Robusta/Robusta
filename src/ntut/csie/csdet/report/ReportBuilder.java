@@ -180,10 +180,10 @@ public class ReportBuilder {
 		// 目前的Method AST Node
 		for (MethodDeclaration method : methodList) {
 			// 取得專案中的ignore Exception
-			if (detMethodSmell.get(RLMarkerAttribute.CS_INGNORE_EXCEPTION)) {
+			if (detMethodSmell.get(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK)) {
 				ieVisitor = new IgnoreExceptionVisitor(root);
 				method.accept(ieVisitor);
-				List<MarkerInfo> ignoreExList = checkCatchSmell(ieVisitor.getIgnoreList(), detCatchSmell.get(RLMarkerAttribute.CS_INGNORE_EXCEPTION));
+				List<MarkerInfo> ignoreExList = checkCatchSmell(ieVisitor.getIgnoreList(), detCatchSmell.get(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK));
 				newClassModel.setIgnoreExList(ignoreExList, method.getName().toString());
 				model.addIgnoreTotalSize(ignoreExList.size());
 			}

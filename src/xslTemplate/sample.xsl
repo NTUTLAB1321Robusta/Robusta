@@ -64,7 +64,7 @@
 	<table width="100%" border="0" cellpadding="2" cellspacing="1" class="forumline" id="table3">
 		<thead>
 	  		<tr bgcolor="#EAEADA" class="bigbluetext">
-	  			<th>Ignored Checked Exception</th>
+	  			<th>Empty Catch Block</th>
 	  			<th>Dummy Handler</th><th>Unprotected Main Program</th>
 	  			<th>Nested TryStatement</th><th>Careless Cleanup</th>
 	  			<th>Over Logging</th>
@@ -73,7 +73,7 @@
 	  		</tr>
 		</thead>
 		<tr bgcolor="#F7F7F7" class="text" align="right">
-			<td> <xsl:value-of select="EHSmellList/IgnoreCheckedException"></xsl:value-of> </td>
+			<td> <xsl:value-of select="EHSmellList/EmptyCatchBlock"></xsl:value-of> </td>
 			<td><xsl:value-of select="EHSmellList/DummyHandler"></xsl:value-of></td>
 			<td><xsl:value-of select="EHSmellList/UnprotectedMainProgram"></xsl:value-of></td>
 			<td><xsl:value-of select="EHSmellList/NestedTryBlock"></xsl:value-of></td>
@@ -134,7 +134,7 @@
 				<th class="forumline1" width="10">ID</th>
 		  		<th class="forumline1" width="133">Package Name</th>
 		  		<th>Lines Of Code (LOC)</th>
-				<th>Ignored Checked Exception</th>
+				<th>Empty Catch Block</th>
 				<th>Dummy Handler</th>
 				<th>Unprotected Main Program</th>
 				<th>Nested Try Statement</th>
@@ -156,7 +156,7 @@
 					</a>
 				</td>
 				<td><xsl:value-of select="LOC"></xsl:value-of></td>
-				<td><xsl:value-of select="IgnoreCheckedException"></xsl:value-of></td>
+				<td><xsl:value-of select="EmptyCatchBlock"></xsl:value-of></td>
 				<td><xsl:value-of select="DummyHandler"></xsl:value-of></td>
 				<td><xsl:value-of select="UnprotectedMainProgram"></xsl:value-of></td>
 				<td><xsl:value-of select="NestedTryBlock"></xsl:value-of></td>
@@ -171,7 +171,7 @@
 			<td bgcolor="#E5E5E5"></td>
 			<td align="left" bgcolor="#E5E5E5" class="forumline1" width="133"><span class="text2"><strong>Total</strong></span></td>
 			<td bgcolor="#E5E5E5" width="169"><span class="text2"><xsl:value-of select="AllPackageList/Total/LOC"></xsl:value-of></span></td>
-			<td bgcolor="#E5E5E5" width="169"><span class="text2"><xsl:value-of select="AllPackageList/Total/IgnoreTotal"></xsl:value-of></span></td>
+			<td bgcolor="#E5E5E5" width="169"><span class="text2"><xsl:value-of select="AllPackageList/Total/EmptyCatchTotal"></xsl:value-of></span></td>
 			<td bgcolor="#E5E5E5" width="169"><span class="text2"><xsl:value-of select="AllPackageList/Total/DummyTotal"></xsl:value-of></span></td>
 			<td bgcolor="#E5E5E5" width="169"><span class="text2"><xsl:value-of select="AllPackageList/Total/UnMainTotal"></xsl:value-of></span></td>
 			<td bgcolor="#E5E5E5" width="169"><span class="text2"><xsl:value-of select="AllPackageList/Total/NestedTrTotal"></xsl:value-of></span></td>

@@ -8,7 +8,7 @@ public class CSMessageTest extends TestCase {
 	
 	protected void setUp() throws Exception {
 		super.setUp();
-		cm = new CSMessage(RLMarkerAttribute.CS_INGNORE_EXCEPTION, null,
+		cm = new CSMessage(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK, null,
 				"catch(Exception e){}", 155, 77, "Exception");
 	}
 
@@ -17,7 +17,7 @@ public class CSMessageTest extends TestCase {
 	}
 
 	public void testGetCodeSmellType() {
-		assertEquals(RLMarkerAttribute.CS_INGNORE_EXCEPTION,cm.getCodeSmellType());
+		assertEquals(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK,cm.getCodeSmellType());
 	}
 
 	public void testGetLineNumber() {

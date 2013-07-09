@@ -221,7 +221,7 @@ public class RethrowExRefactoring extends Refactoring {
 					currentMethodRLList = exVisitor.getMethodRLAnnotationList();
 
 					// 判斷是Ignore Ex or Dummy handler並取得code smell的List
-					if(problem.equals(RLMarkerAttribute.CS_INGNORE_EXCEPTION)) {
+					if(problem.equals(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK)) {
 						IgnoreExceptionVisitor visitor = new IgnoreExceptionVisitor(this.actRoot);
 						currentMethodNode.accept(visitor);
 						currentExList = visitor.getIgnoreList();

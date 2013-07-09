@@ -158,10 +158,10 @@ public class SmellSettingsTest {
 		assertTrue(smellSettings.isDetectingSmell(SmellSettings.SMELL_DUMMYHANDLER));
 		assertFalse(smellSettings.isDetectingSmell(SmellSettings.SMELL_CARELESSCLEANUP));
 		
-		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_IGNORECHECKEDEXCEPTION, SmellSettings.ATTRIBUTE_ISDETECTING, true);
+		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_EMPTYCATCHBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, true);
 		assertTrue(smellSettings.isDetectingSmell(SmellSettings.SMELL_DUMMYHANDLER));
 		assertFalse(smellSettings.isDetectingSmell(SmellSettings.SMELL_CARELESSCLEANUP));
-		assertTrue(smellSettings.isDetectingSmell(SmellSettings.SMELL_IGNORECHECKEDEXCEPTION));
+		assertTrue(smellSettings.isDetectingSmell(SmellSettings.SMELL_EMPTYCATCHBLOCK));
 	}
 	
 	@Test
@@ -692,7 +692,7 @@ public class SmellSettingsTest {
 				"<extraRule name=\"System.err.println\" /><extraRule name=\"System.out.print\" />" +
 				"<extraRule name=\"System.out.println\" /><extraRule name=\"java.util.logging.Logger\" />" +
 				"<extraRule name=\"org.apache.log4j\" />" +
-				"</SmellTypes><SmellTypes name=\"IgnoreCheckedException\" isDetecting=\"true\" />" +
+				"</SmellTypes><SmellTypes name=\"EmptyCatchBlock\" isDetecting=\"true\" />" +
 				"<SmellTypes name=\"NestedTryBlock\" isDetecting=\"true\" />" +
 				"<SmellTypes name=\"UnprotectedMainProgram\" isDetecting=\"true\" />" +
 				"<SmellTypes name=\"CarelessCleanup\" isDetecting=\"true\">" +

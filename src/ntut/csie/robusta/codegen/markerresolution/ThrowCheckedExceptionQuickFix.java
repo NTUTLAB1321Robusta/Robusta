@@ -112,7 +112,7 @@ public class ThrowCheckedExceptionQuickFix implements IMarkerResolution{
 				return methodIdx;
 			}
 			if(!(problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)) && 
-			  !(problem.equals(RLMarkerAttribute.CS_INGNORE_EXCEPTION))) {
+			  !(problem.equals(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK))) {
 				return methodIdx;
 			}
 

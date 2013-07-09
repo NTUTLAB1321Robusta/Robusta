@@ -8,7 +8,7 @@ public class MarkerInfoTest extends TestCase {
 	
 	protected void setUp() throws Exception {
 		super.setUp();
-		markerInfo = new MarkerInfo(RLMarkerAttribute.CS_INGNORE_EXCEPTION,
+		markerInfo = new MarkerInfo(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK,
 				null, "catch(Exception e){}", 155, 77, "Exception");
 	}
 
@@ -17,7 +17,7 @@ public class MarkerInfoTest extends TestCase {
 	}
 
 	public void testGetCodeSmellType() {
-		assertEquals(RLMarkerAttribute.CS_INGNORE_EXCEPTION, markerInfo.getCodeSmellType());
+		assertEquals(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK, markerInfo.getCodeSmellType());
 	}
 
 	public void testGetLineNumber() {

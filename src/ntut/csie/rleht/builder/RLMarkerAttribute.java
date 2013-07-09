@@ -35,7 +35,7 @@ public interface RLMarkerAttribute {
 
 
 	/** ignore exceptionªºtype */
-	public static final String CS_INGNORE_EXCEPTION = "Ignored_Checked_Exception";
+	public static final String CS_EMPTY_CATCH_BLOCK = "Empty_Catch_Block";
 	
 	/** Dummy Handlerªºtype */
 	public static final String CS_DUMMY_HANDLER = "Dummy_Handler";
@@ -66,10 +66,10 @@ public interface RLMarkerAttribute {
 	
 	
 	/** Total Code Smell Type */
-	public static final String[] CS_TOTAL_TYPE = new String[]{ CS_INGNORE_EXCEPTION,
+	public static final String[] CS_TOTAL_TYPE = new String[]{ CS_EMPTY_CATCH_BLOCK,
 		CS_DUMMY_HANDLER, CS_NESTED_TRY_BLOCK, CS_UNPROTECTED_MAIN, CS_CARELESS_CLEANUP, CS_OVER_LOGGING, CS_OVERWRITTEN_LEAD_EXCEPTION};
 
 	/** Total Smell Type In Catch */
-	public static final String[] CS_CATCH_TYPE = new String[]{ CS_INGNORE_EXCEPTION,
+	public static final String[] CS_CATCH_TYPE = new String[]{ CS_EMPTY_CATCH_BLOCK,
 		CS_DUMMY_HANDLER, CS_OVER_LOGGING};
 }

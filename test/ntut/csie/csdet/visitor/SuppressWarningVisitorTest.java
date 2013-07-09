@@ -154,7 +154,7 @@ public class SuppressWarningVisitorTest {
 		assertEquals(3, ssList.get(2).getSmellList().size());
 		assertEquals("Nested_Try_Block", ssList.get(2).getSmellList().get(0));
 		assertEquals("Over_Logging", ssList.get(2).getSmellList().get(1));
-		assertEquals("Ignore_Checked_Exception", ssList.get(2).getSmellList().get(2));
+		assertEquals("Empty_Catch_Block", ssList.get(2).getSmellList().get(2));
 		assertEquals(1, ssList.get(3).getSmellList().size());
 		assertEquals("Dummy_Handler", ssList.get(3).getSmellList().get(0));
 	}

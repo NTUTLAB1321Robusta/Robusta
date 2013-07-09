@@ -66,7 +66,7 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 			problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
 			
 			if(problem != null && (problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)) || 
-								  (problem.equals(RLMarkerAttribute.CS_INGNORE_EXCEPTION))) {
+								  (problem.equals(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK))) {
 				//如果碰到dummy handler,則將exception rethrow
 				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
 				String msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);

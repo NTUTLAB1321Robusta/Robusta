@@ -119,7 +119,7 @@ public class SmellReport {
 
 		///EH Smell List資料輸出///
 		Element smellList = new Element("EHSmellList");
-		smellList.addContent(new Element("IgnoreCheckedException").addContent(String.valueOf(model.getIgnoreTotalSize())));
+		smellList.addContent(new Element("EmptyCatchBlock").addContent(String.valueOf(model.getIgnoreTotalSize())));
 		smellList.addContent(new Element("DummyHandler").addContent(String.valueOf(model.getDummyTotalSize())));
 		smellList.addContent(new Element("UnprotectedMainProgram").addContent(String.valueOf(model.getUnMainTotalSize())));
 		smellList.addContent(new Element("NestedTryBlock").addContent(String.valueOf(model.getNestedTryTotalSize())));
@@ -159,7 +159,7 @@ public class SmellReport {
 			packages.addContent(new Element("ID").addContent(String.valueOf(i)));
 			//第一欄書籤連結和Package名稱
 			packages.addContent(new Element("LOC").addContent(String.valueOf(packageModel.getTotalLine())));
-			packages.addContent(new Element("IgnoreCheckedException").addContent(String.valueOf(packageModel.getIgnoreSize())));
+			packages.addContent(new Element("EmptyCatchBlock").addContent(String.valueOf(packageModel.getIgnoreSize())));
 			packages.addContent(new Element("DummyHandler").addContent(String.valueOf(packageModel.getDummySize())));
 			packages.addContent(new Element("UnprotectedMainProgram").addContent(String.valueOf(packageModel.getUnMainSize())));
 			packages.addContent(new Element("NestedTryBlock").addContent(String.valueOf(packageModel.getNestedTrySize())));
@@ -194,7 +194,7 @@ public class SmellReport {
 		///AllPackage List 總和資料輸出///
 		Element total = new Element("Total");
 		total.addContent(new Element("LOC").addContent(String.valueOf(model.getTotalLine())));
-		total.addContent(new Element("IgnoreTotal").addContent(String.valueOf(model.getIgnoreTotalSize())));
+		total.addContent(new Element("EmptyCatchTotal").addContent(String.valueOf(model.getIgnoreTotalSize())));
 		total.addContent(new Element("DummyTotal").addContent(String.valueOf(model.getDummyTotalSize())));
 		total.addContent(new Element("UnMainTotal").addContent(String.valueOf(model.getUnMainTotalSize())));
 		total.addContent(new Element("NestedTrTotal").addContent(String.valueOf(model.getNestedTryTotalSize())));

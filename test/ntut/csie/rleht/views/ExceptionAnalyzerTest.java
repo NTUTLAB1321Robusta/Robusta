@@ -429,7 +429,7 @@ public class ExceptionAnalyzerTest {
 //		assertEquals("[Dummy_Handler]", totalList.get(1).getSmellList().toString());
 //		assertEquals("[Nested_Try_Block, Dummy_Handler]", totalList.get(2).getSmellList().toString());
 //		assertEquals("[Nested_Try_Block, Dummy_Handler]", totalList.get(3).getSmellList().toString());
-//		assertEquals("[Ignore_Checked_Exception]",totalList.get(4).getSmellList().toString());
+//		assertEquals("[Empty_Catch_Block]",totalList.get(4).getSmellList().toString());
 //		assertEquals("[Careless_CleanUp]", totalList.get(5).getSmellList().toString());
 //		assertEquals("[Careless_CleanUp]", totalList.get(6).getSmellList().toString());
 //		assertEquals("[Careless_CleanUp]", totalList.get(7).getSmellList().toString());

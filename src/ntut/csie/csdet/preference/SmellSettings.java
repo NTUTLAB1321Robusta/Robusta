@@ -48,7 +48,7 @@ public class SmellSettings {
 	public final static String ATTRIBUTE_ISDETECTING = "isDetecting";	
 	public final static String ATTRIBUTE_ENABLE = "enable";	
 	
-	public final static String SMELL_IGNORECHECKEDEXCEPTION = "IgnoreCheckedException";
+	public final static String SMELL_EMPTYCATCHBLOCK = "EmptyCatchBlock";
 	public final static String SMELL_DUMMYHANDLER = "DummyHandler";
 	public final static String SMELL_NESTEDTRYBLOCK = "NestedTryBlock";
 	public final static String SMELL_UNPROTECTEDMAINPROGRAM = "UnprotectedMainProgram";
@@ -468,7 +468,7 @@ public class SmellSettings {
 		if(settingFile.exists())
 			return;
 		
-		setSmellTypeAttribute(SMELL_IGNORECHECKEDEXCEPTION, ATTRIBUTE_ISDETECTING, true);
+		setSmellTypeAttribute(SMELL_EMPTYCATCHBLOCK, ATTRIBUTE_ISDETECTING, true);
 
 		setSmellTypeAttribute(SMELL_DUMMYHANDLER, ATTRIBUTE_ISDETECTING, true);
 		addExtraRule(SMELL_DUMMYHANDLER, EXTRARULE_ePrintStackTrace);

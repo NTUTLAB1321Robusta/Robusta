@@ -285,8 +285,8 @@ public class RLBuilder extends IncrementalProjectBuilder {
 					method.accept(ieVisitor);
 					List<MarkerInfo> ignoreList = ieVisitor.getIgnoreList();
 					int csIdx = -1;
-					if(detMethodSmell.get(RLMarkerAttribute.CS_INGNORE_EXCEPTION)) {
-						List<Integer> posList = detCatchSmell.get(RLMarkerAttribute.CS_INGNORE_EXCEPTION);
+					if(detMethodSmell.get(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK)) {
+						List<Integer> posList = detCatchSmell.get(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK);
 						for(MarkerInfo markerInfo : ignoreList) {
 							csIdx++;
 							// 判斷使用者有沒有在Catch內貼Annotation，抑制Smell Marker

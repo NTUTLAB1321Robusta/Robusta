@@ -106,7 +106,7 @@ public class SuppressWarningExampleForAnalyzer {
 	/**
 	 * 在 method 上有 suppress warning 的 ignored exception
 	 */
-	@SuppressSmell("Ignore_Checked_Exception")
+	@SuppressSmell("Empty_Catch_Block")
 	public void withSuppressWaringIgnoredExceptionOnMethod() {
 		FileInputStream fis = null;
 		try {
@@ -125,7 +125,7 @@ public class SuppressWarningExampleForAnalyzer {
 		try {
 			fis = new FileInputStream("");
 			fis.read();
-		} catch (@SuppressSmell("Ignore_Checked_Exception") IOException e) {	// IgnoreException
+		} catch (@SuppressSmell("Empty_Catch_Block") IOException e) {	// IgnoreException
 			
 		}
 	}
@@ -246,7 +246,7 @@ public class SuppressWarningExampleForAnalyzer {
 		} catch(@SuppressSmell({ "Nested_Try_Block" , "Over_Logging" }) FileNotFoundException e) {
 			logger.log(Level.WARNING, e.getMessage());
 			throw e;
-		} catch(@SuppressSmell({ "Nested_Try_Block" , "Over_Logging" , "Ignore_Checked_Exception"}) FileLockInterruptionException e) {
+		} catch(@SuppressSmell({ "Nested_Try_Block" , "Over_Logging" , "Empty_Catch_Block"}) FileLockInterruptionException e) {
 			
 		} catch(@SuppressSmell("Dummy_Handler") IOException e) {
 			logger.log(Level.WARNING, e.getMessage());
@@ -265,9 +265,9 @@ public class SuppressWarningExampleForAnalyzer {
 				e.printStackTrace();
 			} catch (@SuppressSmell({ "Dummy_Handler", "Dummy_Handler" }) IOException e1) {
 				e.printStackTrace();
-			} catch (@SuppressSmell( "Ignore_Checked_Exception" ) ArithmeticException e1) {
+			} catch (@SuppressSmell( "Empty_Catch_Block" ) ArithmeticException e1) {
 				// TODO: handle exception
-			} catch (@SuppressSmell( { "Ignore_Checked_Exception", "Ignore_Checked_Exception" } ) ArrayStoreException  e1) {
+			} catch (@SuppressSmell( { "Empty_Catch_Block", "Empty_Catch_Block" } ) ArrayStoreException  e1) {
 				// TODO: handle exception
 			} catch (ArrayIndexOutOfBoundsException e1) {
 				fileOutputStream.close();

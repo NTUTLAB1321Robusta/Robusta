@@ -33,7 +33,7 @@ public class RethrowUncheckExAction implements IMarkerResolution{
 		//使用者點選ignore ex 或者dummy handler的marker時,會去找尋對應的Refactor方法
 		try {
 			String problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
-			if ((problem != null && problem.equals(RLMarkerAttribute.CS_INGNORE_EXCEPTION)) ||
+			if ((problem != null && problem.equals(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK)) ||
 					(problem != null && problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER))){
 				//建立操作Refactor的物件,並將marker傳進去以利之後取得code smell相關資訊
 				RethrowExRefactoring refactoring = new RethrowExRefactoring();				

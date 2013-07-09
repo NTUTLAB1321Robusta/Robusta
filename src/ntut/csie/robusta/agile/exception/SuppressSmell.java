@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
 public @interface SuppressSmell {
 	/* annotation裡面不能有過多資訊，否則ant javac會compile不過 
 	//ignore exception的type
-	public static final String CS_INGNORE_EXCEPTION = "Ignore_Checked_Exception";
+	public static final String CS_EMPTY_CATCH_BLOCK = "Empty_Catch_Block";
 	
 	//Dummy Handler的type
 	public static final String CS_DUMMY_HANDLER = "Dummy_Handler";

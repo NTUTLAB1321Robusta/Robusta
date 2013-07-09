@@ -23,7 +23,7 @@ public class IgnoreExceptionVisitor extends ASTVisitor {
 		this.root = root;
 		ignoreExceptionList = new ArrayList<MarkerInfo>();
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		isDetectingIgnoredExcetion = smellSettings.isDetectingSmell(SmellSettings.SMELL_IGNORECHECKEDEXCEPTION);
+		isDetectingIgnoredExcetion = smellSettings.isDetectingSmell(SmellSettings.SMELL_EMPTYCATCHBLOCK);
 	}
 	
 	/**
@@ -37,7 +37,7 @@ public class IgnoreExceptionVisitor extends ASTVisitor {
 		List<?> statements  = node.getBody().statements();
 		if(statements.size() ==  0) {
 			SingleVariableDeclaration svd = node.getException();
-			MarkerInfo markerInfo = new MarkerInfo(	RLMarkerAttribute.CS_INGNORE_EXCEPTION, 
+			MarkerInfo markerInfo = new MarkerInfo(	RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK, 
 													svd.resolveBinding().getType(),
 													node.toString(), node.getStartPosition(),
 													root.getLineNumber(node.getStartPosition()),

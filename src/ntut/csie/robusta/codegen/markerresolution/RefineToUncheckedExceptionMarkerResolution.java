@@ -42,7 +42,7 @@ public class RefineToUncheckedExceptionMarkerResolution implements IMarkerResolu
 			 * 這裡其實不用特地再做一次壞味道類型的判斷才對，除非每個壞味道都會跑進來。
 			 * 讓我們繼續試下去。
 			 */
-			if (((problem == null) || (!problem.equals(RLMarkerAttribute.CS_INGNORE_EXCEPTION))) &&
+			if (((problem == null) || (!problem.equals(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK))) &&
 				((problem == null) || (!problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)))){
 				return;
 			}

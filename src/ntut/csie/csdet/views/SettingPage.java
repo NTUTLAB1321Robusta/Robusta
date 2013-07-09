@@ -164,7 +164,7 @@ public class SettingPage extends APropertyPage {
 		tempText[6] = new TemplateText(temp, isShowWarning);
 		
 		descText = new String[RLMarkerAttribute.CS_TOTAL_TYPE.length];
-		descText[0] = resource.getString("ignore.checked.description");
+		descText[0] = resource.getString("empty.catch.description");
 		descText[1] = resource.getString("dummy.handler.description");
 		descText[2] = resource.getString("nested.try.statement.description");
 		descText[3] = resource.getString("unprotected.main.program.description");
@@ -178,7 +178,7 @@ public class SettingPage extends APropertyPage {
 	 */
 	private void readSetting() {
 		Element[] smellElements = new Element[RLMarkerAttribute.CS_TOTAL_TYPE.length];
-		smellElements[0] = smellSettings.getSmellType(SmellSettings.SMELL_IGNORECHECKEDEXCEPTION);
+		smellElements[0] = smellSettings.getSmellType(SmellSettings.SMELL_EMPTYCATCHBLOCK);
 		smellElements[1] = smellSettings.getSmellType(SmellSettings.SMELL_DUMMYHANDLER);
 		smellElements[2] = smellSettings.getSmellType(SmellSettings.SMELL_NESTEDTRYBLOCK);
 		smellElements[3] = smellSettings.getSmellType(SmellSettings.SMELL_UNPROTECTEDMAINPROGRAM);
@@ -355,7 +355,7 @@ public class SettingPage extends APropertyPage {
 		//先將列表的item取出來
 		TableItem[] item = smellList.getItems();
 		//去traverse整個table看item的Text和是否被勾選到
-		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_IGNORECHECKEDEXCEPTION, SmellSettings.ATTRIBUTE_ISDETECTING, item[0].getChecked());
+		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_EMPTYCATCHBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, item[0].getChecked());
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.ATTRIBUTE_ISDETECTING, item[1].getChecked());
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_NESTEDTRYBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, item[2].getChecked());
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_UNPROTECTEDMAINPROGRAM, SmellSettings.ATTRIBUTE_ISDETECTING, item[3].getChecked());

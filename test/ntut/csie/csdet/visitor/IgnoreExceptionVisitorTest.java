@@ -83,7 +83,7 @@ public class IgnoreExceptionVisitorTest {
 	public void testVisitNode_withSettingFileAndIsDetectingFalse() {
 		int ignoredSmellCount = 0;
 		SmellSettings smellSetting = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		smellSetting.setSmellTypeAttribute(SmellSettings.SMELL_IGNORECHECKEDEXCEPTION, SmellSettings.ATTRIBUTE_ISDETECTING, false);
+		smellSetting.setSmellTypeAttribute(SmellSettings.SMELL_EMPTYCATCHBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, false);
 		smellSetting.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		assertTrue(new File(UserDefinedMethodAnalyzer.SETTINGFILEPATH).exists());
 		ignoreExceptionVisitor = new IgnoreExceptionVisitor(compilationUnit);
@@ -99,7 +99,7 @@ public class IgnoreExceptionVisitorTest {
 	public void testVisitNode_withSettingFileAndIsDetectingTrue() {
 		int ignoredSmellCount = 0;
 		SmellSettings smellSetting = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		smellSetting.setSmellTypeAttribute(SmellSettings.SMELL_IGNORECHECKEDEXCEPTION, SmellSettings.ATTRIBUTE_ISDETECTING, true);
+		smellSetting.setSmellTypeAttribute(SmellSettings.SMELL_EMPTYCATCHBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, true);
 		smellSetting.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		assertTrue(new File(UserDefinedMethodAnalyzer.SETTINGFILEPATH).exists());
 		ignoreExceptionVisitor = new IgnoreExceptionVisitor(compilationUnit);

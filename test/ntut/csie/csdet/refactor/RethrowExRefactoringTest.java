@@ -150,7 +150,7 @@ public class RethrowExRefactoringTest {
 
 		Field problem = RethrowExRefactoring.class.getDeclaredField("problem");
 		problem.setAccessible(true);
-		problem.set(refactoring, RLMarkerAttribute.CS_INGNORE_EXCEPTION);
+		problem.set(refactoring, RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK);
 		
 		refactoring.methodIdx = "1";
 		
@@ -180,7 +180,7 @@ public class RethrowExRefactoringTest {
 		
 		Field problem = RethrowExRefactoring.class.getDeclaredField("problem");
 		problem.setAccessible(true);
-		problem.set(refactoring, RLMarkerAttribute.CS_INGNORE_EXCEPTION);
+		problem.set(refactoring, RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK);
 		
 		refactoring.methodIdx = "16";
 		refactoring.catchIdx = 0;
