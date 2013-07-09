@@ -85,10 +85,10 @@ public class SuppressWarningExampleForAnalyzer {
 	}
 	
 	/**
-	 * 在 finally 上有  suppress warning 的 nested try block
+	 * 在 method 上有 suppress warning 的 nested try block
 	 */
 	@SuppressSmell({ "Nested_Try_Block", "Dummy_Handler" })
-	public void withSuppressWaringNestedTryBlockOnFinally() {
+	public void withSuppressWaringNestedTryBlockOnMethod() {
 		try {
 			throwSocketTimeoutException();
 		} catch (@SuppressSmell("Dummy_Handler") SocketTimeoutException e) {
