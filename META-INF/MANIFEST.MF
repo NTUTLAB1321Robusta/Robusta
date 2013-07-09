@@ -160,3 +160,4 @@ Export-Package: .,
  org.slf4j.spi,
  xslTemplate
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Import-Package: org.apache.tools.ant.taskdefs.optional.junit
