@@ -4,7 +4,7 @@
  ****************************************************************************-->
 <project name="Robusta" default="all">
 	<property environment="env"/>
-    <property name="ECLIPSE_HOME" value="${env.ECLIPSE_HOME}"/>
+    <property name="eclipse-home" value="${env.ECLIPSE_HOME}"/>
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.6"/>
     <property name="source" value="1.6"/>
@@ -24,17 +24,96 @@
 	<property name="update-id" value="ntut.csie.robusta_1.1.0"/>
 	<property name="eclipse-public-license" value="epl-v10.html"/>
 	<property name="notice" value="notice.html"/>
+	<property name="plugin-name" value="Robusta" />
+	<property name="pde-test-data" value="${basedir}/../../junit-workspace" />
+	<property name="pde-test-dev" value="file:${basedir}/../.metadata/.plugins/org.eclipse.pde.core/pde-junit/dev.properties" />
 	
 	<!-- project lib -->
-    <path id="Robusta.classpath">
-    	<fileset dir="${bin-folder}" includes="**/*.*"/>
-    	<fileset dir="${ECLIPSE_HOME}/plugins/" includes="**/*.jar"/>
+	<path id="Plug-in Dependencies.libraryclasspath">
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.ui_3.6.2.M20110203-1100.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.swt_3.6.2.v3659c.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.swt.win32.win32.x86_3.6.2.v3659c.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.jface_3.6.2.M20110210-1200.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.core.commands_3.6.0.I20100512-1500.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.ui.workbench_3.6.2.M20110210-1200.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.core.runtime_3.6.0.v20100505.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.osgi_3.6.2.R36x_v20110210.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.equinox.common_3.6.0.v20100503.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.core.jobs_3.5.1.R36x_v20100824.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.core.runtime.compatibility.registry_3.3.0.v20100520/runtime_registry_compatibility.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.core.runtime.source_3.6.0.v20100505.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.equinox.registry_3.5.0.v20100503.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.equinox.preferences_3.3.0.v20100503.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.core.contenttype_3.4.100.v20100505-1235.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.equinox.app_1.3.1.R36x_v20100803.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.jdt_3.6.1.v201102101200.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.jdt.core_3.6.2.v_A76_R36x.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.jdt.compiler.apt_1.0.300.v20100513-0845.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.jdt.compiler.tool_1.0.100.v_A76_R36x.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.core.resources_3.6.1.R36x_v20110131-1630.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.ltk.core.refactoring_3.5.101.r362_v20101117-0800.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.ltk.ui.refactoring_3.5.0.v20100526-0800.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.jface.text_3.6.1.r361_v20100825-0800.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.text_3.5.0.v20100601-1300.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.ui.editors_3.6.1.r361_v20100825-0800.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.core.filebuffers_3.5.100.v20100520-0800.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.jdt.ui_3.6.2.r362_v20110203.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.ui.workbench.texteditor_3.6.1.r361_v20100714-0800.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.ui.console_3.5.0.v20100526.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.ui.ide_3.6.2.M20101201-0800.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.compare_3.5.101.R36x_v20100929-0800.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.compare.core_3.5.101.R36x_v20100929-0800.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.jdt.junit_3.6.1.r361_v20100825-0800.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.jdt.junit.core_3.6.1.r361_v20100825-0800.jar"/>
+        <pathelement location="${eclipse-home}/plugins/net.java.amateras.umleditor_1.3.1.jar"/>
+        <pathelement location="${eclipse-home}/plugins/net.java.amateras.umleditor.java_1.3.1.jar"/>
+        <pathelement location="${eclipse-home}/plugins/net.java.amateras.xstream_1.3.1.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.draw2d_3.6.2.v20110128-0100.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.gef_3.6.2.v20110110-2020.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.jdt.launching_3.5.200.v20110105_r362.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.junit_4.8.1.v4_8_1_v20100427-1100/junit.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.jdt.astview_1.1.3.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.jdt.core.manipulation_1.3.0.v20100520-0800.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-antlr.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-apache-bcel.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-apache-bsf.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-apache-log4j.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-apache-oro.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-apache-regexp.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-apache-resolver.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-commons-logging.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-commons-net.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-jai.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-javamail.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-jdepend.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-jmf.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-jsch.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-junit.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-launcher.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-netrexx.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-nodeps.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-starteam.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-stylebook.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-swing.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-trax.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-weblogic.jar"/>
+        <pathelement location="${eclipse-home}/plugins/org.eclipse.ui.views_3.5.1.M20110202-0800.jar"/>
+        <pathelement location="lib/commons-lang-2.3.jar"/>
+        <pathelement location="lib/slf4j-api-1.5.0.jar"/>
+        <pathelement location="lib/slf4j-log4j12-1.5.0.jar"/>
+        <pathelement location="lib/log4j-1.2.15.jar"/>
+        <pathelement location="lib/jdom.jar"/>
+        <pathelement location="lib/jfreechart-1.0.8a.jar"/>
+        <pathelement location="lib/jcommon-1.0.12.jar"/>
+        <pathelement location="lib/loc_counter.jar"/>
     </path>
 	
-	<path id="Robusta.test.classpath">
-		<fileset dir="${lib-folder}" includes="**/*.jar"/>
-		<pathelement path="${bin-folder}"/>
-		<fileset dir="${ECLIPSE_HOME}/plugins/" includes="**/*.jar"/>
+	<path id="Robusta.classpath">
+	 	<path refid="Plug-in Dependencies.libraryclasspath"/>
+	 	<fileset dir="${basedir}/lib" includes="**/*.jar"/>
+		<pathelement path="${basedir}/bin"/>
     </path>
 	
 	<!-- OS picker -->
@@ -51,14 +130,18 @@
 	</condition>
 	
 	<!-- main target -->
-	<target name="all" depends="init, build-project, test, junit-report, remove-other-plugin-lib,
-								agile-jar, product-jar, write-site-xml, write-feature-xml, zip-product">
+	<target name="all" depends="init, build-project, product-test-jar, run-pde-junit-test, junit-test, junit-report, remove-other-plugin-lib,
+								product-jar, agile-jar, write-site-xml, write-feature-xml, zip-product">
 		<echo message="Ant build complete"/>
 	</target>
 	
+	<!-- initialisation -->
     <target name="init">
     	<delete quiet="true" dir="${bin-folder}"/>
     	<delete quiet="true" dir="${result-folder}"/>
+    	<delete quiet="true">
+    		<fileset dir="${basedir}/../../junit-workspace" excludes=".metadate"/>
+    	</delete>
         <mkdir dir="${bin-folder}"/>
     	<mkdir dir="${result-folder}"/>
     	<mkdir dir="${xml-folder}"/>
@@ -114,8 +197,78 @@
             <classpath refid="Robusta.classpath"/>
         </javac>
     </target>
+		
+	<!-- wrap bin folder to test jar file -->
+	<target name="product-test-jar">
+		<jar destfile="${plugin-folder}/${jar-file-name}" filesetmanifest="mergewithoutmain" basedir="${bin-folder}"/>
+		<copy file="${plugin-folder}/${jar-file-name}" todir="${eclipse-home}/plugins" overwrite="true" />
+    </target>
+	
+	<!-- run pde junit test -->
+	<target name="run-pde-junit-test">
+		<java classname="pde.test.utils.PDETestPortLocator" fork="yes">
+			<classpath>
+				<path location="${bin-folder}" />
+			</classpath>
+		</java>
+		<waitfor maxwait="10" maxwaitunit="second" checkevery="100" checkeveryunit="millisecond">
+			<available file="pde_test_port.properties" />
+		</waitfor>
+		<property file="pde_test_port.properties" />
+		<echo message="Using port ${pde.test.port} for listening to PDE Test run" />
+		<parallel>
+			<daemons>
+				<antcall target="run-pde-test-listener" />
+			</daemons>
+			<sequential>
+				<sleep seconds="1" />
+				<antcall target="pde-test"/>
+			</sequential>
+		</parallel>
+		
+		<move todir="${xml-folder}">
+            <fileset dir=".">
+                <include name="**/TEST-*.xml"/>
+            </fileset>
+        </move>
+		
+		<delete quiet="true" file="pde_test_port.properties"/>
+		<delete quiet="true" file="${plugin-folder}/${jar-file-name}"/>
+		<delete quiet="true" file="${eclipse-home}/plugins/${jar-file-name}"/>
+	</target>
+	
+	<target name="pde-test">
+		<property file="${basedir}/build.properties"/>
+		<java jvm="javaw.exe" jar="${eclipse-home}/plugins/org.eclipse.equinox.launcher_1.1.1.R36x_v20101122_1400.jar" fork="yes" maxmemory="512m">
+			<arg line="-version 3" />
+			<arg line="-os win32" />
+			<arg line="-ws win32" />
+			<arg line="-arch x86" />
+			<arg line="-port ${pde.test.port}" />
+			<arg line="-testpluginname ${plugin-name}" />
+			<arg line="-testLoaderClass org.eclipse.jdt.internal.junit4.runner.JUnit4TestLoader" />
+			<arg line="-loaderpluginname org.eclipse.jdt.junit4.runtime" />
+			<arg line="-classNames ntut.csie.AllTest.AllJUnitPluginTests" />
+			<arg line="-application org.eclipse.pde.junit.runtime.uitestapplication" />
+			<arg line="-testlistener org.eclipse.test.XMLTestListener" />
+			<arg line="-product org.eclipse.sdk.ide" />
+			<arg line="-data ${pde-test-data}" />
+			<arg line="-dev ${pde-test-dev}" />
+			<arg line="-debug -consoleLog" />
+		</java>
+	</target>
+	
+	<target name="run-pde-test-listener">
+		<java classname="pde.test.utils.PDETestResultsCollector" fork="yes">
+			<sysproperty key="DEBUG" value="true" />
+			<arg line="ntut.csie.AllTest.AllJUnitPluginTests ${pde.test.port}" />
+			<jvmarg value="-Duser=admin -Dpasswd=admin" />
+			<classpath refid="Robusta.classpath"/>
+		</java>
+	</target>
+	
 	<!-- run junit test -->
-	<target name="test">
+	<target name="junit-test">
 		<junit printsummary="yes">
 			<formatter type="xml"/>
 			<batchtest todir="${xml-folder}">
@@ -123,7 +276,7 @@
 					<include name="**/AllJUnitTests.class"/>
 				</fileset>
 			</batchtest>
-			<classpath refid="Robusta.test.classpath"/>
+			<classpath refid="Robusta.classpath"/>
 		</junit>
 	</target>
 	
@@ -150,6 +303,24 @@
 		</delete>
 	</target>
 	
+	<!-- wrap bin folder to jar file -->
+		<target name="product-jar">
+			<jar destfile="${plugin-folder}/${jar-file-name}" filesetmanifest="mergewithoutmain" basedir="${bin-folder}" excludes="**/filemaker/, **/*Test.class">
+				<!--<manifest>
+					<attribute name="Bundle-ManifestVersion" value="2"/>
+					<attribute name="Bundle-Name" value="Robusta Plug-in"/>
+					<attribute name="Bundle-SymbolicName" value="Robusta; singleton:=true"/>
+					<attribute name="Bundle-Version" value="1.1.0"/>
+					<attribute name="Bundle-Activator" value="ntut.csie.rleht.RLEHTPlugin"/>
+					<attribute name="Bundle-Vendor" value="NTUT CSIE, Taipei Tech, Software Systems Lab"/>
+					<attribute name="Bundle-Localization" value="plugin"/>
+					<attribute name="Bundle-ClassPath" value=".,./bin,lib/commons-lang-2.3.jar,lib/slf4j-log4j12-1.5.0.jar,lib/slf4j-api-1.5.0.jar,lib/log4j-1.2.15.jar,lib/jdom.jar,lib/jfreechart-1.0.8a.jar,lib/jcommon-1.0.12.jar,lib/loc_counter.jar,lib/"/>
+					<attribute name="Require-Bundle" value="org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.jdt,org.eclipse.jdt.core,org.eclipse.core.resources,org.eclipse.ltk.core.refactoring,org.eclipse.ltk.ui.refactoring,org.eclipse.jface.text,org.eclipse.ui.editors,org.eclipse.jdt.ui,org.eclipse.ui.workbench.texteditor,org.eclipse.ui.console,org.eclipse.ui.ide,org.eclipse.compare,org.eclipse.jdt.junit,net.java.amateras.umleditor,net.java.amateras.umleditor.java,net.java.amateras.xstream,org.eclipse.draw2d,org.eclipse.gef,org.eclipse.jdt.launching,org.junit,org.eclipse.jdt.astview,org.eclipse.jdt.core.manipulation"/>
+					<attribute name="Eclipse-LazyStart" value="true"/>
+			    </manifest>-->
+			</jar>
+	    </target>
+	
 	<target name="agile-jar">
 		<jar destfile="${update-folder}/${rl-jar-file-name}" filesetmanifest="mergewithoutmain" basedir="${bin-folder}" includes="**/RTag.class, **/Robustness.class, **/SuppressSmell.class">
 			<manifest>
@@ -157,25 +328,6 @@
 			</manifest>
 		</jar>
 	</target>
-	
-	<!-- wrap bin folder to jar file -->
-	<target name="product-jar">
-		<jar destfile="${plugin-folder}/${jar-file-name}" filesetmanifest="mergewithoutmain" basedir="${bin-folder}" excludes="**/filemaker/, **/*Test.class">
-			<!--<manifest>
-				<attribute name="Bundle-ManifestVersion" value="2"/>
-				<attribute name="Bundle-Name" value="Robusta Plug-in"/>
-				<attribute name="Bundle-SymbolicName" value="Robusta; singleton:=true"/>
-				<attribute name="Bundle-Version" value="1.1.0"/>
-				<attribute name="Bundle-Activator" value="ntut.csie.rleht.RLEHTPlugin"/>
-				<attribute name="Bundle-Vendor" value="NTUT CSIE, Taipei Tech, Software Systems Lab"/>
-				<attribute name="Bundle-Localization" value="plugin"/>
-				<attribute name="Bundle-ClassPath" value=".,./bin,lib/commons-lang-2.3.jar,lib/slf4j-log4j12-1.5.0.jar,lib/slf4j-api-1.5.0.jar,lib/log4j-1.2.15.jar,lib/jdom.jar,lib/jfreechart-1.0.8a.jar,lib/jcommon-1.0.12.jar,lib/loc_counter.jar,lib/"/>
-				<attribute name="Require-Bundle" value="org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.jdt,org.eclipse.jdt.core,org.eclipse.core.resources,org.eclipse.ltk.core.refactoring,org.eclipse.ltk.ui.refactoring,org.eclipse.jface.text,org.eclipse.ui.editors,org.eclipse.jdt.ui,org.eclipse.ui.workbench.texteditor,org.eclipse.ui.console,org.eclipse.ui.ide,org.eclipse.compare,org.eclipse.jdt.junit,net.java.amateras.umleditor,net.java.amateras.umleditor.java,net.java.amateras.xstream,org.eclipse.draw2d,org.eclipse.gef,org.eclipse.jdt.launching,org.junit,org.eclipse.jdt.astview,org.eclipse.jdt.core.manipulation"/>
-				<attribute name="Eclipse-LazyStart" value="true"/>
-		    </manifest>-->
-		</jar>
-		<jar destfile="${plugin-folder}/${jar-file-test-name}" filesetmanifest="mergewithoutmain" basedir="${bin-folder}" />
-    </target>
 
 	<!-- write a site.xml for eclipse update -->
 	<target name="write-site-xml">
