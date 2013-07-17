@@ -64,15 +64,17 @@ public class ReportBuilderTest {
 		javaFileToString = new JavaFileToString();
 		javaProjectMaker = new JavaProjectMaker(projectName);
 		javaProjectMaker.setJREDefaultContainer();
-		
+
 		// 新增欲載入的library
-		javaProjectMaker.addJarFromProjectToBuildPath("lib\\log4j-1.2.15.jar");
+		javaProjectMaker
+				.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR
+						+ "/log4j-1.2.15.jar");
 		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(
 				JavaProjectMaker.FOLDERNAME_LIB_JAR,
 				JavaProjectMaker.FOLDERNAME_BIN_CLASS);
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/"
 				+ JavaProjectMaker.RL_LIBRARY_PATH);
-		
+
 		// 根據測試檔案樣本內容建立新的檔案
 		javaFileToString.read(DummyAndIgnoreExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(

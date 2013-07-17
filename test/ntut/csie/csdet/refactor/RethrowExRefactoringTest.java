@@ -77,7 +77,9 @@ public class RethrowExRefactoringTest {
 		javapProjectMaker = new JavaProjectMaker(testProjectName);
 		javapProjectMaker.setJREDefaultContainer();
 		// 新增欲載入的library
-		javapProjectMaker.addJarFromProjectToBuildPath("lib/log4j-1.2.15.jar");
+		javapProjectMaker
+				.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR
+						+ "/log4j-1.2.15.jar");
 		// 根據測試檔案樣本內容建立新的檔案
 		javapProjectMaker.createJavaFile(
 				DummyAndIgnoreExample.class.getPackage().getName(),

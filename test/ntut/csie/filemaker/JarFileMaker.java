@@ -10,6 +10,9 @@ import java.util.jar.Manifest;
 
 import ntut.csie.robusta.util.PathUtils;
 
+/**
+ * @author charles
+ */
 public class JarFileMaker {
 	public int BUFFER_SIZE = 10240;
 	/**
@@ -60,13 +63,14 @@ public class JarFileMaker {
 	}
 	
 	/**
-	 * 根據.分隔package name
+	 * 根據「.」分隔package name
 	 * @param name
 	 * @return
 	 */
 	private String[] splitNameByDot(String name) {
 		String[] result = new String[1];
 		if(name.indexOf(".") != -1) {
+			// 兩個「\」是兩個階段的跳脫字元, 與folder的斜線無關
 			return name.split("\\.");
 		}
 		result[0] = name;

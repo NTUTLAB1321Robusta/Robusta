@@ -66,10 +66,17 @@ public class OverLoggingRefactorTest {
 		javaFile2String = new JavaFileToString();
 		javaProjectMaker = new JavaProjectMaker(projectName);
 		// 新增欲載入的library
-		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.FOLDERNAME_LIB_JAR, JavaProjectMaker.FOLDERNAME_BIN_CLASS);
-		javaProjectMaker.addJarFromTestProjectToBuildPath("/lib/Tag.jar");
-		javaProjectMaker.addJarFromProjectToBuildPath("lib/log4j-1.2.15.jar");
-		javaProjectMaker.addJarFromProjectToBuildPath("lib/slf4j-api-1.5.0.jar");
+		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(
+				JavaProjectMaker.FOLDERNAME_LIB_JAR,
+				JavaProjectMaker.FOLDERNAME_BIN_CLASS);
+		javaProjectMaker.addJarFromTestProjectToBuildPath("/"
+				+ JavaProjectMaker.FOLDERNAME_LIB_JAR + "/Tag.jar");
+		javaProjectMaker
+				.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR
+						+ "/log4j-1.2.15.jar");
+		javaProjectMaker
+				.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR
+						+ "/slf4j-api-1.5.0.jar");
 		javaProjectMaker.setJREDefaultContainer();
 		
 		// 根據測試檔案樣本內容建立新的檔案
