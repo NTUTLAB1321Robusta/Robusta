@@ -248,7 +248,7 @@
 			<arg line="-testpluginname ${plugin-name}" />
 			<arg line="-testLoaderClass org.eclipse.jdt.internal.junit4.runner.JUnit4TestLoader" />
 			<arg line="-loaderpluginname org.eclipse.jdt.junit4.runtime" />
-			<arg line="-classNames ntut.csie.AllTest.AllJUnitPluginTests" />
+			<arg line="-classNames ntut.csie.rleht.builder.RLBuilderTest" /> <!-- ntut.csie.AllTest.AllJUnitPluginTests -->
 			<arg line="-application org.eclipse.pde.junit.runtime.uitestapplication" />
 			<arg line="-testlistener org.eclipse.test.XMLTestListener" />
 			<arg line="-product org.eclipse.sdk.ide" />
