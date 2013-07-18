@@ -139,9 +139,9 @@
     <target name="init">
     	<delete quiet="true" dir="${bin-folder}"/>
     	<delete quiet="true" dir="${result-folder}"/>
-    	<delete quiet="true">
-    		<fileset dir="${basedir}/../../junit-workspace" excludes=".metadate"/>
-    	</delete>
+    	<delete quiet="true" dir="${basedir}/../../junit-workspace" />
+    		<!--<fileset dir="${basedir}/../../junit-workspace" excludes=".metadate"/>
+    	</delete>-->
         <mkdir dir="${bin-folder}"/>
     	<mkdir dir="${result-folder}"/>
     	<mkdir dir="${xml-folder}"/>
@@ -248,7 +248,7 @@
 			<arg line="-testpluginname ${plugin-name}" />
 			<arg line="-testLoaderClass org.eclipse.jdt.internal.junit4.runner.JUnit4TestLoader" />
 			<arg line="-loaderpluginname org.eclipse.jdt.junit4.runtime" />
-			<arg line="-classNames ntut.csie.rleht.builder.RLBuilderTest" /> <!-- ntut.csie.AllTest.AllJUnitPluginTests -->
+			<arg line="-classNames ntut.csie.AllTest.AllJUnitPluginTests" /> <!-- ntut.csie.AllTest.AllJUnitPluginTests -->
 			<arg line="-application org.eclipse.pde.junit.runtime.uitestapplication" />
 			<arg line="-testlistener org.eclipse.test.XMLTestListener" />
 			<arg line="-product org.eclipse.sdk.ide" />
