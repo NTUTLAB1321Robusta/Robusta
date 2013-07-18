@@ -101,10 +101,6 @@ public class RLBuilderTest {
 
 	@After
 	public void tearDown() throws Exception {
-		File cspre = new File(ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString() + File.separator + "CSPreference.xml");
-		if(cspre.exists())
-			assertTrue(cspre.delete());
-		
 		File smellSettings = new File(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		if(smellSettings.exists())
 			assertTrue(smellSettings.delete());
