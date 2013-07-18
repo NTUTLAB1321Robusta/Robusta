@@ -15,6 +15,7 @@ import java.util.List;
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.visitor.CarelessCleanupVisitor;
+import ntut.csie.csdet.visitor.CarelessCleanupVisitor2;
 import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 import ntut.csie.filemaker.ASTNodeFinder;
 import ntut.csie.filemaker.JavaFileToString;
@@ -321,7 +322,7 @@ public class CarelessCleanUpRefactorTest {
 	
 	@Test
 	public void testDetectIfStatementSize() throws Exception {
-		CarelessCleanupVisitor visitor = new CarelessCleanupVisitor(compilationUnit);
+		CarelessCleanupVisitor2 visitor = new CarelessCleanupVisitor2(compilationUnit);
 		compilationUnit.accept(visitor);
 		
 		tempMarker.setAttribute(RLMarkerAttribute.RL_MSG_INDEX, "11");
@@ -339,12 +340,12 @@ public class CarelessCleanUpRefactorTest {
 		compilationUnit.accept(mVisitor);
 		MethodDeclaration md = (MethodDeclaration)mVisitor.getMethodList().get(11);
 		
-		// delete bad smell in the if statement with size == 1 and block
+		// delete bad smell in the if statement with size == 1
 		Method detectIfStatementSize = CarelessCleanUpRefactor.class.getDeclaredMethod("detectIfStatementSize", Block.class);
 		detectIfStatementSize.setAccessible(true);
 		assertTrue((Boolean)detectIfStatementSize.invoke(refactor, ((TryStatement)md.getBody().statements().get(0)).getBody()));
 		
-		// can't delete bad smell in the if statement with size > 1
+		// it can't delete bad smell in the if statement with size > 1
 		tempMarker.setAttribute(RLMarkerAttribute.RL_MSG_INDEX, "12");
 		refactor.setMarker(tempMarker);
 		
