@@ -104,6 +104,8 @@ public class RLBuilderTest {
 		File smellSettings = new File(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		if(smellSettings.exists())
 			assertTrue(smellSettings.delete());
+		
+		javaProjectMaker.deleteProject();
 	}
 
 	@Test
