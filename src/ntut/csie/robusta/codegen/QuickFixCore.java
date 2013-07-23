@@ -57,9 +57,9 @@ import org.slf4j.LoggerFactory;
 public class QuickFixCore {
 	private static Logger logger = LoggerFactory.getLogger(QuickFixCore.class);
 	
-	/** ­n³Q³]©w¬°NavigatableªºJavaÀÉ¡A«á­±­n±qresource¥h³]©w¥L */
+	/** è¦è¢«è¨­å®šç‚ºNavigatableçš„Javaæª”ï¼Œå¾Œé¢è¦å¾resourceå»è¨­å®šä»– */
 	protected IOpenable actOpenable = null;
-	/** ­n³QQuick FixªºJava AST root node */
+	/** è¦è¢«Quick Fixçš„Java AST root node */
 	private CompilationUnit compilationUnit = null;
 	
 	private ASTRewrite astRewrite = null;
@@ -78,7 +78,7 @@ public class QuickFixCore {
 		parser.setSource((ICompilationUnit) javaElement);
 		parser.setResolveBindings(true);
 		compilationUnit = (CompilationUnit) parser.createAST(null);
-		//AST 2.0¬ö¿ı¤è¦¡
+		//AST 2.0ç´€éŒ„æ–¹å¼
 		compilationUnit.recordModifications();
 		astRewrite = ASTRewrite.create(compilationUnit.getRoot().getAST());
 	}
@@ -146,7 +146,7 @@ public class QuickFixCore {
 		ListRewrite rlArrayInitializerRewrite = astRewrite.getListRewrite(rlArrayInitializer, ArrayInitializer.EXPRESSIONS_PROPERTY);
 		rlArrayInitializerRewrite.insertLast(QuickFixUtils.makeRLAnnotation(rootAST, level, exceptionType.getName()), null);
 		
-//		// ³o¬qµ{¦¡½Xªº·N¸q¡A¦b©ó²¾°£¥ş³¡ÂÂªºRLAnnotation
+//		// é€™æ®µç¨‹å¼ç¢¼çš„æ„ç¾©ï¼Œåœ¨æ–¼ç§»é™¤å…¨éƒ¨èˆŠçš„RLAnnotation
 //		List<IExtendedModifier> lstModifiers = methodDeclaration.modifiers();
 //		
 //		for(IExtendedModifier ieModifier : lstModifiers){
@@ -168,7 +168,7 @@ public class QuickFixCore {
 	}
 	
 	/**
-	 * ¦bMethod Declaration «á­±¥[¤W©ß¥X¨Ò¥~ªº«Å§i
+	 * åœ¨Method Declaration å¾Œé¢åŠ ä¸Šæ‹‹å‡ºä¾‹å¤–çš„å®£å‘Š
 	 * @param astRewrite
 	 * @param methodDeclaration
 	 */
@@ -179,7 +179,7 @@ public class QuickFixCore {
 	}
 	
 	/**
-	 * ®Ú¾Úµ¹©wªºµ{¦¡½X¡A²¾°£CatchClause¤¤¯S©wªº¸`ÂI
+	 * æ ¹æ“šçµ¦å®šçš„ç¨‹å¼ç¢¼ï¼Œç§»é™¤CatchClauseä¸­ç‰¹å®šçš„ç¯€é»
 	 * @param catchClause
 	 * @param removingStatement
 	 */
@@ -197,12 +197,12 @@ public class QuickFixCore {
 	}
 	
 	public void removeExpressionStatement(int removingStartPosition, MethodDeclaration methodDeclaration) {
-		// ¥ÎStartPosition§ä¥X­n²¾°£ªºExpressionStatement
+		// ç”¨StartPositionæ‰¾å‡ºè¦ç§»é™¤çš„ExpressionStatement
 		StatementFinderVisitor statementFinderVisitor = new StatementFinderVisitor(removingStartPosition);
 		methodDeclaration.accept(statementFinderVisitor);
 		ASTNode removingNode = statementFinderVisitor.getFoundExpressionStatement();
 		
-		// §ä¥X­n²¾°£ªºExpressionStatement©ÒÄİªºBlock
+		// æ‰¾å‡ºè¦ç§»é™¤çš„ExpressionStatementæ‰€å±¬çš„Block
 		ASTNode parentNode = NodeUtils.getSpecifiedParentNode(removingNode, ASTNode.BLOCK);
 		
 		ListRewrite modifyingBlock = astRewrite.getListRewrite(parentNode, Block.STATEMENTS_PROPERTY);
@@ -210,7 +210,7 @@ public class QuickFixCore {
 	}
 	
 	/**
-	 * ¼W¥[throw new XxxException(e)ªºµ{¦¡½X
+	 * å¢åŠ throw new XxxException(e)çš„ç¨‹å¼ç¢¼
 	 * @param cc
 	 * @param exceptionType
 	 */
@@ -252,13 +252,13 @@ public class QuickFixCore {
 	}
 	
 	/**
-	 * ±NQuick Fix ­nÅÜ§óªº¤º®e¼g¦^Edit¤¤
+	 * å°‡Quick Fix è¦è®Šæ›´çš„å…§å®¹å¯«å›Editä¸­
 	 * @param rewrite
 	 */
 	public void applyChange() {
 		try {
-			// °Ñ¦Òorg.eclipse.jdt.internal.ui.text.correction.CorrectionMarkerResolutionGenerator run
-			// org.eclipse.jdt.internal.ui.text.correction.ChangeCorrectionProposal apply»PperformChange
+			// åƒè€ƒorg.eclipse.jdt.internal.ui.text.correction.CorrectionMarkerResolutionGenerator run
+			// org.eclipse.jdt.internal.ui.text.correction.ChangeCorrectionProposal applyèˆ‡performChange
 			ICompilationUnit cu = (ICompilationUnit) actOpenable;
 			IEditorPart part = EditorUtility.isOpenInEditor(cu);
 			IEditorInput input = part.getEditorInput();
@@ -271,7 +271,7 @@ public class QuickFixCore {
 	}
 	
 	/**
-	 * ®M¥ÎRefactoring­nÅÜ§óªº¤º®e
+	 * å¥—ç”¨Refactoringè¦è®Šæ›´çš„å…§å®¹
 	 * @param textFileChange
 	 * @throws CoreException 
 	 */
@@ -285,7 +285,7 @@ public class QuickFixCore {
 	}
 	
 	/**
-	 * °õ¦æ Quick Fix ÅÜ§ó
+	 * åŸ·è¡Œ Quick Fix è®Šæ›´
 	 * @param activeEditor
 	 * @param document
 	 * @param rewrite
@@ -336,7 +336,7 @@ public class QuickFixCore {
 	}
 	
 	/**
-	 * ¨ú±oQuick Fix«á§ïÅÜªºµ{¦¡½X
+	 * å–å¾—Quick Fixå¾Œæ”¹è®Šçš„ç¨‹å¼ç¢¼
 	 */
 	private Change getChange(CompilationUnit actRoot, ASTRewrite rewrite) {
 		try {
@@ -357,34 +357,34 @@ public class QuickFixCore {
 	}
 	
 	/**
-	 * ²£¥Í¤@­Ó¤jªºTryStatement¥]¦íMethodDeclaration¸Ì­±©Ò¦³µ{¦¡½X
-	 * @param methodDeclaration ­n²£¥Í¤jTryStatementªºMethodDeclaration
+	 * ç”¢ç”Ÿä¸€å€‹å¤§çš„TryStatementåŒ…ä½MethodDeclarationè£¡é¢æ‰€æœ‰ç¨‹å¼ç¢¼
+	 * @param methodDeclaration è¦ç”¢ç”Ÿå¤§TryStatementçš„MethodDeclaration
 	 */
 	public void generateBigOuterTryStatement(MethodDeclaration methodDeclaration) {
 		ListRewrite addingBigOuterTry = astRewrite.getListRewrite(methodDeclaration.getBody(), Block.STATEMENTS_PROPERTY);
 
 		AST ast = compilationUnit.getAST();
-		/* ²£¥Í¤@­ÓTryStatement */
-		// ²£¥ÍTry
+		/* ç”¢ç”Ÿä¸€å€‹TryStatement */
+		// ç”¢ç”ŸTry
 		TryStatement bigOuterTryStatement = ast.newTryStatement();
-		// ²£¥ÍCatch Clause
+		// ç”¢ç”ŸCatch Clause
 		@SuppressWarnings("unchecked")
 		List<CatchClause> catchStatement = bigOuterTryStatement.catchClauses();
 		CatchClause cc = ast.newCatchClause();
 		ListRewrite catchRewrite = astRewrite.getListRewrite(cc.getBody(), Block.STATEMENTS_PROPERTY);
-		// «Ø¥ßcatchªºtype¬° catch(Exception ex)
+		// å»ºç«‹catchçš„typeç‚º catch(Exception ex)
 		SingleVariableDeclaration sv = ast.newSingleVariableDeclaration();
 		sv.setType(ast.newSimpleType(ast.newSimpleName("Exception")));
 		sv.setName(ast.newSimpleName("ex"));
 		cc.setException(sv);
-		// ¦bCatch¤¤¥[¤JTODOªºµù¸Ñ
+		// åœ¨Catchä¸­åŠ å…¥TODOçš„è¨»è§£
 		StringBuffer comment = new StringBuffer();
 		comment.append("// TODO: handle exception");
 		ASTNode placeHolder = astRewrite.createStringPlaceholder(comment.toString(), ASTNode.EMPTY_STATEMENT);
 		catchRewrite.insertLast(placeHolder, null);
 		catchStatement.add(cc);
 		
-		/* ±N­ì¥»¦btry block¤§¥~ªºµ{¦¡³£²¾°Ê¶i¨Ó */
+		/* å°‡åŸæœ¬åœ¨try blockä¹‹å¤–çš„ç¨‹å¼éƒ½ç§»å‹•é€²ä¾† */
 		ListRewrite tryStatement = astRewrite.getListRewrite(bigOuterTryStatement.getBody(), Block.STATEMENTS_PROPERTY);
 		int listSize = addingBigOuterTry.getRewrittenList().size();
 		tryStatement.insertLast(addingBigOuterTry.createMoveTarget((ASTNode) addingBigOuterTry.getRewrittenList().get(0), 
@@ -394,11 +394,11 @@ public class QuickFixCore {
 	}
 	
 	/**
-	 * ±NTry¸Ì­±«Å§iªºÅÜ¼Æ²¾¨ìTry¥~­±
-	 * @param tryStatement ¸Ì­±¦³«Å§iÅÜ¼ÆªºTry
-	 * @param variableDeclarationStatement «Å§iÅÜ¼Æªº¨º¦æµ{¦¡½X
-	 * @param rootAST ¾ã­Ócompilation unit ªº AST
-	 * @param methodDeclaration ³o­ÓTry©ÒÄİªºmethod declaration
+	 * å°‡Tryè£¡é¢å®£å‘Šçš„è®Šæ•¸ç§»åˆ°Tryå¤–é¢
+	 * @param tryStatement è£¡é¢æœ‰å®£å‘Šè®Šæ•¸çš„Try
+	 * @param variableDeclarationStatement å®£å‘Šè®Šæ•¸çš„é‚£è¡Œç¨‹å¼ç¢¼
+	 * @param rootAST æ•´å€‹compilation unit çš„ AST
+	 * @param methodDeclaration é€™å€‹Tryæ‰€å±¬çš„method declaration
 	 */
 	public void moveOutVariableDeclarationStatementFromTry(TryStatement tryStatement, 
 			VariableDeclarationStatement variableDeclarationStatement, AST rootAST, MethodDeclaration methodDeclaration) {
@@ -408,8 +408,8 @@ public class QuickFixCore {
 		}
 		VariableDeclarationFragment fragment = (VariableDeclarationFragment) fragments.get(0);
 		/* 
-		 * ±N   InputStream fos = new ImputStream();
-		 * §ï¬° fos = new InputStream();
+		 * å°‡   InputStream fos = new ImputStream();
+		 * æ”¹ç‚º fos = new InputStream();
 		 */
 		Assignment assignment = rootAST.newAssignment();
 		assignment.setOperator(Assignment.Operator.ASSIGN);
@@ -421,7 +421,7 @@ public class QuickFixCore {
 		assignment.setRightHandSide((Expression) copyNode);
 
 		ListRewrite tsRewrite = astRewrite.getListRewrite(tryStatement.getBody(), Block.STATEMENTS_PROPERTY);
-		// ±Nfos = new ImputStream(); ´À´«¨ì­ì¥»ªºµ{¦¡¸Ì
+		// å°‡fos = new ImputStream(); æ›¿æ›åˆ°åŸæœ¬çš„ç¨‹å¼è£¡
 		if(assignment.getRightHandSide().getNodeType() != ASTNode.NULL_LITERAL) {
 			ExpressionStatement expressionStatement = rootAST.newExpressionStatement(assignment);
 			tsRewrite.replace(variableDeclarationStatement, expressionStatement, null);
@@ -429,23 +429,23 @@ public class QuickFixCore {
 			tsRewrite.remove(variableDeclarationStatement, null);
 		}
 		
-		// ±NInputStream fos = new ImputStream(); §ï¦¨ InputStream fos = null;
+		// å°‡InputStream fos = new ImputStream(); æ”¹æˆ InputStream fos = null;
 		VariableDeclarationFragment newFragment = rootAST.newVariableDeclarationFragment();
 		newFragment.setName(rootAST.newSimpleName(fragment.getName().toString()));
 		newFragment.setInitializer(rootAST.newNullLiteral());
 		ListRewrite vdsRewrite = astRewrite.getListRewrite(variableDeclarationStatement, VariableDeclarationStatement.FRAGMENTS_PROPERTY);
 		vdsRewrite.replace(fragment, newFragment, null);
 
-		// ±NInputStream fos = null¡A²¾¨ìtry¥~­±
+		// å°‡InputStream fos = nullï¼Œç§»åˆ°tryå¤–é¢
 		ASTNode placeHolder = astRewrite.createMoveTarget(variableDeclarationStatement);
 		ListRewrite moveRewrite = astRewrite.getListRewrite(methodDeclaration.getBody(), Block.STATEMENTS_PROPERTY);
 		moveRewrite.insertFirst(placeHolder, null);
 	}
 	
 	/**
-	 * ¨ú±oTryStatementªşÄİªºfinally block¡C­Y¤£¦s¦b¡A·s¼W¤@­Ó¥X¨Ó¡C
-	 * @param tryStatement §A·Q±q­ş­ÓTryStatement§äfinally block
-	 * @param compilationUnit §A­n§i¶D§Ú¬O­ş­Ócompilation unit¡A§Ú¤~¯àÀ°§A­×§ï
+	 * å–å¾—TryStatementé™„å±¬çš„finally blockã€‚è‹¥ä¸å­˜åœ¨ï¼Œæ–°å¢ä¸€å€‹å‡ºä¾†ã€‚
+	 * @param tryStatement ä½ æƒ³å¾å“ªå€‹TryStatementæ‰¾finally block
+	 * @param compilationUnit ä½ è¦å‘Šè¨´æˆ‘æ˜¯å“ªå€‹compilation unitï¼Œæˆ‘æ‰èƒ½å¹«ä½ ä¿®æ”¹
 	 */
 	public Block getFinallyBlock(TryStatement tryStatement, CompilationUnit compilationUnit) {
 		if(tryStatement.getFinally() != null) {
@@ -457,10 +457,10 @@ public class QuickFixCore {
 	}
 	
 	/**
-	 * ±NTryStatement¸Ì­±¬Y­ÓNode²¾°Ê¨ìFinally
-	 * @param tryStatement ¬Y­ÓNode©ÒÄİªºTryStatement
-	 * @param node ¬Y­ÓNode
-	 * @param finallyBlock §A·Q²¾°Êªº¨º­ÓFinally Block
+	 * å°‡TryStatementè£¡é¢æŸå€‹Nodeç§»å‹•åˆ°Finally
+	 * @param tryStatement æŸå€‹Nodeæ‰€å±¬çš„TryStatement
+	 * @param node æŸå€‹Node
+	 * @param finallyBlock ä½ æƒ³ç§»å‹•çš„é‚£å€‹Finally Block
 	 */
 	public void moveNodeToFinally(TryStatement tryStatement, ASTNode node, Block finallyBlock) {
 		ASTNode placeHolder = astRewrite.createMoveTarget(node);
@@ -469,7 +469,7 @@ public class QuickFixCore {
 	}
 	
 	/**
-	 * ­«·s¾ã²z±j°·«×µ¥¯Åµù°Oªº¶¶§Ç
+	 * é‡æ–°æ•´ç†å¼·å¥åº¦ç­‰ç´šè¨»è¨˜çš„é †åº
 	 */
 	public void rearrangeRobustnessAnnotationOrder() {
 		

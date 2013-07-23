@@ -23,26 +23,26 @@ import org.eclipse.swt.widgets.TableItem;
 import org.jdom.Element;
 
 /**
- * EH TOOL³]©wµe­±
+ * EH TOOLè¨­å®šç•«é¢
  * @author Shiau
  *
  */
 public class SettingPage extends APropertyPage {
 	
 	private Composite mainPageComposite;
-	/** ¨Ò¥~³B²zÃa¨ı¹D³]©w¥Dµe­±ªºContainer */
+	/** ä¾‹å¤–è™•ç†å£å‘³é“è¨­å®šä¸»ç•«é¢çš„Container */
 	private Composite selectComposite;
-	/** Frame¡A¨Ò¥~³B²zÃa¨ı¹DÃş«¬¥~®Ø */
+	/** Frameï¼Œä¾‹å¤–è™•ç†å£å‘³é“é¡å‹å¤–æ¡† */
 	private Group smellTypeGroup;
-	/** ¨Ò¥~³B²zÃa¨ı¹D²M³æ */
+	/** ä¾‹å¤–è™•ç†å£å‘³é“æ¸…å–® */
 	private Table smellList;
-	/** Frame¡AÃa¨ı¹D½d¨Òµ{¦¡½X¥~®Ø */
+	/** Frameï¼Œå£å‘³é“ç¯„ä¾‹ç¨‹å¼ç¢¼å¤–æ¡† */
 	private Group templateCodeGroup;
-	/** ¨Ò¥~³B²zÃa¨ı¹Dµ{¦¡½X*/
+	/** ä¾‹å¤–è™•ç†å£å‘³é“ç¨‹å¼ç¢¼*/
 	private StyledText templateCode;
-	/** Checkbox¡A¿ï¾Ü°»´ú©Ò¦³¨Ò¥~³B²zÃa¨ı¹D */
+	/** Checkboxï¼Œé¸æ“‡åµæ¸¬æ‰€æœ‰ä¾‹å¤–è™•ç†å£å‘³é“ */
 	private Button checkbox_DetectAllSmells;
-	/** Checkbox¡A¿ï¾Ü¬O§_­n±NÃa¨ı¹Dµ{¦¡½X¤Ï¥Õ */
+	/** Checkboxï¼Œé¸æ“‡æ˜¯å¦è¦å°‡å£å‘³é“ç¨‹å¼ç¢¼åç™½ */
 	private Button checkbox_HighlightSmellCode;
 	
 	private boolean isDetectingAllSmells = false;
@@ -51,7 +51,7 @@ public class SettingPage extends APropertyPage {
 	
 	private TemplateText[] tempText;
 	private String[] descText;
-	// ­t³d³B²zÅª¼gXML
+	// è² è²¬è™•ç†è®€å¯«XML
 	private SmellSettings smellSettings;
 	
 	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
@@ -72,7 +72,7 @@ public class SettingPage extends APropertyPage {
 
 		smellList.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
-				//¨ú±oÂI¿ïªºItem
+				//å–å¾—é»é¸çš„Item
 				int index = smellList.getSelectionIndex();
 				changeTemplateText(index);
 				changeTemplateSize();
@@ -174,7 +174,7 @@ public class SettingPage extends APropertyPage {
 	}
 
 	/**
-	 * Åª¨ú¨Ï¥ÎªÌ¤§«e³]©w
+	 * è®€å–ä½¿ç”¨è€…ä¹‹å‰è¨­å®š
 	 */
 	private void readSetting() {
 		Element[] smellElements = new Element[RLMarkerAttribute.CS_TOTAL_TYPE.length];
@@ -192,7 +192,7 @@ public class SettingPage extends APropertyPage {
 	}
 
 	/**
-	 * «Ø¥ßPage¥~Æ[View
+	 * å»ºç«‹Pageå¤–è§€View
 	 * @param composite
 	 */
 	private void buildPage(Composite composite) {
@@ -233,12 +233,12 @@ public class SettingPage extends APropertyPage {
 //			}
 //		});
 
-		// ¤W¥b³¡¡A¿ï¾Ü­n°»´úªºSmell¸s²Õ
+		// ä¸ŠåŠéƒ¨ï¼Œé¸æ“‡è¦åµæ¸¬çš„Smellç¾¤çµ„
 		smellTypeGroup = new Group(selectComposite, SWT.NONE);
 		smellTypeGroup.setText(resource.getString("settingPage.smell.type"));
 		smellTypeGroup.setLocation(10, 5);
 
-		//¬O§_­n¿ï¾Ü©Ê°»´úªºButton
+		//æ˜¯å¦è¦é¸æ“‡æ€§åµæ¸¬çš„Button
 		checkbox_DetectAllSmells = new Button(smellTypeGroup, SWT.CHECK);
 		checkbox_DetectAllSmells.setText(resource.getString("check.all.smell"));
 		checkbox_DetectAllSmells.setLocation(10, 20);
@@ -251,7 +251,7 @@ public class SettingPage extends APropertyPage {
 			}
 		});
 		
-		//¿ï¾ÜEH Smell List
+		//é¸æ“‡EH Smell List
 		smellList = new Table(smellTypeGroup, SWT.CHECK | SWT.SINGLE | SWT.FULL_SELECTION | SWT.BORDER | SWT.HIDE_SELECTION );
 		smellList.setLocation(checkbox_DetectAllSmells.getBounds().x, checkbox_DetectAllSmells.getBounds().y + checkbox_DetectAllSmells.getBounds().height);
 		smellList.setFont(new Font(composite.getDisplay(),"Arial", 11, SWT.NONE));
@@ -263,7 +263,7 @@ public class SettingPage extends APropertyPage {
 		String smellColumnDisplayText = resource.getString("settingPage.smell.type");
 		smellColumn.setText(smellColumnDisplayText);
 		smellColumn.setWidth(smellColumnDisplayText.length() * 9);
-		// ¦Û°Ê½Õ¾ãbad smell Type Columnªº¤j¤p
+		// è‡ªå‹•èª¿æ•´bad smell Type Columnçš„å¤§å°
 		smellColumn.pack();
 		final TableColumn descColumn = new TableColumn(smellList, SWT.NONE);
 		descColumn.setText(resource.getString("settingPage.smell.description"));
@@ -274,10 +274,10 @@ public class SettingPage extends APropertyPage {
 			item.setFont(0, new Font(composite.getDisplay(),"Arial", 11, SWT.BOLD));			
 			item.setText(1, descText[i]);
 		}
-		// ¦Û°Ê½Õ¾ãbad smell Description Columnªº¤j¤p
+		// è‡ªå‹•èª¿æ•´bad smell Description Columnçš„å¤§å°
 		descColumn.pack();
 		
-		// ¦Û°Ê½Õ¾ã³]©w¥D­¶­±¤W¥b³¡µøµ¡ªº¤j¤p
+		// è‡ªå‹•èª¿æ•´è¨­å®šä¸»é é¢ä¸ŠåŠéƒ¨è¦–çª—çš„å¤§å°
 		smellList.pack();
 		smellTypeGroup.pack();
 
@@ -286,7 +286,7 @@ public class SettingPage extends APropertyPage {
 		templateCodeGroup.setText(resource.getString("settingPage.codeExample"));
 		templateCodeGroup.setLocation(10, getLowerRightCoordinate(smellTypeGroup).y + 5);
 
-		//¬O§_­n¿ô¥Ø¼Ğ°Oµ{¦¡½X
+		//æ˜¯å¦è¦é†’ç›®æ¨™è¨˜ç¨‹å¼ç¢¼
 		checkbox_HighlightSmellCode = new Button(templateCodeGroup, SWT.CHECK);
 		checkbox_HighlightSmellCode.setText(resource.getString("settingPage.codeExample.highlight"));
 		checkbox_HighlightSmellCode.setLocation(10, 20);
@@ -310,14 +310,14 @@ public class SettingPage extends APropertyPage {
 		templateCode.setFont(font);
 		templateCodeGroup.pack();
 		
-		// ¦Û°Ê½Õ¾ã³]©w¥D­¶­±Containerªº¤j¤p
+		// è‡ªå‹•èª¿æ•´è¨­å®šä¸»é é¢Containerçš„å¤§å°
 		selectComposite.pack();
 		selectComposite.setSize(getLowerRightCoordinate(smellTypeGroup).x + 15, selectComposite.getBounds().height);
 	}
 
 	private void setUserSetting() {
 		TableItem[] item = smellList.getItems();
-		//¥htraverse¾ã­Ótable¬İitemªºText©M¬O§_³Q¤Ä¿ï¨ì
+		//å»traverseæ•´å€‹tableçœ‹itemçš„Textå’Œæ˜¯å¦è¢«å‹¾é¸åˆ°
 		for (int i=0; i < item.length; i++) {
 			if(isDetectingAllSmells)
 				detSmellList[i] = isDetectingAllSmells;
@@ -352,9 +352,9 @@ public class SettingPage extends APropertyPage {
 
 	@Override
 	public boolean storeSettings() {
-		//¥ı±N¦Cªíªºitem¨ú¥X¨Ó
+		//å…ˆå°‡åˆ—è¡¨çš„itemå–å‡ºä¾†
 		TableItem[] item = smellList.getItems();
-		//¥htraverse¾ã­Ótable¬İitemªºText©M¬O§_³Q¤Ä¿ï¨ì
+		//å»traverseæ•´å€‹tableçœ‹itemçš„Textå’Œæ˜¯å¦è¢«å‹¾é¸åˆ°
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_EMPTYCATCHBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, item[0].getChecked());
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.ATTRIBUTE_ISDETECTING, item[1].getChecked());
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_NESTEDTRYBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, item[2].getChecked());
@@ -363,7 +363,7 @@ public class SettingPage extends APropertyPage {
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_OVERLOGGING, SmellSettings.ATTRIBUTE_ISDETECTING, item[5].getChecked());
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_OVERWRITTENLEADEXCEPTION, SmellSettings.ATTRIBUTE_ISDETECTING, item[6].getChecked());
 
-		//±NÀÉ®×¼g¦^
+		//å°‡æª”æ¡ˆå¯«å›
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		return true;
 	}

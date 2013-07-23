@@ -31,13 +31,13 @@ import org.slf4j.LoggerFactory;
 
 public class ExceptionAnalyzer extends RLBaseVisitor {
 	private static Logger logger = LoggerFactory.getLogger(ExceptionAnalyzer.class);
-	// ¥Ø«e·½½X¿ï¾Ü¤§¶}©l¦ì¸m
+	// ç›®å‰æºç¢¼é¸æ“‡ä¹‹é–‹å§‹ä½ç½®
 	private int sourceStart;
 
-	// ¥Ø«e·½½X¿ï¾Ü¤§µ²§ô¦ì¸m
+	// ç›®å‰æºç¢¼é¸æ“‡ä¹‹çµæŸä½ç½®
 	private int sourceEnd;
 
-	// ¥Ø«e©Ò¦b¤§Method¸`ÂI
+	// ç›®å‰æ‰€åœ¨ä¹‹Methodç¯€é»
 	private MethodDeclaration currentMethodNode;
 
 	private int currentMethodStart;
@@ -60,7 +60,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 
 //	private List<SSMessage> suppressList;
 	
-	// ¬ö¿ıNested Try Blockªº¦ì¸m
+	// ç´€éŒ„Nested Try Blockçš„ä½ç½®
 //	private List<MarkerInfo> nestedTryList;
 
 	private ASTNode currentRLAnnotationNode;
@@ -100,7 +100,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 	}
 
 	/**
-	 * ¨ú±oMethod¤WªºAnnotation¸ê°T
+	 * å–å¾—Methodä¸Šçš„Annotationè³‡è¨Š
 	 * @param node
 	 */
 	private void getMethodAnnotation(ASTNode node) {
@@ -111,16 +111,16 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		IAnnotationBinding[] annoBinding = method.resolveBinding().getAnnotations();
 		
 		for (int i = 0, size = annoBinding.length; i < size; i++) {
-//			//¨ú±oMethod¤WªºSuppressSmell¸ê°T
+//			//å–å¾—Methodä¸Šçš„SuppressSmellè³‡è¨Š
 //			if (annoBinding[i].getAnnotationType().getQualifiedName().equals(SuppressSmell.class.getName())) {
 //				IMemberValuePairBinding[] mvpb = annoBinding[i].getAllMemberValuePairs();
 //
 //				SSMessage ssmsg = new SSMessage(node.getStartPosition(),
 //												getLineNumber(node.getStartPosition()));
-//				//­YSuppressSmell¤º¬°String
+//				//è‹¥SuppressSmellå…§ç‚ºString
 //				if (mvpb[0].getValue() instanceof String) {
 //					ssmsg.addSmellList((String) mvpb[0].getValue());
-//				//­YSuppressSmell¤º¬°Array
+//				//è‹¥SuppressSmellå…§ç‚ºArray
 //				} else if (mvpb[0].getValue() instanceof Object[]) {
 //					Object[] values = (Object[]) mvpb[0].getValue();
 //					for (Object obj : values) {
@@ -130,7 +130,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 //				}
 //				suppressList.add(ssmsg);
 //			}		
-			//¨ú±oMethod¤WªºRobustness¸ê°T
+			//å–å¾—Methodä¸Šçš„Robustnessè³‡è¨Š
 			if (annoBinding[i].getAnnotationType().getQualifiedName().equals(Robustness.class.getName())) {
 				IMemberValuePairBinding[] mvpb = annoBinding[i].getAllMemberValuePairs();
 
@@ -140,7 +140,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 						Object[] values = (Object[]) mvpb[x].getValue();
 						for (int y = 0, ysize = values.length; y < ysize; y++) {
 							IAnnotationBinding binding = (IAnnotationBinding) values[y];
-							// ³B²zRL
+							// è™•ç†RL
 							IMemberValuePairBinding[] rlMvpb = binding.getAllMemberValuePairs();
 							if (rlMvpb.length == 2) {
 
@@ -165,7 +165,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 	}
 
 	/**
-	 * ¨ú±oMethod©Ò«Å§iªºthrows Exception Type Name
+	 * å–å¾—Methodæ‰€å®£å‘Šçš„throws Exception Type Name
 	 * @param node	MethodDeclaration
 	 */
 	private void getMethodThrowsList(ASTNode node) {
@@ -205,7 +205,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		try {
 			switch (node.getNodeType()) {
 				case ASTNode.METHOD_DECLARATION:
-					// ´M§ä©Ò¿ï¾Ü¤å¦r¦b¨º¤@­ÓMethod¤º
+					// å°‹æ‰¾æ‰€é¸æ“‡æ–‡å­—åœ¨é‚£ä¸€å€‹Methodå…§
 					currentMethodStart = node.getStartPosition();
 					currentMethodEnd = currentMethodStart + node.getLength();
 
@@ -256,7 +256,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 					if (currentMethodFound) {
 						ClassInstanceCreation cic = (ClassInstanceCreation) node;
 						if (!this.findAnnotation(node, cic.resolveConstructorBinding().getAnnotations())) {
-							// ¨ú±oMethodªºThrow Exception Type
+							// å–å¾—Methodçš„Throw Exception Type
 							this.findExceptionTypes(node, cic.resolveConstructorBinding().getExceptionTypes());
 						}
 					}
@@ -265,7 +265,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 					if (currentMethodFound) {
 						ConstructorInvocation ci = (ConstructorInvocation) node;
 						if (!this.findAnnotation(node, ci.resolveConstructorBinding().getAnnotations())) {
-							// ¨ú±oMethodªºThrow Exception Type
+							// å–å¾—Methodçš„Throw Exception Type
 							this.findExceptionTypes(node, ci.resolveConstructorBinding().getExceptionTypes());
 						}
 					}
@@ -273,14 +273,14 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 				case ASTNode.METHOD_INVOCATION:
 					if (currentMethodFound) {
 						MethodInvocation mi = (MethodInvocation) node;
-						/* ¦pªGUserªºcode¤£²Å¦XIDEªº³W©w¡A·|³y¦¨MethdoInvocationªºBinding¿ù»~¡A
-						 * ¾É­Pmi.resolveMethodBinding()¬°null¡C
-						 * ex: ¦btry block«Å§i¤@­Ó»İ­ncloseªºinstance
+						/* å¦‚æœUserçš„codeä¸ç¬¦åˆIDEçš„è¦å®šï¼Œæœƒé€ æˆMethdoInvocationçš„BindingéŒ¯èª¤ï¼Œ
+						 * å°è‡´mi.resolveMethodBinding()ç‚ºnullã€‚
+						 * ex: åœ¨try blockå®£å‘Šä¸€å€‹éœ€è¦closeçš„instance
 						 */
 						if (mi.resolveMethodBinding() == null)
-							return false;	//Á×§K¤U­±ªºµ{¦¡½X¶Ç¦^null pointer exception
+							return false;	//é¿å…ä¸‹é¢çš„ç¨‹å¼ç¢¼å‚³å›null pointer exception
 						if (!this.findAnnotation(node, mi.resolveMethodBinding().getAnnotations())) {
-							// ¨ú±oMethodªºThrow Exception Type
+							// å–å¾—Methodçš„Throw Exception Type
 							findExceptionTypes(node, mi.resolveMethodBinding().getExceptionTypes());
 						}
 					}
@@ -299,9 +299,9 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 	}
 
 	/**
-	 * 1. °»´úNested Try BlockªºEH Smell¡A¹ï¨äTry¡BCatch»PFinally¦A¨Ï¥ÎVisitor°»´ú¡C
-	 * 2. °O¿ıCatch Clause©Ò«Å§iªºException Type
-	 * 3. ¨ú±oCatch¤ºªºSuppress Smellªº¸ê°T
+	 * 1. åµæ¸¬Nested Try Blockçš„EH Smellï¼Œå°å…¶Tryã€Catchèˆ‡Finallyå†ä½¿ç”¨Visitoråµæ¸¬ã€‚
+	 * 2. è¨˜éŒ„Catch Clauseæ‰€å®£å‘Šçš„Exception Type
+	 * 3. å–å¾—Catchå…§çš„Suppress Smellçš„è³‡è¨Š
 	 * 
 	 * @param node	TryStatement
 	 */
@@ -321,7 +321,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		// ConsoleLog.debug("TRY===>" + idxTry + ":" + idxCatch + "\t[BEGIN]" +
 		// trystat.getBody().getStartPosition());
 		
-		// °²¦p¬O²Ä¤@­ÓTry,¨º´N¤£¬OCode Smell,¤£¥Î¥[¶i¥h
+		// å‡å¦‚æ˜¯ç¬¬ä¸€å€‹Try,é‚£å°±ä¸æ˜¯Code Smell,ä¸ç”¨åŠ é€²å»
 		if(!parentId.equals("")){
 			MarkerInfo csmsg = new MarkerInfo(	RLMarkerAttribute.CS_NESTED_TRY_BLOCK, null,											
 												trystat.toString(), trystat.getStartPosition(),
@@ -329,7 +329,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 //			nestedTryList.add(csmsg);	
 		}
 		
-		// ³B²zTry Block
+		// è™•ç†Try Block
 		ExceptionAnalyzer visitor = new ExceptionAnalyzer(root, true, createParentId());
 		trystat.getBody().accept(visitor);
 		
@@ -350,7 +350,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 			
 			cc = (CatchClause) catchList.get(i);
 			
-			// ³B²z¦U­ÓCatch
+			// è™•ç†å„å€‹Catch
 			SingleVariableDeclaration svd = (SingleVariableDeclaration) cc.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
 			//logger.debug("\t#####===>CatchClause= "+cc.toString() );
 			
@@ -358,21 +358,21 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 				continue;
 			}
 			
-			//¨ú±oCatch¤ºªºSuppressSmell Annotation
+			//å–å¾—Catchå…§çš„SuppressSmell Annotation
 //			List<?> modifyList = svd.modifiers();
 //			for (int j = 0; j < modifyList.size(); j++) {
 //				if (modifyList.get(j) instanceof Annotation) {
 //					Annotation annotation = (Annotation) modifyList.get(j);
 //					IAnnotationBinding iab  = annotation.resolveAnnotationBinding();
-//					//§PÂ_Annotation Type¬O§_¬°SuppressSmell
+//					//åˆ¤æ–·Annotation Typeæ˜¯å¦ç‚ºSuppressSmell
 //					if (iab.getAnnotationType().getQualifiedName().equals(SuppressSmell.class.getName())) {
 //						IMemberValuePairBinding[] mvpb = iab.getAllMemberValuePairs();
 //
 //						SSMessage ssmsg = new SSMessage(cc.getStartPosition(), getLineNumber(cc.getStartPosition()), i);
-//						//­YAnnotation¤º®e¬°String
+//						//è‹¥Annotationå…§å®¹ç‚ºString
 //						if (mvpb[0].getValue() instanceof String) {
 //							ssmsg.addSmellList((String) mvpb[0].getValue());
-//						//­YAnnotation¤º®e¬°Array
+//						//è‹¥Annotationå…§å®¹ç‚ºArray
 //						} else if (mvpb[0].getValue() instanceof Object[]) {
 //							Object[] values = (Object[]) mvpb[0].getValue();
 //							for (Object obj : values) {
@@ -407,7 +407,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 			// "\t\t[END]" + cc.getBody().getStartPosition());
 		}
 
-		// ³B²zFinally Block
+		// è™•ç†Finally Block
 		Block finallyBlock = trystat.getFinally();
 		
 		if (finallyBlock != null) {
@@ -443,7 +443,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		// logger.debug("=========>>>IAnnotationBinding[] size=" +
 		// annotationBinding.length);
 
-		// ¨ú±oAnotatoin ªº°T®§
+		// å–å¾—Anotatoin çš„è¨Šæ¯
 		for (int i = 0, size = annotationBinding.length; i < size; i++) {
 
 			// logger.debug(i + " >>>" +
@@ -465,7 +465,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 						for (int y = 0, ysize = values.length; y < ysize; y++) {
 							IAnnotationBinding binding = (IAnnotationBinding) values[y];
 
-							// ³B²zRL
+							// è™•ç†RL
 							IMemberValuePairBinding[] rlMvpb = binding.getAllMemberValuePairs();
 							if (rlMvpb.length == 2) {
 								int level = ((Integer) rlMvpb[0].getValue()).intValue();
@@ -540,7 +540,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 	}
 	
 	/**
-	 * ¬ö¿ıNested Try Blockªº¦ì¸m
+	 * ç´€éŒ„Nested Try Blockçš„ä½ç½®
 	 */
 //	public List<MarkerInfo> getNestedTryList() {
 //		return nestedTryList;
@@ -555,7 +555,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 	}
 
 	/**
-	 * ¨ú±o¥Ø«emethod¤º©Ò¦³¥i¯àµo¥Íªºexception¤Îcatch¸ê°T
+	 * å–å¾—ç›®å‰methodå…§æ‰€æœ‰å¯èƒ½ç™¼ç”Ÿçš„exceptionåŠcatchè³‡è¨Š
 	 * 
 	 * @return
 	 */
@@ -564,7 +564,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 	}
 
 	/**
-	 * ¨ú±o¥Ø«e©Ò¦bmethodªºRL°T®§
+	 * å–å¾—ç›®å‰æ‰€åœ¨methodçš„RLè¨Šæ¯
 	 * 
 	 * @return
 	 */
@@ -573,7 +573,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 	}
 	
 	/**
-	 * ¨ú±oSuppressSmell¸ê°T(¥]§tMethod¤W»PCatch¤º)
+	 * å–å¾—SuppressSmellè³‡è¨Š(åŒ…å«Methodä¸Šèˆ‡Catchå…§)
 	 * @return
 	 */
 //	public List<SSMessage> getSuppressSemllAnnotationList() {

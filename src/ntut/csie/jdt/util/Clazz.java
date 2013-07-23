@@ -2,13 +2,13 @@ package ntut.csie.jdt.util;
 
 public class Clazz {
 	/**
-	 * §PÂ_«ü©wªºclass¬O§_¬°¯S©winterfaceªº¹ê§@¡C
+	 * åˆ¤æ–·æŒ‡å®šçš„classæ˜¯å¦ç‚ºç‰¹å®šinterfaceçš„å¯¦ä½œã€‚
 	 * @param clazz
 	 * @param looking4interface
 	 * @return
 	 */
 	public static boolean isImplemented(Class<?> clazz, Class<?> looking4interface) {
-		// ¦pªG¶Ç¶i¨Óªº¬OObjectÃş§O¡A¨º´N¤£·|¦³interface¤F
+		// å¦‚æœå‚³é€²ä¾†çš„æ˜¯Objecté¡åˆ¥ï¼Œé‚£å°±ä¸æœƒæœ‰interfaceäº†
 		if( (clazz == null) || clazz.equals(Object.class)) {
 			return false;
 		}
@@ -25,7 +25,7 @@ public class Clazz {
 	}
 	
 	/**
-	 * ±qÃş§O¦WºÙ¥h´M§äÃş§O¬O§_¦s¦b
+	 * å¾é¡åˆ¥åç¨±å»å°‹æ‰¾é¡åˆ¥æ˜¯å¦å­˜åœ¨
 	 * @param className
 	 * @return
 	 */
@@ -39,8 +39,8 @@ public class Clazz {
 	}
 	
 	/**
-	 * §PÂ_¬O¤£¬O«D¨üÀË¨Ò¥~
-	 * @param exceptionName ¥]§tpackage nameªºÃş§O¦WºÙ
+	 * åˆ¤æ–·æ˜¯ä¸æ˜¯éå—æª¢ä¾‹å¤–
+	 * @param exceptionName åŒ…å«package nameçš„é¡åˆ¥åç¨±
 	 * @return
 	 */
 	public static boolean isUncheckedException(String exceptionName) {

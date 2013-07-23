@@ -35,7 +35,7 @@ public class ClassInstanceCreationVisitorTest {
 		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.FOLDERNAME_LIB_JAR, JavaProjectMaker.FOLDERNAME_BIN_CLASS);
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/" + JavaProjectMaker.RL_LIBRARY_PATH);
 		javaProjectMaker.setJREDefaultContainer();
-		// ®Ú¾Ú´ú¸ÕÀÉ®×¼Ë¥»¤º®e«Ø¥ß·sªºÀÉ®×
+		// æ ¹æ“šæ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹å»ºç«‹æ–°çš„æª”æ¡ˆ
 		javaFile2String.read(ClassInstanceCreationSampleCode.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				ClassInstanceCreationSampleCode.class.getPackage().getName(),
@@ -48,14 +48,14 @@ public class ClassInstanceCreationVisitorTest {
 		// Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(
 				JavaCore.createCompilationUnitFrom(
 						ResourcesPlugin.getWorkspace().
 						getRoot().getFile(ccExamplePath)));
 		parser.setResolveBindings(true);
 
-		// ¨ú±oAST
+		// å–å¾—AST
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
 	}
@@ -68,7 +68,7 @@ public class ClassInstanceCreationVisitorTest {
 	@Test
 	public final void testOneLineCreation() {
 		ASTNode methodDelcaration = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "createInstanceOneLine");
-		// ±qfos.flush();§ä¥X«Ø¥ßinstanceªº¦a¤è
+		// å¾fos.flush();æ‰¾å‡ºå»ºç«‹instanceçš„åœ°æ–¹
 		MethodInvocation fosFlush = (MethodInvocation)NodeFinder.perform(compilationUnit, 338, 11);
 		ASTNode fosCreation = NodeFinder.perform(compilationUnit, 277, 38);
 		classInstanceCreationVisitor = new ClassInstanceCreationVisitor(fosFlush);
@@ -79,7 +79,7 @@ public class ClassInstanceCreationVisitorTest {
 	@Test
 	public final void testTwoLineCreation() {
 		ASTNode methodDelcaration = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "createInstanceTwoLine");
-		// ±qfos.flush();§ä¥X«Ø¥ßinstanceªº¦a¤è
+		// å¾fos.flush();æ‰¾å‡ºå»ºç«‹instanceçš„åœ°æ–¹
 		MethodInvocation fosFlush = (MethodInvocation)NodeFinder.perform(compilationUnit, 535, 11);
 		ASTNode fosCreation = NodeFinder.perform(compilationUnit, 474, 38);
 		classInstanceCreationVisitor = new ClassInstanceCreationVisitor(fosFlush);
@@ -90,7 +90,7 @@ public class ClassInstanceCreationVisitorTest {
 	@Test
 	public final void testTwoLineAndNewNew() {
 		ASTNode methodDelcaration = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "createInstanceTwoLineAndNewNew");
-		// ±qfos.flush();§ä¥X«Ø¥ßinstanceªº¦a¤è
+		// å¾fos.flush();æ‰¾å‡ºå»ºç«‹instanceçš„åœ°æ–¹
 		MethodInvocation fosFlush = (MethodInvocation)NodeFinder.perform(compilationUnit, 796, 11);
 		ASTNode fosCreation = NodeFinder.perform(compilationUnit, 698, 53);
 		classInstanceCreationVisitor = new ClassInstanceCreationVisitor(fosFlush);

@@ -18,7 +18,7 @@ public class UserDefinedCarelessCleanupWeather {
 	
 	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void Shine() throws IOException {
-		throw new IOException("¹J¨ì¯Q¶³");
+		throw new IOException("é‡åˆ°çƒé›²");
 	}
 	
 	public void bark() {

@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * µ¹ TryStatementExceptionsVisitor¨Ï¥Îªº½d¨Òµ{¦¡½X¡C
- * ¥D­n¬O¤ÀªRTryStatementªº¾ã­Óµ²ºc¬O¤£¬O¥i¯à©ß¥X¨Ò¥~¡C
+ * çµ¦ TryStatementExceptionsVisitorä½¿ç”¨çš„ç¯„ä¾‹ç¨‹å¼ç¢¼ã€‚
+ * ä¸»è¦æ˜¯åˆ†æTryStatementçš„æ•´å€‹çµæ§‹æ˜¯ä¸æ˜¯å¯èƒ½æ‹‹å‡ºä¾‹å¤–ã€‚
  * @author charles
  *
  */
@@ -21,7 +21,7 @@ public class TryStatementExceptionsSampleCode {
 	}
 	
 	/**
-	 * ³o­ÓÅªÀÉ¥\¯à·|©ß¥XRuntimeException
+	 * é€™å€‹è®€æª”åŠŸèƒ½æœƒæ‹‹å‡ºRuntimeException
 	 * @return
 	 * @throws RuntimeException
 	 */
@@ -54,7 +54,7 @@ public class TryStatementExceptionsSampleCode {
 	}
 
 	/**
-	 * ³o­Ó¼gÀÉ®×¥\¯à·|©ß¥X¨âºØ¨Ò¥~
+	 * é€™å€‹å¯«æª”æ¡ˆåŠŸèƒ½æœƒæ‹‹å‡ºå…©ç¨®ä¾‹å¤–
 	 * @param outputPath
 	 * @param content
 	 * @throws FileNotFoundException
@@ -81,7 +81,7 @@ public class TryStatementExceptionsSampleCode {
 	}
 	
 	/**
-	 * ´ú¸Õ¥u¦³TryFinallyªº±¡ªp
+	 * æ¸¬è©¦åªæœ‰TryFinallyçš„æƒ…æ³
 	 * @param fos
 	 * @param outputPath
 	 * @throws IOException
@@ -95,7 +95,7 @@ public class TryStatementExceptionsSampleCode {
 	}
 	
 	/**
-	 * ´ú¸ÕTry¤¤¦³Try
+	 * æ¸¬è©¦Tryä¸­æœ‰Try
 	 */
 	public void nestedTryStatement() {
 		InputStream is = null;

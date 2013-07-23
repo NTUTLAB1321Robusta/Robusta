@@ -1,7 +1,7 @@
 package ntut.csie.csdet.fixture;
 
 /**
- * µ¹´údummy handler¨Ï¥Î
+ * çµ¦æ¸¬dummy handlerä½¿ç”¨
  * @author chewei
  */
 

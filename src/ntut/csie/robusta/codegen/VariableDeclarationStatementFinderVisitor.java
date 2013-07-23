@@ -11,13 +11,13 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 
 public class VariableDeclarationStatementFinderVisitor extends ASTVisitor {
-	/**	±N§ä¨ìªºµ²ªG¦s¦b³o¸Ì */
+	/**	å°‡æ‰¾åˆ°çš„çµæœå­˜åœ¨é€™è£¡ */
 	private VariableDeclarationStatement foundVariableDeclarationStatement;
 	
-	/** ·Q­n±q³o­Ómethod invocation§ä¥X«Å§i¥Lªºvariable declaration statement¡C */
+	/** æƒ³è¦å¾é€™å€‹method invocationæ‰¾å‡ºå®£å‘Šä»–çš„variable declaration statementã€‚ */
 	private MethodInvocation comparisingMethodInvocation;
 	
-	/** ¥u±q³o­ÓTryStatement¥h´M§ä */
+	/** åªå¾é€™å€‹TryStatementå»å°‹æ‰¾ */
 	private TryStatement specifiedSearchingNode; 
 	
 	public VariableDeclarationStatementFinderVisitor(MethodInvocation methodInvocation) {
@@ -27,15 +27,15 @@ public class VariableDeclarationStatementFinderVisitor extends ASTVisitor {
 	}
 
 	public boolean visit(VariableDeclarationFragment node) {
-		// method invocationªºÅÜ¼Æ¥i¥H¦ê«Üªø¡A§Ú­Ì¥u¨ú²Ä¤@­Ó¡C
+		// method invocationçš„è®Šæ•¸å¯ä»¥ä¸²å¾ˆé•·ï¼Œæˆ‘å€‘åªå–ç¬¬ä¸€å€‹ã€‚
 		SimpleName methodInvocationFirstVariableSimpleName = (SimpleName)comparisingMethodInvocation.getExpression();
 
-		// ¦pªG¨S¦³SimpleName¡Aªí¥Ü¥L¤£¬Oinstance.method³oºØ¼Ë¤l¡C§Ú°²¸Ë¥¦¬Oclose(instance)ªº¼Ë¤l
+		// å¦‚æœæ²’æœ‰SimpleNameï¼Œè¡¨ç¤ºä»–ä¸æ˜¯instance.methodé€™ç¨®æ¨£å­ã€‚æˆ‘å‡è£å®ƒæ˜¯close(instance)çš„æ¨£å­
 		if(methodInvocationFirstVariableSimpleName == null) {
 			return false;
 		}
 		
-		// ¦pªGÅÜ¼Æ¦W¦r¤£¤@¼Ë¡A´NÂ÷¶}§a
+		// å¦‚æœè®Šæ•¸åå­—ä¸ä¸€æ¨£ï¼Œå°±é›¢é–‹å§
 		if (!node.getName().toString().equals(
 				methodInvocationFirstVariableSimpleName.getFullyQualifiedName())) {		
 			return true;
@@ -43,7 +43,7 @@ public class VariableDeclarationStatementFinderVisitor extends ASTVisitor {
 		
 		ASTNode possibleVariableDeclarationStatement = node.getParent();
 
-		// ¦pªGnodeªº¤W¼h¤£¬OASTNode.VARIABLE_DECLARATION_STATEMENT¡A¤]Â÷¶}§a
+		// å¦‚æœnodeçš„ä¸Šå±¤ä¸æ˜¯ASTNode.VARIABLE_DECLARATION_STATEMENTï¼Œä¹Ÿé›¢é–‹å§
 		if (possibleVariableDeclarationStatement.getNodeType() != ASTNode.VARIABLE_DECLARATION_STATEMENT) {
 			return true;
 		}
@@ -51,7 +51,7 @@ public class VariableDeclarationStatementFinderVisitor extends ASTVisitor {
 		ASTNode possibleVariableDeclarationStatementMD = NodeUtils.getSpecifiedParentNode(possibleVariableDeclarationStatement, ASTNode.METHOD_DECLARATION);
 		ASTNode comparisingMethodInvocationMD = NodeUtils.getSpecifiedParentNode(comparisingMethodInvocation, ASTNode.METHOD_DECLARATION);
 		
-		// ¦pªGnode¸òpossibleVariableDeclarationStatement¦b¤£¦Pmethod declaration¸Ì­±¡A¤]Â÷¶}§a
+		// å¦‚æœnodeè·ŸpossibleVariableDeclarationStatementåœ¨ä¸åŒmethod declarationè£¡é¢ï¼Œä¹Ÿé›¢é–‹å§
 		if(possibleVariableDeclarationStatementMD.equals(comparisingMethodInvocationMD)) {
 			foundVariableDeclarationStatement = (VariableDeclarationStatement) possibleVariableDeclarationStatement;
 			return false;
@@ -65,8 +65,8 @@ public class VariableDeclarationStatementFinderVisitor extends ASTVisitor {
 	}
 	
 	/**
-	 * ¦pªG¦³«ü©wTryStatement¡A´N·|¤ñ¹ï¨âªÌªºStartPosition¬O§_¬Ûµ¥¡A¬Ûµ¥´NÄ~Äò©¹¤U§äVariableDeclaration¡C
-	 * ¦pªG¨S¦³«ü©wTryStatement¡A´N·|¨C­ÓTryStatement³£©¹¤U§ä¡C
+	 * å¦‚æœæœ‰æŒ‡å®šTryStatementï¼Œå°±æœƒæ¯”å°å…©è€…çš„StartPositionæ˜¯å¦ç›¸ç­‰ï¼Œç›¸ç­‰å°±ç¹¼çºŒå¾€ä¸‹æ‰¾VariableDeclarationã€‚
+	 * å¦‚æœæ²’æœ‰æŒ‡å®šTryStatementï¼Œå°±æœƒæ¯å€‹TryStatementéƒ½å¾€ä¸‹æ‰¾ã€‚
 	 */
 	public boolean visit(TryStatement node) {
 		if(specifiedSearchingNode == null) {

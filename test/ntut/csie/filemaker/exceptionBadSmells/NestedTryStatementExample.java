@@ -20,8 +20,8 @@ import ntut.csie.robusta.agile.exception.Robustness;
 public class NestedTryStatementExample {
 	
 	/**
-	 * ¦bfinally¤¤¥X²{±_ª¬try-catch
-	 * ¤º¥~¼htry-catchªºexception type¬°Exception¤U­±¤¤ªº¦P¤@¤l¨t¦C
+	 * åœ¨finallyä¸­å‡ºç¾å·¢ç‹€try-catch
+	 * å…§å¤–å±¤try-catchçš„exception typeç‚ºExceptionä¸‹é¢ä¸­çš„åŒä¸€å­ç³»åˆ—
 	 */
 	public void nestedFinally() {
 		try {
@@ -39,9 +39,9 @@ public class NestedTryStatementExample {
 	}
 	
 	/**
-	 * ¦bcatch¤¤¥X²{±_ª¬try-catch
-	 * ¤º¥~¼htry-catchªºexception type¬°¥~¼hCatchªºexception type¤÷Ãş§O
-	 * ¤wª¾©ó¡uRetryRefactoringTest¡v¤¤ªº¡utestAddNewVariable¡vµ¥¥|­Ó´ú¸Õ·|¥Î¨ì¡A­×§ï®É·|¼vÅT
+	 * åœ¨catchä¸­å‡ºç¾å·¢ç‹€try-catch
+	 * å…§å¤–å±¤try-catchçš„exception typeç‚ºå¤–å±¤Catchçš„exception typeçˆ¶é¡åˆ¥
+	 * å·²çŸ¥æ–¼ã€ŒRetryRefactoringTestã€ä¸­çš„ã€ŒtestAddNewVariableã€ç­‰å››å€‹æ¸¬è©¦æœƒç”¨åˆ°ï¼Œä¿®æ”¹æ™‚æœƒå½±éŸ¿
 	 */
 	public void nestedCatch_InnerCatchWithParentExceptionTypeOfOuter() {
 		try {
@@ -57,8 +57,8 @@ public class NestedTryStatementExample {
 	}
 	
 	/**
-	 * ¦bcatch¤¤¥X²{±_ª¬try-catch
-	 * ¤º¥~¼htry-catchªºexception type¤£¬°Exception¤U­±¤¤ªº¦P¤@¤l¨t¦C
+	 * åœ¨catchä¸­å‡ºç¾å·¢ç‹€try-catch
+	 * å…§å¤–å±¤try-catchçš„exception typeä¸ç‚ºExceptionä¸‹é¢ä¸­çš„åŒä¸€å­ç³»åˆ—
 	 */
 	public void nestedCatch_ExceptionOfTwoCatchWithoutParentChildRelations() {
 		try {
@@ -74,8 +74,8 @@ public class NestedTryStatementExample {
 	}
 	
 	/**
-	 * ¦bcatch¤¤¥X²{±_ª¬try-catch
-	 * ¤º¥~¼htry-catchªºexception type¬°¥~¼hCatchªºexception type¤lÃş§O
+	 * åœ¨catchä¸­å‡ºç¾å·¢ç‹€try-catch
+	 * å…§å¤–å±¤try-catchçš„exception typeç‚ºå¤–å±¤Catchçš„exception typeå­é¡åˆ¥
 	 */
 	public void nestedCatch_InnerCatchWithChildExceptionTypeOfOuter() {
 		try {
@@ -91,8 +91,8 @@ public class NestedTryStatementExample {
 	}
 	
 	/**
-	 * ¦bfinally¤¤¥X²{±_ª¬try-catch
-	 * ¤º¥~¼htry-catchªºexception type¤£¬°Exception¤U­±¤¤ªº¦P¤@¤l¨t¦C
+	 * åœ¨finallyä¸­å‡ºç¾å·¢ç‹€try-catch
+	 * å…§å¤–å±¤try-catchçš„exception typeä¸ç‚ºExceptionä¸‹é¢ä¸­çš„åŒä¸€å­ç³»åˆ—
 	 */
 	public void nestedFinallyWithTopException() {
 		try {
@@ -498,7 +498,7 @@ public class NestedTryStatementExample {
 	}
 
 	/**
-	 * Example from Ant, ¦]¬° Junit ª©¥»®t²§¦Ó¼g¥Xªº code
+	 * Example from Ant, å› ç‚º Junit ç‰ˆæœ¬å·®ç•°è€Œå¯«å‡ºçš„ code
 	 * Nested try in non-MethodDeclaration node.
 	 * @author pig
 	 */
@@ -518,7 +518,7 @@ public class NestedTryStatementExample {
 
 	/**
 	 * Nested try in constructor(It is also MethodDeclaration).
-	 * ¤º®e¦P method¡unestedFinally¡v
+	 * å…§å®¹åŒ methodã€ŒnestedFinallyã€
 	 * @author pig
 	 */
     public NestedTryStatementExample() {

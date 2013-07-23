@@ -33,15 +33,15 @@ public class SpareHandlerVisitorTest {
 	@Before
 	public void setUp() throws Exception {
 		String testProjectName = "SpareHandlerTest";
-		// Åª¨ú´ú¸ÕÀÉ®×¼Ë¥»¤º®e
+		// è®€å–æ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹
 		javaaFile2String = new JavaFileToString();
 		javaaFile2String.read(DummyAndIgnoreExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		
 		javaProjectMaker = new JavaProjectMaker(testProjectName);
 		javaProjectMaker.setJREDefaultContainer();
-		// ·s¼W±ı¸ü¤Jªºlibrary
+		// æ–°å¢æ¬²è¼‰å…¥çš„library
 		javaProjectMaker.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR + "/log4j-1.2.15.jar");
-		// ®Ú¾Ú´ú¸ÕÀÉ®×¼Ë¥»¤º®e«Ø¥ß·sªºÀÉ®×
+		// æ ¹æ“šæ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹å»ºç«‹æ–°çš„æª”æ¡ˆ
 		javaProjectMaker.createJavaFile(DummyAndIgnoreExample.class.getPackage().getName(),
 				DummyAndIgnoreExample.class.getSimpleName(),
 				"package " + DummyAndIgnoreExample.class.getPackage().getName()	+ ";\n"
@@ -51,13 +51,13 @@ public class SpareHandlerVisitorTest {
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(
 				JavaCore.createCompilationUnitFrom(
 						ResourcesPlugin.getWorkspace().
 						getRoot().getFile(dummyAndIgnoreExamplePath)));
 		parser.setResolveBindings(true);
-		// ¨ú±oAST
+		// å–å¾—AST
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
 	}
@@ -73,11 +73,11 @@ public class SpareHandlerVisitorTest {
 	
 	@Test
 	public void testVisitNode_visitTryNode() {
-		// ±qSample code¸Ì­±¨ú¥X¤@­ÓTryStatement
+		// å¾Sample codeè£¡é¢å–å‡ºä¸€å€‹TryStatement
 		SimpleTryStatementFinder simpleTryFinder = new SimpleTryStatementFinder("true_DummyHandlerCatchNestedTry");
 		compilationUnit.accept(simpleTryFinder);
 		
-		// ¨Ï¥ÎªÌ¿ï¾ÜªºTryStatement»PvisitNode¶Ç¤JªºTryStatement¬O¦P¤@­Ó
+		// ä½¿ç”¨è€…é¸æ“‡çš„TryStatementèˆ‡visitNodeå‚³å…¥çš„TryStatementæ˜¯åŒä¸€å€‹
 		SpareHandlerVisitor spareHandlerVisitor = new SpareHandlerVisitor(simpleTryFinder.getTryStatement());
 		spareHandlerVisitor.visit(simpleTryFinder.getTryStatement());
 		assertTrue(spareHandlerVisitor.getResult());
@@ -85,15 +85,15 @@ public class SpareHandlerVisitorTest {
 	
 	@Test
 	public void testVisitNode_visitATryNodeAndSelectAnotherTryNode() {
-		// ±qSample code¸Ì­±¨ú¥X²Ä¤@­ÓTryStatement
+		// å¾Sample codeè£¡é¢å–å‡ºç¬¬ä¸€å€‹TryStatement
 		SimpleTryStatementFinder simpleTryFinderUserSelect = new SimpleTryStatementFinder("true_DummyHandlerCatchNestedTry");
 		compilationUnit.accept(simpleTryFinderUserSelect);
 		
-		// ±qSample code¸Ì­±¨ú¥X²Ä¤G­ÓTryStatement
+		// å¾Sample codeè£¡é¢å–å‡ºç¬¬äºŒå€‹TryStatement
 		SimpleTryStatementFinder simpleTryFinderInputVisitNode = new SimpleTryStatementFinder("true_DummyHandlerTryNestedTry");
 		compilationUnit.accept(simpleTryFinderInputVisitNode);
 		
-		// ¨Ï¥ÎªÌ¿ï¾ÜªºTryStatement»PvisitNode¶Ç¤JªºTryStatement¬O¤£¦P¤@­Ó
+		// ä½¿ç”¨è€…é¸æ“‡çš„TryStatementèˆ‡visitNodeå‚³å…¥çš„TryStatementæ˜¯ä¸åŒä¸€å€‹
 		SpareHandlerVisitor spareHandlerVisitor = new SpareHandlerVisitor(simpleTryFinderUserSelect.getTryStatement());
 		spareHandlerVisitor.visit(simpleTryFinderInputVisitNode.getTryStatement());
 		assertFalse(spareHandlerVisitor.getResult());
@@ -101,11 +101,11 @@ public class SpareHandlerVisitorTest {
 	
 	@Test
 	public void testVisitNode_userNotSelectNode() {
-		// ±qSample code¸Ì­±¨ú¥X¤@­ÓTryStatement¸`ÂI
+		// å¾Sample codeè£¡é¢å–å‡ºä¸€å€‹TryStatementç¯€é»
 		SimpleTryStatementFinder simpleTryFinder = new SimpleTryStatementFinder("true_DummyHandlerCatchNestedTry");
 		compilationUnit.accept(simpleTryFinder);
 		
-		// ¨Ï¥ÎªÌ¨S¦³¿ï¾Ü¸`ÂI
+		// ä½¿ç”¨è€…æ²’æœ‰é¸æ“‡ç¯€é»
 		SpareHandlerVisitor spareHandlerVisitor = new SpareHandlerVisitor(null);
 		spareHandlerVisitor.visit(simpleTryFinder.getTryStatement());
 		assertFalse(spareHandlerVisitor.getResult());			
@@ -113,11 +113,11 @@ public class SpareHandlerVisitorTest {
 	
 	@Test
 	public void testProcessTryStatement_CatchNestedTry() throws Exception {
-		// ®Ú¾Ú«ü©wªº Method Name §ä¥X§Ú­Ì­nªºTryNode
+		// æ ¹æ“šæŒ‡å®šçš„ Method Name æ‰¾å‡ºæˆ‘å€‘è¦çš„TryNode
 		SimpleTryStatementFinder simpleTryFinder = new SimpleTryStatementFinder("true_DummyHandlerCatchNestedTry");
 		compilationUnit.accept(simpleTryFinder);
 		
-		// ¶}©ñprocessTryStatementªº¦s¨úÅv­­
+		// é–‹æ”¾processTryStatementçš„å­˜å–æ¬Šé™
 		Method processTryStatement = SpareHandlerVisitor.class.getDeclaredMethod("processTryStatement", ASTNode.class);
 		processTryStatement.setAccessible(true);
 		
@@ -129,11 +129,11 @@ public class SpareHandlerVisitorTest {
 	
 	@Test
 	public void testProcessTryStatement_TryNestedTry() throws Exception {
-		// ®Ú¾Ú«ü©wªº Method Name §ä¥X§Ú­Ì­nªºTryNode
+		// æ ¹æ“šæŒ‡å®šçš„ Method Name æ‰¾å‡ºæˆ‘å€‘è¦çš„TryNode
 		SimpleTryStatementFinder simpleTryFinder = new SimpleTryStatementFinder("true_DummyHandlerTryNestedTry");
 		compilationUnit.accept(simpleTryFinder);
 		
-		// ¶}©ñprocessTryStatementªº¦s¨úÅv­­
+		// é–‹æ”¾processTryStatementçš„å­˜å–æ¬Šé™
 		Method processTryStatement = SpareHandlerVisitor.class.getDeclaredMethod("processTryStatement", ASTNode.class);
 		processTryStatement.setAccessible(true);
 		
@@ -145,11 +145,11 @@ public class SpareHandlerVisitorTest {
 	
 	@Test
 	public void testProcessTryStatement_TryWithoutNested() throws Exception {
-		// ®Ú¾Ú«ü©wªº Method Name §ä¥X§Ú­Ì­nªºTryNode
+		// æ ¹æ“šæŒ‡å®šçš„ Method Name æ‰¾å‡ºæˆ‘å€‘è¦çš„TryNode
 		SimpleTryStatementFinder simpleTryFinder = new SimpleTryStatementFinder("false_rethrowRuntimeException");
 		compilationUnit.accept(simpleTryFinder);
 		
-		// ¶}©ñprocessTryStatementªº¦s¨úÅv­­
+		// é–‹æ”¾processTryStatementçš„å­˜å–æ¬Šé™
 		Method processTryStatement = SpareHandlerVisitor.class.getDeclaredMethod("processTryStatement", ASTNode.class);
 		processTryStatement.setAccessible(true);
 		

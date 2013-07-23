@@ -8,7 +8,7 @@ import java.io.IOException;
 public class CarelessCleanupCloseInFinallyRaisedExceptionNotInTryExample {
 
 	/**
-	 * ·|µo¥ÍCareless Cleanupªº±¡ªp
+	 * æœƒç™¼ç”ŸCareless Cleanupçš„æƒ…æ³
 	 * @throws IOException
 	 */
 	public void true_readFile() throws IOException {
@@ -29,7 +29,7 @@ public class CarelessCleanupCloseInFinallyRaisedExceptionNotInTryExample {
 	}
 	
 	/**
-	 * ¤£·|³Q»{©wCareless Cleanup
+	 * ä¸æœƒè¢«èªå®šCareless Cleanup
 	 * @throws IOException
 	 */
 	public void readFile2() throws IOException {
@@ -47,14 +47,14 @@ public class CarelessCleanupCloseInFinallyRaisedExceptionNotInTryExample {
 	}
 	
 	/**
-	 * ¦]¬°FileInputStream fis = new FileInputStream(file1);°õ¦æ§¹²¦¥H«á¡A
-	 * java.io.OutputStream out = new java.io.BufferedOutputStream(new FileOutputStream(file2));¥i¯àµo¥Í¨Ò¥~¡A
-	 * ©Ò¥Hfis.close();·|ÅÜ¦¨careless cleanup¡C
+	 * å› ç‚ºFileInputStream fis = new FileInputStream(file1);åŸ·è¡Œå®Œç•¢ä»¥å¾Œï¼Œ
+	 * java.io.OutputStream out = new java.io.BufferedOutputStream(new FileOutputStream(file2));å¯èƒ½ç™¼ç”Ÿä¾‹å¤–ï¼Œ
+	 * æ‰€ä»¥fis.close();æœƒè®Šæˆcareless cleanupã€‚
 	 * <br /><br />
-	 * ¦]¬°fis.close()¥i¯à·|µo¥Í¨Ò¥~¡A
-	 * ©Ò¥Hout.close()·|ÅÜ¦¨careless cleanup¡C
+	 * å› ç‚ºfis.close()å¯èƒ½æœƒç™¼ç”Ÿä¾‹å¤–ï¼Œ
+	 * æ‰€ä»¥out.close()æœƒè®Šæˆcareless cleanupã€‚
 	 * <br /><br />
-	 * ¦ı¬OCarelessCleanupCloseInFinallyRaisedExceptionNotInTryCaused¥u·|°»´ú¨ìfis.close()¡C
+	 * ä½†æ˜¯CarelessCleanupCloseInFinallyRaisedExceptionNotInTryCausedåªæœƒåµæ¸¬åˆ°fis.close()ã€‚
 	 * @param file1
 	 * @param file2
 	 * @throws IOException
@@ -66,20 +66,20 @@ public class CarelessCleanupCloseInFinallyRaisedExceptionNotInTryExample {
 		}
 		FileInputStream fis = new FileInputStream(file1);
 		
-		// ¦pªGoutµo¥Í¨Ò¥~¡A«hfis¨ÌµM·|¦³ careless cleanup ªºÃa¨ı¹D
+		// å¦‚æœoutç™¼ç”Ÿä¾‹å¤–ï¼Œå‰‡fisä¾ç„¶æœƒæœ‰ careless cleanup çš„å£å‘³é“
 		java.io.OutputStream out = new java.io.BufferedOutputStream(new FileOutputStream(file2));
 		try {
 			while(fis.available() != 0) {
 				out.write(fis.read());
 			}
 		} finally {
-			fis.close();	// ¦]¬°new FileOutputStream·|©ß¥X¨Ò¥~¡A³y¦¨fis.close()ÅÜ¦¨careless cleanup
-			out.close();	// ¦]¬°fis.close()·|©ß¥X¨Ò¥~¡A³y¦¨out.close()ÅÜ¦¨careless cleanup
+			fis.close();	// å› ç‚ºnew FileOutputStreamæœƒæ‹‹å‡ºä¾‹å¤–ï¼Œé€ æˆfis.close()è®Šæˆcareless cleanup
+			out.close();	// å› ç‚ºfis.close()æœƒæ‹‹å‡ºä¾‹å¤–ï¼Œé€ æˆout.close()è®Šæˆcareless cleanup
 		}
 	}
 	
 	/**
-	 * StringBuilder¦b«Ø¥ßªº®É­Ô¤£·|µo¥Í¨Ò¥~¡A©Ò¥H³o¾ã­Ó¨Ò¤l¤£¬Ocareless cleanup
+	 * StringBuilderåœ¨å»ºç«‹çš„æ™‚å€™ä¸æœƒç™¼ç”Ÿä¾‹å¤–ï¼Œæ‰€ä»¥é€™æ•´å€‹ä¾‹å­ä¸æ˜¯careless cleanup
 	 * @throws IOException
 	 */
 	public void create2InstanceWithoutThrowingExceptions() throws IOException {

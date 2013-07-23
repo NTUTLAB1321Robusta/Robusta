@@ -17,44 +17,44 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 
 /**
- * ²£¥ÍSequence Diagramªº³]©wµøµ¡
+ * ç”¢ç”ŸSequence Diagramçš„è¨­å®šè¦–çª—
  */
 public class SDDialog extends Dialog{
 	
-	//¬O§_­nÅã¥ÜpackageªºRadioButton
+	//æ˜¯å¦è¦é¡¯ç¤ºpackageçš„RadioButton
 	private Button packageRadBtn;
-	//¥uÅã¥ÜclassªºRadioButton	
+	//åªé¡¯ç¤ºclassçš„RadioButton	
 	private Button classRadBtn;
-	//¬O§_­n¥şÅã¥Ü©Ò¦³ªºpackage¦W¦rªºRadioButton
+	//æ˜¯å¦è¦å…¨é¡¯ç¤ºæ‰€æœ‰çš„packageåå­—çš„RadioButton
 	private Button allRadBtn;
-	//¿ï¾ÜPackage¼Æ¥Øªº«ö¶s(¥Ñ³Ì¤W¼h©¹¤U¼Æ)
+	//é¸æ“‡Packageæ•¸ç›®çš„æŒ‰éˆ•(ç”±æœ€ä¸Šå±¤å¾€ä¸‹æ•¸)
 	private Button topDownRadBtn;
 	private Spinner topDownSpinner;
-	//¿ï¾ÜPackage¼Æ¥Øªº«ö¶s(¥Ñ³Ì¤U¼h©¹¤W¼Æ)
+	//é¸æ“‡Packageæ•¸ç›®çš„æŒ‰éˆ•(ç”±æœ€ä¸‹å±¤å¾€ä¸Šæ•¸)
 	private Button buttonUpRadBtn;
 	private Spinner buttonUpSpinner;
 	
-	//¿ï¾ÜÅã¥ÜRL
+	//é¸æ“‡é¡¯ç¤ºRL
 	private Button showRLRadBtn;
 	private Button notShowRLRadBtn;
-	//¿ï¾ÜÅã¥ÜException Path
+	//é¸æ“‡é¡¯ç¤ºException Path
 	private Button showAllPathRadBtn;
 	private Button onlyShowNameRadBtn;
 	
-	//¬O§_¿ï¾ÜÅã¥Üpackage
+	//æ˜¯å¦é¸æ“‡é¡¯ç¤ºpackage
 	private boolean isPackage;
-	//¬O§_¿ï¾Ü¥ş³¡package³£Åã¥Ü
+	//æ˜¯å¦é¸æ“‡å…¨éƒ¨packageéƒ½é¡¯ç¤º
 	private boolean isShowAll;
-	//¬O§_Åã¥Ü¥Ñ¤W¨ì¤U¡A§_«h¥Ñ¤W¨ì¤W
+	//æ˜¯å¦é¡¯ç¤ºç”±ä¸Šåˆ°ä¸‹ï¼Œå¦å‰‡ç”±ä¸Šåˆ°ä¸Š
 	private boolean isTopDown;
-	//±ıÅã¥Üpackage¼ÆªºÅÜ¼Æ
+	//æ¬²é¡¯ç¤ºpackageæ•¸çš„è®Šæ•¸
 	private int packageCount;
-	//¬O§_Åã¥ÜRobustness¸ê°T
+	//æ˜¯å¦é¡¯ç¤ºRobustnessè³‡è¨Š
 	private boolean isShowRL;
-	//¬O§_Åã¥Ü§¹¾ãªºException¸ô®|
+	//æ˜¯å¦é¡¯ç¤ºå®Œæ•´çš„Exceptionè·¯å¾‘
 	private boolean isShowAllPath;
 
-	//¬O§_¿ï¾ÜCancel
+	//æ˜¯å¦é¸æ“‡Cancel
 	private boolean isCancel = true;
 
 	/**
@@ -83,7 +83,7 @@ public class SDDialog extends Dialog{
 
 		packageRadBtn = new Button(container, SWT.RADIO);
 		packageRadBtn.setLayoutData(new GridData());
-		packageRadBtn.setText("Åã¥ÜPackage©MClass¦WºÙ");
+		packageRadBtn.setText("é¡¯ç¤ºPackageå’ŒClassåç¨±");
 
 		final Composite composite = new Composite(container, SWT.NONE);
 		composite.setLayoutData(new GridData());
@@ -91,50 +91,50 @@ public class SDDialog extends Dialog{
 		gridLayout_1.numColumns = 3;
 		composite.setLayout(gridLayout_1);
 
-		//¥[¤JªÅ¥ÕLabel (¬°¤FÁY±Æ)
+		//åŠ å…¥ç©ºç™½Label (ç‚ºäº†ç¸®æ’)
 		final Label spaceLabel1 = new Label(composite, SWT.NONE);
 		spaceLabel1.setLayoutData(new GridData());
 		spaceLabel1.setText("                                  ");
 
 		allRadBtn = new Button(composite, SWT.RADIO);
 		allRadBtn.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
-		allRadBtn.setText("¥ş³¡ªºPackage¦WºÙ³£Åã¥Ü");
+		allRadBtn.setText("å…¨éƒ¨çš„Packageåç¨±éƒ½é¡¯ç¤º");
 		new Label(composite, SWT.NONE);
 
 		topDownRadBtn = new Button(composite, SWT.RADIO);
-		topDownRadBtn.setText("¿ï¾ÜPackage¼Æ¥Ø(¥Ñ³Ì¤W¼h©¹¤U¼Æ)");
+		topDownRadBtn.setText("é¸æ“‡Packageæ•¸ç›®(ç”±æœ€ä¸Šå±¤å¾€ä¸‹æ•¸)");
 		topDownSpinner = new Spinner(composite, SWT.BORDER);
 		new Label(composite, SWT.NONE);
 		
 		buttonUpRadBtn = new Button(composite, SWT.RADIO);
-		buttonUpRadBtn.setText("¿ï¾ÜPackage¼Æ¥Ø(¥Ñ³Ì¤U¼h©¹¤W¼Æ)");
+		buttonUpRadBtn.setText("é¸æ“‡Packageæ•¸ç›®(ç”±æœ€ä¸‹å±¤å¾€ä¸Šæ•¸)");
 		buttonUpSpinner = new Spinner(composite, SWT.BORDER);
 
 		classRadBtn = new Button(container, SWT.RADIO);
 		classRadBtn.setLayoutData(new GridData());
-		classRadBtn.setText("¥uÅã¥ÜClass¦WºÙ");
+		classRadBtn.setText("åªé¡¯ç¤ºClassåç¨±");
 
-		//¤À¹j½u-----------------
+		//åˆ†éš”ç·š-----------------
 		final Label separator = new Label(container, SWT.SEPARATOR | SWT.HORIZONTAL);
 		final GridData separatorGridData = new GridData(385, SWT.DEFAULT);
 		separator.setLayoutData(separatorGridData);
 
-		//Robustness Levelªº¿ï¶µ
+		//Robustness Levelçš„é¸é …
 		final Label robustnessLevelLabel = new Label(container, SWT.NONE);
 		robustnessLevelLabel.setFont(new Font(null, "default", 10, SWT.BOLD));
 		robustnessLevelLabel.setLayoutData(new GridData());
 		robustnessLevelLabel.setText("Note:");
 
-		//Robustness LevelªºComposite
+		//Robustness Levelçš„Composite
 		final Composite robustComposite = new Composite(container, SWT.NONE);
 		final GridData robustWidthGridData = new GridData(386, SWT.DEFAULT);
 		robustComposite.setLayoutData(robustWidthGridData);
 		final GridLayout robustColumnGridData = new GridLayout();
 		robustComposite.setLayout(robustColumnGridData);
 
-		//Åã¥ÜRobustness Level
+		//é¡¯ç¤ºRobustness Level
 		showRLRadBtn = new Button(robustComposite, SWT.RADIO);
-		showRLRadBtn.setText("Åã¥ÜRobustness¸ê°T");
+		showRLRadBtn.setText("é¡¯ç¤ºRobustnessè³‡è¨Š");
 		
 		final Composite subComposite = new Composite(robustComposite, SWT.NONE);
 		subComposite.setLayoutData(new GridData(380, SWT.DEFAULT));
@@ -142,62 +142,62 @@ public class SDDialog extends Dialog{
 		subGridLayout.numColumns = 2;
 		subComposite.setLayout(subGridLayout);
 
-		//¥[¤JªÅ¥ÕLabel (¬°¤FÁY±Æ)
+		//åŠ å…¥ç©ºç™½Label (ç‚ºäº†ç¸®æ’)
 		final Label spaceLabel2 = new Label(subComposite, SWT.NONE);
 		spaceLabel2.setLayoutData(new GridData(99, SWT.DEFAULT));
 		spaceLabel2.setText("                                  ");
 
-		//¤£Åã¥ÜRobustness Level
+		//ä¸é¡¯ç¤ºRobustness Level
 		notShowRLRadBtn = new Button(robustComposite, SWT.RADIO);
 		notShowRLRadBtn.setLayoutData(new GridData(379, SWT.DEFAULT));
-		notShowRLRadBtn.setText("¤£Åã¥ÜRobustness¸ê°T");
+		notShowRLRadBtn.setText("ä¸é¡¯ç¤ºRobustnessè³‡è¨Š");
 
-		//¬O§_Åã¥ÜException§¹¾ã¸ô®|
+		//æ˜¯å¦é¡¯ç¤ºExceptionå®Œæ•´è·¯å¾‘
 		showAllPathRadBtn = new Button(subComposite, SWT.RADIO);
 		showAllPathRadBtn.setLayoutData(new GridData(266, SWT.DEFAULT));
-		showAllPathRadBtn.setText("Åã¥Ü§¹¾ãªº¨Ò¥~¸ô®|");
+		showAllPathRadBtn.setText("é¡¯ç¤ºå®Œæ•´çš„ä¾‹å¤–è·¯å¾‘");
 		new Label(subComposite, SWT.NONE);
-		//¥uÅã¥ÜException¦WºÙ
+		//åªé¡¯ç¤ºExceptionåç¨±
 		onlyShowNameRadBtn = new Button(subComposite, SWT.RADIO);
-		onlyShowNameRadBtn.setText("¥uÅã¥Ü¨Ò¥~¦WºÙ");
+		onlyShowNameRadBtn.setText("åªé¡¯ç¤ºä¾‹å¤–åç¨±");
 		
-		//¥[¤J¨Æ¥óªººÊÅ¥
+		//åŠ å…¥äº‹ä»¶çš„ç›£è½
 		addEventListener();
 		
-		//ªì©lª¬ºA
+		//åˆå§‹ç‹€æ…‹
 		initialState();
 		
 		return container;
 	}
 
 	/**
-	 * ¥[¤J¨Æ¥óªººÊÅ¥
+	 * åŠ å…¥äº‹ä»¶çš„ç›£è½
 	 */
 	private void addEventListener() {
-		//­Y«ö¤UÅã¥Üpackage«ö¶s¡A§âÅã¥Ü©Ò¦³package©M¿ï¾Üpackage¼Æ«ö¶s³]¦¨¯à¿ï
+		//è‹¥æŒ‰ä¸‹é¡¯ç¤ºpackageæŒ‰éˆ•ï¼ŒæŠŠé¡¯ç¤ºæ‰€æœ‰packageå’Œé¸æ“‡packageæ•¸æŒ‰éˆ•è¨­æˆèƒ½é¸
 		packageRadBtn.addSelectionListener(new SelectionAdapter(){
 			public void widgetSelected(final SelectionEvent e)
 			{
-				//§âpackage«ö¶s³]¦¨true
+				//æŠŠpackageæŒ‰éˆ•è¨­æˆtrue
 				setPackageRadBtn(true);
-				//­Y¬O¿ï¾Ü­nÅã¥Üpackage¥B¿ï¾Ü¨ì¿ï¾Üpackage¼Æ¥Ø¡A§â¼Æ¦rSpinner¥´¶}
+				//è‹¥æ˜¯é¸æ“‡è¦é¡¯ç¤ºpackageä¸”é¸æ“‡åˆ°é¸æ“‡packageæ•¸ç›®ï¼ŒæŠŠæ•¸å­—Spinneræ‰“é–‹
 				if (topDownRadBtn.getSelection())
 					topDownSpinner.setEnabled(true);
 				if (buttonUpRadBtn.getSelection())
 					buttonUpSpinner.setEnabled(true);
 			}
 		});
-		//­Y«ö¤U¥uÅã¥Üclass«ö¶s¡A§âÅã¥Ü©Ò¦³package©M¿ï¾Üpackage¼Æ«ö¶s³]¦¨¤£¯à¿ï
+		//è‹¥æŒ‰ä¸‹åªé¡¯ç¤ºclassæŒ‰éˆ•ï¼ŒæŠŠé¡¯ç¤ºæ‰€æœ‰packageå’Œé¸æ“‡packageæ•¸æŒ‰éˆ•è¨­æˆä¸èƒ½é¸
 		classRadBtn.addSelectionListener(new SelectionAdapter(){
 			public void widgetSelected(final SelectionEvent e)
 			{
-				//§âpackage«ö¶s³]¦¨false
+				//æŠŠpackageæŒ‰éˆ•è¨­æˆfalse
 				setPackageRadBtn(false);
 				topDownSpinner.setEnabled(false);
 				buttonUpSpinner.setEnabled(false);
 			}
 		});
-		//­Y«ö¤UÅã¥Ü©Ò¦³package¡A§â¿ï¾Üpackage¼ÆªºSpinnerÅÜ¦¨¤£¯à¿ï
+		//è‹¥æŒ‰ä¸‹é¡¯ç¤ºæ‰€æœ‰packageï¼ŒæŠŠé¸æ“‡packageæ•¸çš„Spinnerè®Šæˆä¸èƒ½é¸
 		allRadBtn.addSelectionListener(new SelectionAdapter(){
 			public void widgetSelected(final SelectionEvent e)
 			{
@@ -205,7 +205,7 @@ public class SDDialog extends Dialog{
 				buttonUpSpinner.setEnabled(false);
 			}
 		});
-		//­Y«ö¤UTopDown«ö¶s¡A§âTopDownªºSpinner³]¦¨¥i¿ï¡BButtonUpªºSpinner³]¦¨¤£¯à¿ï
+		//è‹¥æŒ‰ä¸‹TopDownæŒ‰éˆ•ï¼ŒæŠŠTopDownçš„Spinnerè¨­æˆå¯é¸ã€ButtonUpçš„Spinnerè¨­æˆä¸èƒ½é¸
 		topDownRadBtn.addSelectionListener(new SelectionAdapter(){
 			public void widgetSelected(final SelectionEvent e) 
 			{
@@ -213,7 +213,7 @@ public class SDDialog extends Dialog{
 				buttonUpSpinner.setEnabled(false);
 			}
 		});
-		//­Y«ö¤UButtonUp«ö¶s¡A§âButtonUpªºSpinner³]¦¨¥i¿ï¡BTopDownªºSpinner³]¦¨¤£¯à¿ï
+		//è‹¥æŒ‰ä¸‹ButtonUpæŒ‰éˆ•ï¼ŒæŠŠButtonUpçš„Spinnerè¨­æˆå¯é¸ã€TopDownçš„Spinnerè¨­æˆä¸èƒ½é¸
 		buttonUpRadBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e)
 			{
@@ -221,7 +221,7 @@ public class SDDialog extends Dialog{
 				buttonUpSpinner.setEnabled(true);
 			}
 		});
-		//¤£Åã¥ÜRL¸ê°T
+		//ä¸é¡¯ç¤ºRLè³‡è¨Š
 		notShowRLRadBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e)
 			{
@@ -229,7 +229,7 @@ public class SDDialog extends Dialog{
 				onlyShowNameRadBtn.setEnabled(false);
 			}
 		});
-		//Åã¥ÜRL¸ê°T
+		//é¡¯ç¤ºRLè³‡è¨Š
 		showRLRadBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e)
 			{
@@ -240,10 +240,10 @@ public class SDDialog extends Dialog{
 	}
 	
 	/**
-	 * ªì©lª¬ºA
+	 * åˆå§‹ç‹€æ…‹
 	 */
 	private void initialState() {
-		//ªì©lª¬ºA
+		//åˆå§‹ç‹€æ…‹
 		packageRadBtn.setSelection(true);
 		allRadBtn.setSelection(true);
 
@@ -284,7 +284,7 @@ public class SDDialog extends Dialog{
 		isShowRL = showRLRadBtn.getSelection();
 		isShowAllPath = showAllPathRadBtn.getSelection();
 
-		//packageCount¥Ñ¿ï¾ÜTopDown©ÎButtonªºSpinner¨Ó¨M©w
+		//packageCountç”±é¸æ“‡TopDownæˆ–Buttonçš„Spinnerä¾†æ±ºå®š
 		if (isTopDown)
 			packageCount = topDownSpinner.getSelection();
 		else
@@ -295,28 +295,28 @@ public class SDDialog extends Dialog{
 	@Override
 	protected void cancelPressed()
 	{
-		//­Y«ö¤U¨ú®øÁä¡A°O¿ı°_¨Ó
+		//è‹¥æŒ‰ä¸‹å–æ¶ˆéµï¼Œè¨˜éŒ„èµ·ä¾†
 		isCancel = true;
 		super.cancelPressed();
 	}
 
-	//¶Ç¥X¬O§_Cancel
+	//å‚³å‡ºæ˜¯å¦Cancel
 	public boolean isCancel(){
 		return isCancel;
 	}
-	//¶Ç¥X¬O§_¿ï¾Ü"­nÅã¥Üpackage"
+	//å‚³å‡ºæ˜¯å¦é¸æ“‡"è¦é¡¯ç¤ºpackage"
 	public boolean isShowPackage(){
 		return isPackage;
 	}
-	//¶Ç¥X¬O§_¿ï¾Ü"§â©Ò¦³package³£Åã¥Ü"
+	//å‚³å‡ºæ˜¯å¦é¸æ“‡"æŠŠæ‰€æœ‰packageéƒ½é¡¯ç¤º"
 	public boolean isShowAllPackage(){
 		return isShowAll;
 	}
-	//¶Ç¥X¬O§_¿ï¾Ü"¥Ñ¤W©¹¤UÅã¥Ü"
+	//å‚³å‡ºæ˜¯å¦é¸æ“‡"ç”±ä¸Šå¾€ä¸‹é¡¯ç¤º"
 	public boolean isTopDown(){
 		return isTopDown;
 	}
-	//¶Ç¥X"­nÅã¥Üpackageªº¶¥¼h¼Æ"
+	//å‚³å‡º"è¦é¡¯ç¤ºpackageçš„éšå±¤æ•¸"
 	public int getPackageCount(){
 			return packageCount;
 	}
@@ -327,7 +327,7 @@ public class SDDialog extends Dialog{
 		return isShowAllPath;
 	}
 
-	//³]©wPackage¨t¦C«ö¶s¬°true©Îfalse
+	//è¨­å®šPackageç³»åˆ—æŒ‰éˆ•ç‚ºtrueæˆ–false
 	private void setPackageRadBtn(boolean trueOrfalse) {
 		allRadBtn.setEnabled(trueOrfalse);
 		topDownRadBtn.setEnabled(trueOrfalse);

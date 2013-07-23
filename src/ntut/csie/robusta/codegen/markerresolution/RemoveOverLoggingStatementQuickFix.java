@@ -20,8 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * ³Q¥[¤Wover logging markerªºµ{¦¡½X¡A¥i¥H§Q¥Î³o­ÓClass¨Ó²¾°£Ãa¨ı¹D¡C
- * ¦pªG¶}µo¤H­û¦³¨â¦æ¤@¼Ò¤@¼Ëªºµ{¦¡½XÄİ©óover logging markerªºÃa¨ı¹D¡A³oÃä¤@¦¸¥u·|²¾°£¤@¦æ¡C
+ * è¢«åŠ ä¸Šover logging markerçš„ç¨‹å¼ç¢¼ï¼Œå¯ä»¥åˆ©ç”¨é€™å€‹Classä¾†ç§»é™¤å£å‘³é“ã€‚
+ * å¦‚æœé–‹ç™¼äººå“¡æœ‰å…©è¡Œä¸€æ¨¡ä¸€æ¨£çš„ç¨‹å¼ç¢¼å±¬æ–¼over logging markerçš„å£å‘³é“ï¼Œé€™é‚Šä¸€æ¬¡åªæœƒç§»é™¤ä¸€è¡Œã€‚
  * @author Charles
  *
  */
@@ -75,8 +75,8 @@ public class RemoveOverLoggingStatementQuickFix implements IMarkerResolution {
 		}
 		
 		/*
-		 * ¦]¬°Over Loggingªº¸ê°T¥u¦³log¸Ó¦æªºLine Number¡A
-		 * ©Ò¥H³oÃä¬O³z¹L¦æ¸¹¨Ó´M§ä¸Ó¦æµ{¦¡½Xªº¤º®e¡C
+		 * å› ç‚ºOver Loggingçš„è³‡è¨Šåªæœ‰logè©²è¡Œçš„Line Numberï¼Œ
+		 * æ‰€ä»¥é€™é‚Šæ˜¯é€éè¡Œè™Ÿä¾†å°‹æ‰¾è©²è¡Œç¨‹å¼ç¢¼çš„å…§å®¹ã€‚
 		 */
 		int overLoggingCodeLineNumber = findOverLoggingCodeLineNumber(methodDeclaration, Integer.parseInt(msgIdx));
 		ExpressionStatementLineNumberFinderVisitor expressionStatementLineNumberFinderVisitor = new ExpressionStatementLineNumberFinderVisitor(compilationUnit, overLoggingCodeLineNumber);
@@ -84,7 +84,7 @@ public class RemoveOverLoggingStatementQuickFix implements IMarkerResolution {
 		String overLoggingStatement = expressionStatementLineNumberFinderVisitor.getExpressionStatement().getExpression().toString();
 		
 		/*
-		 * §ä¨ìµ{¦¡½X¤º®e¥H«á¡A¦A§â¸Ó¦æ§R±¼¡C
+		 * æ‰¾åˆ°ç¨‹å¼ç¢¼å…§å®¹ä»¥å¾Œï¼Œå†æŠŠè©²è¡Œåˆªæ‰ã€‚
 		 */
 		quickFixCore.removeNodeInCatchClause(exactlyCatchClause, overLoggingStatement);
 		
@@ -92,7 +92,7 @@ public class RemoveOverLoggingStatementQuickFix implements IMarkerResolution {
 	}
 	
 	/**
-	 * ±qIMaker»`¶°Ãa¨ı¹Dªº¬ÛÃö¸ê°T
+	 * å¾IMakerè’é›†å£å‘³é“çš„ç›¸é—œè³‡è¨Š
 	 * @param marker
 	 * @return
 	 * @throws CoreException
@@ -111,7 +111,7 @@ public class RemoveOverLoggingStatementQuickFix implements IMarkerResolution {
 			}
 			methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
 			msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX); 
-			// ¤£¥ÎÃhºÃ¡A·í®É¬ö¿ıMarker¬O¬ö¿ıCatch clause ªº Start position
+			// ä¸ç”¨æ‡·ç–‘ï¼Œç•¶æ™‚ç´€éŒ„Markeræ˜¯ç´€éŒ„Catch clause çš„ Start position
 			ccStartPosition = marker.getAttribute(RLMarkerAttribute.RL_INFO_SRC_POS).toString();
 		} catch (CoreException e) {
 			logger.error(e.getMessage());
@@ -125,7 +125,7 @@ public class RemoveOverLoggingStatementQuickFix implements IMarkerResolution {
 	}
 	
 	/**
-	 * ¨ú±o¦³Over LoggingÃa¨ı¹D¸Ó¦æµ{¦¡½Xªº¦æ¸¹
+	 * å–å¾—æœ‰Over Loggingå£å‘³é“è©²è¡Œç¨‹å¼ç¢¼çš„è¡Œè™Ÿ
 	 * @param currentMethodNode
 	 * @param markerInfoIndex
 	 * @return
@@ -133,10 +133,10 @@ public class RemoveOverLoggingStatementQuickFix implements IMarkerResolution {
 	private int findOverLoggingCodeLineNumber(MethodDeclaration currentMethodNode, int markerInfoIndex) {
 		List<MarkerInfo> loggingMarkers = null;
 		if (currentMethodNode != null) {
-			// ´M§ä¸Ómethod¤ºªºOverLogging
+			// å°‹æ‰¾è©²methodå…§çš„OverLogging
 			OverLoggingDetector loggingDetector = new OverLoggingDetector(quickFixCore.getCompilationUnit(), currentMethodNode);
 			loggingDetector.detect();
-			// ¨ú±o±M®×¤¤OverLogging
+			// å–å¾—å°ˆæ¡ˆä¸­OverLogging
 			loggingMarkers = loggingDetector.getOverLoggingList();
 		}
 		MarkerInfo markerInfo = loggingMarkers.get(markerInfoIndex);

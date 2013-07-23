@@ -26,7 +26,7 @@ public class RLChecker {
 		this.exList = visitor.getExceptionList();
 		this.rlList = visitor.getMethodRLAnnotationList();
 
-		// ¨ú±o³Ì¤jªºKey Size
+		// å–å¾—æœ€å¤§çš„Key Size
 		for (RLMessage msg : exList) {
 			if (msg.getKeySize() > maxKeySize) {
 				maxKeySize = msg.getKeySize();
@@ -42,11 +42,11 @@ public class RLChecker {
 			ConsoleLog.debug("[check]max key size=" + maxKeySize);
 		}
 
-		// ¥Ñ¤º¦V¥~­åªRException call chain
+		// ç”±å…§å‘å¤–å‰–æException call chain
 		for (int idx = maxKeySize; idx > 0; idx--) {
 
 			String lastPreKey = "";
-			// ¥Ø«eªºTry¶¥¼h¼Æ
+			// ç›®å‰çš„Tryéšå±¤æ•¸
 			int lastTryLevel = 0;
 			boolean isFirst = true;
 			RLMessage msg = null;
@@ -57,7 +57,7 @@ public class RLChecker {
 
 					if (msg.getKeySize() == idx) {
 
-						// ³B²z¦P¤@µ¥¯Å
+						// è™•ç†åŒä¸€ç­‰ç´š
 						String preKey = idx >= 2 ? msg.getKeyString(idx - 2) : "ROOT";
 						String levelKey = msg.getKeyList().get(idx - 1);
 						String[] keyItems = new StrTokenizer(levelKey, ".").getTokenArray();
@@ -98,7 +98,7 @@ public class RLChecker {
 		}
 		this.checkRLHandling();
 
-		//ConsoleLog.debug("[check]ªá¶O®É¶¡¡G" + (System.currentTimeMillis() - t1) + " ms");
+		//ConsoleLog.debug("[check]èŠ±è²»æ™‚é–“ï¼š" + (System.currentTimeMillis() - t1) + " ms");
 
 		return this.exList;
 	}
@@ -138,7 +138,7 @@ public class RLChecker {
 		}
 
 		try {
-			// §PÂ_Catch¬O§_¦³³B²zthrowªºException
+			// åˆ¤æ–·Catchæ˜¯å¦æœ‰è™•ç†throwçš„Exception
 			for (Integer catchIdx : catchList) {
 				RLMessage catchMsg = this.exList.get(catchIdx);
 
@@ -152,7 +152,7 @@ public class RLChecker {
 						ConsoleLog.debug("[checkHandling] throwMsg=" + throwMsg);
 					}
 					if (!throwMsg.isHandling()) {
-						// §PÂ_catch¥u¯àcatch¤ñ¦Û¤w¦ì¸m¤pªºException¥B»İÀË¬dÃş§O¥]§t¤§Ãö«Y
+						// åˆ¤æ–·catchåªèƒ½catchæ¯”è‡ªå·²ä½ç½®å°çš„Exceptionä¸”éœ€æª¢æŸ¥é¡åˆ¥åŒ…å«ä¹‹é—œä¿‚
 						if (throwMsg.getPosition() < catchMsg.getPosition()
 								&& throwMsg.equalClassType(catchMsg.getRLData().getExceptionType())) {
 							throwMsg.setHandling(true);
@@ -163,7 +163,7 @@ public class RLChecker {
 				}
 			}
 
-			// ±N¥¼³B²zªºException©¹¤W¤@Level¶Ç
+			// å°‡æœªè™•ç†çš„Exceptionå¾€ä¸Šä¸€Levelå‚³
 			for (Integer throwIdx : throwList) {
 				RLMessage throwMsg = this.exList.get(throwIdx);
 				if (!throwMsg.isHandling()) {

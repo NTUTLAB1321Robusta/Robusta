@@ -62,10 +62,10 @@ public class OverLoggingRefactorTest {
 	@Before
 	public void setUp() throws Exception {
 		projectName = "OverLoggingExampleProject";
-		// Åª¨ú´ú¸ÕÀÉ®×¼Ë¥»¤º®e
+		// è®€å–æ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹
 		javaFile2String = new JavaFileToString();
 		javaProjectMaker = new JavaProjectMaker(projectName);
-		// ·s¼W±ı¸ü¤Jªºlibrary
+		// æ–°å¢æ¬²è¼‰å…¥çš„library
 		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(
 				JavaProjectMaker.FOLDERNAME_LIB_JAR,
 				JavaProjectMaker.FOLDERNAME_BIN_CLASS);
@@ -79,7 +79,7 @@ public class OverLoggingRefactorTest {
 						+ "/slf4j-api-1.5.0.jar");
 		javaProjectMaker.setJREDefaultContainer();
 		
-		// ®Ú¾Ú´ú¸ÕÀÉ®×¼Ë¥»¤º®e«Ø¥ß·sªºÀÉ®×
+		// æ ¹æ“šæ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹å»ºç«‹æ–°çš„æª”æ¡ˆ
 		javaFile2String.read(OverLoggingIntegrationExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(OverLoggingIntegrationExample.class.getPackage().getName(),
 										OverLoggingIntegrationExample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
@@ -129,7 +129,7 @@ public class OverLoggingRefactorTest {
 										+ ";\n" + javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
-		// «Ø¥ßXML
+		// å»ºç«‹XML
 		CreateSettings();
 		
 		Path path = new Path(	projectName + "/" + JavaProjectMaker.FOLDERNAME_SOURCE + "/" +
@@ -138,10 +138,10 @@ public class OverLoggingRefactorTest {
 		// Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
-		// ¨ú±oAST
+		// å–å¾—AST
 		overLoggingJavaLogExampleUnit = (CompilationUnit) parser.createAST(null); 
 		overLoggingJavaLogExampleUnit.recordModifications();
 		
@@ -152,10 +152,10 @@ public class OverLoggingRefactorTest {
 		// Create AST to parse
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
-		// ¨ú±oAST
+		// å–å¾—AST
 		overLoggingLog4JExampleUnit = (CompilationUnit) parser.createAST(null); 
 		overLoggingLog4JExampleUnit.recordModifications();
 		
@@ -166,10 +166,10 @@ public class OverLoggingRefactorTest {
 		// Create AST to parse
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
-		// ¨ú±oAST
+		// å–å¾—AST
 		overLoggingSelf4JExampleUnit = (CompilationUnit) parser.createAST(null); 
 		overLoggingRefactor = new OverLoggingRefactor();
 	}
@@ -177,10 +177,10 @@ public class OverLoggingRefactorTest {
 	@After
 	public void tearDown() throws Exception {
 		File xmlFile = new File(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		// ¦pªGxmlÀÉ®×¦s¦b¡A«h§R°£¤§
+		// å¦‚æœxmlæª”æ¡ˆå­˜åœ¨ï¼Œå‰‡åˆªé™¤ä¹‹
 		if(xmlFile.exists())
 			assertTrue(xmlFile.delete());
-		// §R°£±M®×
+		// åˆªé™¤å°ˆæ¡ˆ
 		javaProjectMaker.deleteProject();
 	}
 
@@ -291,7 +291,7 @@ public class OverLoggingRefactorTest {
 		Method getIsKeepTrace = OverLoggingRefactor.class.getDeclaredMethod("getIsKeepTrace", IMethod.class, IMethod.class);
 		getIsKeepTrace.setAccessible(true);
 		IMethod method = (IMethod)ASTNodeFinder.getMethodDeclarationNodeByName(overLoggingJavaLogExampleUnit, "theThirdOrderInTheSameClassWithJavaLog").resolveBinding().getJavaElement();
-		// test target ²Ä¤@­Ómethod¥Ø«e¨S¦³¥ô¦ó·N¸q¡A¥u¬O¬°¤F²Å¦X°Ñ¼Æ³W©w¡A¦ı¸Ì­±¹ê»Ú¨S¦³¥\¥Î¡A©Ò¥H¤~¨â­Ó¶Ç¤@¼Ëªº°Ñ¼Æ
+		// test target ç¬¬ä¸€å€‹methodç›®å‰æ²’æœ‰ä»»ä½•æ„ç¾©ï¼Œåªæ˜¯ç‚ºäº†ç¬¦åˆåƒæ•¸è¦å®šï¼Œä½†è£¡é¢å¯¦éš›æ²’æœ‰åŠŸç”¨ï¼Œæ‰€ä»¥æ‰å…©å€‹å‚³ä¸€æ¨£çš„åƒæ•¸
 		assertFalse((Boolean)getIsKeepTrace.invoke(overLoggingRefactor, method, method));
 		
 		method = (IMethod)ASTNodeFinder.getMethodDeclarationNodeByName(overLoggingJavaLogExampleUnit, "theSecondOrderInTheSameClassWithJavaLog").resolveBinding().getJavaElement();
@@ -673,7 +673,7 @@ public class OverLoggingRefactorTest {
 	
 	@Ignore
 	public void testRefator() {
-		fail("¥\¯à¦³°İÃD¥B·|©I¥sapplyChange¡A¬G¥ı¤£´ú");
+		fail("åŠŸèƒ½æœ‰å•é¡Œä¸”æœƒå‘¼å«applyChangeï¼Œæ•…å…ˆä¸æ¸¬");
 	}
 	
 	private void CreateSettings() {

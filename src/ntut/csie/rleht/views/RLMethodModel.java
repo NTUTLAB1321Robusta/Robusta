@@ -39,13 +39,13 @@ import org.slf4j.LoggerFactory;
 
 public class RLMethodModel {
 	private static Logger logger = LoggerFactory.getLogger(RLMethodModel.class);
-	// ¥Ø«emethodªºException¸ê°T
+	// ç›®å‰methodçš„Exceptionè³‡è¨Š
 	private List<RLMessage> exceptionList = null;
 
-	// ¥Ø«emethodªºRL Annotation¸ê°T
+	// ç›®å‰methodçš„RL Annotationè³‡è¨Š
 	private List<RLMessage> rlAnnotationList = null;
 
-	// ¥Ø«eªºMethod AST Node
+	// ç›®å‰çš„Method AST Node
 	private ASTNode methodNode = null;
 
 	private ASTHandler astHandler = null;
@@ -61,7 +61,7 @@ public class RLMethodModel {
 	}
 
 	// ************************************************************************
-	// ¨ä¥¦¨Æ¥ó¬ÛÃö³B²z
+	// å…¶å®ƒäº‹ä»¶ç›¸é—œè™•ç†
 	// ************************************************************************
 	
 	public void clear(){
@@ -101,17 +101,17 @@ public class RLMethodModel {
 	 */
 	public boolean createAST(IOpenable openable, int pos) throws CoreException {
 		if (openable == null) {
-			System.err.println("½s¿è¾¹¤º®e¤£¬Ojavaµ{¦¡¡I");
-			throw createCoreException("½s¿è¾¹¤º®e¤£¬Ojavaµ{¦¡¡I", null);
+			System.err.println("ç·¨è¼¯å™¨å…§å®¹ä¸æ˜¯javaç¨‹å¼ï¼");
+			throw createCoreException("ç·¨è¼¯å™¨å…§å®¹ä¸æ˜¯javaç¨‹å¼ï¼", null);
 		}
 
 		this.actOpenable = openable;
 
-		// §PÂ_Java·½½Xªºª©¥»¬O§_¬°1.5¥H¤W(¦]¬°­n¨Ï¥ÎAnnotation)
+		// åˆ¤æ–·Javaæºç¢¼çš„ç‰ˆæœ¬æ˜¯å¦ç‚º1.5ä»¥ä¸Š(å› ç‚ºè¦ä½¿ç”¨Annotation)
 		IJavaProject project = (IJavaProject) ((IJavaElement) actOpenable).getAncestor(IJavaElement.JAVA_PROJECT);
 		String option = project.getOption(JavaCore.COMPILER_SOURCE, true);
 		if (!JavaCore.VERSION_1_5.equals(option) && !JavaCore.VERSION_1_6.equals(option)) {
-			throw createCoreException("javaµ{¦¡¤£¬O1.5¥H¤Wª©¥»¡I", null);
+			throw createCoreException("javaç¨‹å¼ä¸æ˜¯1.5ä»¥ä¸Šç‰ˆæœ¬ï¼", null);
 		}
 
 //		if (actOpenable.getBuffer() == null) {
@@ -126,7 +126,7 @@ public class RLMethodModel {
 
 		} catch (RuntimeException ex) {
 			logger.error("[createAST] EXCEPTION ", ex);
-			throw createCoreException("µLªk²£¥ÍAST:\n" + ex.getMessage(), ex);
+			throw createCoreException("ç„¡æ³•ç”¢ç”ŸAST:\n" + ex.getMessage(), ex);
 		}
 	}
 
@@ -135,7 +135,7 @@ public class RLMethodModel {
 	}
 
 	/**
-	 * ¼W¥[Nature ¨ì¥»Project¤W
+	 * å¢åŠ Nature åˆ°æœ¬Projectä¸Š
 	 * 
 	 * @throws CoreException
 	 */
@@ -173,10 +173,10 @@ public class RLMethodModel {
 	}
 
 	/**
-	 * ±NRL Annotation°T®§¼W¥[¨ì«ü©wMethod¤W
+	 * å°‡RL Annotationè¨Šæ¯å¢åŠ åˆ°æŒ‡å®šMethodä¸Š
 	 * 
 	 * @param msg
-	 *            ¥Ø«e¨Æ¥ó©Ò¦bªºRLMessageª«¥ó°T®§
+	 *            ç›®å‰äº‹ä»¶æ‰€åœ¨çš„RLMessageç‰©ä»¶è¨Šæ¯
 	 * 
 	 * 
 	 * 
@@ -206,18 +206,18 @@ public class RLMethodModel {
 			if (add) {
 				addImportDeclaration();
 
-				// ¼W¥[²{¦b©Ò¿ïExceptionªº@Tag Annotation
+				// å¢åŠ ç¾åœ¨æ‰€é¸Exceptionçš„@Tag Annotation
 				rlary.expressions().add(getRLAnnotation(ast, msg.getRLData()));
 			}
 
-			// ¥[¤JÂÂ¦³ªº@Tag Annotation
+			// åŠ å…¥èˆŠæœ‰çš„@Tag Annotation
 			int idx = 0;
 			for (RLMessage rlmsg : rlAnnotationList) {
 				if (add) {
-					// ·s¼W
+					// æ–°å¢
 					rlary.expressions().add(getRLAnnotation(ast, rlmsg.getRLData()));
 				} else {
-					// ²¾°£
+					// ç§»é™¤
 					if (idx++ != pos) {
 						rlary.expressions().add(getRLAnnotation(ast, rlmsg.getRLData()));
 					}
@@ -257,7 +257,7 @@ public class RLMethodModel {
 
 	@SuppressWarnings("unchecked")
 	private void addImportDeclaration() {
-		// §PÂ_¬O§_¤w¸gImport Robustness¤ÎRLªº«Å§i
+		// åˆ¤æ–·æ˜¯å¦å·²ç¶“Import RobustnessåŠRLçš„å®£å‘Š
 		List<ImportDeclaration> importList = this.actRoot.imports();
 		boolean isImportRobustnessClass = false;
 		boolean isImportRLClass = false;
@@ -338,14 +338,14 @@ public class RLMethodModel {
 	}
 
 	/**
-	 * ²£¥ÍRL Annotation¤§RL¸ê®Æ
+	 * ç”¢ç”ŸRL Annotationä¹‹RLè³‡æ–™
 	 * 
 	 * @param ast
 	 *            AST Object
 	 * @param levelVal
-	 *            ±j°·«×µ¥¯Å
+	 *            å¼·å¥åº¦ç­‰ç´š
 	 * @param exClass
-	 *            ¨Ò¥~Ãş§O
+	 *            ä¾‹å¤–é¡åˆ¥
 	 * @return NormalAnnotation AST Node
 	 */
 
@@ -397,7 +397,7 @@ public class RLMethodModel {
 	// Setter/Getter
 	// ************************************************************************
 	/**
-	 * ¨ú±o¥Ø«e´å¼Ğ©Ò¦b¦æ¼Æ
+	 * å–å¾—ç›®å‰æ¸¸æ¨™æ‰€åœ¨è¡Œæ•¸
 	 * 
 	 * @param pos
 	 * @return

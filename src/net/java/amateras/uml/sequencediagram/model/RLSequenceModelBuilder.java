@@ -29,15 +29,15 @@ public class RLSequenceModelBuilder {
 
 	private Map<String, MessageModel> messageMap = new HashMap<String, MessageModel>();
 
-	//°O¿ıNote Message
+	//è¨˜éŒ„Note Message
 	private Stack<NoteModel> noteStack = new Stack<NoteModel>();
-	//°O¿ıNote Message»P¸ò¥¦°t¹ïªºInstance
+	//è¨˜éŒ„Note Messageèˆ‡è·Ÿå®ƒé…å°çš„Instance
 	private Map<NoteModel, InstanceModel > noteMap = new HashMap<NoteModel, InstanceModel>();
-	//²{¦bªºY¶b¦ì¸m
+	//ç¾åœ¨çš„Yè»¸ä½ç½®
 	private int currentY = 0;
-	//Instanceªº³Ì¤p¼e«×
+	//Instanceçš„æœ€å°å¯¬åº¦
 	private int MIN_WIDTH = 150;
-	//¤å¦rªº¼e«×
+	//æ–‡å­—çš„å¯¬åº¦
 	private int FONT_WIDTH = 7;
 	
 	public int picPostion = MIN_WIDTH + 20;
@@ -46,7 +46,7 @@ public class RLSequenceModelBuilder {
 
 	int picCounter = 0;
 
-	// µù¸Ñªº¤å¦r¤j¤p
+	// è¨»è§£çš„æ–‡å­—å¤§å°
 	private final float FONT_SIZE = 6.5f;
 
 	public RLSequenceModelBuilder() {
@@ -54,93 +54,93 @@ public class RLSequenceModelBuilder {
 	}
 
 	/**
-	 * ²£¥ÍInstance
-	 * @param instanceName	Instance¦WºÙ
-	 * @param isPackage		¬O§_Åã¥ÜPackage
-	 * @param isShowAll		¬O§_Åã¥Ü¥ş³¡ªºPackage
-	 * @param isTopDown		true:¥Ñ¤W¨ì¤U¼Æ	false:¥Ñ¤U©¹¤W¼Æ
-	 * @param packageCount	±ıÅã¥ÜPackage­Ó¼Æ
+	 * ç”¢ç”ŸInstance
+	 * @param instanceName	Instanceåç¨±
+	 * @param isPackage		æ˜¯å¦é¡¯ç¤ºPackage
+	 * @param isShowAll		æ˜¯å¦é¡¯ç¤ºå…¨éƒ¨çš„Package
+	 * @param isTopDown		true:ç”±ä¸Šåˆ°ä¸‹æ•¸	false:ç”±ä¸‹å¾€ä¸Šæ•¸
+	 * @param packageCount	æ¬²é¡¯ç¤ºPackageå€‹æ•¸
 	 * @return
 	 */
 	public InstanceModel createInstance(String instanceName, boolean isPackage, boolean isShowAll, boolean isTopDown, int packageCount)
 	{
-		//class¦WºÙªº¤è¶ô¼e«×
+		//classåç¨±çš„æ–¹å¡Šå¯¬åº¦
 		int width;
 		InstanceModel model = new InstanceModel();
-		//¦bpackage+class¦r¦ê¸Ì§ä¨ìclass¦WºÙªº°_©l¦ì¸m
+		//åœ¨package+classå­—ä¸²è£¡æ‰¾åˆ°classåç¨±çš„èµ·å§‹ä½ç½®
 		int pos = instanceName.lastIndexOf(".");
 
-		//­Y¤£Åã¥Üpackage©Î¬OÅã¥Ü0¼hªºpackage©ÎpackageµL"."
+		//è‹¥ä¸é¡¯ç¤ºpackageæˆ–æ˜¯é¡¯ç¤º0å±¤çš„packageæˆ–packageç„¡"."
 		if (!isPackage || (!isShowAll && packageCount == 0) || pos == -1)
 		{
-			//­YinstanceName¸Ì¨S¦³"."§â¥ş³¡Åã¥Ü¥X¨Ó¡A­Y¦³«h§âpackage¦WºÙµ¹²M±¼
+			//è‹¥instanceNameè£¡æ²’æœ‰"."æŠŠå…¨éƒ¨é¡¯ç¤ºå‡ºä¾†ï¼Œè‹¥æœ‰å‰‡æŠŠpackageåç¨±çµ¦æ¸…æ‰
 			instanceName = (pos != -1 ? instanceName.substring(pos + 1) : instanceName);
 
 			model.setName(instanceName);
 			
-			//¹L¤p´N§â¥¦½Õ¬°¹w³]
+			//éå°å°±æŠŠå®ƒèª¿ç‚ºé è¨­
 			if (instanceName.length()*FONT_WIDTH <MIN_WIDTH)
 				width = MIN_WIDTH;
 			else
 				width = pos*FONT_WIDTH;
 		}
-		//Åã¥Üpackage®É
+		//é¡¯ç¤ºpackageæ™‚
 		else
 		{
-			//­YÅã¥Ü¥ş³¡ªºpackage
+			//è‹¥é¡¯ç¤ºå…¨éƒ¨çš„package
 			if (isShowAll)
-				//­YinstanceName¸Ì¨S¦³"."§â¥ş³¡Åã¥Ü¥X¨Ó¡A­Y¦³«h§âclass¦WºÙ²¾¨ì¤U¤@¦æ
+				//è‹¥instanceNameè£¡æ²’æœ‰"."æŠŠå…¨éƒ¨é¡¯ç¤ºå‡ºä¾†ï¼Œè‹¥æœ‰å‰‡æŠŠclassåç¨±ç§»åˆ°ä¸‹ä¸€è¡Œ
 				instanceName = (pos != -1 ? instanceName.substring(0, pos + 1) + "\n" + instanceName.substring(pos + 1) : instanceName);
-			//­YÅã¦¡¤è¦¡¬O¥Ñ¤W¨ì¤U
+			//è‹¥é¡¯å¼æ–¹å¼æ˜¯ç”±ä¸Šåˆ°ä¸‹
 			else if (isTopDown)
 			{
-				//package«áªº"."ªº¦ì¸m
+				//packageå¾Œçš„"."çš„ä½ç½®
 				int docPos = 0;
-				//§ä¨ì«ü©wªºpackage¼Æ«áªº"."ªº¦ì¸m(­Y¶W¹L«h¥Î³Ì«á¤@­Ópackageªº"."¤§¦ì¸m)
+				//æ‰¾åˆ°æŒ‡å®šçš„packageæ•¸å¾Œçš„"."çš„ä½ç½®(è‹¥è¶…éå‰‡ç”¨æœ€å¾Œä¸€å€‹packageçš„"."ä¹‹ä½ç½®)
 				for (int i=0;instanceName.indexOf(".",docPos+1)!=-1 && i<packageCount;i++)
 					docPos = instanceName.indexOf(".",docPos+1);
-				//§â¶W¹L¿ï¾Üpackage¼Æ¥Øªº½d³òªºpackage¦WºÙµ¹²M±¼
+				//æŠŠè¶…éé¸æ“‡packageæ•¸ç›®çš„ç¯„åœçš„packageåç¨±çµ¦æ¸…æ‰
 				instanceName = instanceName.substring(0,docPos+1) + "\n" + instanceName.substring(pos+1);
-				//­«·s§ä¤@¦¸class¦WºÙªº¦ì¸m
+				//é‡æ–°æ‰¾ä¸€æ¬¡classåç¨±çš„ä½ç½®
 				pos = instanceName.lastIndexOf(".");
 			}
-			//­YÅã¥Ü¤è¦¡¬O¥Ñ¤U©¹¤W
+			//è‹¥é¡¯ç¤ºæ–¹å¼æ˜¯ç”±ä¸‹å¾€ä¸Š
 			else
 			{
-				//class«eªº"."ªº¦ì¸m
+				//classå‰çš„"."çš„ä½ç½®
 				int docPos = pos;
-				//§ä¨ì«ü©wªºpackage¼Æ«áªº"."ªº¦ì¸m
+				//æ‰¾åˆ°æŒ‡å®šçš„packageæ•¸å¾Œçš„"."çš„ä½ç½®
 				int i=0;
 				for (;instanceName.lastIndexOf(".",docPos-1)!=-1 && i<packageCount;i++)
 					docPos = instanceName.lastIndexOf(".",docPos-1);
-				//­Y¶W¹L«h¥şÅã¥Ü
+				//è‹¥è¶…éå‰‡å…¨é¡¯ç¤º
 				if (i<packageCount)
 					instanceName = instanceName.substring(0, pos + 1) + "\n" + instanceName.substring(pos + 1);
 				else
-					//§â¶W¹L¿ï¾Üpackage¼Æ¥Øªº½d³òªºpackage¦WºÙµ¹²M±¼
+					//æŠŠè¶…éé¸æ“‡packageæ•¸ç›®çš„ç¯„åœçš„packageåç¨±çµ¦æ¸…æ‰
 					instanceName = instanceName.substring(docPos+1,pos+1) + "\n" + instanceName.substring(pos+1);
-				//­«·s§ä¤@¦¸class¦WºÙªº¦ì¸m
+				//é‡æ–°æ‰¾ä¸€æ¬¡classåç¨±çš„ä½ç½®
 				pos = instanceName.lastIndexOf(".");
 			}
 			model.setName(instanceName);
 			
-			//§PÂ_¬O¤W¥b³¡¦W¤ñ¸û¤jÁÙ¬O¤U¥b³¡
-			if (instanceName.length()/2 <= pos)			//¤W¥b³¡¸û¤j
+			//åˆ¤æ–·æ˜¯ä¸ŠåŠéƒ¨åæ¯”è¼ƒå¤§é‚„æ˜¯ä¸‹åŠéƒ¨
+			if (instanceName.length()/2 <= pos)			//ä¸ŠåŠéƒ¨è¼ƒå¤§
 				width = pos*FONT_WIDTH;
 			else
-				width = (instanceName.length()-pos)*7;	//¤U¥b³¡¸û¤j
-			//¹L¤p´N§â¥¦½Õ¬°¹w³]
+				width = (instanceName.length()-pos)*7;	//ä¸‹åŠéƒ¨è¼ƒå¤§
+			//éå°å°±æŠŠå®ƒèª¿ç‚ºé è¨­
 			if (width < MIN_WIDTH)
 				width = MIN_WIDTH;
 		}
 		// root.getInstances().get(root).getConstraint().getRight().getPosition(root.getConstraint().getRight());
 
-		//Debugger¨ì²Ä¤@­Ómethodªº¦ì¸m
+		//Debuggeråˆ°ç¬¬ä¸€å€‹methodçš„ä½ç½®
 		model.setConstraint(new Rectangle(picPostion + 20, InstanceModel.DEFAULT_LOCATION, width , -1));
 
-		//Àx¦s°_¨Óµ¹©³¤Uµe¤è¶ô¹Ïªº°Ñ·Ó
+		//å„²å­˜èµ·ä¾†çµ¦åº•ä¸‹ç•«æ–¹å¡Šåœ–çš„åƒç…§
 		picsWidth.add(width/2-5);
-		//°O¿ı¦ì¸mµ¹¤U­Ó¹Ï¨Ï¥Î
+		//è¨˜éŒ„ä½ç½®çµ¦ä¸‹å€‹åœ–ä½¿ç”¨
 		picPostion += width+20;
 
 		//model.setConstraint(new Rectangle((MAX_WIDTH + 20) * root.getInstances().size() + 20, InstanceModel.DEFAULT_LOCATION, instanceName.length()*5 , -1));
@@ -156,7 +156,7 @@ public class RLSequenceModelBuilder {
 	}
 
 	/**
-	 * ²£¥ÍActor
+	 * ç”¢ç”ŸActor
 	 * @param instanceName
 	 * @return
 	 */
@@ -212,7 +212,7 @@ public class RLSequenceModelBuilder {
 	}
 
 	/**
-	 * ²£¥ÍMessage(©I¥s¨ä¥¦InstanceªºMethod)
+	 * ç”¢ç”ŸMessage(å‘¼å«å…¶å®ƒInstanceçš„Method)
 	 * @param message
 	 * @param backMessage
 	 * @param target
@@ -233,12 +233,12 @@ public class RLSequenceModelBuilder {
 
 		if (targetModel == null) {
 			//logger.info("<targetModel == null> message="+message+":" + currentY);
-			//¨C¦h¤@­Óclass¤è®Øªº°ª´N§ó¸G¤@¨Ç
+			//æ¯å¤šä¸€å€‹classæ–¹æ¡†çš„é«˜å°±æ›´çŸ®ä¸€äº›
 			currentY += 20;
-			//µeclass¤è®Ø¤U­±ªºªø¤è§Î¤è®Ø
+			//ç•«classæ–¹æ¡†ä¸‹é¢çš„é•·æ–¹å½¢æ–¹æ¡†
 			model.setConstraint(					
 					new Rectangle(
-							//µe¨ì¤U¤@­Óclassªº¤è¶ôªº¤¤¶¡
+							//ç•«åˆ°ä¸‹ä¸€å€‹classçš„æ–¹å¡Šçš„ä¸­é–“
 							target.getConstraint().x + picsWidth.get(picCounter++),
 							currentY, 
 							ActivationModel.DEFAULT_WIDTH, 
@@ -293,7 +293,7 @@ public class RLSequenceModelBuilder {
 		
 		// ----------------------------------------------------------------------
 
-		//±NRobustness Levelªº¸ê°T¨Ï¥ÎNoteÅã¥Ü
+		//å°‡Robustness Levelçš„è³‡è¨Šä½¿ç”¨Noteé¡¯ç¤º
 		createNoteMessage(message, backMessage);
 		
 		messageMap.put(current.getOwnerLine().getOwner().getName() + "-" + message + "-" + target.getName(), messageModel);
@@ -324,7 +324,7 @@ public class RLSequenceModelBuilder {
 	}
 
 	/**
-	 * ²£¥ÍMessage(Call¦Û¤v)
+	 * ç”¢ç”ŸMessage(Callè‡ªå·±)
 	 * @param message
 	 * @param backMessage
 	 * @param level
@@ -365,7 +365,7 @@ public class RLSequenceModelBuilder {
 //		}
 		// ----------------------------------------------------------------------
 
-		//±NRobustness Levelªº¸ê°T¨Ï¥ÎNoteÅã¥Ü
+		//å°‡Robustness Levelçš„è³‡è¨Šä½¿ç”¨Noteé¡¯ç¤º
 		createNoteMessage(message, backMessage);
 	
 		messageStack.push(messageModel);
@@ -413,28 +413,28 @@ public class RLSequenceModelBuilder {
 	}
 
 	/**
-	 * ²£¥Íµù¸Ñ°T®§(Robustness Level°T®§)
+	 * ç”¢ç”Ÿè¨»è§£è¨Šæ¯(Robustness Levelè¨Šæ¯)
 	 * @param noteMessage
 	 * @param current2 
 	 */
 	private void createNoteMessage(String methodName, String noteMessage) {
-		//­Y¦³
+		//è‹¥æœ‰
 		if(noteMessage != null && !"".equals(noteMessage.trim())) {
 			NoteModel aNote = new NoteModel();
 
-			//RobustnessLevel Message­Ó¼Æ
+			//RobustnessLevel Messageå€‹æ•¸
 			int rlCounter =1;
-			// NoteMessage¤º³æ¦æ³Ìªø¦r¼Æ
+			// NoteMessageå…§å–®è¡Œæœ€é•·å­—æ•¸
 			int maxLength =0;
 			// Robustness Level End Index
 			int endIdx = noteMessage.indexOf("} {");
 
-			// ­Y¥u¦³¤@­ÓRobustnessLevel Message
+			// è‹¥åªæœ‰ä¸€å€‹RobustnessLevel Message
 			if (endIdx == -1) {
 				maxLength = noteMessage.length();
 				aNote.setContent(noteMessage);
 			}
-			// ­Y¶W¹L¤@­Ó¥H¤WªºRobustnessLevel Message
+			// è‹¥è¶…éä¸€å€‹ä»¥ä¸Šçš„RobustnessLevel Message
 			else {
 				String remainder = noteMessage;
 				maxLength = endIdx +1;
@@ -444,23 +444,23 @@ public class RLSequenceModelBuilder {
 
 					remainder = remainder.substring(endIdx + 2);
 				}
-				//¨ú±o³Ìªøªº³æ¦æ¦r¼Æ
+				//å–å¾—æœ€é•·çš„å–®è¡Œå­—æ•¸
 				if (maxLength < remainder.length()-1)
 					maxLength = remainder.length()-1;
 
-				//´¡¤J´«¦æ²Å¸¹
+				//æ’å…¥æ›è¡Œç¬¦è™Ÿ
 				aNote.setContent(noteMessage.replace("} ", "}\n"));
 			}
-			//¥[¤JMethod¦WºÙ
+			//åŠ å…¥Methodåç¨±
 			aNote.setContent(methodName + "\n" + aNote.getContent());
 			aNote.setConstraint(new Rectangle(current.getConstraint().x, 0,
 											  (int)((float)maxLength * FONT_SIZE), 30 + 14 * rlCounter));
 
 			aNote.setShowIcon(true);
 
-			//°O¿ıNote
+			//è¨˜éŒ„Note
 			noteStack.push(aNote);
-			//°O¿ıNote»P¸òNote·f°tªºInstance
+			//è¨˜éŒ„Noteèˆ‡è·ŸNoteæ­é…çš„Instance
 			noteMap.put(aNote, current.getOwnerLine().getOwner());
 
 			root.addUMLModel(aNote);
@@ -468,74 +468,74 @@ public class RLSequenceModelBuilder {
 	}
 
 	/**
-	 * ±NMessage¦]¤£¦PRobustness Level¨Ï¥Î¤£¦PÃC¦â
+	 * å°‡Messageå› ä¸åŒRobustness Levelä½¿ç”¨ä¸åŒé¡è‰²
 	 * @param messageModel
 	 * @param level
 	 */
 	private void setMessageModelColor(SyncMessageModel messageModel, int level) {
-/*		Shiau: RLªº°T®§À³¨Ì·ÓException¬°³æ¦ì¦Ó«DMethod,©Ò¥H§R°£¡C
-		// ¦pªGÅã¥ÜRL¸ê°T¡A¤~±N¦WºÙ¼W¥[RL
+/*		Shiau: RLçš„è¨Šæ¯æ‡‰ä¾ç…§Exceptionç‚ºå–®ä½è€ŒéMethod,æ‰€ä»¥åˆªé™¤ã€‚
+		// å¦‚æœé¡¯ç¤ºRLè³‡è¨Šï¼Œæ‰å°‡åç¨±å¢åŠ RL
 		if (isShowRL)
 			message = "Tag " + level + "\t" + message;
 */
 		String message = messageModel.getName();
 		messageModel.setName(" " + message);
 		
-		// ¨Ì¤£¦PLevelµ¹¤©¤£¦PÃC¦â
+		// ä¾ä¸åŒLevelçµ¦äºˆä¸åŒé¡è‰²
 		switch (level) {
-			case 1:		// RL1:¬õ
+			case 1:		// RL1:ç´…
 				messageModel.setForegroundColor(new RGB(255, 0, 0));
 				break;
-			case 2:		// RL2:¶À
+			case 2:		// RL2:é»ƒ
 				messageModel.setForegroundColor(new RGB(229, 109, 29));
 				break;
-			case 3:		// RL3:ºñ
+			case 3:		// RL3:ç¶ 
 				messageModel.setForegroundColor(new RGB(54, 157, 54));
 				break;
-			default:	// RL0:¶Â
+			default:	// RL0:é»‘
 				messageModel.setForegroundColor(new RGB(0, 0, 0));
 		}
 	}
 	
 	/**
-	 * ²£¥ÍXMLÀÉ
+	 * ç”¢ç”ŸXMLæª”
 	 * @return
 	 */
 	public String toXML() {
 		MessageOrderUtil.computeMessageOrders(root);
 		root.adjustLifeLine();
 		
-		//±NNote°µ±Æ§Ç
+		//å°‡Noteåšæ’åº
 		arrangeNote();
 
 		return XStreamSerializer.serialize(root, getClass().getClassLoader());
 	}
 
 	/**
-	 * ±NNote»PInstance°µ±Æ§Ç
+	 * å°‡Noteèˆ‡Instanceåšæ’åº
 	 */
 	private void arrangeNote() {
-		//°O¿ıInstance»P¦¹Instanceªº¤U¤@­ÓInstanceªº¦ì¸m
+		//è¨˜éŒ„Instanceèˆ‡æ­¤Instanceçš„ä¸‹ä¸€å€‹Instanceçš„ä½ç½®
 		Map<InstanceModel, Integer> widthMap = new HashMap<InstanceModel, Integer>();
 		
-		/*	Note Y¶b±Æ¦C	*/
+		/*	Note Yè»¸æ’åˆ—	*/
 		for (int i=0; i < noteStack.size(); i++) {
 			NoteModel aNote = noteStack.get(i);
-			//¨ú±oNoteªºInstance
+			//å–å¾—Noteçš„Instance
 			InstanceModel instance = noteMap.get(aNote);
 			Rectangle rect = instance.getModel().getConstraint();
 
-			//°O¿ıInstance¨ì¤U¤@­ÓInstance³Ì¤j¶ZÂ÷(§ä³Ì¤jªºNote¼e«×)
+			//è¨˜éŒ„Instanceåˆ°ä¸‹ä¸€å€‹Instanceæœ€å¤§è·é›¢(æ‰¾æœ€å¤§çš„Noteå¯¬åº¦)
 			Integer width = widthMap.get(instance);
 			if (width == null || width < aNote.getConstraint().width)
 				widthMap.put(instance, aNote.getConstraint().right());
 
-			//­Y³æ¤@Instance¤¤¦³­«½ÆªºNote¡A±N¥¦©ñ¸m¦¹Note¤U¤è
+			//è‹¥å–®ä¸€Instanceä¸­æœ‰é‡è¤‡çš„Noteï¼Œå°‡å®ƒæ”¾ç½®æ­¤Noteä¸‹æ–¹
 			int axisY = rect.y + rect.height;
 			for (int j=i-1; j >= 0; j--) {
 				NoteModel lastNote = noteStack.get(j);
 				InstanceModel lastInstance = noteMap.get(lastNote);
-				//«e­±¬O§_¦³¬Û¦PInstanceªºNote
+				//å‰é¢æ˜¯å¦æœ‰ç›¸åŒInstanceçš„Note
 				if (instance == lastInstance) {
 					axisY = lastNote.getConstraint().bottom();
 					break;
@@ -544,49 +544,49 @@ public class RLSequenceModelBuilder {
 			aNote.getConstraint().y = axisY +10;
 		}
 
-		/*	±N¤U¤@­ÓInstance¼W¥[¨ì¥i®e¤UNoteªº¼e«×	*/
+		/*	å°‡ä¸‹ä¸€å€‹Instanceå¢åŠ åˆ°å¯å®¹ä¸‹Noteçš„å¯¬åº¦	*/
 		List<InstanceModel> instanceList = root.getInstances();
 		for (int i=0; i < instanceList.size(); i++) {
-			//¨ú±o¸ÓInstance¹w­p½Õ¾ã¤U¤@­ÓInstanceªº¦ì¸m
+			//å–å¾—è©²Instanceé è¨ˆèª¿æ•´ä¸‹ä¸€å€‹Instanceçš„ä½ç½®
 			Integer nextAxisX = widthMap.get(instanceList.get(i));
-			//­Y¨S¦³ªí¥Ü¤£»İ­n½Õ¾ã
+			//è‹¥æ²’æœ‰è¡¨ç¤ºä¸éœ€è¦èª¿æ•´
 			if (nextAxisX == null)
 				continue;
 
-			//­ìInstance»P½Õ¾ã¹L«áªºInstanceªº¬Û®t­È
+			//åŸInstanceèˆ‡èª¿æ•´éå¾Œçš„Instanceçš„ç›¸å·®å€¼
 			int diff = 0;
 			if (i+1 < instanceList.size()) {
 				InstanceModel model = instanceList.get(i+1);
 				diff = nextAxisX - model.getConstraint().x - model.getConstraint().width/2 +10;
 			}
-			//®t­È¥²¶·­n¤j©ó0
+			//å·®å€¼å¿…é ˆè¦å¤§æ–¼0
 			if (diff > 0) {
-				//±N¤§«áªºInstance³£½Õ¾ã¦ì¸m
+				//å°‡ä¹‹å¾Œçš„Instanceéƒ½èª¿æ•´ä½ç½®
 				for (int j = i+1; j < instanceList.size(); j++) {
 					InstanceModel nextInstance = instanceList.get(j);
 					Rectangle rect = nextInstance.getConstraint();
 					nextInstance.setConstraint(
 							new Rectangle(rect.x + diff, rect.y, rect.width, rect.height));
 					
-					//±N¤§«áªº­pºâªºNoteWidth¤]½Õ¾ã¦ì¸m
+					//å°‡ä¹‹å¾Œçš„è¨ˆç®—çš„NoteWidthä¹Ÿèª¿æ•´ä½ç½®
 					Integer nextWidth = widthMap.get(nextInstance);
 					if (nextWidth != null)
 						widthMap.put(nextInstance, nextWidth +diff);
 				}
 			}
 		}
-		/*	Note X¶b±Æ¦C	*/
+		/*	Note Xè»¸æ’åˆ—	*/
 		Set<NoteModel> keySet = noteMap.keySet();
 		Iterator<NoteModel> iterator = keySet.iterator();
 		while(iterator.hasNext()) {
 			NoteModel aNote = (NoteModel) iterator.next();
 			InstanceModel instance = noteMap.get(aNote);
-			//±NNoteªºx¶b¦ì¸m²¾¨ìInstanceªºX¶b
+			//å°‡Noteçš„xè»¸ä½ç½®ç§»åˆ°Instanceçš„Xè»¸
 			aNote.getConstraint().x = instance.getConstraint().x + instance.getConstraint().width/2;
 		}
 	}
 
-	//¨S¥Î¨ì(¨S¤Hcall¥¦)µù¸Ñ±¼
+	//æ²’ç”¨åˆ°(æ²’äººcallå®ƒ)è¨»è§£æ‰
 	//public MessageModel createMessage(String message, InstanceModel target) {
 	//	ActivationModel model = new ActivationModel();
 	//	current.copyPresentation(model);

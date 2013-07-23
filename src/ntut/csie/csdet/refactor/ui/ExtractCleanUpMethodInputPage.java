@@ -32,21 +32,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * ´£¨Ñ¤@­Ó¤¶­±µ¹user, Åıuser¥i¥H¿ï¾Ü­nExtract¤°»ò¼ËªºMethod
+ * æä¾›ä¸€å€‹ä»‹é¢çµ¦user, è®“userå¯ä»¥é¸æ“‡è¦Extractä»€éº¼æ¨£çš„Method
  * @author Min, Shiau
  */
 public class ExtractCleanUpMethodInputPage extends UserInputWizardPage {
 
 	private static Logger logger = LoggerFactory.getLogger(ExtractCleanUpMethodInputPage.class);
 
-	//Extract MethodªºÅÜ¼Æ¦WºÙ
+	//Extract Methodçš„è®Šæ•¸åç¨±
 	private Text newMethodText;
 	private Text existMethodText;
-	//Public¡BProtected¡Bprivate¤T¾Ü¤@ªºRadioButton
+	//Publicã€Protectedã€privateä¸‰æ“‡ä¸€çš„RadioButton
 	private Button publicRadBtn;
 	private Button protectedRadBtn;
 	private Button privateRadBtn;
-	//e.printStack¡Bjava.logger¤G¾Ü¤@ªºRadioButton
+	//e.printStackã€java.loggeräºŒæ“‡ä¸€çš„RadioButton
 	private Button printRadBtn;
 	private Button loggerRadBtn;
 	//Exist Method Check Button
@@ -90,28 +90,28 @@ public class ExtractCleanUpMethodInputPage extends UserInputWizardPage {
 		existMethodText = createText(composite, SWT.BORDER | SWT.READ_ONLY, "");
 		browseBtn = createButton(composite, SWT.NONE, "Browse...");
 
-		//³]©wControl°Ê§@
+		//è¨­å®šControlå‹•ä½œ
 		addControlListener();
 
-		//ªì©l°Ê§@
+		//åˆå§‹å‹•ä½œ
 		privateRadBtn.setSelection(true);
 		printRadBtn.setSelection(true);
 		browseBtn.setEnabled(false);
 		existMethodText.setEnabled(false);
 
-		//¨Ï¥ÎªÌ¥¼§ó§ïText¤º®e¡A¦Óª½±µ«ö½T©w¡A·|°õ¦æ¦¹¦æ¡C§_«hText¤º®e·|§ì¤£¨ì¡C
+		//ä½¿ç”¨è€…æœªæ›´æ”¹Textå…§å®¹ï¼Œè€Œç›´æ¥æŒ‰ç¢ºå®šï¼ŒæœƒåŸ·è¡Œæ­¤è¡Œã€‚å¦å‰‡Textå…§å®¹æœƒæŠ“ä¸åˆ°ã€‚
 		handleInputChange();
 	}
 
 	/**
-	 * ¬O§_¨Ï¥Î¬J¦³ªºMethod³]©w (§_«h¨Ï¥Î·sªºMethod³]©w)
+	 * æ˜¯å¦ä½¿ç”¨æ—¢æœ‰çš„Methodè¨­å®š (å¦å‰‡ä½¿ç”¨æ–°çš„Methodè¨­å®š)
 	 */
 	private void setGroupSetting(boolean isTrue) {
-		//­Y¨Ï¥Î¬J¦³ªºMethod
+		//è‹¥ä½¿ç”¨æ—¢æœ‰çš„Method
 		browseBtn.setEnabled(isTrue);
 		existMethodText.setEnabled(isTrue);
 
-		//­Y·s¼W·sªºMethod
+		//è‹¥æ–°å¢æ–°çš„Method
 		newMethodText.setEnabled(!isTrue);
 		printRadBtn.setEnabled(!isTrue);
 		loggerRadBtn.setEnabled(!isTrue);
@@ -121,7 +121,7 @@ public class ExtractCleanUpMethodInputPage extends UserInputWizardPage {
 	}
 	
 	/**
-	 * °²¤JText¤¤ªºªF¦è¦³§ïÅÜ®É­n³B²z
+	 * å‡å…¥Textä¸­çš„æ±è¥¿æœ‰æ”¹è®Šæ™‚è¦è™•ç†
 	 */
 	private void handleInputChange(){
 		RefactoringStatus status = new RefactoringStatus();
@@ -150,13 +150,13 @@ public class ExtractCleanUpMethodInputPage extends UserInputWizardPage {
 				status.merge(refactoring.setNewMethodLogType(loggerRadBtn.getText()));
 		}
 
-		//¥ı½T»{¦³¨S¦³errorªº±¡§Î
+		//å…ˆç¢ºèªæœ‰æ²’æœ‰errorçš„æƒ…å½¢
 		setPageComplete(!status.hasError());
 		int severity = status.getSeverity();
 		String message = status.getMessageMatchingSeverity(severity);
 
 		if(severity >= RefactoringStatus.INFO) {
-			//¦³Errorªº±¡§Î´N§â¥L³]©w¶i¨Ó
+			//æœ‰Errorçš„æƒ…å½¢å°±æŠŠä»–è¨­å®šé€²ä¾†
 			setMessage(message,RefactoringStatus.WARNING);
 		} else {
 			setMessage("", NONE);
@@ -164,7 +164,7 @@ public class ExtractCleanUpMethodInputPage extends UserInputWizardPage {
 	}
 
 	/**
-	 * ¨ú±oRefactoringªºª«¥ó«¬ºA
+	 * å–å¾—Refactoringçš„ç‰©ä»¶å‹æ…‹
 	 * @return
 	 */
 	private CarelessCleanUpRefactor getEMRefactoring(){
@@ -172,28 +172,28 @@ public class ExtractCleanUpMethodInputPage extends UserInputWizardPage {
 	}
 
 	/**
-	 * ¸õ¥XDialogÅı¨Ï¥ÎªÌ¿ï¾Ü¤w¦s¦bªºMethod
+	 * è·³å‡ºDialogè®“ä½¿ç”¨è€…é¸æ“‡å·²å­˜åœ¨çš„Method
 	 * @return
 	 */
 	private IMethod selectExistingMethod(){
 
-		//³z¹LEclipse©Ò´£¨ÑªºDialog¨Ó§ä´M±M®×¤¤©Ò¦³ªºMethod
+		//é€éEclipseæ‰€æä¾›çš„Dialogä¾†æ‰¾å°‹å°ˆæ¡ˆä¸­æ‰€æœ‰çš„Method
 		try {
 
-			//¨ú±o¦s¦bgetRethrowExRefactoring¤¤ªºproject
+			//å–å¾—å­˜åœ¨getRethrowExRefactoringä¸­çš„project
 			IJavaProject project = getEMRefactoring().getProject();
 
-			//´M§ä©Ò¦³¦s¦bªºMethod
+			//å°‹æ‰¾æ‰€æœ‰å­˜åœ¨çš„Method
 			List<IJavaElement> methodList = searchProjectMethods(project);
 
-			//´M§ä±M®×¤¤¤w¦s¦bªºMethod©ñ¤JMethodSelectionDialog¤§¤¤
+			//å°‹æ‰¾å°ˆæ¡ˆä¸­å·²å­˜åœ¨çš„Methodæ”¾å…¥MethodSelectionDialogä¹‹ä¸­
 			ExistingMethodSelectionDialog dialog = new ExistingMethodSelectionDialog(getShell(), getEMRefactoring().getCurrentMethodNode());
 			dialog.setElements(methodList.toArray(new IJavaElement[methodList.size()]));
 			dialog.setTitle("Choose Existing Method");
 			dialog.setMessage("Choose Existing Method to Close Resource:");
 
 			if(dialog.open() == Window.OK){
-				//«ö¤Uok«á¦^¶Ç¨Ï¥ÎªÌ©Ò¿ï¾Üªº
+				//æŒ‰ä¸‹okå¾Œå›å‚³ä½¿ç”¨è€…æ‰€é¸æ“‡çš„
 				return (IMethod)dialog.getFirstResult();
 			}
 		} catch (JavaModelException e) {			
@@ -203,7 +203,7 @@ public class ExtractCleanUpMethodInputPage extends UserInputWizardPage {
 	}
 
 	/**
-	 * ´M§äProject¤¤ªº©Ò¦³Method
+	 * å°‹æ‰¾Projectä¸­çš„æ‰€æœ‰Method
 	 * @param project
 	 * @return
 	 * @throws JavaModelException
@@ -211,7 +211,7 @@ public class ExtractCleanUpMethodInputPage extends UserInputWizardPage {
 	private List<IJavaElement> searchProjectMethods(IJavaProject project)
 			throws JavaModelException {
 
-		//¨ú±oProject¤¤ªºCompilationUnit
+		//å–å¾—Projectä¸­çš„CompilationUnit
 		List<ICompilationUnit> compilationUnitList = new ArrayList<ICompilationUnit>();
 		for (IJavaElement element : project.getChildren()) {
 			if (!element.getElementName().endsWith(".jar")) {
@@ -223,7 +223,7 @@ public class ExtractCleanUpMethodInputPage extends UserInputWizardPage {
 			}
 		}
 
-		//¨ú±oCompilationUnit¤¤ªºMethod
+		//å–å¾—CompilationUnitä¸­çš„Method
 		List<IJavaElement> methodList = new ArrayList<IJavaElement>();
 		for (ICompilationUnit icu : compilationUnitList) {
 			for (IJavaElement element : icu.getChildren()) {
@@ -238,7 +238,7 @@ public class ExtractCleanUpMethodInputPage extends UserInputWizardPage {
 	}
 	
 	/**
-	 * «Ø¥ßLabel
+	 * å»ºç«‹Label
 	 * @param composite
 	 * @param name
 	 */
@@ -249,7 +249,7 @@ public class ExtractCleanUpMethodInputPage extends UserInputWizardPage {
 	}
 
 	/**
-	 * «Ø¥ßRadio Button
+	 * å»ºç«‹Radio Button
 	 * @param parent
 	 * @param name
 	 * @return
@@ -266,9 +266,9 @@ public class ExtractCleanUpMethodInputPage extends UserInputWizardPage {
 	}
 	
 	/**
-	 * «Ø¥ß¦³LayoutªºComposite
+	 * å»ºç«‹æœ‰Layoutçš„Composite
 	 * @param parent
-	 * @param columnNumber Column­Ó¼Æ
+	 * @param columnNumber Columnå€‹æ•¸
 	 * @return
 	 */
 	private Composite createLayoutComposite(Composite parent, int columnNumber) {
@@ -282,7 +282,7 @@ public class ExtractCleanUpMethodInputPage extends UserInputWizardPage {
 	}
 	
 	/**
-	 * «Ø¥ßText
+	 * å»ºç«‹Text
 	 * @param composite
 	 * @param style
 	 * @param defaultText
@@ -296,7 +296,7 @@ public class ExtractCleanUpMethodInputPage extends UserInputWizardPage {
 	}
 
 	/**
-	 * «Ø¥ßButton
+	 * å»ºç«‹Button
 	 * @param composite
 	 * @return 
 	 */
@@ -308,16 +308,16 @@ public class ExtractCleanUpMethodInputPage extends UserInputWizardPage {
 	}
 	
 	/**
-	 * ±NControl¤¸¥ó²K¥[°Ê§@
+	 * å°‡Controlå…ƒä»¶æ·»åŠ å‹•ä½œ
 	 */
 	private void addControlListener() {
-		//°²¦p¤º®e³Q§ó§ïªº¸Ü,±N¸ê°T¦s¨ìCarelessCleanUpRefactoring
+		//å‡å¦‚å…§å®¹è¢«æ›´æ”¹çš„è©±,å°‡è³‡è¨Šå­˜åˆ°CarelessCleanUpRefactoring
 		newMethodText.addModifyListener(new ModifyListener(){
 			public void modifyText(ModifyEvent e) {
 				handleInputChange();				
 			}
 		});
-		//¨Ï¥ÎªÌ«ö¤UExistMethod¡A±N³¡¤À¸s²ÕÅã¥Ü/¤£Åã¥Ü
+		//ä½¿ç”¨è€…æŒ‰ä¸‹ExistMethodï¼Œå°‡éƒ¨åˆ†ç¾¤çµ„é¡¯ç¤º/ä¸é¡¯ç¤º
 		existMethodBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				if (existMethodBtn.getSelection())
@@ -328,15 +328,15 @@ public class ExtractCleanUpMethodInputPage extends UserInputWizardPage {
 				handleInputChange();
 			}
 		});
-		//¨Ï¥ÎªÌ«ö¤UBrowseButton¡A¸õ¥XMethodSelectionDialog
+		//ä½¿ç”¨è€…æŒ‰ä¸‹BrowseButtonï¼Œè·³å‡ºMethodSelectionDialog
 		browseBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				//¸õ¥XDialog
+				//è·³å‡ºDialog
 				existingMethod = selectExistingMethod();
 				if (existingMethod == null)
 					return;
 
-				//Åã¥Ü¨Ï¥ÎªÌ¿ï¾ÜMethod¸ê°T
+				//é¡¯ç¤ºä½¿ç”¨è€…é¸æ“‡Methodè³‡è¨Š
 				IType className = (IType) existingMethod.getParent();
 				String path = className.getFullyQualifiedName() + "." + existingMethod.getElementName();
 				existMethodText.setText(path);

@@ -34,13 +34,13 @@ public interface RLMarkerAttribute {
 	
 
 
-	/** ignore exceptionªºtype */
+	/** ignore exceptionçš„type */
 	public static final String CS_EMPTY_CATCH_BLOCK = "Empty_Catch_Block";
 	
-	/** Dummy Handlerªºtype */
+	/** Dummy Handlerçš„type */
 	public static final String CS_DUMMY_HANDLER = "Dummy_Handler";
 	
-	/** Nested Try Blockªºtype */
+	/** Nested Try Blockçš„type */
 	public static final String CS_NESTED_TRY_BLOCK = "Nested_TryStatement";
 	
 	/** Unprotected Main Program */

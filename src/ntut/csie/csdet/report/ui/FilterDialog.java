@@ -68,7 +68,7 @@ public class FilterDialog extends Dialog {
 		final Composite container = (Composite) super.createDialogArea(parent);
 		container.setLayout(null);
 
-		///°»´ú¥ş³¡ProjectªºButton///
+		///åµæ¸¬å…¨éƒ¨Projectçš„Button///
 		AllRadBtn = new Button(container, SWT.RADIO);
 		AllRadBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
@@ -79,7 +79,7 @@ public class FilterDialog extends Dialog {
 		AllRadBtn.setText(resource.getString("detect.all"));
 		AllRadBtn.pack();
 
-		///¿ï¾ÜPackageªºButton///
+		///é¸æ“‡Packageçš„Button///
 		selectRadBtn = new Button(container, SWT.RADIO);
 		selectRadBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
@@ -90,17 +90,17 @@ public class FilterDialog extends Dialog {
 		selectRadBtn.setText(resource.getString("detect.select.package"));
 		selectRadBtn.pack();
 
-		///Filter¬ÛÃöªºComposite///
+		///Filterç›¸é—œçš„Composite///
 		filterComposite = new Composite(container, SWT.NONE);
 		filterComposite.setBounds(41, 54, 343, 233);
 
-		///Åã¥Ü¤å¦rªºLabel///
+		///é¡¯ç¤ºæ–‡å­—çš„Label///
 		final Label nameLabel = new Label(filterComposite, SWT.NONE);
 		nameLabel.setLocation(7, 10);
 		nameLabel.setText(resource.getString("filter.rule"));
 		nameLabel.pack();
 
-		///¿ù»~¹Ï¥Ü»P¿ù»~°T®§///
+		///éŒ¯èª¤åœ–ç¤ºèˆ‡éŒ¯èª¤è¨Šæ¯///
 		final Label warningLabel = new Label(filterComposite, SWT.NONE);
 		warningLabel.setLocation(32, 212);
 		warningLabel.setVisible(false);
@@ -112,82 +112,82 @@ public class FilterDialog extends Dialog {
 		picLabel.setImage(ImageManager.getInstance().get("warning"));
 		picLabel.pack();
 
-		///µ¹¤©User¿é¤JRuleªºText///
+		///çµ¦äºˆUserè¼¸å…¥Ruleçš„Text///
 		tempText = new Text(filterComposite, SWT.BORDER);
 		tempText.setBounds(10, 28, 243, 22);
 		tempText.addKeyListener(new KeyAdapter() {
 			public void keyPressed(final KeyEvent e) {
-				//­YText¤@§ïÅÜ´N§âÄµ§i°T®§®ø±¼
+				//è‹¥Textä¸€æ”¹è®Šå°±æŠŠè­¦å‘Šè¨Šæ¯æ¶ˆæ‰
 				setWarning(warningLabel, picLabel, false);
 			}
 		});
 
-		///Åã¥ÜRuleªºTable///
+		///é¡¯ç¤ºRuleçš„Table///
 		displayTable = new Table(filterComposite, SWT.FULL_SELECTION | SWT.CHECK | SWT.MULTI | SWT.BORDER);
 		displayTable.setFont(new Font(this.getShell().getDisplay(),"Arial", 11,SWT.NONE));
 		displayTable.setBounds(10, 56, 243, 150);
 		final GridData gd_testList = new GridData(SWT.FILL, SWT.FILL, true, true);
 		displayTable.setLayoutData(gd_testList);
-		//¦pªG¿ï¾ÜªºdisplayTableªºItem§â¨ä¦WºÙÅã¥Ü¦bText¤W
+		//å¦‚æœé¸æ“‡çš„displayTableçš„ItemæŠŠå…¶åç¨±é¡¯ç¤ºåœ¨Textä¸Š
 		displayTable.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				int selectionIndex = displayTable.getSelectionIndex();
-				//¨¾¤î¤@¶}Dialog´N¥ı¤Ä¿ïcheckbox,¥X²{index=-1ªº±¡ªp
+				//é˜²æ­¢ä¸€é–‹Dialogå°±å…ˆå‹¾é¸checkbox,å‡ºç¾index=-1çš„æƒ…æ³
 				if(selectionIndex >= 0) {
-					//§â¿ï¾ÜªºItem¨äLibrary¦WºÙÅã¥Ü¦bText¤W
+					//æŠŠé¸æ“‡çš„Itemå…¶Libraryåç¨±é¡¯ç¤ºåœ¨Textä¸Š
 					editBtn.setEnabled(true);
 					tempText.setText(displayTable.getItem(selectionIndex).getText());
 				}
 			}
 		});
-		//­Y¦bdisplayTableªºItem¤WÂI¿ï¨â¤U¡A¸õ¥X­×§ïµøµ¡
+		//è‹¥åœ¨displayTableçš„Itemä¸Šé»é¸å…©ä¸‹ï¼Œè·³å‡ºä¿®æ”¹è¦–çª—
 		displayTable.addMouseListener(new MouseAdapter() {
 			public void mouseDoubleClick(final MouseEvent e) {
 				int selectionIndex = displayTable.getSelectionIndex();
 				if (selectionIndex >= 0) {
 					String temp = displayTable.getItem(selectionIndex).getText();
-					//©I¥s­×§ïDialog
+					//å‘¼å«ä¿®æ”¹Dialog
 					EditRuleDialog dialog = new EditRuleDialog(new Shell(),temp,displayTable);
 					dialog.open();
-					//¨ÌEditµ²ªG­×§ï¨Ï¥Î³£©Ò¿ï¨úªºItem
+					//ä¾Editçµæœä¿®æ”¹ä½¿ç”¨éƒ½æ‰€é¸å–çš„Item
 					tempText.setText(displayTable.getItem(selectionIndex).getText());
 				}
 			}
 		});
 
-		///ButtonªºComposite///
+		///Buttonçš„Composite///
 		btnComposite = new Composite(filterComposite, SWT.NONE);
 		btnComposite.setBounds(259, 28, 68, 199);
 
-		///¼W¥[RuleªºButton///
+		///å¢åŠ Ruleçš„Button///
 		final Button addBtn = new Button(btnComposite, SWT.NONE);
 		addBtn.setBounds(0, 0, 68, 22);
 		addBtn.setText(resource.getString("add"));
 		addBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
 				boolean isWarning = addRule();
-				//­Y­«½Æ´NÅã¥ÜÄµ§i°T®§
+				//è‹¥é‡è¤‡å°±é¡¯ç¤ºè­¦å‘Šè¨Šæ¯
 				if (isWarning)
 					setWarning(warningLabel, picLabel, true);
 			}
 		});
 
-		///§R°£RuleªºButton///
+		///åˆªé™¤Ruleçš„Button///
 		final Button removeButton = new Button(btnComposite, SWT.NONE);
 		removeButton.setBounds(0, 28, 68, 22);
 		removeButton.setText(resource.getString("remove"));
 		removeButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
-				//Table¤£¬°ªÅªº¥B¦³¿ï¨ìLibrary ´N§â¿ï¾ÜªºLibraryµ¹§R±¼
+				//Tableä¸ç‚ºç©ºçš„ä¸”æœ‰é¸åˆ°Library å°±æŠŠé¸æ“‡çš„Libraryçµ¦åˆªæ‰
 				if (displayTable.getItemCount() != 0 && displayTable.getSelectionIndex()!=-1) {
 					displayTable.remove(displayTable.getSelectionIndices());
-					//§R°£®É§âText²M°£
+					//åˆªé™¤æ™‚æŠŠTextæ¸…é™¤
 					tempText.setText("");
 				}
 			}
 		});
 
-		///­×§ïªºButton///
+		///ä¿®æ”¹çš„Button///
 		editBtn = new Button(btnComposite, SWT.NONE);
 		editBtn.setEnabled(false);
 		editBtn.setBounds(0, 56, 68, 22);
@@ -197,7 +197,7 @@ public class FilterDialog extends Dialog {
 				int selectionIndex = displayTable.getSelectionIndex();
 				if (selectionIndex >= 0) {
 					String temp = displayTable.getItem(selectionIndex).getText();
-					//©I¥s­×§ïDialog
+					//å‘¼å«ä¿®æ”¹Dialog
 					EditRuleDialog dialog = new EditRuleDialog(new Shell(),temp,displayTable);
 					dialog.open();
 					tempText.setText(displayTable.getItem(selectionIndex).getText());
@@ -205,13 +205,13 @@ public class FilterDialog extends Dialog {
 			}
 		});
 
-		///¿ï¾Ü¥ş³¡ItemªºButton///
+		///é¸æ“‡å…¨éƒ¨Itemçš„Button///
 		final Button selectBtn = new Button(btnComposite, SWT.NONE);
 		selectBtn.setBounds(0, 84, 68, 22);
 		selectBtn.setText(resource.getString("select.all"));
 		selectBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
-				//¿ï¾Ü¥ş³¡ªºItem
+				//é¸æ“‡å…¨éƒ¨çš„Item
 				for (int i=0;i<displayTable.getItemCount();i++) {
 					TableItem item = displayTable.getItem(i);
 					item.setChecked(true);
@@ -219,13 +219,13 @@ public class FilterDialog extends Dialog {
 			}
 		});
 
-		///¥ş³¡¤£¿ï¾ÜªºButton///
+		///å…¨éƒ¨ä¸é¸æ“‡çš„Button///
 		final Button clearBtn = new Button(btnComposite, SWT.NONE);
 		clearBtn.setBounds(0, 112, 68, 22);
 		clearBtn.setText(resource.getString("deselect.all"));
 		clearBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
-				//¨ú®ø¥ş³¡ªºItem
+				//å–æ¶ˆå…¨éƒ¨çš„Item
 				for (int i=0;i<displayTable.getItemCount();i++) {
 					TableItem item = displayTable.getItem(i);
 					item.setChecked(false);
@@ -233,12 +233,12 @@ public class FilterDialog extends Dialog {
 			}
 		});
 		
-		///»¡©úµøµ¡///
+		///èªªæ˜è¦–çª—///
 		final Button explainBtn = new Button(btnComposite, SWT.NONE);
 		explainBtn.setBounds(0, 140,68, 22);
 		explainBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
-				//¸õ¥X»¡©úªºDialog
+				//è·³å‡ºèªªæ˜çš„Dialog
 				MessageDialog.openInformation(
 						new Shell(),
 						resource.getString("caption"),
@@ -249,13 +249,13 @@ public class FilterDialog extends Dialog {
 		explainBtn.setImage(ImageManager.getInstance().get("help"));
 		
 
-		//±qXML¤¤¨ú±o¤§«eUserªº³]©w
+		//å¾XMLä¸­å–å¾—ä¹‹å‰Userçš„è¨­å®š
 		getFilterSettings();
 
-		//±N©Ò¦³°»´ú®×¨ÒÅã¥Ü¦btable¤¤
+		//å°‡æ‰€æœ‰åµæ¸¬æ¡ˆä¾‹é¡¯ç¤ºåœ¨tableä¸­
 		setInput();
 
-		//­Y¤§«e³]©wªºSelect¦b¶}©l®É´N¿ï¾ÜSelect
+		//è‹¥ä¹‹å‰è¨­å®šçš„Selectåœ¨é–‹å§‹æ™‚å°±é¸æ“‡Select
 		if (!isAllPackage)
 			selectRadBtn.setSelection(true);
 
@@ -263,12 +263,12 @@ public class FilterDialog extends Dialog {
 	}
 
 	/**
-	 * ±qXML¤¤¨ú±o¤§«eUserªº³]©w
+	 * å¾XMLä¸­å–å¾—ä¹‹å‰Userçš„è¨­å®š
 	 */
 	private void getFilterSettings() {
 		Document docJDom = JDomUtil.readXMLFile();
 		if(docJDom != null) {
-			//±qXML¸ÌÅª¥X¤§«eªº³]©w
+			//å¾XMLè£¡è®€å‡ºä¹‹å‰çš„è¨­å®š
 			Element root = docJDom.getRootElement();
 			if (root.getChild(JDomUtil.EHSmellFilterTaq) != null)
 			{
@@ -276,12 +276,12 @@ public class FilterDialog extends Dialog {
 				isAllPackage = Boolean.valueOf(filter.getAttribute("IsAllPackage").getValue());
 
 				List<Attribute> libRuleList = filter.getAttributes();
-				//§â¨Ï¥ÎªÌ©ÒÀx¦sªºFilter³W«h³]©w¦s¨ìMap¸ê®Æ¸Ì
+				//æŠŠä½¿ç”¨è€…æ‰€å„²å­˜çš„Filterè¦å‰‡è¨­å®šå­˜åˆ°Mapè³‡æ–™è£¡
 				for (int i=0;i<libRuleList.size();i++) {
 					if (libRuleList.get(i).getQualifiedName() == "IsAllPackage")
 						continue;
 
-					//§âEH_STAR¨ú¥N¬°²Å¸¹"*"
+					//æŠŠEH_STARå–ä»£ç‚ºç¬¦è™Ÿ"*"
 					String temp = toUnNormalize(libRuleList.get(i).getQualifiedName());
 					filterMap.put(temp, libRuleList.get(i).getValue().equals("true"));
 				}
@@ -294,26 +294,26 @@ public class FilterDialog extends Dialog {
 	}
 	
 	/**
-	 * Àx¦s³]©w¦ÜXML
+	 * å„²å­˜è¨­å®šè‡³XML
 	 */
 	private void storeSettings() {
-		//¨úªºXMLªºroot
+		//å–çš„XMLçš„root
 		Element root = JDomUtil.createXMLContent();
-		//«Ø¥ßDummyHandlerªºtag		
+		//å»ºç«‹DummyHandlerçš„tag		
 		Element smellFilter = new Element(JDomUtil.EHSmellFilterTaq);
 		Element filter = new Element("filter");
 
-		//Àx¦s¬O§_°»´ú¥ş³¡ªºPackage
+		//å„²å­˜æ˜¯å¦åµæ¸¬å…¨éƒ¨çš„Package
 		filter.setAttribute("IsAllPackage", Boolean.toString(AllRadBtn.getSelection()));
 
 		smellFilter.addContent(filter);
 
-		//­Y¤§«e¤wÀx¦sFilter Rule«h§R°£
+		//è‹¥ä¹‹å‰å·²å„²å­˜Filter Ruleå‰‡åˆªé™¤
 		if (root.getChild(JDomUtil.EHSmellFilterTaq) != null)
 			root.removeChild(JDomUtil.EHSmellFilterTaq);
 
 		TableItem[] temp = displayTable.getItems();
-		//¥htraverse¾ã­Ótable¬İitemªºText©M¬O§_³Q¤Ä¿ï¨ì
+		//å»traverseæ•´å€‹tableçœ‹itemçš„Textå’Œæ˜¯å¦è¢«å‹¾é¸åˆ°
 		for(int i=0;i<temp.length;i++) {
 			String libName = toNormalize(temp[i].getText());
 			filter.setAttribute(libName, String.valueOf(temp[i].getChecked()));
@@ -321,13 +321,13 @@ public class FilterDialog extends Dialog {
 
 		root.addContent(smellFilter);
 
-		//±NÀÉ®×¼g¦^
+		//å°‡æª”æ¡ˆå¯«å›
 		String path = JDomUtil.getWorkspace() +File.separator +"CSPreference.xml";
 		JDomUtil.OutputXMLFile(root.getDocument(), path);
 	}
 
 	/**
-	 * ±N¯S®í¤å¦r¥¿³W¤Æ
+	 * å°‡ç‰¹æ®Šæ–‡å­—æ­£è¦åŒ–
 	 * @param libName
 	 * @return
 	 */
@@ -339,7 +339,7 @@ public class FilterDialog extends Dialog {
 	}
 	
 	/**
-	 * ±N¥¿³W¤Æªº¤å¦r¤ÏÄ¶¦^¨Ó
+	 * å°‡æ­£è¦åŒ–çš„æ–‡å­—åè­¯å›ä¾†
 	 * @param libName
 	 * @return
 	 */
@@ -351,7 +351,7 @@ public class FilterDialog extends Dialog {
 	}
 	
 	/**
-	 * ¬O§_±NFilter Compositeªº«öÁä³]¬°¥i¨Ï¥Î
+	 * æ˜¯å¦å°‡Filter Compositeçš„æŒ‰éµè¨­ç‚ºå¯ä½¿ç”¨
 	 * @param isEnable
 	 */
 	private void setFilterRuleBtn(boolean isEnable)
@@ -368,22 +368,22 @@ public class FilterDialog extends Dialog {
 	}
 	
 	/**
-	 * ¼W¥[Rule¸ê®Æ
+	 * å¢åŠ Ruleè³‡æ–™
 	 */
 	private boolean addRule() {
 		boolean isWarning = false;
-		//§R°£Text«e«áªÅ®æ³¡¥÷
+		//åˆªé™¤Textå‰å¾Œç©ºæ ¼éƒ¨ä»½
 		String temp = tempText.getText().trim();
 
 		if (tempText.getText().length() != 0) {
 			boolean isExist = false;
-			//¬İLibraryªºName¦³¨S¦³­«½Æ
+			//çœ‹Libraryçš„Nameæœ‰æ²’æœ‰é‡è¤‡
 			for(int i=0;i<displayTable.getItemCount();i++)
 			{
 				if(temp.equals(displayTable.getItem(i).getText()))
 					isExist = true;
 			}
-			//¨S¦³­«½Æ´N¥[¤J·sªºLibrary
+			//æ²’æœ‰é‡è¤‡å°±åŠ å…¥æ–°çš„Library
 			if (!isExist){
 				TableItem item = new TableItem(displayTable,SWT.NONE);
 				item.setText(temp);
@@ -398,7 +398,7 @@ public class FilterDialog extends Dialog {
 	}
 	
 	/**
-	 * ³]©wWarningªºÅã¥Ü»P§_
+	 * è¨­å®šWarningçš„é¡¯ç¤ºèˆ‡å¦
 	 * @param warningLabel
 	 * @param picLabel
 	 */
@@ -408,7 +408,7 @@ public class FilterDialog extends Dialog {
 	}
 	
 	/**
-	 * ±N©Ò¦³°»´ú®×¨ÒÅã¥Ü¦btable¤¤
+	 * å°‡æ‰€æœ‰åµæ¸¬æ¡ˆä¾‹é¡¯ç¤ºåœ¨tableä¸­
 	 */
 	private void setInput(){
 		Iterator<String> filterIt = filterMap.keySet().iterator();
@@ -424,7 +424,7 @@ public class FilterDialog extends Dialog {
 	 * store dates
 	 */
 	protected void okPressed() {
-		//Àx¦s³]©w¦ÜXML
+		//å„²å­˜è¨­å®šè‡³XML
 		storeSettings();
 
 		super.okPressed();

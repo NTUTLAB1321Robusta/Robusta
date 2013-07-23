@@ -35,47 +35,47 @@ public class RLOrderFix {
 	private CompilationUnit actRoot;
 	
 	private IOpenable actOpenable;
-	//¥Ø«emethodªºRL Annotation¸ê°T
+	//ç›®å‰methodçš„RL Annotationè³‡è¨Š
 	private List<RLMessage> currentMethodRLList = null;
-	//¥Ø«eªºMethod AST Node
+	//ç›®å‰çš„Method AST Node
 	private ASTNode currentMethodNode = null;
 
 	/**
-	 * ¶i¦æ½Õ¾ãRL Annotation¶¶§Ç
+	 * é€²è¡Œèª¿æ•´RL Annotationé †åº
 	 * @param resource		
 	 * @param methodIdx		
 	 * @param msgIdx		
-	 * @param selectLine	±ı¤Ï¥Õªº¦æ¼Æ
+	 * @param selectLine	æ¬²åç™½çš„è¡Œæ•¸
 	 */
 	public void run(IResource resource, String methodIdx, String msgIdx)
 	{		
-		//¨ú±ocurrentMethodRLList
+		//å–å¾—currentMethodRLList
 		findMethod(resource, Integer.parseInt(methodIdx));
 
-		//§PÂ_currentMethodRLList¬O§_»İ­n­«¸m
+		//åˆ¤æ–·currentMethodRLListæ˜¯å¦éœ€è¦é‡ç½®
 		boolean isError = checkCurrentMethodRLList();
 
-		//­Y»İ­n­«¸m¡A«h¶i¦æ­«¸m§@·~
+		//è‹¥éœ€è¦é‡ç½®ï¼Œå‰‡é€²è¡Œé‡ç½®ä½œæ¥­
 		if (isError)
 		{			
-			//§âcurrentMethodRLList¦s¦¨Array + 1(¥[1¬°±Æ§Ç®É¥i½Õ¾ãªºªÅ¶¡)
+			//æŠŠcurrentMethodRLListå­˜æˆArray + 1(åŠ 1ç‚ºæ’åºæ™‚å¯èª¿æ•´çš„ç©ºé–“)
 			RLMessage[] newRLList = new RLMessage[currentMethodRLList.size()+1];
-			//currentMethodRLList©ñ¤JArray¤¤
+			//currentMethodRLListæ”¾å…¥Arrayä¸­
 			for (int i=0;i < currentMethodRLList.size();i++)
 				newRLList[i] = currentMethodRLList.get(i);
-			//¦b·s¼W½Õ¾ãªÅ¶¡©ñ¤J¸ê®Æ¡A¨Ï¥¦¤£¬°Null¡A¤~¤£·|¥X¿ù
+			//åœ¨æ–°å¢èª¿æ•´ç©ºé–“æ”¾å…¥è³‡æ–™ï¼Œä½¿å®ƒä¸ç‚ºNullï¼Œæ‰ä¸æœƒå‡ºéŒ¯
 			newRLList[currentMethodRLList.size()] = newRLList[0];
 
-			//§âRL List­«·s±Æ§Ç¡A­Y¦ì¸m¥¿½T§âµ²ªG¦s¨ìcurrentMethodRLList¤¤
+			//æŠŠRL Listé‡æ–°æ’åºï¼Œè‹¥ä½ç½®æ­£ç¢ºæŠŠçµæœå­˜åˆ°currentMethodRLListä¸­
 			permutation(newRLList,1);
 		}
 
-		//§ó·s¥ş³¡ªº Tag Annotation List
+		//æ›´æ–°å…¨éƒ¨çš„ Tag Annotation List
 		updateRLAnnotation(Integer.parseInt(msgIdx));
 	}
 	
 	/**
-	 * ¨ú±ocurrentMethodRLList
+	 * å–å¾—currentMethodRLList
 	 * 
 	 * @param resource
 	 * @param methodIdx
@@ -117,16 +117,16 @@ public class RLOrderFix {
 	}
 	
 	/**
-	 * §PÂ_currentMethodRLList¬O§_»İ­n­«¸m
+	 * åˆ¤æ–·currentMethodRLListæ˜¯å¦éœ€è¦é‡ç½®
 	 * 
-	 * @return	¬O§_»İ­n­«¸m
+	 * @return	æ˜¯å¦éœ€è¦é‡ç½®
 	 */
 	private boolean checkCurrentMethodRLList() {
 		boolean isError = false;
 		int idx = -1;
 		for (RLMessage msg : currentMethodRLList) {
 			idx++;
-			// ÀË¬d@RL²M³æ¤ºªºexceptionÃş§O¶¥¼h¬O§_¥¿½T
+			// æª¢æŸ¥@RLæ¸…å–®å…§çš„exceptioné¡åˆ¥éšå±¤æ˜¯å¦æ­£ç¢º
 			int idx2 = 0;
 			for (RLMessage msg2 : currentMethodRLList) {
 				if (idx >= idx2++) {
@@ -140,31 +140,31 @@ public class RLOrderFix {
 	}
 	
 	/**
-	 * §âRL List±Æ¦C²Õ¦X±Æ§Ç¡A¨C±Æ¦C¤@¦¸§PÂ_¶¶§Ç¬O§_¥¿½T¡A­Y¥¿½T§â¥¿½Tµ²ªG¦s¨ìcurrentMethodRLList¤¤
+	 * æŠŠRL Listæ’åˆ—çµ„åˆæ’åºï¼Œæ¯æ’åˆ—ä¸€æ¬¡åˆ¤æ–·é †åºæ˜¯å¦æ­£ç¢ºï¼Œè‹¥æ­£ç¢ºæŠŠæ­£ç¢ºçµæœå­˜åˆ°currentMethodRLListä¸­
 	 * 
 	 * @param newRLList
-	 * 				·s±Æ§ÇªºRL Annotation List	
+	 * 				æ–°æ’åºçš„RL Annotation List	
 	 * @param i
-	 * 				±Æ¦C¸s²Õ¦ì¸m
+	 * 				æ’åˆ—ç¾¤çµ„ä½ç½®
 	 */
 	private void permutation(RLMessage[] newRLList, int i) {
-		//±Æ¦C¤¤
+		//æ’åˆ—ä¸­
 		if(i < newRLList.length - 1) {
     		for(int j = i; j <= newRLList.length - 1; j++) {
     			RLMessage tmp = newRLList[j];
-                //±ÛÂà¸Ó°Ï¬q³Ì¥kÃä¼Æ¦r¦Ü³Ì¥ªÃä
+                //æ—‹è½‰è©²å€æ®µæœ€å³é‚Šæ•¸å­—è‡³æœ€å·¦é‚Š
                 for(int k = j; k > i; k--)
                 	newRLList[k] = newRLList[k-1];
                 newRLList[i] = tmp;
                 permutation(newRLList, i+1);
-                //ÁÙ­ì
+                //é‚„åŸ
                 for(int k = i; k < j; k++)
                 	newRLList[k] = newRLList[k+1];
                 newRLList[j] = tmp;
         	}
-   		//±Æ¦C§¹¦¨
+   		//æ’åˆ—å®Œæˆ
     	} else {
-        	//­YRL Annotation List¶¶§Ç¥ş³¡¥¿½T¡A§â¥¦°O¿ı¨ìcurrentMethodRLList¸Ì
+        	//è‹¥RL Annotation Listé †åºå…¨éƒ¨æ­£ç¢ºï¼ŒæŠŠå®ƒè¨˜éŒ„åˆ°currentMethodRLListè£¡
         	if (!isRLListCorrect(newRLList)) {
         		currentMethodRLList.clear();
         		for(int j = 1; j <= newRLList.length - 1; j++)
@@ -174,12 +174,12 @@ public class RLOrderFix {
     }
 	
 	/**
-	 * §PÂ_©Ò¦³ªºRL List¦ì¸m¬O§_¥¿½T
+	 * åˆ¤æ–·æ‰€æœ‰çš„RL Listä½ç½®æ˜¯å¦æ­£ç¢º
 	 * 
 	 * @param newRLList
-	 * 		·s¦ì¸mªºRL Annotation List
+	 * 		æ–°ä½ç½®çš„RL Annotation List
 	 * @return
-	 * 		Tag List¶¶§Ç¬O§_¥ş³¡¥¿½T
+	 * 		Tag Listé †åºæ˜¯å¦å…¨éƒ¨æ­£ç¢º
 	 */
 	private boolean isRLListCorrect(RLMessage[] newRLList)
 	{
@@ -191,7 +191,7 @@ public class RLOrderFix {
 				if (msg1 >= k++)
 					continue;
 
-				//§PÂ_¤÷Ãş§O¬O§_¦b¤lÃş§O«e
+				//åˆ¤æ–·çˆ¶é¡åˆ¥æ˜¯å¦åœ¨å­é¡åˆ¥å‰
 				boolean isErr = isParentFrontSon(newRLList[j].getTypeBinding(),newRLList[i].getTypeBinding().getQualifiedName());
 				if (isErr)
 					return true;
@@ -201,14 +201,14 @@ public class RLOrderFix {
 	}
 	
 	/**
-	 * §PÂ_¤÷Ãş§O¬O§_¦b¤lÃş§O«e
+	 * åˆ¤æ–·çˆ¶é¡åˆ¥æ˜¯å¦åœ¨å­é¡åˆ¥å‰
 	 * 
 	 * @param typeBinding
-	 * 			¤÷Ãş§O
+	 * 			çˆ¶é¡åˆ¥
 	 * @param typeName
-	 * 			¤lÃş§O¦WºÙ
+	 * 			å­é¡åˆ¥åç¨±
 	 * @return
-	 * 			¤÷Ãş§O¬O§_¦b¤lÃş§O«e
+	 * 			çˆ¶é¡åˆ¥æ˜¯å¦åœ¨å­é¡åˆ¥å‰
 	 */
     private boolean isParentFrontSon(ITypeBinding typeBinding,String typeName)
 	{
@@ -219,14 +219,14 @@ public class RLOrderFix {
 		if (qname.equals(typeName))
 			return true;
 
-		//§PÂ_¤÷Ãş§O
+		//åˆ¤æ–·çˆ¶é¡åˆ¥
 		ITypeBinding superClass = typeBinding.getSuperclass();
 		if (superClass != null) {
 			if (superClass.getQualifiedName().equals(typeName))
 				return true;
 		}
 
-		//§PÂ_¤¶­±
+		//åˆ¤æ–·ä»‹é¢
 		ITypeBinding[] interfaceType = typeBinding.getInterfaces();
 		if (interfaceType != null && interfaceType.length > 0) {
 			for (int i = 0, size = interfaceType.length; i < size; i++) {
@@ -238,10 +238,10 @@ public class RLOrderFix {
 	}
     
 	/**
-	 * §ó·sRL Annotation
+	 * æ›´æ–°RL Annotation
 	 * 
 	 * @param isAllUpdate
-	 * 		¬O§_§ó·s¥ş³¡ªºAnnotation
+	 * 		æ˜¯å¦æ›´æ–°å…¨éƒ¨çš„Annotation
 	 * @param pos
 	 * @param level
 	 */
@@ -263,7 +263,7 @@ public class RLOrderFix {
 			ArrayInitializer rlary = ast.newArrayInitializer();
 			value.setValue(rlary);
 
-			//­Y¥ş³¡§ó·s¡Aªí¥Ü¬°currentMethodRLList±Æ§Ç¡A©Ò¥H¥[¤JAnnotation Library«Å§i
+			//è‹¥å…¨éƒ¨æ›´æ–°ï¼Œè¡¨ç¤ºç‚ºcurrentMethodRLListæ’åºï¼Œæ‰€ä»¥åŠ å…¥Annotation Libraryå®£å‘Š
 			
 			int msgIdx = 0;
 			for (RLMessage rlmsg : currentMethodRLList) {
@@ -275,7 +275,7 @@ public class RLOrderFix {
 
 			List<IExtendedModifier> modifiers = method.modifiers();
 			for (int i = 0, size = modifiers.size(); i < size; i++) {
-				//§ä¨ìÂÂ¦³ªºannotation«á±N¥¦²¾°£
+				//æ‰¾åˆ°èˆŠæœ‰çš„annotationå¾Œå°‡å®ƒç§»é™¤
 				if (modifiers.get(i).isAnnotation() && modifiers.get(i).toString().indexOf("Robustness") != -1) {
 					method.modifiers().remove(i);
 					break;
@@ -283,11 +283,11 @@ public class RLOrderFix {
 			}
 
 			if (rlary.expressions().size() > 0) {
-				//±N·s«Ø¥ßªºannotation root¥[¶i¥h
+				//å°‡æ–°å»ºç«‹çš„annotation rootåŠ é€²å»
 				method.modifiers().add(0, root);
 			}
 			
-			//±N­nÅÜ§óªº¸ê®Æ¼g¦^¦ÜDocument¤¤¡A¨Ã¤Ï¥Õ
+			//å°‡è¦è®Šæ›´çš„è³‡æ–™å¯«å›è‡³Documentä¸­ï¼Œä¸¦åç™½
 			applyChange();
 		}
 		catch (Exception ex) {
@@ -296,13 +296,13 @@ public class RLOrderFix {
 	}
 	
 	/**
-	 * ²£¥ÍRL Annotation¤§RL¸ê®Æ
+	 * ç”¢ç”ŸRL Annotationä¹‹RLè³‡æ–™
 	 * @param ast
 	 *            AST Object
 	 * @param levelVal
-	 *            ±j°·«×µ¥¯Å
+	 *            å¼·å¥åº¦ç­‰ç´š
 	 * @param exClass
-	 *            ¨Ò¥~Ãş§O
+	 *            ä¾‹å¤–é¡åˆ¥
 	 * @return NormalAnnotation AST Node
 	 */
 	@SuppressWarnings("unchecked")
@@ -327,11 +327,11 @@ public class RLOrderFix {
 	}
 	
 	/**
-	 * ±N­nÅÜ§óªº¸ê®Æ¼g¦^¦ÜDocument¤¤
+	 * å°‡è¦è®Šæ›´çš„è³‡æ–™å¯«å›è‡³Documentä¸­
 	 */
 	private void applyChange()
 	{
-		//¼g¦^Edit¤¤
+		//å¯«å›Editä¸­
 		try{
 			ICompilationUnit cu = (ICompilationUnit) actOpenable;
 			Document document = new Document(cu.getBuffer().getContents());

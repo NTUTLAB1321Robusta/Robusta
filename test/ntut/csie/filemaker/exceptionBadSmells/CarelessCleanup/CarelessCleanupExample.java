@@ -14,16 +14,16 @@ import ntut.csie.robusta.agile.exception.Robustness;
 
 
 /**
- * Careless Cleanupªº¿ù»~½d¨Ò¡C
- * Careless Cleanup¡G·í¨Ï¥ÎªÌ¹Á¸ÕÃö³¬¦ê¬y®É¡AÃö³¬ªº°Ê§@¨Ã¨S¦³¦bfinally¸Ì­±°õ¦æ¡A«K¬OÄİ©ó³oÃşÃa¨ı¹D¡C
- * ³o¨Ç½d¨Ò³£¥i¥H³Q§Ú­ÌªºCarelessCleanupVisitor°»´ú¨ì¡C
+ * Careless Cleanupçš„éŒ¯èª¤ç¯„ä¾‹ã€‚
+ * Careless Cleanupï¼šç•¶ä½¿ç”¨è€…å˜—è©¦é—œé–‰ä¸²æµæ™‚ï¼Œé—œé–‰çš„å‹•ä½œä¸¦æ²’æœ‰åœ¨finallyè£¡é¢åŸ·è¡Œï¼Œä¾¿æ˜¯å±¬æ–¼é€™é¡å£å‘³é“ã€‚
+ * é€™äº›ç¯„ä¾‹éƒ½å¯ä»¥è¢«æˆ‘å€‘çš„CarelessCleanupVisitoråµæ¸¬åˆ°ã€‚
  * @author Charles
  *
  */
 public class CarelessCleanupExample {
 	
 	/**
-	 * ¤£·|³QCarelessCleanupVisitor¥[¤Wmark
+	 * ä¸æœƒè¢«CarelessCleanupVisitoråŠ ä¸Šmark
 	 * @param context
 	 * @param outputFile
 	 */
@@ -41,7 +41,7 @@ public class CarelessCleanupExample {
 	}
 	
 	/**
-	 * ·|³QCarelessCleanupVisitor¦bfileOutputStream.close();¥[¤Wmark
+	 * æœƒè¢«CarelessCleanupVisitoråœ¨fileOutputStream.close();åŠ ä¸Šmark
 	 * @param context
 	 * @param outputFile
 	 */
@@ -60,7 +60,7 @@ public class CarelessCleanupExample {
 	}
 	
 	/**
-	 * ·|³QCarelessCleanupVisitor¦bfileOutputStream.close();¥[¤Wmark
+	 * æœƒè¢«CarelessCleanupVisitoråœ¨fileOutputStream.close();åŠ ä¸Šmark
 	 * @param context
 	 * @param outputFile
 	 */
@@ -82,7 +82,7 @@ public class CarelessCleanupExample {
 	}
 	
 	/**
-	 * ·|³QCarelessCleanupVisitor¦bfileOutputStream.close();¥[¤Wmark
+	 * æœƒè¢«CarelessCleanupVisitoråœ¨fileOutputStream.close();åŠ ä¸Šmark
 	 * @param context
 	 * @param outputFile
 	 */
@@ -102,7 +102,7 @@ public class CarelessCleanupExample {
 	}
 	
 	/**
-	 * ·|³QCarelessCleanupVisitor¦bfileOutputStream.close();¥[¤Wmark
+	 * æœƒè¢«CarelessCleanupVisitoråœ¨fileOutputStream.close();åŠ ä¸Šmark
 	 * @param context
 	 * @param outputFile
 	 */
@@ -123,7 +123,7 @@ public class CarelessCleanupExample {
 	}
 	
 	/**
-	 * ·|³QCarelessCleanupVisitor¦bfileOutputStream.close();¥[¤Wmark
+	 * æœƒè¢«CarelessCleanupVisitoråœ¨fileOutputStream.close();åŠ ä¸Šmark
 	 * @param context
 	 * @param outputFile
 	 */
@@ -144,7 +144,7 @@ public class CarelessCleanupExample {
 	}
 	
 	/**
-	 * ·|³QCarelessCleanupVisitor¦bfileOutputStream.close();¥[¤Wmark(¨â³B)
+	 * æœƒè¢«CarelessCleanupVisitoråœ¨fileOutputStream.close();åŠ ä¸Šmark(å…©è™•)
 	 * @param context
 	 * @param outputFile
 	 * @throws IOException
@@ -169,9 +169,9 @@ public class CarelessCleanupExample {
 	}
 	
 	/**
-	 * ¤£·|³QCarelessCleanupVisitor¦banInstance.close();¥[¤Wmark
-	 * ¦]¬°ClassWithNotThrowingExceptionCloseable¤£¬Oimplements Closeable¤¶­±
-	 * ©Ò¥H¤£·|³Qµø¬°¬OÃö³¬¸ê·½ªº°Ê§@
+	 * ä¸æœƒè¢«CarelessCleanupVisitoråœ¨anInstance.close();åŠ ä¸Šmark
+	 * å› ç‚ºClassWithNotThrowingExceptionCloseableä¸æ˜¯implements Closeableä»‹é¢
+	 * æ‰€ä»¥ä¸æœƒè¢«è¦–ç‚ºæ˜¯é—œé–‰è³‡æºçš„å‹•ä½œ
 	 */
 	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
 	public void closeNonClosableInstance() {
@@ -197,7 +197,7 @@ public class CarelessCleanupExample {
 	}
 	
 	/**
-	 * ¬İ¦ü±Mªù¥Î¨Ó©ñ¦bFinally°µÃö³¬¦ê¬yªºµ{¦¡½X¡A¦ı¬O¥L·|©ß¥X¨Ò¥~¡A©Ò¥HÁÙ¬O­n³QCareless CleanupÀË¬d¡C
+	 * çœ‹ä¼¼å°ˆé–€ç”¨ä¾†æ”¾åœ¨Finallyåšé—œé–‰ä¸²æµçš„ç¨‹å¼ç¢¼ï¼Œä½†æ˜¯ä»–æœƒæ‹‹å‡ºä¾‹å¤–ï¼Œæ‰€ä»¥é‚„æ˜¯è¦è¢«Careless Cleanupæª¢æŸ¥ã€‚
 	 * @param fileOutputStream
 	 * @throws IOException 
 	 */
@@ -214,7 +214,7 @@ public class CarelessCleanupExample {
 	}
 	
 	/**
-	 * ¬İ¦ü±Mªù¥Î¨Ó©ñ¦bFinally°µÃö³¬¦ê¬yªºµ{¦¡½X¡A¦ı¬O¥L·|©ß¥X¨Ò¥~¡A©Ò¥HÁÙ¬O­n³QCareless CleanupÀË¬d¡C
+	 * çœ‹ä¼¼å°ˆé–€ç”¨ä¾†æ”¾åœ¨Finallyåšé—œé–‰ä¸²æµçš„ç¨‹å¼ç¢¼ï¼Œä½†æ˜¯ä»–æœƒæ‹‹å‡ºä¾‹å¤–ï¼Œæ‰€ä»¥é‚„æ˜¯è¦è¢«Careless Cleanupæª¢æŸ¥ã€‚
 	 * @param fileOutputStream
 	 */
 	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
@@ -229,8 +229,8 @@ public class CarelessCleanupExample {
 	}
 	
 	/**
-	 * ¦pªG¬O±Mªù¥Î¨Ó©ñ¦bFinallyÃö³¬¦ê¬yªºmethod¡A±N¤£°µcareless cleanupªºÀË¬d¡C
-	 * ¦ı¬O¥Ø«eªºµ{¦¡½X¦³¥Î¨ìelse¡A©Ò¥H§Ú­Ì»{¬°»y·N¤W¡A¥i¯à¤£¬O³æ¯ÂÃö³¬¦ê¬yªºmethod¡C
+	 * å¦‚æœæ˜¯å°ˆé–€ç”¨ä¾†æ”¾åœ¨Finallyé—œé–‰ä¸²æµçš„methodï¼Œå°‡ä¸åšcareless cleanupçš„æª¢æŸ¥ã€‚
+	 * ä½†æ˜¯ç›®å‰çš„ç¨‹å¼ç¢¼æœ‰ç”¨åˆ°elseï¼Œæ‰€ä»¥æˆ‘å€‘èªç‚ºèªæ„ä¸Šï¼Œå¯èƒ½ä¸æ˜¯å–®ç´”é—œé–‰ä¸²æµçš„methodã€‚
 	 * @param fileOutputStream
 	 */
 	protected void y_closeStreamWithElseBigTry(FileOutputStream fileOutputStream) {
@@ -246,8 +246,8 @@ public class CarelessCleanupExample {
 	}
 	
 	/**
-	 * ¦pªG¬O±Mªù¥Î¨Ó©ñ¦bFinallyÃö³¬¦ê¬yªºmethod¡A±N¤£°µcareless cleanupªºÀË¬d
-	 * ¦ı¬O¥Ø«eªºµ{¦¡½Xif¤£¥u¦³Ãö³¬¦ê¬yªºµ{¦¡½X¡A©Ò¥H§Ú­Ì»{¬°»y·N¤W¡A¥i¯à¤£¬O³æ¯ÂÃö³¬¦ê¬yªºmethod¡C
+	 * å¦‚æœæ˜¯å°ˆé–€ç”¨ä¾†æ”¾åœ¨Finallyé—œé–‰ä¸²æµçš„methodï¼Œå°‡ä¸åšcareless cleanupçš„æª¢æŸ¥
+	 * ä½†æ˜¯ç›®å‰çš„ç¨‹å¼ç¢¼ifä¸åªæœ‰é—œé–‰ä¸²æµçš„ç¨‹å¼ç¢¼ï¼Œæ‰€ä»¥æˆ‘å€‘èªç‚ºèªæ„ä¸Šï¼Œå¯èƒ½ä¸æ˜¯å–®ç´”é—œé–‰ä¸²æµçš„methodã€‚
 	 * @param fileOutputStream
 	 */
 	protected void y_closeStreamWithMultiStatementInThenBigTry(FileOutputStream fileOutputStream) {
@@ -262,7 +262,7 @@ public class CarelessCleanupExample {
 	}
 	
 	/**
-	 * ¦pªG¬O±Mªù¥Î¨Ó©ñ¦bFinallyÃö³¬¦ê¬yªºmethod¡A±N¤£°µcareless cleanupªºÀË¬d
+	 * å¦‚æœæ˜¯å°ˆé–€ç”¨ä¾†æ”¾åœ¨Finallyé—œé–‰ä¸²æµçš„methodï¼Œå°‡ä¸åšcareless cleanupçš„æª¢æŸ¥
 	 * @param fileOutputStream
 	 */
 	protected void closeStreamWithoutThrowingExceptionBigTry(FileOutputStream fileOutputStream) {
@@ -276,7 +276,7 @@ public class CarelessCleanupExample {
 	}
 
 	/**
-	 * ¦pªG¬O±Mªù¥Î¨Ó©ñ¦bFinallyÃö³¬¦ê¬yªºmethod¡A±N¤£°µcareless cleanupªºÀË¬d
+	 * å¦‚æœæ˜¯å°ˆé–€ç”¨ä¾†æ”¾åœ¨Finallyé—œé–‰ä¸²æµçš„methodï¼Œå°‡ä¸åšcareless cleanupçš„æª¢æŸ¥
 	 * @param fileOutputStream
 	 */
 	protected void closeStreamWithoutThrowingExceptionBigTryIfWithoutBlock(FileOutputStream fileOutputStream) {
@@ -289,7 +289,7 @@ public class CarelessCleanupExample {
 	}
 	
 	/**
-	 * ¦pªG¬O±Mªù¥Î¨Ó©ñ¦bFinallyÃö³¬¦ê¬yªºmethod¡A±N¤£°µcareless cleanupªºÀË¬d
+	 * å¦‚æœæ˜¯å°ˆé–€ç”¨ä¾†æ”¾åœ¨Finallyé—œé–‰ä¸²æµçš„methodï¼Œå°‡ä¸åšcareless cleanupçš„æª¢æŸ¥
 	 * @param fileOutputStream
 	 */
 	protected void closeStreamWithoutThrowingException(FileOutputStream fileOutputStream) {
@@ -303,7 +303,7 @@ public class CarelessCleanupExample {
 	}
 
 	/**
-	 * ¦pªG¬O±Mªù¥Î¨Ó©ñ¦bFinallyÃö³¬¦ê¬yªºmethod¡A±N¤£°µcareless cleanupªºÀË¬d
+	 * å¦‚æœæ˜¯å°ˆé–€ç”¨ä¾†æ”¾åœ¨Finallyé—œé–‰ä¸²æµçš„methodï¼Œå°‡ä¸åšcareless cleanupçš„æª¢æŸ¥
 	 * @param fileOutputStream
 	 */
 	public void closeStreamWithoutThrowingExceptionNestedIfTry(FileOutputStream fileOutputStream) {
@@ -318,7 +318,7 @@ public class CarelessCleanupExample {
 	}
 	
 	/**
-	 * ·|³QCarelessCleanupVisitor¦bfis.close();¥[¤Wmark
+	 * æœƒè¢«CarelessCleanupVisitoråœ¨fis.close();åŠ ä¸Šmark
 	 * @throws IOException 
 	 */
 	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
@@ -329,7 +329,7 @@ public class CarelessCleanupExample {
 	}
 	
 	/**
-	 * ·|³QCarelessCleanupVisitor¦bfis.close();¥[¤Wmark
+	 * æœƒè¢«CarelessCleanupVisitoråœ¨fis.close();åŠ ä¸Šmark
 	 * @throws IOException
 	 */
 	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
@@ -343,7 +343,7 @@ public class CarelessCleanupExample {
 	}
 	
 	/**
-	 * ·|³QCarelessCleanupVisitor¦bfis.close();¥[¤Wmark
+	 * æœƒè¢«CarelessCleanupVisitoråœ¨fis.close();åŠ ä¸Šmark
 	 * @throws IOException
 	 */
 	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
@@ -356,7 +356,7 @@ public class CarelessCleanupExample {
 	}
 	
 	/**
-	 * ·|³QCarelessCleanupVisitor¦bfis.close();¥[¤Wmark
+	 * æœƒè¢«CarelessCleanupVisitoråœ¨fis.close();åŠ ä¸Šmark
 	 * @throws IOException
 	 */
 	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
@@ -371,7 +371,7 @@ public class CarelessCleanupExample {
 	}
 	
 	/**
-	 * ·|³QCarelessCleanupVisitor¦bfis.close();¥[¤Wmark
+	 * æœƒè¢«CarelessCleanupVisitoråœ¨fis.close();åŠ ä¸Šmark
 	 * @throws IOException
 	 */
 	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
@@ -385,7 +385,7 @@ public class CarelessCleanupExample {
 	}
 	
 	/**
-	 * ¥u¬O­n®ø°£private methodªºÄµ§i¥Î¡A¤£·|¦³¥ô¦ómark
+	 * åªæ˜¯è¦æ¶ˆé™¤private methodçš„è­¦å‘Šç”¨ï¼Œä¸æœƒæœ‰ä»»ä½•mark
 	 * @throws IOException
 	 */
 	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
@@ -398,7 +398,7 @@ public class CarelessCleanupExample {
 	}
 	
 	/**
-	 * close IOªº¼Ğ·Ç¼gªk
+	 * close IOçš„æ¨™æº–å¯«æ³•
 	 */
 	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
 	public void openStream2Write() {
@@ -415,7 +415,7 @@ public class CarelessCleanupExample {
 	}
 	
 	/**
-	 * ·|³QCarelessCleanupVisitor¦bfis.close();¥[¤Wmark
+	 * æœƒè¢«CarelessCleanupVisitoråœ¨fis.close();åŠ ä¸Šmark
 	 * @throws IOException
 	 */
 	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
@@ -433,7 +433,7 @@ public class CarelessCleanupExample {
 	}
 	
 	/**
-	 * ·|³QCarelessCleanupVisitor¦bfis.close();¥[¤Wmark
+	 * æœƒè¢«CarelessCleanupVisitoråœ¨fis.close();åŠ ä¸Šmark
 	 * @throws IOException
 	 */
 	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
@@ -452,7 +452,7 @@ public class CarelessCleanupExample {
 	}
 	
 	/**
-	 * ·|³QCarelessCleanupVisitor¦bfw.close();¥[¤Wmark(¦]¬°catch»Pfinally³£·|©ß¥X¨Ò¥~)
+	 * æœƒè¢«CarelessCleanupVisitoråœ¨fw.close();åŠ ä¸Šmark(å› ç‚ºcatchèˆ‡finallyéƒ½æœƒæ‹‹å‡ºä¾‹å¤–)
 	 * @throws IOException
 	 */
 	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
@@ -475,9 +475,9 @@ public class CarelessCleanupExample {
 	}
 
 	/**
-	 * ·|³QCarelessCleanupVisitor¦bmethod«Å§i³B¥[¤Wmark
-	 * (¦]¬°¨Ï¥ÎªÌ·|·Q­n¦bcatchÂà«¬¨Ï¥Îfunctional code³B²z¨Ò¥~®É¡A
-	 * À³¸Ó¬O¤£§Æ±æmethodªº«Å§i·|©ß¥X¨Ò¥~¡A©Ò¥Hfinally¤£À³¸Ó©ß¥X¨Ò¥~¡C)
+	 * æœƒè¢«CarelessCleanupVisitoråœ¨methodå®£å‘Šè™•åŠ ä¸Šmark
+	 * (å› ç‚ºä½¿ç”¨è€…æœƒæƒ³è¦åœ¨catchè½‰å‹ä½¿ç”¨functional codeè™•ç†ä¾‹å¤–æ™‚ï¼Œ
+	 * æ‡‰è©²æ˜¯ä¸å¸Œæœ›methodçš„å®£å‘Šæœƒæ‹‹å‡ºä¾‹å¤–ï¼Œæ‰€ä»¥finallyä¸æ‡‰è©²æ‹‹å‡ºä¾‹å¤–ã€‚)
 	 * @throws IOException
 	 */
 	@Robustness(value = { @RTag(level = 2, exception = java.io.IOException.class) })
@@ -499,7 +499,7 @@ public class CarelessCleanupExample {
 		}
 	}
 	
-	//=========­n¦b³]©wÀÉ¸Ì­±¥[¤W¨Ï¥ÎªÌ°»´ú±ø¥ó¡A¤~¯à§PÂ_¥X¥H¤Umethod¬O§_¦³careless cleanup=========//
+	//=========è¦åœ¨è¨­å®šæª”è£¡é¢åŠ ä¸Šä½¿ç”¨è€…åµæ¸¬æ¢ä»¶ï¼Œæ‰èƒ½åˆ¤æ–·å‡ºä»¥ä¸‹methodæ˜¯å¦æœ‰careless cleanup=========//
 	
 	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void uy_userDefinedLibrary() throws IOException {
@@ -512,7 +512,7 @@ public class CarelessCleanupExample {
 		dog.bark();
 	}
 	
-	//======­n¦A³]©wÀÉ¸Ì­±¤Ä¿ïExtra rule¡A¤~¯à§PÂ_¥X¥H¤Umethod¬O§_¦³careless cleanup======//
+	//======è¦å†è¨­å®šæª”è£¡é¢å‹¾é¸Extra ruleï¼Œæ‰èƒ½åˆ¤æ–·å‡ºä»¥ä¸‹methodæ˜¯å¦æœ‰careless cleanup======//
 	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void uy_closeStreaminOuterMethodInTry() throws IOException {
 		try {
@@ -538,7 +538,7 @@ public class CarelessCleanupExample {
 		}
 	}
 	
-	//================´ú¸ÕmoveInstance case¨Ï¥Îªº¯S©w®æ¦¡==========================
+	//================æ¸¬è©¦moveInstance caseä½¿ç”¨çš„ç‰¹å®šæ ¼å¼==========================
 	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void moveInstance() throws IOException {
 		try {
@@ -551,7 +551,7 @@ public class CarelessCleanupExample {
 	}
 	
 	/**
-	 * ­Y.close() method¤£·|¥á¥X¨Ò¥~¡AÀ³¥i¥Hª½±µquick fix©ñ¨ìfinally block¤¤
+	 * è‹¥.close() methodä¸æœƒä¸Ÿå‡ºä¾‹å¤–ï¼Œæ‡‰å¯ä»¥ç›´æ¥quick fixæ”¾åˆ°finally blockä¸­
 	 * @throws IOException
 	 */
 	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
@@ -565,14 +565,14 @@ public class CarelessCleanupExample {
 	}
 	
 	/*=================================================================================
-	 * ¨ä¥L¥i¯à¥X²{ Careless Cleanup Ãa¨ı¹Dªºµ{¦¡½Xµ²ºc¡C
-	 * µo·QÆF·P¨Ó¦Ûjfreechart¡C
+	 * å…¶ä»–å¯èƒ½å‡ºç¾ Careless Cleanup å£å‘³é“çš„ç¨‹å¼ç¢¼çµæ§‹ã€‚
+	 * ç™¼æƒ³éˆæ„Ÿä¾†è‡ªjfreechartã€‚
 	 =================================================================================*/
 	
 	/**
-	 * ¦P¤@­Óinstance¡A¦bMethodDeclaration¤W­±¦³©ß¥X¨Ò¥~¡A
-	 * ¤S¥Î¤Ftry-catch¥h®·®»³o­Ó³o­Óinstance¨ä¥Lmethod¡A¨Ã¦bfinally¸Ì­±Ãö³¬¡C
-	 * ³oºØ¤]¬Ocareless cleanupªº¤@ºØ¡C
+	 * åŒä¸€å€‹instanceï¼Œåœ¨MethodDeclarationä¸Šé¢æœ‰æ‹‹å‡ºä¾‹å¤–ï¼Œ
+	 * åˆç”¨äº†try-catchå»æ•æ‰é€™å€‹é€™å€‹instanceå…¶ä»–methodï¼Œä¸¦åœ¨finallyè£¡é¢é—œé–‰ã€‚
+	 * é€™ç¨®ä¹Ÿæ˜¯careless cleanupçš„ä¸€ç¨®ã€‚
 	 * @throws IOException
 	 */
 	public void y_thrownExceptionOnMethodDeclarationWithTryStatementWith2KindsInstance(
@@ -582,20 +582,20 @@ public class CarelessCleanupExample {
 		}
 		FileInputStream fis = new FileInputStream(file1);
 		
-		// ¦pªGoutµo¥Í¨Ò¥~¡A«hfis¨ÌµM·|¦³ careless cleanup ªºÃa¨ı¹D
+		// å¦‚æœoutç™¼ç”Ÿä¾‹å¤–ï¼Œå‰‡fisä¾ç„¶æœƒæœ‰ careless cleanup çš„å£å‘³é“
 		java.io.OutputStream out = new java.io.BufferedOutputStream(new FileOutputStream(file2));
 		try {
 			while(fis.available() != 0) {
 				out.write(fis.read());
 			}
 		} finally {
-			fis.close();	// ¦]¬°new FileOutputStream·|©ß¥X¨Ò¥~¡A³y¦¨fis.close()ÅÜ¦¨careless cleanup
-			out.close();	// ¦]¬°fis.close()·|©ß¥X¨Ò¥~¡A³y¦¨out.close()ÅÜ¦¨careless cleanup
+			fis.close();	// å› ç‚ºnew FileOutputStreamæœƒæ‹‹å‡ºä¾‹å¤–ï¼Œé€ æˆfis.close()è®Šæˆcareless cleanup
+			out.close();	// å› ç‚ºfis.close()æœƒæ‹‹å‡ºä¾‹å¤–ï¼Œé€ æˆout.close()è®Šæˆcareless cleanup
 		}
 	}
 	
 	/**
-	 * ¦P¤W¡A¦ı¬O¨Ï¥ÎªÌ¦Û©w¸qªº°»´ú±ø¥ó
+	 * åŒä¸Šï¼Œä½†æ˜¯ä½¿ç”¨è€…è‡ªå®šç¾©çš„åµæ¸¬æ¢ä»¶
 	 * @throws IOException
 	 */
 	public void y_thrownExceptionOnMethodDeclarationWithTryStatementWith2KindsInstanceUserDefined()
@@ -607,34 +607,34 @@ public class CarelessCleanupExample {
 			uccw1.bark();
 			uccw2.rain();
 		} finally {
-			uccw1.Shine();	// ¦b³o­Ó¨Ò¤l¤¤¡Auccw1«ç¼Ë³£¤£·|³Q·í§@careless cleanup
-			uccw2.Shine();	// ©w¸qshine¬°close
+			uccw1.Shine();	// åœ¨é€™å€‹ä¾‹å­ä¸­ï¼Œuccw1æ€æ¨£éƒ½ä¸æœƒè¢«ç•¶ä½œcareless cleanup
+			uccw2.Shine();	// å®šç¾©shineç‚ºclose
 		}
 	}
 	
 	/**
-	 * ¶Ç¶i¨Óªº¸ê·½¡A­n¦b¦¹³BÃö³¬¡C
+	 * å‚³é€²ä¾†çš„è³‡æºï¼Œè¦åœ¨æ­¤è™•é—œé–‰ã€‚
 	 * @param fis
 	 * @throws IOException
 	 */
 	public void y_inputResource(FileInputStream fis) throws IOException {
 		FileOutputStream fos = new FileOutputStream("C:\\123.txt");
-		fis.reset();	// ·|©ß¨Ò¥~
+		fis.reset();	// æœƒæ‹‹ä¾‹å¤–
 		try {
 			while(fis.available() != 0) {
 				fos.write(fis.read());
 			}
 		} finally {
-			fos.close();	// ¦]¬°fis.reset();·|©ß¨Ò¥~¡A©Ò¥Hfos.close()¬Ocareless cleanup
+			fos.close();	// å› ç‚ºfis.reset();æœƒæ‹‹ä¾‹å¤–ï¼Œæ‰€ä»¥fos.close()æ˜¯careless cleanup
 		}
 	}
 	
 	/**
-	 * ¦P¤@­Óinstance¡A¦bMethodDeclaration¤W­±¦³©ß¥X¨Ò¥~¡A
-	 * ¤S¥Î¤Ftry-catch¥h®·®»³o­Ó³o­Óinstance¨ä¥Lmethod¡A¨Ã¦bfinally¸Ì­±Ãö³¬¡C
-	 * ³oºØ¤]¬Ocareless cleanupªº¤@ºØ¡C
+	 * åŒä¸€å€‹instanceï¼Œåœ¨MethodDeclarationä¸Šé¢æœ‰æ‹‹å‡ºä¾‹å¤–ï¼Œ
+	 * åˆç”¨äº†try-catchå»æ•æ‰é€™å€‹é€™å€‹instanceå…¶ä»–methodï¼Œä¸¦åœ¨finallyè£¡é¢é—œé–‰ã€‚
+	 * é€™ç¨®ä¹Ÿæ˜¯careless cleanupçš„ä¸€ç¨®ã€‚
 	 * 
-	 * finally¸Ì­±¨â­ÓÃö³¬¦ê¬yªº°Ê§@¡A²Ä¤@­Ó¥i¯à·|©ß¨Ò¥~¡A¾É­P²Ä¤G­Ó°Ê§@¥i¯à°õ¦æ¤£¨ì¡C
+	 * finallyè£¡é¢å…©å€‹é—œé–‰ä¸²æµçš„å‹•ä½œï¼Œç¬¬ä¸€å€‹å¯èƒ½æœƒæ‹‹ä¾‹å¤–ï¼Œå°è‡´ç¬¬äºŒå€‹å‹•ä½œå¯èƒ½åŸ·è¡Œä¸åˆ°ã€‚
 	 * @throws IOException
 	 */
 	public void y_thrownExceptionOnMethodDeclarationWithTryStatementWith2KindsInstanceAndLastOneNotThrowsException(
@@ -644,14 +644,14 @@ public class CarelessCleanupExample {
 		}
 		FileInputStream fis = new FileInputStream(file1);
 		
-		// ¦pªGoutµo¥Í¨Ò¥~¡A«hfis¨ÌµM·|¦³ careless cleanup ªºÃa¨ı¹D
+		// å¦‚æœoutç™¼ç”Ÿä¾‹å¤–ï¼Œå‰‡fisä¾ç„¶æœƒæœ‰ careless cleanup çš„å£å‘³é“
 		java.io.OutputStream out = new java.io.BufferedOutputStream(new FileOutputStream(file2));
 		try {
 			while(fis.available() != 0) {
 				out.write(fis.read());
 			}
 		} finally {
-			fis.close(); // ¦pªGoutµo¥Í¨Ò¥~¡A«hfis¨ÌµM·|¦³ careless cleanup ªºÃa¨ı¹D	
+			fis.close(); // å¦‚æœoutç™¼ç”Ÿä¾‹å¤–ï¼Œå‰‡fisä¾ç„¶æœƒæœ‰ careless cleanup çš„å£å‘³é“	
 			close(out);
 		}
 	}
@@ -670,21 +670,21 @@ public class CarelessCleanupExample {
 		int a = 10;
 		FileInputStream fis = new FileInputStream("");
 		for(int i = 1; i<a; i++) {
-			while(fis.available() != 0) {	// ·|©ß¨Ò¥~
-				fis.reset();				// ·|©ß¨Ò¥~
+			while(fis.available() != 0) {	// æœƒæ‹‹ä¾‹å¤–
+				fis.reset();				// æœƒæ‹‹ä¾‹å¤–
 			}
 		}
 		try {
-			fis.read();	//·|©ß¥X¨Ò¥~
+			fis.read();	//æœƒæ‹‹å‡ºä¾‹å¤–
 		} finally {
 			fis.close();
 		}
 	}
 	
 	/**
-	 * ¦P¤@­Óinstance¡A¦bMethodDeclaration¤W­±¦³©ß¥X¨Ò¥~¡A
-	 * ¤S¥Î¤Ftry-catch¥h®·®»³o­Ó³o­Óinstance¨ä¥Lmethod¡A¨S¦³¥ô¦óÃö³¬ªº°Ê§@¦bfinally¸Ì­±¡C
-	 * ´N¤£ºâ¬Ocareless cleanupªº¤@ºØ¡C
+	 * åŒä¸€å€‹instanceï¼Œåœ¨MethodDeclarationä¸Šé¢æœ‰æ‹‹å‡ºä¾‹å¤–ï¼Œ
+	 * åˆç”¨äº†try-catchå»æ•æ‰é€™å€‹é€™å€‹instanceå…¶ä»–methodï¼Œæ²’æœ‰ä»»ä½•é—œé–‰çš„å‹•ä½œåœ¨finallyè£¡é¢ã€‚
+	 * å°±ä¸ç®—æ˜¯careless cleanupçš„ä¸€ç¨®ã€‚
 	 * @throws IOException
 	 */
 	public void thrownExceptionOnMethodDeclarationWithTryStatement(File file1, File file2) throws IOException {
@@ -693,7 +693,7 @@ public class CarelessCleanupExample {
 		}
 		FileInputStream fis = new FileInputStream(file1);
 		
-		// ¦pªGoutµo¥Í¨Ò¥~¡A«hfis¨ÌµM·|¦³ careless cleanup ªºÃa¨ı¹D
+		// å¦‚æœoutç™¼ç”Ÿä¾‹å¤–ï¼Œå‰‡fisä¾ç„¶æœƒæœ‰ careless cleanup çš„å£å‘³é“
 		java.io.OutputStream out = new java.io.BufferedOutputStream(new FileOutputStream(file2));
 		try {
 			out.write(fis.read());
@@ -703,9 +703,9 @@ public class CarelessCleanupExample {
 	}
 	
 	/**
-	 * ¦P¤@­Óinstance¡A¦bMethodDeclaration¤W­±¦³©ß¥X¨Ò¥~¡A
-	 * ¤S¥Î¤Ftry-catch¥h®·®»³o­Ó³o­Óinstance¨ä¥Lmethod¡A¨S¦³¥ô¦óÃö³¬ªº°Ê§@¦bfinally¸Ì­±¡C
-	 * ´N¤£ºâ¬Ocareless cleanupªº¤@ºØ¡C
+	 * åŒä¸€å€‹instanceï¼Œåœ¨MethodDeclarationä¸Šé¢æœ‰æ‹‹å‡ºä¾‹å¤–ï¼Œ
+	 * åˆç”¨äº†try-catchå»æ•æ‰é€™å€‹é€™å€‹instanceå…¶ä»–methodï¼Œæ²’æœ‰ä»»ä½•é—œé–‰çš„å‹•ä½œåœ¨finallyè£¡é¢ã€‚
+	 * å°±ä¸ç®—æ˜¯careless cleanupçš„ä¸€ç¨®ã€‚
 	 * @throws IOException
 	 */
 	public void thrownExceptionOnMethodDeclarationWithTryStatement() throws IOException {
@@ -716,7 +716,7 @@ public class CarelessCleanupExample {
 			System.out.println(fis.toString());
 		}
 		try {
-			fis.read();	//·|©ß¥X¨Ò¥~
+			fis.read();	//æœƒæ‹‹å‡ºä¾‹å¤–
 		} finally {
 			fis.close();
 		}
@@ -734,8 +734,8 @@ public class CarelessCleanupExample {
 			fis.read();
 		} finally {
 			/*
-			 * ÁöµMfos.write(10);·|©ß¥X¨Ò¥~¡A¦ı¬Oµo¥Í®Éfis©|¥¼³Q«Ø¥ß¡A©Ò¥HµL»İÃö³¬¡C
-			 * ©Ò¥H¤£ºâ¬Ocareless cleanup
+			 * é›–ç„¶fos.write(10);æœƒæ‹‹å‡ºä¾‹å¤–ï¼Œä½†æ˜¯ç™¼ç”Ÿæ™‚fiså°šæœªè¢«å»ºç«‹ï¼Œæ‰€ä»¥ç„¡éœ€é—œé–‰ã€‚
+			 * æ‰€ä»¥ä¸ç®—æ˜¯careless cleanup
 			 */
 			fis.close();
 		}
@@ -746,8 +746,8 @@ public class CarelessCleanupExample {
 		FileInputStream fis = new FileInputStream("");
 		try {
 			for(int i = 1; i<a; i++) {
-				while(fis.available() != 0) {	// ·|©ß¨Ò¥~
-					fis.reset();				// ·|©ß¨Ò¥~
+				while(fis.available() != 0) {	// æœƒæ‹‹ä¾‹å¤–
+					fis.reset();				// æœƒæ‹‹ä¾‹å¤–
 				}
 			}
 		} finally {
@@ -755,7 +755,7 @@ public class CarelessCleanupExample {
 		}
 		
 		try {
-			fis.read();	//·|©ß¥X¨Ò¥~
+			fis.read();	//æœƒæ‹‹å‡ºä¾‹å¤–
 		} finally {
 			fis.close();
 		}

@@ -15,7 +15,7 @@ public @interface RTag {
 	
 	int level() default 1;
 
-	//Class¤£·|§PÂ_¬O§_Ä~©Ó©óThrowable¡A©Ò¥H¤£¯à¥ÎClass<Throwable> exception()
+	//Classä¸æœƒåˆ¤æ–·æ˜¯å¦ç¹¼æ‰¿æ–¼Throwableï¼Œæ‰€ä»¥ä¸èƒ½ç”¨Class<Throwable> exception()
 	Class<?> exception() default Throwable.class;
 	
 	/** The level of thrown exception */

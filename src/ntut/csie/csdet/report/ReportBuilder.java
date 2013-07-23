@@ -45,16 +45,16 @@ public class ReportBuilder {
 	private static Logger logger = LoggerFactory.getLogger(ReportBuilder.class);
 
 	private IProject project;
-	// Reportªº¸ê®Æ
+	// Reportçš„è³‡æ–™
 	private ReportModel model;
-	// ¬O§_°»´ú¥ş³¡ªºPackage
+	// æ˜¯å¦åµæ¸¬å…¨éƒ¨çš„Package
 	private Boolean isAllPackage;
-	// Àx¦sfilter±ø¥óªºList
+	// å„²å­˜filteræ¢ä»¶çš„List
 	private List<String> filterRuleList = new ArrayList<String>();
 	private LOCCounter noFormatCounter = new LOCCounter();
 
 	/**
-	 * «Ø¥ßReport
+	 * å»ºç«‹Report
 	 * 
 	 * @param project
 	 * @param model
@@ -65,50 +65,50 @@ public class ReportBuilder {
 	}
 
 	public void run() {
-		// ¨ú±o±M®×¦WºÙ
+		// å–å¾—å°ˆæ¡ˆåç¨±
 		model.setProjectName(project.getName());
-		// ¨ú±o«Ø³y®É¶¡
+		// å–å¾—å»ºé€ æ™‚é–“
 		model.setBuildTime();
 
-		// ±NUser¹ï©óFilterªº³]©w¦s¤U¨Ó
+		// å°‡Userå°æ–¼Filterçš„è¨­å®šå­˜ä¸‹ä¾†
 		getFilterSettings();
 
-		// ¸ÑªR±M®×
+		// è§£æå°ˆæ¡ˆ
 		analysisProject(project);
 
-		// ²£¥ÍHTM
+		// ç”¢ç”ŸHTM
 		SmellReport createHTM = new SmellReport(model);
 		createHTM.build();
 
-		// ²£¥Í¹Ïªí
+		// ç”¢ç”Ÿåœ–è¡¨
 		BarChart smellChart = new BarChart(model);
 		smellChart.build();
 	}
 
 	/**
-	 * ±NUser¹ï©óFilterªº³]©w¦s¤U¨Ó
+	 * å°‡Userå°æ–¼Filterçš„è¨­å®šå­˜ä¸‹ä¾†
 	 * 
 	 * @return
 	 */
 	private void getFilterSettings() {
 		Element root = JDomUtil.createXMLContent();
 
-		// ¦pªG¬Onullªí¥ÜXMLÀÉ¬O­è«Ø¦nªº,ÁÙ¨S¦³EHSmellFilterTaqªºtag,ª½±µ¸õ¥X¥h
+		// å¦‚æœæ˜¯nullè¡¨ç¤ºXMLæª”æ˜¯å‰›å»ºå¥½çš„,é‚„æ²’æœ‰EHSmellFilterTaqçš„tag,ç›´æ¥è·³å‡ºå»
 		if (root.getChild(JDomUtil.EHSmellFilterTaq) != null) {
 
-			// ³o¸Ìªí¥Ü¤§«e¨Ï¥ÎªÌ¤w¸g¦³³]©w¹Lpreference¤F,¥h¨ú±o¬ÛÃö°»´ú³]©w­È
+			// é€™è£¡è¡¨ç¤ºä¹‹å‰ä½¿ç”¨è€…å·²ç¶“æœ‰è¨­å®šépreferenceäº†,å»å–å¾—ç›¸é—œåµæ¸¬è¨­å®šå€¼
 			Element filter = root.getChild(JDomUtil.EHSmellFilterTaq).getChild("filter");
 			isAllPackage = Boolean.valueOf(filter.getAttribute("IsAllPackage").getValue());
 
-			// ­Y¤£¬O°»´ú¥ş³¡ªºProject¡A«h§âRule±ø¥óÀx¦s
+			// è‹¥ä¸æ˜¯åµæ¸¬å…¨éƒ¨çš„Projectï¼Œå‰‡æŠŠRuleæ¢ä»¶å„²å­˜
 			if (!isAllPackage) {
 				List<?> filterList = filter.getAttributes();
 
 				for (int i = 0; i < filterList.size(); i++) {
-					// ²¤¹L¤£Äİ©óRuleªº³]©w
+					// ç•¥éä¸å±¬æ–¼Ruleçš„è¨­å®š
 					if (((Attribute)filterList.get(i)).getQualifiedName() == "IsAllPackage")
 						continue;
-					// ­YRule³]¦¨true¤~Àx¦s
+					// è‹¥Ruleè¨­æˆtrueæ‰å„²å­˜
 					if (Boolean.valueOf(((Attribute)filterList.get(i)).getValue()))
 						filterRuleList.add(((Attribute)filterList.get(i)).getQualifiedName());
 				}
@@ -121,7 +121,7 @@ public class ReportBuilder {
 	}
 
 	/**
-	 * Àx¦s³æ¤@Class¤º©Ò¦³Smell¸ê°T
+	 * å„²å­˜å–®ä¸€Classå…§æ‰€æœ‰Smellè³‡è¨Š
 	 * 
 	 * @param icu
 	 * @param isRecord
@@ -141,7 +141,7 @@ public class ReportBuilder {
 		TryStatementCounterVisitor counterVisitor = null;
 		OverwrittenLeadExceptionVisitor overwrittenVisitor = null;
 
-		// «ØºcAST
+		// å»ºæ§‹AST
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		parser.setSource(icu);
@@ -151,14 +151,14 @@ public class ReportBuilder {
 		ASTMethodCollector methodCollector = new ASTMethodCollector();
 
 		root.accept(methodCollector);
-		// ¨ú±o±M®×¤¤©Ò¦³ªºmethod
+		// å–å¾—å°ˆæ¡ˆä¸­æ‰€æœ‰çš„method
 		List<MethodDeclaration> methodList = methodCollector.getMethodList();
 
 		ClassModel newClassModel = new ClassModel();
 		newClassModel.setClassName(icu.getElementName());
 		newClassModel.setClassPath(pkPath);
 
-		// ¨ú±o¼Ğ°O©ó¦U­Ó Method ªº SuppressSmell
+		// å–å¾—æ¨™è¨˜æ–¼å„å€‹ Method çš„ SuppressSmell
 		TreeMap<String, Boolean> detMethodSmell = new TreeMap<String, Boolean>();
 		TreeMap<String, List<Integer>> detCatchSmell = new TreeMap<String, List<Integer>>();
 		for (MethodDeclaration method : methodList) {
@@ -170,16 +170,16 @@ public class ReportBuilder {
 			inputSuppressData(suppressSmellList, detMethodSmell, detCatchSmell);
 		}
 		
-		// ¨ú±o±M®×¤¤ªºNested Try Block
+		// å–å¾—å°ˆæ¡ˆä¸­çš„Nested Try Block
 		ntsVisitor = new NestedTryStatementVisitor(root);
 		root.accept(ntsVisitor);
 		List<MarkerInfo> nestedTryList = checkCatchSmell(ntsVisitor.getNestedTryStatementList(), detCatchSmell.get(RLMarkerAttribute.CS_NESTED_TRY_BLOCK));
 		newClassModel.addNestedTryList(nestedTryList);
 		model.addNestedTotalTrySize(nestedTryList.size());
 		
-		// ¥Ø«eªºMethod AST Node
+		// ç›®å‰çš„Method AST Node
 		for (MethodDeclaration method : methodList) {
-			// ¨ú±o±M®×¤¤ªºignore Exception
+			// å–å¾—å°ˆæ¡ˆä¸­çš„ignore Exception
 			if (detMethodSmell.get(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK)) {
 				ieVisitor = new IgnoreExceptionVisitor(root);
 				method.accept(ieVisitor);
@@ -187,7 +187,7 @@ public class ReportBuilder {
 				newClassModel.setIgnoreExList(ignoreExList, method.getName().toString());
 				model.addIgnoreTotalSize(ignoreExList.size());
 			}
-			// ¨ú±o±M®×¤¤dummy handler
+			// å–å¾—å°ˆæ¡ˆä¸­dummy handler
 			if (detMethodSmell.get(RLMarkerAttribute.CS_DUMMY_HANDLER)) {
 				dhVisitor = new DummyHandlerVisitor(root);
 				method.accept(dhVisitor);
@@ -195,21 +195,21 @@ public class ReportBuilder {
 				newClassModel.setDummyList(dummyList, method.getName().toString());
 				model.addDummyTotalSize(dummyList.size());
 			}
-			// ´M§ä¸Ómethod¤ºªºunprotected main program
+			// å°‹æ‰¾è©²methodå…§çš„unprotected main program
 			mainVisitor = new UnprotectedMainProgramVisitor(root);
 			method.accept(mainVisitor);
 			if (detMethodSmell.get(RLMarkerAttribute.CS_UNPROTECTED_MAIN)) {
 				newClassModel.setUnprotectedMain(mainVisitor.getUnprotedMainList(), method.getName().toString());
 				model.addUnMainTotalSize(mainVisitor.getUnprotedMainList().size());
 			}
-			// §ä´M±M®×¤¤©Ò¦³ªºCareless Cleanup
+			// æ‰¾å°‹å°ˆæ¡ˆä¸­æ‰€æœ‰çš„Careless Cleanup
 			ccVisitor = new CarelessCleanupVisitor2(root);
 			method.accept(ccVisitor);
 			if (detMethodSmell.get(RLMarkerAttribute.CS_CARELESS_CLEANUP)) {
 				newClassModel.setCarelessCleanUp(ccVisitor.getCarelessCleanupList(), method.getName().toString());
 				model.addCarelessCleanUpSize(ccVisitor.getCarelessCleanupList().size());
 			}
-			// ´M§ä¸Ómethod¤ºªºOverLogging
+			// å°‹æ‰¾è©²methodå…§çš„OverLogging
 			loggingDetector = new OverLoggingDetector(root, method);
 			loggingDetector.detect();
 			if (detMethodSmell.get(RLMarkerAttribute.CS_OVER_LOGGING)) {
@@ -217,7 +217,7 @@ public class ReportBuilder {
 				newClassModel.setOverLogging(olList, method.getName().toString());
 				model.addOverLoggingSize(olList.size());
 			}
-			// §ä´M±M®×¤¤©Ò¦³ªºOverwritten Lead Exception
+			// æ‰¾å°‹å°ˆæ¡ˆä¸­æ‰€æœ‰çš„Overwritten Lead Exception
 			overwrittenVisitor = new OverwrittenLeadExceptionVisitor(root);
 			method.accept(overwrittenVisitor);
 			if(detMethodSmell.get(RLMarkerAttribute.CS_OVERWRITTEN_LEAD_EXCEPTION)) {
@@ -225,14 +225,14 @@ public class ReportBuilder {
 				newClassModel.setOverwrittenLead(owList, method.getName().toString());
 				model.addOverwrittenSize(owList.size());
 			}
-			// °O¿ıCode Information
+			// è¨˜éŒ„Code Information
 			counterVisitor = new TryStatementCounterVisitor();
 			method.accept(counterVisitor);
 			model.addTryCounter(counterVisitor.getTryCount());
 			model.addCatchCounter(counterVisitor.getCatchCount());
 			model.addFinallyCounter(counterVisitor.getFinallyCount());
 		}
-		// °O¿ı¨ìReportModel¤¤
+		// è¨˜éŒ„åˆ°ReportModelä¸­
 		newPackageModel.addClassModel(newClassModel);
 	}
 
@@ -256,7 +256,7 @@ public class ReportBuilder {
 	}
 
 	/**
-	 * §PÂ_¬O§_­n¤£¶KMarker
+	 * åˆ¤æ–·æ˜¯å¦è¦ä¸è²¼Marker
 	 * 
 	 * @param smellPosList
 	 * @param pos
@@ -265,7 +265,7 @@ public class ReportBuilder {
 	private boolean suppressMarker(List<Integer> smellPosList, int pos) {
 		if(smellPosList != null) {
 			for (Integer index : smellPosList)
-				// ­YCatch¦ì¸m¬Û¦P¡Aªí¥Ü­n§í¨îªºMarker¬°¦P¤@­ÓMarker
+				// è‹¥Catchä½ç½®ç›¸åŒï¼Œè¡¨ç¤ºè¦æŠ‘åˆ¶çš„Markerç‚ºåŒä¸€å€‹Marker
 				if (pos == index)
 					return true;
 		}
@@ -273,7 +273,7 @@ public class ReportBuilder {
 	}
 
 	/**
-	 * Àx¦sSuppress Smellªº³]©w
+	 * å„²å­˜Suppress Smellçš„è¨­å®š
 	 * 
 	 * @param suppressSmellList
 	 * @param detMethodSmell
@@ -282,7 +282,7 @@ public class ReportBuilder {
 	private void inputSuppressData(	List<SSMessage> suppressSmellList,
 									TreeMap<String, Boolean> detMethodSmell,
 									TreeMap<String, List<Integer>> detCatchSmell) {
-		// ªì©l¤Æ³]©w¡A¹w³]¨C­ÓSmell³£°»´ú
+		// åˆå§‹åŒ–è¨­å®šï¼Œé è¨­æ¯å€‹Smelléƒ½åµæ¸¬
 		for (String smellType : RLMarkerAttribute.CS_TOTAL_TYPE)
 			detMethodSmell.put(smellType, true);
 
@@ -290,14 +290,14 @@ public class ReportBuilder {
 			detCatchSmell.put(smellType, new ArrayList<Integer>());
 
 		for (SSMessage msg : suppressSmellList) {
-			// ­Y¬°Method¤Wªº³]©w
+			// è‹¥ç‚ºMethodä¸Šçš„è¨­å®š
 			if (!msg.isInCatch()) {
-				// ­Y¨Ï¥ÎªÌ°»´ú­ş­ÓSmell¤£°»´ú¡A´N§â¸ÓSmell°»´ú³]©w¬°false
+				// è‹¥ä½¿ç”¨è€…åµæ¸¬å“ªå€‹Smellä¸åµæ¸¬ï¼Œå°±æŠŠè©²Smellåµæ¸¬è¨­å®šç‚ºfalse
 				for (String smellType : msg.getSmellList())
 					detMethodSmell.put(smellType, false);
-				// ­Y¬°Catch¤ºªº³]©w
+				// è‹¥ç‚ºCatchå…§çš„è¨­å®š
 			} else {
-				// ­Y¨Ï¥ÎªÌ³]©wCatch¤ºSmell¤£°»´ú¡A°O¿ı¸ÓSmell©Ò¦bªºCatch¦ì¸m
+				// è‹¥ä½¿ç”¨è€…è¨­å®šCatchå…§Smellä¸åµæ¸¬ï¼Œè¨˜éŒ„è©²Smellæ‰€åœ¨çš„Catchä½ç½®
 				for (String smellType : msg.getSmellList()) {
 					List<Integer> smellPosList = detCatchSmell.get(smellType);
 					if (smellPosList != null)
@@ -308,11 +308,11 @@ public class ReportBuilder {
 	}
 
 	/**
-	 * ¤ÀªR¯S©wProject¤ºªºSmell¸ê°T
+	 * åˆ†æç‰¹å®šProjectå…§çš„Smellè³‡è¨Š
 	 * @param project
 	 */
 	private void analysisProject(IProject project) {
-		// ¨ú±o±M®×ªº¸ô®|
+		// å–å¾—å°ˆæ¡ˆçš„è·¯å¾‘
 		IJavaProject javaPrj = JavaCore.create(project);
 		String workPath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toString();
 		model.setProjectPath(workPath + javaPrj.getPath());
@@ -320,9 +320,9 @@ public class ReportBuilder {
 		try {
 			List<IPackageFragmentRoot> root = getSourcePaths(javaPrj);
 			for (int i = 0; i < root.size(); i++) {
-				// ¨ú±oFolderªº¦WºÙ
+				// å–å¾—Folderçš„åç¨±
 				String folderName = root.get(i).getElementName();
-				// ¨ú±oRoot©³¤Uªº©Ò¦³Package
+				// å–å¾—Rootåº•ä¸‹çš„æ‰€æœ‰Package
 				IJavaElement[] packages = root.get(i).getChildren();
 
 				for (IJavaElement iJavaElement : packages) {
@@ -330,29 +330,29 @@ public class ReportBuilder {
 					if (iJavaElement.getElementType() == IJavaElement.PACKAGE_FRAGMENT) {
 						IPackageFragment iPackageFgt = (IPackageFragment) iJavaElement;
 
-						// §PÂ_¬O§_­n°O¿ı
+						// åˆ¤æ–·æ˜¯å¦è¦è¨˜éŒ„
 						boolean isRecord = determineRecord(folderName, iPackageFgt);
 
-						// ¨ú±oPackage©³¤Uªºclass
+						// å–å¾—Packageåº•ä¸‹çš„class
 						ICompilationUnit[] compilationUnits = iPackageFgt.getCompilationUnits();
 						PackageModel newPackageModel = null;
 
-						// ­Y­n¬ö¿ı«h·s¼WPackage
+						// è‹¥è¦ç´€éŒ„å‰‡æ–°å¢Package
 						if (isRecord) {
 							if (compilationUnits.length != 0) {
-								// «Ø¥ßPackageModel
+								// å»ºç«‹PackageModel
 								newPackageModel = model.addSmellList(iPackageFgt.getElementName());
-								// °O¿ıPackageªºFolder¦WºÙ
+								// è¨˜éŒ„Packageçš„Folderåç¨±
 								newPackageModel.setFolderName(root.get(i).getElementName());
 							}
 
-							// ¨ú±oPackage©³¤Uªº©Ò¦³classªºsmell¸ê°T
+							// å–å¾—Packageåº•ä¸‹çš„æ‰€æœ‰classçš„smellè³‡è¨Š
 							for (int k = 0; k < compilationUnits.length; k++) {
 								setSmellInfo(compilationUnits[k], isRecord, newPackageModel, iPackageFgt.getPath().toString());
 
-								// °O¿ıLOC
+								// è¨˜éŒ„LOC
 								int codeLines = countFileLOC(compilationUnits[k].getPath().toString());
-								// ¬ö¿ı¨ìPackage¤¤
+								// ç´€éŒ„åˆ°Packageä¸­
 								newPackageModel.addTotalLine(codeLines);
 							}
 						}
@@ -365,27 +365,27 @@ public class ReportBuilder {
 	}
 
 	/**
-	 * §PÂ_¬O§_­n°O¿ı³o­ÓPackageªºSmell¸ê°T
+	 * åˆ¤æ–·æ˜¯å¦è¦è¨˜éŒ„é€™å€‹Packageçš„Smellè³‡è¨Š
 	 * 
 	 * @param folderName
 	 * @param pk
 	 * @return
 	 */
 	private boolean determineRecord(String folderName, IPackageFragment pk) {
-		// ­Y°»´ú¥ş³¡Package «h¥ş³¡°O¿ı
+		// è‹¥åµæ¸¬å…¨éƒ¨Package å‰‡å…¨éƒ¨è¨˜éŒ„
 		if (isAllPackage) {
 			return true;
 		} else {
 			for (String filterRule : filterRuleList) {
-				//§PÂ_µ¹©wªº±ø¥ó¡A¦³¨S¦³¥]§t¸ê®Æ§¨
+				//åˆ¤æ–·çµ¦å®šçš„æ¢ä»¶ï¼Œæœ‰æ²’æœ‰åŒ…å«è³‡æ–™å¤¾
 				if (isConformFolderFormat(filterRule)) {
-					//[Folder]¼Ò¦¡¡C¦pªG³Ì«e»P³Ì«á³£¬Osquare bracket¡A¥Nªí¨Ï¥ÎªÌ­n¬İ¾ã­Ó¸ê®Æ§¨
+					//[Folder]æ¨¡å¼ã€‚å¦‚æœæœ€å‰èˆ‡æœ€å¾Œéƒ½æ˜¯square bracketï¼Œä»£è¡¨ä½¿ç”¨è€…è¦çœ‹æ•´å€‹è³‡æ–™å¤¾
 					if(filterRule.indexOf(JDomUtil.EH_Left) == 0 && (filterRule.indexOf(JDomUtil.EH_Right)+JDomUtil.EH_Right.length()) == filterRule.length()){
 						if(getFolderName(filterRule).equals(folderName)){
 							return true;
 						}
 					}
-					//[Folder]+Package.*ªº¼Ò¦¡
+					//[Folder]+Package.*çš„æ¨¡å¼
 					else if(filterRule.contains("."+JDomUtil.EH_Star)){
 						if(getFolderName(filterRule).equals(folderName) &&
 							isConformMultiPackageFormat(pk, filterRule)){
@@ -398,7 +398,7 @@ public class ReportBuilder {
 							return true;
 						}
 					}
-				//¦¹³B¬°¨S¦³µ¹©w¸ê®Æ§¨ªº§PÂ_
+				//æ­¤è™•ç‚ºæ²’æœ‰çµ¦å®šè³‡æ–™å¤¾çš„åˆ¤æ–·
 				} else {
 					if (filterRule.contains("." + JDomUtil.EH_Star)) {
 						if (isConformMultiPackageFormat(pk, filterRule)) {
@@ -414,7 +414,7 @@ public class ReportBuilder {
 	}
 
 	/**
-	 * .*­n¦bfilteRuleªº³Ì«á­±
+	 * .*è¦åœ¨filteRuleçš„æœ€å¾Œé¢
 	 * @param iPkgFgt
 	 * @param filterRule
 	 * @return <i>True</i> if match "Package.*" <br />
@@ -424,14 +424,14 @@ public class ReportBuilder {
 		if ((filterRule.length() - (JDomUtil.EH_Star.length() + 1)) == filterRule.indexOf("." + JDomUtil.EH_Star)) {
 			String pkgHead = filterRule.substring(0, filterRule.length() - (1+JDomUtil.EH_Star.length()));
 			
-			//¦pªG¥]§tFolder¡A¨º´N­n§âFolder¬å±¼
+			//å¦‚æœåŒ…å«Folderï¼Œé‚£å°±è¦æŠŠFolderç æ‰
 			if(isConformFolderFormat(pkgHead)){
 				pkgHead = pkgHead.substring(pkgHead.indexOf(JDomUtil.EH_Right)+JDomUtil.EH_Right.length());
 			}
 			
-			//¬Y­Ó§ì¨Óªº§¹¾ãpackageªø«×¡A¤ñ¨Ï¥Î³o³]©wªºpackage.*ªø
+			//æŸå€‹æŠ“ä¾†çš„å®Œæ•´packageé•·åº¦ï¼Œæ¯”ä½¿ç”¨é€™è¨­å®šçš„package.*é•·
 			if (iPkgFgt.getElementName().length() >= pkgHead.length()) {
-				// ¤S¡APackage«e¥b¬qªø«×ªº¦WºÙ»Pfilter rule¤@¼Ë¡A«h¥[¤J°»´úsmellªº²M³æ¤¤
+				// åˆï¼ŒPackageå‰åŠæ®µé•·åº¦çš„åç¨±èˆ‡filter ruleä¸€æ¨£ï¼Œå‰‡åŠ å…¥åµæ¸¬smellçš„æ¸…å–®ä¸­
 				if (iPkgFgt.getElementName().substring(0, pkgHead.length()).equals(pkgHead))
 					return true;
 			}
@@ -440,7 +440,7 @@ public class ReportBuilder {
 	}
 
 	/**
-	 * ¨ú¦^EH_LEFT<i>folder</i>EH_RIGHT¤§¤¤ªºfolder¦WºÙ
+	 * å–å›EH_LEFT<i>folder</i>EH_RIGHTä¹‹ä¸­çš„folderåç¨±
 	 * 
 	 * @param filterRule
 	 * @param folderName
@@ -449,15 +449,15 @@ public class ReportBuilder {
 	private String getFolderName(String filterRule) {
 		int left = filterRule.indexOf(JDomUtil.EH_Left);
 		int right = filterRule.indexOf(JDomUtil.EH_Right);
-		// ¨Ï¥ÎªÌ·|¿é¤J[FolderName]¡A¦¹³B­t³d¦©±¼¥ª¥k[]¡A¨ú±oFolder¦W¦r
+		// ä½¿ç”¨è€…æœƒè¼¸å…¥[FolderName]ï¼Œæ­¤è™•è² è²¬æ‰£æ‰å·¦å³[]ï¼Œå–å¾—Folderåå­—
 		String pkFolder = filterRule.substring(left + JDomUtil.EH_Left.length(), right);
 		return pkFolder;
 	}
 	
 	/**
-	 * ÀË¬d¬O§_²Å¦XFolderªº­ì«h<br />
-	 * 1. ­n¦³&quot;[&quot; & &quot;]&quot; <br />
-	 * 2. &quot;[&quot;­n¦b&quot;]&quot;«e­±
+	 * æª¢æŸ¥æ˜¯å¦ç¬¦åˆFolderçš„åŸå‰‡<br />
+	 * 1. è¦æœ‰&quot;[&quot; & &quot;]&quot; <br />
+	 * 2. &quot;[&quot;è¦åœ¨&quot;]&quot;å‰é¢
 	 * @param filterRule
 	 * @return
 	 */
@@ -471,7 +471,7 @@ public class ReportBuilder {
 	}
 
 	/**
-	 * ±NEH_LEFT<i>folder</i>EH_RIGHTªº¦r¦ê¹LÂo±¼
+	 * å°‡EH_LEFT<i>folder</i>EH_RIGHTçš„å­—ä¸²éæ¿¾æ‰
 	 * 
 	 * @param filterRule
 	 * @return String, the string without folder and &quot;square barker&quot;
@@ -481,7 +481,7 @@ public class ReportBuilder {
 	}
 
 	/**
-	 * ¨ú±oPackageFragmentRoot List (¹LÂojar)
+	 * å–å¾—PackageFragmentRoot List (éæ¿¾jar)
 	 */
 	public List<IPackageFragmentRoot> getSourcePaths(IJavaProject project) throws JavaModelException {
 		List<IPackageFragmentRoot> sourcePaths = new ArrayList<IPackageFragmentRoot>();
@@ -497,23 +497,23 @@ public class ReportBuilder {
 	}
 
 	/**
-	 * ­pºâClass FileªºLOC
+	 * è¨ˆç®—Class Fileçš„LOC
 	 * 
-	 * @param filePath	classªºFile Path
-	 * @return classªºLOC¼Æ
+	 * @param filePath	classçš„File Path
+	 * @return classçš„LOCæ•¸
 	 */
 	private int countFileLOC(String filePath) {
-		// ¨ú±oclass¸ô®|
+		// å–å¾—classè·¯å¾‘
 		String workspace = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
 		String path = workspace + filePath;
 
 		File file = new File(path);
 
-		// ­YClass¦s¦b¡A­pºâClass
+		// è‹¥Classå­˜åœ¨ï¼Œè¨ˆç®—Class
 		if (file.exists()) {
 			LOCData noFormatData = null;
 			try {
-				// ­pºâLOC
+				// è¨ˆç®—LOC
 				noFormatData = noFormatCounter.countFileLOC(file);
 			} catch (FileNotFoundException e) {
 				logger.error("[File Not Found Exception] FileNotFoundException ", e);

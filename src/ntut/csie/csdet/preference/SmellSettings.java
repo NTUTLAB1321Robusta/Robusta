@@ -57,9 +57,9 @@ public class SmellSettings {
 	public final static String SMELL_OVERWRITTENLEADEXCEPTION = "OverwrittenLeadException";
 	public final static String ANNOTATION_ROBUSTNESSLEVEL = "RobustnessLevel";
 
-	/** ¨Ò¥~Âà«¬«áÄ~Äò°»´ú */
+	/** ä¾‹å¤–è½‰å‹å¾Œç¹¼çºŒåµæ¸¬ */
 	public final static String EXTRARULE_OVERLOGGING_DETECTWRAPPINGEXCEPTION = "DetectWrappingExcetion";
-	/** °»´úÄÀ©ñ¸ê·½ªºµ{¦¡½X¬O§_¦b¨ç¦¡¤¤ */
+	/** åµæ¸¬é‡‹æ”¾è³‡æºçš„ç¨‹å¼ç¢¼æ˜¯å¦åœ¨å‡½å¼ä¸­ */
 	public final static String EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD = "DetectIsReleaseIOCodeInDeclaredMethod";
 	
 	public final static String EXTRARULE_ePrintStackTrace = "printStackTrace";
@@ -97,8 +97,8 @@ public class SmellSettings {
 	}
 	
 	/**
-	 * ¿é¤J­n­n¬d¸ßªºbad smell¦WºÙ¡A¦^¶Ç³]©wÀÉ¤¤¬O§_¦³¤Ä¿ï­n°»´ú
-	 * @param badSmellName ­n¬d¸ßªºbad smell¦WºÙ
+	 * è¼¸å…¥è¦è¦æŸ¥è©¢çš„bad smellåç¨±ï¼Œå›å‚³è¨­å®šæª”ä¸­æ˜¯å¦æœ‰å‹¾é¸è¦åµæ¸¬
+	 * @param badSmellName è¦æŸ¥è©¢çš„bad smellåç¨±
 	 * @return 
 	 */
 	public boolean isDetectingSmell(String badSmellName) {
@@ -115,7 +115,7 @@ public class SmellSettings {
 	}
 	
 	/**
-	 * ¬O§_­n¨Ï¥Î±j°·«×µ¥¯Åµù°O
+	 * æ˜¯å¦è¦ä½¿ç”¨å¼·å¥åº¦ç­‰ç´šè¨»è¨˜
 	 * @return
 	 */
 	public boolean isAddingRobustnessAnnotation() {
@@ -124,9 +124,9 @@ public class SmellSettings {
 	}
 
 	/**
-	 * ¦pªG·Q¨ú±oªºbad smell name¤£¦s¦b¡A
-	 * ´N·|¦Û°Ê²£¥Í¥H³o­Óbad smell name¬°Äİ©Ênameªº¸`ÂI¡A
-	 * ¨Ã¥B³]©wisDetectingÄİ©Ê¬°true¡C
+	 * å¦‚æœæƒ³å–å¾—çš„bad smell nameä¸å­˜åœ¨ï¼Œ
+	 * å°±æœƒè‡ªå‹•ç”¢ç”Ÿä»¥é€™å€‹bad smell nameç‚ºå±¬æ€§nameçš„ç¯€é»ï¼Œ
+	 * ä¸¦ä¸”è¨­å®šisDetectingå±¬æ€§ç‚ºtrueã€‚
 	 * @param badSmellName
 	 * @return
 	 */
@@ -153,8 +153,8 @@ public class SmellSettings {
 	}
 	
 	/**
-	 * ¨ú±o±j°·«×µ¥¯Åªº¸`ÂI¡C
-	 * ¦pªG¸`ÂI¤£¦s¦b¡A´N·|¦Û°Ê²£¥Í¤@­Óenable¬°falseªº±j°·«×µ¥¯Å¸`ÂI¡C
+	 * å–å¾—å¼·å¥åº¦ç­‰ç´šçš„ç¯€é»ã€‚
+	 * å¦‚æœç¯€é»ä¸å­˜åœ¨ï¼Œå°±æœƒè‡ªå‹•ç”¢ç”Ÿä¸€å€‹enableç‚ºfalseçš„å¼·å¥åº¦ç­‰ç´šç¯€é»ã€‚
 	 * @param annotationName
 	 * @return
 	 */
@@ -197,8 +197,8 @@ public class SmellSettings {
 	}
 	
 	/**
-	 * §ä¥X«ü©wªºbad smell¤¤©Ò¦³±Ò¥Îªºpatterns
-	 * ¨S¦³±Ò¥Îªºpattern´N¤£·|³Q¥[¤Jlist¤¤
+	 * æ‰¾å‡ºæŒ‡å®šçš„bad smellä¸­æ‰€æœ‰å•Ÿç”¨çš„patterns
+	 * æ²’æœ‰å•Ÿç”¨çš„patternå°±ä¸æœƒè¢«åŠ å…¥listä¸­
 	 * @param smellName
 	 * @return
 	 */
@@ -230,7 +230,7 @@ public class SmellSettings {
 	}
 	
 	/**
-	 * Åı¨Ï¥ÎªÌ¿ï¾Ü­n´M§äªºPattern¬OClass¡BMethod¡B©Î¬OClass+Method
+	 * è®“ä½¿ç”¨è€…é¸æ“‡è¦å°‹æ‰¾çš„Patternæ˜¯Classã€Methodã€æˆ–æ˜¯Class+Method
 	 * @param smellName
 	 * @param type
 	 * @return
@@ -261,7 +261,7 @@ public class SmellSettings {
 	}
 	
 	/**
-	 * ¨ú¦^¯S©wsmell©Ò¦³Patternªº³]©w­È
+	 * å–å›ç‰¹å®šsmellæ‰€æœ‰Patternçš„è¨­å®šå€¼
 	 * @param smellName
 	 * @return
 	 */
@@ -292,9 +292,9 @@ public class SmellSettings {
 	}
 	
 	/**
-	 * pattern¬O¨Ï¥ÎªÌ¦Û¦æ¿é¤Jªºµ{¦¡½X¡A³o¨Çµ{¦¡½X·|³Q°O¿ı°_¨Ó¡A
-	 * µM«á¥Î¤@­ÓisDetecting¨Ó¨M©wÀË¬dbad smellªº®É­Ô­n¤£­n¤@°_°µÀË¬d¡C
-	 * ¥u¦³¦b¨Ï¥ÎªÌ§R°£¦Û¦æ¿é¤Jªºµ{¦¡½X®É¡Apattern node¤~·|³Q§R°£¡C
+	 * patternæ˜¯ä½¿ç”¨è€…è‡ªè¡Œè¼¸å…¥çš„ç¨‹å¼ç¢¼ï¼Œé€™äº›ç¨‹å¼ç¢¼æœƒè¢«è¨˜éŒ„èµ·ä¾†ï¼Œ
+	 * ç„¶å¾Œç”¨ä¸€å€‹isDetectingä¾†æ±ºå®šæª¢æŸ¥bad smellçš„æ™‚å€™è¦ä¸è¦ä¸€èµ·åšæª¢æŸ¥ã€‚
+	 * åªæœ‰åœ¨ä½¿ç”¨è€…åˆªé™¤è‡ªè¡Œè¼¸å…¥çš„ç¨‹å¼ç¢¼æ™‚ï¼Œpattern nodeæ‰æœƒè¢«åˆªé™¤ã€‚
 	 * @param badSmellName
 	 * @param patternContent
 	 * @param isDetecting
@@ -302,7 +302,7 @@ public class SmellSettings {
 	private void addPattern(String badSmellName, String patternContent, boolean isDetecting) {	
 		Element badSmellElement = getSmellType(badSmellName);
 		
-		// °£¤F³o¸Ì°µÀË¬d°Ê§@¡A¨¾¤î¨Ï¥ÎªÌ¥[¤J­«½Æªºpattern¡A«eºİ¤]­n°O±oÀË¬d
+		// é™¤äº†é€™è£¡åšæª¢æŸ¥å‹•ä½œï¼Œé˜²æ­¢ä½¿ç”¨è€…åŠ å…¥é‡è¤‡çš„patternï¼Œå‰ç«¯ä¹Ÿè¦è¨˜å¾—æª¢æŸ¥
 		List<?> patternElements = badSmellElement.getChildren(TAG_PATTERN);
 		for (Object object : patternElements) {
 			Element pattern = (Element) object;
@@ -311,7 +311,7 @@ public class SmellSettings {
 				return;
 			}
 		}
-		// ½T©wpattern¤£¦s¦b¡A´N¥[¤J·sªºnode
+		// ç¢ºå®špatternä¸å­˜åœ¨ï¼Œå°±åŠ å…¥æ–°çš„node
 		Element pattern = new Element(TAG_PATTERN);
 		pattern.setAttribute(ATTRIBUTE_NAME, patternContent);
 		pattern.setAttribute(ATTRIBUTE_ISDETECTING, String.valueOf(isDetecting));
@@ -325,8 +325,8 @@ public class SmellSettings {
 	}
 	
 	/**
-	 * extraRule¬O§Ú­Ì´£¨Ñµ¹¨Ï¥ÎªÌ¤Ä¿ïªº¿ï¶µ¡A©Ò¥H·í¨Ï¥ÎªÌ¦³¤Ä¿ï®É¡A
-	 * ³o­ÓextraRuleªºnode¤~·|¥X²{¡A¨Ï¥ÎªÌ¦pªG¨ú®ø¤Ä¿ï¡A´N·|§R°£³o­Ónode¡C
+	 * extraRuleæ˜¯æˆ‘å€‘æä¾›çµ¦ä½¿ç”¨è€…å‹¾é¸çš„é¸é …ï¼Œæ‰€ä»¥ç•¶ä½¿ç”¨è€…æœ‰å‹¾é¸æ™‚ï¼Œ
+	 * é€™å€‹extraRuleçš„nodeæ‰æœƒå‡ºç¾ï¼Œä½¿ç”¨è€…å¦‚æœå–æ¶ˆå‹¾é¸ï¼Œå°±æœƒåˆªé™¤é€™å€‹nodeã€‚
 	 * @param badSmellName
 	 * @param ruleName
 	 */
@@ -349,7 +349,7 @@ public class SmellSettings {
 	public boolean isExtraRuleExist(String badSmellName, String ruleName) {
 		Element badSmellElement = getSmellType(badSmellName);
 		
-		// ¦pªG¸`ÂI¦b¡A«h§ä¥X¬O§_¦³³o­Óextra rule
+		// å¦‚æœç¯€é»åœ¨ï¼Œå‰‡æ‰¾å‡ºæ˜¯å¦æœ‰é€™å€‹extra rule
 		List<?> extraRules = badSmellElement.getChildren();
 		for(Object object : extraRules) {
 			Element extraRule = (Element) object;
@@ -364,8 +364,8 @@ public class SmellSettings {
 	 * 
 	 * @param badSmellName
 	 * @param ruleName
-	 * @return true¥NªíRule¦s¦b¡A¨Ã¥B²¾°£¦¨¥\¡C<br />
-	 * 		   false¥i¯à¬O²¾°£¥¢±Ñ¡A¤]¥i¯à¬ORule±q¨Ó¤£¦s¦b¡C
+	 * @return trueä»£è¡¨Ruleå­˜åœ¨ï¼Œä¸¦ä¸”ç§»é™¤æˆåŠŸã€‚<br />
+	 * 		   falseå¯èƒ½æ˜¯ç§»é™¤å¤±æ•—ï¼Œä¹Ÿå¯èƒ½æ˜¯Ruleå¾ä¾†ä¸å­˜åœ¨ã€‚
 	 */
 	public boolean removeExtraRule(String badSmellName, String ruleName) {
 		Element badSmellElement = getSmellType(badSmellName);
@@ -382,7 +382,7 @@ public class SmellSettings {
 	public TreeMap<String, UserDefinedConstraintsType> getSmellSettings(String badSmellName) {
 		TreeMap<String, UserDefinedConstraintsType> libMap = new TreeMap<String, UserDefinedConstraintsType>();
 		Element badSmellElement = getSmellType(badSmellName);
-		// ¬°¿ï¨ú°»´ú¦¹bad smell¡A«h¤£°µ¥ô¦óÅª¨ú°Ê§@
+		// ç‚ºé¸å–åµæ¸¬æ­¤bad smellï¼Œå‰‡ä¸åšä»»ä½•è®€å–å‹•ä½œ
 		if(!Boolean.parseBoolean(badSmellElement.getAttributeValue(ATTRIBUTE_ISDETECTING))) {
 			return libMap;
 		}
@@ -461,7 +461,7 @@ public class SmellSettings {
 	}
 	
 	/**
-	 * ±N©Ò¦³ªº±ø¥ó³£¤Ä¿ï¡A¨Ã¼g¨ì³]©wÀÉ¤¤
+	 * å°‡æ‰€æœ‰çš„æ¢ä»¶éƒ½å‹¾é¸ï¼Œä¸¦å¯«åˆ°è¨­å®šæª”ä¸­
 	 */
 	public void activateAllConditions(String path) {
 		File settingFile = new File(path);

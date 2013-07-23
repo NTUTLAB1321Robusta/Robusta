@@ -65,7 +65,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Careless CleanUp Refactoringªº¨ãÅé¾Ş§@³£¦b³o­Óclass¤¤
+ * Careless CleanUp Refactoringçš„å…·é«”æ“ä½œéƒ½åœ¨é€™å€‹classä¸­
  * @author Min, Shiau
  */
 public class CarelessCleanUpRefactor extends Refactoring {
@@ -73,112 +73,112 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	
 	private IJavaProject project;
 		
-	//¨Ï¥ÎªÌ©ÒÂI¿ïªºMarker
+	//ä½¿ç”¨è€…æ‰€é»é¸çš„Marker
 	private IMarker marker;
 	
 	private IOpenable actOpenable;
 	
 	private TextFileChange textFileChange;
 	
-	// ¦s©ñ¥Ø«e­n­×§ïªº.javaÀÉ
+	// å­˜æ”¾ç›®å‰è¦ä¿®æ”¹çš„.javaæª”
 	private CompilationUnit actRoot;
 	
-	// ¦s©ñ¥Ø«e©Ò­nfixªºmethod node
+	// å­˜æ”¾ç›®å‰æ‰€è¦fixçš„method node
 	private MethodDeclaration currentMethodNode = null;
 	
-	// ¦¬¶°Method¤º©Ò¦³ªºCareless CleanUp
+	// æ”¶é›†Methodå…§æ‰€æœ‰çš„Careless CleanUp
 	private List<MarkerInfo> CarelessCleanUpList = null;
 	
-	// Method¬O§_¦s¦b¡A¬O¡G·s¼WCaller Method ¡A§_¡G·s¼WRelease Method
+	// Methodæ˜¯å¦å­˜åœ¨ï¼Œæ˜¯ï¼šæ–°å¢Caller Method ï¼Œå¦ï¼šæ–°å¢Release Method
 	private boolean isMethodExist = false;
 	
-	// methodNameªºÅÜ¼Æ¦WºÙ,¹w³]¬Oclose
+	// methodNameçš„è®Šæ•¸åç¨±,é è¨­æ˜¯close
 	private String methodName;
 
-	// modifierªºType¡A¹w³]¬Oprivate
+	// modifierçš„Typeï¼Œé è¨­æ˜¯private
 	private String modifierType;
 
-	// logªºtype,¹w³]¬Oe.printStackTrace
+	// logçš„type,é è¨­æ˜¯e.printStackTrace
 	private String logType;
 	
-	// ¨Ï¥ÎªÌ­Y¿ï¾ÜExisting Method¡A­n©I¥sªºMethod¸ê°T
+	// ä½¿ç”¨è€…è‹¥é¸æ“‡Existing Methodï¼Œè¦å‘¼å«çš„Methodè³‡è¨Š
 	private IMethod existingMethod;
 	
-	// Careless CleanUpªºSmell Message
+	// Careless CleanUpçš„Smell Message
 	private MarkerInfo smellMessage = null;
 	
-	// ÄÀ©ñ¸ê·½ªºStatement
+	// é‡‹æ”¾è³‡æºçš„Statement
 	private ExpressionStatement cleanUpExpressionStatement;
 	
-	// Try Block¦bMethod¸Ìªº¦ì¸m
+	// Try Blockåœ¨Methodè£¡çš„ä½ç½®
 	private int tryIndex = -1;
 
 	/**
-	 * µ²§ô°Ê§@
+	 * çµæŸå‹•ä½œ
 	 */
 	@Override
 	public RefactoringStatus checkFinalConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
-		//¥h­×§ïAST Tree
+		//å»ä¿®æ”¹AST Tree
 		collectChange(marker.getResource());
-		//¤£»İcheck final condition
+		//ä¸éœ€check final condition
 		RefactoringStatus status = new RefactoringStatus();		
 		return status;
 	}
 	
 	/**
-	 * ªì©l°Ê§@
-	 * ½T»{ªì©lª¬ºA¬O§_²Å¦X
+	 * åˆå§‹å‹•ä½œ
+	 * ç¢ºèªåˆå§‹ç‹€æ…‹æ˜¯å¦ç¬¦åˆ
 	 */
 	@Override
 	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
-		//¤£»İcheck initial condition
+		//ä¸éœ€check initial condition
 		RefactoringStatus status;
 
 		boolean isOK = findMethod(marker.getResource());
 		if(isOK && currentMethodNode != null){
 			CarelessCleanupVisitor2 visitor = new CarelessCleanupVisitor2(actRoot);
 			currentMethodNode.accept(visitor);
-			//¨ú±ocode smellªºList
+			//å–å¾—code smellçš„List
 			CarelessCleanUpList = visitor.getCarelessCleanupList();
 		}
 		
-		//¨ú±oEH Smellªº¸ê°T
+		//å–å¾—EH Smellçš„è³‡è¨Š
 		findSmellMessage();
 
-		// ¨ú±oSmell©Ò¦bªºTry Block¤¤
+		// å–å¾—Smellæ‰€åœ¨çš„Try Blockä¸­
 		TryStatement tryStatement = findTryStatement();
 		
-		// §PÂ_Smell¬O§_¦ì©óIf¤§¤¤¡A­Y¬O¨äIf¤ºªºStatement¼Æ¤£¯à¹L¶W1¦æ
+		// åˆ¤æ–·Smellæ˜¯å¦ä½æ–¼Ifä¹‹ä¸­ï¼Œè‹¥æ˜¯å…¶Ifå…§çš„Statementæ•¸ä¸èƒ½éè¶…1è¡Œ
 		boolean isSizeSafe = detectIfStatementSize(tryStatement.getBody());
 
 		if (isSizeSafe)
 			status = new RefactoringStatus();
 		else
-			status = RefactoringStatus.createFatalErrorStatus("§PÂ_¦¡¤º¦³¨ä¥¦ªºµ{¦¡½X");
+			status = RefactoringStatus.createFatalErrorStatus("åˆ¤æ–·å¼å…§æœ‰å…¶å®ƒçš„ç¨‹å¼ç¢¼");
 		
 		return status;
 	}
 	
 	/**
-	 * §R°£Block¤ºSmell Statement
+	 * åˆªé™¤Blockå…§Smell Statement
 	 * @param block
 	 */
 	private boolean detectIfStatementSize(Block block) {
 		List<?> statements = block.statements();
-		//¤ñ¹ïTry Statement¸Ì¬O§_¦³±ı²¾°Êªºµ{¦¡½X,­Y¦³«h²¾°£
+		//æ¯”å°Try Statementè£¡æ˜¯å¦æœ‰æ¬²ç§»å‹•çš„ç¨‹å¼ç¢¼,è‹¥æœ‰å‰‡ç§»é™¤
 		for(int i=0; i < statements.size(); i++) {
 			if (statements.get(i) instanceof IfStatement) {
 				IfStatement aStatement = (IfStatement) statements.get(i);
-				// ­Y¬°If§PÂ_¦¡¡A¥B¥]§tSmell¸ê°T
+				// è‹¥ç‚ºIfåˆ¤æ–·å¼ï¼Œä¸”åŒ…å«Smellè³‡è¨Š
 				if (aStatement.getStartPosition() <= smellMessage.getPosition() &&
 					aStatement.getStartPosition() + aStatement.getLength()
 												  >= smellMessage.getPosition()) {
 
 					IfStatement ifStatement = (IfStatement) statements.remove(i);
 					Statement thenStatement = ifStatement.getThenStatement();
-					// ¦pªG¬°Block ( if¦³¥["{" "}" )
+					// å¦‚æœç‚ºBlock ( ifæœ‰åŠ "{" "}" )
 					if (thenStatement instanceof Block) {
 						Block ifBlock = (Block) ifStatement.getThenStatement();
 						int ifSize = ifBlock.statements().size();
@@ -186,7 +186,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 							return true;
 						else
 							return false;
-					// ¤£¬°Block (if «áª½±µ±µStatement)
+					// ä¸ç‚ºBlock (if å¾Œç›´æ¥æ¥Statement)
 					} else {
 						return true;
 					}
@@ -199,14 +199,14 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	@Override
 	public Change createChange(IProgressMonitor pm) 
 								throws CoreException, OperationCanceledException {
-		// 2010.07.20 ¤§«eªº¼gªk¡APreviewªºToken¤£·|ÅÜ¦â
-		// §â­nÅÜ§óªºµ²ªG¥]¦¨composite¶Ç¥X¥h
+		// 2010.07.20 ä¹‹å‰çš„å¯«æ³•ï¼ŒPreviewçš„Tokenä¸æœƒè®Šè‰²
+		// æŠŠè¦è®Šæ›´çš„çµæœåŒ…æˆcompositeå‚³å‡ºå»
 		//Change[] changes = new Change[] {textFileChange};
 		//CompositeChange change = new CompositeChange("My Extract Method", changes);
 
-		/* °Ñ¦ÒEclipse Code
+		/* åƒè€ƒEclipse Code
 		 * org.eclipse.jdt.internal.corext.refactoring.code.ExtractMethodRefactoring
-		 * createChange methodªº¼gªk */
+		 * createChange methodçš„å¯«æ³• */
 		String name = "Extract CleanUp Method";
 		ICompilationUnit unit = (ICompilationUnit) this.actOpenable;
 		CompilationUnitChange result = new CompilationUnitChange(name, unit);
@@ -215,10 +215,10 @@ public class CarelessCleanUpRefactor extends Refactoring {
 		//MultiTextEdit root= new MultiTextEdit();
 		//root.addChild(edits);
 
-		// ±N­×§ïµ²ªG³]¸m¦bCompilationUnitChange
+		// å°‡ä¿®æ”¹çµæœè¨­ç½®åœ¨CompilationUnitChange
 		TextEdit edits = textFileChange.getEdit();
 		result.setEdit(edits);
-		// ±N­×§ïµ²ªG³]¦¨Group¡A·|Åã¥Ü¦bPreview¤W¤è¸`ÂI¡C
+		// å°‡ä¿®æ”¹çµæœè¨­æˆGroupï¼Œæœƒé¡¯ç¤ºåœ¨Previewä¸Šæ–¹ç¯€é»ã€‚
 		result.addTextEditGroup(new TextEditGroup("Careless Clean Up Method", 
 								new TextEdit[] {edits} ));
 
@@ -231,7 +231,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	}
 	
 	/**
-	 * §âmarker¶Ç¶i¨Ó¨Ñ¦¹class¦s¨ú¤@¨Çcode smell¸ê°T
+	 * æŠŠmarkerå‚³é€²ä¾†ä¾›æ­¤classå­˜å–ä¸€äº›code smellè³‡è¨Š
 	 * @param marker
 	 */
 	public void setMarker(IMarker marker){
@@ -240,23 +240,23 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	}
 	
 	/**
-	 * parse AST Tree¨Ã¨ú±o­n­×§ïªºmethod node
+	 * parse AST Treeä¸¦å–å¾—è¦ä¿®æ”¹çš„method node
 	 * @param resource
 	 */
 	private void collectChange(IResource resource){
-		//¨ú±o­n­×§ïªºCompilationUnit
+		//å–å¾—è¦ä¿®æ”¹çš„CompilationUnit
 		if (findMethod(resource) && currentMethodNode != null) {
 			extractMethod();
 		}
 	}
 	
 	/**
-	 * ¨ú±o¥Ø«e­n³Q­×§ïªºmethod node
+	 * å–å¾—ç›®å‰è¦è¢«ä¿®æ”¹çš„method node
 	 * @param resource
 	 * @return
 	 */
 	private boolean findMethod(IResource resource) {
-		//¨ú±o­n­×§ïªºCompilationUnit
+		//å–å¾—è¦ä¿®æ”¹çš„CompilationUnit
 		if (resource instanceof IFile && resource.getName().endsWith(".java")) {
 			try {
 				IJavaElement javaElement = JavaCore.create(resource);
@@ -272,13 +272,13 @@ public class CarelessCleanUpRefactor extends Refactoring {
 				parser.setResolveBindings(true);
 				this.actRoot = (CompilationUnit) parser.createAST(null);
 
-				//¨ú±o¸Óclass©Ò¦³ªºmethod
+				//å–å¾—è©²classæ‰€æœ‰çš„method
 				ASTMethodCollector methodCollector = new ASTMethodCollector();
 				actRoot.accept(methodCollector);
 				List<MethodDeclaration> methodList = methodCollector.getMethodList();
 				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
 
-				//¨ú±o¥Ø«e­n³Q­×§ïªºmethod node
+				//å–å¾—ç›®å‰è¦è¢«ä¿®æ”¹çš„method node
 				currentMethodNode = methodList.get(Integer.parseInt(methodIdx));
 
 				return true;			
@@ -293,30 +293,30 @@ public class CarelessCleanUpRefactor extends Refactoring {
 		actRoot.recordModifications();
 		AST ast = currentMethodNode.getAST();
 
-		// ¨ú±oEH Smellªº¸ê°T
+		// å–å¾—EH Smellçš„è³‡è¨Š
 		findSmellMessage();
 
-		// ¨ú±oSmell©Ò¦bªºTry Block¤¤
+		// å–å¾—Smellæ‰€åœ¨çš„Try Blockä¸­
 		TryStatement tryStatement = findTryStatement();
 		
-		// ­Ytry Statement¸Ì¨S¦³Finally Block,«h«Ø¥ßFinally Block
+		// è‹¥try Statementè£¡æ²’æœ‰Finally Block,å‰‡å»ºç«‹Finally Block
 		Block finallyBlock = addFinallyBlock(ast, tryStatement);
 
-		// §R°£fos.close();
+		// åˆªé™¤fos.close();
 		deleteCleanUpLine(ast, tryStatement);
 
-		// ­Yfos¬O¦bTry Block«Å§i¡A±N¥¦²¾¦ÜTry Block¥~
+		// è‹¥fosæ˜¯åœ¨Try Blockå®£å‘Šï¼Œå°‡å®ƒç§»è‡³Try Blockå¤–
 		moveInstance(ast, tryStatement);
 
-		// ¦bfinally¤¤¥[¤JcloseStream(fos)
+		// åœ¨finallyä¸­åŠ å…¥closeStream(fos)
 		addMethodInFinally(ast, finallyBlock);
 
-		// ¼g¦^Edit¤¤
+		// å¯«å›Editä¸­
 		applyChange();
 	}
 
 	/**
-	 * ±NInstance²¾¦ÜTry Catch¥~
+	 * å°‡Instanceç§»è‡³Try Catchå¤–
 	 * @param ast
 	 * @param tryStatement
 	 */
@@ -335,10 +335,10 @@ public class CarelessCleanUpRefactor extends Refactoring {
 				List<?> fragmentsList = variable.fragments();
 				if (fragmentsList.size() == 1) {
 					VariableDeclarationFragment fragment = (VariableDeclarationFragment) fragmentsList.get(0);
-					// ­Y°Ñ¼Æ«Ø¦bTry Block¤º
+					// è‹¥åƒæ•¸å»ºåœ¨Try Blockå…§
 					if (fragment.getName().toString().equals(expression.toString())) {
-						/* ±N   InputStream fos = new ImputStream();
-						 * §ï¬° fos = new InputStream();
+						/* å°‡   InputStream fos = new ImputStream();
+						 * æ”¹ç‚º fos = new InputStream();
 						 * */
 						Assignment assignment = ast.newAssignment();
 						assignment.setOperator(Assignment.Operator.ASSIGN);
@@ -349,19 +349,19 @@ public class CarelessCleanUpRefactor extends Refactoring {
 						ASTNode copyNode = ASTNode.copySubtree(init.getAST(), init);
 						assignment.setRightHandSide((Expression) copyNode);
 
-						// ±Nfos = new ImputStream(); ´À´«¨ì­ì¥»ªºµ{¦¡¸Ì
+						// å°‡fos = new ImputStream(); æ›¿æ›åˆ°åŸæœ¬çš„ç¨‹å¼è£¡
 						if(assignment.getRightHandSide().getNodeType() != ASTNode.NULL_LITERAL){
 							ExpressionStatement expressionStatement = ast.newExpressionStatement(assignment);
 							tryStatement.getBody().statements().set(i, expressionStatement);
 						}else{
-							//¦pªG¥»¨Óªºµ{¦¡½X¬O³]©winstanceªì©l¬°null¡A¨º´Nª½±µ²¾°£±¼
+							//å¦‚æœæœ¬ä¾†çš„ç¨‹å¼ç¢¼æ˜¯è¨­å®šinstanceåˆå§‹ç‚ºnullï¼Œé‚£å°±ç›´æ¥ç§»é™¤æ‰
 							tryStatement.getBody().statements().remove(i);
 						}
 
 						// InputStream fos = null
-						// ±Nnew°Ê§@´À´«¦¨null
+						// å°‡newå‹•ä½œæ›¿æ›æˆnull
 						fragment.setInitializer(ast.newNullLiteral());
-						// ¥[¦Ü­ì¥»µ{¦¡½X¤§«e
+						// åŠ è‡³åŸæœ¬ç¨‹å¼ç¢¼ä¹‹å‰
 						MethodDeclaration md = currentMethodNode;
 						md.getBody().statements().add(tryIndex, variable);
 						break;
@@ -372,7 +372,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	}
 
 	/**
-	 * ´M§ä§R°£ªºµ{¦¡½X
+	 * å°‹æ‰¾åˆªé™¤çš„ç¨‹å¼ç¢¼
 	 */
 	private void findSmellMessage() {
 		try {
@@ -384,11 +384,11 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	}
 	
 	/**
-	 * ¨ú±oSmell©Ò¦bªºTry Statement
-	 * @return	´M§ä±o¨ì¡GTry Statement §ä¤£¨ì¡GNull
+	 * å–å¾—Smellæ‰€åœ¨çš„Try Statement
+	 * @return	å°‹æ‰¾å¾—åˆ°ï¼šTry Statement æ‰¾ä¸åˆ°ï¼šNull
 	 */
 	private TryStatement findTryStatement() {
-		//¨ú±o¤èªk¤¤©Ò¦³ªºstatement
+		//å–å¾—æ–¹æ³•ä¸­æ‰€æœ‰çš„statement
 		MethodDeclaration md = currentMethodNode;
 		Block mdBlock = md.getBody();
 		List<?> statement = mdBlock.statements();
@@ -410,7 +410,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 			}
 			if(((ASTNode)statement.get(i)).getNodeType() == ASTNode.TRY_STATEMENT) {
 				TryStatement aTryStatement = (TryStatement) statement.get(i);
-				// ¦pªGSmell¦ì©óTry¤º
+				// å¦‚æœSmellä½æ–¼Tryå…§
 				if (aTryStatement.getStartPosition() <= smellMessage.getPosition() &&
 					aTryStatement.getStartPosition()+ aTryStatement.getLength()
 					                                 >= smellMessage.getPosition()) {					
@@ -423,7 +423,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	}
 
 	/**
-	 * §PÂ_Try Statement¬O§_¦³Finally Block¡A­YµL«h«Ø¥ßFinally Block
+	 * åˆ¤æ–·Try Statementæ˜¯å¦æœ‰Finally Blockï¼Œè‹¥ç„¡å‰‡å»ºç«‹Finally Block
 	 * @param tryStatement 
 	 */
 	private Block addFinallyBlock(AST ast, TryStatement tryStatement) {
@@ -436,19 +436,19 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	}
 
 	/**
-	 * §R°£Careless CleanUp Smell ¸Ó¦æ
+	 * åˆªé™¤Careless CleanUp Smell è©²è¡Œ
 	 * @param ast 
 	 * @param tryStatement 
 	 */
 	private void deleteCleanUpLine(AST ast, TryStatement tryStatement) {
 		boolean isDeleted = false;
-		//´M§äTry Block
+		//å°‹æ‰¾Try Block
 		isDeleted = deleteBlockStatement(tryStatement.getBody(), ast);
 
 		List<?> catchs = tryStatement.catchClauses();
 		for (int j=0; j < catchs.size() && !isDeleted; j++) {
 			CatchClause catchClause = (CatchClause)catchs.get(j);
-			//´M§äCatch Clause
+			//å°‹æ‰¾Catch Clause
 			isDeleted = deleteBlockStatement(catchClause.getBody(), ast);
 		}
 		
@@ -458,37 +458,37 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	}
 
 	/**
-	 * §R°£Block¤ºSmell Statement
-	 * @param block ­n³Q§R°£ªºBlock
+	 * åˆªé™¤Blockå…§Smell Statement
+	 * @param block è¦è¢«åˆªé™¤çš„Block
 	 * @param ast
-	 * @return		¬O§_§R°£
+	 * @return		æ˜¯å¦åˆªé™¤
 	 */
 	private boolean deleteBlockStatement(Block block, AST ast) {
 		List<?> statements = block.statements();
-		//¤ñ¹ïTry Statement¸Ì¬O§_¦³±ı²¾°Êªºµ{¦¡½X,­Y¦³«h²¾°£
+		//æ¯”å°Try Statementè£¡æ˜¯å¦æœ‰æ¬²ç§»å‹•çš„ç¨‹å¼ç¢¼,è‹¥æœ‰å‰‡ç§»é™¤
 		for(int i=0; i < statements.size(); i++) {
 			if (statements.get(i) instanceof ExpressionStatement) {
 				ExpressionStatement aStatement = (ExpressionStatement) statements.get(i);
-				// ¦pªG¤@­ÓTry Catch¤º¦³¦h­ÓCareless CleanUp Smell
-				// ¥Î¦ì¸m§PÂ_¤~¯à¥¿½T§PÂ_¥X¬O­ş¤@­Ó
+				// å¦‚æœä¸€å€‹Try Catchå…§æœ‰å¤šå€‹Careless CleanUp Smell
+				// ç”¨ä½ç½®åˆ¤æ–·æ‰èƒ½æ­£ç¢ºåˆ¤æ–·å‡ºæ˜¯å“ªä¸€å€‹
 				if (aStatement.getStartPosition() == smellMessage.getPosition()) {
 					cleanUpExpressionStatement = (ExpressionStatement) statements.remove(i);
 					return true;
 				}
 			} else if (statements.get(i) instanceof IfStatement) {
 				IfStatement aStatement = (IfStatement) statements.get(i);
-				// ­Y¬°If§PÂ_¦¡¡A¥B¥]§tSmell¸ê°T
+				// è‹¥ç‚ºIfåˆ¤æ–·å¼ï¼Œä¸”åŒ…å«Smellè³‡è¨Š
 				if (aStatement.getStartPosition() <= smellMessage.getPosition() &&
 					aStatement.getStartPosition() + aStatement.getLength()
 												  >= smellMessage.getPosition()) {
 
 					IfStatement ifStatement = (IfStatement) statements.remove(i);
 					Statement thenStatement = ifStatement.getThenStatement();
-					// ¦pªG¬°Block ( if¦³¥["{" "}" )
+					// å¦‚æœç‚ºBlock ( ifæœ‰åŠ "{" "}" )
 					if (thenStatement instanceof Block) {
 						Block ifBlock = (Block) ifStatement.getThenStatement();
 						return deleteBlockStatement(ifBlock, ast);
-					// ¤£¬°Block (if «áª½±µ±µStatement)
+					// ä¸ç‚ºBlock (if å¾Œç›´æ¥æ¥Statement)
 					} else {
 						ifStatement.setThenStatement(ast.newBlock());
 						cleanUpExpressionStatement = (ExpressionStatement) thenStatement;
@@ -506,15 +506,15 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	 */
 	@SuppressWarnings("unchecked")
 	private void addExtractMethod(AST ast) {
-		//¨ú±o¸ê°T
+		//å–å¾—è³‡è¨Š
 		MethodInvocation delLineMI = (MethodInvocation) cleanUpExpressionStatement.getExpression();
 		Expression exp = delLineMI.getExpression();
 		SimpleName sn = (SimpleName) exp;
 
-		//·s¼WMethod Declaration
+		//æ–°å¢Method Declaration
 		MethodDeclaration newMD = ast.newMethodDeclaration();
 
-		//³]©w¦s¨ú«¬§O(public)
+		//è¨­å®šå­˜å–å‹åˆ¥(public)
 		if (modifierType == "public")
 			newMD.modifiers().add(ast.newModifier(Modifier.ModifierKeyword.PUBLIC_KEYWORD));			
 		else if (modifierType == "protected")
@@ -522,32 +522,32 @@ public class CarelessCleanUpRefactor extends Refactoring {
 		else
 			newMD.modifiers().add(ast.newModifier(Modifier.ModifierKeyword.PRIVATE_KEYWORD));									
 
-		//³]©wreturn type
+		//è¨­å®šreturn type
 		newMD.setReturnType2(ast.newPrimitiveType(PrimitiveType.VOID));
-		//³]©wMDªº¦WºÙ
+		//è¨­å®šMDçš„åç¨±
 		newMD.setName(ast.newSimpleName(methodName));
-		//³]©w°Ñ¼Æ
+		//è¨­å®šåƒæ•¸
 		SingleVariableDeclaration svd = ast.newSingleVariableDeclaration();
 		svd.setType(ast.newSimpleType(ast.newSimpleName(exp.resolveTypeBinding().getName().toString())));
 		svd.setName(ast.newSimpleName(sn.getIdentifier()));
 		newMD.parameters().add(svd);
 
-		//³]©wbody
+		//è¨­å®šbody
 		Block block = ast.newBlock();
 		newMD.setBody(block);
 		
 		TryStatement ts = addTryStatement(ast, delLineMI);
 
-		//±N·s¼Wªºtry statement¥[¶i¨Ó
+		//å°‡æ–°å¢çš„try statementåŠ é€²ä¾†
 		block.statements().add(ts);
-		//±Nnew MD¥[¤J
+		//å°‡new MDåŠ å…¥
 		List<AbstractTypeDeclaration> typeList = actRoot.types();
 		TypeDeclaration td = (TypeDeclaration) typeList.get(0);
 		td.bodyDeclarations().add(newMD);
 	}
 
 	/**
-	 * ±NReleaseªºMethod¥[¤J¦ÜFinally Block¤¤
+	 * å°‡Releaseçš„MethodåŠ å…¥è‡³Finally Blockä¸­
 	 * @param ast	MethodNode
 	 * @param finallyBlock 
 	 */
@@ -557,26 +557,26 @@ public class CarelessCleanUpRefactor extends Refactoring {
 		// e.g. fos
 		Expression expression = delLineMI.getExpression();
 
-		// ­Y¸Ó¦æ¬°Method (e.g. closeFile(fos)) «hª½ª½±µ¦¹¦æ²¾¦ÜFinally Block¤¤
+		// è‹¥è©²è¡Œç‚ºMethod (e.g. closeFile(fos)) å‰‡ç›´ç›´æ¥æ­¤è¡Œç§»è‡³Finally Blockä¸­
 		if (expression == null) {
 			finallyBlock.statements().add(cleanUpExpressionStatement);
 			return;
 		}
 
 		MethodInvocation newMI = null;
-		// ­YMethod¤£¦s¦b
+		// è‹¥Methodä¸å­˜åœ¨
 		if (!isMethodExist) {
 			newMI = createNewMethod(ast, expression, methodName);
 
-			// ­YMethod¤£¦s¦b¡A«Ø¥ß·sMethod
+			// è‹¥Methodä¸å­˜åœ¨ï¼Œå»ºç«‹æ–°Method
 			addExtractMethod(ast);
 
-		// ­YMethod¤w¦s¦b
+		// è‹¥Methodå·²å­˜åœ¨
 		} else {
-			//·s¼WªºMethod Invocation
+			//æ–°å¢çš„Method Invocation
 			newMI = createNewMethod(ast, expression, existingMethod.getElementName());
 
-			// ³]¸m©I¥sMethodªº¦WºÙ
+			// è¨­ç½®å‘¼å«Methodçš„åç¨±
 			createCallerMethod(ast, newMI, finallyBlock);
 		}
 
@@ -585,7 +585,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	}
 
 	/**
-	 * ·s¼WMethod
+	 * æ–°å¢Method
 	 * @param ast
 	 * @param expression
 	 * @return
@@ -593,37 +593,37 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	private MethodInvocation createNewMethod(AST ast, Expression expression, String methodName) {
 		SimpleName simpleName = (SimpleName) expression;
 
-		//·s¼WªºMethod Invocation
+		//æ–°å¢çš„Method Invocation
 		MethodInvocation newMI = ast.newMethodInvocation();
 
-		// ³]©wMIªºname
+		// è¨­å®šMIçš„name
 		newMI.setName(ast.newSimpleName(methodName));
 
-		// ³]©wMIªº°Ñ¼Æ
+		// è¨­å®šMIçš„åƒæ•¸
 		newMI.arguments().add(ast.newSimpleName(simpleName.getIdentifier()));
 
 		return newMI;
 	}
 
 	/**
-	 * ·s¼WCaller Method
+	 * æ–°å¢Caller Method
 	 * @param ast
 	 * @param newMI
 	 * @param finallyBlock 
 	 */
 	private void createCallerMethod(AST ast, MethodInvocation newMI, Block finallyBlock) {
 		try {
-			//Private®É¤£¯S§O°Ê§@
+			//Privateæ™‚ä¸ç‰¹åˆ¥å‹•ä½œ
 			//if ((existingMethod.getFlags() & Flags.AccPrivate) != 0)
 
 			IType classType = (IType) existingMethod.getParent();
-			//­Y¬°Public
+			//è‹¥ç‚ºPublic
 			if ((existingMethod.getFlags() & Flags.AccPublic) != 0) {
-				// ­YMethod¬°Static: ª½±µ©I¥s
+				// è‹¥Methodç‚ºStatic: ç›´æ¥å‘¼å«
 				if ((existingMethod.getFlags() & Flags.AccStatic) != 0) {
 					newMI.setExpression(ast.newSimpleName(classType.getElementName()));
 
-				// ­Y«DStatic Method: ¥ıNew¦A©I¥s
+				// è‹¥éStatic Method: å…ˆNewå†å‘¼å«
 				} else {
 					//new Method();
 					ClassInstanceCreation classInstance = ast.newClassInstanceCreation();
@@ -644,7 +644,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 				}
 			}
 
-			// ·s¼WImport¸ê°T
+			// æ–°å¢Importè³‡è¨Š
 			addImportPackage(classType);
 
 		} catch (JavaModelException e) {
@@ -654,23 +654,23 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	}
 
 	/**
-	 * ¥[¤JPublic MethodªºImport Package
+	 * åŠ å…¥Public Methodçš„Import Package
 	 * @param classType
 	 */
 	private void addImportPackage(IType classType) {
-		//­YPackage¬Û¦P¡A«h¤£¥[import
+		//è‹¥Packageç›¸åŒï¼Œå‰‡ä¸åŠ import
 		String extractMethodPackage = classType.getPackageFragment().getElementName();
 		String localMethodPackage = actRoot.getPackage().getName().toString();
 		if (extractMethodPackage.equals(localMethodPackage))
 			return;
 
-		//­YPackage¥[¤J¹L¤]¤£¥[
+		//è‹¥PackageåŠ å…¥éä¹Ÿä¸åŠ 
 		List<?> importList = actRoot.imports();
 		for(Object id : importList)
 			if(((ImportDeclaration)id).getName().getFullyQualifiedName().contains(classType.getFullyQualifiedName()))
 				return;
 
-		//°²¦p¨S¦³import,´N¥[¤J¨ìAST¤¤
+		//å‡å¦‚æ²’æœ‰import,å°±åŠ å…¥åˆ°ASTä¸­
 		AST rootAst = actRoot.getAST(); 
 		ImportDeclaration imp = rootAst.newImportDeclaration();
 		imp.setName(rootAst.newName(classType.getFullyQualifiedName()));
@@ -678,7 +678,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	}
 
 	/**
-	 * ¥[¤JTry Statement
+	 * åŠ å…¥Try Statement
 	 * @param ast
 	 * @param delLineMI
 	 * @return
@@ -690,35 +690,35 @@ public class CarelessCleanUpRefactor extends Refactoring {
 		/* if (obj != null)
 		 * 		obj.close();
 		 */
-		//«Ø¥ß obj != null
+		//å»ºç«‹ obj != null
 		InfixExpression in = ast.newInfixExpression();
 		in.setOperator(InfixExpression.Operator.NOT_EQUALS);
 		in.setLeftOperand(ast.newSimpleName(delLineMI.getExpression().toString()));
 		in.setRightOperand(ast.newNullLiteral());
 
-		//«Ø¥ß if Satement
+		//å»ºç«‹ if Satement
 		IfStatement ifStatement = ast.newIfStatement();
 		ifStatement.setExpression(in);
-		//¥[¤JRelease Source Code
+		//åŠ å…¥Release Source Code
 		ifStatement.setThenStatement(cleanUpExpressionStatement);
-		//¥[¨ìTry Block¤§¤¤
+		//åŠ åˆ°Try Blockä¹‹ä¸­
 		tsBody.statements().add(ifStatement);
 
-		//´Àtry ¥[¤J¤@­ÓCatch clause
+		//æ›¿try åŠ å…¥ä¸€å€‹Catch clause
 		List<CatchClause> catchStatement = ts.catchClauses();
 		CatchClause cc = ast.newCatchClause();
 		
-		//¦s©ñµ{¦¡½X©Ò©ß¥Xªº¨Ò¥~Ãş«¬
+		//å­˜æ”¾ç¨‹å¼ç¢¼æ‰€æ‹‹å‡ºçš„ä¾‹å¤–é¡å‹
 		ITypeBinding[] iType;
 		iType = delLineMI.resolveMethodBinding().getExceptionTypes();
 	
-		//«Ø¥ßcatchªºtype¬° catch(... ex)
+		//å»ºç«‹catchçš„typeç‚º catch(... ex)
 		SingleVariableDeclaration svdCatch = ast.newSingleVariableDeclaration();
 		svdCatch.setType(ast.newSimpleType(ast.newSimpleName(iType[0].getName())));
 		svdCatch.setName(ast.newSimpleName("e"));
 		cc.setException(svdCatch);
 
-		//¥[¤Jcatchªºbody
+		//åŠ å…¥catchçš„body
 		if(logType.equals("e.printStackTrace();"))
 			addPrintStackStatement(ast, cc);
 		else
@@ -729,23 +729,23 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	}
 
 	/**
-	 * ¥[¤Je.printStatckTrace
+	 * åŠ å…¥e.printStatckTrace
 	 * @param ast
 	 * @param cc
 	 */
 	private void addPrintStackStatement(AST ast, CatchClause cc) {
-		//·s¼WªºMethod Invocation
+		//æ–°å¢çš„Method Invocation
 		MethodInvocation catchMI = ast.newMethodInvocation();
-		//³]©wMIªºname
+		//è¨­å®šMIçš„name
 		catchMI.setName(ast.newSimpleName("printStackTrace"));
-		//³]©wMIªºExpression
+		//è¨­å®šMIçš„Expression
 		catchMI.setExpression(ast.newSimpleName("e"));			
 		ExpressionStatement catchES = ast.newExpressionStatement((Expression)catchMI);
 		cc.getBody().statements().add(catchES);
 	}
 
 	/**
-	 * ¥[¤Jlogger.warning(e.getMessage());
+	 * åŠ å…¥logger.warning(e.getMessage());
 	 * @param ast
 	 * @param cc
 	 */
@@ -756,14 +756,14 @@ public class CarelessCleanUpRefactor extends Refactoring {
 		//private Logger logger = Logger.getLogger(CarelessCleanUpTest.class.getName());
 		addLoggerField(ast);
 		
-		//³]©wcatchªºbodyªºMethod Invocation
+		//è¨­å®šcatchçš„bodyçš„Method Invocation
 		MethodInvocation cbMI = ast.newMethodInvocation();
-		//³]©wcbMIªºName
+		//è¨­å®šcbMIçš„Name
 		cbMI.setName(ast.newSimpleName("warning"));
-		//³]©wcbMIªºExpression
+		//è¨­å®šcbMIçš„Expression
 		cbMI.setExpression(ast.newSimpleName("logger"));
 		
-		//³]©wcbMIªºargumentsªºMethod Invocation
+		//è¨­å®šcbMIçš„argumentsçš„Method Invocation
 		MethodInvocation cbarguMI = ast.newMethodInvocation();
 		cbarguMI.setName(ast.newSimpleName("getMessage"));
 		cbarguMI.setExpression(ast.newSimpleName("e"));
@@ -775,10 +775,10 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	}
 
 	/**
-	 *  ¥[¤Jimport java.util.logging.Logger;
+	 *  åŠ å…¥import java.util.logging.Logger;
 	 */
 	private void addJavaLoggerLibrary() {
-		//§PÂ_¬O§_¦³import java.util.logging.Logger
+		//åˆ¤æ–·æ˜¯å¦æœ‰import java.util.logging.Logger
 		boolean isImportLibrary = false;
 		List<?> importList = actRoot.imports();
 		for(Object id : importList){
@@ -787,7 +787,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 			}
 		}
 		
-		//°²¦p¨S¦³import,´N¥[¤J¨ìAST¤¤
+		//å‡å¦‚æ²’æœ‰import,å°±åŠ å…¥åˆ°ASTä¸­
 		AST rootAst = actRoot.getAST(); 
 		if (!isImportLibrary) {
 			ImportDeclaration imp = rootAst.newImportDeclaration();
@@ -797,14 +797,14 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	}
 	
 	/**
-	 * ¥[¤Jprivate Logger logger = Logger.getLogger(CarelessCleanUpTest.class.getName());
+	 * åŠ å…¥private Logger logger = Logger.getLogger(CarelessCleanUpTest.class.getName());
 	 * @param ast
 	 */
 	private void addLoggerField(AST ast) {
 		List<?> typeList = actRoot.types();
 		TypeDeclaration td = (TypeDeclaration) typeList.get(0);
 		
-		//­Y¤w¸g¥[¤Jjava logger«h¤£¥[¤J
+		//è‹¥å·²ç¶“åŠ å…¥java loggerå‰‡ä¸åŠ å…¥
 		List<?> bodyList = td.bodyDeclarations();
 		String result = "private Logger logger=Logger.getLogger";
 		for (Object node: bodyList) {
@@ -815,52 +815,52 @@ public class CarelessCleanUpRefactor extends Refactoring {
 			}
 		}
 		
-		//¥[¤Jprivate Logger logger = Logger.getLogger(LoggerTest.class.getName());
+		//åŠ å…¥private Logger logger = Logger.getLogger(LoggerTest.class.getName());
 		VariableDeclarationFragment vdf = ast.newVariableDeclarationFragment();
-		//³]©wlogger
+		//è¨­å®šlogger
 		vdf.setName(ast.newSimpleName("logger"));
 		
-		//vdfªºinitializerªºMethod Invocation
+		//vdfçš„initializerçš„Method Invocation
 		MethodInvocation initMI = ast.newMethodInvocation();
-		//³]©winitMIªºName
+		//è¨­å®šinitMIçš„Name
 		initMI.setName(ast.newSimpleName("getLogger"));
-		//³]©winitMIªºExpression
+		//è¨­å®šinitMIçš„Expression
 		initMI.setExpression(ast.newSimpleName("Logger"));
 
-		/* ³]©warguMIªºExpression */
+		/* è¨­å®šarguMIçš„Expression */
 		MethodInvocation arguMI = ast.newMethodInvocation();
-		//³]©warguMIªºName
+		//è¨­å®šarguMIçš„Name
 		arguMI.setName(ast.newSimpleName("getName"));
 
-		/* ¨ú±oclass Name */
+		/* å–å¾—class Name */
 		ICompilationUnit icu = (ICompilationUnit) actOpenable;
 		String javaName = icu.getElementName();
-		//Âo±¼".java"
+		//æ¿¾æ‰".java"
 		String className = javaName.substring(0, javaName.length()-5);
-		//³]©wExpressionªºType Literal
+		//è¨­å®šExpressionçš„Type Literal
 		TypeLiteral tl = ast.newTypeLiteral();
 		tl.setType(ast.newSimpleType(ast.newName(className)));
 
 		arguMI.setExpression(tl);
 		
-		//³]©winitMIªºargumentsªºMethod Invocation
+		//è¨­å®šinitMIçš„argumentsçš„Method Invocation
 		initMI.arguments().add(arguMI);
 		vdf.setInitializer(initMI);
 
-		//«Ø¥ßFieldDeclaration
+		//å»ºç«‹FieldDeclaration
 		FieldDeclaration fd = ast.newFieldDeclaration(vdf);
 		fd.modifiers().add(ast.newModifier(Modifier.ModifierKeyword.PRIVATE_KEYWORD));
 		fd.setType(ast.newSimpleType(ast.newName("Logger")));
 
-		//±NFiled¼g¤JTypeTypeDeclaration¤¤¡Aª½±µ©ñ¤J²Ä¤@­ÓTypeDeclaration
+		//å°‡Filedå¯«å…¥TypeTypeDeclarationä¸­ï¼Œç›´æ¥æ”¾å…¥ç¬¬ä¸€å€‹TypeDeclaration
 		td.bodyDeclarations().add(0, fd);
 	}
 
 	/**
-	 * ±N­nÅÜ§óªº¸ê®Æ¼g¦^¦ÜDocument¤¤
+	 * å°‡è¦è®Šæ›´çš„è³‡æ–™å¯«å›è‡³Documentä¸­
 	 */
 	private void applyChange() {
-		//¼g¦^Edit¤¤
+		//å¯«å›Editä¸­
 		try {
 			ICompilationUnit cu = (ICompilationUnit) actOpenable;
 			Document document = new Document(cu.getBuffer().getContents());
@@ -876,25 +876,25 @@ public class CarelessCleanUpRefactor extends Refactoring {
 
 
 	/**
-	 * ¨ú±oJavaProject
+	 * å–å¾—JavaProject
 	 */
 	public IJavaProject getProject(){
 		return project;
 	}
 
 	/**
-	 * ¨ú±oICompilationUnitªº¦WºÙ
+	 * å–å¾—ICompilationUnitçš„åç¨±
 	 */
 	public MethodDeclaration getCurrentMethodNode() {
 		IResource resource = marker.getResource();
-		//¨ú±oMethodNode
+		//å–å¾—MethodNode
 		findMethod(resource);
 
 		return currentMethodNode;
 	}
 	
 	/**
-	 * ³]©w¬O§_¨Ï¥Î¤w¦s¦bªºMethod
+	 * è¨­å®šæ˜¯å¦ä½¿ç”¨å·²å­˜åœ¨çš„Method
 	 */
 	public RefactoringStatus setIsRefactoringMethodExist(boolean isMethodExist){
 		this.isMethodExist = isMethodExist;
@@ -902,7 +902,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	}
 	
 	/**
-	 * set methodNameÅÜ¼Æ¦WºÙ
+	 * set methodNameè®Šæ•¸åç¨±
 	 */
 	public RefactoringStatus setNewMethodName(String methodName){
 		if (methodName.length() == 0) {
@@ -911,11 +911,11 @@ public class CarelessCleanUpRefactor extends Refactoring {
 		
 		boolean isError = false;
 		char[] name = methodName.toCharArray();
-		//Method¦WºÙ²Ä¤@­Ó¦r¥u¯à¬°A~Z & a~z
+		//Methodåç¨±ç¬¬ä¸€å€‹å­—åªèƒ½ç‚ºA~Z & a~z
 		if (!(name[0] >= 'a' && name[0] <= 'z') && !(name[0] >= 'A' && name[0] <= 'Z'))
 			isError = true;
 
-		//Method¦WºÙ¤£¯à¦³¯S®í¦r¤¸
+		//Methodåç¨±ä¸èƒ½æœ‰ç‰¹æ®Šå­—å…ƒ
 		for (char c : name) {
 			if (!(c >= 'a' && c <= 'z') && !(c >= 'A' && c <= 'Z') && !(c >= '0' && c <= '9')) {
 				isError = true;
@@ -923,7 +923,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 			}
 		}
 
-		//¦WºÙ­Y¤£¹ï¡AÅã¥Ü¿ù»~°T®§
+		//åç¨±è‹¥ä¸å°ï¼Œé¡¯ç¤ºéŒ¯èª¤è¨Šæ¯
 		if (isError)
 			return RefactoringStatus.createFatalErrorStatus(methodName + " is not a valid Java identifer");
 		else
@@ -957,7 +957,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	}
 	
 	/**
-	 * ³]¸m¤w¦s¦bªºMethod¸ê°T
+	 * è¨­ç½®å·²å­˜åœ¨çš„Methodè³‡è¨Š
 	 */
 	public RefactoringStatus setExistingMethod(IMethod method){
 		if (method == null) {

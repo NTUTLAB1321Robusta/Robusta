@@ -102,22 +102,22 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 	// -------------------------------------------------------------------------
 	// Action Object
 	// -------------------------------------------------------------------------
-	// Åã¥Ü©Ò¦³ Exception
+	// é¡¯ç¤ºæ‰€æœ‰ Exception
 	private Action actionShowAll;
 
-	// Åã¥Ü¦³@RLªºException
+	// é¡¯ç¤ºæœ‰@RLçš„Exception
 	private Action actionShowRL;
 
-	// Åã¥Ü¦bMethod¤º¥¼³B²zªºException
+	// é¡¯ç¤ºåœ¨Methodå…§æœªè™•ç†çš„Exception
 	private Action actionShowThrow;
 
-	// Åã¥Ü¦bMethod¤º¤w³B²zªºException
+	// é¡¯ç¤ºåœ¨Methodå…§å·²è™•ç†çš„Exception
 	private Action actionShowCatch;
 
-	// ¬O§_³sµ²¦Ü·½½X
+	// æ˜¯å¦é€£çµè‡³æºç¢¼
 	private Action actionGotoSource;
 
-	// ¼W¥[RL Annotation
+	// å¢åŠ RL Annotation
 	private Action actionAddRLAnnotation;
 
 	private Action doubleClickAction;
@@ -159,7 +159,7 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 		hookContextMenu();
 		contributeToActionBars();
 
-		ConsoleLog.debug("ªì©l¤Æ§¹¦¨¡I");
+		ConsoleLog.debug("åˆå§‹åŒ–å®Œæˆï¼");
 		try {
 
 			IEditorPart part = EditorUtils.getActiveEditor();
@@ -249,10 +249,10 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 	}
 
 	/**
-	 * ±N°T®§Åã¥Ü¦bViewªºTable¤W
+	 * å°‡è¨Šæ¯é¡¯ç¤ºåœ¨Viewçš„Tableä¸Š
 	 * 
 	 * @param list
-	 *            ¸ê®Æ¨Ó·½
+	 *            è³‡æ–™ä¾†æº
 	 */
 	private void showExListTableContent() {
 		// logger.debug("@@@@=====>>showExListTableContent==>"+this.currentMethodNode);
@@ -260,7 +260,7 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 		this.tableExList.clearAll();
 
 		if (!model.hasExceptionData()) {
-			ConsoleLog.debug("¥Ø«eMethod¤ºµL¨Ò¥~¸ê°T¡I");
+			ConsoleLog.debug("ç›®å‰Methodå…§ç„¡ä¾‹å¤–è³‡è¨Šï¼");
 			return;
 		}
 
@@ -310,7 +310,7 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 				item.setImage(3, ImageManager.getInstance().get("annotation"));
 			}
 
-			// Åã¥Ü¦æ¼Æ
+			// é¡¯ç¤ºè¡Œæ•¸
 			item.setText(4, String.valueOf(msg.getLineNumber()));
 
 			if (currentLineNumber == msg.getLineNumber()) {
@@ -326,11 +326,11 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 		this.tableRLList.removeAll();
 
 		if (model.getRLAnnotationList() == null || model.getRLAnnotationList().size() == 0) {
-			ConsoleLog.debug("¥Ø«eµL¢IRL¸ê°T¡I");
+			ConsoleLog.debug("ç›®å‰ç„¡ï¼ RLè³‡è¨Šï¼");
 			return;
 		}
 
-		ConsoleLog.debug("¥Ø«e¢IRL¸ê°T¡G" + model.getRLAnnotationList().size() + "­Ó");
+		ConsoleLog.debug("ç›®å‰ï¼ RLè³‡è¨Šï¼š" + model.getRLAnnotationList().size() + "å€‹");
 
 		int idx = -1;
 		for (RLMessage msg : model.getRLAnnotationList()) {
@@ -375,9 +375,9 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 	// *************************************************************************
 
 	private void makeActions() {
-		//Åã¥Ü¤èªk¤º©Ò¦³ªº¨Ò¥~
+		//é¡¯ç¤ºæ–¹æ³•å…§æ‰€æœ‰çš„ä¾‹å¤–
 		this.initActionShowAll();
-		//Åã¥Ü¤èªk¤º©I¥sª«¥ó¤èªk¤§©w¸q±j°·«×µ¥¯Åªº¨Ò¥~
+		//é¡¯ç¤ºæ–¹æ³•å…§å‘¼å«ç‰©ä»¶æ–¹æ³•ä¹‹å®šç¾©å¼·å¥åº¦ç­‰ç´šçš„ä¾‹å¤–
 		this.initActionShowRL();
 		this.initActionShowThrow();
 		this.initActionShowCatch();
@@ -592,7 +592,7 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 	}
 
 	/**
-	 * ªì©l¤ÆRL List TableªºPopup Menu¨Æ¥ó³B²z
+	 * åˆå§‹åŒ–RL List Tableçš„Popup Menuäº‹ä»¶è™•ç†
 	 * 
 	 */
 	private void initRLListTablePopupMenu() {
@@ -664,7 +664,7 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 	}
 
 	/**
-	 * ³]©wªí®æ¢Ñlick¨Æ¥ó³B²z
+	 * è¨­å®šè¡¨æ ¼ï¼£lickäº‹ä»¶è™•ç†
 	 * 
 	 */
 	private void initExListTableRowClick() {
@@ -688,7 +688,7 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 	}
 
 	/**
-	 * ³]©wªí®æDouble click¨Æ¥ó³B²z
+	 * è¨­å®šè¡¨æ ¼Double clickäº‹ä»¶è™•ç†
 	 * 
 	 */
 	private void initExListTableDoubleClick() {
@@ -743,7 +743,7 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 	}
 
 	/**
-	 * ³]©wªí®æDouble click¨Æ¥ó³B²z
+	 * è¨­å®šè¡¨æ ¼Double clickäº‹ä»¶è™•ç†
 	 * 
 	 */
 	private void initRLListTableDoubleClick() {
@@ -822,7 +822,7 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 					});
 
 				} catch (Exception ex) {
-					ErrorLog.getInstance().logError("³B²z@Tag Tableµo¥Í¿ù»~¡I", ex);
+					ErrorLog.getInstance().logError("è™•ç†@Tag Tableç™¼ç”ŸéŒ¯èª¤ï¼", ex);
 				}
 
 			}
@@ -899,10 +899,10 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 				return;
 			}
 
-			// §PÂ_¥Ø«e½s¿è¾¹¤Î¤å¥ó¬O§_¬°²{¦³View§e²{ªº
+			// åˆ¤æ–·ç›®å‰ç·¨è¼¯å™¨åŠæ–‡ä»¶æ˜¯å¦ç‚ºç¾æœ‰Viewå‘ˆç¾çš„
 			if (this.changeDocument || !model.hasData() || part != actEditor) {
-				ConsoleLog.debug("[handleSelectionChanged4Editor]­«·s¦A¨ú±oJava¤å¥ó¤Î½s¿è¾¹!");
-				// ­«·s¦A¨ú±oJava¤å¥ó¤Î½s¿è¾¹
+				ConsoleLog.debug("[handleSelectionChanged4Editor]é‡æ–°å†å–å¾—Javaæ–‡ä»¶åŠç·¨è¼¯å™¨!");
+				// é‡æ–°å†å–å¾—Javaæ–‡ä»¶åŠç·¨è¼¯å™¨
 				if (part instanceof ITextEditor && (EditorUtils.getJavaInput((ITextEditor) part) != null)) {
 					try {
 
@@ -915,8 +915,8 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 					}
 				}
 			} else {
-				// ¤å¥ó¤Î½s¿è¾¹¬°²{¦sªº
-				ConsoleLog.debug("[handleSelectionChanged4Editor]¤å¥ó¤Î½s¿è¾¹¬°²{¦sªº!");
+				// æ–‡ä»¶åŠç·¨è¼¯å™¨ç‚ºç¾å­˜çš„
+				ConsoleLog.debug("[handleSelectionChanged4Editor]æ–‡ä»¶åŠç·¨è¼¯å™¨ç‚ºç¾å­˜çš„!");
 				ConsoleLog.debug("[handleSelectionChanged4Editor]offset=" + offset + ",length=" + length);
 			}
 
@@ -956,7 +956,7 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 	}
 
 	public ShowInContext getShowInContext() {
-		// ²¾¨ìEclipse 3.4³oÃä·|µo¥Ínull point exception,©Ò¥H³oÃä§ï¦¨³o¼Ë
+		// ç§»åˆ°Eclipse 3.4é€™é‚Šæœƒç™¼ç”Ÿnull point exception,æ‰€ä»¥é€™é‚Šæ”¹æˆé€™æ¨£
 		IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
 		if (editor == null)	return null;
 

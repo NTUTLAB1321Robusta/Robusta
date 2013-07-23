@@ -18,9 +18,9 @@ public abstract class APropertyPage {
 	}
 
 	/**
-	 * ¨ú±oControlªº¥k¤U¨¤®y¼Ğ
+	 * å–å¾—Controlçš„å³ä¸‹è§’åº§æ¨™
 	 * @param control
-	 * @return			¥k¤U¨¤®y¼Ğ
+	 * @return			å³ä¸‹è§’åº§æ¨™
 	 */
 	protected Point getLowerRightCoordinate(Control control) {
 		if (control == null) return new Point(0,0);

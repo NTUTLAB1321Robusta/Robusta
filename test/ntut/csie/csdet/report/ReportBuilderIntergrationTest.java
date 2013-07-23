@@ -60,12 +60,12 @@ public class ReportBuilderIntergrationTest {
 	@Before
 	public void setUp() throws Exception {
 		
-		// Åª¨ú´ú¸ÕÀÉ®×¼Ë¥»¤º®e
+		// è®€å–æ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹
 		javaFileToString = new JavaFileToString();
 		javaProjectMaker = new JavaProjectMaker(projectName);
 		javaProjectMaker.setJREDefaultContainer();
 		
-		// ·s¼W±ı¸ü¤Jªºlibrary
+		// æ–°å¢æ¬²è¼‰å…¥çš„library
 		javaProjectMaker.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR + "/log4j-1.2.15.jar");
 		javaProjectMaker.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR + "/slf4j-api-1.5.0.jar");
 		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(
@@ -74,7 +74,7 @@ public class ReportBuilderIntergrationTest {
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/"
 				+ JavaProjectMaker.RL_LIBRARY_PATH);
 		
-		// ®Ú¾Ú´ú¸ÕÀÉ®×¼Ë¥»¤º®e«Ø¥ß·sªºÀÉ®×
+		// æ ¹æ“šæ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹å»ºç«‹æ–°çš„æª”æ¡ˆ
 		javaFileToString.read(NestedTryStatementExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				NestedTryStatementExample.class.getPackage().getName(),
@@ -286,10 +286,10 @@ public class ReportBuilderIntergrationTest {
 	}
 	
 	/**
-	 * ¥ş¤Ä³]©w¾×°£¤F Dummy & Ignore ¨S¤Ä
-	 * ¥H¤Î¦Û©w¸qªº³¡¤À¤]¤w¸g¥[¤J¤F
-	 * ¦]¬°¦b§Oªº class ¤w¸g³B²z¹L¤F
-	 * «ÜªøªºÀÉ®×¸ô®|¦r¦ê°O±o­n§ï
+	 * å…¨å‹¾è¨­å®šæ“‹é™¤äº† Dummy & Ignore æ²’å‹¾
+	 * ä»¥åŠè‡ªå®šç¾©çš„éƒ¨åˆ†ä¹Ÿå·²ç¶“åŠ å…¥äº†
+	 * å› ç‚ºåœ¨åˆ¥çš„ class å·²ç¶“è™•ç†éäº†
+	 * å¾ˆé•·çš„æª”æ¡ˆè·¯å¾‘å­—ä¸²è¨˜å¾—è¦æ”¹
 	 */
 	private void CreateAllSettings() {
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.ATTRIBUTE_ISDETECTING, unDetcting);
@@ -387,10 +387,10 @@ public class ReportBuilderIntergrationTest {
 
 	@Test
 	public void testCountFileLOC() throws Exception {
-		/** ¥¿½T¸ô®|¤Uªºclass file */
+		/** æ­£ç¢ºè·¯å¾‘ä¸‹çš„class file */
 		Method countFileLOC = ReportBuilder.class.getDeclaredMethod("countFileLOC", String.class);
 		countFileLOC.setAccessible(true);
-		// ÀË¬d´ú¸Õ±M®×ÀÉ®×ªº¦æ¼Æ
+		// æª¢æŸ¥æ¸¬è©¦å°ˆæ¡ˆæª”æ¡ˆçš„è¡Œæ•¸
 		assertEquals(495, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(NestedTryStatementExample.class, projectName)));
 		assertEquals(565, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(CarelessCleanupExample.class, projectName)));
 		assertEquals(17, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(ClassImplementCloseable.class, projectName)));
@@ -413,13 +413,13 @@ public class ReportBuilderIntergrationTest {
 		assertEquals(13, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(UnprotectedmainProgramWithTryAtFirstStatement.class, projectName)));
 		assertEquals(13, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithTryAtLastStatement.class, projectName)));
 		assertEquals(13, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithTryAtMiddleStatement.class, projectName)));
-		/** ¸ô®|¤£¥¿½T©ÎªÌ¤£¦s¦bªºclass file */
+		/** è·¯å¾‘ä¸æ­£ç¢ºæˆ–è€…ä¸å­˜åœ¨çš„class file */
 		assertEquals(0, countFileLOC.invoke(reportBuilder, "not/exist/example.java"));
 	}
 	
 	/**
-	 * DummyHandler & Ignore Report ¦b¨ä¥L Class ¤w¸g¦³¶i¦æ´ú¸Õ¤F
-	 * ¦b³oÃä¥u¬O½T©w³]©wÀÉ¤£·|¼vÅT¥»¨­ªºµ²ªG
+	 * DummyHandler & Ignore Report åœ¨å…¶ä»– Class å·²ç¶“æœ‰é€²è¡Œæ¸¬è©¦äº†
+	 * åœ¨é€™é‚Šåªæ˜¯ç¢ºå®šè¨­å®šæª”ä¸æœƒå½±éŸ¿æœ¬èº«çš„çµæœ
 	 * @throws Exception
 	 */
 	@Test
@@ -587,10 +587,10 @@ public class ReportBuilderIntergrationTest {
 	}
 	
 	/**
-	 * ³]©wÀÉ¥ş¤Ä
-	 * ¥¿±`´ú¸Õ±¡ªp
-	 * ´ú¸Õ°£¤F DummyHandler & Ignore ¥H¥~ªº³øªí
-	 * ¥H¤Î¬ÛÃö¸ê°T
+	 * è¨­å®šæª”å…¨å‹¾
+	 * æ­£å¸¸æ¸¬è©¦æƒ…æ³
+	 * æ¸¬è©¦é™¤äº† DummyHandler & Ignore ä»¥å¤–çš„å ±è¡¨
+	 * ä»¥åŠç›¸é—œè³‡è¨Š
 	 * @throws Exception
 	 */
 	@Test

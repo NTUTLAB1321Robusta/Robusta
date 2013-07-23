@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * ´£¨Ñ¥t¤@ºØ¦³AlternativeªºRetry template¦b¥kÁä¿ï³æ
+ * æä¾›å¦ä¸€ç¨®æœ‰Alternativeçš„Retry templateåœ¨å³éµé¸å–®
  * Introduce resourceful try clause
  * @author chewei
  */
@@ -44,10 +44,10 @@ public class RetryAction implements IEditorActionDelegate{
 		}else{
 			ISelection selection = editor.getEditorSite().getSelectionProvider().getSelection();
 			if ((selection != null) && selection instanceof ITextSelection) {
-				//¨ú±o¨Ï¥ÎªÌ©Ò¿ï¨úªº¤å¦r
+				//å–å¾—ä½¿ç”¨è€…æ‰€é¸å–çš„æ–‡å­—
 				ITextSelection textSelection = (ITextSelection) selection;
 				IProject project = EditorUtils.getProject(editor);
-				//¨ú±o¨Ï¥ÎªÌ©Ò­nÅÜ§óªºjavaÀÉ
+				//å–å¾—ä½¿ç”¨è€…æ‰€è¦è®Šæ›´çš„javaæª”
 				IJavaProject javaProject = JavaCore.create(project);
 				IEditorInput input = editor.getEditorInput();
 				IFile file = (IFile) input.getAdapter(IFile.class);
@@ -55,7 +55,7 @@ public class RetryAction implements IEditorActionDelegate{
 				
 				try {
 					RetryRefactoring refactoring = new RetryRefactoring(javaProject,javaElement,textSelection,retry_type);				
-					//±Ò°ÊRefactor dialog
+					//å•Ÿå‹•Refactor dialog
 					RefactoringWizardOpenOperation operation = 
 						new RefactoringWizardOpenOperation(new RetryWizard(refactoring,0));
 					operation.run(new Shell(), "Introduce resourceful try clause");

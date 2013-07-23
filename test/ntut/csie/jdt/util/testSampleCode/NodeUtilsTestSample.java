@@ -7,21 +7,21 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public class NodeUtilsTestSample {
-	// ObjectÃş§Oªº¤èªk
+	// Objecté¡åˆ¥çš„æ–¹æ³•
 	public void objectMethod() {
 		Object object = new Object();
-		// NodeUtils¤£·|§ì¥X¥L¬O¹ê§@Closeableªº
+		// NodeUtilsä¸æœƒæŠ“å‡ºä»–æ˜¯å¯¦ä½œCloseableçš„
 		object.toString();
 	}
 	
-	// FileÃş§Oªº¤èªk
+	// Fileé¡åˆ¥çš„æ–¹æ³•
 	public void fileMethod() {
 		File f = new File("");
-		// NodeUtils¤£·|§ì¥X¥L¬O¹ê§@Closeableªº
+		// NodeUtilsä¸æœƒæŠ“å‡ºä»–æ˜¯å¯¦ä½œCloseableçš„
 		f.toString();
 	}
 	
-	// OutputStreamÃş§Oªº¤èªk(¦¹Ãş§O¦³¹ê§@Closeable)
+	// OutputStreamé¡åˆ¥çš„æ–¹æ³•(æ­¤é¡åˆ¥æœ‰å¯¦ä½œCloseable)
 	public void outputStreamMethod() throws IOException {
 		OutputStream os = null;
 		os = new OutputStream() {		
@@ -30,19 +30,19 @@ public class NodeUtilsTestSample {
 				throw new IOException();
 			}
 		};
-		// NodeUtils·|§ì¥X¥L¬O¹ê§@Closeableªº
+		// NodeUtilsæœƒæŠ“å‡ºä»–æ˜¯å¯¦ä½œCloseableçš„
 		os.write(1);
-		// NodeUtils·|§ì¥X¥L¬O¹ê§@Closeableªº
+		// NodeUtilsæœƒæŠ“å‡ºä»–æ˜¯å¯¦ä½œCloseableçš„
 		os.close();
 	}
 	
-	// FileInputStreamÃş§Oªº¤èªk(¹ê§@Closeable)
+	// FileInputStreamé¡åˆ¥çš„æ–¹æ³•(å¯¦ä½œCloseable)
 	public void fileInputStreamMethod() throws IOException {
 		FileInputStream fis = null;
 		fis = new FileInputStream("");
-		// NodeUtils¤£·|§ì¥X¥L¬O¹ê§@Closeableªº
+		// NodeUtilsä¸æœƒæŠ“å‡ºä»–æ˜¯å¯¦ä½œCloseableçš„
 		fis.toString();
-		// NodeUtils·|§ì¥X¥L¬O¹ê§@Closeableªº
+		// NodeUtilsæœƒæŠ“å‡ºä»–æ˜¯å¯¦ä½œCloseableçš„
 		fis.close();
 	}
 	

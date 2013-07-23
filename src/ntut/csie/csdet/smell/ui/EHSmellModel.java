@@ -32,18 +32,18 @@ import org.slf4j.LoggerFactory;
 public class EHSmellModel {
 	private static Logger logger = LoggerFactory.getLogger(EHSmellModel.class);
 
-	//¬ö¿ı§ä¨ìªºDummyHandler Smell
+	//ç´€éŒ„æ‰¾åˆ°çš„DummyHandler Smell
 	private List<MarkerInfo> dummyHandlerList = null;
-	//¬ö¿ı§ä¨ìªºIgnoreCheckedException Smell
+	//ç´€éŒ„æ‰¾åˆ°çš„IgnoreCheckedException Smell
 	private List<MarkerInfo> ignoreExList = null;
-	//¬ö¿ı§ä¨ìªºNestedTryBlock Smell
+	//ç´€éŒ„æ‰¾åˆ°çš„NestedTryBlock Smell
 	private List<MarkerInfo> nestedTryList = null;
-	//¬ö¿ı§ä¨ìªºUnprotectedMain Smell
+	//ç´€éŒ„æ‰¾åˆ°çš„UnprotectedMain Smell
 	private List<MarkerInfo> unprotectedMainList = null;
-	//¬ö¿ı©Ò¦³ªºSmell
+	//ç´€éŒ„æ‰€æœ‰çš„Smell
 	private List<MarkerInfo> smellList = new ArrayList<MarkerInfo>();
 
-	// ¥Ø«eªºMethod AST Node
+	// ç›®å‰çš„Method AST Node
 	private ASTNode methodNode = null;	
 
 	private ASTHandler astHandler = null;
@@ -51,7 +51,7 @@ public class EHSmellModel {
 	private CompilationUnit actRoot;
 
 	private IOpenable actOpenable;
-	//°O¿ı²{¦b¦æ¼Æ
+	//è¨˜éŒ„ç¾åœ¨è¡Œæ•¸
 	private int currentLine = 0;
 	
 	public EHSmellModel() {
@@ -59,7 +59,7 @@ public class EHSmellModel {
 	}
 	
 	public void clear(){
-		//²M°£List
+		//æ¸…é™¤List
 		if(dummyHandlerList != null) dummyHandlerList.clear();
 		if(ignoreExList != null) ignoreExList.clear();
 		if(nestedTryList != null) nestedTryList.clear();
@@ -81,24 +81,24 @@ public class EHSmellModel {
 	 */
 	public boolean createAST(IOpenable openable, int pos) throws CoreException {
 		if (openable == null) {
-			System.err.println("½s¿è¾¹¤º®e¤£¬Ojavaµ{¦¡¡I");
-			throw createCoreException("½s¿è¾¹¤º®e¤£¬Ojavaµ{¦¡¡I", null);
+			System.err.println("ç·¨è¼¯å™¨å…§å®¹ä¸æ˜¯javaç¨‹å¼ï¼");
+			throw createCoreException("ç·¨è¼¯å™¨å…§å®¹ä¸æ˜¯javaç¨‹å¼ï¼", null);
 		}
 
 		this.actOpenable = openable;
 
-		// §PÂ_Java·½½Xªºª©¥»¬O§_¬°1.5¥H¤W(¦]¬°­n¨Ï¥ÎAnnotation)
+		// åˆ¤æ–·Javaæºç¢¼çš„ç‰ˆæœ¬æ˜¯å¦ç‚º1.5ä»¥ä¸Š(å› ç‚ºè¦ä½¿ç”¨Annotation)
 		IJavaProject project = (IJavaProject) ((IJavaElement) actOpenable).getAncestor(IJavaElement.JAVA_PROJECT);
 		String option = project.getOption(JavaCore.COMPILER_SOURCE, true);
 		if (!JavaCore.VERSION_1_5.equals(option) && !JavaCore.VERSION_1_6.equals(option)) {
-			throw createCoreException("javaµ{¦¡¤£¬O1.5¥H¤Wª©¥»¡I", null);
+			throw createCoreException("javaç¨‹å¼ä¸æ˜¯1.5ä»¥ä¸Šç‰ˆæœ¬ï¼", null);
 		}
 		try {
 			this.actRoot = astHandler.createAST(actOpenable, pos);
 			return (this.actRoot != null);
 		} catch (RuntimeException ex) {
 			logger.error("[createAST] EXCEPTION ", ex);
-			throw createCoreException("µLªk²£¥ÍAST:\n" + ex.getMessage(), ex);
+			throw createCoreException("ç„¡æ³•ç”¢ç”ŸAST:\n" + ex.getMessage(), ex);
 		}
 	}
 	
@@ -107,16 +107,16 @@ public class EHSmellModel {
 	}
 	
 	/**
-	 * ¸ÑªR¥XSmellªºList
+	 * è§£æå‡ºSmellçš„List
 	 * @param offset
 	 * @param length
 	 */
 	public void parseDocument(int offset, int length) {
 		this.methodNode = NodeUtils.getSpecifiedParentNode(NodeFinder.perform(actRoot, offset, length), ASTNode.METHOD_DECLARATION);
 		
-		//¨¾¤î¨SÂImethod¥X²{NullPoint¿ù»~
+		//é˜²æ­¢æ²’é»methodå‡ºç¾NullPointéŒ¯èª¤
 		if (methodNode != null) {
-			//§ä¥X³o­Ómethodªºcode smell
+			//æ‰¾å‡ºé€™å€‹methodçš„code smell
 			DummyHandlerVisitor dhVisitor = new DummyHandlerVisitor(actRoot);
 			IgnoreExceptionVisitor ieVisitor = new IgnoreExceptionVisitor(actRoot);
 			this.methodNode.accept(dhVisitor);
@@ -124,22 +124,22 @@ public class EHSmellModel {
 			dummyHandlerList = dhVisitor.getDummyList();
 			ignoreExList = ieVisitor.getIgnoreList();
 	
-			//¨ú±o±M®×¤¤ªºNested Try Block
+			//å–å¾—å°ˆæ¡ˆä¸­çš„Nested Try Block
 			NestedTryStatementVisitor ntVisitor = new NestedTryStatementVisitor(actRoot);
 			methodNode.accept(ntVisitor);
 			nestedTryList = ntVisitor.getNestedTryStatementList();
 			
-			//´M§ä¸Ómethod¤ºªºunprotected main program
+			//å°‹æ‰¾è©²methodå…§çš„unprotected main program
 			UnprotectedMainProgramVisitor mainVisitor = new UnprotectedMainProgramVisitor(actRoot);
 			methodNode.accept(mainVisitor);
 			unprotectedMainList = mainVisitor.getUnprotedMainList();
 		}
 
-		//²M°£Smell
+		//æ¸…é™¤Smell
 		smellList.clear();
-		//§â©Ò¦³SmellªºList¥[¦b¤@°_
+		//æŠŠæ‰€æœ‰Smellçš„ListåŠ åœ¨ä¸€èµ·
 		if (dummyHandlerList != null) {
-			/* FIXME - ¼È®ÉÂà´«¥Î¡Aµ¥¥ş³¡³£´«¦¨MarkerInfo´N¤£»İ­n³o­ÓLOOP */
+			/* FIXME - æš«æ™‚è½‰æ›ç”¨ï¼Œç­‰å…¨éƒ¨éƒ½æ›æˆMarkerInfoå°±ä¸éœ€è¦é€™å€‹LOOP */
 			List<MarkerInfo> tempList = new ArrayList<MarkerInfo>();
 			for(int i = 0; i < dummyHandlerList.size(); i++) {
 				MarkerInfo message = new MarkerInfo(dummyHandlerList.get(i).getCodeSmellType(), dummyHandlerList.get(i).getTypeBinding(), dummyHandlerList.get(i).getStatement(), dummyHandlerList.get(i).getPosition(), dummyHandlerList.get(i).getLineNumber(), dummyHandlerList.get(i).getExceptionType());
@@ -148,7 +148,7 @@ public class EHSmellModel {
 			smellList.addAll(tempList);
 		}
 		if (ignoreExList != null) {
-			/* FIXME - ¼È®ÉÂà´«¥Î¡Aµ¥¥ş³¡³£´«¦¨MarkerInfo´N¤£»İ­n³o­ÓLOOP */
+			/* FIXME - æš«æ™‚è½‰æ›ç”¨ï¼Œç­‰å…¨éƒ¨éƒ½æ›æˆMarkerInfoå°±ä¸éœ€è¦é€™å€‹LOOP */
 			List<MarkerInfo> tempList = new ArrayList<MarkerInfo>();
 			for(int i = 0; i < ignoreExList.size(); i++) {
 				MarkerInfo message = new MarkerInfo(ignoreExList.get(i).getCodeSmellType(), ignoreExList.get(i).getTypeBinding(), ignoreExList.get(i).getStatement(), ignoreExList.get(i).getPosition(), ignoreExList.get(i).getLineNumber(), ignoreExList.get(i).getExceptionType());
@@ -160,15 +160,15 @@ public class EHSmellModel {
 			smellList.addAll(unprotectedMainList);
 		if (nestedTryList != null)
 			smellList.addAll(nestedTryList);
-		//SmellList±Æ§Ç
+		//SmellListæ’åº
 		sortCSMessageList(smellList);
 
-		//°O¿ı²{¦b¦æ¼Æ
+		//è¨˜éŒ„ç¾åœ¨è¡Œæ•¸
 		this.setCurrentLine(offset);
 	}
 	
 	/**
-	 * ¨ú±o¥Ø«e´å¼Ğ©Ò¦b¦æ¼Æ
+	 * å–å¾—ç›®å‰æ¸¸æ¨™æ‰€åœ¨è¡Œæ•¸
 	 * @param pos
 	 * @return
 	 */
@@ -209,7 +209,7 @@ public class EHSmellModel {
 	}
 
 	/**
-	 * §âCSMessageªºList¨Ì¦æ¼Æ°µ±Æ§Ç(¤É¾­)
+	 * æŠŠCSMessageçš„Listä¾è¡Œæ•¸åšæ’åº(å‡å†ª)
 	 * @param smellList
 	 */
 	private void sortCSMessageList(List<MarkerInfo> smellList) {
@@ -224,7 +224,7 @@ public class EHSmellModel {
 	}
 	
 	/**
-	 * ¨ú±o¦U­ÓSmellªºList
+	 * å–å¾—å„å€‹Smellçš„List
 	 * @return
 	 */
 	public List<MarkerInfo> getDummyList() {

@@ -41,11 +41,11 @@ public class ExpressionStatementStringFinderVisitorTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		// ·Ç³Æ´ú¸ÕÀÉ®×¼Ë¥»¤º®e
+		// æº–å‚™æ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹
 		javaProjectMaker = new JavaProjectMaker(testProjectName);
 		javaProjectMaker.setJREDefaultContainer();
 
-		// «Ø¥ß·sªºÀÉ®×DummyAndIgnoreExample
+		// å»ºç«‹æ–°çš„æª”æ¡ˆDummyAndIgnoreExample
 		javaFile2String = new JavaFileToString();
 		javaFile2String.read(StatementBeFoundSampleCode.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
@@ -58,10 +58,10 @@ public class ExpressionStatementStringFinderVisitorTest {
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
-		// ¨ú±oAST
+		// å–å¾—AST
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 	}
 
@@ -82,10 +82,10 @@ public class ExpressionStatementStringFinderVisitorTest {
 		compilationUnit.accept(statementFinderVisitor);
 		assertEquals(683, statementFinderVisitor.getFoundExpressionStatement().getStartPosition());
 		
-		// line 22 & line 32ªºµ{¦¡½X¤º®e¤@¼Ë¡A¦ı¬Oµ{¦¡¥ı§ä¨ì²Å¦Xªº´N·|°±¤U¨Ó
+		// line 22 & line 32çš„ç¨‹å¼ç¢¼å…§å®¹ä¸€æ¨£ï¼Œä½†æ˜¯ç¨‹å¼å…ˆæ‰¾åˆ°ç¬¦åˆçš„å°±æœƒåœä¸‹ä¾†
 		targetStatement = "e.printStackTrace();";
 		statementFinderVisitor = new ExpressionStatementStringFinderVisitor(targetStatement);
 		compilationUnit.accept(statementFinderVisitor);
-		assertFalse("¦¹¤èªk¥u¯à§ä¨ì³Ì¥ı¥X²{ªºExpressionStatement", (statementFinderVisitor.getFoundExpressionStatement().getStartPosition() == (867 - 1)));
+		assertFalse("æ­¤æ–¹æ³•åªèƒ½æ‰¾åˆ°æœ€å…ˆå‡ºç¾çš„ExpressionStatement", (statementFinderVisitor.getFoundExpressionStatement().getStartPosition() == (867 - 1)));
 	}
 }

@@ -43,9 +43,9 @@ import org.slf4j.LoggerFactory;
 
 public class RLQuickFix extends BaseQuickFix implements IMarkerResolution, IMarkerResolution2 {
 	private static Logger logger = LoggerFactory.getLogger(RLQuickFix.class);
-	// ¥Ø«emethodªºException¸ê°T
+	// ç›®å‰methodçš„Exceptionè³‡è¨Š
 	private List<RLMessage> currentMethodExList = null;
-	// ¥Ø«emethodªºRL Annotation¸ê°T
+	// ç›®å‰methodçš„RL Annotationè³‡è¨Š
 	private List<RLMessage> currentMethodRLList = null;
 	private String label;
 	private String errMsg;
@@ -74,7 +74,7 @@ public class RLQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 
 	@Override
 	public Image getImage() {
-		// Resource IconsªºAnnotation¹Ï¥Ü
+		// Resource Iconsçš„Annotationåœ–ç¤º
 		// return ImageManager.getInstance().get("annotation");
 		return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_ANNOTATION);
 	}
@@ -82,18 +82,18 @@ public class RLQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 	public void run(IMarker marker) {
 		try {
 			String problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
-			//Tag Level¦³°İÃD(¶W¥X1~3½d³ò¤º)
+			//Tag Levelæœ‰å•é¡Œ(è¶…å‡º1~3ç¯„åœå…§)
 			if (problem != null && problem.equals(RLMarkerAttribute.ERR_RL_LEVEL)) {
 				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
 				String msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
 				boolean isok = findMethod(marker.getResource(), Integer.parseInt(methodIdx));
 				if (isok) {
 					this.updateRLAnnotation(Integer.parseInt(msgIdx), levelForUpdate);
-					// ©w¦ì¨ìAnnotation¸Ó¦æ
+					// å®šä½åˆ°Annotationè©²è¡Œ
 					// selectLine(marker, methodIdx);
 				}
 			}
-			//µLRL¸ê°T
+			//ç„¡RLè³‡è¨Š
 			else if (problem != null && problem.equals(RLMarkerAttribute.ERR_NO_RL)) {
 				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
 				String msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
@@ -101,19 +101,19 @@ public class RLQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 				boolean isok = findMethod(marker.getResource(), Integer.parseInt(methodIdx));
 				if (isok) {
 					this.addOrRemoveRLAnnotation(true, Integer.parseInt(msgIdx));
-					// ©w¦ì¨ìAnnotation¸Ó¦æ
+					// å®šä½åˆ°Annotationè©²è¡Œ
 					// selectLine(marker, methodIdx);
 				}
 			}
-			//RL¶¶§Ç¹ï½Õ
+			//RLé †åºå°èª¿
 			else if (problem != null && problem.equals(RLMarkerAttribute.ERR_RL_INSTANCE)) {
 				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
 				String msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
 
-				// ½Õ¾ãRL Annotation¶¶§Ç
+				// èª¿æ•´RL Annotationé †åº
 				new RLOrderFix().run(marker.getResource(), methodIdx, msgIdx);
 
-				// ©w¦ì¨ìAnnotation¸Ó¦æ
+				// å®šä½åˆ°Annotationè©²è¡Œ
 				// selectLine(marker, methodIdx);
 			}
 		} catch (CoreException e) {
@@ -122,10 +122,10 @@ public class RLQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 	}
 
 	/**
-	 * ¨ú±oMethodªº¸ê°T
+	 * å–å¾—Methodçš„è³‡è¨Š
 	 * @param resource
-	 * @param methodIdx		methodªºIndex
-	 * @return				¬O§_¦¨¥\
+	 * @param methodIdx		methodçš„Index
+	 * @return				æ˜¯å¦æˆåŠŸ
 	 */
 	private boolean findMethod(IResource resource, int methodIdx) {
 		if (resource instanceof IFile && resource.getName().endsWith(".java")) {
@@ -169,14 +169,14 @@ public class RLQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 	}
 
 	/**
-	 * ­Y¥¼import Robustness Library¡A«h§â¥¦import
+	 * è‹¥æœªimport Robustness Libraryï¼Œå‰‡æŠŠå®ƒimport
 	 */
 	@SuppressWarnings("unchecked")
 	private void addImportDeclaration() {
-		// §PÂ_¬O§_¤w¸gImport Robustness¤ÎRLªº«Å§i
+		// åˆ¤æ–·æ˜¯å¦å·²ç¶“Import RobustnessåŠRLçš„å®£å‘Š
 		List<ImportDeclaration> importList = this.actRoot.imports();
 
-		//¬O§_¤w¦s¦bRobustness¤ÎRLªº«Å§i
+		//æ˜¯å¦å·²å­˜åœ¨RobustnessåŠRLçš„å®£å‘Š
 		boolean isImportRobustnessClass = false;
 		boolean isImportRLClass = false;
 
@@ -203,7 +203,7 @@ public class RLQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 	}
 
 	/**
-	 * ±NRL Annotation°T®§¼W¥[¨ì«ü©wMethod¤W
+	 * å°‡RL Annotationè¨Šæ¯å¢åŠ åˆ°æŒ‡å®šMethodä¸Š
 	 * 
 	 * @param add
 	 * @param pos
@@ -232,22 +232,22 @@ public class RLQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 			if (add) {
 				addImportDeclaration();
 
-				// ¼W¥[²{¦b©Ò¿ïExceptionªº@Tag Annotation
+				// å¢åŠ ç¾åœ¨æ‰€é¸Exceptionçš„@Tag Annotation
 				rlary.expressions().add(
 						getRLAnnotation(ast, msg.getRLData().getLevel() <= 0 ? RTag.LEVEL_1_ERR_REPORTING : msg
 								.getRLData().getLevel(), msg.getRLData().getExceptionType()));
 			}
 
-			// ¥[¤JÂÂ¦³ªº@Tag Annotation
+			// åŠ å…¥èˆŠæœ‰çš„@Tag Annotation
 			int idx = 0;
 			for (RLMessage rlmsg : currentMethodRLList) {
 				if (add) {
-					// ·s¼W
+					// æ–°å¢
 					rlary.expressions().add(
 							getRLAnnotation(ast, rlmsg.getRLData().getLevel(), rlmsg.getRLData().getExceptionType()));
 				}
 				else {
-					// ²¾°£
+					// ç§»é™¤
 					if (idx++ != pos) {
 						rlary.expressions()
 								.add(
@@ -279,9 +279,9 @@ public class RLQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 	}
 
 	/**
-	 * §ó·sRL Annotation
+	 * æ›´æ–°RL Annotation
 	 * 
-	 * @param isAllUpdate	¬O§_§ó·s¥ş³¡ªºAnnotation
+	 * @param isAllUpdate	æ˜¯å¦æ›´æ–°å…¨éƒ¨çš„Annotation
 	 * @param pos
 	 * @param level
 	 */
@@ -303,11 +303,11 @@ public class RLQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 			ArrayInitializer rlary = ast.newArrayInitializer();
 			value.setValue(rlary);
 
-			//­Y¥ş³¡§ó·s¡Aªí¥Ü¬°currentMethodRLList±Æ§Ç¡A©Ò¥H¥[¤JAnnotation Library«Å§i
+			//è‹¥å…¨éƒ¨æ›´æ–°ï¼Œè¡¨ç¤ºç‚ºcurrentMethodRLListæ’åºï¼Œæ‰€ä»¥åŠ å…¥Annotation Libraryå®£å‘Š
 			
 			int msgIdx = 0;
 			for (RLMessage rlmsg : currentMethodRLList) {
-				//­YisAllUpdateªí¥Ü¬°RL Annotation±Æ§Ç¡A±Æ§Ç¤£¥Î§ó§ïlevel¡A©Ò¥H¨Ï¥¦¤£¶i¤J
+				//è‹¥isAllUpdateè¡¨ç¤ºç‚ºRL Annotationæ’åºï¼Œæ’åºä¸ç”¨æ›´æ”¹levelï¼Œæ‰€ä»¥ä½¿å®ƒä¸é€²å…¥
 				if (msgIdx++ == pos) {
 					rlary.expressions().add(getRLAnnotation(ast, level, rlmsg.getRLData().getExceptionType()));
 				}
@@ -321,7 +321,7 @@ public class RLQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 
 			List<IExtendedModifier> modifiers = method.modifiers();
 			for (int i = 0, size = modifiers.size(); i < size; i++) {
-				//§ä¨ìÂÂ¦³ªºannotation«á±N¥¦²¾°£
+				//æ‰¾åˆ°èˆŠæœ‰çš„annotationå¾Œå°‡å®ƒç§»é™¤
 				if (modifiers.get(i).isAnnotation() && modifiers.get(i).toString().indexOf("Robustness") != -1) {
 					method.modifiers().remove(i);
 					break;
@@ -329,7 +329,7 @@ public class RLQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 			}
 
 			if (rlary.expressions().size() > 0) {
-				//±N·s«Ø¥ßªºannotation root¥[¶i¥h
+				//å°‡æ–°å»ºç«‹çš„annotation rootåŠ é€²å»
 				method.modifiers().add(0, root);
 			}
 
@@ -341,11 +341,11 @@ public class RLQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 	}
 
 	/**
-	 * ²£¥ÍRL Annotation¤§RL¸ê®Æ
+	 * ç”¢ç”ŸRL Annotationä¹‹RLè³‡æ–™
 	 * 
 	 * @param ast		AST Object
-	 * @param levelVal	±j°·«×µ¥¯Å
-	 * @param exClass	¨Ò¥~Ãş§O
+	 * @param levelVal	å¼·å¥åº¦ç­‰ç´š
+	 * @param exClass	ä¾‹å¤–é¡åˆ¥
 	 * @return NormalAnnotation AST Node
 	 */
 	@SuppressWarnings("unchecked")
@@ -370,11 +370,11 @@ public class RLQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 	}
 
 //	/**
-//	 * ±N­nÅÜ§óªº¸ê®Æ¼g¦^¦ÜDocument¤¤
+//	 * å°‡è¦è®Šæ›´çš„è³‡æ–™å¯«å›è‡³Documentä¸­
 //	 */
 //	private void applyChange()
 //	{
-//		//¼g¦^Edit¤¤
+//		//å¯«å›Editä¸­
 //		try{
 //			ICompilationUnit cu = (ICompilationUnit) actOpenable;
 //			Document document = new Document(cu.getBuffer().getContents());
@@ -387,29 +387,29 @@ public class RLQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 //		}
 //	}
 //	/**
-//	 * ´å¼Ğ©w¦ì(©w¦ì¨ìRL Annotation¨º¦æ)
+//	 * æ¸¸æ¨™å®šä½(å®šä½åˆ°RL Annotationé‚£è¡Œ)
 //	 * @param marker
 //	 * @param methodIdx
 //	 * @throws JavaModelException
 //	 */
 //	private void selectLine(IMarker marker, String methodIdx) throws JavaModelException {
-//		//­«·s¨ú±o·sªºMethod¸ê°T(¦]¬°¸ê®Æ¤w§ïÅÜ¡Amethod¨º¨Ç¸ê°T¬OÂÂªº)
+//		//é‡æ–°å–å¾—æ–°çš„Methodè³‡è¨Š(å› ç‚ºè³‡æ–™å·²æ”¹è®Šï¼Œmethodé‚£äº›è³‡è¨Šæ˜¯èˆŠçš„)
 //		boolean isok = findMethod(marker.getResource(), Integer.parseInt(methodIdx));
 //
 //		if (isok) {
 //			ICompilationUnit cu = (ICompilationUnit) actOpenable;
 //			Document document = new Document(cu.getBuffer().getContents());
 //
-//			//¨ú±o¥Ø«eªºEditPart
+//			//å–å¾—ç›®å‰çš„EditPart
 //			IEditorPart editorPart = EditorUtils.getActiveEditor();
 //			ITextEditor editor = (ITextEditor) editorPart;
 //	
-//			//¨ú±oMethodªº°_ÂI¦ì¸m
+//			//å–å¾—Methodçš„èµ·é»ä½ç½®
 //			int srcPos = currentMethodNode.getStartPosition();
-//			//¥ÎMethod°_ÂI¦ì¸m¨ú±oMethod¦ì©ó²Ä´X¦æ¼Æ(°_©l¦æ¼Æ±q0¶}©l¡A¤£¬O1¡A©Ò¥H´î1)
+//			//ç”¨Methodèµ·é»ä½ç½®å–å¾—Methodä½æ–¼ç¬¬å¹¾è¡Œæ•¸(èµ·å§‹è¡Œæ•¸å¾0é–‹å§‹ï¼Œä¸æ˜¯1ï¼Œæ‰€ä»¥æ¸›1)
 //			int numLine = this.actRoot.getLineNumber(srcPos)-1;
 //	
-//			//¨ú±o¦æ¼Æªº¸ê®Æ
+//			//å–å¾—è¡Œæ•¸çš„è³‡æ–™
 //			IRegion lineInfo = null;
 //			try {
 //				lineInfo = document.getLineInformation(numLine);
@@ -417,7 +417,7 @@ public class RLQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 //				logger.error("[BadLocation] EXCEPTION ",e);
 //			}
 //	
-//			//¤Ï¥Õ¸Ó¦æ ¦bQuick fix§¹¤§«á,¥i¥H±N´å¼Ğ©w¦ì¦bQuick Fix¨º¦æ
+//			//åç™½è©²è¡Œ åœ¨Quick fixå®Œä¹‹å¾Œ,å¯ä»¥å°‡æ¸¸æ¨™å®šä½åœ¨Quick Fixé‚£è¡Œ
 //			editor.selectAndReveal(lineInfo.getOffset(), lineInfo.getLength());
 //		}
 //	}

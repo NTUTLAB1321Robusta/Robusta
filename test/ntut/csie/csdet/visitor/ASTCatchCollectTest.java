@@ -16,7 +16,7 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 /**
- * ´ú¸Õ¥hÅª¨ú¤@­ÓMM.javaªºÀÉ®×¤¤catchªº¼Æ¶q
+ * æ¸¬è©¦å»è®€å–ä¸€å€‹MM.javaçš„æª”æ¡ˆä¸­catchçš„æ•¸é‡
  * @author chewei
  */
 

@@ -31,7 +31,7 @@ public class SuppressWarningVisitor extends ASTVisitor {
 		IAnnotationBinding[] annoBinding = node.resolveBinding().getAnnotations();
 		
 		for (int i = 0, size = annoBinding.length; i < size; i++) {
-			//¨ú±oMethod¤WªºSuppressSmell¸ê°T
+			//å–å¾—Methodä¸Šçš„SuppressSmellè³‡è¨Š
 			if (annoBinding[i].getAnnotationType().getQualifiedName().equals(SuppressSmell.class.getName()))
 				addSuppressWarning(node, annoBinding[i].getAllMemberValuePairs(), -1);
 		}
@@ -39,7 +39,7 @@ public class SuppressWarningVisitor extends ASTVisitor {
 	}
 	
 	public boolean visit(CatchClause node) {
-		// §ä¥Xcatch index
+		// æ‰¾å‡ºcatch index
 		int index = -1;
 		TryStatement ts = (TryStatement)NodeUtils.getSpecifiedParentNode(node, ASTNode.TRY_STATEMENT);
 		List<?> cc = ts.catchClauses();
@@ -49,14 +49,14 @@ public class SuppressWarningVisitor extends ASTVisitor {
 				break;
 			}
 		}
-		// §PÂ_catch¤W¬O§_¦³Suppress Warning
+		// åˆ¤æ–·catchä¸Šæ˜¯å¦æœ‰Suppress Warning
 		SingleVariableDeclaration svd = (SingleVariableDeclaration) node.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
 		List<?> modifyList = svd.modifiers();
 		for (int j = 0; j < modifyList.size(); j++) {
 			if (modifyList.get(j) instanceof Annotation) {
 				Annotation annotation = (Annotation) modifyList.get(j);
 				IAnnotationBinding iab  = annotation.resolveAnnotationBinding();
-				//§PÂ_Annotation Type¬O§_¬°SuppressSmell
+				//åˆ¤æ–·Annotation Typeæ˜¯å¦ç‚ºSuppressSmell
 				if (iab.getAnnotationType().getQualifiedName().equals(SuppressSmell.class.getName()))
 					addSuppressWarning(node, iab.getAllMemberValuePairs(), index);
 			}
@@ -71,10 +71,10 @@ public class SuppressWarningVisitor extends ASTVisitor {
 		else			// suppress warning on catch
 			ssmsg = new SSMessage(node.getStartPosition(), root.getLineNumber(node.getStartPosition()), index);
 		
-		//­YAnnotation¤º®e¬°String
+		//è‹¥Annotationå…§å®¹ç‚ºString
 		if (mvpb[0].getValue() instanceof String) {
 			ssmsg.addSmellList((String) mvpb[0].getValue());
-		//­YAnnotation¤º®e¬°Array
+		//è‹¥Annotationå…§å®¹ç‚ºArray
 		} else if (mvpb[0].getValue() instanceof Object[]) {
 			Object[] values = (Object[]) mvpb[0].getValue();
 			for (Object obj : values) {

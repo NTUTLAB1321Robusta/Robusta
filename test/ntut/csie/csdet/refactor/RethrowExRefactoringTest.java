@@ -70,23 +70,23 @@ public class RethrowExRefactoringTest {
 
 	@Before
 	public void setUp() throws Exception {
-		// Åª¨ú´ú¸ÕÀÉ®×¼Ë¥»¤º®e
+		// è®€å–æ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹
 		javaFile2String = new JavaFileToString();
 		javaFile2String.read(DummyAndIgnoreExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		
 		javapProjectMaker = new JavaProjectMaker(testProjectName);
 		javapProjectMaker.setJREDefaultContainer();
-		// ·s¼W±ı¸ü¤Jªºlibrary
+		// æ–°å¢æ¬²è¼‰å…¥çš„library
 		javapProjectMaker
 				.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR
 						+ "/log4j-1.2.15.jar");
-		// ®Ú¾Ú´ú¸ÕÀÉ®×¼Ë¥»¤º®e«Ø¥ß·sªºÀÉ®×
+		// æ ¹æ“šæ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹å»ºç«‹æ–°çš„æª”æ¡ˆ
 		javapProjectMaker.createJavaFile(
 				DummyAndIgnoreExample.class.getPackage().getName(),
 				DummyAndIgnoreExample.class.getSimpleName()	+ JavaProjectMaker.JAVA_FILE_EXTENSION,
 				"package " + DummyAndIgnoreExample.class.getPackage().getName()
 				+ ";\n" + javaFile2String.getFileContent());
-		// «Ø¥ßNested try block example file
+		// å»ºç«‹Nested try block example file
 		javaFile2String = new JavaFileToString();
 		javaFile2String.read(NestedTryStatementExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javapProjectMaker.createJavaFile(
@@ -98,10 +98,10 @@ public class RethrowExRefactoringTest {
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(dummyHandlerExamplePath)));
 		parser.setResolveBindings(true);
-		// ¨ú±oAST
+		// å–å¾—AST
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 //		unit.recordModifications();
 		
@@ -115,13 +115,13 @@ public class RethrowExRefactoringTest {
 			xmlSettingFile.delete();
 		}
 		
-		// §R°£±M®×
+		// åˆªé™¤å°ˆæ¡ˆ
 		javapProjectMaker.deleteProject();
 		
 		File xmlFile = new File(JDomUtil.getWorkspace() + File.separator + "CSPreference.xml");
 		if(xmlFile.exists()) {
 			xmlFile.delete();
-//			fail("ÂÂª©³]©wÀÉ¤£À³¸Ó¦s¦b");
+//			fail("èˆŠç‰ˆè¨­å®šæª”ä¸æ‡‰è©²å­˜åœ¨");
 		}
 	}
 	
@@ -137,11 +137,11 @@ public class RethrowExRefactoringTest {
 		
 		Method getThrowStatementSourceLine = RethrowExRefactoring.class.getDeclaredMethod("getThrowStatementSourceLine", int.class);
 		getThrowStatementSourceLine.setAccessible(true);
-		/** ¥¼¤Ï¥Õ¨ìtry-catch block®É¬°-1 */
+		/** æœªåç™½åˆ°try-catch blockæ™‚ç‚º-1 */
 		assertEquals(-1, getThrowStatementSourceLine.invoke(refactoring, -1));
-		/** ¤Ï¥Õ¨ìªºcatch¤¤¡A¨S¦³throw statement */
+		/** åç™½åˆ°çš„catchä¸­ï¼Œæ²’æœ‰throw statement */
 		assertEquals(-1, getThrowStatementSourceLine.invoke(refactoring, 0));
-		/** ¤Ï¥Õ¨ìtry-catch block¥Bcatch¤¤¦³throw statement */
+		/** åç™½åˆ°try-catch blockä¸”catchä¸­æœ‰throw statement */
 		currentMethodNode.set(refactoring, ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "false_throwAndSystemOut"));
 		assertEquals(208-1, getThrowStatementSourceLine.invoke(refactoring, 0));
 	}
@@ -162,11 +162,11 @@ public class RethrowExRefactoringTest {
 		
 		Method findMethod = RethrowExRefactoring.class.getDeclaredMethod("findMethod", IResource.class);
 		findMethod.setAccessible(true);
-		/** ¶Ç¤Jªºresource¤£¬OIFile type */
+		/** å‚³å…¥çš„resourceä¸æ˜¯IFile type */
 		assertFalse((Boolean)findMethod.invoke(refactoring, javaProject.getResource()));
-		/** ¶Ç¤Jªºresource¬OIFile type ¥Bproblem¬Oignore exception*/
+		/** å‚³å…¥çš„resourceæ˜¯IFile type ä¸”problemæ˜¯ignore exception*/
 		assertTrue((Boolean)findMethod.invoke(refactoring, javaElement.getResource()));
-		/** ¶Ç¤Jªºresource¬OIFile type ¥Bproblem¬Odummy handler*/
+		/** å‚³å…¥çš„resourceæ˜¯IFile type ä¸”problemæ˜¯dummy handler*/
 		problem.set(refactoring, RLMarkerAttribute.CS_DUMMY_HANDLER);
 		assertTrue((Boolean)findMethod.invoke(refactoring, javaElement.getResource()));
 	}
@@ -189,13 +189,13 @@ public class RethrowExRefactoringTest {
 		
 		Method selectSourceLine = RethrowExRefactoring.class.getDeclaredMethod("selectSourceLine");
 		selectSourceLine.setAccessible(true);
-		// FIXME - ¦]¬°ITextEditor¦bunit test¤¤¡A¥Ø«e¤£ª¾¹D¦p¦ófocus¡A¬G¦¹´ú¸Õ·|Error
-		assertTrue("¦]¬°¤£ª¾¹D«ç»òFocus¤@­ÓITextEditor", (Boolean)selectSourceLine.invoke(refactoring));
+		// FIXME - å› ç‚ºITextEditoråœ¨unit testä¸­ï¼Œç›®å‰ä¸çŸ¥é“å¦‚ä½•focusï¼Œæ•…æ­¤æ¸¬è©¦æœƒError
+		assertTrue("å› ç‚ºä¸çŸ¥é“æ€éº¼Focusä¸€å€‹ITextEditor", (Boolean)selectSourceLine.invoke(refactoring));
 	}
 	
 //	@Test
 	public void testChangeAnnotation() throws Exception {
-		// FIXME - ¥Ñ©ó·|¨Ï¥Î¨ìselectSourceLine¡A¬G¤@¼Ë¦³°İÃD¡A´ú¸Õµ¥¦³¸Ñ®É¡A¦A¸É´ú
+		// FIXME - ç”±æ–¼æœƒä½¿ç”¨åˆ°selectSourceLineï¼Œæ•…ä¸€æ¨£æœ‰å•é¡Œï¼Œæ¸¬è©¦ç­‰æœ‰è§£æ™‚ï¼Œå†è£œæ¸¬
 		fail("not implement");
 	}
 	
@@ -234,7 +234,7 @@ public class RethrowExRefactoringTest {
 		assertEquals("import java.util.logging.Level;\n", imports.get(4).toString());
 		assertEquals("import org.apache.log4j.Logger;\n", imports.get(5).toString());
 		
-		/** ²Ä¤@¦¸import¡A¬G·|import RL©MRobustness */
+		/** ç¬¬ä¸€æ¬¡importï¼Œæ•…æœƒimport RLå’ŒRobustness */
 		Method addImportRLDeclaration = RethrowExRefactoring.class.getDeclaredMethod("addImportRLDeclaration");
 		addImportRLDeclaration.setAccessible(true);
 		addImportRLDeclaration.invoke(refactoring);
@@ -250,7 +250,7 @@ public class RethrowExRefactoringTest {
 		assertEquals("import ntut.csie.robusta.agile.exception.Robustness;\n", imports.get(6).toString());
 		assertEquals("import ntut.csie.robusta.agile.exception.RTag;\n", imports.get(7).toString());
 		
-		/** ²Ä¤G¦¸import¡ARL©MRobustness¤w¸g¦³¤F¡A¬G¤£·|¦Aimport¤@¦¸ */
+		/** ç¬¬äºŒæ¬¡importï¼ŒRLå’ŒRobustnesså·²ç¶“æœ‰äº†ï¼Œæ•…ä¸æœƒå†importä¸€æ¬¡ */
 		addImportRLDeclaration.invoke(refactoring);
 		
 		imports = compilationUnit.imports();
@@ -267,7 +267,7 @@ public class RethrowExRefactoringTest {
 	
 	@Test
 	public void testAddImportDeclaration() throws Exception {
-		/* °Ñ¼Æ³]©w */
+		/* åƒæ•¸è¨­å®š */
 		Field actRoot = RethrowExRefactoring.class.getDeclaredField("actRoot");
 		actRoot.setAccessible(true);
 		actRoot.set(refactoring, compilationUnit);
@@ -276,14 +276,14 @@ public class RethrowExRefactoringTest {
 		IType exType = JavaCore.create(project).findType("java.io.IOException");
 		refactoring.setExType(exType);
 		
-		/** µ¹¤©¤w¦s¦bªºimport«h¤£­«½Æimport */
+		/** çµ¦äºˆå·²å­˜åœ¨çš„importå‰‡ä¸é‡è¤‡import */
 		
-		/* °õ¦æ´ú¸Õ¹ï¶H */
+		/* åŸ·è¡Œæ¸¬è©¦å°è±¡ */
 		Method addImportDeclaration = RethrowExRefactoring.class.getDeclaredMethod("addImportDeclaration");
 		addImportDeclaration.setAccessible(true);
 		addImportDeclaration.invoke(refactoring);
 		
-		/* ÅçÃÒµ²ªG */
+		/* é©—è­‰çµæœ */
 		List<?> imports = compilationUnit.imports();
 		assertEquals(6, imports.size());
 		assertEquals("import java.io.FileInputStream;\n", imports.get(0).toString());
@@ -293,12 +293,12 @@ public class RethrowExRefactoringTest {
 		assertEquals("import java.util.logging.Level;\n", imports.get(4).toString());
 		assertEquals("import org.apache.log4j.Logger;\n", imports.get(5).toString());
 		
-		/** µ¹¤©·sªºimport«h¥²¶·import */
+		/** çµ¦äºˆæ–°çš„importå‰‡å¿…é ˆimport */
 		exType = JavaCore.create(project).findType("java.io.IOError");
 		refactoring.setExType(exType);
 		addImportDeclaration.invoke(refactoring);
 		
-		/* ÅçÃÒµ²ªG */
+		/* é©—è­‰çµæœ */
 		imports = compilationUnit.imports();
 		assertEquals(7, imports.size());
 		assertEquals("import java.io.FileInputStream;\n", imports.get(0).toString());
@@ -340,16 +340,16 @@ public class RethrowExRefactoringTest {
 		Field actRoot = RethrowExRefactoring.class.getDeclaredField("actRoot");
 		actRoot.setAccessible(true);
 		CompilationUnit root = (CompilationUnit)actRoot.get(refactoring);
-		// ÀË¬dprecondition
+		// æª¢æŸ¥precondition
 		assertEquals(6, root.imports().size());
-		/** ²Ä¤@¦¸import Tag */
+		/** ç¬¬ä¸€æ¬¡import Tag */
 		Method addAnnotationRoot = RethrowExRefactoring.class.getDeclaredMethod("addAnnotationRoot", AST.class);
 		addAnnotationRoot.setAccessible(true);
 		addAnnotationRoot.invoke(refactoring, node.getAST());
-		// ÅçÃÒµ²ªG
+		// é©—è­‰çµæœ
 		assertEquals(8, root.imports().size());
 		
-		/** ²Ä¤G¦¸import Tag¡A¤w¸g¦s¦b«h¤£­«½Æimport */
+		/** ç¬¬äºŒæ¬¡import Tagï¼Œå·²ç¶“å­˜åœ¨å‰‡ä¸é‡è¤‡import */
 		ExceptionAnalyzer exVisitor = new ExceptionAnalyzer(root, node.getStartPosition(), 0);
 		node.accept(exVisitor);
 		List<?> rlList = exVisitor.getExceptionList();
@@ -374,10 +374,10 @@ public class RethrowExRefactoringTest {
 		for(int i = 0; i < catchList.size(); i++) {
 			List<Statement> statements = catchList.get(i).getBody().statements();
 			deleteStatement.invoke(refactoring, statements);
-			// ¸g¹LdeleteStatement method¤§«á¡A¦pªGÁÙ¦³³Ñ¤Ustatementªº¸Ü¡A¥i¯à¬O¤@¨Ç¨ä¥LÅŞ¿è
+			// ç¶“édeleteStatement methodä¹‹å¾Œï¼Œå¦‚æœé‚„æœ‰å‰©ä¸‹statementçš„è©±ï¼Œå¯èƒ½æ˜¯ä¸€äº›å…¶ä»–é‚è¼¯
 			if(statements.size() > 0) {
 				for(int j = 0; j < statements.size(); j++) {
-					// §PÂ_ExpressionStatement¤£À³¸Ó¬°System.out.print¡BprintStackTrace¡BSystem.err.print
+					// åˆ¤æ–·ExpressionStatementä¸æ‡‰è©²ç‚ºSystem.out.printã€printStackTraceã€System.err.print
 					if(statements.get(j).getNodeType() == ASTNode.EXPRESSION_STATEMENT) {
 						assertFalse(((ExpressionStatement)statements.get(j)).getExpression().toString().contains("System.out.print"));
 						assertFalse(((ExpressionStatement)statements.get(j)).getExpression().toString().contains("printStackTrace"));
@@ -390,7 +390,7 @@ public class RethrowExRefactoringTest {
 	
 	@Test
 	public void testAddThrowStatement() throws Exception {
-		/* ¿ï©w­nquick fixªºmethod */
+		/* é¸å®šè¦quick fixçš„method */
 		
 		IJavaElement javaElement = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot().getFile(dummyHandlerExamplePath));
 		
@@ -411,7 +411,7 @@ public class RethrowExRefactoringTest {
 		Field currentMethodNodeField = RethrowExRefactoring.class.getDeclaredField("currentMethodNode");
 		currentMethodNodeField.setAccessible(true);
 		ASTNode currentMethodNode = (ASTNode)currentMethodNodeField.get(refactoring);
-		// ÅçÃÒ¬O§_§ì¨ì¹w·Q¤¤ªºmethod
+		// é©—è­‰æ˜¯å¦æŠ“åˆ°é æƒ³ä¸­çš„method
 		assertEquals(	"public void true_systemErrPrint(){\n" +
 						"  FileInputStream fis=null;\n" +
 						"  try {\n" +
@@ -426,11 +426,11 @@ public class RethrowExRefactoringTest {
 		/* add throw statement */
 		Method addThrowStatement = RethrowExRefactoring.class.getDeclaredMethod("addThrowStatement", CatchClause.class, AST.class);
 		addThrowStatement.setAccessible(true);
-		// ¨ú±o¸Ómethodªºcatch clause
+		// å–å¾—è©²methodçš„catch clause
 		ASTCatchCollect catchCollector = new ASTCatchCollect();
 		currentMethodNode.accept(catchCollector);
 		addThrowStatement.invoke(refactoring, catchCollector.getMethodList().get(0), currentMethodNode.getAST());
-		// ÅçÃÒ¬O§_¥[¤Jthrow statement¥H¤Î§R°£System.err.println(e)
+		// é©—è­‰æ˜¯å¦åŠ å…¥throw statementä»¥åŠåˆªé™¤System.err.println(e)
 		assertEquals(	"public void true_systemErrPrint(){\n" +
 						"  FileInputStream fis=null;\n" +
 						"  try {\n" +
@@ -459,28 +459,28 @@ public class RethrowExRefactoringTest {
 		
 		List<?> exceptionList = ((MethodDeclaration)node).thrownExceptions();
 		
-		/** method·|©ß¥X«ü©wªºexception typeªº±¡ªp¡A¦¹®É´N¤£¥²§âexception type¥[¤J¨ì³omethodªº¸ê°T¤¤*/
+		/** methodæœƒæ‹‹å‡ºæŒ‡å®šçš„exception typeçš„æƒ…æ³ï¼Œæ­¤æ™‚å°±ä¸å¿…æŠŠexception typeåŠ å…¥åˆ°é€™methodçš„è³‡è¨Šä¸­*/
 		refactoring.setExceptionName("IOException");
-		// ÀË¬dprecondition
+		// æª¢æŸ¥precondition
 		assertEquals(1, exceptionList.size());
 		assertEquals("IOException", exceptionList.get(0).toString());
 		
 		checkMethodThrow.invoke(refactoring, node.getAST());
 		
-		// ÅçÃÒµ²ªG
+		// é©—è­‰çµæœ
 		exceptionList = ((MethodDeclaration)node).thrownExceptions();
 		assertEquals(1, exceptionList.size());
 		assertEquals("IOException", exceptionList.get(0).toString());
 		
-		/** method¤£·|©ß¥X«ü©wªºexception typeªº±¡ªp¡A¦¹®É´N¥²¶·§âexception type¥[¤J¨ì³omethodªº¸ê°T¤¤ */
+		/** methodä¸æœƒæ‹‹å‡ºæŒ‡å®šçš„exception typeçš„æƒ…æ³ï¼Œæ­¤æ™‚å°±å¿…é ˆæŠŠexception typeåŠ å…¥åˆ°é€™methodçš„è³‡è¨Šä¸­ */
 		refactoring.setExceptionName("RuntimeException");
-		// ÀË¬dprecondition
+		// æª¢æŸ¥precondition
 		assertEquals(1, exceptionList.size());
 		assertEquals("IOException", exceptionList.get(0).toString());
 		
 		checkMethodThrow.invoke(refactoring, node.getAST());
 		
-		// ÅçÃÒµ²ªG
+		// é©—è­‰çµæœ
 		exceptionList = ((MethodDeclaration)node).thrownExceptions();
 		assertEquals(2, exceptionList.size());
 		assertEquals("IOException", exceptionList.get(0).toString());
@@ -586,7 +586,7 @@ public class RethrowExRefactoringTest {
 		compilationUnit.accept(methodCollector);
 		List<?> methodList = methodCollector.getMethodList();
 		ASTNode node = (ASTNode)methodList.get(1);
-		// ÀË¬d¿ï¨ú¨ìªºmethod
+		// æª¢æŸ¥é¸å–åˆ°çš„method
 		assertEquals(	"public void true_printStackTrace_public(){\n" +
 						"  FileInputStream fis=null;\n" +
 						"  try {\n" +
@@ -597,7 +597,7 @@ public class RethrowExRefactoringTest {
 						"    e.printStackTrace();\n" +
 						"  }\n" +
 						"}\n", node.toString());
-		// ÀË¬dimportªº¼Æ¶q¥H¤Î¦WºÙ
+		// æª¢æŸ¥importçš„æ•¸é‡ä»¥åŠåç¨±
 		List<?> imports = compilationUnit.imports();
 		assertEquals(6, imports.size());
 		assertEquals("import java.io.FileInputStream;\n", imports.get(0).toString());
@@ -614,7 +614,7 @@ public class RethrowExRefactoringTest {
 		/** verify postcondition */
 		Field currentMethodNode = RethrowExRefactoring.class.getDeclaredField("currentMethodNode");
 		currentMethodNode.setAccessible(true);
-		// ÅçÃÒ¿ï¨úªºmethodªº§ïÅÜ
+		// é©—è­‰é¸å–çš„methodçš„æ”¹è®Š
 		assertEquals(	"@Robustness(value={@RTag(level=1,exception=IOError.class)}) " +
 						"public void true_printStackTrace_public() throws IOError {\n" +
 						"  FileInputStream fis=null;\n" +
@@ -626,7 +626,7 @@ public class RethrowExRefactoringTest {
 						"    throw new IOError(e);\n" +
 						"  }\n" +
 						"}\n", currentMethodNode.get(refactoring).toString());
-		// ÅçÃÒimport¼Æ¶q¥H¤Î¦WºÙ
+		// é©—è­‰importæ•¸é‡ä»¥åŠåç¨±
 		Field actRoot = RethrowExRefactoring.class.getDeclaredField("actRoot");
 		actRoot.setAccessible(true);
 		List<?> newImports = ((CompilationUnit)actRoot.get(refactoring)).imports(); 
@@ -744,43 +744,43 @@ public class RethrowExRefactoringTest {
 		actRoot.setAccessible(true);
 		actRoot.set(refactoring, compilationUnit);
 		
-		// ÀË¬dprecondition
+		// æª¢æŸ¥precondition
 		Field textFileChange = RethrowExRefactoring.class.getDeclaredField("textFileChange");
 		textFileChange.setAccessible(true);
 		TextFileChange text = (TextFileChange)textFileChange.get(refactoring); 
 		assertNull(text);
-		// °õ¦æ´ú¸Õ¹ï¶H
+		// åŸ·è¡Œæ¸¬è©¦å°è±¡
 		Method applyChange = RethrowExRefactoring.class.getDeclaredMethod("applyChange");
 		applyChange.setAccessible(true);
 		applyChange.invoke(refactoring);
-		// ÅçÃÒµ²ªG
+		// é©—è­‰çµæœ
 		text = (TextFileChange)textFileChange.get(refactoring);
 		assertNotNull(text);
 	}
 	
 	/**
-	 * «Ø¥ßCSPreference.xmlÀÉ®×
+	 * å»ºç«‹CSPreference.xmlæª”æ¡ˆ
 	 */
 	private void CreateDummyHandlerXML() {
-		//¨úªºXMLªºroot
+		//å–çš„XMLçš„root
 		Element root = JDomUtil.createXMLContent();
 
-		//«Ø¥ßDummy HandlerªºTag
+		//å»ºç«‹Dummy Handlerçš„Tag
 		Element dummyHandler = new Element(JDomUtil.DummyHandlerTag);
 		Element rule = new Element("rule");
-		//°²¦pe.printStackTrace¦³³Q¤Ä¿ï°_¨Ó
+		//å‡å¦‚e.printStackTraceæœ‰è¢«å‹¾é¸èµ·ä¾†
 		rule.setAttribute(JDomUtil.e_printstacktrace,"Y");
 
-		//°²¦psystem.out.println¦³³Q¤Ä¿ï°_¨Ó
+		//å‡å¦‚system.out.printlnæœ‰è¢«å‹¾é¸èµ·ä¾†
 		rule.setAttribute(JDomUtil.systemout_print,"Y");
 		
 		rule.setAttribute(JDomUtil.apache_log4j,"Y");
 		rule.setAttribute(JDomUtil.java_Logger,"Y");
 
-		//§â¨Ï¥ÎªÌ¦Û­qªºRule¦s¤JXML
+		//æŠŠä½¿ç”¨è€…è‡ªè¨‚çš„Ruleå­˜å…¥XML
 		Element libRule = new Element("librule");
 		
-		//±N·s«Øªºtag¥[¶i¥h
+		//å°‡æ–°å»ºçš„tagåŠ é€²å»
 		dummyHandler.addContent(rule);
 		dummyHandler.addContent(libRule);
 
@@ -789,7 +789,7 @@ public class RethrowExRefactoringTest {
 
 		root.addContent(dummyHandler);
 
-		//±NÀÉ®×¼g¦^
+		//å°‡æª”æ¡ˆå¯«å›
 		String path = JDomUtil.getWorkspace() + File.separator + "CSPreference.xml";
 		JDomUtil.OutputXMLFile(root.getDocument(), path);
 	}

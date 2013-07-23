@@ -3,7 +3,7 @@ package ntut.csie.csdet.data;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 
 /**
- * °O¿ı¨C¤@ºØcode smellªº¬ÛÃö¸ê°T
+ * è¨˜éŒ„æ¯ä¸€ç¨®code smellçš„ç›¸é—œè³‡è¨Š
  * @author chewei
  */
 

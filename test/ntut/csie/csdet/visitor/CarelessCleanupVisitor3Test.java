@@ -40,7 +40,7 @@ public class CarelessCleanupVisitor3Test {
 		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.FOLDERNAME_LIB_JAR, JavaProjectMaker.FOLDERNAME_BIN_CLASS);
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/" + JavaProjectMaker.RL_LIBRARY_PATH);
 		javaProjectMaker.setJREDefaultContainer();
-		// ®Ú¾Ú´ú¸ÕÀÉ®×¼Ë¥»¤º®e«Ø¥ß·sªºÀÉ®×
+		// æ ¹æ“šæ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹å»ºç«‹æ–°çš„æª”æ¡ˆ
 		javaFile2String.read(CarelessCleanupWithExtraRules.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				CarelessCleanupWithExtraRules.class.getPackage().getName(),
@@ -49,7 +49,7 @@ public class CarelessCleanupVisitor3Test {
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
-		/* ´ú¸Õ¨Ï¥ÎªÌ³]©wPattern®É­Ô¨Ï¥Î */
+		/* æ¸¬è©¦ä½¿ç”¨è€…è¨­å®šPatternæ™‚å€™ä½¿ç”¨ */
 		javaFile2String.read(FileUtils.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				FileUtils.class.getPackage().getName(),
@@ -63,15 +63,15 @@ public class CarelessCleanupVisitor3Test {
 		
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(
 				JavaCore.createCompilationUnitFrom(
 						ResourcesPlugin.getWorkspace().
 						getRoot().getFile(ccExamplePath)));
 		parser.setResolveBindings(true);
-		// «Ø¥ßXML
+		// å»ºç«‹XML
 		CreateSettings();
-		// ¨ú±oAST
+		// å–å¾—AST
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
 		carelessCleanupVisitor = new CarelessCleanupVisitor2(compilationUnit);
@@ -96,7 +96,7 @@ public class CarelessCleanupVisitor3Test {
 	}
 	
 	/**
-	 * ¬ö¿ı©Ò¦³badSmell¤º®e¥H¤Î¦æ¸¹
+	 * ç´€éŒ„æ‰€æœ‰badSmellå…§å®¹ä»¥åŠè¡Œè™Ÿ
 	 * @param badSmellList
 	 * @return
 	 */

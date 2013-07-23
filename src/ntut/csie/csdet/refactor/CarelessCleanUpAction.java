@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * ¦bMarker¤W¥[¤JRefactoringªº¥\¯à
+ * åœ¨Markerä¸ŠåŠ å…¥Refactoringçš„åŠŸèƒ½
  * @author Min
  */
 public class CarelessCleanUpAction implements IMarkerResolution{
@@ -34,16 +34,16 @@ public class CarelessCleanUpAction implements IMarkerResolution{
 		try {
 			String problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
 			if ((problem != null && problem.equals(RLMarkerAttribute.CS_CARELESS_CLEANUP))){
-				// «Ø¥ß¾Ş§@Refactorªºª«¥ó,¨Ã±Nmarker¶Ç¶i¥h¥H§Q¤§«á¨ú±ocode smell¬ÛÃö¸ê°T
+				// å»ºç«‹æ“ä½œRefactorçš„ç‰©ä»¶,ä¸¦å°‡markerå‚³é€²å»ä»¥åˆ©ä¹‹å¾Œå–å¾—code smellç›¸é—œè³‡è¨Š
 				CarelessCleanUpRefactor refactoring = new CarelessCleanUpRefactor();				
 				refactoring.setMarker(marker);
-				// ±Ò°ÊRefactor dialog
+				// å•Ÿå‹•Refactor dialog
 				RefactoringWizardOpenOperation operation = 
 					new RefactoringWizardOpenOperation(new ExtractCleanUpMethodWizard(refactoring, 0));
 				operation.run(new Shell(), "My Extract Method");
 			}
 		} catch (Exception e) {
-			// ·|©ß¥Xªº§Q¥~«¬¦³InterruptedException¡BCoreException
+			// æœƒæ‹‹å‡ºçš„åˆ©å¤–å‹æœ‰InterruptedExceptionã€CoreException
 			logger.error("[Refactor][My Extract Method] EXCEPTION ", e);
 		}
 	}

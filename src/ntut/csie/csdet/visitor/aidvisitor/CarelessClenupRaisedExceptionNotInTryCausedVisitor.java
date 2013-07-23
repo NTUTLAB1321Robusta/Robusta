@@ -15,24 +15,24 @@ import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TryStatement;
 
 /**
- * ÀË¬dFinally block¸Ì­±Ãö³¬¸ê·½¤§Method Invocationªºinstane¡A
- * ¬O¤£¬O¦bTry¥~­±¡A¨Ã¥B·|©ß¥X¨Ò¥~¡C
+ * æª¢æŸ¥Finally blockè£¡é¢é—œé–‰è³‡æºä¹‹Method Invocationçš„instaneï¼Œ
+ * æ˜¯ä¸æ˜¯åœ¨Tryå¤–é¢ï¼Œä¸¦ä¸”æœƒæ‹‹å‡ºä¾‹å¤–ã€‚
  * 
- * ¥ÎMethodDeclaration¥haccept¡A¨Ã¥B¶Ç¤J¤w¸gª¾¹Dªºclose²M³æ¶i¨Ó¡C
- * MethodInvocation¦A¥h¤ñ¹ï¡A¬İ¬O¤£¬O¦³matchªºinstance
+ * ç”¨MethodDeclarationå»acceptï¼Œä¸¦ä¸”å‚³å…¥å·²ç¶“çŸ¥é“çš„closeæ¸…å–®é€²ä¾†ã€‚
+ * MethodInvocationå†å»æ¯”å°ï¼Œçœ‹æ˜¯ä¸æ˜¯æœ‰matchçš„instance
  * 
  * @author charles
  *
  */
 public class CarelessClenupRaisedExceptionNotInTryCausedVisitor extends	ASTVisitor {
 
-	/** ­t³d°µ¸ê·½Ãö³¬ªºMethodInvocation(¶ûºÃ¥Ç) */
+	/** è² è²¬åšè³‡æºé—œé–‰çš„MethodInvocation(å«Œç–‘çŠ¯) */
 	private List<MethodInvocation> closeResources;
 	
-	/** ½T©w¬Ocareless cleanupªºMethodInvocation */
+	/** ç¢ºå®šæ˜¯careless cleanupçš„MethodInvocation */
 	private List<MethodInvocation> carelessCleanupMethod;
 	
-	/** MethodDeclaration©Ò¦³Ãö³¬¸ê·½ªºmethod invocation©ÒBindingªºinstance¡C*/
+	/** MethodDeclarationæ‰€æœ‰é—œé–‰è³‡æºçš„method invocationæ‰€Bindingçš„instanceã€‚*/
 	private List<IBinding> closeResourcesInstanceBinding;
 
 	public CarelessClenupRaisedExceptionNotInTryCausedVisitor(List<MethodInvocation> closeResources) {
@@ -48,7 +48,7 @@ public class CarelessClenupRaisedExceptionNotInTryCausedVisitor extends	ASTVisit
 	}
 	
 	/**
-	 * ©¿²¤TryStatementªºÀË¬d¡C
+	 * å¿½ç•¥TryStatementçš„æª¢æŸ¥ã€‚
 	 */
 	public boolean visit(TryStatement node) {
 		TryStatementExceptionsVisitor tryStatementVisitor = new TryStatementExceptionsVisitor(node);
@@ -59,16 +59,16 @@ public class CarelessClenupRaisedExceptionNotInTryCausedVisitor extends	ASTVisit
 		
 		for(int i = 0; i<closeResources.size(); i++) {
 			TryStatement closeResourcesTryStatement = (TryStatement) NodeUtils.getSpecifiedParentNode(closeResources.get(i), ASTNode.TRY_STATEMENT);
-			// ¦pªG¤ñ¨ìªº TryStatement­è¦n¬OÃö³¬¸ê·½ªºµ{¦¡½X©Ò¦bªºTryStatement¡A«h²¤¹LÀË¬d
+			// å¦‚æœæ¯”åˆ°çš„ TryStatementå‰›å¥½æ˜¯é—œé–‰è³‡æºçš„ç¨‹å¼ç¢¼æ‰€åœ¨çš„TryStatementï¼Œå‰‡ç•¥éæª¢æŸ¥
 			if(node.equals(closeResourcesTryStatement)) {
 				continue;
 			}
 
 			if(isNodeBetweenCreationAndClose(node, closeResources.get(i))) {
-				// ±Ncloseªº°Ê§@¥[¤Jcareless cleanup ²M³æ
+				// å°‡closeçš„å‹•ä½œåŠ å…¥careless cleanup æ¸…å–®
 				carelessCleanupMethod.add(closeResources.get(i));
 				
-				/* ±N¥[¹Lªºclose°Ê§@²¾°£±¼ */
+				/* å°‡åŠ éçš„closeå‹•ä½œç§»é™¤æ‰ */
 				closeResourcesInstanceBinding.remove(i);
 				closeResources.remove(i);
 				break;
@@ -80,12 +80,12 @@ public class CarelessClenupRaisedExceptionNotInTryCausedVisitor extends	ASTVisit
 	
 	public boolean visit(MethodInvocation node) {
 		SimpleName nodeVariable = NodeUtils.getMethodInvocationBindingVariableSimpleName(node.getExpression());
-		// System.out.println(fis.toString()); ³oºØNode¥i¯à´N·|NULL
+		// System.out.println(fis.toString()); é€™ç¨®Nodeå¯èƒ½å°±æœƒNULL
 		if(nodeVariable == null) {
 			return true;
 		}
 		
-		// ¦pªG³o­ÓNode¥»¨­¤£·|©ß¥X¨Ò¥~¡A«h¤£·|¬O³y¦¨careless cleanupªº­ì¦]
+		// å¦‚æœé€™å€‹Nodeæœ¬èº«ä¸æœƒæ‹‹å‡ºä¾‹å¤–ï¼Œå‰‡ä¸æœƒæ˜¯é€ æˆcareless cleanupçš„åŸå› 
 		int checkedExceptionLength = (node.resolveMethodBinding() != null) ? node.resolveMethodBinding().getExceptionTypes().length : 0;
 		if(checkedExceptionLength == 0) {
 			return true;
@@ -93,10 +93,10 @@ public class CarelessClenupRaisedExceptionNotInTryCausedVisitor extends	ASTVisit
 		
 		for(int i = 0; i<closeResources.size(); i++) {
 			if(isNodeBetweenCreationAndClose(node, closeResources.get(i))) {
-				// ±Ncloseªº°Ê§@¥[¤Jcareless cleanup ²M³æ
+				// å°‡closeçš„å‹•ä½œåŠ å…¥careless cleanup æ¸…å–®
 				carelessCleanupMethod.add(closeResources.get(i));
 				
-				/* ±N¥[¹Lªºclose°Ê§@²¾°£±¼ */
+				/* å°‡åŠ éçš„closeå‹•ä½œç§»é™¤æ‰ */
 				closeResourcesInstanceBinding.remove(i);
 				closeResources.remove(i);
 				return false;
@@ -120,7 +120,7 @@ public class CarelessClenupRaisedExceptionNotInTryCausedVisitor extends	ASTVisit
 	public boolean visit(ClassInstanceCreation node) {
 		int nodeExceptionLength = node.resolveConstructorBinding().getExceptionTypes().length;
 		
-		// ¦btry¥~­±·|©ß¨Ò¥~ªºClassInstanceCreation¦³¥i¯à³y¦¨finally¸Ì­±ªºclose¬Ocareless cleanup
+		// åœ¨tryå¤–é¢æœƒæ‹‹ä¾‹å¤–çš„ClassInstanceCreationæœ‰å¯èƒ½é€ æˆfinallyè£¡é¢çš„closeæ˜¯careless cleanup
 		for (int i = 0; i < closeResources.size(); i++) {
 			if ((isNodeBetweenCreationAndClose(node, closeResources.get(i))) &&
 				(nodeExceptionLength != 0)){
@@ -139,10 +139,10 @@ public class CarelessClenupRaisedExceptionNotInTryCausedVisitor extends	ASTVisit
 	}
 	
 	/**
-	 * ¥ô·N¶Ç¶i¨Óªºnode¬O§_¦bcloseResource¥H¤Î¦¹closeResource«Å§iªº¦ì¸m¤§¶¡
+	 * ä»»æ„å‚³é€²ä¾†çš„nodeæ˜¯å¦åœ¨closeResourceä»¥åŠæ­¤closeResourceå®£å‘Šçš„ä½ç½®ä¹‹é–“
 	 * @param node
 	 * @param closeResource
-	 * @return true ¬OÃa¨ı¹D
+	 * @return true æ˜¯å£å‘³é“
 	 */
 	private boolean isNodeBetweenCreationAndClose(ASTNode node, MethodInvocation closeResource) {
 		boolean isBetween = false;
@@ -151,7 +151,7 @@ public class CarelessClenupRaisedExceptionNotInTryCausedVisitor extends	ASTVisit
 		int astNodeStartPosition = node.getStartPosition();
 		
 		/*
-		 * §ä¥XcloseResourceªºinstance¦b­ş­Ó¸`ÂI³Q«Å§i
+		 * æ‰¾å‡ºcloseResourceçš„instanceåœ¨å“ªå€‹ç¯€é»è¢«å®£å‘Š
 		 */
 		ClassInstanceCreationVisitor cicVisitor = new ClassInstanceCreationVisitor(closeResource);
 		ASTNode methodDeclaration = NodeUtils.getSpecifiedParentNode(closeResource, ASTNode.METHOD_DECLARATION);

@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * ´£¨Ñ¥t¤@ºØ­«¸Õ¦P¤@¥ó¨Æ±¡ªºªºRetry template¦b¥kÁä¿ï³æ
+ * æä¾›å¦ä¸€ç¨®é‡è©¦åŒä¸€ä»¶äº‹æƒ…çš„çš„Retry templateåœ¨å³éµé¸å–®
  * Retry with original values
  * @author chewei
  */
@@ -44,7 +44,7 @@ public class NoAlternativeRetryAction implements IEditorActionDelegate{
 		}else{
 			ISelection selection = editor.getEditorSite().getSelectionProvider().getSelection();
 			if ((selection != null) && selection instanceof ITextSelection) {
-				//¨ú±o¨Ï¥ÎªÌ©Ò¿ï¨úªº¤å¦r
+				//å–å¾—ä½¿ç”¨è€…æ‰€é¸å–çš„æ–‡å­—
 				ITextSelection textSelection = (ITextSelection) selection;
 				IProject project = EditorUtils.getProject(editor);
 				IJavaProject javaProject = JavaCore.create(project);
@@ -53,7 +53,7 @@ public class NoAlternativeRetryAction implements IEditorActionDelegate{
 				IJavaElement javaElement = JavaCore.create(file);
 				try {
 					RetryRefactoring refactoring = new RetryRefactoring(javaProject,javaElement,textSelection,retry_type);
-					//±Ò°ÊRefactor dialog
+					//å•Ÿå‹•Refactor dialog
 					RefactoringWizardOpenOperation operation = 
 
 						new RefactoringWizardOpenOperation(new RetryWizard(refactoring,0));

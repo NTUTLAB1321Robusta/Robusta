@@ -12,7 +12,7 @@ import ntut.csie.robusta.agile.exception.Robustness;
 
 public class OverwrittenLeadExceptionExample {
 	/**
-	 * ¨S¦³Finally Block¡A¤£·|³Q¥[¤Wmark
+	 * æ²’æœ‰Finally Blockï¼Œä¸æœƒè¢«åŠ ä¸Šmark
 	 * @param context
 	 * @param outputFile
 	 */
@@ -29,7 +29,7 @@ public class OverwrittenLeadExceptionExample {
 	}
 	
 	/**
-	 * ·|³QOverwrittenLeadExceptionVisitor¦bfileOutputStream.close();¥[¤Wmark
+	 * æœƒè¢«OverwrittenLeadExceptionVisitoråœ¨fileOutputStream.close();åŠ ä¸Šmark
 	 * @param context
 	 * @param outputFile
 	 * @throws IOException
@@ -50,7 +50,7 @@ public class OverwrittenLeadExceptionExample {
 	}
 	
 	/**
-	 * ·|³QOverwrittenLeadExceptionVisitor¦bfileOutputStream.close();¥[¤Wmark
+	 * æœƒè¢«OverwrittenLeadExceptionVisitoråœ¨fileOutputStream.close();åŠ ä¸Šmark
 	 * @param context
 	 * @param outputFile
 	 * @throws IOException
@@ -72,7 +72,7 @@ public class OverwrittenLeadExceptionExample {
 	}
 	
 	/**
-	 * ·|³QOverwrittenLeadExceptionVisitor¦bfileOutputStream.close();¥[¤Wmark
+	 * æœƒè¢«OverwrittenLeadExceptionVisitoråœ¨fileOutputStream.close();åŠ ä¸Šmark
 	 * @param context
 	 * @param outputFile
 	 * @throws IOException
@@ -95,7 +95,7 @@ public class OverwrittenLeadExceptionExample {
 	}
 	
 	/**
-	 * ·|³QOverwrittenLeadExceptionVisitor¦bfileOutputStream.close();¥[¤Wmark
+	 * æœƒè¢«OverwrittenLeadExceptionVisitoråœ¨fileOutputStream.close();åŠ ä¸Šmark
 	 * @param context
 	 * @param outputFile
 	 * @throws IOException
@@ -119,7 +119,7 @@ public class OverwrittenLeadExceptionExample {
 	}
 	
 	/**
-	 * ¦@2­Ó
+	 * å…±2å€‹
 	 * @param context
 	 * @param outputFile
 	 * @throws IOException
@@ -146,7 +146,7 @@ public class OverwrittenLeadExceptionExample {
 	}
 	
 	/**
-	 * ¦@2­Ó
+	 * å…±2å€‹
 	 * @param context
 	 * @param outputFile
 	 * @throws IOException
@@ -171,7 +171,7 @@ public class OverwrittenLeadExceptionExample {
 	}
 	
 	/**
-	 * ¦@3­Ó
+	 * å…±3å€‹
 	 * @param context
 	 * @param outputFile
 	 * @throws IOException
@@ -212,7 +212,7 @@ public class OverwrittenLeadExceptionExample {
 	}
 	
 	/**
-	 * ¦@2­Ó
+	 * å…±2å€‹
 	 * @param context
 	 * @param outputFile
 	 * @throws IOException
@@ -250,7 +250,7 @@ public class OverwrittenLeadExceptionExample {
 	}
 	
 	/**
-	 * ¦@5­Ó
+	 * å…±5å€‹
 	 * @param context
 	 * @param outputFile
 	 * @throws IOException
@@ -291,7 +291,7 @@ public class OverwrittenLeadExceptionExample {
 	}
 	
 	/**
-	 * ¦@2­Ó
+	 * å…±2å€‹
 	 * @param context
 	 * @param outputFile
 	 * @throws IOException
@@ -349,7 +349,7 @@ public class OverwrittenLeadExceptionExample {
 	}
 	
 	/**
-	 * ¤£·|³QOverwrittenLeadExceptionVisitor¥[¤Wmark
+	 * ä¸æœƒè¢«OverwrittenLeadExceptionVisitoråŠ ä¸Šmark
 	 * @param context
 	 * @param outputFile
 	 * @throws IOException
@@ -416,7 +416,7 @@ public class OverwrittenLeadExceptionExample {
 	}
 	
 	/**
-	 * ¦@3­Ó
+	 * å…±3å€‹
 	 * @param context
 	 * @param outputFile
 	 * @throws IOException
@@ -475,7 +475,7 @@ public class OverwrittenLeadExceptionExample {
 	}
 	
 	/**
-	 * ¦@5­Ó
+	 * å…±5å€‹
 	 * @param context
 	 * @param outputFile
 	 * @throws IOException
@@ -515,7 +515,7 @@ public class OverwrittenLeadExceptionExample {
 	}
 
 	/**
-	 * ´ú¸Õ¥]§ttry¤ºªº¨Ò¥~¡A¥u­n·|ÂĞ»\«e­±ªº¨Ò¥~¡A³£·|³Q°»´ú¥X¨Ó
+	 * æ¸¬è©¦åŒ…å«tryå…§çš„ä¾‹å¤–ï¼Œåªè¦æœƒè¦†è“‹å‰é¢çš„ä¾‹å¤–ï¼Œéƒ½æœƒè¢«åµæ¸¬å‡ºä¾†
 	 * 
 	 * @Author pig
 	 */
@@ -536,8 +536,8 @@ public class OverwrittenLeadExceptionExample {
 	}
 
 	/**
-	 * ·¥ºİ¨Ò¤l¡A§Y¨Ï§¹¥ş¨S°Ê§@ªº try block¡A¥u­n finally ¤º¦³¨Ò¥~©ß¥X¡AÁöµM¹ê»Ú¤W¤£·|µo¥Í overwritten lead exception
-	 * ¦ı¦]¬°°»´ú¤Wªº­­¨î¡A¤u¨ã¼È®É»{¬°¬O OW Ãa¨ı¹D
+	 * æ¥µç«¯ä¾‹å­ï¼Œå³ä½¿å®Œå…¨æ²’å‹•ä½œçš„ try blockï¼Œåªè¦ finally å…§æœ‰ä¾‹å¤–æ‹‹å‡ºï¼Œé›–ç„¶å¯¦éš›ä¸Šä¸æœƒç™¼ç”Ÿ overwritten lead exception
+	 * ä½†å› ç‚ºåµæ¸¬ä¸Šçš„é™åˆ¶ï¼Œå·¥å…·æš«æ™‚èªç‚ºæ˜¯ OW å£å‘³é“
 	 * @Author pig
 	 */
 	@SuppressWarnings("finally")
@@ -550,9 +550,9 @@ public class OverwrittenLeadExceptionExample {
 	}
 
 	/**
-	 * ÁöµM finally ¤º¦³¨Ò¥~©ß¥X¡A¦ı¦]¬° Catch ¤F Exception ¨Ã¥u°µ Dummy Handle
-	 * ©Ò¥H¹ê»Ú¤W¤£·|µo¥Í overwritten lead exception
-	 * ¦ı¦]¬°°»´ú¤Wªº­­¨î¡A¤u¨ã¼È®É»{¬°¬O OW Ãa¨ı¹D
+	 * é›–ç„¶ finally å…§æœ‰ä¾‹å¤–æ‹‹å‡ºï¼Œä½†å› ç‚º Catch äº† Exception ä¸¦åªåš Dummy Handle
+	 * æ‰€ä»¥å¯¦éš›ä¸Šä¸æœƒç™¼ç”Ÿ overwritten lead exception
+	 * ä½†å› ç‚ºåµæ¸¬ä¸Šçš„é™åˆ¶ï¼Œå·¥å…·æš«æ™‚èªç‚ºæ˜¯ OW å£å‘³é“
 	 * 
 	 * @Author pig
 	 */
@@ -571,9 +571,9 @@ public class OverwrittenLeadExceptionExample {
 	}
 
 	/**
-	 * ÁöµM finally ¤º¦³¨Ò¥~©ß¥X¡A¦ı¦]¬° Catch ¤F Exception ¨Ã¬O Empty Catch Block
-	 * ©Ò¥H¹ê»Ú¤W¤£·|µo¥Í overwritten lead exception
-	 * ¦ı¦]¬°°»´ú¤Wªº­­¨î¡A¤u¨ã¼È®É»{¬°¬O OW Ãa¨ı¹D
+	 * é›–ç„¶ finally å…§æœ‰ä¾‹å¤–æ‹‹å‡ºï¼Œä½†å› ç‚º Catch äº† Exception ä¸¦æ˜¯ Empty Catch Block
+	 * æ‰€ä»¥å¯¦éš›ä¸Šä¸æœƒç™¼ç”Ÿ overwritten lead exception
+	 * ä½†å› ç‚ºåµæ¸¬ä¸Šçš„é™åˆ¶ï¼Œå·¥å…·æš«æ™‚èªç‚ºæ˜¯ OW å£å‘³é“
 	 * 
 	 * @Author pig
 	 */
@@ -591,8 +591,8 @@ public class OverwrittenLeadExceptionExample {
 	}
 
 	/**
-	 * ¦b catch ªşÄİªº try block ¤º¡A¦³ try statement ¦ı¨S¦³ finally ªº¸Ü
-	 * ¸Ó catch ¤ºªº¥¿±`¦æ¬°³£¤£·|³Q¼Ğ°O¬° OW
+	 * åœ¨ catch é™„å±¬çš„ try block å…§ï¼Œæœ‰ try statement ä½†æ²’æœ‰ finally çš„è©±
+	 * è©² catch å…§çš„æ­£å¸¸è¡Œç‚ºéƒ½ä¸æœƒè¢«æ¨™è¨˜ç‚º OW
 	 * 
 	 * @Author pig
 	 */
@@ -613,9 +613,9 @@ public class OverwrittenLeadExceptionExample {
 	}
 
 	/**
-	 * Bug ¬ÛÃö½d¨Ò
-	 * ¦b catch ªşÄİªº try block ¤º¡A¥u­n¦³ finally ªº¸Ü¡AµL½×¨ä¬O§_·|©ß¨Ò¥~
-	 * ³£¤£À³¨Ï¸Ó catch ¤ºªº¥¿±`¦æ¬°³Q¼Ğ°O¬° OW
+	 * Bug ç›¸é—œç¯„ä¾‹
+	 * åœ¨ catch é™„å±¬çš„ try block å…§ï¼Œåªè¦æœ‰ finally çš„è©±ï¼Œç„¡è«–å…¶æ˜¯å¦æœƒæ‹‹ä¾‹å¤–
+	 * éƒ½ä¸æ‡‰ä½¿è©² catch å…§çš„æ­£å¸¸è¡Œç‚ºè¢«æ¨™è¨˜ç‚º OW
 	 * 
 	 * @Author pig
 	 */
@@ -640,9 +640,9 @@ public class OverwrittenLeadExceptionExample {
 
 
 	/**
-	 * Bug ¬ÛÃö½d¨Ò
-	 * ¦b catch «e¦³ finally¡A¦ı¦ì©ó ªşÄİªº try block ¤§¥~®É
-	 * ¤£·|¨Ï¸Ó catch ¤ºªº¥¿±`¦æ¬°³Q¼Ğ°O¬° OW
+	 * Bug ç›¸é—œç¯„ä¾‹
+	 * åœ¨ catch å‰æœ‰ finallyï¼Œä½†ä½æ–¼ é™„å±¬çš„ try block ä¹‹å¤–æ™‚
+	 * ä¸æœƒä½¿è©² catch å…§çš„æ­£å¸¸è¡Œç‚ºè¢«æ¨™è¨˜ç‚º OW
 	 * 
 	 * @Author pig
 	 */
@@ -660,10 +660,10 @@ public class OverwrittenLeadExceptionExample {
 	}
 
 	/**
-	 * Bug ¬ÛÃö½d¨Ò
-	 * ¦b catch ªşÄİªº try block ¤º¡A¥u­n¦³ finally ªº¸Ü
-	 * §Y¨Ï¨ä¦ì©ó¨ä¥L try statement ªº catch block ¤º
-	 * ¤]¤£À³¨Ï¸Ó catch ¤ºªº¥¿±`¦æ¬°³Q¼Ğ°O¬° OW
+	 * Bug ç›¸é—œç¯„ä¾‹
+	 * åœ¨ catch é™„å±¬çš„ try block å…§ï¼Œåªè¦æœ‰ finally çš„è©±
+	 * å³ä½¿å…¶ä½æ–¼å…¶ä»– try statement çš„ catch block å…§
+	 * ä¹Ÿä¸æ‡‰ä½¿è©² catch å…§çš„æ­£å¸¸è¡Œç‚ºè¢«æ¨™è¨˜ç‚º OW
 	 * 
 	 * @Author pig
 	 */
@@ -685,7 +685,7 @@ public class OverwrittenLeadExceptionExample {
 	}
 	
 	/**
-	 * ¥¼§ä¥X¨ÓªºGround truth¨Ò¤l
+	 * æœªæ‰¾å‡ºä¾†çš„Ground truthä¾‹å­
 	 * @throws FileNotFoundException 
 	 */
 	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
@@ -704,7 +704,7 @@ public class OverwrittenLeadExceptionExample {
 	}
 	
 	/**
-	 * ¥¼§ä¥X¨ÓªºGround truth¨Ò¤l
+	 * æœªæ‰¾å‡ºä¾†çš„Ground truthä¾‹å­
 	 * @throws FileNotFoundException 
 	 */
 	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })

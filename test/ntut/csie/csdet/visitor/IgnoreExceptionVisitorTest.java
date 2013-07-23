@@ -37,10 +37,10 @@ public class IgnoreExceptionVisitorTest {
 		javaProjectMaker = new JavaProjectMaker(testProjectName);
 		javaProjectMaker.setJREDefaultContainer();
 		
-		// ·s¼W±ı¸ü¤Jªºlibrary
+		// æ–°å¢æ¬²è¼‰å…¥çš„library
 		javaProjectMaker.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR + "/log4j-1.2.15.jar");
 
-		// ®Ú¾Ú´ú¸ÕÀÉ®×¼Ë¥»¤º®e«Ø¥ß·sªºÀÉ®×
+		// æ ¹æ“šæ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹å»ºç«‹æ–°çš„æª”æ¡ˆ
 		javaFile2String = new JavaFileToString();
 		javaFile2String.read(IgnoredCheckedExceptionExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
@@ -49,7 +49,7 @@ public class IgnoreExceptionVisitorTest {
 				"package " + IgnoredCheckedExceptionExample.class.getPackage().getName() + ";\n"
 						+ javaFile2String.getFileContent());
 
-		// Ä~Äò«Ø¥ß´ú¸Õ¥ÎªºUserDefineDummyHandlerFish
+		// ç¹¼çºŒå»ºç«‹æ¸¬è©¦ç”¨çš„UserDefineDummyHandlerFish
 		javaFile2String.clear();
 		javaFile2String.read(UserDefineDummyHandlerFish.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
@@ -62,10 +62,10 @@ public class IgnoreExceptionVisitorTest {
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
-		// ¨ú±oAST
+		// å–å¾—AST
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
 	}
@@ -91,7 +91,7 @@ public class IgnoreExceptionVisitorTest {
 		if(ignoreExceptionVisitor.getIgnoreList() != null)
 			ignoredSmellCount = ignoreExceptionVisitor.getIgnoreList().size();
 		
-		// ÅçÃÒÁ`¦@§ì¨ì´X­Óbad smell
+		// é©—è­‰ç¸½å…±æŠ“åˆ°å¹¾å€‹bad smell
 		assertEquals(0, ignoredSmellCount);
 	}
 	
@@ -107,7 +107,7 @@ public class IgnoreExceptionVisitorTest {
 		if(ignoreExceptionVisitor.getIgnoreList() != null)
 			ignoredSmellCount = ignoreExceptionVisitor.getIgnoreList().size();
 		
-		// ÅçÃÒÁ`¦@§ì¨ì´X­Óbad smell
+		// é©—è­‰ç¸½å…±æŠ“åˆ°å¹¾å€‹bad smell
 		assertEquals(7, ignoredSmellCount);
 	}
 
@@ -119,7 +119,7 @@ public class IgnoreExceptionVisitorTest {
 		if(ignoreExceptionVisitor.getIgnoreList() != null)
 			ignoredSmellCount = ignoreExceptionVisitor.getIgnoreList().size();
 		
-		// ÅçÃÒÁ`¦@§ì¨ì´X­Óbad smell
+		// é©—è­‰ç¸½å…±æŠ“åˆ°å¹¾å€‹bad smell
 		assertEquals(0, ignoredSmellCount);
 	}
 }

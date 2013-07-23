@@ -12,10 +12,10 @@ import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TryStatement;
 
 /**
- * ³æ¯ÂÀË¬dFinally Block¸Ì­±ªºµ{¦¡½X¡C
- * ¦pªG¦AÃö³¬¦ê¬yªºµ{¦¡½X¤§«e¦³µ{¦¡½X·|©ß¥X¨Ò¥~¡A«hÃö³¬¦ê¬yªºµ{¦¡½X§Y¬Ocareless cleanup¡C
+ * å–®ç´”æª¢æŸ¥Finally Blockè£¡é¢çš„ç¨‹å¼ç¢¼ã€‚
+ * å¦‚æœå†é—œé–‰ä¸²æµçš„ç¨‹å¼ç¢¼ä¹‹å‰æœ‰ç¨‹å¼ç¢¼æœƒæ‹‹å‡ºä¾‹å¤–ï¼Œå‰‡é—œé–‰ä¸²æµçš„ç¨‹å¼ç¢¼å³æ˜¯careless cleanupã€‚
  * 
- * ª`·N¡G¤£¬O¥u¦³Finallyªº¸`ÂI¥s°µBlock¡C
+ * æ³¨æ„ï¼šä¸æ˜¯åªæœ‰Finallyçš„ç¯€é»å«åšBlockã€‚
  * @author charles
  *
  */
@@ -24,7 +24,7 @@ public class CarelessCleanupOnlyInFinallyVisitor extends ASTVisitor {
 	private boolean isExceptionRisable;
 	private List<MethodInvocation> carelessCleanupNodes;
 	
-	/** »`¶°¤£¬Ocareless cleanup¡A¦ı¬O¬OÃö³¬¦ê¬yªºµ{¦¡½X */
+	/** è’é›†ä¸æ˜¯careless cleanupï¼Œä½†æ˜¯æ˜¯é—œé–‰ä¸²æµçš„ç¨‹å¼ç¢¼ */
 	private List<MethodInvocation> fineCleanupNodes;
 	
 	public CarelessCleanupOnlyInFinallyVisitor(CompilationUnit compilationUnit) {
@@ -35,9 +35,9 @@ public class CarelessCleanupOnlyInFinallyVisitor extends ASTVisitor {
 	}
 	
 	/**
-	 * ¦Ò¼{Finally Block¸Ì­±¦³TryStatementªº±¡ªp¡C
-	 * ³z¹LTryStatementExceptionsVisitor¨ÓÀË¬d¡A¥H¤F¸Ñfinally¸Ì­±ªº TryStatement·|¤£·|©ß¨Ò¥~¡C
-	 * (¦pªG³o­Ó·|©ß¨Ò¥~ªºTryStatement¦bÃö³¬¦ê¬yªºµ{¦¡½X«e­±¡A«h·|³y¦¨careless cleanup¡C)
+	 * è€ƒæ…®Finally Blockè£¡é¢æœ‰TryStatementçš„æƒ…æ³ã€‚
+	 * é€éTryStatementExceptionsVisitorä¾†æª¢æŸ¥ï¼Œä»¥äº†è§£finallyè£¡é¢çš„ TryStatementæœƒä¸æœƒæ‹‹ä¾‹å¤–ã€‚
+	 * (å¦‚æœé€™å€‹æœƒæ‹‹ä¾‹å¤–çš„TryStatementåœ¨é—œé–‰ä¸²æµçš„ç¨‹å¼ç¢¼å‰é¢ï¼Œå‰‡æœƒé€ æˆcareless cleanupã€‚)
 	 */
 	public boolean visit(TryStatement node) {
 		TryStatementExceptionsVisitor tryStatementVisitor = new TryStatementExceptionsVisitor(node);
@@ -55,13 +55,13 @@ public class CarelessCleanupOnlyInFinallyVisitor extends ASTVisitor {
 	
 	public boolean visit(MethodInvocation node) {
 		/* 
-		 * (¹ïRuntimeException¨SÂá¡C)
-		 * ¦pªG¬OÃö³¬¦ê¬yªºµ{¦¡½X¡A­n°µcareless cleanupªºÀË¬d¡G
-		 * 	¦pªG¦b³o¦æ¤§«e¥i¯à·|µo¥Í¨Ò¥~¡A«h³o¦æ¬°careless cleanup¡C
-		 *  ¦pªG¦b³o¦æ¤§«e¤£·|µo¥Í¨Ò¥~¡A«h³o¦æ´N¤£ºâcareless cleanup
+		 * (å°RuntimeExceptionæ²’è½ã€‚)
+		 * å¦‚æœæ˜¯é—œé–‰ä¸²æµçš„ç¨‹å¼ç¢¼ï¼Œè¦åšcareless cleanupçš„æª¢æŸ¥ï¼š
+		 * 	å¦‚æœåœ¨é€™è¡Œä¹‹å‰å¯èƒ½æœƒç™¼ç”Ÿä¾‹å¤–ï¼Œå‰‡é€™è¡Œç‚ºcareless cleanupã€‚
+		 *  å¦‚æœåœ¨é€™è¡Œä¹‹å‰ä¸æœƒç™¼ç”Ÿä¾‹å¤–ï¼Œå‰‡é€™è¡Œå°±ä¸ç®—careless cleanup
 		 */
 		if(NodeUtils.isCloseResourceMethodInvocation(root, node)) {
-			// ¦pªG«e­±¤w¸g¦³µ{¦¡½X·|µo¥Í¨Ò¥~¡A«h³o­ÓÃö³¬¦ê¬yªºµ{¦¡½X´N¬Ocareless cleanup
+			// å¦‚æœå‰é¢å·²ç¶“æœ‰ç¨‹å¼ç¢¼æœƒç™¼ç”Ÿä¾‹å¤–ï¼Œå‰‡é€™å€‹é—œé–‰ä¸²æµçš„ç¨‹å¼ç¢¼å°±æ˜¯careless cleanup
 			if(isExceptionRisable) {
 				carelessCleanupNodes.add(node);
 			} else {
@@ -70,8 +70,8 @@ public class CarelessCleanupOnlyInFinallyVisitor extends ASTVisitor {
 		}
 		
 		/* 
-		 * °O¿ı³o¦æµ{¦¡½X·|¤£·|©ß¥X¨Ò¥~¡G
-		 * 	³æ¯Â¬ö¿ı·|¤£·|©ß¥X¨Ò¥~¡C
+		 * è¨˜éŒ„é€™è¡Œç¨‹å¼ç¢¼æœƒä¸æœƒæ‹‹å‡ºä¾‹å¤–ï¼š
+		 * 	å–®ç´”ç´€éŒ„æœƒä¸æœƒæ‹‹å‡ºä¾‹å¤–ã€‚
 		 */
 		if (node.resolveMethodBinding().getExceptionTypes().length != 0) {
 			isExceptionRisable = true;
@@ -85,7 +85,7 @@ public class CarelessCleanupOnlyInFinallyVisitor extends ASTVisitor {
 	}
 	
 	/**
-	 * ¤£³Q³o­ÓVisitor»{©wcareless cleanup ªºÃö³¬¸ê·½°Ê§@¡C
+	 * ä¸è¢«é€™å€‹Visitorèªå®šcareless cleanup çš„é—œé–‰è³‡æºå‹•ä½œã€‚
 	 * @return
 	 */
 	public List<MethodInvocation> getfineCleanupNodes() {

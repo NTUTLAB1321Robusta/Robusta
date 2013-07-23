@@ -38,7 +38,7 @@ public class CallersSeqDiagram {
 	private List<SeqDiagramData> seqdataList = new ArrayList<SeqDiagramData>();
 	
 	/**
-	 * ¥Î¨ÓcopyÂÂªºsdd¸ê®Æ
+	 * ç”¨ä¾†copyèˆŠçš„sddè³‡æ–™
 	 * @param sdd
 	 * @return
 	 */
@@ -52,18 +52,18 @@ public class CallersSeqDiagram {
 	}
 	
 	/**
-	 * µeSequence Diagram
-	 * @param selectProject		¦ì©óªº±M®×
+	 * ç•«Sequence Diagram
+	 * @param selectProject		ä½æ–¼çš„å°ˆæ¡ˆ
 	 * @param site				WorkPart
 	 * @param items				Tree Item
 	 * @param isShowCallerType	Caller / Callee
-	 * @param isShowPackage		¬O§_Åã¥ÜPackage
-	 * @param isShowAllPackage	¬O§_Åã¥Ü©Ò¦³ªºPackage
-	 * @param isTopDown			¬O§_±q¤W©¹¤U¼Æ
-	 * @param packageCount		Åã¥ÜªºPackage­Ó¼Æ
-	 * @param isShowRL			¬O§_Åã¥ÜRL¸ê°T
-	 * @param isShowPath		¬O§_Åã¥ÜExceptionªº¦WºÙ
-	 * @param isTraced			¬O§_¤wTrace RL¸ê°T
+	 * @param isShowPackage		æ˜¯å¦é¡¯ç¤ºPackage
+	 * @param isShowAllPackage	æ˜¯å¦é¡¯ç¤ºæ‰€æœ‰çš„Package
+	 * @param isTopDown			æ˜¯å¦å¾ä¸Šå¾€ä¸‹æ•¸
+	 * @param packageCount		é¡¯ç¤ºçš„Packageå€‹æ•¸
+	 * @param isShowRL			æ˜¯å¦é¡¯ç¤ºRLè³‡è¨Š
+	 * @param isShowPath		æ˜¯å¦é¡¯ç¤ºExceptionçš„åç¨±
+	 * @param isTraced			æ˜¯å¦å·²Trace RLè³‡è¨Š
 	 */
 	public void draw(IProject selectProject, IWorkbenchPartSite site, TreeItem[] items,boolean isShowCallerType,
 					 boolean isShowPackage, boolean isShowAllPackage, boolean isTopDown,
@@ -75,32 +75,32 @@ public class CallersSeqDiagram {
 		this.findSelectedItemPath(items, isTraced, isShowRL, isShowPath);
 
         /*------------------------------------------------------------------------*
-        -  ³z¹LisShowCallerType¨Ó§PÂ_¬O¥Ñ¤U©¹¤Wcall hierarchy
-		        ¦pªG¹J¨ì³oºØ±¡§Î,«h±N¶¶§Ç¤Ï¹L¨Ó,¨Ã¥B§âLevel¹ï½Õ
+        -  é€éisShowCallerTypeä¾†åˆ¤æ–·æ˜¯ç”±ä¸‹å¾€ä¸Šcall hierarchy
+		        å¦‚æœé‡åˆ°é€™ç¨®æƒ…å½¢,å‰‡å°‡é †åºåéä¾†,ä¸¦ä¸”æŠŠLevelå°èª¿
         *-------------------------------------------------------------------------*/
 		if (isShowCallerType) {
 			int count = 0;
 			for (int i=seqdataList.size()-1; i >= 0; i--) {
-				//¥ı±qArray³Ì«á­±§âª«¥ócopy¶i¥h
+				//å…ˆå¾Arrayæœ€å¾Œé¢æŠŠç‰©ä»¶copyé€²å»
 				SeqDiagramData sdd = copySeqData(seqdataList.get(i)); 
-				//³]©w­n¤ÏÂàªºLevel
+				//è¨­å®šè¦åè½‰çš„Level
 				sdd.setLevel(seqdataList.get(count).getLevel());
 				copyList.add(sdd);
 				count++;
 			}
-			//§âcopy«áªºµ²ªGassign
+			//æŠŠcopyå¾Œçš„çµæœassign
 			seqdataList = copyList;
 		}
 		
 		Map<String, InstanceModel> instanceModelMap = new HashMap<String, InstanceModel>();
-		//InstanceModel«üªº¬OClass or Actor¤§Ãşªº
+		//InstanceModelæŒ‡çš„æ˜¯Class or Actorä¹‹é¡çš„
 		InstanceModel start = builder.createActor("Debugger");
 
 		for (SeqDiagramData sdd : seqdataList) {
 			if (instanceModelMap.get(sdd.getClassName()) == null) {
-				//«üªº¬O­n³Qcreateªºclass(sequence diagram¤Wªºclass¤è¶ô)
+				//æŒ‡çš„æ˜¯è¦è¢«createçš„class(sequence diagramä¸Šçš„classæ–¹å¡Š)
 				
-				//§âSeqDiagram³]©wµøµ¡±o¨ìªº°Ñ¼Æ¶Ç¨ìµe¹Ïªº¨º¤@¼h
+				//æŠŠSeqDiagramè¨­å®šè¦–çª—å¾—åˆ°çš„åƒæ•¸å‚³åˆ°ç•«åœ–çš„é‚£ä¸€å±¤
 				InstanceModel obj = builder.createInstance(sdd.getClassName(),isShowPackage,isShowAllPackage,isTopDown,packageCount);
 				
 				if (start == null) {
@@ -203,7 +203,7 @@ public class CallersSeqDiagram {
 		// convert to xml
 		// logger.debug("[handleGenSeqDiagram]" + builder.toXML());
 
-		//­ì¥»Editor¥i¯à¬°null point
+		//åŸæœ¬Editorå¯èƒ½ç‚ºnull point
 		//IEditorPart editor = site.getPage().getActiveEditor();
 		//IEditorInput input = editor.getEditorInput();
 		try {
@@ -219,7 +219,7 @@ public class CallersSeqDiagram {
 			if (!folder.exists())
 				folder.create(IResource.NONE, true, null);
 
-			//ÀÉ®×¤£­«½Æ
+			//æª”æ¡ˆä¸é‡è¤‡
 			IFile file;
 			for (int i=1; true; i++) {
 				file = folder.getFile(headName + i + tailName);
@@ -244,9 +244,9 @@ public class CallersSeqDiagram {
 	}
 
 	/**
-	 * ´M§äHierarchy Tree¤¤©Ò¦³¿ï¾ÜªºNode
+	 * å°‹æ‰¾Hierarchy Treeä¸­æ‰€æœ‰é¸æ“‡çš„Node
 	 * @param items	   Hierarchy Tree Item
-	 * @param isTraced ¬O§_¤w¬d¹LRL¸ê°T
+	 * @param isTraced æ˜¯å¦å·²æŸ¥éRLè³‡è¨Š
 	 * @param isShowRL 
 	 * @param isShowPath 
 	 */
@@ -267,13 +267,13 @@ public class CallersSeqDiagram {
 					sdd.setMethodName(method.getElementName());
 					sdd.setLevel(wrapper.getLevel());
 					
-					//¬O§_Åã¥ÜRL¸ê°T
+					//æ˜¯å¦é¡¯ç¤ºRLè³‡è¨Š
 					if (isShowRL) {
-						//¬O§_¤w¸gTrace¹LRL¸ê°T
+						//æ˜¯å¦å·²ç¶“TraceéRLè³‡è¨Š
 						if (isTraced) {
 							sdd.setRLAnnotations(item.getText(1));
 							sdd.setExceptions(item.getText(2));
-						//­YÁÙ¥¼´N¥h¨ú±oRL¸ê°T¡C
+						//è‹¥é‚„æœªå°±å»å–å¾—RLè³‡è¨Šã€‚
 						} else {
 							getRLMessage(wrapper);
 							sdd.setRLAnnotations(colRLInfo);
@@ -284,7 +284,7 @@ public class CallersSeqDiagram {
 				}
 			}
 
-			//­Y¦³Child¡A«hÄ~ÄòTrace
+			//è‹¥æœ‰Childï¼Œå‰‡ç¹¼çºŒTrace
 			if (item.getItemCount() >= 1) {
 				findSelectedItemPath(item.getItems(), isTraced, isShowRL, isShowPath);
 			}
@@ -303,7 +303,7 @@ public class CallersSeqDiagram {
 				int offset = wrapper.getMember().getSourceRange().getOffset();
 				int length = wrapper.getMember().getSourceRange().getLength();
 
-				// ±Noffset¨ú¨ì¸Ómethodªº³Ì«á­±¡A¬O¦]¬°­Y¦³µù¸Ñ¡A«hRL·|¨ú¤£¥X¨Ó¡A«h»İ­n«ü¨ìmethod¤º
+				// å°‡offsetå–åˆ°è©²methodçš„æœ€å¾Œé¢ï¼Œæ˜¯å› ç‚ºè‹¥æœ‰è¨»è§£ï¼Œå‰‡RLæœƒå–ä¸å‡ºä¾†ï¼Œå‰‡éœ€è¦æŒ‡åˆ°methodå…§
 				offset = offset + length - 10;
 				length = 0;
 
@@ -408,7 +408,7 @@ public class CallersSeqDiagram {
 		}
 		
 		/**
-		 * ¬O§_Åã¥Ü¸ô®|
+		 * æ˜¯å¦é¡¯ç¤ºè·¯å¾‘
 		 */
 		public boolean isShowPath() {
 			return isShowPath;
@@ -456,27 +456,27 @@ public class CallersSeqDiagram {
 			return RLAnnotations;
 		}
 		public void setRLAnnotations(String annotations) {
-			//­YÅã¥ÜPath©ÎµLRL Annotation
+			//è‹¥é¡¯ç¤ºPathæˆ–ç„¡RL Annotation
 			if (isShowPath || annotations == "") {
 				RLAnnotations = annotations;
-			//­Y¤£Åã¥Üpath
+			//è‹¥ä¸é¡¯ç¤ºpath
 			} else {
-				//³Ñ¤Uªº¦r¦ê
+				//å‰©ä¸‹çš„å­—ä¸²
 				String remainder = annotations;
 
 				int index = remainder.indexOf("}");
 				for (; index != -1; index = remainder.indexOf("}")) {
-					//±q"{"¨ì"}"»P"\n"
+					//å¾"{"åˆ°"}"èˆ‡"\n"
 					RLAnnotations += removePath(remainder.substring(0, index+2));
 
-					//¤ÀªR¨ä¾l¦r¦ê
+					//åˆ†æå…¶é¤˜å­—ä¸²
 					remainder = remainder.substring(index +2);
 				}
 			}
 		}
 
 		/**
-		 * §R±¼Exception NameªºPath
+		 * åˆªæ‰Exception Nameçš„Path
 		 * @param rlInfo
 		 */
 		private String removePath(String rlInfo) {			
@@ -494,30 +494,30 @@ public class CallersSeqDiagram {
 		}
 		
 		/**
-		 * ¨ú±oRobustnessLevel(­Y¬°½Æ¼Æ¨ú³Ì¤pªºLevel)
+		 * å–å¾—RobustnessLevel(è‹¥ç‚ºè¤‡æ•¸å–æœ€å°çš„Level)
 		 * @return
 		 */
 		public int getRobustnessLevel() {
 			if (RLAnnotations==null || RLAnnotations=="")
 				return 0;
 
-			//³Ì¤pªºRobustness Level
+			//æœ€å°çš„Robustness Level
 			int minLevel = 99;
-			//Robustness Level¶}©lªº¦ì¸m
+			//Robustness Levelé–‹å§‹çš„ä½ç½®
 			int index = 0;
-			//³Ñ¤Uªº¦r¦ê
+			//å‰©ä¸‹çš„å­—ä¸²
 			String remainder = RLAnnotations;
 			for (index = remainder.indexOf("{ "); index != -1; index = remainder.indexOf("{ ")) {
-				//½Õ¾ã¨ìRL¼Æ¦rªº¦a¤è
+				//èª¿æ•´åˆ°RLæ•¸å­—çš„åœ°æ–¹
 				index += 2;
 				String number = String.valueOf(remainder.substring(index).charAt(0));
 				int level = Integer.valueOf(number);
 				
-				//¤ñ¸û³Ì¤pªºRobustness Level
+				//æ¯”è¼ƒæœ€å°çš„Robustness Level
 				if (level < minLevel)
 					minLevel = level;
 				
-				//¤ÀªR¨ä¾l¦r¦ê
+				//åˆ†æå…¶é¤˜å­—ä¸²
 				remainder = remainder.substring(index +1);
 			}
 

@@ -120,17 +120,17 @@ public class ExtractMethodRefactoring extends Refactoring {
 		CompilationUnitChange result = new CompilationUnitChange(name, unit);
 		result.setSaveMode(TextFileChange.KEEP_SAVE_STATE);
 		
-		// ±N­×§ïµ²ªG³]¸m¦bCompilationUnitChange
+		// å°‡ä¿®æ”¹çµæœè¨­ç½®åœ¨CompilationUnitChange
 		TextEdit edits = textFileChange.getEdit();
 		result.setEdit(edits);
-		// ±N­×§ïµ²ªG³]¦¨Group¡A·|Åã¥Ü¦bPreview¤W¤è¸`ÂI¡C
+		// å°‡ä¿®æ”¹çµæœè¨­æˆGroupï¼Œæœƒé¡¯ç¤ºåœ¨Previewä¸Šæ–¹ç¯€é»ã€‚
 		result.addTextEditGroup(new TextEditGroup("Closed Resource Method", 
 								new TextEdit[] {edits} ));
 		return result;
 	}
 	
 	private void deleteTarget(ASTNode node, TryStatement tryStatement) {
-		// §R°£ catch ¸Ìªº
+		// åˆªé™¤ catch è£¡çš„
 		List<CatchClause> catchs = tryStatement.catchClauses();
 		for(int i = 0; i < catchs.size(); i++) {
 			List<Statement> statements = catchs.get(i).getBody().statements();
@@ -141,7 +141,7 @@ public class ExtractMethodRefactoring extends Refactoring {
 				}
 			}
 		}
-		// §R°£ finally ¸Ìªº
+		// åˆªé™¤ finally è£¡çš„
 		List<Statement> statements = tryStatement.getFinally().statements();
 		for(int i = 0; i < statements.size(); i++) {
 			if(statements.get(i).getStartPosition() == markerInfo.getPosition()) {
@@ -152,12 +152,12 @@ public class ExtractMethodRefactoring extends Refactoring {
 	}
 
 	/**
-	 * ¨ú±o¥Ø«e­n³Q­×§ïªºmethod node
+	 * å–å¾—ç›®å‰è¦è¢«ä¿®æ”¹çš„method node
 	 * @param resource
 	 * @return
 	 */
 	private boolean findRoot(IResource resource) {
-		//¨ú±o­n­×§ïªºCompilationUnit
+		//å–å¾—è¦ä¿®æ”¹çš„CompilationUnit
 		if (resource instanceof IFile && resource.getName().endsWith(".java")) {
 			try {
 				IJavaElement javaElement = JavaCore.create(resource);
@@ -207,10 +207,10 @@ public class ExtractMethodRefactoring extends Refactoring {
 				List<?> fragmentsList = variable.fragments();
 				if (fragmentsList.size() == 1) {
 					VariableDeclarationFragment fragment = (VariableDeclarationFragment) fragmentsList.get(0);
-					// ­Y°Ñ¼Æ«Ø¦bTry Block¤º
+					// è‹¥åƒæ•¸å»ºåœ¨Try Blockå…§
 					if (fragment.getName().toString().equals(expression.toString())) {
-						/* ±N   InputStream fos = new ImputStream();
-						 * §ï¬° fos = new InputStream();
+						/* å°‡   InputStream fos = new ImputStream();
+						 * æ”¹ç‚º fos = new InputStream();
 						 * */
 						Assignment assignment = ast.newAssignment();
 						assignment.setOperator(Assignment.Operator.ASSIGN);
@@ -221,19 +221,19 @@ public class ExtractMethodRefactoring extends Refactoring {
 						ASTNode copyNode = ASTNode.copySubtree(init.getAST(), init);
 						assignment.setRightHandSide((Expression) copyNode);
 
-						// ±Nfos = new ImputStream(); ´À´«¨ì­ì¥»ªºµ{¦¡¸Ì
+						// å°‡fos = new ImputStream(); æ›¿æ›åˆ°åŸæœ¬çš„ç¨‹å¼è£¡
 						if(assignment.getRightHandSide().getNodeType() != ASTNode.NULL_LITERAL){
 							ExpressionStatement expressionStatement = ast.newExpressionStatement(assignment);
 							tryStatement.getBody().statements().set(i, expressionStatement);
 						}else{
-							//¦pªG¥»¨Óªºµ{¦¡½X¬O³]©winstanceªì©l¬°null¡A¨º´Nª½±µ²¾°£±¼
+							//å¦‚æœæœ¬ä¾†çš„ç¨‹å¼ç¢¼æ˜¯è¨­å®šinstanceåˆå§‹ç‚ºnullï¼Œé‚£å°±ç›´æ¥ç§»é™¤æ‰
 							tryStatement.getBody().statements().remove(i);
 						}
 
 						// InputStream fos = null
-						// ±Nnew°Ê§@´À´«¦¨null
+						// å°‡newå‹•ä½œæ›¿æ›æˆnull
 						fragment.setInitializer(ast.newNullLiteral());
-						// ¥[¦Ü­ì¥»µ{¦¡½X¤§«e
+						// åŠ è‡³åŸæœ¬ç¨‹å¼ç¢¼ä¹‹å‰
 						currentMethodNode.getBody().statements().add(0, variable);
 						break;
 					}
@@ -243,7 +243,7 @@ public class ExtractMethodRefactoring extends Refactoring {
 	}
 	
 	/**
-	 * ±NReleaseªºMethod¥[¤J¦ÜFinally Block¤¤
+	 * å°‡Releaseçš„MethodåŠ å…¥è‡³Finally Blockä¸­
 	 * @param ast	MethodNode
 	 * @param finallyBlock 
 	 */
@@ -252,26 +252,26 @@ public class ExtractMethodRefactoring extends Refactoring {
 		MethodInvocation delLineMI = (MethodInvocation) currentExpressionStatement.getExpression();
 		// e.g. fos
 		Expression expression = delLineMI.getExpression();
-		// ­Y¸Ó¦æ¬°Method (e.g. closeFile(fos)) «hª½±µ±N¦¹¦æ²¾¦ÜFinally Block¤¤
+		// è‹¥è©²è¡Œç‚ºMethod (e.g. closeFile(fos)) å‰‡ç›´æ¥å°‡æ­¤è¡Œç§»è‡³Finally Blockä¸­
 		if (expression == null) {
 			finallyBlock.statements().add(currentExpressionStatement);
 			return;
 		}
 
 		MethodInvocation newMI = null;
-		// ­YMethod¤£¦s¦b
+		// è‹¥Methodä¸å­˜åœ¨
 		if (!isMethodExist) {
 			newMI = createNewMethod(ast, expression, methodName);
 
-			// ­YMethod¤£¦s¦b¡A«Ø¥ß·sMethod
+			// è‹¥Methodä¸å­˜åœ¨ï¼Œå»ºç«‹æ–°Method
 			addExtractMethod(ast);
 
-		// ­YMethod¤w¦s¦b
+		// è‹¥Methodå·²å­˜åœ¨
 		} else {
-			//·s¼WªºMethod Invocation
+			//æ–°å¢çš„Method Invocation
 			newMI = createNewMethod(ast, expression, existingMethod.getElementName());
 
-			// ³]¸m©I¥sMethodªº¦WºÙ
+			// è¨­ç½®å‘¼å«Methodçš„åç¨±
 			createCallerMethod(ast, newMI, finallyBlock);
 		}
 
@@ -280,7 +280,7 @@ public class ExtractMethodRefactoring extends Refactoring {
 	}
 	
 	/**
-	 * ·s¼WMethod
+	 * æ–°å¢Method
 	 * @param ast
 	 * @param expression
 	 * @return
@@ -288,37 +288,37 @@ public class ExtractMethodRefactoring extends Refactoring {
 	private MethodInvocation createNewMethod(AST ast, Expression expression, String methodName) {
 		SimpleName simpleName = (SimpleName) expression;
 
-		//·s¼WªºMethod Invocation
+		//æ–°å¢çš„Method Invocation
 		MethodInvocation newMI = ast.newMethodInvocation();
 
-		// ³]©wMIªºname
+		// è¨­å®šMIçš„name
 		newMI.setName(ast.newSimpleName(methodName));
 
-		// ³]©wMIªº°Ñ¼Æ
+		// è¨­å®šMIçš„åƒæ•¸
 		newMI.arguments().add(ast.newSimpleName(simpleName.getIdentifier()));
 
 		return newMI;
 	}
 	
 	/**
-	 * ·s¼WCaller Method
+	 * æ–°å¢Caller Method
 	 * @param ast
 	 * @param newMI
 	 * @param finallyBlock 
 	 */
 	private void createCallerMethod(AST ast, MethodInvocation newMI, Block finallyBlock) {
 		try {
-			//Private®É¤£¯S§O°Ê§@
+			//Privateæ™‚ä¸ç‰¹åˆ¥å‹•ä½œ
 			//if ((existingMethod.getFlags() & Flags.AccPrivate) != 0)
 
 			IType classType = (IType) existingMethod.getParent();
-			//­Y¬°Public
+			//è‹¥ç‚ºPublic
 			if ((existingMethod.getFlags() & Flags.AccPublic) != 0) {
-				// ­YMethod¬°Static: ª½±µ©I¥s
+				// è‹¥Methodç‚ºStatic: ç›´æ¥å‘¼å«
 				if ((existingMethod.getFlags() & Flags.AccStatic) != 0) {
 					newMI.setExpression(ast.newSimpleName(classType.getElementName()));
 
-				// ­Y«DStatic Method: ¥ıNew¦A©I¥s
+				// è‹¥éStatic Method: å…ˆNewå†å‘¼å«
 				} else {
 					//new Method();
 					ClassInstanceCreation classInstance = ast.newClassInstanceCreation();
@@ -339,7 +339,7 @@ public class ExtractMethodRefactoring extends Refactoring {
 				}
 			}
 
-			// ·s¼WImport¸ê°T
+			// æ–°å¢Importè³‡è¨Š
 			addImportPackage(classType);
 
 		} catch (JavaModelException e) {
@@ -349,23 +349,23 @@ public class ExtractMethodRefactoring extends Refactoring {
 	}
 	
 	/**
-	 * ¥[¤JPublic MethodªºImport Package
+	 * åŠ å…¥Public Methodçš„Import Package
 	 * @param classType
 	 */
 	private void addImportPackage(IType classType) {
-		//­YPackage¬Û¦P¡A«h¤£¥[import
+		//è‹¥Packageç›¸åŒï¼Œå‰‡ä¸åŠ import
 		String extractMethodPackage = classType.getPackageFragment().getElementName();
 		String localMethodPackage = actRoot.getPackage().getName().toString();
 		if (extractMethodPackage.equals(localMethodPackage))
 			return;
 
-		//­YPackage¥[¤J¹L¤]¤£¥[
+		//è‹¥PackageåŠ å…¥éä¹Ÿä¸åŠ 
 		List<?> importList = actRoot.imports();
 		for(Object id : importList)
 			if(((ImportDeclaration)id).getName().getFullyQualifiedName().contains(classType.getFullyQualifiedName()))
 				return;
 
-		//°²¦p¨S¦³import,´N¥[¤J¨ìAST¤¤
+		//å‡å¦‚æ²’æœ‰import,å°±åŠ å…¥åˆ°ASTä¸­
 		AST rootAst = actRoot.getAST(); 
 		ImportDeclaration imp = rootAst.newImportDeclaration();
 		imp.setName(rootAst.newName(classType.getFullyQualifiedName()));
@@ -377,15 +377,15 @@ public class ExtractMethodRefactoring extends Refactoring {
 	 * @param ast
 	 */
 	private void addExtractMethod(AST ast) {
-		//¨ú±o¸ê°T
+		//å–å¾—è³‡è¨Š
 		MethodInvocation delLineMI = (MethodInvocation) currentExpressionStatement.getExpression();
 		Expression exp = delLineMI.getExpression();
 		SimpleName sn = (SimpleName) exp;
 
-		//·s¼WMethod Declaration
+		//æ–°å¢Method Declaration
 		MethodDeclaration newMD = ast.newMethodDeclaration();
 
-		//³]©w¦s¨ú«¬§O(public)
+		//è¨­å®šå­˜å–å‹åˆ¥(public)
 		if (modifierType == "public")
 			newMD.modifiers().add(ast.newModifier(Modifier.ModifierKeyword.PUBLIC_KEYWORD));			
 		else if (modifierType == "protected")
@@ -393,32 +393,32 @@ public class ExtractMethodRefactoring extends Refactoring {
 		else
 			newMD.modifiers().add(ast.newModifier(Modifier.ModifierKeyword.PRIVATE_KEYWORD));									
 
-		//³]©wreturn type
+		//è¨­å®šreturn type
 		newMD.setReturnType2(ast.newPrimitiveType(PrimitiveType.VOID));
-		//³]©wMDªº¦WºÙ
+		//è¨­å®šMDçš„åç¨±
 		newMD.setName(ast.newSimpleName(methodName));
-		//³]©w°Ñ¼Æ
+		//è¨­å®šåƒæ•¸
 		SingleVariableDeclaration svd = ast.newSingleVariableDeclaration();
 		svd.setType(ast.newSimpleType(ast.newSimpleName(exp.resolveTypeBinding().getName().toString())));
 		svd.setName(ast.newSimpleName(sn.getIdentifier()));
 		newMD.parameters().add(svd);
 
-		//³]©wbody
+		//è¨­å®šbody
 		Block block = ast.newBlock();
 		newMD.setBody(block);
 		
 		TryStatement ts = addTryStatement(ast, delLineMI);
 
-		//±N·s¼Wªºtry statement¥[¶i¨Ó
+		//å°‡æ–°å¢çš„try statementåŠ é€²ä¾†
 		block.statements().add(ts);
-		//±Nnew MD¥[¤J
+		//å°‡new MDåŠ å…¥
 		List<AbstractTypeDeclaration> typeList = actRoot.types();
 		TypeDeclaration td = (TypeDeclaration) typeList.get(0);
 		td.bodyDeclarations().add(newMD);
 	}
 	
 	/**
-	 * ¥[¤JTry Statement
+	 * åŠ å…¥Try Statement
 	 * @param ast
 	 * @param delLineMI
 	 * @return
@@ -430,35 +430,35 @@ public class ExtractMethodRefactoring extends Refactoring {
 		/* if (obj != null)
 		 * 		obj.close();
 		 */
-		//«Ø¥ß obj != null
+		//å»ºç«‹ obj != null
 		InfixExpression in = ast.newInfixExpression();
 		in.setOperator(InfixExpression.Operator.NOT_EQUALS);
 		in.setLeftOperand(ast.newSimpleName(delLineMI.getExpression().toString()));
 		in.setRightOperand(ast.newNullLiteral());
 
-		//«Ø¥ß if Satement
+		//å»ºç«‹ if Satement
 		IfStatement ifStatement = ast.newIfStatement();
 		ifStatement.setExpression(in);
-		//¥[¤JRelease Source Code
+		//åŠ å…¥Release Source Code
 		ifStatement.setThenStatement(currentExpressionStatement);
-		//¥[¨ìTry Block¤§¤¤
+		//åŠ åˆ°Try Blockä¹‹ä¸­
 		tsBody.statements().add(ifStatement);
 
-		//´Àtry ¥[¤J¤@­ÓCatch clause
+		//æ›¿try åŠ å…¥ä¸€å€‹Catch clause
 		List<CatchClause> catchStatement = ts.catchClauses();
 		CatchClause cc = ast.newCatchClause();
 		
-		//¦s©ñµ{¦¡½X©Ò©ß¥Xªº¨Ò¥~Ãş«¬
+		//å­˜æ”¾ç¨‹å¼ç¢¼æ‰€æ‹‹å‡ºçš„ä¾‹å¤–é¡å‹
 		ITypeBinding[] iType;
 		iType = delLineMI.resolveMethodBinding().getExceptionTypes();
 	
-		//«Ø¥ßcatchªºtype¬° catch(... ex)
+		//å»ºç«‹catchçš„typeç‚º catch(... ex)
 		SingleVariableDeclaration svdCatch = ast.newSingleVariableDeclaration();
 		svdCatch.setType(ast.newSimpleType(ast.newSimpleName(iType[0].getName())));
 		svdCatch.setName(ast.newSimpleName("e"));
 		cc.setException(svdCatch);
 
-		//¥[¤Jcatchªºbody
+		//åŠ å…¥catchçš„body
 		if(logType.equals("e.printStackTrace();"))
 			addPrintStackStatement(ast, cc);
 		else
@@ -469,23 +469,23 @@ public class ExtractMethodRefactoring extends Refactoring {
 	}
 	
 	/**
-	 * ¥[¤Je.printStatckTrace
+	 * åŠ å…¥e.printStatckTrace
 	 * @param ast
 	 * @param cc
 	 */
 	private void addPrintStackStatement(AST ast, CatchClause cc) {
-		//·s¼WªºMethod Invocation
+		//æ–°å¢çš„Method Invocation
 		MethodInvocation catchMI = ast.newMethodInvocation();
-		//³]©wMIªºname
+		//è¨­å®šMIçš„name
 		catchMI.setName(ast.newSimpleName("printStackTrace"));
-		//³]©wMIªºExpression
+		//è¨­å®šMIçš„Expression
 		catchMI.setExpression(ast.newSimpleName("e"));			
 		ExpressionStatement catchES = ast.newExpressionStatement((Expression)catchMI);
 		cc.getBody().statements().add(catchES);
 	}
 
 	/**
-	 * ¥[¤Jlogger.warning(e.getMessage());
+	 * åŠ å…¥logger.warning(e.getMessage());
 	 * @param ast
 	 * @param cc
 	 */
@@ -496,14 +496,14 @@ public class ExtractMethodRefactoring extends Refactoring {
 		//private Logger logger = Logger.getLogger(CarelessCleanUpTest.class.getName());
 		addLoggerField(ast);
 		
-		//³]©wcatchªºbodyªºMethod Invocation
+		//è¨­å®šcatchçš„bodyçš„Method Invocation
 		MethodInvocation cbMI = ast.newMethodInvocation();
-		//³]©wcbMIªºName
+		//è¨­å®šcbMIçš„Name
 		cbMI.setName(ast.newSimpleName("warning"));
-		//³]©wcbMIªºExpression
+		//è¨­å®šcbMIçš„Expression
 		cbMI.setExpression(ast.newSimpleName("logger"));
 		
-		//³]©wcbMIªºargumentsªºMethod Invocation
+		//è¨­å®šcbMIçš„argumentsçš„Method Invocation
 		MethodInvocation cbarguMI = ast.newMethodInvocation();
 		cbarguMI.setName(ast.newSimpleName("getMessage"));
 		cbarguMI.setExpression(ast.newSimpleName("e"));
@@ -515,10 +515,10 @@ public class ExtractMethodRefactoring extends Refactoring {
 	}
 	
 	/**
-	 *  ¥[¤Jimport java.util.logging.Logger;
+	 *  åŠ å…¥import java.util.logging.Logger;
 	 */
 	private void addJavaLoggerLibrary() {
-		//§PÂ_¬O§_¦³import java.util.logging.Logger
+		//åˆ¤æ–·æ˜¯å¦æœ‰import java.util.logging.Logger
 		boolean isImportLibrary = false;
 		List<?> importList = actRoot.imports();
 		for(Object id : importList){
@@ -527,7 +527,7 @@ public class ExtractMethodRefactoring extends Refactoring {
 			}
 		}
 		
-		//°²¦p¨S¦³import,´N¥[¤J¨ìAST¤¤
+		//å‡å¦‚æ²’æœ‰import,å°±åŠ å…¥åˆ°ASTä¸­
 		AST rootAst = actRoot.getAST(); 
 		if (!isImportLibrary) {
 			ImportDeclaration imp = rootAst.newImportDeclaration();
@@ -537,14 +537,14 @@ public class ExtractMethodRefactoring extends Refactoring {
 	}
 	
 	/**
-	 * ¥[¤Jprivate Logger logger = Logger.getLogger(CarelessCleanUpTest.class.getName());
+	 * åŠ å…¥private Logger logger = Logger.getLogger(CarelessCleanUpTest.class.getName());
 	 * @param ast
 	 */
 	private void addLoggerField(AST ast) {
 		List<?> typeList = actRoot.types();
 		TypeDeclaration td = (TypeDeclaration) typeList.get(0);
 		
-		//­Y¤w¸g¥[¤Jjava logger«h¤£¥[¤J
+		//è‹¥å·²ç¶“åŠ å…¥java loggerå‰‡ä¸åŠ å…¥
 		List<?> bodyList = td.bodyDeclarations();
 		String result = "private Logger logger=Logger.getLogger";
 		for (Object node: bodyList) {
@@ -555,52 +555,52 @@ public class ExtractMethodRefactoring extends Refactoring {
 			}
 		}
 		
-		//¥[¤Jprivate Logger logger = Logger.getLogger(LoggerTest.class.getName());
+		//åŠ å…¥private Logger logger = Logger.getLogger(LoggerTest.class.getName());
 		VariableDeclarationFragment vdf = ast.newVariableDeclarationFragment();
-		//³]©wlogger
+		//è¨­å®šlogger
 		vdf.setName(ast.newSimpleName("logger"));
 		
-		//vdfªºinitializerªºMethod Invocation
+		//vdfçš„initializerçš„Method Invocation
 		MethodInvocation initMI = ast.newMethodInvocation();
-		//³]©winitMIªºName
+		//è¨­å®šinitMIçš„Name
 		initMI.setName(ast.newSimpleName("getLogger"));
-		//³]©winitMIªºExpression
+		//è¨­å®šinitMIçš„Expression
 		initMI.setExpression(ast.newSimpleName("Logger"));
 
-		/* ³]©warguMIªºExpression */
+		/* è¨­å®šarguMIçš„Expression */
 		MethodInvocation arguMI = ast.newMethodInvocation();
-		//³]©warguMIªºName
+		//è¨­å®šarguMIçš„Name
 		arguMI.setName(ast.newSimpleName("getName"));
 
-		/* ¨ú±oclass Name */
+		/* å–å¾—class Name */
 		ICompilationUnit icu = (ICompilationUnit) actOpenable;
 		String javaName = icu.getElementName();
-		//Âo±¼".java"
+		//æ¿¾æ‰".java"
 		String className = javaName.substring(0, javaName.length()-5);
-		//³]©wExpressionªºType Literal
+		//è¨­å®šExpressionçš„Type Literal
 		TypeLiteral tl = ast.newTypeLiteral();
 		tl.setType(ast.newSimpleType(ast.newName(className)));
 
 		arguMI.setExpression(tl);
 		
-		//³]©winitMIªºargumentsªºMethod Invocation
+		//è¨­å®šinitMIçš„argumentsçš„Method Invocation
 		initMI.arguments().add(arguMI);
 		vdf.setInitializer(initMI);
 
-		//«Ø¥ßFieldDeclaration
+		//å»ºç«‹FieldDeclaration
 		FieldDeclaration fd = ast.newFieldDeclaration(vdf);
 		fd.modifiers().add(ast.newModifier(Modifier.ModifierKeyword.PRIVATE_KEYWORD));
 		fd.setType(ast.newSimpleType(ast.newName("Logger")));
 
-		//±NFiled¼g¤JTypeTypeDeclaration¤¤¡Aª½±µ©ñ¤J²Ä¤@­ÓTypeDeclaration
+		//å°‡Filedå¯«å…¥TypeTypeDeclarationä¸­ï¼Œç›´æ¥æ”¾å…¥ç¬¬ä¸€å€‹TypeDeclaration
 		td.bodyDeclarations().add(0, fd);
 	}
 	
 	/**
-	 * ±N­nÅÜ§óªº¸ê®Æ¼g¦^¦ÜDocument¤¤
+	 * å°‡è¦è®Šæ›´çš„è³‡æ–™å¯«å›è‡³Documentä¸­
 	 */
 	private void applyRefactoringChange() {
-		//¼g¦^Edit¤¤
+		//å¯«å›Editä¸­
 		try {
 			ICompilationUnit cu = (ICompilationUnit) actOpenable;
 			Document document = new Document(cu.getBuffer().getContents());
@@ -635,7 +635,7 @@ public class ExtractMethodRefactoring extends Refactoring {
 	}
 	
 	/**
-	 * ³]¸m¤w¦s¦bªºMethod¸ê°T
+	 * è¨­ç½®å·²å­˜åœ¨çš„Methodè³‡è¨Š
 	 */
 	public RefactoringStatus setExistingMethod(IMethod method){
 		if (method == null) {
@@ -659,7 +659,7 @@ public class ExtractMethodRefactoring extends Refactoring {
 	}
 	
 	/**
-	 * ³]©w¬O§_¨Ï¥Î¤w¦s¦bªºMethod
+	 * è¨­å®šæ˜¯å¦ä½¿ç”¨å·²å­˜åœ¨çš„Method
 	 */
 	public RefactoringStatus setIsRefactoringMethodExist(boolean isMethodExist){
 		this.isMethodExist = isMethodExist;
@@ -667,7 +667,7 @@ public class ExtractMethodRefactoring extends Refactoring {
 	}
 	
 	/**
-	 * set methodNameÅÜ¼Æ¦WºÙ
+	 * set methodNameè®Šæ•¸åç¨±
 	 */
 	public RefactoringStatus setNewMethodName(String methodName){
 		if (methodName.length() == 0)
@@ -675,11 +675,11 @@ public class ExtractMethodRefactoring extends Refactoring {
 		
 		boolean isError = false;
 		char[] name = methodName.toCharArray();
-		// Method¦WºÙ²Ä¤@­Ó¦r¥u¯à¬°A~Z & a~z
+		// Methodåç¨±ç¬¬ä¸€å€‹å­—åªèƒ½ç‚ºA~Z & a~z
 		if (!(name[0] >= 'a' && name[0] <= 'z') && !(name[0] >= 'A' && name[0] <= 'Z'))
 			isError = true;
 
-		// Method¦WºÙ¤£¯à¦³¯S®í¦r¤¸
+		// Methodåç¨±ä¸èƒ½æœ‰ç‰¹æ®Šå­—å…ƒ
 		for (char c : name) {
 			if (!(c >= 'a' && c <= 'z') && !(c >= 'A' && c <= 'Z') && !(c >= '0' && c <= '9')) {
 				isError = true;
@@ -687,7 +687,7 @@ public class ExtractMethodRefactoring extends Refactoring {
 			}
 		}
 
-		// ¦WºÙ­Y¤£¹ï¡AÅã¥Ü¿ù»~°T®§
+		// åç¨±è‹¥ä¸å°ï¼Œé¡¯ç¤ºéŒ¯èª¤è¨Šæ¯
 		if (isError)
 			return RefactoringStatus.createFatalErrorStatus(methodName + " is not a valid Java identifer");
 		else

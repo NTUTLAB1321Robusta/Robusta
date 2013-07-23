@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 
 public class SmellReport {
 	private static Logger logger = LoggerFactory.getLogger(SmellReport.class);
-	//Report¸ê®Æ
+	//Reportè³‡æ–™
 	ReportModel model;
 
 	SmellReport(ReportModel reportModel) {
@@ -41,18 +41,18 @@ public class SmellReport {
 	}
 
 	/**
-	 * ²£¥ÍSmell Report
+	 * ç”¢ç”ŸSmell Report
 	 */
 	void build() {
 		if (model != null) {
 			try {
-				//²£¥ÍXML
+				//ç”¢ç”ŸXML
 				String xmlString = createXML();
-				//§Q¥ÎXML§âXSL¤ºªºÄæ¦ì¶ñ¤W¡A¨Ã²£¥ÍHTMÀÉ
+				//åˆ©ç”¨XMLæŠŠXSLå…§çš„æ¬„ä½å¡«ä¸Šï¼Œä¸¦ç”¢ç”ŸHTMæª”
 				createHTM(xmlString);
-				//¿é¥XHTMÀÉªºStyles.css
+				//è¼¸å‡ºHTMæª”çš„Styles.css
 				createStyles();
-				//¿é¥XHTMÀÉªºGIF¹Ï¤ù
+				//è¼¸å‡ºHTMæª”çš„GIFåœ–ç‰‡
 				createImageFile();
 			} catch (IOException e) {
 				logger.error("[IOException] EXCEPTION ", e);
@@ -61,28 +61,28 @@ public class SmellReport {
 	}
 
 	/**
-	 * ²£¥ÍXML (¨Ñºô­¶°Ñ·Ó¸ê®Æ)
+	 * ç”¢ç”ŸXML (ä¾›ç¶²é åƒç…§è³‡æ–™)
 	 * @return
 	 */
 	private String createXML() {
 		Element root = new Element("EHSmellReport");
 		Document myDocument = new Document(root);
-		//§âSummary¸ê®Æ¥[¦ÜXML Root
+		//æŠŠSummaryè³‡æ–™åŠ è‡³XML Root
 		printSummary(root);
-		//§âCode Information¥[¦ÜXML Root
+		//æŠŠCode InformationåŠ è‡³XML Root
 		printCodeInfo(root);
-		//§âPackagesÁ`Äı¸ê®Æ¥[¦ÜXML Root
+		//æŠŠPackagesç¸½è¦½è³‡æ–™åŠ è‡³XML Root
 		printAllPackageList(root);
-		//§âPackage¸ê®Æ¥[¦ÜXML Root
+		//æŠŠPackageè³‡æ–™åŠ è‡³XML Root
 		printPackageList(root);
 
 		Format fmt = Format.getPrettyFormat();
 		XMLOutputter xmlOut = new XMLOutputter(fmt);
 		StringWriter writer = new StringWriter();
        	try {
-       		//¿é¥XXML
+       		//è¼¸å‡ºXML
 			xmlOut.output(myDocument, writer);
-			//¦L¥XXML¦ÜCÁV (Debug¥Î)
+			//å°å‡ºXMLè‡³Cç³Ÿ (Debugç”¨)
 //			FileWriter writeXML = new FileWriter("/myFile.xml");
 //			xmlOut.output(myDocument, writeXML);
 		} catch (IOException e) {
@@ -90,34 +90,34 @@ public class SmellReport {
 		} finally {
 			closeStream(writer);
 		}
-		//§âXMLÂà¦¨¦r¦ê
+		//æŠŠXMLè½‰æˆå­—ä¸²
        	return writer.getBuffer().toString();
 	}
 
 	/**
-	 * §âSummary¸ê®Æ¥[¦ÜXML Root
+	 * æŠŠSummaryè³‡æ–™åŠ è‡³XML Root
 	 * @param root
 	 */
 	private void printSummary(Element root) {
-		///Summary¸ê®Æ¿é¥X///
+		///Summaryè³‡æ–™è¼¸å‡º///
 		Element summary = new Element("Summary");
 		summary.addContent(new Element("ProjectName").addContent(model.getProjectName()));
 		summary.addContent(new Element("DateTime").addContent(model.getBuildTime()));
 		summary.addContent(new Element("JPGPath").addContent("file:///" + model.getFilePath("Report.jpg", true)));
 		if (model.isDerectAllproject()) {
-			//­Y°»´ú¥ş³¡«h¦L¥X
+			//è‹¥åµæ¸¬å…¨éƒ¨å‰‡å°å‡º
 			summary.addContent(new Element("Filter").addContent("[All Project]"));		
 		} else {
-			//­Y¦³±ø¥ó¦L¥X±ø¥ó
+			//è‹¥æœ‰æ¢ä»¶å°å‡ºæ¢ä»¶
 			if (model.getFilterList().size() != 0)
 				summary.addContent(new Element("Filter").addContent(model.getFilterList().toString()));
-			//­Y¨S¦³±ø¥ó«h¦L¥X¨S¦³±ø¥ó
+			//è‹¥æ²’æœ‰æ¢ä»¶å‰‡å°å‡ºæ²’æœ‰æ¢ä»¶
 			else
 				summary.addContent(new Element("Filter").addContent("[No Package Select]"));			
 		}
 		root.addContent(summary);
 
-		///EH Smell List¸ê®Æ¿é¥X///
+		///EH Smell Listè³‡æ–™è¼¸å‡º///
 		Element smellList = new Element("EHSmellList");
 		smellList.addContent(new Element("EmptyCatchBlock").addContent(String.valueOf(model.getIgnoreTotalSize())));
 		smellList.addContent(new Element("DummyHandler").addContent(String.valueOf(model.getDummyTotalSize())));
@@ -131,11 +131,11 @@ public class SmellReport {
 	}
 	
 	/**
-	 * §âCode Information¥[¦ÜXML Root
+	 * æŠŠCode InformationåŠ è‡³XML Root
 	 * @param root
 	 */
 	private void printCodeInfo(Element root) {
-		///Code Information List ¸ê®Æ¿é¥X///
+		///Code Information List è³‡æ–™è¼¸å‡º///
 		Element codeInfoList = new Element("CodeInfoList");
 		codeInfoList.addContent(new Element("LOC").addContent(String.valueOf(model.getTotalLine())));
 		codeInfoList.addContent(new Element("TryNumber").addContent(String.valueOf(model.getTryCounter())));
@@ -145,11 +145,11 @@ public class SmellReport {
 	}
 	
 	/**
-	 * §âPackagesÁ`Äı¸ê®Æ¥[¦ÜXML Root
+	 * æŠŠPackagesç¸½è¦½è³‡æ–™åŠ è‡³XML Root
 	 * @param root
 	 */
 	private void printAllPackageList(Element root) {
-		///AllPackage List¸ê®Æ¿é¥X///
+		///AllPackage Listè³‡æ–™è¼¸å‡º///
 		Element allPackageList = new Element("AllPackageList");
 		allPackageList.addContent(new Element("JPGPath").addContent("file:///" + model.getFilePath("PackageReport.jpg", true)));
 		List<Element> packageList = new ArrayList<Element>(); 
@@ -157,7 +157,7 @@ public class SmellReport {
 			PackageModel packageModel = model.getPackage(i);
 			Element packages = new Element("Package");
 			packages.addContent(new Element("ID").addContent(String.valueOf(i)));
-			//²Ä¤@Äæ®ÑÅÒ³sµ²©MPackage¦WºÙ
+			//ç¬¬ä¸€æ¬„æ›¸ç±¤é€£çµå’ŒPackageåç¨±
 			packages.addContent(new Element("LOC").addContent(String.valueOf(packageModel.getTotalLine())));
 			packages.addContent(new Element("EmptyCatchBlock").addContent(String.valueOf(packageModel.getIgnoreSize())));
 			packages.addContent(new Element("DummyHandler").addContent(String.valueOf(packageModel.getDummySize())));
@@ -191,7 +191,7 @@ public class SmellReport {
 		// add remaining packageModel what total smell size is zero
 		allPackageList.addContent(packageList);
 		
-		///AllPackage List Á`©M¸ê®Æ¿é¥X///
+		///AllPackage List ç¸½å’Œè³‡æ–™è¼¸å‡º///
 		Element total = new Element("Total");
 		total.addContent(new Element("LOC").addContent(String.valueOf(model.getTotalLine())));
 		total.addContent(new Element("EmptyCatchTotal").addContent(String.valueOf(model.getIgnoreTotalSize())));
@@ -207,24 +207,24 @@ public class SmellReport {
 	}
 	
 	/**
-	 * §âPackage¸ê®Æ¥[¦ÜXML Root
+	 * æŠŠPackageè³‡æ–™åŠ è‡³XML Root
 	 * @param root
 	 */
 	private void printPackageList(Element root) {
-		//Ãö«Y¹Ï¡G
+		//é—œä¿‚åœ–ï¼š
 		//	PackageList
 		//		- Package
 		//			- PHOTO ID
 		//			- PackageName
 		//			- ClassList
-		//				-SmellData(¦h­Ó)
+		//				-SmellData(å¤šå€‹)
 		//					- ClassName
 		//					- MethodName
 		//					- SmellType
 		//					- Line
 		//			- Total
 		
-		///Package List ¸ê®Æ¿é¥X///
+		///Package List è³‡æ–™è¼¸å‡º///
 		Element packageList= new Element("PackageList");
 		for (int i=0; i < model.getPackagesSize(); i++) {
 			Element packages = new Element("Package");
@@ -239,13 +239,13 @@ public class SmellReport {
 				Element classList = new Element("ClassList");
 				for (int j=0; j<pkTemp.getClassSize(); j++) {
 					ClassModel clTemp = pkTemp.getClass(j);
-					//§âSmell¸ê°T¥[¦ÜClassList
+					//æŠŠSmellè³‡è¨ŠåŠ è‡³ClassList
 					if (clTemp.getSmellSize() > 0) {
 						for (int k = 0; k < clTemp.getSmellSize(); k++) {
 							Element smell = new Element("SmellData");
 							smell.addContent(new Element("ClassName").addContent(clTemp.getClassName()));
 							smell.addContent(new Element("State").addContent("0"));
-							//±ı³sµ²ªºSourceCode¸ê°T®æ¦¡
+							//æ¬²é€£çµçš„SourceCodeè³‡è¨Šæ ¼å¼
 							String codeLine = "#" + clTemp.getClassPath() + "#" + clTemp.getSmellLine(k) + "#";
 							smell.addContent(new Element("LinkCode").addContent(codeLine));
 							smell.addContent(new Element("MethodName").addContent(clTemp.getMethodName(k)));
@@ -264,7 +264,7 @@ public class SmellReport {
 	}
 
 	/**
-	 * ¿é¥XHTMÀÉªºStyles.css
+	 * è¼¸å‡ºHTMæª”çš„Styles.css
 	 * @throws IOException 
 	 */
 	void createStyles() throws IOException {
@@ -275,10 +275,10 @@ public class SmellReport {
 			inputStyle = this.getClass().getResourceAsStream("/xslTemplate/styles.css");
 			bReader = new BufferedReader(new InputStreamReader(inputStyle, "UTF-8"));
 			File stylePath = new File(model.getFilePath("styles.css", false));
-			//­Y¨S¦³¸ô®|´N«Ø¥ß¸ô®|
+			//è‹¥æ²’æœ‰è·¯å¾‘å°±å»ºç«‹è·¯å¾‘
 			if(!stylePath.exists()) {
 				fw = new FileWriter(model.getFilePath("styles.css", false));
-				//§âÅª¨ú¨ìªº¸ê®Æ¿é¥X
+				//æŠŠè®€å–åˆ°çš„è³‡æ–™è¼¸å‡º
 				String thisLine = null;
 				while ((thisLine = bReader.readLine()) != null) {
 					fw.write(thisLine);
@@ -294,7 +294,7 @@ public class SmellReport {
 	}
 
 	/**
-	 * HTML¸Ì·|¥Î¨ìªºGif ¹Ï¤ù
+	 * HTMLè£¡æœƒç”¨åˆ°çš„Gif åœ–ç‰‡
 	 * @throws IOException 
 	 * @throws IOException
 	 */
@@ -307,7 +307,7 @@ public class SmellReport {
 			input = this.getClass().getResourceAsStream("/xslTemplate/open.gif");
 			BufferedImage image = ImageIO.read(input);
 			File path = new File(model.getFilePath("open.gif", false));
-			//­YÀÉ®×¤£¦s¦b´N«Ø¥ß
+			//è‹¥æª”æ¡ˆä¸å­˜åœ¨å°±å»ºç«‹
 			if(!path.exists()) {
 				out = new FileOutputStream(model.getFilePath("open.gif", false));
 				ImageIO.write(image, "gif", out);
@@ -316,7 +316,7 @@ public class SmellReport {
 			input = this.getClass().getResourceAsStream("/xslTemplate/close.gif");
 			image = ImageIO.read(input);
 			path = new File(model.getFilePath("close.gif", false));
-			//­YÀÉ®×¤£¦s¦b´N«Ø¥ß
+			//è‹¥æª”æ¡ˆä¸å­˜åœ¨å°±å»ºç«‹
 			if(!path.exists()) {
 				out = new FileOutputStream(model.getFilePath("close.gif", false));
 				ImageIO.write(image, "gif", out);
@@ -331,7 +331,7 @@ public class SmellReport {
 	}
 	
 	/**
-	 * Ãö³¬IOStream
+	 * é—œé–‰IOStream
 	 * @param io
 	 */
 	void closeStream(Closeable io) {
@@ -344,7 +344,7 @@ public class SmellReport {
 	}
 	
 	/**
-	 * §Q¥ÎXML§âXSL¤ºªºÄæ¦ì¶ñ¤W¡A¨Ã²£¥ÍHTMÀÉ
+	 * åˆ©ç”¨XMLæŠŠXSLå…§çš„æ¬„ä½å¡«ä¸Šï¼Œä¸¦ç”¢ç”ŸHTMæª”
 	 * @param xmlString
 	 * @throws IOException
 	 */

@@ -17,7 +17,7 @@ public class RLNature implements IProjectNature {
 	public static IProject project;
 
 	/*
-	 * ±NRLBuilder¥[¤J±M®×¤¤¡A¨Ï»P±M®×²£¥ÍÃöÁp©Ê
+	 * å°‡RLBuilderåŠ å…¥å°ˆæ¡ˆä¸­ï¼Œä½¿èˆ‡å°ˆæ¡ˆç”¢ç”Ÿé—œè¯æ€§
 	 * 
 	 * @see org.eclipse.core.resources.IProjectNature#configure()
 	 */
@@ -25,14 +25,14 @@ public class RLNature implements IProjectNature {
 		IProjectDescription desc = project.getDescription();
 		ICommand[] commands = desc.getBuildSpec();
 
-		// ­YRLBuilder¤w¦b±M®×¸Ì«h¤£°µ¨Æ
+		// è‹¥RLBuilderå·²åœ¨å°ˆæ¡ˆè£¡å‰‡ä¸åšäº‹
 		for (int i = 0; i < commands.length; ++i) {
 			if (commands[i].getBuilderName().equals(RLBuilder.BUILDER_ID)) {
 				return;
 			}
 		}
 
-		// ±NRLBuilder¥[¤J±M®×¤¤
+		// å°‡RLBuilderåŠ å…¥å°ˆæ¡ˆä¸­
 		ICommand[] newCommands = new ICommand[commands.length + 1];
 		System.arraycopy(commands, 0, newCommands, 0, commands.length);
 		ICommand command = desc.newCommand();
@@ -43,7 +43,7 @@ public class RLNature implements IProjectNature {
 	}
 
 	/*
-	 * ±N±M®×¸Ñ°£RLBuilderÃöÁp
+	 * å°‡å°ˆæ¡ˆè§£é™¤RLBuilderé—œè¯
 	 * 
 	 * @see org.eclipse.core.resources.IProjectNature#deconfigure()
 	 */

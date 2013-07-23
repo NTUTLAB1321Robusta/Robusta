@@ -46,42 +46,42 @@ public class QuickFixUtils {
 	@SuppressWarnings("unchecked")
 	public static NormalAnnotation makeRLAnnotation(AST ast, int levelVal, String exceptionType) {
 		/*
-		 * ³o¼Ë¤@¾ã¬q¡A¬O¤@ºØNormalAnnotation
+		 * é€™æ¨£ä¸€æ•´æ®µï¼Œæ˜¯ä¸€ç¨®NormalAnnotation
 		 * @Robustness(value = {
             @RTag(level = 2, exception = java.io.FileNotFoundException.class),
             @RTag(level = 2, exception = java.io.IOException.class) })
          *   
-         * ³o¼Ë¤@¾ã¬q¡A³£¬OMemberValuePair
+         * é€™æ¨£ä¸€æ•´æ®µï¼Œéƒ½æ˜¯MemberValuePair
 		 * value = {
             @RTag(level = 2, exception = java.io.FileNotFoundException.class),
             @RTag(level = 2, exception = java.io.IOException.class) }
          *
-         * ¦bMemberValuePair¤¤ªºValue¸Ì­±¡A¤U­±³o¬q¬OArrayInitializer
+         * åœ¨MemberValuePairä¸­çš„Valueè£¡é¢ï¼Œä¸‹é¢é€™æ®µæ˜¯ArrayInitializer
          * {
             @RTag(level = 2, exception = java.io.FileNotFoundException.class),
             @RTag(level = 2, exception = java.io.IOException.class) }
          *
-         * ¦bArrayInitializer¸Ìªº¨ä¤¤¤@­Ó¤¸¯À¡A¤S¬O¥t¤@¬qNormal Annotation
+         * åœ¨ArrayInitializerè£¡çš„å…¶ä¸­ä¸€å€‹å…ƒç´ ï¼Œåˆæ˜¯å¦ä¸€æ®µNormal Annotation
            @RTag(level = 2, exception = java.io.FileNotFoundException.class)
          * 
-         * ¦b³o¬qNormalAnnotation¸Ì­±¡A¦³¨â­ÓMemberValuePair
+         * åœ¨é€™æ®µNormalAnnotationè£¡é¢ï¼Œæœ‰å…©å€‹MemberValuePair
            level = 2
            exception = java.io.FileNotFoundException.class
          *
-         * ¦b level = 2³o­ÓMemberValuePair¤¤¡A2 ¬ONumberLiteral
+         * åœ¨ level = 2é€™å€‹MemberValuePairä¸­ï¼Œ2 æ˜¯NumberLiteral
            
-           exception = java.io.FileNotFoundException.class¡A
-           java.io.FileNotFoundException.class ¬OTypeLiteral
+           exception = java.io.FileNotFoundException.classï¼Œ
+           java.io.FileNotFoundException.class æ˜¯TypeLiteral
          * 
 		 */
 		
-		//­n«Ø¥ß@RTag(level=1, exception=java.lang.RuntimeException.class)³o¼ËªºAnnotation
+		//è¦å»ºç«‹@RTag(level=1, exception=java.lang.RuntimeException.class)é€™æ¨£çš„Annotation
 		NormalAnnotation rlNormalAnnotation = ast.newNormalAnnotation();
 		rlNormalAnnotation.setTypeName(ast.newSimpleName(RTag.class.getSimpleName()));
 
 		MemberValuePair level = ast.newMemberValuePair();
 		level.setName(ast.newSimpleName(RTag.LEVEL));
-		//throw statement ¹w³]level = 1
+		//throw statement é è¨­level = 1
 		level.setValue(ast.newNumberLiteral(String.valueOf(levelVal)));
 		//TODO HOW TO ADD without warning
 		rlNormalAnnotation.values().add(level);
@@ -133,8 +133,8 @@ public class QuickFixUtils {
 	}
 	
 	/**
-	 * ¦b«ü©wªºmethod declaration¤W­±«Å§i©ß¥X¨Ò¥~¡C
-	 * ¦pªG¦³¤w¸g¦³«Å§i©ß¥X¨Ò¥~¡A´N¤£¦A«Å§i¡C
+	 * åœ¨æŒ‡å®šçš„method declarationä¸Šé¢å®£å‘Šæ‹‹å‡ºä¾‹å¤–ã€‚
+	 * å¦‚æœæœ‰å·²ç¶“æœ‰å®£å‘Šæ‹‹å‡ºä¾‹å¤–ï¼Œå°±ä¸å†å®£å‘Šã€‚
 	 * @param ast
 	 * @param methodDeclaration
 	 * @param exceptionName
@@ -143,13 +143,13 @@ public class QuickFixUtils {
 	public static void addThrowExceptionOnMethodDeclaration(AST ast, MethodDeclaration methodDeclaration, String exceptionName) {
 		// TODO unchecked type
 		List<SimpleName> thrownExceptions = methodDeclaration.thrownExceptions();
-		// ¨S¦³¥ô¦ó©ß¥X¨Ò¥~ªº«Å§i¡A¨º´Nª½±µ¥[¤W¥h
+		// æ²’æœ‰ä»»ä½•æ‹‹å‡ºä¾‹å¤–çš„å®£å‘Šï¼Œé‚£å°±ç›´æ¥åŠ ä¸Šå»
 		if(thrownExceptions.size() == 0) {
 			thrownExceptions.add(ast.newSimpleName(exceptionName));
 			return;
 		}
 		
-		// ¦³©ß¥X¨Ò¥~ªº«Å§i¡A¦AÀË¬d«á¤~©ß¥X
+		// æœ‰æ‹‹å‡ºä¾‹å¤–çš„å®£å‘Šï¼Œå†æª¢æŸ¥å¾Œæ‰æ‹‹å‡º
 		for(SimpleName thrownEx : thrownExceptions) {
 			if(thrownEx.getIdentifier().equals(exceptionName)) {
 				thrownExceptions.add(ast.newSimpleName(exceptionName));
@@ -159,7 +159,7 @@ public class QuickFixUtils {
 	}
 
 	/**
-	 * ¦b¯S©wMethod¤W¼W¥[±j°·«×µ¥¯Åµù°O
+	 * åœ¨ç‰¹å®šMethodä¸Šå¢åŠ å¼·å¥åº¦ç­‰ç´šè¨»è¨˜
 	 * @param ast
 	 * @param compilationUnit
 	 * @param methodDeclaration
@@ -178,10 +178,10 @@ public class QuickFixUtils {
 		
 		List<RLMessage> existedRobustnessLevelAnnotation = getExceptionCodeSmells(compilationUnit, methodDeclaration);
 		if(existedRobustnessLevelAnnotation.size() == 0) {
-			// ¥»¨Ó¨S¦³±j°·«×µ¥¯Åµù°O
+			// æœ¬ä¾†æ²’æœ‰å¼·å¥åº¦ç­‰ç´šè¨»è¨˜
 			rlary.expressions().add(getRobustnessAnnotation(ast, 1,	RuntimeException.class.getSimpleName()));
 		}else {
-			// ¥»¨Ó´N¦³±j°·«×µ¥¯Åµù°O
+			// æœ¬ä¾†å°±æœ‰å¼·å¥åº¦ç­‰ç´šè¨»è¨˜
 			for(RLMessage robustnessAnnotation : existedRobustnessLevelAnnotation) {
 				int pos = robustnessAnnotation.getRLData().getExceptionType().lastIndexOf(".");
 				String cut = robustnessAnnotation.getRLData().getExceptionType().toString().substring(pos+1);
@@ -196,7 +196,7 @@ public class QuickFixUtils {
 			
 			List<IExtendedModifier> modifiers = methodDeclaration.modifiers();
 			for (int i = 0, size = modifiers.size(); i < size; i++) {
-				//§ä¨ìÂÂ¦³ªºannotation«á±N¥¦²¾°£
+				//æ‰¾åˆ°èˆŠæœ‰çš„annotationå¾Œå°‡å®ƒç§»é™¤
 				if (modifiers.get(i).isAnnotation() && modifiers.get(i).toString().indexOf(Robustness.class.getSimpleName()) != -1) {
 					methodDeclaration.modifiers().remove(i);
 					break;
@@ -212,13 +212,13 @@ public class QuickFixUtils {
 	}
 	
 	/**
-	 * ¥[¤W±j°·«×µ¥¯Åµù°Oªºimport¸ê°T
+	 * åŠ ä¸Šå¼·å¥åº¦ç­‰ç´šè¨»è¨˜çš„importè³‡è¨Š
 	 * @param compilationUnit
 	 */
 	private static void addRobustnessAndRTagImporting(CompilationUnit compilationUnit) {
-		// §PÂ_¬O§_¤w¸gImport Robustness¤ÎRLªº«Å§i
+		// åˆ¤æ–·æ˜¯å¦å·²ç¶“Import RobustnessåŠRLçš„å®£å‘Š
 		List<ImportDeclaration> importList = compilationUnit.imports();
-		//¬O§_¤w¦s¦bRobustness¤ÎRLªº«Å§i
+		//æ˜¯å¦å·²å­˜åœ¨RobustnessåŠRLçš„å®£å‘Š
 		boolean isImportRobustnessClass = false;
 		boolean isImportRLClass = false;
 
@@ -245,15 +245,15 @@ public class QuickFixUtils {
 	}
 	
 	private static NormalAnnotation getRobustnessAnnotation(AST ast, int levelVal, String excption) {
-		// ­n«Ø¥ß@Tag(level=1,
-		// exception=java.lang.RuntimeException.class)³o¼ËªºAnnotation
+		// è¦å»ºç«‹@Tag(level=1,
+		// exception=java.lang.RuntimeException.class)é€™æ¨£çš„Annotation
 		NormalAnnotation rl = ast.newNormalAnnotation();
 		rl.setTypeName(ast.newSimpleName(RTag.class.getSimpleName().toString()));
 
 		// level = 1
 		MemberValuePair level = ast.newMemberValuePair();
 		level.setName(ast.newSimpleName(RTag.LEVEL));
-		// throw statement ¹w³]level = 1
+		// throw statement é è¨­level = 1
 		level.setValue(ast.newNumberLiteral(String.valueOf(levelVal)));
 		rl.values().add(level);
 
@@ -261,7 +261,7 @@ public class QuickFixUtils {
 		MemberValuePair exception = ast.newMemberValuePair();
 		exception.setName(ast.newSimpleName(RTag.EXCEPTION));
 		TypeLiteral exclass = ast.newTypeLiteral();
-		// ¹w³]¬°RuntimeException
+		// é è¨­ç‚ºRuntimeException
 		exclass.setType(ast.newSimpleType(ast.newName(excption)));
 		exception.setValue(exclass);
 		rl.values().add(exception);
@@ -270,10 +270,10 @@ public class QuickFixUtils {
 	}
 
 	/**
-	 * ±q¯S©wMethod¤W¡A¨ú±o«ü©wªº¨Ò¥~³B²zÃa¨ı¹D
+	 * å¾ç‰¹å®šMethodä¸Šï¼Œå–å¾—æŒ‡å®šçš„ä¾‹å¤–è™•ç†å£å‘³é“
 	 * 
-	 * @param problem §A·Q­n»`¶°ªº¨Ò¥~³B²zÃa¨ı¹D
-	 * @param methodDeclaration §A«ü©w±q­ş­ÓMethod¤W»`¶°
+	 * @param problem ä½ æƒ³è¦è’é›†çš„ä¾‹å¤–è™•ç†å£å‘³é“
+	 * @param methodDeclaration ä½ æŒ‡å®šå¾å“ªå€‹Methodä¸Šè’é›†
 	 * @return
 	 */
 	public static List<RLMessage> getExceptionCodeSmells(
@@ -286,7 +286,7 @@ public class QuickFixUtils {
 	}
 	
 	/**
-	 * ±qIResource¨ú±oCompilationUnit
+	 * å¾IResourceå–å¾—CompilationUnit
 	 * @param resource
 	 * @return
 	 */
@@ -304,14 +304,14 @@ public class QuickFixUtils {
 				parser.setResolveBindings(true);
 				compilationUnit = (CompilationUnit) parser.createAST(null);
 				
-				//AST 2.0¬ö¿ı¤è¦¡
+				//AST 2.0ç´€éŒ„æ–¹å¼
 				compilationUnit.recordModifications();			
 		}
 		return compilationUnit;
 	}
 	
 	/**
-	 * ®Ú¾ÚMethodDeclarationªº¯Á¤Ş½s¸¹¡A±qCompilationUnit¨ú¥XMethodDeclaration node
+	 * æ ¹æ“šMethodDeclarationçš„ç´¢å¼•ç·¨è™Ÿï¼Œå¾CompilationUnitå–å‡ºMethodDeclaration node
 	 * @param compilationUnit
 	 * @param methodIndex
 	 * @return
@@ -321,12 +321,12 @@ public class QuickFixUtils {
 		compilationUnit.accept(methodCollector);
 		List<MethodDeclaration> methodList = methodCollector.getMethodList();
 		
-		//¨ú±o¥Ø«e­n³Q­×§ïªºmethod node
+		//å–å¾—ç›®å‰è¦è¢«ä¿®æ”¹çš„method node
 		return methodList.get(methodIndex);
 	}
 	
 	/**
-	 * ¼W¥[¤@­Ó©ß¥X¨Ò¥~ªº«Å§i
+	 * å¢åŠ ä¸€å€‹æ‹‹å‡ºä¾‹å¤–çš„å®£å‘Š
 	 * @param ast
 	 * @param exceptionType
 	 * @return
@@ -348,33 +348,33 @@ public class QuickFixUtils {
 	}
 
 	/**
-	 * ²£¥Íthrow new xxxException()ªº¸`ÂI
+	 * ç”¢ç”Ÿthrow new xxxException()çš„ç¯€é»
 	 * @param ast
-	 * @param exceptionVariableName catch(IOException e)¸Ì­±ªºe
-	 * @param exceptionType ­n­«·s©ß¥Xªº¨Ò¥~Ãş«¬
+	 * @param exceptionVariableName catch(IOException e)è£¡é¢çš„e
+	 * @param exceptionType è¦é‡æ–°æ‹‹å‡ºçš„ä¾‹å¤–é¡å‹
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")	
 	public static ASTNode generateThrowNewExceptionNode(String exceptionVariableName, AST ast, String exceptionType) {
-		// ¦Û¦æ«Ø¥ß¤@­Óthrow statement¥[¤J
+		// è‡ªè¡Œå»ºç«‹ä¸€å€‹throw statementåŠ å…¥
 		ThrowStatement ts = ast.newThrowStatement();
 		
-		// ±Nthrowªºvariable¶Ç¤J
+		// å°‡throwçš„variableå‚³å…¥
 		ClassInstanceCreation cic = ast.newClassInstanceCreation();
 		// throw new RuntimeException()
 		cic.setType(ast.newSimpleType(ast.newSimpleName(exceptionType)));
 		// TODO: How to add without warning
-		// ±Nthrow new RuntimeException(ex)¬A¸¹¤¤¥[¤J°Ñ¼Æ
+		// å°‡throw new RuntimeException(ex)æ‹¬è™Ÿä¸­åŠ å…¥åƒæ•¸
 		cic.arguments().add(ast.newSimpleName(exceptionVariableName));
 		ts.setExpression(cic);
 		return ts;
 	}
 	
 	/**
-	 * ±N«ü©wªºcatch clause¤¤­ì¨Ó©ß¥Xªº¨Ò¥~Âà«¬¦¨¨ä¥L¨Ò¥~©ß¥X
-	 * @param cc «ü©wªºcatch clause
-	 * @param ast CompilationUnitªºAST
-	 * @param exceptionType ·Q­nÂà«¬¦¨¦¹ºØ¨Ò¥~©ß¥X
+	 * å°‡æŒ‡å®šçš„catch clauseä¸­åŸä¾†æ‹‹å‡ºçš„ä¾‹å¤–è½‰å‹æˆå…¶ä»–ä¾‹å¤–æ‹‹å‡º
+	 * @param cc æŒ‡å®šçš„catch clause
+	 * @param ast CompilationUnitçš„AST
+	 * @param exceptionType æƒ³è¦è½‰å‹æˆæ­¤ç¨®ä¾‹å¤–æ‹‹å‡º
 	 */
 	@SuppressWarnings("unchecked")
 	public static void addThrowRefinedException(CatchClause cc, AST ast, String exceptionType) {
@@ -405,7 +405,7 @@ public class QuickFixUtils {
 	
 	@SuppressWarnings("unchecked")
 	public static void addImportDeclaration(CompilationUnit compilationUnit, IType exceptionType) {
-		// §PÂ_¬O§_¦³import library
+		// åˆ¤æ–·æ˜¯å¦æœ‰import library
 		boolean isImportLibrary = false;
 		List<ImportDeclaration> importList = compilationUnit.imports();
 		for(ImportDeclaration id : importList) {
@@ -415,7 +415,7 @@ public class QuickFixUtils {
 			}
 		}
 		
-		// °²¦p¨S¦³import´N¥[¤J¨ìAST¤¤
+		// å‡å¦‚æ²’æœ‰importå°±åŠ å…¥åˆ°ASTä¸­
 		AST compilationUnitAST = compilationUnit.getAST(); 
 		if(!isImportLibrary) {
 			ImportDeclaration imp = compilationUnitAST.newImportDeclaration();

@@ -33,19 +33,19 @@ public class RLMessage {
 
 	private int lineNumber;
 
-	// ¬O§_³Q³B²z
+	// æ˜¯å¦è¢«è™•ç†
 	private boolean handling = false;
 
-	// ¬O§_³Q­°¯Å(Tag Level)
+	// æ˜¯å¦è¢«é™ç´š(Tag Level)
 	private boolean reduction = false;
 
-	// ¬O§_¬°Checked Exception
+	// æ˜¯å¦ç‚ºChecked Exception
 	private boolean checkedException = false;
 
-	// ¬O§_³QCatch
+	// æ˜¯å¦è¢«Catch
 	private boolean handleByCatch = false;
 
-	// µù°OªºException²M¥U¦ì¸m
+	// è¨»è¨˜çš„Exceptionæ¸…å†Šä½ç½®
 	private Map<String, String> handleExMap;
 
 	public RLMessage(int level, ITypeBinding typeBinding, int pos, int lineNumber) {
@@ -182,7 +182,7 @@ public class RLMessage {
 	}
 
 	/**
-	 * §R°£Key Arrayªº³Ì«á¤@­Ó¤¸¯À
+	 * åˆªé™¤Key Arrayçš„æœ€å¾Œä¸€å€‹å…ƒç´ 
 	 * 
 	 */
 	public void decreaseKeyList() {
@@ -262,7 +262,7 @@ public class RLMessage {
 	}
 
 	public String toControlString() {
-		return "¢IKEY=[" + this.key + "] ¢IKEY_SIZE=[" + this.getKeySize() + "] ¢IKEY_ARRAY="
+		return "ï¼ KEY=[" + this.key + "] ï¼ KEY_SIZE=[" + this.getKeySize() + "] ï¼ KEY_ARRAY="
 				+ this.getKeyString(this.getKeySize() - 1) + "]";
 	}
 

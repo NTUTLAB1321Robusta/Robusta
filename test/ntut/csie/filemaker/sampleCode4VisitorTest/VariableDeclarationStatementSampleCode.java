@@ -13,7 +13,7 @@ public class VariableDeclarationStatementSampleCode {
 	}
 	
 	public void declareInMethodUseInIfStatement() {
-		String localString = "¤d¤s³¾­¸µ´";
+		String localString = "åƒå±±é³¥é£›çµ•";
 		int nothing = 1;
 		if(nothing == 1) {
 			localString.getBytes();
@@ -22,12 +22,12 @@ public class VariableDeclarationStatementSampleCode {
 	}
 	
 	public void declareSameNameInstanceInDifferentMethodDeclaration_MD1() {
-		String sameName = "¤@µ°¤@¶º¡A·í«ä¨Ó³B¤£©ö";
+		String sameName = "ä¸€ç²¥ä¸€é£¯ï¼Œç•¶æ€ä¾†è™•ä¸æ˜“";
 		sameName.toCharArray();
 	}
 	
 	public void declareSameNameInstanceInDifferentMethodDeclaration_MD2() {
-		String sameName = "¤@µ°¤@¶º¡A·í«ä¨Ó³B¤£©ö";
+		String sameName = "ä¸€ç²¥ä¸€é£¯ï¼Œç•¶æ€ä¾†è™•ä¸æ˜“";
 		sameName.toCharArray();
 	}
 }

@@ -16,8 +16,8 @@ import org.eclipse.ui.actions.ActionGroup;
 
 public class CallersViewAction extends ActionGroup {
 
-	private static final String TYPE_CALL_UP = "Åã¥Ü¤W¼h©I¥sªÌ¶¥¼h";
-	private static final String TYPE_CALL_DOWN = "Åã¥Ü©I¥s¶¥¼h";
+	private static final String TYPE_CALL_UP = "é¡¯ç¤ºä¸Šå±¤å‘¼å«è€…éšå±¤";
+	private static final String TYPE_CALL_DOWN = "é¡¯ç¤ºå‘¼å«éšå±¤";
 
 	public static final String MENU_GROUP_ID = "MAIN_MENU";
 
@@ -35,13 +35,13 @@ public class CallersViewAction extends ActionGroup {
 
 	private ChangeCallerTypeAction showCalleeInfoAction;
 
-	//Åã¥ÜRobustness Level»P¨Ò¥~¸ê°T
+	//é¡¯ç¤ºRobustness Levelèˆ‡ä¾‹å¤–è³‡è¨Š
 	private ShowRobustnessInfoAction showRLInfoAction;
 	
-	//¦C¦L²£¥ÍªºSequence Diagramªº°Ê§@
+	//åˆ—å°ç”¢ç”Ÿçš„Sequence Diagramçš„å‹•ä½œ
 	private PrintSDAction printSDAction; 
 	
-	//±N²£¥ÍªºSequence Diagram¦sÀÉªº°Ê§@
+	//å°‡ç”¢ç”Ÿçš„Sequence Diagramå­˜æª”çš„å‹•ä½œ
 //	private SaveSDAction saveSDAction;
 
 	public CallersViewAction(CallersView view) {
@@ -69,13 +69,13 @@ public class CallersViewAction extends ActionGroup {
 	}
 	
 	/**
-	 * Åã¥Ü¨Ò¥~»P±j°·«×¸ê°T
+	 * é¡¯ç¤ºä¾‹å¤–èˆ‡å¼·å¥åº¦è³‡è¨Š
 	 * @author Shiau
 	 */
 	private class ShowRobustnessInfoAction extends Action {
 		public ShowRobustnessInfoAction() {
-			super("&Åã¥Ü¨Ò¥~¸ê°T", ImageManager.getInstance().getDescriptor("annotation"));
-			setToolTipText("&Åã¥Ü¨Ò¥~¸ê°T");
+			super("&é¡¯ç¤ºä¾‹å¤–è³‡è¨Š", ImageManager.getInstance().getDescriptor("annotation"));
+			setToolTipText("&é¡¯ç¤ºä¾‹å¤–è³‡è¨Š");
 			this.setChecked(false);
 		}
 
@@ -83,13 +83,13 @@ public class CallersViewAction extends ActionGroup {
 		 * @see org.eclipse.jface.action.Action#run()
 		 */
 		public void run() {
-			//³]¸m¬O§_Åã¥ÜException¸ê°T
+			//è¨­ç½®æ˜¯å¦é¡¯ç¤ºExceptionè³‡è¨Š
 			if (showRLInfoAction.isChecked())
 				getView().showRLInfo(true);
 			else
 				getView().showRLInfo(false);
 			
-			//§ó·s
+			//æ›´æ–°
 			getView().updateView();
 		}
 	}
@@ -113,8 +113,8 @@ public class CallersViewAction extends ActionGroup {
 	 */
 	private class PrintSDAction extends Action{
 		public PrintSDAction(){
-			super("¦C¦L´`§Ç¹Ï",ImageManager.getInstance().getDescriptor("print_sd"));
-			setToolTipText("¦C¦L´`§Ç¹Ï");
+			super("åˆ—å°å¾ªåºåœ–",ImageManager.getInstance().getDescriptor("print_sd"));
+			setToolTipText("åˆ—å°å¾ªåºåœ–");
 			
 		}
 		
@@ -129,8 +129,8 @@ public class CallersViewAction extends ActionGroup {
 	
 	private class AddRLAnnotationAction extends Action {
 		public AddRLAnnotationAction() {
-			super("·s¼W©Ò¦³¤Ä¿ï¶µ¥ØªºRL Annotation", ImageManager.getInstance().getDescriptor("annotation"));
-			setToolTipText("·s¼W©Ò¦³¤Ä¿ï¶µ¥ØªºRL Annotation");
+			super("æ–°å¢æ‰€æœ‰å‹¾é¸é …ç›®çš„RL Annotation", ImageManager.getInstance().getDescriptor("annotation"));
+			setToolTipText("æ–°å¢æ‰€æœ‰å‹¾é¸é …ç›®çš„RL Annotation");
 		}
 
 		/**
@@ -142,13 +142,13 @@ public class CallersViewAction extends ActionGroup {
 	}
 
 	/**
-	 * ²M°£©Ò¤Ä¿ïªº¶µ¥Ø
+	 * æ¸…é™¤æ‰€å‹¾é¸çš„é …ç›®
 	 * @author chenyf
 	 */
 	private class GenSeqDiagramSelectedAction extends Action {
 		public GenSeqDiagramSelectedAction() {
-			super("²£¥Í´`§Ç¹Ï", ImageManager.getInstance().getDescriptor("unchecked"));
-			setToolTipText("²£¥Í´`§Ç¹Ï");
+			super("ç”¢ç”Ÿå¾ªåºåœ–", ImageManager.getInstance().getDescriptor("unchecked"));
+			setToolTipText("ç”¢ç”Ÿå¾ªåºåœ–");
 		}
 
 		/*

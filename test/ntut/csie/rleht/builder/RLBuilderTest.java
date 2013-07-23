@@ -44,7 +44,7 @@ public class RLBuilderTest {
 		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.FOLDERNAME_LIB_JAR, JavaProjectMaker.FOLDERNAME_BIN_CLASS);
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/" + JavaProjectMaker.RL_LIBRARY_PATH);
 		javaProjectMaker.setJREDefaultContainer();
-		// ®Ú¾Ú´ú¸ÕÀÉ®×¼Ë¥»¤º®e«Ø¥ß·sªºÀÉ®×
+		// æ ¹æ“šæ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹å»ºç«‹æ–°çš„æª”æ¡ˆ
 		javaFile2String.read(CarelessCleanupExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				CarelessCleanupExample.class.getPackage().getName(),
@@ -69,7 +69,7 @@ public class RLBuilderTest {
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
-		/* ´ú¸Õ¨Ï¥ÎªÌ³]©wPattern®É­Ô¨Ï¥Î */
+		/* æ¸¬è©¦ä½¿ç”¨è€…è¨­å®šPatternæ™‚å€™ä½¿ç”¨ */
 		javaFile2String.read(UserDefinedCarelessCleanupWeather.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				UserDefinedCarelessCleanupWeather.class.getPackage().getName(),
@@ -86,14 +86,14 @@ public class RLBuilderTest {
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 
-		/** ²£¥ÍÂÂª©³]©wÀÉ */
+		/** ç”¢ç”ŸèˆŠç‰ˆè¨­å®šæª” */
 		String oldSettingsContents = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<CodeSmellDetect>\r\n  <CarelessCleanUp>\r\n    <rule detusermethod=\"Y\" />\r\n    <librule EH_STAR.lib=\"Y\" aaa.EH_STAR=\"Y\" />\r\n  </CarelessCleanUp>\r\n  <DetectSmell>\r\n    <rule detectall=\"Y\" Empty_Catch_Block=\"Y\" Dummy_Handler=\"Y\" Nested_Try_Block=\"Y\" Unprotected_Main_Program=\"Y\" Careless_CleanUp=\"Y\" Over_Logging=\"Y\" />\r\n  </DetectSmell>\r\n  <DummyHandler>\r\n    <rule eprintstacktrace=\"Y\" systemoutprint=\"Y\" apache_log4j=\"N\" java_Logger=\"N\" />\r\n    <librule report.EH_STAR=\"Y\" />\r\n  </DummyHandler>\r\n  <OverLogging>\r\n    <rule apache_log4j=\"Y\" java_Logger=\"Y\" />\r\n    <librule />\r\n    <exrule detectionTransException=\"Y\" />\r\n  </OverLogging>\r\n</CodeSmellDetect>\r\n\r\n";
 		FileWriter fw = null;
 		fw = new FileWriter(ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString() + File.separator + "CSPreference.xml");
 		fw.write(oldSettingsContents);
 		fw.close();
 		
-		/** ²£¥Í·sª©³]©wÀÉ */
+		/** ç”¢ç”Ÿæ–°ç‰ˆè¨­å®šæª” */
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		smellSettings.addCarelessCleanupPattern(UserDefinedCarelessCleanupWeather.class.getName() + ".bark", true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
@@ -125,7 +125,7 @@ public class RLBuilderTest {
 //		IFile iFile = (IFile)resource;
 //		for (int i = 0; i < 24; i++) {
 //			IMarker im = iFile.getMarker(Long.valueOf(i));
-//			assertTrue("²Ä" + String.valueOf(i) + "­ÓMarker¦³°ÝÃD¡C", im.exists());
+//			assertTrue("ç¬¬" + String.valueOf(i) + "å€‹Markeræœ‰å•é¡Œã€‚", im.exists());
 //		}
 	}
 }

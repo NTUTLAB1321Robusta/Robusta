@@ -14,7 +14,7 @@ public class DeclaredExceptionSampleCode {
 	}
 	
 	/**
-	 * ³o­ÓÅªÀÉ¥\¯à·|©ß¥XRuntimeException
+	 * é€™å€‹è®€æª”åŠŸèƒ½æœƒæ‹‹å‡ºRuntimeException
 	 * @return
 	 * @throws RuntimeException
 	 */
@@ -47,7 +47,7 @@ public class DeclaredExceptionSampleCode {
 	}
 
 	/**
-	 * ³o­Ó¼gÀÉ®×¥\¯à·|©ß¥X¨âºØ¨Ò¥~
+	 * é€™å€‹å¯«æª”æ¡ˆåŠŸèƒ½æœƒæ‹‹å‡ºå…©ç¨®ä¾‹å¤–
 	 * @param outputPath
 	 * @param content
 	 * @throws FileNotFoundException
@@ -74,7 +74,7 @@ public class DeclaredExceptionSampleCode {
 	}
 	
 	/**
-	 * ´ú¸Õthrow new xxxExceptionªº§Î¦¡
+	 * æ¸¬è©¦throw new xxxExceptionçš„å½¢å¼
 	 * @param filepath
 	 * @return
 	 */
@@ -88,7 +88,7 @@ public class DeclaredExceptionSampleCode {
 	}
 	
 	/**
-	 * ´ú¸Õthrow new xxxException»Pthrow eªº§Î¦¡
+	 * æ¸¬è©¦throw new xxxExceptionèˆ‡throw eçš„å½¢å¼
 	 * @param filepath
 	 * @return
 	 * @throws IOException

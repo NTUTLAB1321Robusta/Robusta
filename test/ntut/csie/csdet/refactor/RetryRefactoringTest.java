@@ -73,21 +73,21 @@ public class RetryRefactoringTest {
 
 	@Before
 	public void setUp() throws Exception {
-		// Åª¨ú´ú¸ÕÀÉ®×¼Ë¥»¤º®e
+		// è®€å–æ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹
 		jfs = new JavaFileToString();
 		jfs.read(DummyAndIgnoreExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		
 		jpm = new JavaProjectMaker(testProjectName);
 		jpm.setJREDefaultContainer();
-		// ·s¼W±ı¸ü¤Jªºlibrary
+		// æ–°å¢æ¬²è¼‰å…¥çš„library
 		jpm.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR
 				+ "/log4j-1.2.15.jar");
-		// ®Ú¾Ú´ú¸ÕÀÉ®×¼Ë¥»¤º®e«Ø¥ß·sªºÀÉ®×
+		// æ ¹æ“šæ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹å»ºç«‹æ–°çš„æª”æ¡ˆ
 		jpm.createJavaFile(DummyAndIgnoreExample.class.getPackage().getName(),
 				DummyAndIgnoreExample.class.getSimpleName(),
 				"package " + DummyAndIgnoreExample.class.getPackage().getName()
 				+ ";\n" + jfs.getFileContent());
-		// «Ø¥ßNested try block example file
+		// å»ºç«‹Nested try block example file
 		jfs = new JavaFileToString();
 		jfs.read(NestedTryStatementExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		jpm.createJavaFile(NestedTryStatementExample.class.getPackage().getName(),
@@ -98,10 +98,10 @@ public class RetryRefactoringTest {
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(dummyAndIgnoredExamplePath)));
 		parser.setResolveBindings(true);
-		// ¨ú±oAST
+		// å–å¾—AST
 		dummyAndIgnoredExampleUnit = (CompilationUnit) parser.createAST(null); 
 		dummyAndIgnoredExampleUnit.recordModifications();
 		
@@ -114,7 +114,7 @@ public class RetryRefactoringTest {
 
 	@After
 	public void tearDown() throws Exception {
-		// §R°£±M®×
+		// åˆªé™¤å°ˆæ¡ˆ
 		jpm.deleteProject();
 	}
 	
@@ -124,7 +124,7 @@ public class RetryRefactoringTest {
 		Field exceptionType = RetryRefactoring.class.getDeclaredField("exceptionType");
 		exceptionType.setAccessible(true);
 		assertNull(exceptionType.get(refactoring));
-		/** ­Y¿é¤J¬°ªÅ¦r¦ê®É¡A­n¦^¶Ç¿ù»~ªºª¬ºA¸ê°T */
+		/** è‹¥è¼¸å…¥ç‚ºç©ºå­—ä¸²æ™‚ï¼Œè¦å›å‚³éŒ¯èª¤çš„ç‹€æ…‹è³‡è¨Š */
 		String name = "";
 		RefactoringStatus result = refactoring.setExceptionName(name);
 		assertEquals(	"<FATALERROR\n" +
@@ -135,7 +135,7 @@ public class RetryRefactoringTest {
 						"Data: null\n" +
 						">", result.toString());
 		assertNull(exceptionType.get(refactoring));
-		/** ­Y¿é¤J¥¿½T¡A«hª¬ºA¬°OK */
+		/** è‹¥è¼¸å…¥æ­£ç¢ºï¼Œå‰‡ç‹€æ…‹ç‚ºOK */
 		name = JavaProjectMaker.FOLDERNAME_TEST;
 		result = refactoring.setExceptionName(name);
 		assertEquals("<OK\n>", result.toString());
@@ -148,7 +148,7 @@ public class RetryRefactoringTest {
 		Field retry = RetryRefactoring.class.getDeclaredField("retry");
 		retry.setAccessible(true);
 		assertNull(retry.get(refactoring));
-		/** ­Y¿é¤J¬°ªÅ¦r¦ê®É¡A­n¦^¶Ç¿ù»~ªºª¬ºA¸ê°T */
+		/** è‹¥è¼¸å…¥ç‚ºç©ºå­—ä¸²æ™‚ï¼Œè¦å›å‚³éŒ¯èª¤çš„ç‹€æ…‹è³‡è¨Š */
 		String name = "";
 		RefactoringStatus result = refactoring.setRetryVariable(name);
 		assertEquals(	"<FATALERROR\n" +
@@ -159,7 +159,7 @@ public class RetryRefactoringTest {
 						"Data: null\n" +
 						">", result.toString());
 		assertNull(retry.get(refactoring));
-		/** ­Y¿é¤J¥¿½T¡A«hª¬ºA¬°OK */
+		/** è‹¥è¼¸å…¥æ­£ç¢ºï¼Œå‰‡ç‹€æ…‹ç‚ºOK */
 		name = "test";
 		result = refactoring.setRetryVariable(name);
 		assertEquals("<OK\n>", result.toString());
@@ -172,7 +172,7 @@ public class RetryRefactoringTest {
 		Field maxNum = RetryRefactoring.class.getDeclaredField("maxNum");
 		maxNum.setAccessible(true);
 		assertNull(maxNum.get(refactoring));
-		/** ­Y¿é¤J¬°ªÅ¦r¦ê®É¡A­n¦^¶Ç¿ù»~ªºª¬ºA¸ê°T */
+		/** è‹¥è¼¸å…¥ç‚ºç©ºå­—ä¸²æ™‚ï¼Œè¦å›å‚³éŒ¯èª¤çš„ç‹€æ…‹è³‡è¨Š */
 		String num = "";
 		RefactoringStatus result = refactoring.setMaxAttemptNum(num);
 		assertEquals(	"<FATALERROR\n" +
@@ -183,7 +183,7 @@ public class RetryRefactoringTest {
 						"Data: null\n" +
 						">", result.toString());
 		assertNull(maxNum.get(refactoring));
-		/** ­Y¿é¤J¥¿½T¡A«hª¬ºA¬°OK */
+		/** è‹¥è¼¸å…¥æ­£ç¢ºï¼Œå‰‡ç‹€æ…‹ç‚ºOK */
 		num = "3";
 		result = refactoring.setMaxAttemptNum(num);
 		assertEquals("<OK\n>", result.toString());
@@ -196,7 +196,7 @@ public class RetryRefactoringTest {
 		Field maxAttempt = RetryRefactoring.class.getDeclaredField("maxAttempt");
 		maxAttempt.setAccessible(true);
 		assertNull(maxAttempt.get(refactoring));
-		/** ­Y¿é¤J¬°ªÅ¦r¦ê®É¡A­n¦^¶Ç¿ù»~ªºª¬ºA¸ê°T */
+		/** è‹¥è¼¸å…¥ç‚ºç©ºå­—ä¸²æ™‚ï¼Œè¦å›å‚³éŒ¯èª¤çš„ç‹€æ…‹è³‡è¨Š */
 		String attempt = "";
 		RefactoringStatus result = refactoring.setMaxAttemptVariable(attempt);
 		assertEquals(	"<FATALERROR\n" +
@@ -207,7 +207,7 @@ public class RetryRefactoringTest {
 						"Data: null\n" +
 						">", result.toString());
 		assertNull(maxAttempt.get(refactoring));
-		/** ­Y¿é¤J¥¿½T¡A«hª¬ºA¬°OK */
+		/** è‹¥è¼¸å…¥æ­£ç¢ºï¼Œå‰‡ç‹€æ…‹ç‚ºOK */
 		attempt = "3";
 		result = refactoring.setMaxAttemptVariable(attempt);
 		assertEquals("<OK\n>", result.toString());
@@ -220,7 +220,7 @@ public class RetryRefactoringTest {
 		Field attempt = RetryRefactoring.class.getDeclaredField("attempt");
 		attempt.setAccessible(true);
 		assertNull(attempt.get(refactoring));
-		/** ­Y¿é¤J¬°ªÅ¦r¦ê®É¡A­n¦^¶Ç¿ù»~ªºª¬ºA¸ê°T */
+		/** è‹¥è¼¸å…¥ç‚ºç©ºå­—ä¸²æ™‚ï¼Œè¦å›å‚³éŒ¯èª¤çš„ç‹€æ…‹è³‡è¨Š */
 		String string = "";
 		RefactoringStatus result = refactoring.setAttemptVariable(string);
 		assertEquals(	"<FATALERROR\n" +
@@ -231,7 +231,7 @@ public class RetryRefactoringTest {
 						"Data: null\n" +
 						">", result.toString());
 		assertNull(attempt.get(refactoring));
-		/** ­Y¿é¤J¥¿½T¡A«hª¬ºA¬°OK */
+		/** è‹¥è¼¸å…¥æ­£ç¢ºï¼Œå‰‡ç‹€æ…‹ç‚ºOK */
 		string = "3";
 		result = refactoring.setAttemptVariable(string);
 		assertEquals("<OK\n>", result.toString());
@@ -240,7 +240,7 @@ public class RetryRefactoringTest {
 	
 	@Test
 	public void testCheckInitialConditions() throws Exception {
-		/* ¿ï¨ú½d³ò > 0 */
+		/* é¸å–ç¯„åœ > 0 */
 		String retry_type = "Retry_with_original";
 		Document document = new Document(
 				"try {" + 
@@ -250,19 +250,19 @@ public class RetryRefactoringTest {
 				"javaLog.log(Level.INFO, \"Just log it.\");	//	DummyHandler" + 
 				"}");
 		TextSelection textSelection = new TextSelection(document, 3069, 153);
-		// ¨ú±o±M®×¤UªºjavaÀÉ
+		// å–å¾—å°ˆæ¡ˆä¸‹çš„javaæª”
 		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(testProjectName);
 		IJavaProject javaProject = JavaCore.create(project);
 		javaProject.open(null);
 		IJavaElement javaElement = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot().getFile(dummyAndIgnoredExamplePath));
-		// ³]©w«İ´ú¥Ø¼Ğ RetryRefactoring
+		// è¨­å®šå¾…æ¸¬ç›®æ¨™ RetryRefactoring
 		IProgressMonitor pm = null;
 		RetryRefactoring refactoring = new RetryRefactoring(javaProject,javaElement,textSelection,retry_type);
 		Method checkInitialConditions = RetryRefactoring.class.getDeclaredMethod("checkInitialConditions", IProgressMonitor.class);
 		checkInitialConditions.setAccessible(true);
 		assertEquals("<OK\n>", ((RefactoringStatus)checkInitialConditions.invoke(refactoring, pm)).toString());
 		
-		/* ¿ï¨ú½d³ò <= 0 */
+		/* é¸å–ç¯„åœ <= 0 */
 		textSelection = new TextSelection(document, -1, 0);
 		Field iTSelection = RetryRefactoring.class.getDeclaredField("iTSelection");
 		iTSelection.setAccessible(true);
@@ -279,7 +279,7 @@ public class RetryRefactoringTest {
 	public void testCreateChange() throws Exception {
 		IJavaElement javaElement = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot().getFile(dummyAndIgnoredExamplePath));
 		RetryRefactoring retryRefactoring = new RetryRefactoring(null, javaElement, null, null);
-		// ³]©w´ú¸Õ«e»İ­n¥Î¨ìªºÅÜ¼Æ¤º®e
+		// è¨­å®šæ¸¬è©¦å‰éœ€è¦ç”¨åˆ°çš„è®Šæ•¸å…§å®¹
 		ASTRewrite rewrite = ASTRewrite.create(dummyAndIgnoredExampleUnit.getAST());
 		ICompilationUnit cu = (ICompilationUnit) javaElement;
 		Document document = new Document(cu.getBuffer().getContents());	
@@ -289,12 +289,12 @@ public class RetryRefactoringTest {
 		Field textFile = RetryRefactoring.class.getDeclaredField("textFileChange");
 		textFile.setAccessible(true);
 		textFile.set(retryRefactoring, textFileChange);
-		// °õ¦æ´ú¸Õ¥Ø¼Ğ
+		// åŸ·è¡Œæ¸¬è©¦ç›®æ¨™
 		Method createChange = RetryRefactoring.class.getDeclaredMethod("createChange", IProgressMonitor.class);
 		createChange.setAccessible(true);
 		IProgressMonitor pm = null;
 		CompilationUnitChange result = (CompilationUnitChange)createChange.invoke(retryRefactoring, pm);
-		// ÅçÃÒµ²ªG
+		// é©—è­‰çµæœ
 		assertEquals("Introduce resourceful try clause", result.getName());
 		assertEquals(TextFileChange.KEEP_SAVE_STATE, result.getSaveMode());
 		assertEquals("{MultiTextEdit} [0,0] [undefined]", result.getEdit().toString());
@@ -303,7 +303,7 @@ public class RetryRefactoringTest {
 	
 	@Test
 	public void testAddImportRLDeclaration() throws Exception {
-		// ³]©w´ú¸Õ¸ê®Æ
+		// è¨­å®šæ¸¬è©¦è³‡æ–™
 		IJavaElement javaElement = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot().getFile(dummyAndIgnoredExamplePath));
 		RetryRefactoring retryRefactoring = new RetryRefactoring(null, javaElement, null, null);
 		Field actRoot = RetryRefactoring.class.getDeclaredField("actRoot");
@@ -314,7 +314,7 @@ public class RetryRefactoringTest {
 		rewrite.setAccessible(true);
 		ASTRewrite rw = ASTRewrite.create(dummyAndIgnoredExampleUnit.getAST());
 		rewrite.set(retryRefactoring, rw);
-		// ÅçÃÒªì©lª¬ºA
+		// é©—è­‰åˆå§‹ç‹€æ…‹
 		List<?> importList = rw.getListRewrite(dummyAndIgnoredExampleUnit, CompilationUnit.IMPORTS_PROPERTY).getRewrittenList();
 		assertEquals(6, importList.size());
 		assertEquals("import java.io.FileInputStream;\n", importList.get(0).toString());
@@ -324,12 +324,12 @@ public class RetryRefactoringTest {
 		assertEquals("import java.util.logging.Level;\n", importList.get(4).toString());
 		assertEquals("import org.apache.log4j.Logger;\n", importList.get(5).toString());
 		
-		// °õ¦æ´ú¸Õ¹ï¶H
+		// åŸ·è¡Œæ¸¬è©¦å°è±¡
 		Method addImportRLDeclaration = RetryRefactoring.class.getDeclaredMethod("addImportRLDeclaration");
 		addImportRLDeclaration.setAccessible(true);
 		addImportRLDeclaration.invoke(retryRefactoring);
 		
-		// ÅçÃÒµ²ªG
+		// é©—è­‰çµæœ
 		rw = (ASTRewrite)rewrite.get(retryRefactoring);
 		importList = rw.getListRewrite(dummyAndIgnoredExampleUnit, CompilationUnit.IMPORTS_PROPERTY).getRewrittenList();
 		assertEquals(8, importList.size());
@@ -350,7 +350,7 @@ public class RetryRefactoringTest {
 		
 		Method getRLAnnotation = RetryRefactoring.class.getDeclaredMethod("getRLAnnotation", AST.class, int.class, String.class);
 		getRLAnnotation.setAccessible(true);
-		// ´ú¸Õ¨ÃÅçÃÒµ²ªG
+		// æ¸¬è©¦ä¸¦é©—è­‰çµæœ
 		NormalAnnotation annotation = (NormalAnnotation)getRLAnnotation.invoke(retryRefactoring, dummyAndIgnoredExampleUnit.getAST(), 3, "RuntimeException");
 		assertEquals("@RTag(level=3,exception=RuntimeException.class)", annotation.toString());
 	}
@@ -360,7 +360,7 @@ public class RetryRefactoringTest {
 		IJavaElement javaElement = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot().getFile(dummyAndIgnoredExamplePath));
 		RetryRefactoring retryRefactoring = new RetryRefactoring(null, javaElement, null, null);
 		
-		/* ³]©w´ú¸Õ°Ñ¼Æ */
+		/* è¨­å®šæ¸¬è©¦åƒæ•¸ */
 		Field exceptionType = RetryRefactoring.class.getDeclaredField("exceptionType");
 		exceptionType.setAccessible(true);
 		exceptionType.set(retryRefactoring, "RuntimeException");
@@ -388,24 +388,24 @@ public class RetryRefactoringTest {
 		actRoot.setAccessible(true);
 		actRoot.set(retryRefactoring, dummyAndIgnoredExampleUnit);
 		
-		/* ÀË¬dprecondition */
+		/* æª¢æŸ¥precondition */
 		List<?> modifiers = ((MethodDeclaration)methodList.get(6)).modifiers();
 		assertEquals(1, modifiers.size());
 		assertEquals("public", modifiers.get(0).toString());
-		/* ´ú¸Õ¥Ø¼Ğ */
+		/* æ¸¬è©¦ç›®æ¨™ */
 		Method addAnnotationRoot = RetryRefactoring.class.getDeclaredMethod("addAnnotationRoot", AST.class);
 		addAnnotationRoot.setAccessible(true);
 		addAnnotationRoot.invoke(retryRefactoring, dummyAndIgnoredExampleUnit.getAST());
-		/* ÅçÃÒµ²ªG */
-		/*FIXME - ³Qrefactoringªºmethod¤W­±À³¸Ó¥X²{RL annotation¡Aclass¤W¤èªºimportÀ³¸Ó¥X²{Robustness©MRL¤~¹ï*/
+		/* é©—è­‰çµæœ */
+		/*FIXME - è¢«refactoringçš„methodä¸Šé¢æ‡‰è©²å‡ºç¾RL annotationï¼Œclassä¸Šæ–¹çš„importæ‡‰è©²å‡ºç¾Robustnesså’ŒRLæ‰å°*/
 		modifiers = ((MethodDeclaration)methodList.get(6)).modifiers();
 		assertEquals(1, modifiers.size());
-		assertEquals("¥»¨Ó¦³6­Óimports¡A¸g¹Lrefactoring¥H«á¡AÀ³¸Ó¦³8­Óimports¤~¹ï", 8, ((CompilationUnit)actRoot.get(retryRefactoring)).imports().size());
+		assertEquals("æœ¬ä¾†æœ‰6å€‹importsï¼Œç¶“érefactoringä»¥å¾Œï¼Œæ‡‰è©²æœ‰8å€‹importsæ‰å°", 8, ((CompilationUnit)actRoot.get(retryRefactoring)).imports().size());
 	}
 	
 	@Test
 	public void testAddImportDeclaration() throws Exception {
-		/* °Ñ¼Æ³]©w */
+		/* åƒæ•¸è¨­å®š */
 		RetryRefactoring retryRefactoring = new RetryRefactoring(null, null, null, null);
 		Field actRoot = RetryRefactoring.class.getDeclaredField("actRoot");
 		actRoot.setAccessible(true);
@@ -420,28 +420,28 @@ public class RetryRefactoringTest {
 		rewrite.setAccessible(true);
 		rewrite.set(retryRefactoring, rw);
 		
-		/** µ¹¤©¤w¦s¦bªºimport«h¤£­«½Æimport */
+		/** çµ¦äºˆå·²å­˜åœ¨çš„importå‰‡ä¸é‡è¤‡import */
 		
-		/* ÀË¬d¥Ø«eª¬ºA */
+		/* æª¢æŸ¥ç›®å‰ç‹€æ…‹ */
 		List<?> importList = rw.getListRewrite(dummyAndIgnoredExampleUnit, CompilationUnit.IMPORTS_PROPERTY).getRewrittenList();
 		assertEquals(6, importList.size());
 		
-		/* °õ¦æ´ú¸Õ¹ï¶H */
+		/* åŸ·è¡Œæ¸¬è©¦å°è±¡ */
 		Method addImportDeclaration = RetryRefactoring.class.getDeclaredMethod("addImportDeclaration");
 		addImportDeclaration.setAccessible(true);
 		addImportDeclaration.invoke(retryRefactoring);
 		
-		/* ÅçÃÒµ²ªG */
+		/* é©—è­‰çµæœ */
 		rw = (ASTRewrite)rewrite.get(retryRefactoring);
 		importList = rw.getListRewrite(dummyAndIgnoredExampleUnit, CompilationUnit.IMPORTS_PROPERTY).getRewrittenList();
 		assertEquals(6, importList.size());
 		
-		/** µ¹¤©·sªºimport«h¥²¶·import */
+		/** çµ¦äºˆæ–°çš„importå‰‡å¿…é ˆimport */
 		exType = JavaCore.create(project).findType("java.io.IOError");
 		retryRefactoring.setExType(exType);
 		addImportDeclaration.invoke(retryRefactoring);
 		
-		/* ÅçÃÒµ²ªG */
+		/* é©—è­‰çµæœ */
 		rw = (ASTRewrite)rewrite.get(retryRefactoring);
 		importList = rw.getListRewrite(dummyAndIgnoredExampleUnit, CompilationUnit.IMPORTS_PROPERTY).getRewrittenList();
 		assertEquals(7, importList.size());
@@ -449,7 +449,7 @@ public class RetryRefactoringTest {
 	
 	@Test
 	public void testFindHomogeneousExType_InnerTryStatementHoldHigherLevelExceptionType() throws Exception {
-		/* ³]©w°Ñ¼Æ */
+		/* è¨­å®šåƒæ•¸ */
 		RetryRefactoring retryRefactoring = new RetryRefactoring(null, null, null, null);
 		Method findHomogeneousExType = RetryRefactoring.class.getDeclaredMethod("findHomogeneousExType", AST.class, SingleVariableDeclaration.class, Object.class);
 		findHomogeneousExType.setAccessible(true);
@@ -506,7 +506,7 @@ public class RetryRefactoringTest {
 
 	@Test
 	public void testAddNewVariable() throws Exception {
-		// ³]©w°Ñ¼Æ
+		// è¨­å®šåƒæ•¸
 		RetryRefactoring retryRefactoring = new RetryRefactoring(null, null, null, "Alt_Retry");
 		retryRefactoring.setAttemptVariable("attempt");
 		retryRefactoring.setMaxAttemptVariable("maxAttempt");
@@ -514,7 +514,7 @@ public class RetryRefactoringTest {
 		retryRefactoring.setRetryVariable("retry");
 		ASTRewrite rw = ASTRewrite.create(nestedTryStatementUnit.getAST());
 		/*
-		 * ¹ïÀ³¡uNestedTryStatementExample.java¡vªº¡unestedCatch_InnerCatchWithParentExceptionTypeOfOuter¡vmethod
+		 * å°æ‡‰ã€ŒNestedTryStatementExample.javaã€çš„ã€ŒnestedCatch_InnerCatchWithParentExceptionTypeOfOuterã€method
 		 */
 		Document document = new Document(
 				"try {\n" + 
@@ -529,30 +529,30 @@ public class RetryRefactoringTest {
 				"  }\n" +
 				"  e.printStackTrace();\n" +
 				"}\n");
-		// ¼ÒÀÀ¤Ï¥Õ®ÄªG
+		// æ¨¡æ“¬åç™½æ•ˆæœ
 		TextSelection textSelection = new TextSelection(document, 1242, 231);
 		NodeFinder nodeFinder = new NodeFinder(textSelection.getOffset(), textSelection.getLength());
 		nestedTryStatementUnit.accept(nodeFinder);
 		ASTNode selectNode = nodeFinder.getCoveringNode();
 		ListRewrite listRewrite = rw.getListRewrite(selectNode, Block.STATEMENTS_PROPERTY);
-		// §ä¥X¿ï¨úªº³¡¤À¹ï©ó¾ã­Óunit¨Ó»¡¦ì©ó­ş­Ó¦ì¸m
+		// æ‰¾å‡ºé¸å–çš„éƒ¨åˆ†å°æ–¼æ•´å€‹unitä¾†èªªä½æ–¼å“ªå€‹ä½ç½®
 		int replacePos = -1;
 		for (int i = 0; i < listRewrite.getRewrittenList().size(); i++) {
 			if (listRewrite.getRewrittenList().get(i).equals(selectNode)) {
-				//§ä¨ìTry Statement´N§â¥Lªº¦ì¸m°O¿ı¤U¨Ó
+				//æ‰¾åˆ°Try Statementå°±æŠŠä»–çš„ä½ç½®è¨˜éŒ„ä¸‹ä¾†
 				replacePos = i;
 			}
 		}
 		
-		// °õ¦æ´ú¸Õ¹ï¶H
+		// åŸ·è¡Œæ¸¬è©¦å°è±¡
 		Method addNewVariable = RetryRefactoring.class.getDeclaredMethod("addNewVariable", AST.class, ListRewrite.class, int.class);
 		addNewVariable.setAccessible(true);
 		addNewVariable.invoke(retryRefactoring, nestedTryStatementUnit.getAST(), listRewrite, replacePos);
 		
-		// ÅçÃÒµ²ªG
+		// é©—è­‰çµæœ
 		List<?> rewriteList = listRewrite.getRewrittenList();
 		assertEquals(4, rewriteList.size());
-		// CAUTION: §Úµo²{³o­ÓlistRewrite indexªº¶¶§Ç¥i¯à·|³Q¥´¶Ã
+		// CAUTION: æˆ‘ç™¼ç¾é€™å€‹listRewrite indexçš„é †åºå¯èƒ½æœƒè¢«æ‰“äº‚
 		assertEquals("int maxAttempt=2;\n", rewriteList.get(0).toString());
 		assertEquals("boolean retry=false;\n", rewriteList.get(1).toString());
 		assertEquals(document.get(), rewriteList.get(2).toString());
@@ -561,19 +561,19 @@ public class RetryRefactoringTest {
 
 	@Test
 	public void testAddDoWhile() throws Exception {
-		// ³]©w°Ñ¼Æ
+		// è¨­å®šåƒæ•¸
 		RetryRefactoring retryRefactoring = new RetryRefactoring(null, null, null, "Alt_Retry");
 		retryRefactoring.setAttemptVariable("attempt");
 		retryRefactoring.setMaxAttemptVariable("maxAttempt");
 		retryRefactoring.setMaxAttemptNum("2");
 		retryRefactoring.setRetryVariable("retry");
 		
-		// °õ¦æ´ú¸Õ¹ï¶H
+		// åŸ·è¡Œæ¸¬è©¦å°è±¡
 		Method addDoWhile = RetryRefactoring.class.getDeclaredMethod("addDoWhile", AST.class);
 		addDoWhile.setAccessible(true);
 		DoStatement result = (DoStatement)addDoWhile.invoke(retryRefactoring, nestedTryStatementUnit.getAST());
 		
-		// ÅçÃÒµ²ªG
+		// é©—è­‰çµæœ
 		assertEquals(	"do {\n" +
 						"}\n" + 
 						" while (attempt <= maxAttempt & retry);\n", result.toString());
@@ -581,7 +581,7 @@ public class RetryRefactoringTest {
 	
 	@Test
 	public void testAddTryClause() throws Exception {
-		// ³]©w°Ñ¼Æ
+		// è¨­å®šåƒæ•¸
 		RetryRefactoring retryRefactoring = new RetryRefactoring(null, null, null, "Alt_Retry");
 		retryRefactoring.setAttemptVariable("attempt");
 		retryRefactoring.setMaxAttemptVariable("maxAttempt");
@@ -594,7 +594,7 @@ public class RetryRefactoringTest {
 		rewrite.set(retryRefactoring, rw);
 
 		/*
-		 * ¹ïÀ³¡uNestedTryStatementExample.java¡vªº¡unestedCatch_InnerCatchWithParentExceptionTypeOfOuter¡vmethod
+		 * å°æ‡‰ã€ŒNestedTryStatementExample.javaã€çš„ã€ŒnestedCatch_InnerCatchWithParentExceptionTypeOfOuterã€method
 		 */
 		Document document = new Document(
 				"try {\n" + 
@@ -609,30 +609,30 @@ public class RetryRefactoringTest {
 				"  }\n" +
 				"  e.printStackTrace();\n" +
 				"}\n");
-		// ¼ÒÀÀ¤Ï¥Õ®ÄªG
+		// æ¨¡æ“¬åç™½æ•ˆæœ
 		TextSelection textSelection = new TextSelection(document, 1242, 231);
 		NodeFinder nodeFinder = new NodeFinder(textSelection.getOffset(), textSelection.getLength());
 		nestedTryStatementUnit.accept(nodeFinder);
 		ASTNode selectNode = nodeFinder.getCoveringNode();
 		ListRewrite listRewrite = rw.getListRewrite(selectNode, Block.STATEMENTS_PROPERTY);
-		// §ä¥X¿ï¨úªº³¡¤À¹ï©ó¾ã­Óunit¨Ó»¡¦ì©ó­ş­Ó¦ì¸m
+		// æ‰¾å‡ºé¸å–çš„éƒ¨åˆ†å°æ–¼æ•´å€‹unitä¾†èªªä½æ–¼å“ªå€‹ä½ç½®
 		TryStatement original = null;
 		for (int i = 0; i < listRewrite.getRewrittenList().size(); i++) {
 			if (((ASTNode)listRewrite.getRewrittenList().get(i)).getParent().equals(selectNode))
 				original = (TryStatement)listRewrite.getRewrittenList().get(i);
 		}
 		
-		// «e¸m°Ê§@¡A¥ı«Ø¥ßdo-while statement
+		// å‰ç½®å‹•ä½œï¼Œå…ˆå»ºç«‹do-while statement
 		Method addDoWhile = RetryRefactoring.class.getDeclaredMethod("addDoWhile", AST.class);
 		addDoWhile.setAccessible(true);
 		DoStatement doWhile = (DoStatement)addDoWhile.invoke(retryRefactoring, nestedTryStatementUnit.getAST());
 
-		// °õ¦æ´ú¸Õ¹ï¶H		
+		// åŸ·è¡Œæ¸¬è©¦å°è±¡		
 		Method addTryClause = RetryRefactoring.class.getDeclaredMethod("addTryClause", AST.class, DoStatement.class, TryStatement.class);
 		addTryClause.setAccessible(true);
 		TryStatement tryStatement = (TryStatement)addTryClause.invoke(retryRefactoring, nestedTryStatementUnit.getAST(), doWhile, original);
 		
-		// ÅçÃÒµ²ªG
+		// é©—è­‰çµæœ
 		assertEquals(	"try {\n" +
 						"  retry=false;\n" +
 						"  if (attempt == 0) {\n" +
@@ -644,7 +644,7 @@ public class RetryRefactoringTest {
 	
 	@Test
 	public void testAddNoAltTryBlock() throws Exception {
-		// ³]©w°Ñ¼Æ
+		// è¨­å®šåƒæ•¸
 		RetryRefactoring retryRefactoring = new RetryRefactoring(null, null, null, "Alt_Retry");
 		retryRefactoring.setAttemptVariable("attempt");
 		retryRefactoring.setMaxAttemptVariable("maxAttempt");
@@ -657,7 +657,7 @@ public class RetryRefactoringTest {
 		rewrite.set(retryRefactoring, rw);
 
 		/*
-		 * ¹ïÀ³¡uNestedTryStatementExample.java¡vªº¡unestedCatch_InnerCatchWithParentExceptionTypeOfOuter¡vmethod
+		 * å°æ‡‰ã€ŒNestedTryStatementExample.javaã€çš„ã€ŒnestedCatch_InnerCatchWithParentExceptionTypeOfOuterã€method
 		 */
 		Document document = new Document(
 				"try {\n" + 
@@ -672,30 +672,30 @@ public class RetryRefactoringTest {
 				"  }\n" +
 				"  e.printStackTrace();\n" +
 				"}\n");
-		// ¼ÒÀÀ¤Ï¥Õ®ÄªG
+		// æ¨¡æ“¬åç™½æ•ˆæœ
 		TextSelection textSelection = new TextSelection(document, 1242, 231);
 		NodeFinder nodeFinder = new NodeFinder(textSelection.getOffset(), textSelection.getLength());
 		nestedTryStatementUnit.accept(nodeFinder);
 		ASTNode selectNode = nodeFinder.getCoveringNode();
 		ListRewrite listRewrite = rw.getListRewrite(selectNode, Block.STATEMENTS_PROPERTY);
-		// §ä¥X¿ï¨úªº³¡¤À¹ï©ó¾ã­Óunit¨Ó»¡¦ì©ó­ş­Ó¦ì¸m
+		// æ‰¾å‡ºé¸å–çš„éƒ¨åˆ†å°æ–¼æ•´å€‹unitä¾†èªªä½æ–¼å“ªå€‹ä½ç½®
 		TryStatement original = null;
 		for (int i = 0; i < listRewrite.getRewrittenList().size(); i++) {
 			if (((ASTNode)listRewrite.getRewrittenList().get(i)).getParent().equals(selectNode))
 				original = (TryStatement)listRewrite.getRewrittenList().get(i);
 		}
 		
-		// «e¸m°Ê§@¡A¥ı«Ø¥ßdo-while statement
+		// å‰ç½®å‹•ä½œï¼Œå…ˆå»ºç«‹do-while statement
 		Method addDoWhile = RetryRefactoring.class.getDeclaredMethod("addDoWhile", AST.class);
 		addDoWhile.setAccessible(true);
 		DoStatement doWhile = (DoStatement)addDoWhile.invoke(retryRefactoring, nestedTryStatementUnit.getAST());
 		
-		// °õ¦æ´ú¸Õ¹ï¶H
+		// åŸ·è¡Œæ¸¬è©¦å°è±¡
 		Method addNoAltTryBlock = RetryRefactoring.class.getDeclaredMethod("addNoAltTryBlock", AST.class, DoStatement.class, TryStatement.class);
 		addNoAltTryBlock.setAccessible(true);
 		TryStatement tryStatement = (TryStatement)addNoAltTryBlock.invoke(retryRefactoring, nestedTryStatementUnit.getAST(), doWhile, original);
 		
-		// ÅçÃÒµ²ªG
+		// é©—è­‰çµæœ
 		assertEquals(	"try {\n" +
 						"  retry=false;\n" +
 						"}\n ", tryStatement.toString());
@@ -703,7 +703,7 @@ public class RetryRefactoringTest {
 	
 	@Test
 	public void testAddCatchBlock() throws Exception {
-		// ³]©w°Ñ¼Æ
+		// è¨­å®šåƒæ•¸
 		RetryRefactoring retryRefactoring = new RetryRefactoring(null, null, null, "Alt_Retry");
 		retryRefactoring.setAttemptVariable("attempt");
 		retryRefactoring.setMaxAttemptVariable("maxAttempt");
@@ -736,7 +736,7 @@ public class RetryRefactoringTest {
 		retryRefactoring.setExType(exType);
 
 		/*
-		 * ¹ïÀ³¡uNestedTryStatementExample.java¡vªº¡unestedCatch_InnerCatchWithParentExceptionTypeOfOuter¡vmethod
+		 * å°æ‡‰ã€ŒNestedTryStatementExample.javaã€çš„ã€ŒnestedCatch_InnerCatchWithParentExceptionTypeOfOuterã€method
 		 */
 		Document document = new Document(
 				"try {\n" + 
@@ -751,20 +751,20 @@ public class RetryRefactoringTest {
 				"  }\n" +
 				"  e.printStackTrace();\n" +
 				"}\n");
-		// ¼ÒÀÀ¤Ï¥Õ®ÄªG
+		// æ¨¡æ“¬åç™½æ•ˆæœ
 		TextSelection textSelection = new TextSelection(document, 1242, 231);
 		NodeFinder nodeFinder = new NodeFinder(textSelection.getOffset(), textSelection.getLength());
 		nestedTryStatementUnit.accept(nodeFinder);
 		ASTNode selectNode = nodeFinder.getCoveringNode();
 		ListRewrite listRewrite = rw.getListRewrite(selectNode, Block.STATEMENTS_PROPERTY);
-		// §ä¥X¿ï¨úªº³¡¤À¹ï©ó¾ã­Óunit¨Ó»¡¦ì©ó­ş­Ó¦ì¸m
+		// æ‰¾å‡ºé¸å–çš„éƒ¨åˆ†å°æ–¼æ•´å€‹unitä¾†èªªä½æ–¼å“ªå€‹ä½ç½®
 		TryStatement original = null;
 		for (int i = 0; i < listRewrite.getRewrittenList().size(); i++) {
 			if (((ASTNode)listRewrite.getRewrittenList().get(i)).getParent().equals(selectNode))
 				original = (TryStatement)listRewrite.getRewrittenList().get(i);
 		}
 		
-		// «e¸m°Ê§@
+		// å‰ç½®å‹•ä½œ
 		Method addDoWhile = RetryRefactoring.class.getDeclaredMethod("addDoWhile", AST.class);
 		addDoWhile.setAccessible(true);
 		DoStatement doWhile = (DoStatement)addDoWhile.invoke(retryRefactoring, nestedTryStatementUnit.getAST());
@@ -772,15 +772,15 @@ public class RetryRefactoringTest {
 		Method addNoAltTryBlock = RetryRefactoring.class.getDeclaredMethod("addNoAltTryBlock", AST.class, DoStatement.class, TryStatement.class);
 		addNoAltTryBlock.setAccessible(true);
 		TryStatement tryStatement = (TryStatement)addNoAltTryBlock.invoke(retryRefactoring, nestedTryStatementUnit.getAST(), doWhile, original);
-		// ÀË¬dªì©lª¬ºA
+		// æª¢æŸ¥åˆå§‹ç‹€æ…‹
 		assertEquals(	"try {\n" +
 						"  retry=false;\n" +
 						"}\n ", tryStatement.toString());
-		// °õ¦æ´ú¸Õ¹ï¶H
+		// åŸ·è¡Œæ¸¬è©¦å°è±¡
 		Method addCatchBlock = RetryRefactoring.class.getDeclaredMethod("addCatchBlock", AST.class, TryStatement.class, TryStatement.class);
 		addCatchBlock.setAccessible(true);
 		addCatchBlock.invoke(retryRefactoring, nestedTryStatementUnit.getAST(), original, tryStatement);
-		// ÅçÃÒµ²ªG
+		// é©—è­‰çµæœ
 		assertEquals(	"try {\n" +
 						"  retry=false;\n" +
 						"}\n" +
@@ -795,13 +795,13 @@ public class RetryRefactoringTest {
 	
 //	@Test
 	public void testIntroduceTryClause() {
-		fail("not implement ¦]¬°applyChange¥Ø«e·Q¤£¥X«ç»ò´ú");
+		fail("not implement å› ç‚ºapplyChangeç›®å‰æƒ³ä¸å‡ºæ€éº¼æ¸¬");
 	}
 	
 //	@Test
 	public void testCollectChange() throws Exception {
 		String retry_type = "Retry_with_original";
-		/* ¨Ï¥ÎªÌ¿ï¨ú¥¿½T¡A¥]§tªÅ¥Õ */
+		/* ä½¿ç”¨è€…é¸å–æ­£ç¢ºï¼ŒåŒ…å«ç©ºç™½ */
 		Document document = new Document(
 				"try {" + 
 				"fis = new FileInputStream(\"\");" + 
@@ -810,12 +810,12 @@ public class RetryRefactoringTest {
 				"javaLog.log(Level.INFO, \"Just log it.\");	//	DummyHandler" + 
 				"}");
 		TextSelection textSelection = new TextSelection(document, 3392, 168);
-		// ¨ú±o±M®×¤UªºjavaÀÉ
+		// å–å¾—å°ˆæ¡ˆä¸‹çš„javaæª”
 		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(testProjectName);
 		IJavaProject javaProject = JavaCore.create(project);
 		javaProject.open(null);
 		IJavaElement javaElement = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot().getFile(dummyAndIgnoredExamplePath));
-		// ³]©w«İ´ú¥Ø¼Ğ RetryRefactoring
+		// è¨­å®šå¾…æ¸¬ç›®æ¨™ RetryRefactoring
 		RetryRefactoring refactoring = new RetryRefactoring(javaProject,javaElement,textSelection,retry_type);
 		refactoring.setAttemptVariable("attempt");
 		refactoring.setMaxAttemptVariable("maxAttempt");
@@ -827,10 +827,10 @@ public class RetryRefactoringTest {
 		collectChange.setAccessible(true);
 		RefactoringStatus status = new RefactoringStatus();
 		collectChange.invoke(refactoring, status);
-		// µ²ªG¬°OKªí¥Ü¨Ï¥ÎªÌ¿ï¨ú¥¿½T
+		// çµæœç‚ºOKè¡¨ç¤ºä½¿ç”¨è€…é¸å–æ­£ç¢º
 		assertEquals("<OK\n>", status.toString());
 		
-		/* ¨Ï¥ÎªÌ¿ï¨ú¥¿½T¡A¤£¥]§tªÅ¥Õ */
+		/* ä½¿ç”¨è€…é¸å–æ­£ç¢ºï¼Œä¸åŒ…å«ç©ºç™½ */
 		document = new Document(
 				"try {" + 
 				"fis = new FileInputStream(\"\");" + 
@@ -848,10 +848,10 @@ public class RetryRefactoringTest {
 		refactoring.setExceptionName("RuntimeException");
 		
 		collectChange.invoke(refactoring, status);
-		// µ²ªG¬°OKªí¥Ü¨Ï¥ÎªÌ¿ï¨ú¥¿½T
+		// çµæœç‚ºOKè¡¨ç¤ºä½¿ç”¨è€…é¸å–æ­£ç¢º
 		assertEquals("<OK\n>", status.toString());
 		
-		/* ¨Ï¥ÎªÌ¦h¿ï¡A¿ï¿ù½d³ò */
+		/* ä½¿ç”¨è€…å¤šé¸ï¼Œé¸éŒ¯ç¯„åœ */
 		document = new Document(
 				"FileInputStream fis = null;" + 
 				"try {" + 
@@ -870,7 +870,7 @@ public class RetryRefactoringTest {
 		refactoring.setExceptionName("RuntimeException");
 		
 		collectChange.invoke(refactoring, status);
-		// ¬d¬İª¬ºA¡AÅçÃÒµ²ªG
+		// æŸ¥çœ‹ç‹€æ…‹ï¼Œé©—è­‰çµæœ
 		assertEquals(	"<FATALERROR\n\t\n" +
 						"FATALERROR: Selection Error, please retry again!!!\n" +
 						"Context: <Unspecified context>\n" +
@@ -878,7 +878,7 @@ public class RetryRefactoringTest {
 						"Data: null\n" +
 						">", status.toString());
 		
-		/* ¨Ï¥ÎªÌ¤Ö¿ï¡A¿ï¿ù½d³ò */
+		/* ä½¿ç”¨è€…å°‘é¸ï¼Œé¸éŒ¯ç¯„åœ */
 		document = new Document(
 				"fis = new FileInputStream(\"\");" + 
 				"fis.read();" + 
@@ -895,7 +895,7 @@ public class RetryRefactoringTest {
 		refactoring.setExceptionName("RuntimeException");
 		
 		collectChange.invoke(refactoring, status);
-		// ¬d¬İª¬ºA¡AÅçÃÒµ²ªG
+		// æŸ¥çœ‹ç‹€æ…‹ï¼Œé©—è­‰çµæœ
 		assertEquals(	"<FATALERROR\n\t\n" +
 						"FATALERROR: Selection Error, please retry again!!!\n" +
 						"Context: <Unspecified context>\n" +

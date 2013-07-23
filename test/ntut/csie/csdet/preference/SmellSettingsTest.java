@@ -21,7 +21,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class SmellSettingsTest {
-	/** ²£¥Í¥X¨ÓªºXMLÀÉ®× */
+	/** ç”¢ç”Ÿå‡ºä¾†çš„XMLæª”æ¡ˆ */
 	private File smellSettingFile;
 	private SmellSettings smellSettings;
 	
@@ -166,12 +166,12 @@ public class SmellSettingsTest {
 	
 	@Test
 	public void testGetAllDetectingPatterns() {
-		/* ¨S¦³Pattern¦s¦b */
+		/* æ²’æœ‰Patternå­˜åœ¨ */
 		List<String> patterns = smellSettings.getAllDetectingPatterns(SmellSettings.SMELL_CARELESSCLEANUP);
 		assertEquals(0, patterns.size());
 		
-		/* ¦³CarelessCleaup Pattern»PDummyHandelr Pattern¦s¦b¡A
-		 * »`¶°©Ò¦³CarelessCleanup Pattern
+		/* æœ‰CarelessCleaup Patternèˆ‡DummyHandelr Patternå­˜åœ¨ï¼Œ
+		 * è’é›†æ‰€æœ‰CarelessCleanup Pattern
 		 */
 		smellSettings.addDummyHandlerPattern("kkkkk.k", true);
 		int testDataCount = 4;
@@ -227,7 +227,7 @@ public class SmellSettingsTest {
 		Method addPattern = SmellSettings.class.getDeclaredMethod("addPattern", String.class, String.class, boolean.class);
 		addPattern.setAccessible(true);
 		
-		// ¥[¤Jªºpattern¬O¥ş·sªº
+		// åŠ å…¥çš„patternæ˜¯å…¨æ–°çš„
 		addPattern.invoke(smellSettings, SmellSettings.SMELL_CARELESSCLEANUP, "a.b.c", true);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		String fileContent = readFileContents(smellSettingFile);
@@ -236,7 +236,7 @@ public class SmellSettingsTest {
 				+ "<pattern name=\"a.b.c\" isDetecting=\"true\" />"
 				+ "</SmellTypes></CodeSmells>", fileContent);
 		
-		// ¥[¤Jªºpattern¬O¤w¸g¦s¦b¹Lªº
+		// åŠ å…¥çš„patternæ˜¯å·²ç¶“å­˜åœ¨éçš„
 		addPattern.invoke(smellSettings, SmellSettings.SMELL_CARELESSCLEANUP, "a.b.c", true);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		fileContent = readFileContents(smellSettingFile);
@@ -251,7 +251,7 @@ public class SmellSettingsTest {
 		Method addPattern = SmellSettings.class.getDeclaredMethod("addExtraRule", String.class, String.class);
 		addPattern.setAccessible(true);
 		
-		// ¼W¥[¤@­ÓÁÙ¨S¦s¦b¹Lªº³W«h
+		// å¢åŠ ä¸€å€‹é‚„æ²’å­˜åœ¨éçš„è¦å‰‡
 		addPattern.invoke(smellSettings, SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		String fileContent = readFileContents(smellSettingFile);
@@ -261,7 +261,7 @@ public class SmellSettingsTest {
 				SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD +
 				"\" /></SmellTypes></CodeSmells>", fileContent);
 		
-		// ¼W¥[¤@­Ó¤w¸g¦s¦bªº³W«h
+		// å¢åŠ ä¸€å€‹å·²ç¶“å­˜åœ¨çš„è¦å‰‡
 		addPattern.invoke(smellSettings, SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		fileContent = readFileContents(smellSettingFile);
@@ -274,7 +274,7 @@ public class SmellSettingsTest {
 
 	@Test
 	public void testRemoveExtraRule() throws Exception {
-		/* extraRuleªº¸`ÂI¤£¦s¦b */
+		/* extraRuleçš„ç¯€é»ä¸å­˜åœ¨ */
 		assertFalse(smellSettings.removeExtraRule(
 			SmellSettings.SMELL_CARELESSCLEANUP,
 			SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD));
@@ -285,7 +285,7 @@ public class SmellSettingsTest {
 						"<SmellTypes name=\"CarelessCleanup\" isDetecting=\"true\" />" +
 						"</CodeSmells>", fileContent);
 		
-		/* extraRuleªº¸`ÂI¦s¦b */
+		/* extraRuleçš„ç¯€é»å­˜åœ¨ */
 		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
 		assertTrue(smellSettings.removeExtraRule(
 				SmellSettings.SMELL_CARELESSCLEANUP,
@@ -323,114 +323,114 @@ public class SmellSettingsTest {
 	@Test
 	public void testWriteXMLFile() throws Exception {
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
-		// ÀË¬dÀÉ®×¬O§_¥Í¦¨
+		// æª¢æŸ¥æª”æ¡ˆæ˜¯å¦ç”Ÿæˆ
 		assertTrue(smellSettingFile.exists());
 		
-		// ÀË¬dÀÉ®×¤º®e¬O§_¥¿½T
+		// æª¢æŸ¥æª”æ¡ˆå…§å®¹æ˜¯å¦æ­£ç¢º
 		String fileContent = readFileContents(smellSettingFile);
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells />", fileContent);
 	}
 	
 	@Test
 	public void testWriteXMLFile_OverwriteNonXMLFormatFile() throws Exception {
-		// ¥Í¦¨¤@­Ó¤å¦rÀÉ®×¡A¸Ì­±³£¬O¤¤¤å¦r
-		String chineseString = "¤Ñ¦a¥È¶À¦t©z¬x¯î";
+		// ç”Ÿæˆä¸€å€‹æ–‡å­—æª”æ¡ˆï¼Œè£¡é¢éƒ½æ˜¯ä¸­æ–‡å­—
+		String chineseString = "å¤©åœ°ç„é»ƒå®‡å®™æ´ªè’";
 		FileWriter fw = new FileWriter(smellSettingFile);
 		fw.write(chineseString);
 		fw.close();
-		// ½T»{ÀÉ®×¸Ì­±ªº¤¤¤å¦r
+		// ç¢ºèªæª”æ¡ˆè£¡é¢çš„ä¸­æ–‡å­—
 		String chineseContent = readFileContents(smellSettingFile);
 		assertEquals(chineseString, chineseContent);
 		
-		// ¥Í¦¨XMLÀÉ®×
+		// ç”ŸæˆXMLæª”æ¡ˆ
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
-		// ÀË¬dÀÉ®×¬O§_¥Í¦¨
+		// æª¢æŸ¥æª”æ¡ˆæ˜¯å¦ç”Ÿæˆ
 		assertTrue(smellSettingFile.exists());
 		
-		// ÀË¬dÀÉ®×¤º®e¬O§_¥¿½T
+		// æª¢æŸ¥æª”æ¡ˆå…§å®¹æ˜¯å¦æ­£ç¢º
 		String fileContent = readFileContents(smellSettingFile);
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells />", fileContent);		
 	}
 	
 	/**
-	 * ¦pªGSmellSettingsªºinstance¤w¸g³Q²£¥Í¥X¨Ó¡A¨Ï¥ÎªÌ¦P®É¦A¥Î¨ä¥L¤å¦r½s¿è¾¹¼g¤J³]©wÀÉ¤º®e¡A
-	 * ³Ì«á¦A¥ÎSmellSettigs¦sÀÉ«á¡A¨ä¥L¤å¦r½s¿è¾¹¼g¤Jªº¤º®e·|¿ò¥¢¡C
+	 * å¦‚æœSmellSettingsçš„instanceå·²ç¶“è¢«ç”¢ç”Ÿå‡ºä¾†ï¼Œä½¿ç”¨è€…åŒæ™‚å†ç”¨å…¶ä»–æ–‡å­—ç·¨è¼¯å™¨å¯«å…¥è¨­å®šæª”å…§å®¹ï¼Œ
+	 * æœ€å¾Œå†ç”¨SmellSettigså­˜æª”å¾Œï¼Œå…¶ä»–æ–‡å­—ç·¨è¼¯å™¨å¯«å…¥çš„å…§å®¹æœƒéºå¤±ã€‚
 	 * @throws Exception
 	 */
 	@Test
 	public void testWriteXMLFile_OtherTextWriterWriteSmellSettingXMLFormatFileAfterSmellSettingInstanceIsCreated() throws Exception {
-		// ¥Í¦¨¤@­Ó¤å¦rÀÉ®×¡A¸Ì­±¬OÂÂ¦³ªºXML³]©wÀÉ
+		// ç”Ÿæˆä¸€å€‹æ–‡å­—æª”æ¡ˆï¼Œè£¡é¢æ˜¯èˆŠæœ‰çš„XMLè¨­å®šæª”
 		String xmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells><SmellTypes name=\"DummyHandler\" isDetecting=\"true\"><pattern name=\"*.toString\" isDetecting=\"true\" /></SmellTypes></CodeSmells>";
 		FileWriter fw = new FileWriter(smellSettingFile);
 		fw.write(xmlString);
 		fw.close();
-		// ½T»{ÀÉ®×¸Ì­±ªºXML³]©wÀÉ¤º®e
+		// ç¢ºèªæª”æ¡ˆè£¡é¢çš„XMLè¨­å®šæª”å…§å®¹
 		String xmlReadContent = readFileContents(smellSettingFile);
 		assertEquals(xmlString, xmlReadContent);
 		
-		// ¥Í¦¨XMLÀÉ®×
+		// ç”ŸæˆXMLæª”æ¡ˆ
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
-		// ÀË¬dÀÉ®×¬O§_¥Í¦¨
+		// æª¢æŸ¥æª”æ¡ˆæ˜¯å¦ç”Ÿæˆ
 		assertTrue(smellSettingFile.exists());
 		
-		// ÀË¬dÀÉ®×¤º®e¬O§_¥¿½T
+		// æª¢æŸ¥æª”æ¡ˆå…§å®¹æ˜¯å¦æ­£ç¢º
 		String fileContent = readFileContents(smellSettingFile);
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells />", fileContent);		
 	}
 	
 	/**
-	 * ¬Û¦P¸ô®|¤U¤w¸g¦³³]©wÀÉ¡A«h¨C¦¸²£¥ÍSmellSettings·sªºinstance¡A³£À³¸Ó·|¦Û°ÊÅª¨úÂÂªº³]©wÀÉ¡C
+	 * ç›¸åŒè·¯å¾‘ä¸‹å·²ç¶“æœ‰è¨­å®šæª”ï¼Œå‰‡æ¯æ¬¡ç”¢ç”ŸSmellSettingsæ–°çš„instanceï¼Œéƒ½æ‡‰è©²æœƒè‡ªå‹•è®€å–èˆŠçš„è¨­å®šæª”ã€‚
 	 * @throws Exception
 	 */
 	@Test
 	public void testWriteXMLFile_UsingSameVariableTwiceWithDifferentNewInstance() throws Exception {
-		// ¥ı¥Î¤@­Ó·sªºinstace²£¥ÍxmlÀÉ
+		// å…ˆç”¨ä¸€å€‹æ–°çš„instaceç”¢ç”Ÿxmlæª”
 		smellSettings = new SmellSettings(smellSettingFile);
 		smellSettings.addDummyHandlerPattern("*.toString", true);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		
 		String expectedResult = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells><SmellTypes name=\"DummyHandler\" isDetecting=\"true\"><pattern name=\"*.toString\" isDetecting=\"true\" /></SmellTypes></CodeSmells>";
 		
-		// ½T»{¤º®e
+		// ç¢ºèªå…§å®¹
 		String firstTimeContent = readFileContents(smellSettingFile);
 		assertEquals(expectedResult, firstTimeContent);
 		
-		// ¦A¥Î¦P¤@­ÓÅÜ¼Æ²£¥Í·sªºinstace¡A¦A²£¥ÍxmlÀÉ
+		// å†ç”¨åŒä¸€å€‹è®Šæ•¸ç”¢ç”Ÿæ–°çš„instaceï¼Œå†ç”¢ç”Ÿxmlæª”
 		smellSettings = new SmellSettings(smellSettingFile);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
-		// ½T»{¤º®e
+		// ç¢ºèªå…§å®¹
 		String fileContent = readFileContents(smellSettingFile);
 		assertEquals(expectedResult, fileContent);
 	}
 	
 	/**
-	 * ¬Û¦P¸ô®|¤U¤w¸g¦³³]©wÀÉ¡A«h¨C¦¸²£¥ÍSmellSettings·sªºinstance¡A³£À³¸Ó·|¦Û°ÊÅª¨úÂÂªº³]©wÀÉ¡C
+	 * ç›¸åŒè·¯å¾‘ä¸‹å·²ç¶“æœ‰è¨­å®šæª”ï¼Œå‰‡æ¯æ¬¡ç”¢ç”ŸSmellSettingsæ–°çš„instanceï¼Œéƒ½æ‡‰è©²æœƒè‡ªå‹•è®€å–èˆŠçš„è¨­å®šæª”ã€‚
 	 * @throws Exception
 	 */
 	@Test
 	public void testWriteXMLFile_UsingTwoDifferentVariable() throws Exception {
-		// ¥ı¥Î¤@­Ó·sªºÅÜ¼Æ²£¥ÍxmlÀÉ
+		// å…ˆç”¨ä¸€å€‹æ–°çš„è®Šæ•¸ç”¢ç”Ÿxmlæª”
 		SmellSettings setting = new SmellSettings(smellSettingFile);
 		setting.addDummyHandlerPattern("*.toString", true);
 		setting.writeXMLFile(smellSettingFile.getPath());
 		
 		String expectedResult = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells><SmellTypes name=\"DummyHandler\" isDetecting=\"true\"><pattern name=\"*.toString\" isDetecting=\"true\" /></SmellTypes></CodeSmells>";
 		
-		// ½T»{¤º®e
+		// ç¢ºèªå…§å®¹
 		String firstTimeContent = readFileContents(smellSettingFile);
 		assertEquals(expectedResult, firstTimeContent);
 		
-		// ¦A¥Î¥t¤@­ÓÅÜ¼Æ²£¥ÍxmlÀÉ
+		// å†ç”¨å¦ä¸€å€‹è®Šæ•¸ç”¢ç”Ÿxmlæª”
 		smellSettings = new SmellSettings(smellSettingFile);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
-		// ½T»{¤º®e
+		// ç¢ºèªå…§å®¹
 		String fileContent = readFileContents(smellSettingFile);
 		assertEquals(expectedResult, fileContent);
 	}
 	
 	@Test
 	public void testRemovePatterns() throws Exception {
-		// ·Ç³Æ´ú¸Õ»İ­n¤º®e
+		// æº–å‚™æ¸¬è©¦éœ€è¦å…§å®¹
 		smellSettingFile.createNewFile();
 		smellSettings.addDummyHandlerPattern(SmellSettings.EXTRARULE_SystemErrPrint, true);
 		smellSettings.addDummyHandlerPattern(SmellSettings.EXTRARULE_ePrintStackTrace, false);
@@ -439,7 +439,7 @@ public class SmellSettingsTest {
 		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		String content = readFileContents(smellSettingFile);
-		// ÀË¬d·Ç³Æ¸ê®Æ¬O§_¥¿½T
+		// æª¢æŸ¥æº–å‚™è³‡æ–™æ˜¯å¦æ­£ç¢º
 		assertEquals(	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
 						"<CodeSmells><SmellTypes name=\"DummyHandler\" isDetecting=\"true\">" +
 						"<pattern name=\"System.err.print\" isDetecting=\"true\" />" +
@@ -452,7 +452,7 @@ public class SmellSettingsTest {
 		
 		assertTrue(smellSettings.removePatterns(SmellSettings.SMELL_DUMMYHANDLER));
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
-		// ÅçÃÒµ²ªG¬O§_¥¿½T
+		// é©—è­‰çµæœæ˜¯å¦æ­£ç¢º
 		content = readFileContents(smellSettingFile);
 		assertEquals(	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
 						"<CodeSmells>" +
@@ -464,7 +464,7 @@ public class SmellSettingsTest {
 	
 	@Test
 	public void testSetSmellTypeAttribute() throws Exception {
-		// ·Ç³Æ´ú¸Õ»İ­n¤º®e
+		// æº–å‚™æ¸¬è©¦éœ€è¦å…§å®¹
 		smellSettingFile.createNewFile();
 		smellSettings.addDummyHandlerPattern(SmellSettings.EXTRARULE_SystemErrPrint, true);
 		smellSettings.addDummyHandlerPattern(SmellSettings.EXTRARULE_ePrintStackTrace, false);
@@ -473,7 +473,7 @@ public class SmellSettingsTest {
 		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		String content = readFileContents(smellSettingFile);
-		// ÀË¬d·Ç³Æ¸ê®Æ¬O§_¥¿½T
+		// æª¢æŸ¥æº–å‚™è³‡æ–™æ˜¯å¦æ­£ç¢º
 		assertEquals(	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
 						"<CodeSmells>" +
 						"<SmellTypes name=\"DummyHandler\" isDetecting=\"true\">" +
@@ -488,7 +488,7 @@ public class SmellSettingsTest {
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.ATTRIBUTE_ISDETECTING, false);
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.ATTRIBUTE_ISDETECTING, false);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
-		// ÅçÃÒµ²ªG¬O§_¥¿½T
+		// é©—è­‰çµæœæ˜¯å¦æ­£ç¢º
 		content = readFileContents(smellSettingFile);
 		assertEquals(	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
 						"<CodeSmells>" +
@@ -504,35 +504,35 @@ public class SmellSettingsTest {
 	
 	@Test
 	public void testGetSemllPatterns() throws Exception {
-		/** ·í¨S¦³³o­ÓBad Smell³]©w­È®É */
+		/** ç•¶æ²’æœ‰é€™å€‹Bad Smellè¨­å®šå€¼æ™‚ */
 		smellSettingFile.createNewFile();
 		String content = readFileContents(smellSettingFile);
-		// ÀË¬d·Ç³Æ¸ê®Æ¬O§_¥¿½T
+		// æª¢æŸ¥æº–å‚™è³‡æ–™æ˜¯å¦æ­£ç¢º
 		assertEquals("", content);
 		TreeMap<String, Boolean> libMap = smellSettings.getSemllPatterns(SmellSettings.SMELL_DUMMYHANDLER);
-		// ÅçÃÒµ²ªG¬O§_¥¿½T
+		// é©—è­‰çµæœæ˜¯å¦æ­£ç¢º
 		assertEquals(0, libMap.size());
 		
-		/** ·í¨S¦³¥ô¦ó³]©w­È®É */
-		// ·Ç³Æ´ú¸Õ»İ­n¤º®e
+		/** ç•¶æ²’æœ‰ä»»ä½•è¨­å®šå€¼æ™‚ */
+		// æº–å‚™æ¸¬è©¦éœ€è¦å…§å®¹
 		smellSettings.getSmellType(SmellSettings.SMELL_DUMMYHANDLER);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		content = readFileContents(smellSettingFile);
-		// ÀË¬d·Ç³Æ¸ê®Æ¬O§_¥¿½T
+		// æª¢æŸ¥æº–å‚™è³‡æ–™æ˜¯å¦æ­£ç¢º
 		assertEquals(	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
 						"<CodeSmells><SmellTypes name=\"DummyHandler\" isDetecting=\"true\" />" +
 						"</CodeSmells>", content);
 		libMap = smellSettings.getSemllPatterns(SmellSettings.SMELL_DUMMYHANDLER);
-		// ÅçÃÒµ²ªG¬O§_¥¿½T
+		// é©—è­‰çµæœæ˜¯å¦æ­£ç¢º
 		assertEquals(0, libMap.size());
 		
-		/** ·í¦³³]©w­È®É */
+		/** ç•¶æœ‰è¨­å®šå€¼æ™‚ */
 		smellSettings.addDummyHandlerPattern(SmellSettings.EXTRARULE_SystemErrPrint, true);
 		smellSettings.addDummyHandlerPattern(SmellSettings.EXTRARULE_ePrintStackTrace, false);
 		smellSettings.addDummyHandlerPattern(SmellSettings.EXTRARULE_OrgApacheLog4j, true);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		content = readFileContents(smellSettingFile);
-		// ÀË¬d·Ç³Æ¸ê®Æ¬O§_¥¿½T
+		// æª¢æŸ¥æº–å‚™è³‡æ–™æ˜¯å¦æ­£ç¢º
 		assertEquals(	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
 						"<CodeSmells><SmellTypes name=\"DummyHandler\" isDetecting=\"true\">" +
 						"<pattern name=\"System.err.print\" isDetecting=\"true\" />" +
@@ -541,7 +541,7 @@ public class SmellSettingsTest {
 						"</SmellTypes></CodeSmells>", content);
 		
 		libMap = smellSettings.getSemllPatterns(SmellSettings.SMELL_DUMMYHANDLER);
-		// ÅçÃÒµ²ªG¬O§_¥¿½T
+		// é©—è­‰çµæœæ˜¯å¦æ­£ç¢º
 		assertEquals(3, libMap.size());
 		assertTrue(libMap.get(SmellSettings.EXTRARULE_SystemErrPrint));
 		assertFalse(libMap.get(SmellSettings.EXTRARULE_ePrintStackTrace));
@@ -552,14 +552,14 @@ public class SmellSettingsTest {
 	public void testIsExtraRuleExist() throws Exception {
 		smellSettingFile.createNewFile();
 		
-		/** ·íbad smellªº¸`ÂI¤£¦s¦b®É */
+		/** ç•¶bad smellçš„ç¯€é»ä¸å­˜åœ¨æ™‚ */
 		assertFalse(smellSettings.isExtraRuleExist(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD));
 		
-		/** ·íbad smellªº¸`ÂI¦s¦b¡A«o¨S¦³³]©w­È®É */
+		/** ç•¶bad smellçš„ç¯€é»å­˜åœ¨ï¼Œå»æ²’æœ‰è¨­å®šå€¼æ™‚ */
 		smellSettings.getSmellType(SmellSettings.SMELL_CARELESSCLEANUP);
 		assertFalse(smellSettings.isExtraRuleExist(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD));
 		
-		/** ·íbad smellªº¸`ÂI¦s¦b¡A¤]¦³³]©w­È®É */
+		/** ç•¶bad smellçš„ç¯€é»å­˜åœ¨ï¼Œä¹Ÿæœ‰è¨­å®šå€¼æ™‚ */
 		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		assertTrue(smellSettings.isExtraRuleExist(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD));
@@ -569,10 +569,10 @@ public class SmellSettingsTest {
 	public void testGetSmellSettings() throws Exception {
 		smellSettingFile.createNewFile();
 		
-		/** ·íbad smellªº¸`ÂI¤£¦s¦b®É */
+		/** ç•¶bad smellçš„ç¯€é»ä¸å­˜åœ¨æ™‚ */
 		assertEquals(0, smellSettings.getSmellSettings(SmellSettings.SMELL_DUMMYHANDLER).size());
 		
-		/** ·íbad smellªº¸`ÂI¦s¦b¡A¦Ó¥u¦³extra rule®É */
+		/** ç•¶bad smellçš„ç¯€é»å­˜åœ¨ï¼Œè€Œåªæœ‰extra ruleæ™‚ */
 		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_ePrintStackTrace);
 		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_JavaUtilLoggingLogger);
 		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_SystemOutPrintln);
@@ -589,11 +589,11 @@ public class SmellSettingsTest {
 		assertEquals(UserDefinedConstraintsType.Library, libMap.get(SmellSettings.EXTRARULE_JavaUtilLoggingLogger));
 		assertEquals(UserDefinedConstraintsType.Method, libMap.get(SmellSettings.EXTRARULE_ePrintStackTrace));
 		
-		// §R°£ÀÉ®×¥H«K¤U­Ócase´ú¸Õ
+		// åˆªé™¤æª”æ¡ˆä»¥ä¾¿ä¸‹å€‹caseæ¸¬è©¦
 		assertTrue(smellSettingFile.delete());
 		smellSettings = new SmellSettings(smellSettingFile.getPath());
 		
-		/** ·íbad smellªº¸`ÂI¦s¦b¡A¦Ó¥u¦³pattern®É */
+		/** ç•¶bad smellçš„ç¯€é»å­˜åœ¨ï¼Œè€Œåªæœ‰patternæ™‚ */
 		assertTrue(smellSettingFile.createNewFile());
 		smellSettings.addDummyHandlerPattern("Java.io.File", true);
 		smellSettings.addDummyHandlerPattern("Java.io.FileInputStream", false);
@@ -643,7 +643,7 @@ public class SmellSettingsTest {
 		assertEquals(UserDefinedConstraintsType.Method, libMap.get("File"));
 		assertNull(libMap.get("FileInputStream"));
 		
-		/** ³]©wÀÉ¥¼¿ï¨ú®É¡A«hµL¥ô¦óÅª¨ú°Ê§@ */
+		/** è¨­å®šæª”æœªé¸å–æ™‚ï¼Œå‰‡ç„¡ä»»ä½•è®€å–å‹•ä½œ */
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.ATTRIBUTE_ISDETECTING, false);
 		libMap = smellSettings.getSmellSettings(SmellSettings.SMELL_DUMMYHANDLER);
 		assertEquals(0, libMap.size());
@@ -662,28 +662,28 @@ public class SmellSettingsTest {
 
 	@Test
 	public void testActivateAllConditions() throws Exception {
-		// ¥ı¥Î¤@­Ó·sªºinstace²£¥ÍxmlÀÉ
+		// å…ˆç”¨ä¸€å€‹æ–°çš„instaceç”¢ç”Ÿxmlæª”
 		smellSettings = new SmellSettings(smellSettingFile);
 		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_ePrintStackTrace);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		
 		String expectedResult = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells><SmellTypes name=\"DummyHandler\" isDetecting=\"true\"><extraRule name=\"printStackTrace\" /></SmellTypes></CodeSmells>";
 		
-		// ½T»{¤º®e
+		// ç¢ºèªå…§å®¹
 		String firstTimeContent = readFileContents(smellSettingFile);
 		assertEquals(expectedResult, firstTimeContent);
 		
-		// ©I¥sactivateAllConditions¡A¨Ï¨ä¤Ä¿ï©Ò¦³³]©w
+		// å‘¼å«activateAllConditionsï¼Œä½¿å…¶å‹¾é¸æ‰€æœ‰è¨­å®š
 		smellSettings.activateAllConditions(smellSettingFile.getPath());
 
-		// ¦]¬°ÀÉ®×¦s¦b¡A©Ò¥H¤£·|¼g¤J¥ô¦ó·sªº¸ê°T
+		// å› ç‚ºæª”æ¡ˆå­˜åœ¨ï¼Œæ‰€ä»¥ä¸æœƒå¯«å…¥ä»»ä½•æ–°çš„è³‡è¨Š
 		assertEquals(expectedResult, firstTimeContent);
 		
-		// §R°£¤w¸g¦s¦bªºÀÉ®×¡A¨Ã¥B­«·s¤Ä¿ï©Ò¦³³]©w
+		// åˆªé™¤å·²ç¶“å­˜åœ¨çš„æª”æ¡ˆï¼Œä¸¦ä¸”é‡æ–°å‹¾é¸æ‰€æœ‰è¨­å®š
 		assertTrue(smellSettingFile.delete());
 		smellSettings.activateAllConditions(smellSettingFile.getPath());
 		
-		// ­«·s½T»{¤º®e
+		// é‡æ–°ç¢ºèªå…§å®¹
 		String fileContent = readFileContents(smellSettingFile);
 		assertEquals(
 				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells>" +

@@ -25,14 +25,14 @@ public class SuppressWarningExampleForAnalyzer {
 	 * 4.ignored exception
 	 * 5.careless cleanup
 	 * 6.over logging
-	 * 7.«İ¸É
+	 * 7.å¾…è£œ
 	 */
 	
 	/* ---------------------- With Suppress warning & Tag Example --------------------- */
 	/* ------------------------------------ Start ------------------------------------ */
 	
 	/**
-	 * ¦³ suppress warning ªº unprotected main program
+	 * æœ‰ suppress warning çš„ unprotected main program
 	 */
 	@SuppressSmell("Unprotected_Main_Program")
 	public static void main(String[] args) {
@@ -41,7 +41,7 @@ public class SuppressWarningExampleForAnalyzer {
 	}
 	
 	/**
-	 * ¦b method ¤W¦³  suppress warning ªº dummy handler
+	 * åœ¨ method ä¸Šæœ‰  suppress warning çš„ dummy handler
 	 */
 	@SuppressSmell("Dummy_Handler")
 	public void withSuppressWaringDummyHandlerOnMethod() {
@@ -55,7 +55,7 @@ public class SuppressWarningExampleForAnalyzer {
 	}
 	
 	/**
-	 * ¦b catch ¤W¦³  suppress warning ªº dummy handler
+	 * åœ¨ catch ä¸Šæœ‰  suppress warning çš„ dummy handler
 	 */
 	public void withSuppressWaringDummyHandlerOnCatch() {
 		FileInputStream fis = null;
@@ -68,7 +68,7 @@ public class SuppressWarningExampleForAnalyzer {
 	}
 
 	/**
-	 * ¦b catch ¤W¦³  suppress warning ªº nested try block
+	 * åœ¨ catch ä¸Šæœ‰  suppress warning çš„ nested try block
 	 */
 	@SuppressSmell({ "Nested_Try_Block", "Dummy_Handler" })
 	public void withSuppressWaringNestedTryBlockOnCatch() {
@@ -85,7 +85,7 @@ public class SuppressWarningExampleForAnalyzer {
 	}
 	
 	/**
-	 * ¦b method ¤W¦³ suppress warning ªº nested try block
+	 * åœ¨ method ä¸Šæœ‰ suppress warning çš„ nested try block
 	 */
 	@SuppressSmell({ "Nested_Try_Block", "Dummy_Handler" })
 	public void withSuppressWaringNestedTryBlockOnMethod() {
@@ -104,7 +104,7 @@ public class SuppressWarningExampleForAnalyzer {
 	}
 
 	/**
-	 * ¦b method ¤W¦³ suppress warning ªº ignored exception
+	 * åœ¨ method ä¸Šæœ‰ suppress warning çš„ ignored exception
 	 */
 	@SuppressSmell("Empty_Catch_Block")
 	public void withSuppressWaringIgnoredExceptionOnMethod() {
@@ -118,7 +118,7 @@ public class SuppressWarningExampleForAnalyzer {
 	}
 	
 	/**
-	 * ¦b catch ¤W¦³ suppress warning ªº ignored exception
+	 * åœ¨ catch ä¸Šæœ‰ suppress warning çš„ ignored exception
 	 */
 	public void withSuppressWaringIgnoredExceptionOnCatch() {
 		FileInputStream fis = null;
@@ -131,7 +131,7 @@ public class SuppressWarningExampleForAnalyzer {
 	}
 
 	/**
-	 * ¦³ suppress waring ªº careless cleanup
+	 * æœ‰ suppress waring çš„ careless cleanup
 	 */
 	@SuppressSmell("Careless_CleanUp")
 	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
@@ -150,7 +150,7 @@ public class SuppressWarningExampleForAnalyzer {
 	}
 	
 	/**
-	 * ¦³ suppress waring ªº careless cleanup ¦b try ¶i¦æ close ªº°Ê§@
+	 * æœ‰ suppress waring çš„ careless cleanup åœ¨ try é€²è¡Œ close çš„å‹•ä½œ
 	 * @param context
 	 * @param outputFile
 	 */
@@ -170,7 +170,7 @@ public class SuppressWarningExampleForAnalyzer {
 	}
 	
 	/**
-	 * ¦³ suppress waring ªº careless cleanup ¥[¤W finally block
+	 * æœ‰ suppress waring çš„ careless cleanup åŠ ä¸Š finally block
 	 */
 	@SuppressSmell("Careless_CleanUp")
 	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
@@ -202,7 +202,7 @@ public class SuppressWarningExampleForAnalyzer {
 	}
 	
 	/**
-	 * @SuppressSmell("Over_Logging")¦b method ¤W
+	 * @SuppressSmell("Over_Logging")åœ¨ method ä¸Š
 	 */
 	@SuppressSmell("Over_Logging")
 	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
@@ -216,7 +216,7 @@ public class SuppressWarningExampleForAnalyzer {
 	}
 	
 	/**
-	 * @SuppressSmell("Over_Logging")¦b catch ¤W
+	 * @SuppressSmell("Over_Logging")åœ¨ catch ä¸Š
 	 */
 	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void theThirdOrderInTheSameClass() throws IOException {
@@ -229,8 +229,8 @@ public class SuppressWarningExampleForAnalyzer {
 	}
 	
 	/**
-	 * ¦b±_ª¬ try-catch ­n¦b catch ¤W suppress bad smell ®É
-	 * ¤ÏÆ[¦b method ¤W suppress bad smell ®É¥i¥H¥¿½Tªº³Q suppress
+	 * åœ¨å·¢ç‹€ try-catch è¦åœ¨ catch ä¸Š suppress bad smell æ™‚
+	 * åè§€åœ¨ method ä¸Š suppress bad smell æ™‚å¯ä»¥æ­£ç¢ºçš„è¢« suppress
 	 */
 	@SuppressSmell({ "Careless_CleanUp", "Nested_Try_Block" })
 	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
@@ -254,7 +254,7 @@ public class SuppressWarningExampleForAnalyzer {
 			try {
 				fis = new FileInputStream("");
 				fis.read();
-				//¤T¼h
+				//ä¸‰å±¤
 				try {
 					fileInputStream = new FileInputStream("");
 					fileInputStream.read();
@@ -420,8 +420,8 @@ public class SuppressWarningExampleForAnalyzer {
 	}
 	
 	/**
-	 * ¦b±_ª¬ try-catch ­n¦b catch ¤W suppress bad smell ®É
-	 * ¤ÏÆ[¦b method ¤W suppress bad smell ®É¥i¥H¥¿½Tªº³Q suppress
+	 * åœ¨å·¢ç‹€ try-catch è¦åœ¨ catch ä¸Š suppress bad smell æ™‚
+	 * åè§€åœ¨ method ä¸Š suppress bad smell æ™‚å¯ä»¥æ­£ç¢ºçš„è¢« suppress
 	 */
 	public void withoutSuppressWaringTheFourthOrderInTheSameClass() throws IOException {
 		FileOutputStream fileOutputStream = null;
@@ -443,7 +443,7 @@ public class SuppressWarningExampleForAnalyzer {
 			try {
 				fis = new FileInputStream("");
 				fis.read();
-				//¤T¼h
+				//ä¸‰å±¤
 				try {
 					fileInputStream = new FileInputStream("");
 					fileInputStream.read();

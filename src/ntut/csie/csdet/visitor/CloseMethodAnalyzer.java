@@ -14,13 +14,13 @@ import org.eclipse.jdt.core.dom.TryStatement;
 
 public class CloseMethodAnalyzer extends ASTVisitor {
 
-	/** visitªºnode¡A³£·|³QÂà¦¨expression¨Ó°µ§PÂ_ */
+	/** visitçš„nodeï¼Œéƒ½æœƒè¢«è½‰æˆexpressionä¾†åšåˆ¤æ–· */
 	private Expression _expression;
 	
-	/** ¬O§_§ä¨ìcareless cleanupªºstatement */
+	/** æ˜¯å¦æ‰¾åˆ°careless cleanupçš„statement */
 	private boolean _isFoundCarelessCleanup;
 	
-	/** ¨Ï¥ÎªÌ¬O§_­n¨D°»´ú¥~³¡©I¥sªºµ{¦¡¡A¦³¨S¦³careless cleanup */
+	/** ä½¿ç”¨è€…æ˜¯å¦è¦æ±‚åµæ¸¬å¤–éƒ¨å‘¼å«çš„ç¨‹å¼ï¼Œæœ‰æ²’æœ‰careless cleanup */
 	private boolean _isDetectOutterMethodWithCarelessCleanup;
 	
 	private MethodInvocation _miNode;
@@ -29,18 +29,18 @@ public class CloseMethodAnalyzer extends ASTVisitor {
 	
 	/**
 	 * Constructor
-	 * @param isDetectOutterMethodWithCarelessCleanup ¨Ï¥ÎªÌ¬O§_­n°»´ú¥~³¡©I¥sªºµ{¦¡¸Ì¡A¦³¨S¦³careless cleanupªº±¡ªp
-	 * @param lstMethods¡@­ì¨Óµ{¦¡½X¸Ì­±¡A©Ò¦³Method Nameªº¶°¦X
+	 * @param isDetectOutterMethodWithCarelessCleanup ä½¿ç”¨è€…æ˜¯å¦è¦åµæ¸¬å¤–éƒ¨å‘¼å«çš„ç¨‹å¼è£¡ï¼Œæœ‰æ²’æœ‰careless cleanupçš„æƒ…æ³
+	 * @param lstMethodsã€€åŸä¾†ç¨‹å¼ç¢¼è£¡é¢ï¼Œæ‰€æœ‰Method Nameçš„é›†åˆ
 	 */
 	public CloseMethodAnalyzer(boolean isDetectOutterMethodWithCarelessCleanup, List<ASTNode> lstMethods){
 		_isDetectOutterMethodWithCarelessCleanup = isDetectOutterMethodWithCarelessCleanup;
 		_lstMethods = lstMethods;
-		_isFoundCarelessCleanup = false;	//ªì©l¤Æ®É¡A°²©w¤°»ò³£¨S§ä¨ì
+		_isFoundCarelessCleanup = false;	//åˆå§‹åŒ–æ™‚ï¼Œå‡å®šä»€éº¼éƒ½æ²’æ‰¾åˆ°
 	}
 	
 	/**
-	 * ¬O§_§ä¨ìcareless cleanupªºstatement
-	 * @return true: §ä¨ì¡F false¡G¨S§ä¨ì
+	 * æ˜¯å¦æ‰¾åˆ°careless cleanupçš„statement
+	 * @return true: æ‰¾åˆ°ï¼› falseï¼šæ²’æ‰¾åˆ°
 	 */
 	public boolean isFoundCarelessCleanup(){
 		return this._isFoundCarelessCleanup;
@@ -65,10 +65,10 @@ public class CloseMethodAnalyzer extends ASTVisitor {
 
 		boolean isFromSource = methodBinding.getDeclaringClass().isFromSource();
 		String methodName = miNode.resolveMethodBinding().getName();
-		//1. expression != null --> ¬°close(object)ªºÃş«¬
-		//2. !isFromSource --> class¤£¬O¨Ï¥ÎªÌ¦b¦¹¦¸¶}µoªºµ{¦¡¤¤¡A©Ò©w¸qªºclass
-		//3. methodName.equals("close") --> methodªº¦WºÙ¬°"close"
-		//4. !_isDetectOutterMethodWithCarelessCleanup --> ¤£°»´ú¥~³¡µ{¦¡¦³¨S¦³careless cleanup
+		//1. expression != null --> ç‚ºclose(object)çš„é¡å‹
+		//2. !isFromSource --> classä¸æ˜¯ä½¿ç”¨è€…åœ¨æ­¤æ¬¡é–‹ç™¼çš„ç¨‹å¼ä¸­ï¼Œæ‰€å®šç¾©çš„class
+		//3. methodName.equals("close") --> methodçš„åç¨±ç‚º"close"
+		//4. !_isDetectOutterMethodWithCarelessCleanup --> ä¸åµæ¸¬å¤–éƒ¨ç¨‹å¼æœ‰æ²’æœ‰careless cleanup
 		if((this._expression != null) && (!isFromSource) && (methodName.equals("close")) && (!_isDetectOutterMethodWithCarelessCleanup)){
 			this._isFoundCarelessCleanup = true;
 			_miNode = miNode;
@@ -80,7 +80,7 @@ public class CloseMethodAnalyzer extends ASTVisitor {
 				this._isFoundCarelessCleanup = true;
 				return true;
 			}
-//			//´ú¸Õif¬O¤£¬O¦b¸Ì­±
+//			//æ¸¬è©¦ifæ˜¯ä¸æ˜¯åœ¨è£¡é¢
 //			for(int i = 0; i < _lstMethods.size(); i++){
 //				System.out.println("M list: " + _lstMethods.get(i));
 //			}
@@ -90,7 +90,7 @@ public class CloseMethodAnalyzer extends ASTVisitor {
 	}
 	
 	/**
-	 * ¥Ñ¶Ç¶i¨Óvisitªºstatement¡A©¹¦^retrieve¥Lªºparent node¡A§ä¨ìMethodInvocation
+	 * ç”±å‚³é€²ä¾†visitçš„statementï¼Œå¾€å›retrieveä»–çš„parent nodeï¼Œæ‰¾åˆ°MethodInvocation
 	 * @return
 	 */
 	public MethodInvocation getMethodInvocation(){
@@ -98,38 +98,38 @@ public class CloseMethodAnalyzer extends ASTVisitor {
 	}
 	
 	/**
-	 * ÀË¬d¡Aµ{¦¡¸Ì­±©Ò©I¥sªº¥~³¡µ{¦¡¡A¬O§_¦³careless cleanupªº²{¶H
+	 * æª¢æŸ¥ï¼Œç¨‹å¼è£¡é¢æ‰€å‘¼å«çš„å¤–éƒ¨ç¨‹å¼ï¼Œæ˜¯å¦æœ‰careless cleanupçš„ç¾è±¡
 	 * @param methodList
 	 * @return
 	 */
-	//TODO: ³o­Ócopy¹L¨Óªºµ{¦¡½X¤]¤Óªø¤F¡A¸Ó­«ºc¤@¤U(À³¸Ó®M¥Îvisitor pattern)
+	//TODO: é€™å€‹copyéä¾†çš„ç¨‹å¼ç¢¼ä¹Ÿå¤ªé•·äº†ï¼Œè©²é‡æ§‹ä¸€ä¸‹(æ‡‰è©²å¥—ç”¨visitor pattern)
 	private boolean isCallMethodWithCarelessCleanup(List<ASTNode> methodList){
 		String methodInvName = _miNode.resolveMethodBinding().getName();
 		String methodDecName;
 		MethodDeclaration md;
-		//¬O§_¦³Method DeclarationªºName»PMethod InvocationªºName¬Û¦P
+		//æ˜¯å¦æœ‰Method Declarationçš„Nameèˆ‡Method Invocationçš„Nameç›¸åŒ
 		for (int i = 0; i < methodList.size(); i++) {
-			//¨ú±oMethod Declarationªº¦WºÙ
+			//å–å¾—Method Declarationçš„åç¨±
 			md = (MethodDeclaration) methodList.get(i);
 			methodDecName = md.resolveBinding().getName();
-			//­Y¦WºÙ¬Û¦P,«h³B²z¸ÓMethod Invocation
+			//è‹¥åç¨±ç›¸åŒ,å‰‡è™•ç†è©²Method Invocation
 			if (methodDecName.equals(methodInvName)) {
-				// ¨¾¤îInterface¤§ÃşªºMethod Declaration¥X¿ù
+				// é˜²æ­¢Interfaceä¹‹é¡çš„Method Declarationå‡ºéŒ¯
 				if (md.getBody() == null)
 					continue;
-				//¨ú±o¸ÓMethod Declarationªº©Ò¦³statement
+				//å–å¾—è©²Method Declarationçš„æ‰€æœ‰statement
 				List<?> mdStatement = md.getBody().statements();
-				//¨ú±o¸ÓMethod Declarationªºthrown exception name
+				//å–å¾—è©²Method Declarationçš„thrown exception name
 				List<?> thrown = md.thrownExceptions();
 
 				if (mdStatement.size() != 0) {
 					for (int j = 0; j < mdStatement.size(); j++) {
-						//§ä¨ç¦¡¤ºªºtry¸`ÂI
+						//æ‰¾å‡½å¼å…§çš„tryç¯€é»
 						if(mdStatement.get(j) instanceof TryStatement){
-							//¨ú±otry Block¤ºªºStatement
+							//å–å¾—try Blockå…§çš„Statement
 							TryStatement trystat=(TryStatement) mdStatement.get(j);
 							List<?> statementTemp=trystat.getBody().statements();
-							//§ästatement¤º¬O§_¦³Method Invocation
+							//æ‰¾statementå…§æ˜¯å¦æœ‰Method Invocation
 								if(!statementTemp.isEmpty()){
 									Statement statement;
 									for (int k = 0; k < statementTemp.size(); k++) {
@@ -140,9 +140,9 @@ public class CloseMethodAnalyzer extends ASTVisitor {
 									}
 								}
 						}
-						//§äMethod¦³ThrowException
+						//æ‰¾Methodæœ‰ThrowException
 						if(thrown.size()!=0){
-							//object.close ¬Ò¬°Expression Statement
+							//object.close çš†ç‚ºExpression Statement
 							if(mdStatement.get(j) instanceof ExpressionStatement){
 								ExpressionStatement es=(ExpressionStatement) mdStatement.get(j);
 								return isOutterMethodWithCarelessCleanup(es);
@@ -156,7 +156,7 @@ public class CloseMethodAnalyzer extends ASTVisitor {
 	}
 
 	/**
-	 * ¥u¥ÑisCallMethodWithCarelessCleanup()©I¥s¡A­t³d³Ì«á¤@¨Bªº§PÂ_¡A¬İ¥~³¡µ{¦¡¬O§_¦³careless cleanup
+	 * åªç”±isCallMethodWithCarelessCleanup()å‘¼å«ï¼Œè² è²¬æœ€å¾Œä¸€æ­¥çš„åˆ¤æ–·ï¼Œçœ‹å¤–éƒ¨ç¨‹å¼æ˜¯å¦æœ‰careless cleanup
 	 * @param st
 	 * @return
 	 */

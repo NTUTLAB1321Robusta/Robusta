@@ -22,27 +22,27 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 
 public class OverLoggingVisitor extends ASTVisitor {
-	// ¬O§_­nÄ~Äò°»´ú
+	// æ˜¯å¦è¦ç¹¼çºŒåµæ¸¬
 	private boolean isKeepTrace = false;
-	// ¬O§_¦³Logging
+	// æ˜¯å¦æœ‰Logging
 	private boolean isLogging = false;
-	// Âà«¬¬O§_Ä~Äò°lÂÜ
+	// è½‰å‹æ˜¯å¦ç¹¼çºŒè¿½è¹¤
 	private boolean isDetTransEx = false;
-	// ¬O§_§ä¨ìcallee
+	// æ˜¯å¦æ‰¾åˆ°callee
 	private boolean isFoundCallee = false;
-	// ¬O§_°»´úOverLoggingBadSmell
+	// æ˜¯å¦åµæ¸¬OverLoggingBadSmell
 	private boolean isDetectingOverLoggingSmell;
-	// CalleeªºClass©MMethodªº¸ê°T
+	// Calleeçš„Classå’ŒMethodçš„è³‡è¨Š
 	private String methodInfo;
-	// ¹w¥ıÀx¦s¥i¯à¬OoverloggingªºExpressionStatement
+	// é å…ˆå„²å­˜å¯èƒ½æ˜¯overloggingçš„ExpressionStatement
 	private ASTNode suspectNode;
-	// AST Treeªºroot(ÀÉ®×¦WºÙ)
+	// AST Treeçš„root(æª”æ¡ˆåç¨±)
 	private CompilationUnit root;
-	// Àx¦s©Ò§ä¨ìªºOverLogging Exception 
+	// å„²å­˜æ‰€æ‰¾åˆ°çš„OverLogging Exception 
 	private List<MarkerInfo> loggingList = new ArrayList<MarkerInfo>();
-	// Àx¦s¨Ï¥ÎªÌ©w¸qªºLog±ø¥ó
+	// å„²å­˜ä½¿ç”¨è€…å®šç¾©çš„Logæ¢ä»¶
 	private TreeMap<String, UserDefinedConstraintsType> libMap = new TreeMap<String, UserDefinedConstraintsType>();
-	// ³]©wÀÉ
+	// è¨­å®šæª”
 	private SmellSettings smellSettings;
 
 	public OverLoggingVisitor(CompilationUnit root, String methodInfo) {
@@ -55,15 +55,15 @@ public class OverLoggingVisitor extends ASTVisitor {
 	}
 	
 	/**
-	 * ®Ú¾Ú³]©wÀÉªº¸ê°T¡A¨M©w­n¤£­n«ô³X¾ã´Ê¾ğ¡C
+	 * æ ¹æ“šè¨­å®šæª”çš„è³‡è¨Šï¼Œæ±ºå®šè¦ä¸è¦æ‹œè¨ªæ•´æ£µæ¨¹ã€‚
 	 */
 	public boolean visit(MethodDeclaration node) {
 		return isDetectingOverLoggingSmell;
 	}
 	
 	/**
-	 * §PÂ_CalleeªºMethod¬O§_¥X²{¦b³o­ÓTry¤§¤¤
-	 * §PÂ_¬O§_¦³Logging
+	 * åˆ¤æ–·Calleeçš„Methodæ˜¯å¦å‡ºç¾åœ¨é€™å€‹Tryä¹‹ä¸­
+	 * åˆ¤æ–·æ˜¯å¦æœ‰Logging
 	 */
 	public boolean visit(MethodInvocation node) {
 //		if(NodeUtils.getSpecifiedParentNode(node, ASTNode.TRY_STATEMENT) != null)
@@ -79,7 +79,7 @@ public class OverLoggingVisitor extends ASTVisitor {
 		
 		if(!satisfyLoggingStatement(node))
 			return true;
-		// ¦³logging¤~¥[¤J¤§«eºÃ¦üOverLoggingªºnode¡A§_«hµ¹¤©·sµo²{ªº¶ûºÃ¥Ç
+		// æœ‰loggingæ‰åŠ å…¥ä¹‹å‰ç–‘ä¼¼OverLoggingçš„nodeï¼Œå¦å‰‡çµ¦äºˆæ–°ç™¼ç¾çš„å«Œç–‘çŠ¯
 		if(isLogging)
 			addOverLoggingMarkerInfo(suspectNode);
 		else
@@ -91,13 +91,13 @@ public class OverLoggingVisitor extends ASTVisitor {
 	}
 
 	/**
-	 * §PÂ_¦³¨S¦³Throw¡A¨M©w­n¤£­nÄ~Ä~Trace
+	 * åˆ¤æ–·æœ‰æ²’æœ‰Throwï¼Œæ±ºå®šè¦ä¸è¦ç¹¼ç¹¼Trace
 	 */
 	public boolean visit(ThrowStatement node) {
 		if(NodeUtils.getSpecifiedParentNode(node, ASTNode.CATCH_CLAUSE) == null)
 			return true;
 		
-		// ­Y¦³­nlog¤~°lÂÜ¡A¨S¦³logªº°Ê§@¡A¨º¤]´N¨S¦³over loggingªº°İÃD
+		// è‹¥æœ‰è¦logæ‰è¿½è¹¤ï¼Œæ²’æœ‰logçš„å‹•ä½œï¼Œé‚£ä¹Ÿå°±æ²’æœ‰over loggingçš„å•é¡Œ
 		if(isLogging)
 			isKeepTrace = true;
 		
@@ -105,14 +105,14 @@ public class OverLoggingVisitor extends ASTVisitor {
 	}
 
 	/**
-	 * §PÂ_¬O§_¬°Throw new Exception
+	 * åˆ¤æ–·æ˜¯å¦ç‚ºThrow new Exception
 	 */
 	public boolean visit(ClassInstanceCreation node) {
 		ASTNode parent = NodeUtils.getSpecifiedParentNode(node, ASTNode.CATCH_CLAUSE);
 		if(parent == null)
 			return true;
 		
-		// ­Y¤£°»´úÂà«¬ ©Î ¨S¦³±Ncatch exception¥N¤J(eg:RuntimeException(e))¡A«h¤£Ä~Äò°»´ú
+		// è‹¥ä¸åµæ¸¬è½‰å‹ æˆ– æ²’æœ‰å°‡catch exceptionä»£å…¥(eg:RuntimeException(e))ï¼Œå‰‡ä¸ç¹¼çºŒåµæ¸¬
 		if (!isDetTransEx || node.arguments().size() == 0 || 
 			!node.arguments().get(0).toString().equals(((CatchClause)parent).getException().getName().toString())) {
 			isKeepTrace = false;
@@ -122,15 +122,15 @@ public class OverLoggingVisitor extends ASTVisitor {
 	}
 
 	/**
-	 * Àx¦s°»´ú¨ìªºover logging
-	 * @param parent bad smellªºparent
+	 * å„²å­˜åµæ¸¬åˆ°çš„over logging
+	 * @param parent bad smellçš„parent
 	 */
 	private void addOverLoggingMarkerInfo(ASTNode node) {
 		ASTNode compilationUnit = NodeUtils.getSpecifiedParentNode(node, ASTNode.COMPILATION_UNIT);
-		// compilation unit¦pªG¬Onull¡A«h¤£°Ê§@ 
+		// compilation unitå¦‚æœæ˜¯nullï¼Œå‰‡ä¸å‹•ä½œ 
 		if(compilationUnit == null)
 			return;
-		// ¥uÀx¦s¥Ø«e¤ÀªRªºÀÉ®×¤¤ªºmarker¡A¦pªG°lÂÜ¨ì¨ä¥LÀÉ®×¡A«h¤£Àx¦s
+		// åªå„²å­˜ç›®å‰åˆ†æçš„æª”æ¡ˆä¸­çš„markerï¼Œå¦‚æœè¿½è¹¤åˆ°å…¶ä»–æª”æ¡ˆï¼Œå‰‡ä¸å„²å­˜
 		if(compilationUnit.toString().equals(root.toString())) {
 			ASTNode parent = NodeUtils.getSpecifiedParentNode(node, ASTNode.CATCH_CLAUSE);
 			CatchClause cc = (CatchClause)parent;
@@ -162,23 +162,23 @@ public class OverLoggingVisitor extends ASTVisitor {
 	}
 
 	/**
-	 * ¨ú±o¬O§_­nÄ~ÄòTrace
+	 * å–å¾—æ˜¯å¦è¦ç¹¼çºŒTrace
 	 */
 	public boolean getIsKeepTrace() {
 		return isKeepTrace;
 	}
 
 	/**
-	 * ¦^¶Ç¬O§_¦³Logging
+	 * å›å‚³æ˜¯å¦æœ‰Logging
 	 * @return
 	 */
 	public boolean getIsLogging() {
-		// ¦pªG¦³­nlog¡A¤]­n°lÂÜ¡A¦Ó¥B¦³ºÃ¦üOverLoggingªºnode¡A´N¦^¶Çfalse¡A¬°¤FÅıdetectorÄ~Äò»¼°j
+		// å¦‚æœæœ‰è¦logï¼Œä¹Ÿè¦è¿½è¹¤ï¼Œè€Œä¸”æœ‰ç–‘ä¼¼OverLoggingçš„nodeï¼Œå°±å›å‚³falseï¼Œç‚ºäº†è®“detectorç¹¼çºŒéè¿´
 		return !(isLogging && isKeepTrace && (suspectNode != null) ? true : false);
 	}
 	
 	/**
-	 * ¨ú±oOverLogging ¦æ¼Æªº¸ê°T
+	 * å–å¾—OverLogging è¡Œæ•¸çš„è³‡è¨Š
 	 * @return
 	 */
 	public List<MarkerInfo> getOverLoggingList() {

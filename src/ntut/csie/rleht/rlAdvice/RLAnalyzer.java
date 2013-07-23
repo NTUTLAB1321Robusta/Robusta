@@ -15,20 +15,20 @@ import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.rleht.common.RLBaseVisitor;
 
 /**
- * ¤ÀªR·|©ß¥X¨Ò¥~¡A¥H¤Î¦³©w¸qRLªº¥~³¡Method¡AÀ³¥Î¤Fvisitor pattern
+ * åˆ†ææœƒæ‹‹å‡ºä¾‹å¤–ï¼Œä»¥åŠæœ‰å®šç¾©RLçš„å¤–éƒ¨Methodï¼Œæ‡‰ç”¨äº†visitor pattern
  * @author Charles
  * @version 0.0.1
  *  2011/02/10
  */
 public class RLAnalyzer extends RLBaseVisitor {
 
-	/** AST treeªºroot(ÀÉ®×¦WºÙ) */
+	/** AST treeçš„root(æª”æ¡ˆåç¨±) */
 	private CompilationUnit root;
 	
-	/** ¦¬¶°class¤¤ªºmethod */
+	/** æ”¶é›†classä¸­çš„method */
 	private ASTMethodCollector methodCollector;
 	
-//	/** Àx¦s§ä¨ìªºMethod List */
+//	/** å„²å­˜æ‰¾åˆ°çš„Method List */
 //	private List<ASTNode> lstMethod;
 	
 	private List<RLAdviceMessage> lstRLAdviceMessage;
@@ -42,7 +42,7 @@ public class RLAnalyzer extends RLBaseVisitor {
 	}
 
 	/**
-	 * ÀË¬d¦³©ß¥X¨Ò¥~ªº«Å§i
+	 * æª¢æŸ¥æœ‰æ‹‹å‡ºä¾‹å¤–çš„å®£å‘Š
 	 */
 	protected boolean visitNode(ASTNode node){
 		switch(node.getNodeType()){
@@ -56,7 +56,7 @@ public class RLAnalyzer extends RLBaseVisitor {
 	}
 	
 	/**
-	 * ÀË¬d¦¹node¦³¨S¦³©ß¥X¨Ò¥~
+	 * æª¢æŸ¥æ­¤nodeæœ‰æ²’æœ‰æ‹‹å‡ºä¾‹å¤–
 	 * @param node
 	 */
 	private void addAdvice(ASTNode node) {
@@ -75,9 +75,9 @@ public class RLAnalyzer extends RLBaseVisitor {
 	}
 
 	/**
-	 * ©I¥s³o­ÓClassªºfunction¡A¦bÀË¬d¹LMethodInvocation¡A¥B±oª¾·|©ß¥X¨Ò¥~«á¡A ·|addMarker¡C
-	 * ³o¸ÌªºaddMarker¡A­t³d§âµ{¦¡½Xªº¸ê°T¡A¬ö¿ı¨ìRLAdviceMessage¸Ì­±¡C
-	 * ¬Û¸û©óRLBuilder.classªºaddMarker¡A«h¬O§Q¥ÎRLAdviceMessageªº¸ê°T¥H«á¡A­«·s¶K¤@¦¸marker
+	 * å‘¼å«é€™å€‹Classçš„functionï¼Œåœ¨æª¢æŸ¥éMethodInvocationï¼Œä¸”å¾—çŸ¥æœƒæ‹‹å‡ºä¾‹å¤–å¾Œï¼Œ æœƒaddMarkerã€‚
+	 * é€™è£¡çš„addMarkerï¼Œè² è²¬æŠŠç¨‹å¼ç¢¼çš„è³‡è¨Šï¼Œç´€éŒ„åˆ°RLAdviceMessageè£¡é¢ã€‚
+	 * ç›¸è¼ƒæ–¼RLBuilder.classçš„addMarkerï¼Œå‰‡æ˜¯åˆ©ç”¨RLAdviceMessageçš„è³‡è¨Šä»¥å¾Œï¼Œé‡æ–°è²¼ä¸€æ¬¡marker
 	 * @param node
 	 */
 	private void addMarker(ASTNode node){
@@ -101,7 +101,7 @@ public class RLAnalyzer extends RLBaseVisitor {
 	}
 	
 	/**
-	 * §ä¥X³o­Ónode©ÒÄİªºTryStatement
+	 * æ‰¾å‡ºé€™å€‹nodeæ‰€å±¬çš„TryStatement
 	 * @param node
 	 * @return
 	 */
@@ -110,7 +110,7 @@ public class RLAnalyzer extends RLBaseVisitor {
 		if(node.getParent().getNodeType() == ASTNode.TRY_STATEMENT){
 			return tryNodeCadidate;
 		}else if(node.getParent().getNodeType() == ASTNode.TYPE_DECLARATION){
-			//¨¾¤î¤@ª½©¹¤W§ä¤£°±¡A©Ò¥H¥HTYPE_DECLARATION·í§@©¹¤W§äªº³Ì«á¤@¼h
+			//é˜²æ­¢ä¸€ç›´å¾€ä¸Šæ‰¾ä¸åœï¼Œæ‰€ä»¥ä»¥TYPE_DECLARATIONç•¶ä½œå¾€ä¸Šæ‰¾çš„æœ€å¾Œä¸€å±¤
 			return null;
 		}else{
 			return findTryNode(tryNodeCadidate);

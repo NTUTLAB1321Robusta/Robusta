@@ -33,13 +33,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * ´£¨Ñ¿ï¾Ü¤w¦s¦bMethodªºDialog
+ * æä¾›é¸æ“‡å·²å­˜åœ¨Methodçš„Dialog
  * @author Shiau
  */
 public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
 	private static Logger logger = LoggerFactory.getLogger(ExistingMethodSelectionDialog.class);
 
-	//UI¤¸¥ó
+	//UIå…ƒä»¶
 	private ProgressBar progressBar;	
 	private Button parameBtn;
 	private Button privateBtn;
@@ -55,27 +55,27 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
 		super(parent, new JavaElementLabelProvider(JavaElementLabelProvider.SHOW_DEFAULT),
 					  new ClassRenderer());
 
-		//¨ú±oMethod©Ò¦³
+		//å–å¾—Methodæ‰€æœ‰
 		analyzeSuperClass(methodNode);
 	}
 
 	/**
-	 * ¤ÀªRMethodªºClass¡A§ä¥X©Ò¦³ªºSuperClass
+	 * åˆ†æMethodçš„Classï¼Œæ‰¾å‡ºæ‰€æœ‰çš„SuperClass
 	 * @param methodNode
 	 */
 	private void analyzeSuperClass(MethodDeclaration methodNode) {
 		if (methodNode.getParent() instanceof TypeDeclaration) {
 			TypeDeclaration typeDeclaration = (TypeDeclaration) methodNode.getParent();
-			//¨ú±oMethodªºClass Name
+			//å–å¾—Methodçš„Class Name
 			className = typeDeclaration.getName() + ".java";
 			superClassList.add(typeDeclaration.resolveBinding().getBinaryName());
 			
-			//¨ú±o©Ò¦³SuperClass
+			//å–å¾—æ‰€æœ‰SuperClass
 			if (typeDeclaration.resolveBinding().getSuperclass() != null) {
 				ITypeBinding type = typeDeclaration.resolveBinding().getSuperclass();					
 				superClassList.add(type.getBinaryName());
 
-				//¤@ª½°lÂÜ¨ì¨S¦³SuperClass
+				//ä¸€ç›´è¿½è¹¤åˆ°æ²’æœ‰SuperClass
 				while (true) {
 					if (type.getSuperclass() == null)
 						break;
@@ -88,17 +88,17 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
 	}
 
 	/**
-	 * °O¿ı¶Ç¤JªºMethod¸ê®Æ
+	 * è¨˜éŒ„å‚³å…¥çš„Methodè³‡æ–™
 	 */
     public void setElements(Object[] elements) {
-    	//°O¿ı¶Ç¤J¸ê®Æ
+    	//è¨˜éŒ„å‚³å…¥è³‡æ–™
     	methods = elements;
 
         super.setElements(elements);
     }
     
     /**
-     * Filter Check Button§ïÅÜ®Éªº°Ê§@
+     * Filter Check Buttonæ”¹è®Šæ™‚çš„å‹•ä½œ
      */
     private void handleFilterChange() {
     	List<Object> filterList = new ArrayList<Object>();
@@ -113,20 +113,20 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
 				if (element instanceof IMethod) {
 					IMethod method = (IMethod) element;
 	
-					//Âo±¼Private
+					//æ¿¾æ‰Private
 		    		if (!isFiltered && privateBtn.getSelection())
 	    				isFiltered = filterPrivate(method);
 
-		    		//Âà¦¨MethodDeclaration (³t«×·|ÅÜ«ÜºC)
+		    		//è½‰æˆMethodDeclaration (é€Ÿåº¦æœƒè®Šå¾ˆæ…¢)
 		    		MethodDeclaration md = transMethodNode(method);
 		    		if (md == null)
 		    			continue;
 
-		    		//Âo±¼Protected
+		    		//æ¿¾æ‰Protected
 		    		if (!isFiltered && protectedBtn.getSelection())
 		    			isFiltered = filterProtected(method, md);
 
-		    		//Âo±¼°Ñ¼Æ¤£¦Xªº
+		    		//æ¿¾æ‰åƒæ•¸ä¸åˆçš„
 		    		if (!isFiltered && parameBtn.getSelection())
 						isFiltered = filterParame(method, md);
 				}
@@ -142,15 +142,15 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
     }
 
     /**
-     * Âo±¼¤£¦PClassªºPrivate Method
+     * æ¿¾æ‰ä¸åŒClassçš„Private Method
      * @param method
      * @return
      * @throws JavaModelException
      */
 	private boolean filterPrivate(IMethod method) throws JavaModelException {
-		//­Y¬°Private«hÂo±¼
+		//è‹¥ç‚ºPrivateå‰‡æ¿¾æ‰
 		if ((method.getFlags() & Flags.AccPrivate) != 0) {
-			//¦P¤@class¤ºªºPrivate Method¤£¥ÎÂo±¼
+			//åŒä¸€classå…§çš„Private Methodä¸ç”¨æ¿¾æ‰
 			if (className.equals(method.getCompilationUnit().getElementName()))
 				return false;
 
@@ -160,7 +160,7 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
 	}
 
 	/**
-	 * Âo±¼¤£¬°SuperClassªºProtected Method
+	 * æ¿¾æ‰ä¸ç‚ºSuperClassçš„Protected Method
 	 * @param isFiltered
 	 * @param method
 	 * @param md
@@ -168,7 +168,7 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
 	 * @throws JavaModelException
 	 */
 	private boolean filterProtected(IMethod method,	MethodDeclaration md) throws JavaModelException {
-		//­Y­nÂo±¼Protected
+		//è‹¥è¦æ¿¾æ‰Protected
 		if ((method.getFlags() & Flags.AccProtected) != 0) {
 			if (md.getParent() instanceof TypeDeclaration) {
 				TypeDeclaration typeDeclaration = (TypeDeclaration) md.getParent();
@@ -184,13 +184,13 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
 	}
 
 	/**
-	 * Âo±¼°Ñ¼Æ¤º¨S¦³Close«¬ºAªºMethod
+	 * æ¿¾æ‰åƒæ•¸å…§æ²’æœ‰Closeå‹æ…‹çš„Method
 	 * @param isFiltered
 	 * @param md
 	 * @return
 	 */
 	private boolean filterParame(IMethod method, MethodDeclaration md) {
-		//­Y¨S¦³°Ñ¼Æª½±µÂo±¼
+		//è‹¥æ²’æœ‰åƒæ•¸ç›´æ¥æ¿¾æ‰
 		if (method.getNumberOfParameters() == 0)
 			return true;
 
@@ -198,7 +198,7 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
 			List<?> paramTypes = md.parameters();
 
 			for (int i=0; i < paramTypes.size(); i++) {
-				//­Y°Ñ¼Æ¤º¦³¥]§t¦³CloseªºMethod«h¤£Âo±¼
+				//è‹¥åƒæ•¸å…§æœ‰åŒ…å«æœ‰Closeçš„Methodå‰‡ä¸æ¿¾æ‰
 				if (paramTypes.get(i) instanceof SingleVariableDeclaration) {
 					SingleVariableDeclaration svd = (SingleVariableDeclaration) paramTypes.get(i);
 					if (svd.resolveBinding().getType().toString().contains("close()"))
@@ -210,7 +210,7 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
 	}
     
 	/**
-	 * Âà´«¦¨ASTNode MethodDeclaration
+	 * è½‰æ›æˆASTNode MethodDeclaration
 	 * @param method
 	 * @return
 	 */
@@ -218,21 +218,21 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
 		MethodDeclaration md = null;
 		
 		try {
-			//Parser JarÀÉ®É¡A·|¨ú¤£¨ìICompilationUnit
+			//Parser Jaræª”æ™‚ï¼Œæœƒå–ä¸åˆ°ICompilationUnit
 			if (method.getCompilationUnit() == null)
 				return null;
 
-			//²£¥ÍAST
+			//ç”¢ç”ŸAST
 			ASTParser parserAST = ASTParser.newParser(AST.JLS3);
 			parserAST.setKind(ASTParser.K_COMPILATION_UNIT);
 			parserAST.setSource(method.getCompilationUnit());
 			parserAST.setResolveBindings(true);
 			ASTNode ast = parserAST.createAST(null);
 
-			//¨ú±oASTªºMethod³¡¥÷
+			//å–å¾—ASTçš„Methodéƒ¨ä»½
 			ASTNode methodNode = NodeFinder.perform(ast, method.getSourceRange().getOffset(), method.getSourceRange().getLength());
 
-			//­Y¦¹ASTNodeÄİ©óMethodDeclaration¡A«hÂà«¬
+			//è‹¥æ­¤ASTNodeå±¬æ–¼MethodDeclarationï¼Œå‰‡è½‰å‹
 			if(methodNode instanceof MethodDeclaration) {
 				md = (MethodDeclaration) methodNode;
 			}
@@ -244,19 +244,19 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
 	}
 
 	/**
-	 * ¦bDialog¤U¤è«Ø¥ßProgressBar
+	 * åœ¨Dialogä¸‹æ–¹å»ºç«‹ProgressBar
 	 */
     public Control createDialogArea(Composite parent) {
 		Composite contents = (Composite) super.createDialogArea(parent);
 		
-		//«Ø¥ßProgressBar (Range 0~100)
+		//å»ºç«‹ProgressBar (Range 0~100)
 		createProgressBar(contents, 0, 100);
 
     	return contents;
     }
 	
     /**
-     * «Ø¥ß¤£Åã¥ÜªºProgress Bar
+     * å»ºç«‹ä¸é¡¯ç¤ºçš„Progress Bar
      * @param contents
      * @param min
      * @param max
@@ -270,7 +270,7 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
 	}
 	
     /**
-     * ¦bFilter Text¤U¤è·s«Ø¥ßFilter CheckButton
+     * åœ¨Filter Textä¸‹æ–¹æ–°å»ºç«‹Filter CheckButton
      */
     protected Text createFilterText(Composite parent) {
     	Text contents = (Text) super.createFilterText(parent);
@@ -289,7 +289,7 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
     }
 
 	/**
-	 * «Ø¥ßComposite
+	 * å»ºç«‹Composite
 	 * @param parent
 	 * @return
 	 */
@@ -307,7 +307,7 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
 	}
 
 	/**
-	 * «Ø¥ßCheckButton
+	 * å»ºç«‹CheckButton
 	 * @param composite
 	 * @return 
 	 */
@@ -323,7 +323,7 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
 	}
 	
 	/**
-	 * «Ø¥ß¿ï¾Ü©Ò¦³Filter±ø¥óªºButton
+	 * å»ºç«‹é¸æ“‡æ‰€æœ‰Filteræ¢ä»¶çš„Button
 	 * @param parent
 	 */
 	private void createSelectAllButton(Composite parent) {
@@ -340,7 +340,7 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
 	}
 
 	/**
-	 * Åã¥ÜClass¸ê°TªºElementLabel
+	 * é¡¯ç¤ºClassè³‡è¨Šçš„ElementLabel
 	 * @author Shiau
 	 */
 	private static class ClassRenderer extends JavaElementLabelProvider {

@@ -38,20 +38,20 @@ public class SuppressWarningVisitorTest {
 
 	@Before
 	public void setUp() throws Exception {
-		// Åª¨ú´ú¸ÕÀÉ®×¼Ë¥»¤º®e
+		// è®€å–æ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹
 		javaFileToString = new JavaFileToString();
 		javaFileToString.read(SuppressWarningExampleForAnalyzer.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker = new JavaProjectMaker("SuppressWarningTest");
 		javaProjectMaker.setJREDefaultContainer();
 		
-		// ·s¼W±ı¸ü¤Jªº library
+		// æ–°å¢æ¬²è¼‰å…¥çš„ library
 		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(
 				JavaProjectMaker.FOLDERNAME_LIB_JAR,
 				JavaProjectMaker.FOLDERNAME_BIN_CLASS);
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/"
 				+ JavaProjectMaker.RL_LIBRARY_PATH);
 		
-		// ®Ú¾Ú´ú¸ÕÀÉ®×¼Ë¥»¤º®e«Ø¥ß·sªºÀÉ®×
+		// æ ¹æ“šæ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹å»ºç«‹æ–°çš„æª”æ¡ˆ
 		javaProjectMaker.createJavaFile(
 				SuppressWarningExampleForAnalyzer.class.getPackage().getName(),
 				SuppressWarningExampleForAnalyzer.class.getSimpleName()
@@ -68,7 +68,7 @@ public class SuppressWarningVisitorTest {
 				+ javaFileToString.getFileContent());
 		javaFileToString.clear();
 		
-		// «Ø¥ß XML
+		// å»ºç«‹ XML
 		smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		smellSettings.activateAllConditions(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(SuppressWarningExampleForAnalyzer.class, javaProjectMaker.getProjectName()));
@@ -77,11 +77,11 @@ public class SuppressWarningVisitorTest {
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		
-		// ³]©w­n³Q«Ø¥ß AST ªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ AST çš„æª”æ¡ˆ
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
 		
-		// ¨ú±o AST
+		// å–å¾— AST
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
 		
@@ -91,10 +91,10 @@ public class SuppressWarningVisitorTest {
 	@After
 	public void tearDown() throws Exception {
 		File xmlFile = new File(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		// ¦pªG XML ÀÉ®×¦s¦b¡A«h§R°£¤§
+		// å¦‚æœ XML æª”æ¡ˆå­˜åœ¨ï¼Œå‰‡åˆªé™¤ä¹‹
 		if(xmlFile.exists())
 			assertTrue(xmlFile.delete());
-		// §R°£±M®×
+		// åˆªé™¤å°ˆæ¡ˆ
 		javaProjectMaker.deleteProject();
 	}
 	

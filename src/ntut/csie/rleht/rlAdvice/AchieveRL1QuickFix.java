@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * ·í¨Ï¥ÎªÌ§Æ±æµ{¦¡½X¥i¥H¹F¨ìRL1®É¡A§Ú­ÌÀ°¥L¾ã²zcode¡A¨Ã²£¥Í¤@¨Ç´£¥Ü
+ * ç•¶ä½¿ç”¨è€…å¸Œæœ›ç¨‹å¼ç¢¼å¯ä»¥é”åˆ°RL1æ™‚ï¼Œæˆ‘å€‘å¹«ä»–æ•´ç†codeï¼Œä¸¦ç”¢ç”Ÿä¸€äº›æç¤º
  * @author Charles
  * @version 0.0.1
  */
@@ -22,7 +22,7 @@ public class AchieveRL1QuickFix extends BaseQuickFix implements IMarkerResolutio
 	private static Logger logger = LoggerFactory.getLogger(AchieveRL1QuickFix.class);
 	private String label;
 	
-	//±ı­×§ïªºµ{¦¡½X¸ê°T
+	//æ¬²ä¿®æ”¹çš„ç¨‹å¼ç¢¼è³‡è¨Š
 	private String moveLine;
 	
 	public AchieveRL1QuickFix(String label){
@@ -43,18 +43,18 @@ public class AchieveRL1QuickFix extends BaseQuickFix implements IMarkerResolutio
 			if(problem != null && (problem.equals(RLMarkerAttribute.CS_EXCEPTION_RLADVICE))){
 				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
 				String msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
-				//¨ú±o¥Ø«e­n³Q­×§ïªºmethod node
+				//å–å¾—ç›®å‰è¦è¢«ä¿®æ”¹çš„method node
 				findCurrentMethod(marker.getResource(), Integer.parseInt(methodIdx));
 				
 				GainMarkerInfoUtil gmi = new GainMarkerInfoUtil();
 				
-				//§ä¨ì­n³Q­×§ïªºµ{¦¡½X¸ê°T
+				//æ‰¾åˆ°è¦è¢«ä¿®æ”¹çš„ç¨‹å¼ç¢¼è³‡è¨Š
 				moveLine  = gmi.findMoveLine(msgIdx, this.actRoot, currentMethodNode);
 
 				/* 
 				 * p.s. 
-				 *  ¦pªG¨º¤@¦æ¦³warning¡A´N¤£·|¥X²{infoªº¿ï¶µ¡C
-				 *  ©Ò¥H¥Ø«e¥u¦Ò¼{warning­×§¹ªº±¡ªp¡A´£¨Ñ¨Ï¥ÎªÌcode gene
+				 *  å¦‚æœé‚£ä¸€è¡Œæœ‰warningï¼Œå°±ä¸æœƒå‡ºç¾infoçš„é¸é …ã€‚
+				 *  æ‰€ä»¥ç›®å‰åªè€ƒæ…®warningä¿®å®Œçš„æƒ…æ³ï¼Œæä¾›ä½¿ç”¨è€…code gene
 				 */		
 				actRoot.recordModifications();
 				
@@ -62,19 +62,19 @@ public class AchieveRL1QuickFix extends BaseQuickFix implements IMarkerResolutio
 				
 				TryStatement ts = (TryStatement) gmi.findTryInMethodDeclaration(currentMethodNode, moveLine);
 				if(ts != null){
-					//¥Ø«e¹F¦¨RL1ªºcode gene¡A¥uÀ°¨Ï¥ÎªÌ²¾°£dummy handler¡A¨Ã¥Bthrow unchecked exception
+					//ç›®å‰é”æˆRL1çš„code geneï¼Œåªå¹«ä½¿ç”¨è€…ç§»é™¤dummy handlerï¼Œä¸¦ä¸”throw unchecked exception
 					for(Object obj : ts.catchClauses()){
 						CatchClause cc = (CatchClause)obj;
 						if(((String)marker.getAttribute(RLMarkerAttribute.MI_WITH_Ex)).contains(cc.getException().getType().toString())){
-							//¥[¤JRL annotation
+							//åŠ å…¥RL annotation
 							qf.addAnnotationRoot(actRoot, currentMethodNode, 
 									RTag.LEVEL_1_ERR_REPORTING, QuickFixUtil.runtimeException);
 							
-							//¥[¤JRuntimeException
+							//åŠ å…¥RuntimeException
 							qf.addThrowStatement(cc, currentMethodNode.getAST(), 
 									QuickFixUtil.runtimeException);
 							
-							//§R±¼printStackTrace©Î¬OSystem.out.printlnªº¸ê°T
+							//åˆªæ‰printStackTraceæˆ–æ˜¯System.out.printlnçš„è³‡è¨Š
 							qf.deleteStatement(cc.getBody().statements(), QuickFixUtil.dummyHandlerStrings);
 							this.applyChange();
 							break;

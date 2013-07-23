@@ -6,8 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
- * �o�ӽd�ҵ{���X�O���Ӵ���Visitor�Ϊ��C�o�䪺Visitor�A�x���D�ҥ~�B�z�a���D������Visitor�C
- * �ҥ~�B�z�~���D���d�ҵ{���X�A�������Ӽg�b�o�̡C
+ * 這個範例程式碼是拿來測試Visitor用的。這邊的Visitor，泛指非例外處理壞味道偵測的Visitor。
+ * 例外處理外味道的範例程式碼，都不應該寫在這裡。
  * @author Charles
  *
  */

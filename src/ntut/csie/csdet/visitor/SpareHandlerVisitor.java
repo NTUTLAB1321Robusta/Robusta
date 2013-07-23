@@ -7,12 +7,12 @@ import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.TryStatement;
 
 /**
- * §ä´M±M®×¤¤©Ò¦³ªºspare handler
+ * æ‰¾å°‹å°ˆæ¡ˆä¸­æ‰€æœ‰çš„spare handler
  * @author chewei
  */
 public class SpareHandlerVisitor extends ASTVisitor {
 	private boolean result = false;	
-	/** ·Æ¹«¤Ï¥Õ¿ï¨ìªº¸`ÂI */
+	/** æ»‘é¼ åç™½é¸åˆ°çš„ç¯€é» */
 	private ASTNode selectNode = null;
 	
 	public SpareHandlerVisitor(ASTNode node) {
@@ -26,32 +26,32 @@ public class SpareHandlerVisitor extends ASTVisitor {
 	}
 	
 	/**
-	 * ´M§ä­n³Qrefactorªºtry statement
+	 * å°‹æ‰¾è¦è¢«refactorçš„try statement
 	 * @param node
 	 */
 	private void processTryStatement(ASTNode node) {
 		/* 
-		 * ¯S©w¸`ÂI¦pªGº¡¨¬¥H¤U±ø¥ó¡A«h»{©w¨Ï¥ÎªÌ»{©w¥¦¬°spare handler¡A
-		 * ¨Ã¥B·Q­n¥Î§Ú­Ì´£¨ÑªºSpare Handler ­«ºc¾÷¨î¡C
-		 * 1. ¥u­nCatch Clause¸Ì­±¤£¬OªÅªº
-		 * 2. Catch Clause¸Ì­±ªº©Ò¦³µ{¦¡½X³£³Q¿ï¨ú
+		 * ç‰¹å®šç¯€é»å¦‚æœæ»¿è¶³ä»¥ä¸‹æ¢ä»¶ï¼Œå‰‡èªå®šä½¿ç”¨è€…èªå®šå®ƒç‚ºspare handlerï¼Œ
+		 * ä¸¦ä¸”æƒ³è¦ç”¨æˆ‘å€‘æä¾›çš„Spare Handler é‡æ§‹æ©Ÿåˆ¶ã€‚
+		 * 1. åªè¦Catch Clauseè£¡é¢ä¸æ˜¯ç©ºçš„
+		 * 2. Catch Clauseè£¡é¢çš„æ‰€æœ‰ç¨‹å¼ç¢¼éƒ½è¢«é¸å–
 		 * FIXME: 
-		 *  1. ¥L¥u·|¥h§PÂ_TryStatement¦³¨S¦³¾ã­Ó³Q¿ï°_¨Ó¡A¦Ó¤£·|¥h¬İ³o­ÓTryStatement¬O¤£¬O¦bCatch Clause¤U­±
-		 *  2. ¦pªG¤£¬OTryStatement¡A¦Ó¬O¾ã­ÓCatch Clause¸Ì­±ªºµ{¦¡½X³Q¿ï¨ú¡A¤]À³¸Ó­n¥i¥H­«ºc 
+		 *  1. ä»–åªæœƒå»åˆ¤æ–·TryStatementæœ‰æ²’æœ‰æ•´å€‹è¢«é¸èµ·ä¾†ï¼Œè€Œä¸æœƒå»çœ‹é€™å€‹TryStatementæ˜¯ä¸æ˜¯åœ¨Catch Clauseä¸‹é¢
+		 *  2. å¦‚æœä¸æ˜¯TryStatementï¼Œè€Œæ˜¯æ•´å€‹Catch Clauseè£¡é¢çš„ç¨‹å¼ç¢¼è¢«é¸å–ï¼Œä¹Ÿæ‡‰è©²è¦å¯ä»¥é‡æ§‹ 
 		 */
-		//¥u­n¦bcatch block¤§¤¤ÁÙ¦³¤@­Ótry-catch,«hµø¬°spare handler
+		//åªè¦åœ¨catch blockä¹‹ä¸­é‚„æœ‰ä¸€å€‹try-catch,å‰‡è¦–ç‚ºspare handler
 		TryStatement ts = (TryStatement)node;
 		List<?> catchList = ts.catchClauses();
 		if(catchList != null && selectNode != null) {
 			if(ts.getStartPosition() == selectNode.getStartPosition()) {
-				//§ä¨ì¨º­Ótryªº¸`ÂI´N³]©w¬°true				
+				//æ‰¾åˆ°é‚£å€‹tryçš„ç¯€é»å°±è¨­å®šç‚ºtrue				
 				result = true;
 			}				
 		}
 	}
 	
 	/**
-	 * §Q¥Î¦¹µ²ªG¨Ó±oª¾¬O§_¦³§ä¨ì­n³Qrefactorªº¸`ÂI
+	 * åˆ©ç”¨æ­¤çµæœä¾†å¾—çŸ¥æ˜¯å¦æœ‰æ‰¾åˆ°è¦è¢«refactorçš„ç¯€é»
 	 * @return
 	 */
 	public boolean getResult() {

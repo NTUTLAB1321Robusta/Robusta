@@ -21,8 +21,8 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 
 public class DummyHandlerVisitor extends ASTVisitor {
 	private List<MarkerInfo> dummyHandlerList;
-	// Àx¦s°»´ú"LibraryªºName"©M"¬O§_Library"
-	// store¨Ï¥ÎªÌ­n°»´úªºlibrary¦WºÙ¡A©M"¬O§_­n°»´ú¦¹library"
+	// å„²å­˜åµæ¸¬"Libraryçš„Name"å’Œ"æ˜¯å¦Library"
+	// storeä½¿ç”¨è€…è¦åµæ¸¬çš„libraryåç¨±ï¼Œå’Œ"æ˜¯å¦è¦åµæ¸¬æ­¤library"
 	private TreeMap<String, UserDefinedConstraintsType> libMap;// = new TreeMap<String, UserDefinedConstraintsType>();
 	private boolean isDetectingDummyHandlerSmell;
 	private CompilationUnit root;
@@ -37,10 +37,10 @@ public class DummyHandlerVisitor extends ASTVisitor {
 	}
 	
 	/**
-	 * ®Ú¾Ú³]©wÀÉªº¸ê°T¡A¨M©w­n¤£­n«ô³X¾ã´Ê¾ğ¡C
+	 * æ ¹æ“šè¨­å®šæª”çš„è³‡è¨Šï¼Œæ±ºå®šè¦ä¸è¦æ‹œè¨ªæ•´æ£µæ¨¹ã€‚
 	 */
 	public boolean visit(MethodDeclaration node) {
-		// ¦pªG¬OMain Program¡A´N¤£«ô³X
+		// å¦‚æœæ˜¯Main Programï¼Œå°±ä¸æ‹œè¨ª
 		if(node.getName().toString().equals("main")) {
 			return false;
 		}
@@ -55,16 +55,16 @@ public class DummyHandlerVisitor extends ASTVisitor {
 	public void detectDummyHandler(MethodInvocation node) {
 		ASTNode parentCatchClauseNode = NodeUtils.getSpecifiedParentNode(node, ASTNode.CATCH_CLAUSE);
 		/*
-		 * ¦pªG§ä¨ìªºExpressionStatement¤£¬O¦bCatchClause¸Ì­±¡A
-		 * «h¤£¯à·í§@DummyHandler
+		 * å¦‚æœæ‰¾åˆ°çš„ExpressionStatementä¸æ˜¯åœ¨CatchClauseè£¡é¢ï¼Œ
+		 * å‰‡ä¸èƒ½ç•¶ä½œDummyHandler
 		 */
 		if(parentCatchClauseNode == null) {
 			return;
 		}
 		CatchClause cc = (CatchClause) parentCatchClauseNode;
 		/* 
-		 * ¦pªG¦b³o­Ócatch clause¸Ì­±¡A¦³throw statement¦s¦b¡A
-		 * «h¤£§â³o­ÓExpressionStatement·í§@DummyHandler¡C
+		 * å¦‚æœåœ¨é€™å€‹catch clauseè£¡é¢ï¼Œæœ‰throw statementå­˜åœ¨ï¼Œ
+		 * å‰‡ä¸æŠŠé€™å€‹ExpressionStatementç•¶ä½œDummyHandlerã€‚
 		 */
 		if(isThrowStatementInCatchClause(cc)) {
 			return;
@@ -73,21 +73,21 @@ public class DummyHandlerVisitor extends ASTVisitor {
 	}
 	
 	/**
-	 * ®Ú¾Ú¶Ç¤JªºExpressionStatement Node¡A§ä¥X¨ä©ÒÄİªºCatchClause
+	 * æ ¹æ“šå‚³å…¥çš„ExpressionStatement Nodeï¼Œæ‰¾å‡ºå…¶æ‰€å±¬çš„CatchClause
 	 * @param node ExpressionStatement Node
 	 */
 	private void addDummyHandlerSmellInfo(MethodInvocation node) {
-			// ¨ú±oMethodªºLibrary¦WºÙ
+			// å–å¾—Methodçš„Libraryåç¨±
 			String libName = node.resolveMethodBinding().getDeclaringClass().getQualifiedName();
-			// ¨ú±oMethodªº¦WºÙ
+			// å–å¾—Methodçš„åç¨±
 			String methodName = node.resolveMethodBinding().getName();
 
-			// ¦pªG¸Ó¦æ¦³Array(¦pjava.util.ArrayList<java.lang.Boolean>)¡A§â<>»P¨ä¤º®e³£®³±¼
+			// å¦‚æœè©²è¡Œæœ‰Array(å¦‚java.util.ArrayList<java.lang.Boolean>)ï¼ŒæŠŠ<>èˆ‡å…¶å…§å®¹éƒ½æ‹¿æ‰
 			if (libName.indexOf("<") != -1)
 				libName = libName.substring(0, libName.indexOf("<"));
 			
 			Iterator<String> libIt = libMap.keySet().iterator();
-			// §PÂ_¬O§_­n°»´ú ¥B ¦¹¥y¤]¥]§t±ı°»´úLibrary
+			// åˆ¤æ–·æ˜¯å¦è¦åµæ¸¬ ä¸” æ­¤å¥ä¹ŸåŒ…å«æ¬²åµæ¸¬Library
 			while(libIt.hasNext()){
 				String temp = libIt.next();
 				CatchClause cc = (CatchClause) NodeUtils.getSpecifiedParentNode(node, ASTNode.CATCH_CLAUSE);
@@ -97,19 +97,19 @@ public class DummyHandlerVisitor extends ASTVisitor {
 														.getStartPosition(), root.getLineNumber(node
 														.getStartPosition()), svd.getType().toString());
 				
-				// ¥u°»´úLibrary
+				// åªåµæ¸¬Library
 				if (libMap.get(temp) == UserDefinedConstraintsType.Library) {
-					//­YLibraryªø«×¤j©ó°»´úªø«×¡A§_«hªí¤£¬Û¦Pª½±µ²¤¹L
+					//è‹¥Libraryé•·åº¦å¤§æ–¼åµæ¸¬é•·åº¦ï¼Œå¦å‰‡è¡¨ä¸ç›¸åŒç›´æ¥ç•¥é
 					if (libName.length() >= temp.length()) {
-						//¤ñ¸û«e¥b¬qªø«×ªº¦WºÙ¬O§_¬Û¦P
+						//æ¯”è¼ƒå‰åŠæ®µé•·åº¦çš„åç¨±æ˜¯å¦ç›¸åŒ
 						if (libName.substring(0, temp.length()).equals(temp))
 							dummyHandlerList.add(markerInfo);
 					}
-				// ¥u°»´úMethod
+				// åªåµæ¸¬Method
 				} else if (libMap.get(temp) == UserDefinedConstraintsType.Method) {
 					if (methodName.equals(temp))
 						dummyHandlerList.add(markerInfo);
-				// °»´úLibrary.Methodªº§Î¦¡
+				// åµæ¸¬Library.Methodçš„å½¢å¼
 				} else if (libMap.get(temp) == UserDefinedConstraintsType.FullQulifiedMethod) {
 					int pos = temp.lastIndexOf(".");
 					if (libName.equals(temp.substring(0, pos)) &&
@@ -126,7 +126,7 @@ public class DummyHandlerVisitor extends ASTVisitor {
 	}
 
 	/**
-	 * «ü©wªºCatchClause¸Ì­±¡A¬O¤£¬O¦³ThrowStatement¡C
+	 * æŒ‡å®šçš„CatchClauseè£¡é¢ï¼Œæ˜¯ä¸æ˜¯æœ‰ThrowStatementã€‚
 	 * @param catchClause
 	 * @return
 	 */

@@ -10,12 +10,12 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.TryStatement;
 
 /**
- * §PÂ_¬Y­ÓMethodDeclaration¬O¤£¬OCareless Cleanup¤¹³\ªº¨Ò¥~ª¬ªp
+ * åˆ¤æ–·æŸå€‹MethodDeclarationæ˜¯ä¸æ˜¯Careless Cleanupå…è¨±çš„ä¾‹å¤–ç‹€æ³
  * @author charles
  *
  */
 public class CarelessCleanupToleranceVisitor extends ASTVisitor {
-	/** ¬O¤£¬O­n©¿²¤ÀË¬d³o­ÓMethodDeclaration */
+	/** æ˜¯ä¸æ˜¯è¦å¿½ç•¥æª¢æŸ¥é€™å€‹MethodDeclaration */
 	private boolean isIgnoringMethodDeclaration;
 	public CarelessCleanupToleranceVisitor() {
 		isIgnoringMethodDeclaration = false;
@@ -41,9 +41,9 @@ public class CarelessCleanupToleranceVisitor extends ASTVisitor {
 		}
 		
 //		/*
-//		 *  if ¸Ì­±¥u¦³¤@­Ótry statement ªº»yªk¦³¨âºØ¼gªk¡C
-//		 *  ¤@­Ó¬O¨S¦³ªá¬A¸¹ªº¡A§A·|ª½±µ§ì¨ìtry statement¡C
-//		 *  ¤@­Ó¬O¦³ªá¬A¸¹ªº¡A§A·|¦bthen statement§ì¨ìBlock¡C
+//		 *  if è£¡é¢åªæœ‰ä¸€å€‹try statement çš„èªæ³•æœ‰å…©ç¨®å¯«æ³•ã€‚
+//		 *  ä¸€å€‹æ˜¯æ²’æœ‰èŠ±æ‹¬è™Ÿçš„ï¼Œä½ æœƒç›´æ¥æŠ“åˆ°try statementã€‚
+//		 *  ä¸€å€‹æ˜¯æœ‰èŠ±æ‹¬è™Ÿçš„ï¼Œä½ æœƒåœ¨then statementæŠ“åˆ°Blockã€‚
 //		 */
 //		Statement thenStatement = node.getThenStatement();
 //		if ((thenStatement.getNodeType() == ASTNode.EXPRESSION_STATEMENT) || 

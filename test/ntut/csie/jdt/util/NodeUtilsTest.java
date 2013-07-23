@@ -41,7 +41,7 @@ public class NodeUtilsTest {
 		javaFile2String = new JavaFileToString();
 		javaProjectMaker = new JavaProjectMaker(projectName);
 		javaProjectMaker.setJREDefaultContainer();
-		// ®Ú¾Ú´ú¸ÕÀÉ®×¼Ë¥»¤º®e«Ø¥ß·sªºÀÉ®×
+		// æ ¹æ“šæ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹å»ºç«‹æ–°çš„æª”æ¡ˆ
 		javaFile2String.read(NodeUtilsTestSample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(NodeUtilsTestSample.class.getPackage().getName(),
 				NodeUtilsTestSample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
@@ -53,11 +53,11 @@ public class NodeUtilsTest {
 		// Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin
 				.getWorkspace().getRoot().getFile(ccExamplePath)));
 		parser.setResolveBindings(true);
-		// ¨ú±oAST
+		// å–å¾—AST
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
 		miVisitor = new MethodInvocationVisitor();
@@ -70,18 +70,18 @@ public class NodeUtilsTest {
 	
 	@Test
 	public void testIsITypeBindingImplemented() {	
-		// nullªº±¡ªp
+		// nullçš„æƒ…æ³
 		assertFalse(NodeUtils.isITypeBindingImplemented(null, Closeable.class));
 		
 		compilationUnit.accept(miVisitor);
 		assertEquals(10, miVisitor.countMethodInvocations());
 		
-		// ITypeBinding¬°Objectªº±¡ªp
+		// ITypeBindingç‚ºObjectçš„æƒ…æ³
 		assertFalse(NodeUtils.isITypeBindingImplemented(miVisitor
 				.getMethodInvocation(0).resolveMethodBinding()
 				.getDeclaringClass(), Closeable.class));
 		
-		// ITypeBindingªºSuperClass¤]¤£¬O¨Ï¥ÎªÌ«ü©w¤§interfaceªº±¡ªp
+		// ITypeBindingçš„SuperClassä¹Ÿä¸æ˜¯ä½¿ç”¨è€…æŒ‡å®šä¹‹interfaceçš„æƒ…æ³
 		assertFalse(NodeUtils.isITypeBindingImplemented(miVisitor
 				.getMethodInvocation(1).resolveMethodBinding()
 				.getDeclaringClass(), Closeable.class));
@@ -90,7 +90,7 @@ public class NodeUtilsTest {
 				.getMethodInvocation(4).resolveMethodBinding()
 				.getDeclaringClass(), Closeable.class));
 				
-		// ITypeBinding¬°¨Ï¥ÎªÌ«ü©w¤§interfaceªº±¡ªp
+		// ITypeBindingç‚ºä½¿ç”¨è€…æŒ‡å®šä¹‹interfaceçš„æƒ…æ³
 		assertTrue(
 				miVisitor.getMethodInvocation(2).toString(),
 				NodeUtils.isITypeBindingImplemented(miVisitor
@@ -101,7 +101,7 @@ public class NodeUtilsTest {
 				.getMethodInvocation(3).resolveMethodBinding()
 				.getDeclaringClass(), Closeable.class));
 		
-		// ITypeBindingªºsuperClass¬°¨Ï¥ÎªÌ«ü©w¤§interfaceªº±¡ªp
+		// ITypeBindingçš„superClassç‚ºä½¿ç”¨è€…æŒ‡å®šä¹‹interfaceçš„æƒ…æ³
 		assertTrue(NodeUtils.isITypeBindingImplemented(miVisitor
 				.getMethodInvocation(5).resolveMethodBinding()
 				.getDeclaringClass(), Closeable.class));

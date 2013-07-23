@@ -37,7 +37,7 @@ public class OverwrittenLeadExceptionVisitorTest {
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/" + JavaProjectMaker.RL_LIBRARY_PATH);
 		javaProjectMaker.setJREDefaultContainer();
 		
-		// ®Ú¾Ú´ú¸ÕÀÉ®×¼Ë¥»¤º®e«Ø¥ß·sªºÀÉ®×
+		// æ ¹æ“šæ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹å»ºç«‹æ–°çš„æª”æ¡ˆ
 		javaFile2String = new JavaFileToString();
 		javaFile2String.read(OverwrittenLeadExceptionExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
@@ -50,10 +50,10 @@ public class OverwrittenLeadExceptionVisitorTest {
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
-		// ¨ú±oAST
+		// å–å¾—AST
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
 		CreateSettings(true);
@@ -83,7 +83,7 @@ public class OverwrittenLeadExceptionVisitorTest {
 	}
 
 	/**
-	 * ¬ö¿ı©Ò¦³badSmell¤º®e¥H¤Î¦æ¸¹
+	 * ç´€éŒ„æ‰€æœ‰badSmellå…§å®¹ä»¥åŠè¡Œè™Ÿ
 	 * @param badSmellList
 	 * @return
 	 */

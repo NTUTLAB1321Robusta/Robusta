@@ -4,7 +4,7 @@ import ntut.csie.filemaker.JavaProjectMaker;
 
 public class PathUtils {
 	/**
-	 * packageName¸Ì­±ªº.´«¦¨±×½u
+	 * packageNameè£¡é¢çš„.æ›æˆæ–œç·š
 	 * @param packageName
 	 * @return
 	 */
@@ -15,10 +15,10 @@ public class PathUtils {
 	}
 	
 	/**
-	 * ¨ú±o¶Ç¤Jclassªº§¹¾ã¸ô®|
-	 * @param clazz ­n¨ú±o¦ì¸mªº.classÀÉ
-	 * @param projectName ¸Ó.classÀÉ©Ò¦bªº±M®×¦WºÙ
-	 * @return ¸Ó.classÀÉªº¹ê»Ú¸ô®|
+	 * å–å¾—å‚³å…¥classçš„å®Œæ•´è·¯å¾‘
+	 * @param clazz è¦å–å¾—ä½ç½®çš„.classæª”
+	 * @param projectName è©².classæª”æ‰€åœ¨çš„å°ˆæ¡ˆåç¨±
+	 * @return è©².classæª”çš„å¯¦éš›è·¯å¾‘
 	 * @author pig
 	 */
 	public static String getPathOfClassUnderSrcFolder(Class<?> clazz, String projectName) {

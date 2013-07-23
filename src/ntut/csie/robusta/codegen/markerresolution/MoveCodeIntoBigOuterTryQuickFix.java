@@ -20,7 +20,7 @@ public class MoveCodeIntoBigOuterTryQuickFix implements IMarkerResolution{
 	private QuickFixCore quickFixCore;
 	
 	private String label;
-	//¬ö¿ýcode smellªºtype
+	//ç´€éŒ„code smellçš„type
 	private String problem;
 
 	public MoveCodeIntoBigOuterTryQuickFix(String label) {

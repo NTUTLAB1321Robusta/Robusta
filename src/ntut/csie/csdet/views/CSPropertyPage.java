@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.TabItem;
 
 public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage{
 
-	//Àx¦s¨C¤@­Ópage
+	//å„²å­˜æ¯ä¸€å€‹page
 	private ArrayList<APropertyPage> tabPages;
 	private SmellSettings smellSettings;
 	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
@@ -40,7 +40,7 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage{
 		final TabFolder tabFolder = new TabFolder(composite, SWT.NONE);
 		tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		
-		//±N¨C­Ó¤À­¶¥[¤J
+		//å°‡æ¯å€‹åˆ†é åŠ å…¥
 		addPage(tabFolder);
 		
 		return composite;
@@ -81,8 +81,8 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage{
 	}
 
 	/**
-	 * «ö¤Uokªº®É­Ô¥h§ì¨ú¨C­ÓTab Pageªº¸ê®Æ
-	 * µM«á±N¥LÀx¦s¤U¨Ó
+	 * æŒ‰ä¸‹okçš„æ™‚å€™å»æŠ“å–æ¯å€‹Tab Pageçš„è³‡æ–™
+	 * ç„¶å¾Œå°‡ä»–å„²å­˜ä¸‹ä¾†
 	 */
 	public boolean performOk() {
 		for(int i=0;i<tabPages.size();i++){

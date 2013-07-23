@@ -8,23 +8,23 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Reportªº¬ÛÃö¸ê®Æ
+ * Reportçš„ç›¸é—œè³‡æ–™
  * @author Shiau
  */
 public class ReportModel {
-	//Smell¸ê°T
+	//Smellè³‡è¨Š
 	private List<PackageModel> smellList = new ArrayList<PackageModel>();
-	//Filter±øºø¬O§_¬°¥ş°»´ú
+	//Filteræ¢ç¶¿æ˜¯å¦ç‚ºå…¨åµæ¸¬
 	private boolean derectAllproject;
 	
 	private Date buildTime;
-	//Filter±ø¥ó
+	//Filteræ¢ä»¶
 	private List<String> filterRuleList = new ArrayList<String>();
-	//±M®×¦WºÙ
+	//å°ˆæ¡ˆåç¨±
 	private String projectName = "";
-	//Àx¦s¸ô®|
+	//å„²å­˜è·¯å¾‘
 	private String projectPath = "";
-	//SmellÁ`¼Æ
+	//Smellç¸½æ•¸
 	private int ignoreTotalSize = 0;
 	private int dummyTotalSize = 0;
 	private int unMainTotalSize = 0;
@@ -32,26 +32,26 @@ public class ReportModel {
 	private int carelessCleanUpSize = 0;
 	private int overLoggingSize = 0;
 	private int overwrittenSize = 0;
-	//¨ú±ocode counter
+	//å–å¾—code counter
 	private int tryCounter = 0;
 	private int catchCounter = 0;
 	private int finallyCounter = 0;
 
 	/**
-	 * ³]©w¡B¨ú±o«Ø³y®É¶¡
+	 * è¨­å®šã€å–å¾—å»ºé€ æ™‚é–“
 	 */
 	public void setBuildTime() {
 		Calendar calendar= Calendar.getInstance();
 		buildTime = calendar.getTime();
 	}
 	public String getBuildTime() {
-		//³]©w®æ¦¡ Åã¥Ü¬í¼Æ
+		//è¨­å®šæ ¼å¼ é¡¯ç¤ºç§’æ•¸
         DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.LONG);
 
         return df.format(buildTime);
 	}
 	
-	///¼W¥[SmellªºÁ`¼Æ///
+	///å¢åŠ Smellçš„ç¸½æ•¸///
 	public void addIgnoreTotalSize(int ignoreSize) {
 		this.ignoreTotalSize += ignoreSize;
 	}
@@ -74,7 +74,7 @@ public class ReportModel {
 		this.overwrittenSize += overwrittenSize;
 	}
 	
-	///¨ú±oSmellªºÁ`¼Æ///
+	///å–å¾—Smellçš„ç¸½æ•¸///
 	public int getIgnoreTotalSize() {
 			return ignoreTotalSize;
 	}
@@ -101,7 +101,7 @@ public class ReportModel {
 				+ getCarelessCleanUpTotalSize() + getOverLoggingTotalSize() + getOverwrittenTotalSize();
 	}
 
-	///³]©w©Î¨ú±oProjectªº¦WºÙ///
+	///è¨­å®šæˆ–å–å¾—Projectçš„åç¨±///
 	public void setProjectName(String projectName) {
 		this.projectName = projectName;
 	}
@@ -109,23 +109,23 @@ public class ReportModel {
 		return projectName;
 	}
 
-	///³]©w©Î¨ú±oProjectªº¸ô®|///
+	///è¨­å®šæˆ–å–å¾—Projectçš„è·¯å¾‘///
 	public String getProjectPath() {
 		return projectPath;
 	}
 	public void setProjectPath(String workspacePath) {
 		this.projectPath = workspacePath + "/" + getProjectName() + "_Report";
 		File metadataPath = new File(projectPath);
-		//­Y¨S¦³¸ô®|´N«Ø¥ß¸ô®|
+		//è‹¥æ²’æœ‰è·¯å¾‘å°±å»ºç«‹è·¯å¾‘
 		if(!metadataPath.exists())
 			metadataPath.mkdir();
 		File htmlPath = new File(projectPath + "/" + buildTime.getTime());
 		htmlPath.mkdir();
 	}
 	/**
-	 * ¨ú±oFileªºª½¹ê¦ì¸m(¦³µL¥[®É¶¡°Ï¹j)
-	 * @param fileName	(Fileªº¦WºÙ)
-	 * @param isAddTime (¬O§_¦³¥[®É¶¡)
+	 * å–å¾—Fileçš„ç›´å¯¦ä½ç½®(æœ‰ç„¡åŠ æ™‚é–“å€éš”)
+	 * @param fileName	(Fileçš„åç¨±)
+	 * @param isAddTime (æ˜¯å¦æœ‰åŠ æ™‚é–“)
 	 * @return
 	 */
 	public String getFilePath(String fileName, boolean isAddTime) {
@@ -136,7 +136,7 @@ public class ReportModel {
 	}
 
 	/**
-	 * ¨ú±oPackageModel
+	 * å–å¾—PackageModel
 	 * @param i PackageIndex
 	 * @return
 	 */
@@ -147,7 +147,7 @@ public class ReportModel {
 			return smellList.get(i);
 	}
 	/**
-	 * ¨ú±oPackageÁ`¼Æ
+	 * å–å¾—Packageç¸½æ•¸
 	 * @return
 	 */
 	public int getPackagesSize() {
@@ -155,20 +155,20 @@ public class ReportModel {
 	}
 
 	/**
-	 * ¥[¤J·sªºPackage
+	 * åŠ å…¥æ–°çš„Package
 	 * @param packageName
 	 * @return
 	 */
 	public PackageModel addSmellList(String packageName) {
 		PackageModel newPackageModel = new PackageModel();
-		//³]¸mPackage¦WºÙ
+		//è¨­ç½®Packageåç¨±
 		newPackageModel.setPackageName(packageName);
 		smellList.add(newPackageModel);
 
 		return newPackageModel;
 	}
 
-	///¦s¨úFilter±ø¥ó¬O§_¬°¥ş°»´ú///
+	///å­˜å–Filteræ¢ä»¶æ˜¯å¦ç‚ºå…¨åµæ¸¬///
 	public boolean isDerectAllproject() {
 		return derectAllproject;
 	}
@@ -176,7 +176,7 @@ public class ReportModel {
 		this.derectAllproject = derectAllproject;
 	}
 	
-	///¦s¨úFilter±ø¥ó///
+	///å­˜å–Filteræ¢ä»¶///
 	public List<String> getFilterList() {
 		return filterRuleList;
 	}
@@ -189,7 +189,7 @@ public class ReportModel {
 		}
 	}
 	
-	///¨ú±o¥ş³¡ªº¦æ¼Æ///
+	///å–å¾—å…¨éƒ¨çš„è¡Œæ•¸///
 	public int getTotalLine() {
 		int total = 0;
 		for (PackageModel pm : smellList)
@@ -197,7 +197,7 @@ public class ReportModel {
 		return total;
 	}
 	
-	///¦s¨úCodeªº¸ê°T///
+	///å­˜å–Codeçš„è³‡è¨Š///
 	public int getTryCounter() {
 		return tryCounter;
 	}

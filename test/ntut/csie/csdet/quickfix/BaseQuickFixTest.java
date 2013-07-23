@@ -48,31 +48,31 @@ public class BaseQuickFixTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		// Åª¨ú´ú¸ÕÀÉ®×¼Ë¥»¤º®e
+		// è®€å–æ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹
 		jfs = new JavaFileToString();
 		jfs.read(DummyAndIgnoreExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		
 		jpm = new JavaProjectMaker(testProjectNameString);
 		jpm.setJREDefaultContainer();
-		// ·s¼W±ı¸ü¤Jªºlibrary
+		// æ–°å¢æ¬²è¼‰å…¥çš„library
 		jpm.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR + "/log4j-1.2.15.jar");
 		jpm.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.FOLDERNAME_LIB_JAR, JavaProjectMaker.FOLDERNAME_BIN_CLASS);
 		jpm.addJarFromTestProjectToBuildPath("/" + JavaProjectMaker.FOLDERNAME_LIB_JAR + JavaProjectMaker.FOLDERNAME_LIB_JAR);
-		// ®Ú¾Ú´ú¸ÕÀÉ®×¼Ë¥»¤º®e«Ø¥ß·sªºÀÉ®×
+		// æ ¹æ“šæ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹å»ºç«‹æ–°çš„æª”æ¡ˆ
 		jpm.createJavaFile(testPackageNameString,
 				testClassSimpleNameString + JavaProjectMaker.JAVA_FILE_EXTENSION,
 				"package " + testPackageNameString + ";\n" + jfs.getFileContent());
-		// «Ø¥ßXML
+		// å»ºç«‹XML
 		CreateSettings();
 		
 		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(DummyAndIgnoreExample.class, testProjectNameString));
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
-		// ¨ú±oAST
+		// å–å¾—AST
 		unit = (CompilationUnit) parser.createAST(null); 
 		unit.recordModifications();
 	}
@@ -80,10 +80,10 @@ public class BaseQuickFixTest {
 	@After
 	public void tearDown() throws Exception {
 		File xmlFile = new File(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		// ¦pªGxmlÀÉ®×¦s¦b¡A«h§R°£¤§
+		// å¦‚æœxmlæª”æ¡ˆå­˜åœ¨ï¼Œå‰‡åˆªé™¤ä¹‹
 		if(xmlFile.exists())
 			assertTrue(xmlFile.delete());
-		// §R°£±M®×
+		// åˆªé™¤å°ˆæ¡ˆ
 		jpm.deleteProject();
 	}
 	
@@ -145,16 +145,16 @@ public class BaseQuickFixTest {
 	
 //	@Test
 	public void testPerformChange() throws Exception {
-		fail("¥Ø«e¤£ª¾¹D¦p¦ó¦bUnit Test¤¤§ì¨ìEditorPart¡A©Ò¥H¥¼¹ê§@");
+		fail("ç›®å‰ä¸çŸ¥é“å¦‚ä½•åœ¨Unit Testä¸­æŠ“åˆ°EditorPartï¼Œæ‰€ä»¥æœªå¯¦ä½œ");
 	}
 	
 //	@Test
 	public void testApplyChange() throws Exception {
-		fail("¥Ø«e¤£ª¾¹D¦p¦ó¦bUnit Test¤¤§ì¨ìEditorPart¡A©Ò¥H¥¼¹ê§@");
+		fail("ç›®å‰ä¸çŸ¥é“å¦‚ä½•åœ¨Unit Testä¸­æŠ“åˆ°EditorPartï¼Œæ‰€ä»¥æœªå¯¦ä½œ");
 	}
 	
 	/**
-	 * «Ø¥ßxmlÀÉ®×
+	 * å»ºç«‹xmlæª”æ¡ˆ
 	 */
 	private void CreateSettings() {
 		smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);

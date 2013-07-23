@@ -38,7 +38,7 @@ public class VariableDeclarationStatementFinderVisitorTest {
 		testProjectName = "VariableDeclarationStatementFinderVisitor";
 		javaProjectMaker = new JavaProjectMaker(testProjectName);
 		javaProjectMaker.setJREDefaultContainer();
-		// «Ø¥ß·sªºÀÉ®×DummyAndIgnoreExample
+		// å»ºç«‹æ–°çš„æª”æ¡ˆDummyAndIgnoreExample
 		javaFile2String = new JavaFileToString();
 		javaFile2String.read(VariableDeclarationStatementSampleCode.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
@@ -51,10 +51,10 @@ public class VariableDeclarationStatementFinderVisitorTest {
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
-		// ¨ú±oAST
+		// å–å¾—AST
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
 	}
@@ -65,7 +65,7 @@ public class VariableDeclarationStatementFinderVisitorTest {
 	}
 
 	/**
-	 * ÅÜ¼Æ¬O¦bclass¸Ì­±³Q«Å§iªº¡A©Ò¥H·|¬O¤@­ÓFieldDeclaration¡A¥Î³o­ÓVisitor´N¤°»ò³£§ä¤£¨ì¡C
+	 * è®Šæ•¸æ˜¯åœ¨classè£¡é¢è¢«å®£å‘Šçš„ï¼Œæ‰€ä»¥æœƒæ˜¯ä¸€å€‹FieldDeclarationï¼Œç”¨é€™å€‹Visitorå°±ä»€éº¼éƒ½æ‰¾ä¸åˆ°ã€‚
 	 */
 	@Test
 	public void testVariableDeclarationStatementFinder_Field() {
@@ -82,12 +82,12 @@ public class VariableDeclarationStatementFinderVisitorTest {
 		MethodInvocation mi = (MethodInvocation)NodeFinder.perform(compilationUnit, 481 - 1, 22);
 		VariableDeclarationStatementFinderVisitor vdsfv = new VariableDeclarationStatementFinderVisitor(mi);
 		compilationUnit.accept(vdsfv);
-		assertEquals("String localString=\"¤d¤s³¾­¸µ´\";\n", vdsfv.getFoundVariableDeclarationStatement().toString());
+		assertEquals("String localString=\"åƒå±±é³¥é£›çµ•\";\n", vdsfv.getFoundVariableDeclarationStatement().toString());
 	}
 	
 	/**
-	 * ÀË¬d¤£¦PªºMethodDeclaration¾Ö¦³¬Û¦Pµ{¦¡½Xªº«Å§i®É¡A·|¤£·|¥X¿ù¡C
-	 * ±qMD1ªºmi´M§ä¥LªºVariableDeclarationStatement
+	 * æª¢æŸ¥ä¸åŒçš„MethodDeclarationæ“æœ‰ç›¸åŒç¨‹å¼ç¢¼çš„å®£å‘Šæ™‚ï¼Œæœƒä¸æœƒå‡ºéŒ¯ã€‚
+	 * å¾MD1çš„miå°‹æ‰¾ä»–çš„VariableDeclarationStatement
 	 */
 	@Test
 	public void testVariableDeclarationStatementFinder_DifferentMethodDeclaraionOwnsSameCode_1st() {
@@ -96,7 +96,7 @@ public class VariableDeclarationStatementFinderVisitorTest {
 		VariableDeclarationStatementFinderVisitor vdsfv = new VariableDeclarationStatementFinderVisitor(mi);
 		compilationUnit.accept(vdsfv);
 		/*
-		 * String sameName = "¤@µ°¤@¶º¡A·í«ä¨Ó³B¤£©ö"; in declareSameNameInstanceInDifferentMethodDeclaration_MD1()
+		 * String sameName = "ä¸€ç²¥ä¸€é£¯ï¼Œç•¶æ€ä¾†è™•ä¸æ˜“"; in declareSameNameInstanceInDifferentMethodDeclaration_MD1()
 		 * Start position is 620, 32
 		 */
 		assertEquals((620 - 1), vdsfv.getFoundVariableDeclarationStatement().getStartPosition());
@@ -104,7 +104,7 @@ public class VariableDeclarationStatementFinderVisitorTest {
 	
 	/**
 	 * @see #testVariableDeclarationStatementFinder_DifferentMethodDeclaraionOwnsSameCode_1st()
-	 * ±qMD2ªºmi´M§ä¥LªºVariableDeclarationStatement
+	 * å¾MD2çš„miå°‹æ‰¾ä»–çš„VariableDeclarationStatement
 	 */
 	@Test
 	public void testVariableDeclarationStatementFinder_DifferentMethodDeclaraionOwnsSameCode_2rd() {
@@ -113,7 +113,7 @@ public class VariableDeclarationStatementFinderVisitorTest {
 		VariableDeclarationStatementFinderVisitor vdsfv = new VariableDeclarationStatementFinderVisitor(mi);
 		compilationUnit.accept(vdsfv);
 		/*
-		 * String sameName = "¤@µ°¤@¶º¡A·í«ä¨Ó³B¤£©ö"; in declareSameNameInstanceInDifferentMethodDeclaration_MD2()
+		 * String sameName = "ä¸€ç²¥ä¸€é£¯ï¼Œç•¶æ€ä¾†è™•ä¸æ˜“"; in declareSameNameInstanceInDifferentMethodDeclaration_MD2()
 		 * Start position is 764, 32
 		 */
 		assertEquals((764 - 1), vdsfv.getFoundVariableDeclarationStatement().getStartPosition());

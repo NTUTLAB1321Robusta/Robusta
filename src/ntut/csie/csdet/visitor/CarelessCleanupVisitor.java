@@ -25,9 +25,9 @@ import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.TryStatement;
 
 public class CarelessCleanupVisitor extends ASTVisitor {
-	/** ASTªºroot */
+	/** ASTçš„root */
 	private CompilationUnit root;
-	/** Àx¦s§ä¨ìªº¨Ò¥~³B²zÃa¨ı¹Dµ{¦¡½X©Ò¦bªº¦æ¼Æ¥H¤Îµ{¦¡½X¤ù¬q...µ¥ */
+	/** å„²å­˜æ‰¾åˆ°çš„ä¾‹å¤–è™•ç†å£å‘³é“ç¨‹å¼ç¢¼æ‰€åœ¨çš„è¡Œæ•¸ä»¥åŠç¨‹å¼ç¢¼ç‰‡æ®µ...ç­‰ */
 	private List<MarkerInfo> carelessCleanupList;
 	private boolean isDetectingCarelessCleanupSmell;
 	
@@ -47,25 +47,25 @@ public class CarelessCleanupVisitor extends ASTVisitor {
 	}
 	
 	/**
-	 * ®Ú¾Ú³]©wÀÉªº¸ê°T¡A¨M©w­n¤£­n«ô³X¾ã´Ê¾ğ¡C
+	 * æ ¹æ“šè¨­å®šæª”çš„è³‡è¨Šï¼Œæ±ºå®šè¦ä¸è¦æ‹œè¨ªæ•´æ£µæ¨¹ã€‚
 	 */
 	public boolean visit(MethodDeclaration node) {
 		return isDetectingCarelessCleanupSmell;
 	}
 	
 	/**********************************************************
-	 * ÀË¬dIfStatement»PTryStatement¡G
-	 * ¦pªG©ÒÄİªºMethodDeclaration¨S¦³©ß¥X¨Ò¥~¡F
-	 * If¨S¦³elseªº±Ô­z¡A¥BIf¥u¦³¤@­ÓStatement¡F
-	 * Try¨S¦³finallyªº±Ô­z¥Bcatch¨S¦³©ß¥X¨Ò¥~¡ATry¸Ì­±¤]¥u¦³¤@­ÓStatement¡F
-	 * «h¤£·|¥hÀË¬d¥]§t¦b¸Ì­±ªºMethodInvocation¡A
-	 * ¥ç§Y¤£ºŞ¸Ì­±ªºStatement¬O¬Æ»ò¡A³£¤£·|³QÀË¬d¡C
+	 * æª¢æŸ¥IfStatementèˆ‡TryStatementï¼š
+	 * å¦‚æœæ‰€å±¬çš„MethodDeclarationæ²’æœ‰æ‹‹å‡ºä¾‹å¤–ï¼›
+	 * Ifæ²’æœ‰elseçš„æ•˜è¿°ï¼Œä¸”Ifåªæœ‰ä¸€å€‹Statementï¼›
+	 * Tryæ²’æœ‰finallyçš„æ•˜è¿°ä¸”catchæ²’æœ‰æ‹‹å‡ºä¾‹å¤–ï¼ŒTryè£¡é¢ä¹Ÿåªæœ‰ä¸€å€‹Statementï¼›
+	 * å‰‡ä¸æœƒå»æª¢æŸ¥åŒ…å«åœ¨è£¡é¢çš„MethodInvocationï¼Œ
+	 * äº¦å³ä¸ç®¡è£¡é¢çš„Statementæ˜¯ç”šéº¼ï¼Œéƒ½ä¸æœƒè¢«æª¢æŸ¥ã€‚
 	 **********************************************************/
 
 	// FIXME - for, while, do-while, parenthesis
 	
 	/**
-	 * ¼W¥[¤£ÀË¬dcloseªº±ø¥ó:If
+	 * å¢åŠ ä¸æª¢æŸ¥closeçš„æ¢ä»¶:If
 	 */
 	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
 	public boolean visit(IfStatement node) {
@@ -73,15 +73,15 @@ public class CarelessCleanupVisitor extends ASTVisitor {
 			return true;
 		}
 		
-		// else¦³µ{¦¡½X¡A¨º¾ã­Óif´N­n³QÀËÅç
+		// elseæœ‰ç¨‹å¼ç¢¼ï¼Œé‚£æ•´å€‹ifå°±è¦è¢«æª¢é©—
 		if(node.getElseStatement() != null) {
 			return true;
 		}
 		
 		/*
-		 *  if ¸Ì­±¥u¦³¤@­Ótry statement ªº»yªk¦³¨âºØ¼gªk¡C
-		 *  ¤@­Ó¬O¦³ªá¬A¸¹ªº¡A§A·|¦bthen statement§ì¨ìBlock¡C
-		 *  ¤@­Ó¬O¨S¦³ªá¬A¸¹ªº¡A§A·|ª½±µ§ì¨ìtry statement¡C
+		 *  if è£¡é¢åªæœ‰ä¸€å€‹try statement çš„èªæ³•æœ‰å…©ç¨®å¯«æ³•ã€‚
+		 *  ä¸€å€‹æ˜¯æœ‰èŠ±æ‹¬è™Ÿçš„ï¼Œä½ æœƒåœ¨then statementæŠ“åˆ°Blockã€‚
+		 *  ä¸€å€‹æ˜¯æ²’æœ‰èŠ±æ‹¬è™Ÿçš„ï¼Œä½ æœƒç›´æ¥æŠ“åˆ°try statementã€‚
 		 */
 		Statement thenStatement = node.getThenStatement();
 		if(thenStatement.getNodeType() == ASTNode.EXPRESSION_STATEMENT) {
@@ -96,12 +96,12 @@ public class CarelessCleanupVisitor extends ASTVisitor {
 		if(thenBlock.statements().size() != 1) {
 			return true;
 		} else if(thenBlock.statements().size() == 1) {
-			// ¦pªG³o­ÓIfStatement³QTryStatement¥]µÛ¡A«h©¹¤W§ä¨â¼h·|§ä¨ìTryStatement
+			// å¦‚æœé€™å€‹IfStatementè¢«TryStatementåŒ…è‘—ï¼Œå‰‡å¾€ä¸Šæ‰¾å…©å±¤æœƒæ‰¾åˆ°TryStatement
 			ASTNode parentTryStatement = node.getParent().getParent();
 			if (parentTryStatement.getNodeType() != ASTNode.TRY_STATEMENT) {
 				return true;
 			} else {
-				// ¦pªG¥]µÛ³o­Óifªºtry¦³©ß¥X¨Ò¥~¡A¨º´N­nÀË¬dif¸Ì­±¦³¨S¦³careless cleanup
+				// å¦‚æœåŒ…è‘—é€™å€‹ifçš„tryæœ‰æ‹‹å‡ºä¾‹å¤–ï¼Œé‚£å°±è¦æª¢æŸ¥ifè£¡é¢æœ‰æ²’æœ‰careless cleanup
 				if(isTryStatementThrowException((TryStatement)parentTryStatement)) {
 					return true;
 				}
@@ -111,7 +111,7 @@ public class CarelessCleanupVisitor extends ASTVisitor {
 	}
 	
 	/**
-	 * ¼W¥[¤£ÀË¬dcloseªº±ø¥ó:Try
+	 * å¢åŠ ä¸æª¢æŸ¥closeçš„æ¢ä»¶:Try
 	 */
 	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
 	public boolean visit(TryStatement node) {
@@ -119,19 +119,19 @@ public class CarelessCleanupVisitor extends ASTVisitor {
 			return true;
 		}
 		
-		// Try¸Ì­±¶W¹L¤@­ÓStatement(´N¦³¥i¯à¤£¥ucloseªº°Ê§@)
+		// Tryè£¡é¢è¶…éä¸€å€‹Statement(å°±æœ‰å¯èƒ½ä¸åªcloseçš„å‹•ä½œ)
 		if(node.getBody().statements().size() != 1) {
 			return true;
 		} else if (node.getFinally() != null) {
 			return true;
 		} else {
-			// ­nª`·N³o¤@­ÓStatement¬O¤£¬Oif
+			// è¦æ³¨æ„é€™ä¸€å€‹Statementæ˜¯ä¸æ˜¯if
 			if(((Statement)node.getBody().statements().get(0)).getNodeType() == ASTNode.IF_STATEMENT) {
 				return true;
 			}
 		}
 		
-		// ¦pªGCatch¸Ì­±¦³©ß¥X¨Ò¥~¡A´N¤£¬O¥i¥H¦s©ñ¦bFinally¤¤¡AÃö³¬¦ê¬yªº°Ê§@
+		// å¦‚æœCatchè£¡é¢æœ‰æ‹‹å‡ºä¾‹å¤–ï¼Œå°±ä¸æ˜¯å¯ä»¥å­˜æ”¾åœ¨Finallyä¸­ï¼Œé—œé–‰ä¸²æµçš„å‹•ä½œ
 		if(isTryStatementThrowException(node)) {
 			return true;
 		}
@@ -139,12 +139,12 @@ public class CarelessCleanupVisitor extends ASTVisitor {
 	}
 	
 	/**
-	 * ÀË¬d³o­ÓTryStatement¬O¤£¬O¦³©ß¥X¨Ò¥~
+	 * æª¢æŸ¥é€™å€‹TryStatementæ˜¯ä¸æ˜¯æœ‰æ‹‹å‡ºä¾‹å¤–
 	 * @param node
-	 * @return true¦³©ß¥X¨Ò¥~¡Afalse¨S©ß¥X¨Ò¥~
+	 * @return trueæœ‰æ‹‹å‡ºä¾‹å¤–ï¼Œfalseæ²’æ‹‹å‡ºä¾‹å¤–
 	 */
 	private boolean isTryStatementThrowException(TryStatement node) {
-		// ¦pªGCatch¸Ì­±¦³©ß¥X¨Ò¥~¡A´N¤£¬O¥i¥H¦s©ñ¦bFinally¤¤¡AÃö³¬¦ê¬yªº°Ê§@
+		// å¦‚æœCatchè£¡é¢æœ‰æ‹‹å‡ºä¾‹å¤–ï¼Œå°±ä¸æ˜¯å¯ä»¥å­˜æ”¾åœ¨Finallyä¸­ï¼Œé—œé–‰ä¸²æµçš„å‹•ä½œ
 		for (int i = 0; i < node.catchClauses().size(); i++) {
 			CatchClause cc = (CatchClause)node.catchClauses().get(i);
 			for(int j = 0; j< cc.getBody().statements().size(); j++){
@@ -158,8 +158,8 @@ public class CarelessCleanupVisitor extends ASTVisitor {
 	}
 	
 	/**
-	 * ÀË¬d³o­ÓMethodDeclaration¬O§_¦³©ß¥X¨Ò¥~
-	 * (RuntimeException¨S¿ìªk§Q¥Î³o­Ó¤èªkÀË¬d)
+	 * æª¢æŸ¥é€™å€‹MethodDeclarationæ˜¯å¦æœ‰æ‹‹å‡ºä¾‹å¤–
+	 * (RuntimeExceptionæ²’è¾¦æ³•åˆ©ç”¨é€™å€‹æ–¹æ³•æª¢æŸ¥)
 	 * @param node
 	 * @return
 	 */
@@ -180,13 +180,13 @@ public class CarelessCleanupVisitor extends ASTVisitor {
 	}
 	
 	private boolean visitDefault(MethodInvocation node) {
-		// ´M§ämethod name¬°close
+		// å°‹æ‰¾method nameç‚ºclose
 		if(!node.getName().toString().equals("close")) {
 			return false;
 		}
 
 		/*
-		 *	´M§ä³o­Óclose¬O¤£¬O¹ê§@Closeable 
+		 *	å°‹æ‰¾é€™å€‹closeæ˜¯ä¸æ˜¯å¯¦ä½œCloseable 
 		 */
 		if(node.resolveMethodBinding() == null) {
 			System.out.println("aa");
@@ -196,7 +196,7 @@ public class CarelessCleanupVisitor extends ASTVisitor {
 			return true;
 		}
 		
-		// ¸g¹L¤W­zÀË¬d«á¡A§ì¨ìªºclose´N­n³Q¥[¤WMarker
+		// ç¶“éä¸Šè¿°æª¢æŸ¥å¾Œï¼ŒæŠ“åˆ°çš„closeå°±è¦è¢«åŠ ä¸ŠMarker
 		collectSmell(node);
 		return false;
 	}
@@ -255,18 +255,18 @@ public class CarelessCleanupVisitor extends ASTVisitor {
 	}
 	
 	/**
-	 * »`¶°MethodInvocation¤W©Ò¦³©ß¥Xªº¨Ò¥~¡C
-	 * ³q±`¥u¯à»`¶°¨ìChecked Exception¡A¦]¬°¥u¦³¥¦­Ì·|³Q±j¨î­n¨D¼g¦bMethodDeclaration¤W¡C
-	 * @param node §A·Q»`¶°¨Ò¥~ªºMethodInvocation
+	 * è’é›†MethodInvocationä¸Šæ‰€æœ‰æ‹‹å‡ºçš„ä¾‹å¤–ã€‚
+	 * é€šå¸¸åªèƒ½è’é›†åˆ°Checked Exceptionï¼Œå› ç‚ºåªæœ‰å®ƒå€‘æœƒè¢«å¼·åˆ¶è¦æ±‚å¯«åœ¨MethodDeclarationä¸Šã€‚
+	 * @param node ä½ æƒ³è’é›†ä¾‹å¤–çš„MethodInvocation
 	 * @return
 	 */
 	private ITypeBinding[] collectMethodInvocationThrownException(MethodInvocation node) {
-		// ¦pªG¨Ï¥ÎªÌ¶i¦æ¤F§Ö³t­×´_¡A«h·|»`¶°¨ìListRewriteªº¸ê°T¡Anode.resolveMethodBinding()·|ÅÜ¦¨null
+		// å¦‚æœä½¿ç”¨è€…é€²è¡Œäº†å¿«é€Ÿä¿®å¾©ï¼Œå‰‡æœƒè’é›†åˆ°ListRewriteçš„è³‡è¨Šï¼Œnode.resolveMethodBinding()æœƒè®Šæˆnull
 		if(node.resolveMethodBinding() == null) {
 			return null;
 		}
 		
-		// visit­ì©lµ{¦¡½Xªº®É­Ô¡A¥i¥H»`¶°¨ìnode.resolveMethodBinding()
+		// visitåŸå§‹ç¨‹å¼ç¢¼çš„æ™‚å€™ï¼Œå¯ä»¥è’é›†åˆ°node.resolveMethodBinding()
 		if(node.resolveMethodBinding().getExceptionTypes().length <= 0) {
 			return null;
 		}
@@ -275,7 +275,7 @@ public class CarelessCleanupVisitor extends ASTVisitor {
 	}
 	
 	/**
-	 * ¦pªG¬Ofinally block´N¤£ÀË¬d
+	 * å¦‚æœæ˜¯finally blockå°±ä¸æª¢æŸ¥
 	 */
 	public boolean visit(Block node) {
 		ASTNode tryStatement = NodeUtils.getSpecifiedParentNode(node, ASTNode.TRY_STATEMENT);

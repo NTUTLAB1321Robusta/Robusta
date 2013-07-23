@@ -20,16 +20,16 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * Åı¨Ï¥ÎªÌ­×§ïRuleªºDialog
+ * è®“ä½¿ç”¨è€…ä¿®æ”¹Ruleçš„Dialog
  */
 public class EditRuleDialog  extends Dialog{
-	//µ¹¤©¨Ï¥ÎªÌ­×§ïªºText
+	//çµ¦äºˆä½¿ç”¨è€…ä¿®æ”¹çš„Text
 	private Text tempText;
-	//¤W¤@¼h©Ò¿ï¾Ü­×§ïªºRule¦WºÙ
+	//ä¸Šä¸€å±¤æ‰€é¸æ“‡ä¿®æ”¹çš„Ruleåç¨±
 	private String ruleName;
-	//¤W¤@¼hÀx¦sRule¸ê®Æ
+	//ä¸Šä¸€å±¤å„²å­˜Ruleè³‡æ–™
 	private Table ruleTable;
-	//Äµ§i¹Ï¥Ü©M¤å¦r
+	//è­¦å‘Šåœ–ç¤ºå’Œæ–‡å­—
 	private Label warningLabel;
 	private Label picLabel;
 
@@ -60,7 +60,7 @@ public class EditRuleDialog  extends Dialog{
 		tempText = new Text(container, SWT.BORDER);
 		tempText.addKeyListener(new KeyAdapter() {
 			public void keyPressed(final KeyEvent e) {
-				//­Y¦³­×§ï§âÄµ§i¼Ğ»y®ø±¼
+				//è‹¥æœ‰ä¿®æ”¹æŠŠè­¦å‘Šæ¨™èªæ¶ˆæ‰
 				picLabel.setVisible(false);
 				warningLabel.setVisible(false);
 			}
@@ -99,22 +99,22 @@ public class EditRuleDialog  extends Dialog{
 		String temp = tempText.getText().trim();
 		if (temp.length() > 0)
 		{
-			//­Y¨S¦³"."ªí¥Ü¬°Method¡A¦Û¦æÀ°¨Ï¥ÎªÌ¥["*."
+			//è‹¥æ²’æœ‰"."è¡¨ç¤ºç‚ºMethodï¼Œè‡ªè¡Œå¹«ä½¿ç”¨è€…åŠ "*."
 			if (!temp.contains("."))
 				temp = "*." + temp;
 			
 			boolean isWarning = false;
-			//¬İLibraryªºName¦³¨S¦³­«½Æ
+			//çœ‹Libraryçš„Nameæœ‰æ²’æœ‰é‡è¤‡
 			for(int i=0;i<ruleTable.getItemCount();i++){
-				//­Y­«½Æ´NÅã¥ÜÄµ§i°T®§
+				//è‹¥é‡è¤‡å°±é¡¯ç¤ºè­¦å‘Šè¨Šæ¯
 				if(temp.equals(ruleTable.getItem(i).getText()))
 					isWarning = true;
 			}
-			//­Y­«½Æ´N¥X²{Äµ§i°T®§¡A§_«h­×§ïKey
+			//è‹¥é‡è¤‡å°±å‡ºç¾è­¦å‘Šè¨Šæ¯ï¼Œå¦å‰‡ä¿®æ”¹Key
 			if (isWarning){
 				tempText.setText(temp);
 				showWarningText(resource.getString("rule.exist"));
-			//¨S¦³­«½Æ´N­×§ï
+			//æ²’æœ‰é‡è¤‡å°±ä¿®æ”¹
 			}else{
 				ruleTable.getItem(ruleTable.getSelectionIndex()).setText(temp);
 				super.okPressed();
@@ -143,7 +143,7 @@ public class EditRuleDialog  extends Dialog{
 	}
 	
 	/**
-	 * §ó§ïÄµ§i¼Ğ»y¨ÃÅã¥Ü
+	 * æ›´æ”¹è­¦å‘Šæ¨™èªä¸¦é¡¯ç¤º
 	 */
 	protected void showWarningText(String warningInf) {
 		warningLabel.setText(warningInf);

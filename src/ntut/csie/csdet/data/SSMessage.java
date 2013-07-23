@@ -6,27 +6,27 @@ import java.util.List;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 
 /**
- * °O¿ıSuppressSmellªº¬ÛÃö¸ê°T
+ * è¨˜éŒ„SuppressSmellçš„ç›¸é—œè³‡è¨Š
  * @author Shiau
  */
 public class SSMessage {
-	/** ±ıSuppressªºSmell¦WºÙ */
+	/** æ¬²Suppressçš„Smellåç¨± */
 	private List<String> smellList = null;
-	/** Annotation©Ò¦b¦ì¸m */
+	/** Annotationæ‰€åœ¨ä½ç½® */
 	private int position;
-	/** Annotation©Ò¦b¦æ¼Æ */
+	/** Annotationæ‰€åœ¨è¡Œæ•¸ */
 	private int lineNumber;
-	/** ¬O§_¦bCatch¤º¡A§_«h¦bMethod¤W */
+	/** æ˜¯å¦åœ¨Catchå…§ï¼Œå¦å‰‡åœ¨Methodä¸Š */
 	private boolean inCatch = false;
-	/** ¦bCatch¤ºªºIndex */
+	/** åœ¨Catchå…§çš„Index */
 	private int catchIdx;
-	/** ¬O§_¦³¿ù»~¦WºÙ */
+	/** æ˜¯å¦æœ‰éŒ¯èª¤åç¨± */
 	public boolean haveFaultName = false;
-	/** ºÙ¿ù»~ªºSmell¦WºÙ */
+	/** ç¨±éŒ¯èª¤çš„Smellåç¨± */
 	private String faultName;
 	
 	/**
-	 * ¦bMethod¤W«Ø¥ßªºAnnotation
+	 * åœ¨Methodä¸Šå»ºç«‹çš„Annotation
 	 * @param pos
 	 * @param lineNumber
 	 */
@@ -39,7 +39,7 @@ public class SSMessage {
 	}
 
 	/**
-	 * ¦bCatch¤º«Ø¥ßªºAnnotation
+	 * åœ¨Catchå…§å»ºç«‹çš„Annotation
 	 * @param pos
 	 * @param lineNumber
 	 * @param catchIdx
@@ -64,20 +64,20 @@ public class SSMessage {
 		return smellList;
 	}
 	/**
-	 * ¥[¤J±ıSuppressªºSmell¦WºÙ
+	 * åŠ å…¥æ¬²Suppressçš„Smellåç¨±
 	 * @param smell
 	 */
 	public void addSmellList(String smell) {
-		//­Y¨S¦³¿ù»~¦WºÙ«h°»´ú¡A­Y¦³¿ù»~¦WºÙ«h¤£°»´ú
+		//è‹¥æ²’æœ‰éŒ¯èª¤åç¨±å‰‡åµæ¸¬ï¼Œè‹¥æœ‰éŒ¯èª¤åç¨±å‰‡ä¸åµæ¸¬
 		if (!haveFaultName) {
 			boolean isCorrectName = false;
-			//§PÂ_¬O§_¬°¥¿½TªºSmell¦WºÙ
+			//åˆ¤æ–·æ˜¯å¦ç‚ºæ­£ç¢ºçš„Smellåç¨±
 			for (String type : RLMarkerAttribute.CS_TOTAL_TYPE)
 				if (smell.equals(type)) {
 					isCorrectName = true;
 					break;
 				}
-			//­YSmell¦WºÙ¤£¥¿½T¡A«h°O¿ı¦¹¿ù»~Smell¦WºÙ
+			//è‹¥Smellåç¨±ä¸æ­£ç¢ºï¼Œå‰‡è¨˜éŒ„æ­¤éŒ¯èª¤Smellåç¨±
 			if (!isCorrectName) {
 				faultName = smell;
 				haveFaultName = true;
@@ -100,21 +100,21 @@ public class SSMessage {
 		this.position = position;
 	}
 	/**
-	 * ¬O§_¦³¿ù»~¦WºÙ
+	 * æ˜¯å¦æœ‰éŒ¯èª¤åç¨±
 	 * @return
 	 */
 	public boolean isFaultName() {
 		return haveFaultName;
 	}
 	/**
-	 * ¨ú±o¿ù»~ªºSmell¦WºÙ
+	 * å–å¾—éŒ¯èª¤çš„Smellåç¨±
 	 * @return
 	 */
 	public String getFaultName() {
 		return faultName;
 	}
 	/**
-	 * ¦¹Annotation¬O§_¦bCatch¤º
+	 * æ­¤Annotationæ˜¯å¦åœ¨Catchå…§
 	 * @return
 	 */
 	public boolean isInCatch() {

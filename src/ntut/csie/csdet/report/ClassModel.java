@@ -6,19 +6,19 @@ import java.util.List;
 import ntut.csie.csdet.data.MarkerInfo;
 
 /**
- * Àx¦sClass¤ºSmell¸ê°T
+ * å„²å­˜Classå…§Smellè³‡è¨Š
  * @author Shiau
  */
 public class ClassModel {
-	//¦s¨úClassªº¦WºÙ
+	//å­˜å–Classçš„åç¨±
 	private String className = "";
-	//¦s¨úClassªº¸ô®|
+	//å­˜å–Classçš„è·¯å¾‘
 	private String classPath = "";
-	//¥ş³¡Smell¸ê°T
+	//å…¨éƒ¨Smellè³‡è¨Š
 	private List<MarkerInfo> smellList = new ArrayList<MarkerInfo>();
-	//Smell¦ì©óªºMethod¦WºÙ
+	//Smellä½æ–¼çš„Methodåç¨±
 	private List<String> methodList = new ArrayList<String>();
-	//Smell¼Æ¶q
+	//Smellæ•¸é‡
 	private int ignoreExSize = 0;
 	private int dummySize = 0;
 	private int nestedTrySize = 0;
@@ -27,7 +27,7 @@ public class ClassModel {
 	private int carelessSize = 0;
 	private int overwrittenSize = 0;
 
-	///¦s¨úClassªº¦WºÙ///
+	///å­˜å–Classçš„åç¨±///
 	public String getClassName() { 
 		return className;
 	}
@@ -38,11 +38,11 @@ public class ClassModel {
 			this.className = "";
 	}
 	
-	///³]©w¦¹ClassªºSmell List///
+	///è¨­å®šæ­¤Classçš„Smell List///
 	public void setIgnoreExList(List<MarkerInfo> ignoreExList, String MethodName) {
 		if(ignoreExList != null) {
 			ignoreExSize += ignoreExList.size();
-			//±NSmell»P¨ä©Ò¦bªºMethod¦WºÙ¦s°_¨Ó
+			//å°‡Smellèˆ‡å…¶æ‰€åœ¨çš„Methodåç¨±å­˜èµ·ä¾†
 			smellList.addAll(ignoreExList);
 			for (int i=0; i<ignoreExList.size(); i++)
 				methodList.add(MethodName);
@@ -57,9 +57,9 @@ public class ClassModel {
 		}
 	}
 	/**
-	 * ±N nestedTryList ¥[¦b ClassModel ¦¬¶°ªº smellList ¤¤
-	 * TODO §R°£ methodList ®Éª½±µ§R°£¾ã­Ó for statement §Y¥i
-	 * TODO ¨ä¥L list °Ñ¦Ò¦¹ Method¡A±N MethodName °Ñ¼Æ®³±¼
+	 * å°‡ nestedTryList åŠ åœ¨ ClassModel æ”¶é›†çš„ smellList ä¸­
+	 * TODO åˆªé™¤ methodList æ™‚ç›´æ¥åˆªé™¤æ•´å€‹ for statement å³å¯
+	 * TODO å…¶ä»– list åƒè€ƒæ­¤ Methodï¼Œå°‡ MethodName åƒæ•¸æ‹¿æ‰
 	 * @param nestedTryList
 	 */
 	public void addNestedTryList(List<MarkerInfo> nestedTryList) {
@@ -104,7 +104,7 @@ public class ClassModel {
 		}
 	}
 
-	///¨ú±oClass¤ºªºSmell¸ê°T///
+	///å–å¾—Classå…§çš„Smellè³‡è¨Š///
 	public int getSmellSize() {
 		return smellList.size();
 	}
@@ -115,14 +115,14 @@ public class ClassModel {
 		return smellList.get(i).getCodeSmellType();
 	}
 	/*
-	 * TODO MethodName¾ã¦X¨ìMarkerInfo¤º¡A¤§«á¥i§R°£methodList
+	 * TODO MethodNameæ•´åˆåˆ°MarkerInfoå…§ï¼Œä¹‹å¾Œå¯åˆªé™¤methodList
 	 * by pig
 	 */
 	public String getMethodName(int i) {
 		return methodList.get(i);
 	}
 
-	///¨ú±o¦¹ClassªºSmell¼Æ¶q///
+	///å–å¾—æ­¤Classçš„Smellæ•¸é‡///
 	public int getIgnoreSize() {
 		return ignoreExSize;
 	}
@@ -149,7 +149,7 @@ public class ClassModel {
 			   getCarelessCleanUpSize() + getOverLoggingSize() + getOverwrittenSize();
 	}
 	
-	///¦s¨úClassªº¸ô®|///
+	///å­˜å–Classçš„è·¯å¾‘///
 	public String getClassPath() {
 		return classPath;
 	}

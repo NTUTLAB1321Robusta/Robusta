@@ -8,17 +8,17 @@ import java.io.IOException;
 import java.util.Scanner;
 
 /**
- * Åª¨ú±M®×¤ºjavaÀÉªº¤º®e¡C
- * ¤è«KÅª¨ú¤@¨Çbad smellªºcode¡A¦bUnit test®É¡A¼g¦¨´ú¸Õ¥Îªºcode¡C
+ * è®€å–å°ˆæ¡ˆå…§javaæª”çš„å…§å®¹ã€‚
+ * æ–¹ä¾¿è®€å–ä¸€äº›bad smellçš„codeï¼Œåœ¨Unit testæ™‚ï¼Œå¯«æˆæ¸¬è©¦ç”¨çš„codeã€‚
  * @author Charles
  *
  */
 public class JavaFileToString {
-	/**	¥Î¨ÓÅª¨úclassªº¦ê¬y */
+	/**	ç”¨ä¾†è®€å–classçš„ä¸²æµ */
 	FileInputStream fileInputStream;
-	/** ±½´y¦ê¬y¡AÂà¦¨¤å¦r */
+	/** æƒæä¸²æµï¼Œè½‰æˆæ–‡å­— */
 	Scanner scanner;
-	/** Àx¦sÀÉ®×ªº¤å¦r */
+	/** å„²å­˜æª”æ¡ˆçš„æ–‡å­— */
 	StringBuilder sb;
 
 	public JavaFileToString() {
@@ -28,10 +28,10 @@ public class JavaFileToString {
 	}
 
 	/**
-	 * Åª¨újavaÀÉªº¤º®e¡A¦ı¬O·|²¤¹LPackage¨º¦æ¡C°ÆÀÉ¦W·|¦Û°Ê»{©w¬°.java¡C
-	 * ½Ğ°Ñ¦Ò{@link #read(Class, String, String)}
-	 * @param clazz ­nÅªªºclass
-	 * @param folder ­nÅªªºclass¬O¨Ó¦Ûsrc¸ê®Æ§¨©Î¬Otest¸ê®Æ§¨
+	 * è®€å–javaæª”çš„å…§å®¹ï¼Œä½†æ˜¯æœƒç•¥éPackageé‚£è¡Œã€‚å‰¯æª”åæœƒè‡ªå‹•èªå®šç‚º.javaã€‚
+	 * è«‹åƒè€ƒ{@link #read(Class, String, String)}
+	 * @param clazz è¦è®€çš„class
+	 * @param folder è¦è®€çš„classæ˜¯ä¾†è‡ªsrcè³‡æ–™å¤¾æˆ–æ˜¯testè³‡æ–™å¤¾
 	 * @throws FileNotFoundException
 	 */
 	public void read(Class<?> clazz, String folder) throws FileNotFoundException {
@@ -39,10 +39,10 @@ public class JavaFileToString {
 	}
 	
 	/**
-	 * Åª¨újavaÀÉªº¤º®e¡A¦ı¬O·|²¤¹LPackage¨º¦æ¡C
-	 * @param clazz ­nÅªªºclass
-	 * @param folder src¸ê®Æ§¨©Î¬Otest¸ê®Æ§¨
-	 * @param extension ³o­Óclassªº°ÆÀÉ¦W¡C
+	 * è®€å–javaæª”çš„å…§å®¹ï¼Œä½†æ˜¯æœƒç•¥éPackageé‚£è¡Œã€‚
+	 * @param clazz è¦è®€çš„class
+	 * @param folder srcè³‡æ–™å¤¾æˆ–æ˜¯testè³‡æ–™å¤¾
+	 * @param extension é€™å€‹classçš„å‰¯æª”åã€‚
 	 * @throws FileNotFoundException
 	 */
 	public void read(Class<?> clazz, String folder, String extension) throws FileNotFoundException {
@@ -54,10 +54,10 @@ public class JavaFileToString {
 			fileInputStream = new FileInputStream(classFile);
 			scanner = new Scanner(fileInputStream);
 
-			// ¸õ¹Lpackageªº¨º¦æ¤£­nÀx¦s
+			// è·³épackageçš„é‚£è¡Œä¸è¦å„²å­˜
 			scanner.nextLine();
 			
-			// §âÀÉ®×¦ê¬y¡A¤å¦r¤@¦æ¤@¦æÅª¥X¨Ó
+			// æŠŠæª”æ¡ˆä¸²æµï¼Œæ–‡å­—ä¸€è¡Œä¸€è¡Œè®€å‡ºä¾†
 			while(scanner.hasNextLine()) {
 				sb.append(scanner.nextLine() + lineSeparator);
 			}
@@ -70,7 +70,7 @@ public class JavaFileToString {
 	}
 	
 	/**
-	 * ¨ú±oÀÉ®×ªº¤å¦r¤º®e¡C
+	 * å–å¾—æª”æ¡ˆçš„æ–‡å­—å…§å®¹ã€‚
 	 * @return
 	 */
 	public String getFileContent() {
@@ -78,7 +78,7 @@ public class JavaFileToString {
 	}
 	
 	/**
-	 * ²M°£¤w¸gÅª¨ú¹Lªº¤º®e¡C
+	 * æ¸…é™¤å·²ç¶“è®€å–éçš„å…§å®¹ã€‚
 	 * @return
 	 */
 	public void clear() {
@@ -86,7 +86,7 @@ public class JavaFileToString {
 	}
 	
 	/**
-	 * Ãö³¬¦ê¬y
+	 * é—œé–‰ä¸²æµ
 	 * @param cloz
 	 */
 	private void closeStream(Closeable cloz) {

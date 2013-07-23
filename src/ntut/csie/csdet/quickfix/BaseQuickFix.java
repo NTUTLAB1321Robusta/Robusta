@@ -41,16 +41,16 @@ public class BaseQuickFix {
 	private static Logger logger = LoggerFactory.getLogger(BaseQuickFix.class);
 
 	protected IOpenable actOpenable = null;
-	/** ¦s©ñ¥Ø«e­n­×§ïªº.javaÀÉ */
+	/** å­˜æ”¾ç›®å‰è¦ä¿®æ”¹çš„.javaæª” */
 	protected CompilationUnit actRoot = null;
-	/** ¦s©ñ¥Ø«e©Ò­nfixªºmethod node */
+	/** å­˜æ”¾ç›®å‰æ‰€è¦fixçš„method node */
 	protected MethodDeclaration currentMethodNode = null;
 
 	/**
-	 * ¨ú±oMethod¬ÛÃö¸ê°T
-	 * @param resource		¨Ó·½
-	 * @param methodIdx		MethodªºIndex
-	 * @return				¬O§_¦¨¥\
+	 * å–å¾—Methodç›¸é—œè³‡è¨Š
+	 * @param resource		ä¾†æº
+	 * @param methodIdx		Methodçš„Index
+	 * @return				æ˜¯å¦æˆåŠŸ
 	 */
 	protected boolean findCurrentMethod(IResource resource, int methodIdx){
 		if (resource instanceof IFile && resource.getName().endsWith(".java")) {
@@ -68,15 +68,15 @@ public class BaseQuickFix {
 				parser.setSource((ICompilationUnit) javaElement);
 				parser.setResolveBindings(true);
 				actRoot = (CompilationUnit) parser.createAST(null);
-				//AST 2.0¬ö¿ı¤è¦¡
+				//AST 2.0ç´€éŒ„æ–¹å¼
 				actRoot.recordModifications();
 				
-				//¨ú±o¸Óclass©Ò¦³ªºmethod
+				//å–å¾—è©²classæ‰€æœ‰çš„method
 				ASTMethodCollector methodCollector = new ASTMethodCollector();
 				actRoot.accept(methodCollector);
 				List<MethodDeclaration> methodList = methodCollector.getMethodList();
 				
-				//¨ú±o¥Ø«e­n³Q­×§ïªºmethod node
+				//å–å¾—ç›®å‰è¦è¢«ä¿®æ”¹çš„method node
 				currentMethodNode = methodList.get(methodIdx);
 			
 				return true;
@@ -88,19 +88,19 @@ public class BaseQuickFix {
 	}
 
 	/**
-	 * ±N©Ò­nÅÜ§óªº¤º®e¼g¦^Edit¤¤ (Old)
+	 * å°‡æ‰€è¦è®Šæ›´çš„å…§å®¹å¯«å›Editä¸­ (Old)
 	 */
 	protected void applyChange() {
 		applyChange(null);
 	}
 	/**
-	 * ±N©Ò­nÅÜ§óªº¤º®e¼g¦^Edit¤¤  (New)
+	 * å°‡æ‰€è¦è®Šæ›´çš„å…§å®¹å¯«å›Editä¸­  (New)
 	 * @param msg
 	 */
 	protected void applyChange(ASTRewrite rewrite) {
 		try {
-			// °Ñ¦Òorg.eclipse.jdt.internal.ui.text.correction.CorrectionMarkerResolutionGenerator run
-			// org.eclipse.jdt.internal.ui.text.correction.ChangeCorrectionProposal apply»PperformChange
+			// åƒè€ƒorg.eclipse.jdt.internal.ui.text.correction.CorrectionMarkerResolutionGenerator run
+			// org.eclipse.jdt.internal.ui.text.correction.ChangeCorrectionProposal applyèˆ‡performChange
 			ICompilationUnit cu = (ICompilationUnit) actOpenable;
 			IEditorPart part = EditorUtility.isOpenInEditor(cu);
 			IEditorInput input = part.getEditorInput();
@@ -113,7 +113,7 @@ public class BaseQuickFix {
 	}
 
 	/**
-	 * °õ¦æQuick FixÅÜ§ó
+	 * åŸ·è¡ŒQuick Fixè®Šæ›´
 	 * @param activeEditor
 	 * @param document
 	 * @throws CoreException
@@ -163,7 +163,7 @@ public class BaseQuickFix {
 	}
 
 	/**
-	 * ¨ú±oQuick Fix«á§ïÅÜªºµ{¦¡½X
+	 * å–å¾—Quick Fixå¾Œæ”¹è®Šçš„ç¨‹å¼ç¢¼
 	 */
 	private Change getChange(CompilationUnit actRoot, ASTRewrite rewrite) {
 		try {

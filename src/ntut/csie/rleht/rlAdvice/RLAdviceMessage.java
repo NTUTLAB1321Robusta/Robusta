@@ -9,8 +9,8 @@ import org.eclipse.jdt.core.dom.ITypeBinding;
 
 
 /**
- * ±q·|throw¥XexceptionªºexpressionStatement¤¤¡A»`¶°¸ò¥L¬ÛÃöªº¸ê°T
- * ¥»class°Ñ¦Ò¤FCSMessageªº§@ªk
+ * å¾æœƒthrowå‡ºexceptionçš„expressionStatementä¸­ï¼Œè’é›†è·Ÿä»–ç›¸é—œçš„è³‡è¨Š
+ * æœ¬classåƒè€ƒäº†CSMessageçš„ä½œæ³•
  * @author Charles
  * @version 0.0.1
  */
@@ -68,7 +68,7 @@ public class RLAdviceMessage {
 	}
 	
 	/**
-	 * ®³¨Ó¬ö¿ıMethod©w¸qªºRLµ¥¯Å¤Î¨ä¹ïÀ³ªºException class
+	 * æ‹¿ä¾†ç´€éŒ„Methodå®šç¾©çš„RLç­‰ç´šåŠå…¶å°æ‡‰çš„Exception class
 	 * @author Charles
 	 *
 	 */
@@ -90,22 +90,22 @@ public class RLAdviceMessage {
 	}
 	
 	/**
-	 * @return ¦¹method©Ò¦³ªºRL annotation¡C
+	 * @return æ­¤methodæ‰€æœ‰çš„RL annotationã€‚
 	 */
 	public RLInfo[] getRobustnessLevel(){
 		RLInfo[] rlinfo = null;
 		boolean isRobustnessAnnotationExist = false;
-		//method¥i¯à¦³«Ü¦hannotation
+		//methodå¯èƒ½æœ‰å¾ˆå¤šannotation
 		for (IAnnotationBinding annotation : annotations) {
-			//´M§äRobustnessªºannotation
+			//å°‹æ‰¾Robustnessçš„annotation
 			if (annotation.getAnnotationType().getBinaryName().equals("ntut.csie.robusta.agile.exception.Robustness")) {
 				IMemberValuePairBinding[] mvpb = annotation.getAllMemberValuePairs();
-				//³o¸Ì¦³ÂIÁà¡A¤Ï¥¿´N¬O§ârobustnessªºannotation¤¤¡ARL¸òexceptionªº¸ê°T³£¦s°_¨Ó
+				//é€™è£¡æœ‰é»é†œï¼Œåæ­£å°±æ˜¯æŠŠrobustnessçš„annotationä¸­ï¼ŒRLè·Ÿexceptionçš„è³‡è¨Šéƒ½å­˜èµ·ä¾†
 				Object[] values = (Object[]) mvpb[0].getValue();
 				rlinfo = new RLInfo[values.length];
 				for(int j = 0; j<values.length; j++){
 					IAnnotationBinding binding = (IAnnotationBinding) values[j];
-					// ³B²zRL
+					// è™•ç†RL
 					IMemberValuePairBinding[] rlMvpb = binding.getAllMemberValuePairs();
 					if (rlMvpb.length == 2) {
 						rlinfo[j] = new RLInfo();
@@ -124,7 +124,7 @@ public class RLAdviceMessage {
 			rlinfo[0] = new RLInfo();
 			rlinfo[0].setLevel(RTag.LEVEL_1_ERR_REPORTING);
 			rlinfo[0].setException(getExceptionType());
-//			System.out.println("RLAdviceMessage¨S¦³Annotation¡A¨Ò¥~Ãş«¬¬°: "+ getExceptionType());
+//			System.out.println("RLAdviceMessageæ²’æœ‰Annotationï¼Œä¾‹å¤–é¡å‹ç‚º: "+ getExceptionType());
 		}
 		return rlinfo;
 	}

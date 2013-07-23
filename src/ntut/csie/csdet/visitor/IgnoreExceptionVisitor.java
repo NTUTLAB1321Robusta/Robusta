@@ -27,7 +27,7 @@ public class IgnoreExceptionVisitor extends ASTVisitor {
 	}
 	
 	/**
-	 * ®Ú¾Ú³]©wÀÉªº¸ê°T¡A¨M©w­n¤£­n«ô³X¾ã´Ê¾ğ¡C
+	 * æ ¹æ“šè¨­å®šæª”çš„è³‡è¨Šï¼Œæ±ºå®šè¦ä¸è¦æ‹œè¨ªæ•´æ£µæ¨¹ã€‚
 	 */
 	public boolean visit(MethodDeclaration node) {
 		return isDetectingIgnoredExcetion;

@@ -6,22 +6,22 @@ import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 
 /**
- * §Q¥Î¦æ¸¹§ä´MExpressionStatement
+ * åˆ©ç”¨è¡Œè™Ÿæ‰¾å°‹ExpressionStatement
  * @author Charles
  *
  */
 public class ExpressionStatementLineNumberFinderVisitor extends ASTVisitor {
 
-	/**	±N§ä¨ìªºµ²ªG¦s¦b³o¸Ì */
+	/**	å°‡æ‰¾åˆ°çš„çµæœå­˜åœ¨é€™è£¡ */
 	private ExpressionStatement foundExpressionStatement;
 	
-	/** ·Q´M§äªºµ{¦¡½X¦æ¸¹ */
+	/** æƒ³å°‹æ‰¾çš„ç¨‹å¼ç¢¼è¡Œè™Ÿ */
 	private int findingStatementLineNumber;
 	
-	/** ¬O§_Ä~ÄòVisit¾ã­ÓTree */
+	/** æ˜¯å¦ç¹¼çºŒVisitæ•´å€‹Tree */
 	private boolean isKeepVisiting;
 	
-	/** ³o­ÓExpressionStatement©ÒÄİªºCompilationUnit¡CºâLine Number»İ­n¡C */
+	/** é€™å€‹ExpressionStatementæ‰€å±¬çš„CompilationUnitã€‚ç®—Line Numberéœ€è¦ã€‚ */
 	private CompilationUnit belongingCompilationUnit;
 	
 	public ExpressionStatementLineNumberFinderVisitor(CompilationUnit compilationUnit, int statementLineNumber) {
@@ -33,10 +33,10 @@ public class ExpressionStatementLineNumberFinderVisitor extends ASTVisitor {
 	
 	public boolean visit(MethodDeclaration methodDeclaration) {
 		/*
-		 * ¦pªG¤£Ä~Äòvisit¾ã­ÓTree¡A´N¦bMethodDeclarationªº¸`ÂI¾×±¼¡A
-		 * ¤£Ä~Äò©¹¤l¸`ÂI«ô³X¡A¥[§Öµ²§ôªº³t«×¡C
-		 * ³o­Ó¬O°w¹ï¨Ï¥Î¦¹ClassªºCaller­n¨D«ô³XCompilationUnitªº®É­Ô¤~¦³§@¥Î¡C
-		 * ´«¥y¸Ü»¡¡A¦pªG¥u¬O«ô³XIfStatement, TryStatement..., and so on¡A³o¬qµ{¦¡½X´N¨S®t¡C
+		 * å¦‚æœä¸ç¹¼çºŒvisitæ•´å€‹Treeï¼Œå°±åœ¨MethodDeclarationçš„ç¯€é»æ“‹æ‰ï¼Œ
+		 * ä¸ç¹¼çºŒå¾€å­ç¯€é»æ‹œè¨ªï¼ŒåŠ å¿«çµæŸçš„é€Ÿåº¦ã€‚
+		 * é€™å€‹æ˜¯é‡å°ä½¿ç”¨æ­¤Classçš„Callerè¦æ±‚æ‹œè¨ªCompilationUnitçš„æ™‚å€™æ‰æœ‰ä½œç”¨ã€‚
+		 * æ›å¥è©±èªªï¼Œå¦‚æœåªæ˜¯æ‹œè¨ªIfStatement, TryStatement..., and so onï¼Œé€™æ®µç¨‹å¼ç¢¼å°±æ²’å·®ã€‚
 		 */
 		return isKeepVisiting;
 	}

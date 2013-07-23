@@ -89,7 +89,7 @@ public class CallersLabelProvider extends LabelProvider implements ITableLabelPr
 				int offset = wrapper.getMember().getSourceRange().getOffset();
 				int length = wrapper.getMember().getSourceRange().getLength();
 
-				// ±Noffset¨ú¨ì¸Ómethodªº³Ì«á­±¡A¬O¦]¬°­Y¦³µù¸Ñ¡A«hRL·|¨ú¤£¥X¨Ó¡A«h»İ­n«ü¨ìmethod¤º
+				// å°‡offsetå–åˆ°è©²methodçš„æœ€å¾Œé¢ï¼Œæ˜¯å› ç‚ºè‹¥æœ‰è¨»è§£ï¼Œå‰‡RLæœƒå–ä¸å‡ºä¾†ï¼Œå‰‡éœ€è¦æŒ‡åˆ°methodå…§
 				offset = offset + length - 10;
 				length = 0;
 

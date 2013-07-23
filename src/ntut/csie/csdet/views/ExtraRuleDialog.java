@@ -32,20 +32,20 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * Åıuser³]©w­n°»´ú¸ÕªºDummy Handler
+ * è®“userè¨­å®šè¦åµæ¸¬è©¦çš„Dummy Handler
  * @author Shiau
  *
  */
 public class ExtraRuleDialog extends Dialog{
-	//Åã¥ÜRule¸ê°TªºTable
+	//é¡¯ç¤ºRuleè³‡è¨Šçš„Table
 	private Table displayTable;
-	//Dialog¤W¤èªºText
+	//Dialogä¸Šæ–¹çš„Text
 	private Text tempText;
-	//­×§ïItemªº«ö¶s
+	//ä¿®æ”¹Itemçš„æŒ‰éˆ•
 	private Button editBtn;
-	//¦s©ñLibrary©ÎStatementªºRule¸ê®Æ
+	//å­˜æ”¾Libraryæˆ–Statementçš„Ruleè³‡æ–™
 	private TreeMap<String, Boolean> ruleMap;
-	//¬°©ñ¸m©Ò¦³ButtonªºComposite
+	//ç‚ºæ”¾ç½®æ‰€æœ‰Buttonçš„Composite
 	private Composite btnComposite;
 
 	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
@@ -68,45 +68,45 @@ public class ExtraRuleDialog extends Dialog{
 	@Override
 	protected Control createDialogArea(Composite parent) {
 		final Composite container = (Composite) super.createDialogArea(parent);
-		//­Y§ïÅÜµøµ¡¤j¤p
+		//è‹¥æ”¹è®Šè¦–çª—å¤§å°
 		container.addControlListener(new ControlAdapter() {
 			public void controlResized(final ControlEvent e) {
 				//Resize
-				//243¬°tempText¹w³]¼e«×¡A342¬°container¹w³]¼e«×
+				//243ç‚ºtempTexté è¨­å¯¬åº¦ï¼Œ342ç‚ºcontaineré è¨­å¯¬åº¦
 				tempText.setSize(243 + container.getSize().x - 342, tempText.getSize().y);
-				//243¬°displayTable¹w³]¼e«×¡A342¬°container¹w³]¼e«×¡F150¬°displayTable¹w³]°ª«×¡A247¬°container¹w³]°ª«×
+				//243ç‚ºdisplayTableé è¨­å¯¬åº¦ï¼Œ342ç‚ºcontaineré è¨­å¯¬åº¦ï¼›150ç‚ºdisplayTableé è¨­é«˜åº¦ï¼Œ247ç‚ºcontaineré è¨­é«˜åº¦
 				displayTable.setSize(243 + container.getSize().x - 342, 150 + container.getSize().y - 247);
-				//10¬°displayTable¹w³]¦ì¸m¡A6¬°displayTable©MbtnComposite¤¤¶¡ªºªÅ¥Õªø«×
+				//10ç‚ºdisplayTableé è¨­ä½ç½®ï¼Œ6ç‚ºdisplayTableå’ŒbtnCompositeä¸­é–“çš„ç©ºç™½é•·åº¦
 				btnComposite.setLocation(10 + tempText.getSize().x + 6, btnComposite.getLocation().y);
 			}
 		});
 		container.setLayout(null);
 		
-		//Åã¥ÜTable
+		//é¡¯ç¤ºTable
 		displayTable = new Table(container, SWT.FULL_SELECTION | SWT.CHECK | SWT.MULTI | SWT.BORDER);
 		displayTable.setFont(new Font(this.getShell().getDisplay(),"Arial", 11,SWT.NONE));
 		final GridData gd_testList = new GridData(SWT.FILL, SWT.FILL, true, true);
 		displayTable.setBounds(10, 66, 243, 150);
 		displayTable.setLayoutData(gd_testList);
-		//¦pªG¿ï¾ÜªºdisplayTableªºItem§â¨ä¦WºÙÅã¥Ü¦bText¤W
+		//å¦‚æœé¸æ“‡çš„displayTableçš„ItemæŠŠå…¶åç¨±é¡¯ç¤ºåœ¨Textä¸Š
 		displayTable.addListener(SWT.Selection, new Listener(){
 			public void handleEvent(Event e){
 				int selectionIndex = displayTable.getSelectionIndex();
-				//¨¾¤î¤@¶}Dialog´N¥ı¤Ä¿ïcheckbox,¥X²{index=-1ªº±¡ªp
+				//é˜²æ­¢ä¸€é–‹Dialogå°±å…ˆå‹¾é¸checkbox,å‡ºç¾index=-1çš„æƒ…æ³
 				if(selectionIndex >= 0){
-					//§â¿ï¾ÜªºItem¨äLibrary¦WºÙÅã¥Ü¦bText¤W
+					//æŠŠé¸æ“‡çš„Itemå…¶Libraryåç¨±é¡¯ç¤ºåœ¨Textä¸Š
 					editBtn.setEnabled(true);
 					tempText.setText(displayTable.getItem(selectionIndex).getText());
 				}
 			}
 		});
-		//­Y¦bdisplayTableªºItem¤WÂI¿ï¨â¤U¡A¸õ¥X­×§ïµøµ¡
+		//è‹¥åœ¨displayTableçš„Itemä¸Šé»é¸å…©ä¸‹ï¼Œè·³å‡ºä¿®æ”¹è¦–çª—
 		displayTable.addMouseListener(new MouseAdapter() {
 			public void mouseDoubleClick(final MouseEvent e) {
 				int selectionIndex = displayTable.getSelectionIndex();
 				if (selectionIndex >= 0) {
 					String temp = displayTable.getItem(selectionIndex).getText();
-					//©I¥s­×§ïDialog
+					//å‘¼å«ä¿®æ”¹Dialog
 					EditRuleDialog dialog = new EditRuleDialog(new Shell(),temp,displayTable);
 					dialog.open();
 					tempText.setText(displayTable.getItem(selectionIndex).getText());
@@ -114,10 +114,10 @@ public class ExtraRuleDialog extends Dialog{
 			}
 		});
 
-		//©ñ¸mButtonªºcomposite
+		//æ”¾ç½®Buttonçš„composite
 		btnComposite = new Composite(container, SWT.NONE);
 
-		//Äµ§i¹Ï¥Ü©M¤å¦r
+		//è­¦å‘Šåœ–ç¤ºå’Œæ–‡å­—
 		final Label picLabel = new Label(container, SWT.NONE);
 		picLabel.setBounds(10, 222, 16, 15);
 		picLabel.setVisible(false);
@@ -127,13 +127,13 @@ public class ExtraRuleDialog extends Dialog{
 		warningLabel.setVisible(false);
 		warningLabel.setBounds(32, 222, 85, 12);
 
-		//¨Ï¥Î³£¿é¤JText
+		//ä½¿ç”¨éƒ½è¼¸å…¥Text
 		tempText = new Text(container, SWT.BORDER);
 		tempText.setFont(new Font(parent.getDisplay(), "Courier New",12,SWT.NORMAL));
 		tempText.setBounds(10, 38, 243, 22);
 		tempText.addKeyListener(new KeyAdapter() {
 			public void keyPressed(final KeyEvent e) {
-				//­YText¤@§ïÅÜ´N§âÄµ§i°T®§®ø±¼
+				//è‹¥Textä¸€æ”¹è®Šå°±æŠŠè­¦å‘Šè¨Šæ¯æ¶ˆæ‰
 				picLabel.setVisible(false);
 				warningLabel.setVisible(false);
 			}
@@ -141,17 +141,17 @@ public class ExtraRuleDialog extends Dialog{
 		
 		Label nameLabel = new Label(container, SWT.NONE);
 		nameLabel.setBounds(10, 10, 97, 22);
-		//¨Ì¬O§_¬°library©Îstatement¨Ó§ïÅÜ¤£¦Pªº½d¨Ò
+		//ä¾æ˜¯å¦ç‚ºlibraryæˆ–statementä¾†æ”¹è®Šä¸åŒçš„ç¯„ä¾‹
 		nameLabel.setText(resource.getString("detect.rule"));
 
-		//¥ş¨ú®ø«ö¶s
+		//å…¨å–æ¶ˆæŒ‰éˆ•
 		final Button clearBtn = new Button(btnComposite, SWT.NONE);
 		clearBtn.setBounds(0, 112, 68, 22);
 		clearBtn.setText(resource.getString("deselect.all"));
 		clearBtn.pack();
 		clearBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
-				//¨ú®ø¥ş³¡ªºItem
+				//å–æ¶ˆå…¨éƒ¨çš„Item
 				for (int i=0;i<displayTable.getItemCount();i++) {
 					TableItem item = displayTable.getItem(i);
 					item.setChecked(false);
@@ -160,13 +160,13 @@ public class ExtraRuleDialog extends Dialog{
 		});
 		int maxButtonWidth = clearBtn.getBounds().width;
 
-		//¥ş¿ï«ö¶s
+		//å…¨é¸æŒ‰éˆ•
 		final Button selectBtn = new Button(btnComposite, SWT.NONE);
 		selectBtn.setBounds(0, 84, maxButtonWidth, 22);
 		selectBtn.setText(resource.getString("select.all"));
 		selectBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
-				//¿ï¾Ü¥ş³¡ªºItem
+				//é¸æ“‡å…¨éƒ¨çš„Item
 				for (int i=0;i<displayTable.getItemCount();i++) {
 					TableItem item = displayTable.getItem(i);
 					item.setChecked(true);
@@ -174,14 +174,14 @@ public class ExtraRuleDialog extends Dialog{
 			}
 		});
 		
-		//·s¼W«ö¶s
+		//æ–°å¢æŒ‰éˆ•
 		Button addBtn = new Button(btnComposite, SWT.NONE);
 		addBtn.setBounds(0, 0, maxButtonWidth, 22);
 		addBtn.setText(resource.getString("add"));
 		addBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
 				boolean isWarning = addRule();
-				//­Y­«½Æ´NÅã¥ÜÄµ§i°T®§
+				//è‹¥é‡è¤‡å°±é¡¯ç¤ºè­¦å‘Šè¨Šæ¯
 				if (isWarning){
 					picLabel.setVisible(true);
 					warningLabel.setVisible(true);
@@ -189,23 +189,23 @@ public class ExtraRuleDialog extends Dialog{
 			}
 		});
 
-		//§R°£«ö¶s
+		//åˆªé™¤æŒ‰éˆ•
 		final Button removeButton = new Button(btnComposite, SWT.NONE);
 		removeButton.setBounds(0, 28, maxButtonWidth, 22);
 		removeButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e)
 			{
-				//Table¤£¬°ªÅªº¥B¦³¿ï¨ìLibrary ´N§â¿ï¾ÜªºLibraryµ¹§R±¼
+				//Tableä¸ç‚ºç©ºçš„ä¸”æœ‰é¸åˆ°Library å°±æŠŠé¸æ“‡çš„Libraryçµ¦åˆªæ‰
 				if (displayTable.getItemCount() != 0 && displayTable.getSelectionIndex()!=-1) {
 					displayTable.remove(displayTable.getSelectionIndices());
-					//§R°£®É§âText²M°£
+					//åˆªé™¤æ™‚æŠŠTextæ¸…é™¤
 					tempText.setText("");
 				}
 			}
 		});
 		removeButton.setText(resource.getString("remove"));
 
-		//­×§ïªº«ö¶s
+		//ä¿®æ”¹çš„æŒ‰éˆ•
 		editBtn = new Button(btnComposite, SWT.NONE);
 		editBtn.setBounds(0, 56, maxButtonWidth, 22);
 		editBtn.addSelectionListener(new SelectionAdapter() {
@@ -213,7 +213,7 @@ public class ExtraRuleDialog extends Dialog{
 				int selectionIndex = displayTable.getSelectionIndex();
 				if (selectionIndex >= 0) {
 					String temp = displayTable.getItem(selectionIndex).getText();
-					//©I¥s­×§ïDialog
+					//å‘¼å«ä¿®æ”¹Dialog
 					EditRuleDialog dialog = new EditRuleDialog(new Shell(),temp,displayTable);
 					dialog.open();
 					tempText.setText(displayTable.getItem(selectionIndex).getText());
@@ -223,12 +223,12 @@ public class ExtraRuleDialog extends Dialog{
 		editBtn.setText(resource.getString("edit"));
 		editBtn.setEnabled(false);
 
-		//»¡©úµøµ¡
+		//èªªæ˜è¦–çª—
 		final Button explainBtn = new Button(btnComposite, SWT.NONE);
 		explainBtn.setBounds(0, 140, maxButtonWidth, 22);
 		explainBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
-				//¸õ¥X»¡©úªºDialog
+				//è·³å‡ºèªªæ˜çš„Dialog
 				MessageDialog.openInformation(
 						new Shell(),
 						resource.getString("caption"),
@@ -240,7 +240,7 @@ public class ExtraRuleDialog extends Dialog{
 		
 		btnComposite.setBounds(259, 38, maxButtonWidth, 199);
 
-		//±N¸Ó©Ò¦³ªº°»´úLibrary¸ê®ÆÅã¥Ü¦bList
+		//å°‡è©²æ‰€æœ‰çš„åµæ¸¬Libraryè³‡æ–™é¡¯ç¤ºåœ¨List
 		setInput();
 
 		return container;
@@ -254,13 +254,13 @@ public class ExtraRuleDialog extends Dialog{
 		
 	@Override
 	protected void okPressed() {
-		//¼W¥[Rule
+		//å¢åŠ Rule
 		addRule();
-		//²M°£±¼­ì¥»ªºRule
+		//æ¸…é™¤æ‰åŸæœ¬çš„Rule
 		ruleMap.clear();
-		//¥ı±N¦Cªíªºitem¨ú¥X¨Ó
+		//å…ˆå°‡åˆ—è¡¨çš„itemå–å‡ºä¾†
 		TableItem[] temp = displayTable.getItems();
-		//¥htraverse¾ã­Ótable¬İitemªºText©M¬O§_³Q¤Ä¿ï¨ì
+		//å»traverseæ•´å€‹tableçœ‹itemçš„Textå’Œæ˜¯å¦è¢«å‹¾é¸åˆ°
 		for(int i=0;i<temp.length;i++){
 			ruleMap.put(temp[i].getText(),temp[i].getChecked());
 		}
@@ -274,30 +274,30 @@ public class ExtraRuleDialog extends Dialog{
 	
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		//Åã¥ÜDialog¼ĞÃD
+		//é¡¯ç¤ºDialogæ¨™é¡Œ
 		newShell.setText(resource.getString("extra.rules.dialog.title"));
 	}
 
 	/**
-	 * ¼W¥[Rule¸ê®Æ
+	 * å¢åŠ Ruleè³‡æ–™
 	 */
 	private boolean addRule() {
 		boolean isWarning = false;
-		//§R°£Text«e«áªÅ®æ³¡¥÷
+		//åˆªé™¤Textå‰å¾Œç©ºæ ¼éƒ¨ä»½
 		String temp = tempText.getText().trim();
 
 		if (tempText.getText().length() != 0) {			
-			//­Y¨S¦³"."ªí¥Ü¬°Method¡A¦Û¦æÀ°¨Ï¥ÎªÌ¥["*."
+			//è‹¥æ²’æœ‰"."è¡¨ç¤ºç‚ºMethodï¼Œè‡ªè¡Œå¹«ä½¿ç”¨è€…åŠ "*."
 			if (!temp.contains("."))
 				temp = "*." + temp;
 
 			boolean isExist = false;
-			//¬İLibraryªºName¦³¨S¦³­«½Æ
+			//çœ‹Libraryçš„Nameæœ‰æ²’æœ‰é‡è¤‡
 			for(int i=0;i<displayTable.getItemCount();i++) {
 				if(temp.equals(displayTable.getItem(i).getText()))
 					isExist = true;
 			}
-			//¨S¦³­«½Æ´N¥[¤J·sªºLibrary
+			//æ²’æœ‰é‡è¤‡å°±åŠ å…¥æ–°çš„Library
 			if (!isExist) {
 				TableItem item = new TableItem(displayTable,SWT.NONE);
 				item.setText(temp);
@@ -312,14 +312,14 @@ public class ExtraRuleDialog extends Dialog{
 	}
 	
 	/**
-	 * ¨ú±o³]©w°»´úªºLibrary¸ê®Æ
+	 * å–å¾—è¨­å®šåµæ¸¬çš„Libraryè³‡æ–™
 	 */
 	public TreeMap<String, Boolean> getLibMap() {
 		return ruleMap;
 	}
 	
 	/**
-	 * ±N©Ò¦³°»´ú®×¨ÒÅã¥Ü¦btable¤¤
+	 * å°‡æ‰€æœ‰åµæ¸¬æ¡ˆä¾‹é¡¯ç¤ºåœ¨tableä¸­
 	 */
 	private void setInput() {
 		Iterator<String> libIt = ruleMap.keySet().iterator();

@@ -16,8 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * ¤º®e¾¹¡C¥Ñ¥¦¨M©w­ş¨Ç¹ï¶H°O¿ıÀ³¸Ó¿é¥X¦bTreeViewer¸ÌÅã¥Ü
- * °Ñ¦ÒCallHierarchyContentProvider­×§ï¸ÎÂ×¾Çªøªºµ{¦¡
+ * å…§å®¹å™¨ã€‚ç”±å®ƒæ±ºå®šå“ªäº›å°è±¡è¨˜éŒ„æ‡‰è©²è¼¸å‡ºåœ¨TreeViewerè£¡é¡¯ç¤º
+ * åƒè€ƒCallHierarchyContentProviderä¿®æ”¹è£•è±å­¸é•·çš„ç¨‹å¼
  * @author Shiau
  */
 public class CallersContentProvider implements ITreeContentProvider {
@@ -48,8 +48,8 @@ public class CallersContentProvider implements ITreeContentProvider {
     }
 
     /**
-     * ·í¬É­±¤¤³æÀ»¬Yµ²ÂI®É¡A¥Ñ¦¹¤èªk¨M©w³Q³æÀ»µ²ÂIÀ³¸ÓÅã¥Ü­ş¨Ç¤lµ²ÂI
-     * parentElement´N¬O³Q³æÀ»ªºµ²ÂI¹ï¶H¡Cªğ¦^ªº¼Æ²Õ´N¬OÀ³Åã¥Üªº¤lµ²ÂI
+     * ç•¶ç•Œé¢ä¸­å–®æ“ŠæŸçµé»æ™‚ï¼Œç”±æ­¤æ–¹æ³•æ±ºå®šè¢«å–®æ“Šçµé»æ‡‰è©²é¡¯ç¤ºå“ªäº›å­çµé»
+     * parentElementå°±æ˜¯è¢«å–®æ“Šçš„çµé»å°è±¡ã€‚è¿”å›çš„æ•¸çµ„å°±æ˜¯æ‡‰é¡¯ç¤ºçš„å­çµé»
      */
 	public Object[] getChildren(Object parentElement) {
 
@@ -64,7 +64,7 @@ public class CallersContentProvider implements ITreeContentProvider {
                 return EMPTY_ARRAY;
             } else {
             	Object[] wrappers = fetchChildren(methodWrapper);
-            	//TODO ¥Ø«e¤£²M·¡¬°¤°»ò­n±Æ§Ç,¸ÎÂ×¾Çªø»¡¥i¥H¥ıµù¸Ñ±¼¨SÃö«Y
+            	//TODO ç›®å‰ä¸æ¸…æ¥šç‚ºä»€éº¼è¦æ’åº,è£•è±å­¸é•·èªªå¯ä»¥å…ˆè¨»è§£æ‰æ²’é—œä¿‚
 				//wrappers = CallersUtils.sortCallers(wrappers);
             	return wrappers;
             }
@@ -89,7 +89,7 @@ public class CallersContentProvider implements ITreeContentProvider {
     }
 	
     /**
-     * ¬O§_°±¤î¨ú±o
+     * æ˜¯å¦åœæ­¢å–å¾—
      * @param methodWrapper
      * @return
      */
@@ -98,7 +98,7 @@ public class CallersContentProvider implements ITreeContentProvider {
     }
 
     /**
-     * ¨ú±oelementªº¤÷µ²ÂI¡C·¥¤Ö¨Ï¥Î
+     * å–å¾—elementçš„çˆ¶çµé»ã€‚æ¥µå°‘ä½¿ç”¨
      */
     public Object getParent(Object element) {    	
         if (element instanceof MethodWrapper) {
@@ -109,8 +109,8 @@ public class CallersContentProvider implements ITreeContentProvider {
     }
 
     /**
-     * §PÂ_°Ñ¼Æelementµ²ÂI¬O§_¦³¤lµ²ÂI
-     * ªğ¦^trueªí¥Üelement¦³¤lµ²ÂI¡A«h¨ä«e­±·|Åã¥Ü¦³¡u¡Ï¡v¸¹¹Ï¼Ğ
+     * åˆ¤æ–·åƒæ•¸elementçµé»æ˜¯å¦æœ‰å­çµé»
+     * è¿”å›trueè¡¨ç¤ºelementæœ‰å­çµé»ï¼Œå‰‡å…¶å‰é¢æœƒé¡¯ç¤ºæœ‰ã€Œï¼‹ã€è™Ÿåœ–æ¨™
      */
 	public boolean hasChildren(Object element) {	
 		if (element == CallersRoot.EMPTY_ROOT) {
@@ -137,21 +137,21 @@ public class CallersContentProvider implements ITreeContentProvider {
 
 
 	/**
-	 * ¥Ñ¦¹¤èªk¨M©w¾ğªº¡u²Ä¤@¯Å¡vµ²ÂIÅã¥Ü­ş¨Ç¹ï¶H¡CinputElement¬O¥ÎTreeViewer.setInput()¤èªk
-	 * ¿é¤Jªº¨º­Ó¹ï¶H¡CObject[]¬O¤@­Ó¼Æ²Õ¡A¼Æ²Õ¤¤¤@­Ó¤¸¯À´N¬O¤@­Óµ²ÂI
+	 * ç”±æ­¤æ–¹æ³•æ±ºå®šæ¨¹çš„ã€Œç¬¬ä¸€ç´šã€çµé»é¡¯ç¤ºå“ªäº›å°è±¡ã€‚inputElementæ˜¯ç”¨TreeViewer.setInput()æ–¹æ³•
+	 * è¼¸å…¥çš„é‚£å€‹å°è±¡ã€‚Object[]æ˜¯ä¸€å€‹æ•¸çµ„ï¼Œæ•¸çµ„ä¸­ä¸€å€‹å…ƒç´ å°±æ˜¯ä¸€å€‹çµé»
 	 */
 	public Object[] getElements(Object inputElement) {
 		return getChildren(inputElement);
 	}
 
 	/**
-	 * ¾ğ³Q¾P·´®ÉÄ²µo
+	 * æ¨¹è¢«éŠ·æ¯€æ™‚è§¸ç™¼
 	 */
 	public void dispose() {
 	}
 
 	/**
-	 * ¨C¦¸TreeViewer.setInputÄ²µo
+	 * æ¯æ¬¡TreeViewer.setInputè§¸ç™¼
 	 */
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		// this.tv = (TreeViewer) viewer;

@@ -37,7 +37,7 @@ public class TryStatementExceptionsVisitor extends ASTVisitor {
 	}
 	
 	/**
-	 * ¸ÑªR¦UBlockªº½d³ò¡A¥H§Q¨C­Ó¦r¸`ÂI°µ¨Ò¥~ªºÂkÃş
+	 * è§£æå„Blockçš„ç¯„åœï¼Œä»¥åˆ©æ¯å€‹å­—ç¯€é»åšä¾‹å¤–çš„æ­¸é¡
 	 */
 	private void resolveRootTryStatementBlockRange() {
 		ASTNode tryBlock = rootTryStatement.getBody();
@@ -86,19 +86,19 @@ public class TryStatementExceptionsVisitor extends ASTVisitor {
 	}
 	
 	/* ==========================================================================
-	 * ¦bAST¸Ì­±¡A"throw e;" »P "throw new Exception(e);"
-	 * ³£ºâ¬O¤@­ÓThrowStatementªº¸`ÂI¡C
-	 * ¦ı¬O "new Exception(e)" ¬O¤@­ÓClassInstanceCreationªº¸`ÂI¡C
+	 * åœ¨ASTè£¡é¢ï¼Œ"throw e;" èˆ‡ "throw new Exception(e);"
+	 * éƒ½ç®—æ˜¯ä¸€å€‹ThrowStatementçš„ç¯€é»ã€‚
+	 * ä½†æ˜¯ "new Exception(e)" æ˜¯ä¸€å€‹ClassInstanceCreationçš„ç¯€é»ã€‚
 	 * 
-	 *  ¤U­±¨â­Óvisit¥\¯à¡A
-	 *  visit(ClassInstanceCreation node) §Æ±æ»`¶° "throw new Exception(e);" ©ß¥Xªº¨Ò¥~Ãş«¬
-	 *  visit(ThrowStatement node) §Æ±æ»`¶° "throw e;" ©ß¥Xªº¨Ò¥~Ãş«¬
+	 *  ä¸‹é¢å…©å€‹visitåŠŸèƒ½ï¼Œ
+	 *  visit(ClassInstanceCreation node) å¸Œæœ›è’é›† "throw new Exception(e);" æ‹‹å‡ºçš„ä¾‹å¤–é¡å‹
+	 *  visit(ThrowStatement node) å¸Œæœ›è’é›† "throw e;" æ‹‹å‡ºçš„ä¾‹å¤–é¡å‹
 	 ==========================================================================*/
 	
 	public boolean visit(ClassInstanceCreation node) {
-		// ¦pªG¬O¥á¥X·sªº¨Ò¥~¡A¤]­n»`¶°°_¨Ó
+		// å¦‚æœæ˜¯ä¸Ÿå‡ºæ–°çš„ä¾‹å¤–ï¼Œä¹Ÿè¦è’é›†èµ·ä¾†
 		ASTNode throwStatement = NodeUtils.getSpecifiedParentNode(node, ASTNode.THROW_STATEMENT);
-		// ¦pªG¤÷¸`ÂI¬Othrow statement¡A³o´N¬O¤@­Ó©ß¥X¨Ò¥~ªºclass instance creation
+		// å¦‚æœçˆ¶ç¯€é»æ˜¯throw statementï¼Œé€™å°±æ˜¯ä¸€å€‹æ‹‹å‡ºä¾‹å¤–çš„class instance creation
 		if(throwStatement != null) {
 			String typeQualifiedName = node.resolveTypeBinding().getQualifiedName();
 			addException(typeQualifiedName, getNodeExceptionContainer(node));
@@ -107,7 +107,7 @@ public class TryStatementExceptionsVisitor extends ASTVisitor {
 	}
 	
 	public boolean visit(ThrowStatement node) {
-		// ¦pªG¬Othrow e¡A¦¹nodeªºexpressionÀ³¸Ó¬°simple name¸`ÂI
+		// å¦‚æœæ˜¯throw eï¼Œæ­¤nodeçš„expressionæ‡‰è©²ç‚ºsimple nameç¯€é»
 		if(node.getExpression().getNodeType() != ASTNode.SIMPLE_NAME) {
 			return true;
 		}

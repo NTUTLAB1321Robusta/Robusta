@@ -29,8 +29,8 @@ public class NTQuickFix implements IMarkerResolution{
 		try {
 			String problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
 			if(problem != null && problem.equals(RLMarkerAttribute.CS_NESTED_TRY_BLOCK)){
-				// ¦]¬°µLªkª½±µ¨Ï¥ÎEclipse refactor - Extract Method,©Ò¥H¨S¦³¥ô¦ó¸Ñªk
-				//¦b³oÃä¥u·|´£¥Ü¨Ï¥ÎªÌ¨Ï¥ÎEclipse¥­¥xªº­«ºc¥\¯à
+				// å› ç‚ºç„¡æ³•ç›´æ¥ä½¿ç”¨Eclipse refactor - Extract Method,æ‰€ä»¥æ²’æœ‰ä»»ä½•è§£æ³•
+				//åœ¨é€™é‚Šåªæœƒæç¤ºä½¿ç”¨è€…ä½¿ç”¨Eclipseå¹³å°çš„é‡æ§‹åŠŸèƒ½
 			}
 		} catch (CoreException e) {		
 			logger.error("[NTQuickFix] EXCEPTION ",e);

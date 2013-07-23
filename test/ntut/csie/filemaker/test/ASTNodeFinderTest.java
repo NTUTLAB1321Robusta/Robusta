@@ -41,7 +41,7 @@ public class ASTNodeFinderTest {
 		javaFileToString = new JavaFileToString();
 		javaProjectMaker = new JavaProjectMaker(projectName);
 		javaProjectMaker.setJREDefaultContainer();
-		// ®Ú¾Ú´ú¸ÕÀÉ®×¼Ë¥»¤º®e«Ø¥ß·sªºÀÉ®×
+		// æ ¹æ“šæ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹å»ºç«‹æ–°çš„æª”æ¡ˆ
 		javaFileToString.read(NodeUtilsTestSample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(NodeUtilsTestSample.class.getPackage().getName(),
 				NodeUtilsTestSample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
@@ -55,11 +55,11 @@ public class ASTNodeFinderTest {
 		// Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin
 				.getWorkspace().getRoot().getFile(ccExamplePath)));
 		parser.setResolveBindings(true);
-		// ¨ú±oAST
+		// å–å¾—AST
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
 	}
@@ -72,50 +72,50 @@ public class ASTNodeFinderTest {
 	@Test
 	public void testGetNodeFromSpecifiedClass() throws Exception {
 		/**
-		 * ²¤­z
-		 * lineNumber = 1 ¡÷ ¸Ó¥Ø¼Ğ .java ¥ş³¡ code
-		 * lineNumber method ¡÷ ¾ã­Ó method code
-		 * lineNumber class ¡÷ ¾ã­Ó class code
-		 * lineNumber ¤À¸¹ ¡÷ null (line number not match)
-		 * lineNumber µù¸Ñ ¡÷ null
-		 * lineNumber ¤j¬A©· ¡÷ null (line number not match)
-		 * lineNumber ªÅ¥Õ¦æ¼Æ ¡÷ null
+		 * ç•¥è¿°
+		 * lineNumber = 1 â†’ è©²ç›®æ¨™ .java å…¨éƒ¨ code
+		 * lineNumber method â†’ æ•´å€‹ method code
+		 * lineNumber class â†’ æ•´å€‹ class code
+		 * lineNumber åˆ†è™Ÿ â†’ null (line number not match)
+		 * lineNumber è¨»è§£ â†’ null
+		 * lineNumber å¤§æ‹¬å¼§ â†’ null (line number not match)
+		 * lineNumber ç©ºç™½è¡Œæ•¸ â†’ null
 		 */
 		
-		//¨ú±o¸Ó¦æ¤º®e
+		//å–å¾—è©²è¡Œå…§å®¹
 		ASTMethodCollector methodCollector = new ASTMethodCollector();
 		compilationUnit.accept(methodCollector);
 		List<MethodDeclaration> list = methodCollector.getMethodList();
 		MethodDeclaration mDeclaration = list.get(1);
 		ExpressionStatement statement = (ExpressionStatement) mDeclaration.getBody().statements().get(1);
 		
-		//¿é¤Jclass«ü©w¦æ¼Æ
+		//è¼¸å…¥classæŒ‡å®šè¡Œæ•¸
 		int lineNumber = 21;
 		
-		//case#1:¤@¯ë±¡ªp
+		//case#1:ä¸€èˆ¬æƒ…æ³
 		ASTNode astNode = ASTNodeFinder.getNodeFromSpecifiedClass(NodeUtilsTestSample.class, projectName, lineNumber);
 		assertEquals(ASTNode.EXPRESSION_STATEMENT, astNode.getNodeType());
 		assertEquals(lineNumber, compilationUnit.getLineNumber(astNode.getStartPosition()));
 		assertEquals(astNode.toString(), statement.toString());
 		
-		//case#2:«ü¦Vµù¸Ñ
+		//case#2:æŒ‡å‘è¨»è§£
 		lineNumber = 10;
 		astNode = ASTNodeFinder.getNodeFromSpecifiedClass(NodeUtilsTestSample.class, projectName, lineNumber);
 		assertNull(astNode);
 		
-		//case#3:«ü¦Vmethod
+		//case#3:æŒ‡å‘method
 		lineNumber = 18;
 		astNode = ASTNodeFinder.getNodeFromSpecifiedClass(NodeUtilsTestSample.class, projectName, lineNumber);
 		assertEquals(ASTNode.METHOD_DECLARATION, astNode.getNodeType());
 		assertEquals(lineNumber, compilationUnit.getLineNumber(astNode.getStartPosition()));
 		assertEquals(astNode.toString(), mDeclaration.toString());
 		
-		//case#4:«ü¦VªÅ¥Õ
+		//case#4:æŒ‡å‘ç©ºç™½
 		lineNumber = 48;
 		astNode = ASTNodeFinder.getNodeFromSpecifiedClass(NodeUtilsTestSample.class, projectName, lineNumber);
 		assertNull(astNode);
 		
-		//case#5:¶W¹L¸Ójava¦æ¼Æ
+		//case#5:è¶…éè©²javaè¡Œæ•¸
 		lineNumber = 999999999;
 		astNode = ASTNodeFinder.getNodeFromSpecifiedClass(NodeUtilsTestSample.class, projectName, lineNumber);
 		assertNull(astNode);
@@ -123,18 +123,18 @@ public class ASTNodeFinderTest {
 	
 	@Ignore
 	public void testGetNodeFromSpecifiedClass_caseSemicolonParentheses() throws Exception {
-		//¨ú±o¸Ó¦æ¤º®e
+		//å–å¾—è©²è¡Œå…§å®¹
 		ASTMethodCollector methodCollector = new ASTMethodCollector();
 		compilationUnit.accept(methodCollector);
 //		List<MethodDeclaration> list = methodCollector.getMethodList();
 //		MethodDeclaration mDeclaration = list.get(1);
 		
-		//¿é¤Jclass«ü©w¦æ¼Æ
+		//è¼¸å…¥classæŒ‡å®šè¡Œæ•¸
 		int lineNumber = 20;
 		
-		//(©|¥¼¸Ñ¨M)
-		//Ãş¦üªºcase¦³ ";" "{" "}"
-		//case#6:«ü¦V¤À¸¹get¨ìnode¬O¥¿½Tªº¦ı¬O¦æ¼Æ¤£match¦^¶Çnull
+		//(å°šæœªè§£æ±º)
+		//é¡ä¼¼çš„caseæœ‰ ";" "{" "}"
+		//case#6:æŒ‡å‘åˆ†è™Ÿgetåˆ°nodeæ˜¯æ­£ç¢ºçš„ä½†æ˜¯è¡Œæ•¸ä¸matchå›å‚³null
 		lineNumber = 46;
 		ASTNode astNode = ASTNodeFinder.getNodeFromSpecifiedClass(NodeUtilsTestSample.class, projectName, lineNumber);
 		// FIXME the bug need to be fix.

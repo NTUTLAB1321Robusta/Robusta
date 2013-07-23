@@ -10,19 +10,19 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
 /**
- * ProcessBar°Ê§@
+ * ProcessBarå‹•ä½œ
  * @author Shiau
  */
 public class ProgressActionJob extends Job {
-	//Projectªº¸ê®Æ
+	//Projectçš„è³‡æ–™
 	private IProject project;
-	//Reportªº¸ê®Æ
+	//Reportçš„è³‡æ–™
 	private ReportModel model;
 
 	public ProgressActionJob(String name, IProject project, ReportModel model) {
 		super(name);
 		
-		//¨ú±o¸ê®Æ
+		//å–å¾—è³‡æ–™
 		this.model = model;
 		this.project = project;
 	}
@@ -36,13 +36,13 @@ public class ProgressActionJob extends Job {
 
 		monitor.beginTask("Running....", IProgressMonitor.UNKNOWN);
 
-		//«Ø¸mReport
+		//å»ºç½®Report
 		ReportBuilder buildReport = new ReportBuilder(project,model);
 		
 		long start = System.currentTimeMillis();		
 		buildReport.run();
 		long end = System.currentTimeMillis();
-		System.out.println("ªá¶O®É¶¡ "+(end - start) + " milli second.");
+		System.out.println("èŠ±è²»æ™‚é–“ "+(end - start) + " milli second.");
 
 		monitor.worked(1);
 

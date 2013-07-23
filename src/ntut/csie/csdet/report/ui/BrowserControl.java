@@ -26,48 +26,48 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Browser°Ê§@
+ * Browserå‹•ä½œ
  * @author Shiau
  */
 public class BrowserControl extends LocationAdapter {
 	private static Logger logger = LoggerFactory.getLogger(BrowserControl.class);
-	//¨Ó·½Browser
+	//ä¾†æºBrowser
 	Browser browser;
 
-	//±ı¿ï¨úSourceCodeªº±M®×¦WºÙ
+	//æ¬²é¸å–SourceCodeçš„å°ˆæ¡ˆåç¨±
 	String projectName = "";
-	//±ı¿ï¨úSourceCodeªºPackage¸ô®|
+	//æ¬²é¸å–SourceCodeçš„Packageè·¯å¾‘
 	String packagePath = "";
-	//±ı¿ï¨úSourceCodeªº¦æ¼Æ
+	//æ¬²é¸å–SourceCodeçš„è¡Œæ•¸
 	String LineString  = "";
 
-	//Ä²µo°Ê§@¬°ºô§}¤@§ïÅÜ
+	//è§¸ç™¼å‹•ä½œç‚ºç¶²å€ä¸€æ”¹è®Š
 	public void changed(final LocationEvent event) {
-		//­YBrowser¬°Null¡A¥h¨ú±oBrowser¨Ó·½
+		//è‹¥Browserç‚ºNullï¼Œå»å–å¾—Browserä¾†æº
 		if (browser == null)
 			browser = (Browser) event.getSource();
 
-		//ºô§}ÅÜ§ó¡A¶Ç¤J°T®§
+		//ç¶²å€è®Šæ›´ï¼Œå‚³å…¥è¨Šæ¯
 		String info = browser.getUrl();
 
-		//URL³Ì«á¤@½X¬°"#"¡Aªí¥Ü­nLink¨ìSourceCode
+		//URLæœ€å¾Œä¸€ç¢¼ç‚º"#"ï¼Œè¡¨ç¤ºè¦Linkåˆ°SourceCode
 		if (info.charAt(info.length()- 1) == '#')
 		{
-			//¸ÑªRURL¡A¨ú±oµ{¦¡½X¦æ¼Æ¥²­n¸ê°T
+			//è§£æURLï¼Œå–å¾—ç¨‹å¼ç¢¼è¡Œæ•¸å¿…è¦è³‡è¨Š
 			parseUrl(info);
 
-			//¨ú±oFileªºProjectName
+			//å–å¾—Fileçš„ProjectName
 			IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 			if (project != null) {
 
-				//¨ú±oClassªºPath
+				//å–å¾—Classçš„Path
 				IFile javaFile = project.getFile(new Path(packagePath));
 				if (javaFile != null) {
-					//¥´¶}FileªºEditor
+					//æ‰“é–‹Fileçš„Editor
 					IEditorPart edit = openEditor(project, javaFile);
-					//¨ú±o
+					//å–å¾—
 					Document document = getDocument(javaFile);
-					//¤Ï¥Õ¿ï¾Ü¦æ¼Æ
+					//åç™½é¸æ“‡è¡Œæ•¸
 					selectLine(edit, LineString, document);
 				}
 			}
@@ -75,9 +75,9 @@ public class BrowserControl extends LocationAdapter {
 	}
 
 	/**
-	 * ¨ú±oFileªºDocument
-	 * @param javaFile		±ı³sµ²ªº.javaÀÉ
-	 * @return				FileªºDocument
+	 * å–å¾—Fileçš„Document
+	 * @param javaFile		æ¬²é€£çµçš„.javaæª”
+	 * @return				Fileçš„Document
 	 */
 	private Document getDocument(IFile javaFile) {
 		ICompilationUnit icu = (ICompilationUnit)JavaCore.create(javaFile);
@@ -92,7 +92,7 @@ public class BrowserControl extends LocationAdapter {
 	}
 
 	/**
-	 * ¶}±ÒFileªºEditor
+	 * é–‹å•ŸFileçš„Editor
 	 * @param project
 	 * @param javaFile
 	 * @return
@@ -113,7 +113,7 @@ public class BrowserControl extends LocationAdapter {
 	}
 
 	/**
-	 * ¤Ï¥Õ¿ï¾Ü¦æ¼Æ
+	 * åç™½é¸æ“‡è¡Œæ•¸
 	 * @param edit
 	 * @param LineString
 	 * @param document
@@ -125,39 +125,39 @@ public class BrowserControl extends LocationAdapter {
 			if (sourceEditor instanceof ITextEditor) {
 				ITextEditor editor = (ITextEditor) sourceEditor;
 				
-				//±ı¤Ï¥Õªº¦æ¼Æ¸ê®Æ
+				//æ¬²åç™½çš„è¡Œæ•¸è³‡æ–™
 				IRegion lineInfo = null;
 				try {
-					//¨ú±o¦æ¼Æªº¸ê®Æ
+					//å–å¾—è¡Œæ•¸çš„è³‡æ–™
 					lineInfo = document.getLineInformation(Integer.valueOf(LineString) - 1);
 				} catch (BadLocationException e) {
 					logger.error("[BadLocation] EXCEPTION ",e);
 				}
 				
-				//¤Ï¥Õ«ü©wªº¦æ¼Æ
+				//åç™½æŒ‡å®šçš„è¡Œæ•¸
 				editor.selectAndReveal(lineInfo.getOffset(), lineInfo.getLength());
 			}
 		} catch (Exception ex) {
-			RLEHTPlugin.logError("¨ä¥¦¿ù»~¡I", ex);
+			RLEHTPlugin.logError("å…¶å®ƒéŒ¯èª¤ï¼", ex);
 		}
 	}
 
 	/**
-	 * ¸ÑªRURL¡A¨ú±oµ{¦¡½X¦æ¼Æ¥²­n¸ê°T
+	 * è§£æURLï¼Œå–å¾—ç¨‹å¼ç¢¼è¡Œæ•¸å¿…è¦è³‡è¨Š
 	 * @param info
 	 */
 	private void parseUrl(String info) {
-		//URLºô§}³W®æ¡Gfile:///..../#ProjectName/PackagePath.../ClassName.java#¦æ¼Æ#
-		//¥h±¼HTML¦ì¸m
+		//URLç¶²å€è¦æ ¼ï¼šfile:///..../#ProjectName/PackagePath.../ClassName.java#è¡Œæ•¸#
+		//å»æ‰HTMLä½ç½®
 		info = info.substring(info.indexOf("#") + 2, info.length() - 1);
-		//±M®×¦WºÙµ²§À¦ì¸m
+		//å°ˆæ¡ˆåç¨±çµå°¾ä½ç½®
 		int projectEndLocation = info.indexOf("/");
-		//Package¸ô®|µ²§À¦ì¸m
+		//Packageè·¯å¾‘çµå°¾ä½ç½®
 		int pathEndLocation = info.indexOf("#");
-		//¦æ¼Æ°_©l¦ì¸m
+		//è¡Œæ•¸èµ·å§‹ä½ç½®
 		int lineStartLocation = info.lastIndexOf("#") + 1;
 
-		///¨ú±o¸ê°T///
+		///å–å¾—è³‡è¨Š///
 		projectName = info.substring(0, projectEndLocation);
 		packagePath = info.substring(projectEndLocation, pathEndLocation);
 		LineString = info.substring(lineStartLocation);

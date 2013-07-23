@@ -226,7 +226,7 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 	}
 
 	// *************************************************************************
-	// ¨Æ¥ó³B²z
+	// äº‹ä»¶è™•ç†
 	// *************************************************************************
 
 	public void handleSelectionChanged4Editor() {
@@ -249,9 +249,9 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 						// return;
 						// }
 						// lastMethodName = method.toString();
-						//¨ú±o¨Ï¥ÎªÌ©Ò¿ï¾Ü­nCall Hierarchyªºmethod
+						//å–å¾—ä½¿ç”¨è€…æ‰€é¸æ“‡è¦Call Hierarchyçš„method
 						lastMethod = method;
-						// ¨ú±o¨Ï¥ÎªÌ¦ì©óªºProject
+						// å–å¾—ä½¿ç”¨è€…ä½æ–¼çš„Project
 						lastProject = method.getJavaProject().getProject();
 						
 						this.updateView(method);
@@ -269,8 +269,8 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 
 	protected void updateView(IMethod method) {
 		if (method != null) {
-			// ¨Ì¾ÚshowCaller¨Ó¨M©w¬O©¹¤W©Î©¹¤U°µCall Hierarchy
-			// getCallerRoot:¥Ñ¤U©¹¤Wcall,getCalleeRoot:¥Ñ¤W©¹¤Ucall
+			// ä¾æ“šshowCallerä¾†æ±ºå®šæ˜¯å¾€ä¸Šæˆ–å¾€ä¸‹åšCall Hierarchy
+			// getCallerRoot:ç”±ä¸‹å¾€ä¸Šcall,getCalleeRoot:ç”±ä¸Šå¾€ä¸‹call
 			IMember[] methodArray = new IMember[] {method};
 			MethodWrapper[] mw = showCaller ? CallHierarchy.getDefault().getCallerRoots(methodArray)
 											: CallHierarchy.getDefault().getCalleeRoots(methodArray);
@@ -279,8 +279,8 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 			 * 								 : CallHierarchy.getDefault().getCalleeRoot(method);
 			 */
 			if (mw.length == 1) {
-				// ¤£½×¬O¥Ñ¤W©¹¤U©Î¥Ñ¤U©¹¤WªºCall Hierarchy³Ì¦h³£¥ı¥u®i¶}¨â¼h¦Ó¤w
-				// ¨¾¤îmemory¤@¦¸¥Î¤Ó¦h,®e©ömemory leak
+				// ä¸è«–æ˜¯ç”±ä¸Šå¾€ä¸‹æˆ–ç”±ä¸‹å¾€ä¸Šçš„Call Hierarchyæœ€å¤šéƒ½å…ˆåªå±•é–‹å…©å±¤è€Œå·²
+				// é˜²æ­¢memoryä¸€æ¬¡ç”¨å¤ªå¤š,å®¹æ˜“memory leak
 				int expand = showCaller ? 2 : 2;
 
 				CallersRoot root = new CallersRoot(mw[0]);
@@ -336,7 +336,7 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 	}
 
 	// *************************************************************************
-	// ¨Æ¥ó³B²z
+	// äº‹ä»¶è™•ç†
 	// *************************************************************************
 
 	public void gotoSelection(ISelection selection) {
@@ -369,9 +369,9 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 				IEditorPart methodEditor = RLUtils.openInEditor(method, ACT_EDITOR_ON_SELECT);
 				JavaUI.revealInEditor(methodEditor, (IJavaElement) method);
 			} catch (JavaModelException e) {
-				RLEHTPlugin.logError("¨ú±o¸ê·½¿ù»~¡I", e);
+				RLEHTPlugin.logError("å–å¾—è³‡æºéŒ¯èª¤ï¼", e);
 			} catch (PartInitException e) {
-				RLEHTPlugin.logError("¶}±Ò½s¿è¾¹¿ù»~¡I", e);
+				RLEHTPlugin.logError("é–‹å•Ÿç·¨è¼¯å™¨éŒ¯èª¤ï¼", e);
 			}
 		}
 	}
@@ -385,11 +385,11 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 				editor.selectAndReveal(callLocation.getStart(), (callLocation.getEnd() - callLocation.getStart()));
 			}
 		} catch (PartInitException ex) {
-			RLEHTPlugin.logError("¶}±Ò½s¿è¾¹¿ù»~¡I", ex);
+			RLEHTPlugin.logError("é–‹å•Ÿç·¨è¼¯å™¨éŒ¯èª¤ï¼", ex);
 		} catch (JavaModelException ex) {
-			RLEHTPlugin.logError("¨ú±o¸ê·½¿ù»~¡I", ex);
+			RLEHTPlugin.logError("å–å¾—è³‡æºéŒ¯èª¤ï¼", ex);
 		} catch (Exception ex) {
-			RLEHTPlugin.logError("¨ä¥¦¿ù»~¡I", ex);
+			RLEHTPlugin.logError("å…¶å®ƒéŒ¯èª¤ï¼", ex);
 		}
 	}
 
@@ -398,7 +398,7 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 	}
 
 	// *************************************************************************
-	// ICheckStateListener ¨Æ¥ó³B²z BEGIN
+	// ICheckStateListener äº‹ä»¶è™•ç† BEGIN
 	// *************************************************************************
 
 	public void checkStateChanged(CheckStateChangedEvent event) {
@@ -413,7 +413,7 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 			
 			TreeItem item = this.findCheckedItem(selection, obj);
 			if (item != null) {			
-				//¦pªG¨Ï¥ÎªÌ¤Ä¿ïTree¤¤¸û¤U¼hªº¿ï¶µ,«h·|À°¥L³s¤W¼hªº¿ï¶µ³£¤Ä¿ï
+				//å¦‚æœä½¿ç”¨è€…å‹¾é¸Treeä¸­è¼ƒä¸‹å±¤çš„é¸é …,å‰‡æœƒå¹«ä»–é€£ä¸Šå±¤çš„é¸é …éƒ½å‹¾é¸
 				if (item.getChecked()) {
 					if(showCaller){
 						showCheckData(this.treeviewer.getTree().getItems(),item);
@@ -429,7 +429,7 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 						item = item.getParentItem();
 					}
 				} else {
-					//°²³]call chain ¬°A->B->C,¨Ï¥ÎªÌ±NB¨ú®ø±¼ªº¸Ü,­n±NC¦P®É¨ú®ø±¼
+					//å‡è¨­call chain ç‚ºA->B->C,ä½¿ç”¨è€…å°‡Bå–æ¶ˆæ‰çš„è©±,è¦å°‡CåŒæ™‚å–æ¶ˆæ‰
 					disableChildCheckData(item);
 				}
 			}
@@ -443,7 +443,7 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 		logger.debug("\t---->findCheckedItem BEGIN");
 		for (int i = 0, size = items.length; i < size; i++) {
 			TreeItem item = items[i];
-			//selectedData : ³Q¤Ä¿ïªº¶µ¥Ø
+			//selectedData : è¢«å‹¾é¸çš„é …ç›®
 			logger.debug("\t---->"+ i+" >> " +item.getItemCount()+":"+ selectedData + ":" + item.getData() + " = " + (selectedData == item.getData()) + " = " + (selectedData.equals(item.getData())));
 			if (selectedData == item.getData()) {
 				return item;
@@ -480,7 +480,7 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 	}
 
 	/**
-	 * ¥Î¨ÓÀË¬d¦b¥Ñ¤U©¹¤Wcall hierarchyªº®É­Ô¬O§_¿ï¾Ü¦h±ø¸ô®|
+	 * ç”¨ä¾†æª¢æŸ¥åœ¨ç”±ä¸‹å¾€ä¸Šcall hierarchyçš„æ™‚å€™æ˜¯å¦é¸æ“‡å¤šæ¢è·¯å¾‘
 	 * @param items
 	 * @param activeItem
 	 */
@@ -523,18 +523,18 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 	}
 
 	// *************************************************************************
-	// ICheckStateListener ¨Æ¥ó³B²z END
+	// ICheckStateListener äº‹ä»¶è™•ç† END
 	// *************************************************************************
 	public void handleGenSeqDiagram(boolean isShowCallerType) {
 		
 		
-		//¦bµe´`§Ç¹Ï«e¥ıÅã¥Ü³]©wµøµ¡
+		//åœ¨ç•«å¾ªåºåœ–å‰å…ˆé¡¯ç¤ºè¨­å®šè¦–çª—
 		SDDialog dialog = new SDDialog(new Shell());
 		dialog.open();
 
 //		TreeItem[] items = treeviewer.getTree().getItems();
 //		test(items);
-		//­Y¨ú®ø«h¤£µe´`§Ç¹Ï
+		//è‹¥å–æ¶ˆå‰‡ä¸ç•«å¾ªåºåœ–
 		if (!dialog.isCancel())
 			new CallersSeqDiagram().draw(lastProject, this.getSite(), this.treeviewer.getTree().getItems(),
 										isShowCallerType, dialog.isShowPackage(), dialog.isShowAllPackage(),
@@ -551,7 +551,7 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 	}
 
 	/**
-	 * §Q¥ÎGEF¦C¦L²£¥Í¥X¨Óªº´`§Ç¹Ï
+	 * åˆ©ç”¨GEFåˆ—å°ç”¢ç”Ÿå‡ºä¾†çš„å¾ªåºåœ–
 	 * @param editor
 	 */
 	public void printSequenceDiagram(IWorkbenchPart editor){		
@@ -587,10 +587,10 @@ public class CallersView extends ViewPart implements IDoubleClickListener, IChec
 		if (isShow) {
 			createRLColumn(tree);
 		} else {
-			//¨ú±oColumn
+			//å–å¾—Column
 			TreeColumn column1 = tree.getColumn(1);
 			TreeColumn column2 = tree.getColumn(2);
-			//§R°£Column
+			//åˆªé™¤Column
 			column1.dispose();
 			column2.dispose();
 		}

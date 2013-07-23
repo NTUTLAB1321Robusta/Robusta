@@ -14,16 +14,16 @@ public class ClazzTest {
 
 	@Test
 	public void testIsImplemented() {
-		// FileOutputStream¬O¦]¬°Ä~©ÓOutputStream¡A¦ÓOutputStream¦³¹ê§@Closeable
+		// FileOutputStreamæ˜¯å› ç‚ºç¹¼æ‰¿OutputStreamï¼Œè€ŒOutputStreamæœ‰å¯¦ä½œCloseable
 		assertTrue(Clazz.isImplemented(FileOutputStream.class, Closeable.class));
 
-		// InputStream¦Û¤v´N¦³¹ê§@Closeable
+		// InputStreamè‡ªå·±å°±æœ‰å¯¦ä½œCloseable
 		assertTrue(Clazz.isImplemented(InputStream.class, Closeable.class));
 
-		// File¬OObjectªº¤lÃş§O
+		// Fileæ˜¯Objectçš„å­é¡åˆ¥
 		assertFalse(Clazz.isImplemented(File.class, Closeable.class));
 
-		// ¨S¦³¹ê§@Closeableªºinterface
+		// æ²’æœ‰å¯¦ä½œCloseableçš„interface
 		assertFalse(Clazz.isImplemented(Serializable.class, Closeable.class));
 	}
 	

@@ -51,20 +51,20 @@ public class DummyHandlerVisitorTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		// ·Ç³Æ´ú¸ÕÀÉ®×¼Ë¥»¤º®e
+		// æº–å‚™æ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹
 		javaProjectMaker = new JavaProjectMaker(testProjectName);
 		javaProjectMaker.setJREDefaultContainer();
 		
-		// ·s¼W±ı¸ü¤Jªºlibrary
+		// æ–°å¢æ¬²è¼‰å…¥çš„library
 		javaProjectMaker.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR + "/log4j-1.2.15.jar");
 
-		// ­Yexample code¤¤¦³robustness notation«h¦³¦¹¦æ¥i¥HÅı½sÄ¶³q¹L
+		// è‹¥example codeä¸­æœ‰robustness notationå‰‡æœ‰æ­¤è¡Œå¯ä»¥è®“ç·¨è­¯é€šé
 		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(
 				JavaProjectMaker.FOLDERNAME_LIB_JAR,
 				JavaProjectMaker.FOLDERNAME_BIN_CLASS);
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/" + JavaProjectMaker.RL_LIBRARY_PATH);
 
-		// «Ø¥ß·sªºÀÉ®×DummyAndIgnoreExample
+		// å»ºç«‹æ–°çš„æª”æ¡ˆDummyAndIgnoreExample
 		javaFile2String = new JavaFileToString();
 		javaFile2String.read(DummyAndIgnoreExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
@@ -73,7 +73,7 @@ public class DummyHandlerVisitorTest {
 				"package " + DummyAndIgnoreExample.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		
-		// Ä~Äò«Ø¥ß´ú¸Õ¥ÎªºUserDefineDummyHandlerFish
+		// ç¹¼çºŒå»ºç«‹æ¸¬è©¦ç”¨çš„UserDefineDummyHandlerFish
 		javaFile2String.clear();
 		javaFile2String.read(UserDefineDummyHandlerFish.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
@@ -82,7 +82,7 @@ public class DummyHandlerVisitorTest {
 				"package " + UserDefineDummyHandlerFish.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		
-		// «Ø¥ßXML
+		// å»ºç«‹XML
 		dummyHandlerPatternsInXML = new String[] {
 				SmellSettings.EXTRARULE_ePrintStackTrace, SmellSettings.EXTRARULE_SystemErrPrint, 
 				SmellSettings.EXTRARULE_SystemErrPrintln, SmellSettings.EXTRARULE_SystemOutPrint, 
@@ -94,10 +94,10 @@ public class DummyHandlerVisitorTest {
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
-		// ¨ú±oAST
+		// å–å¾—AST
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
 		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnit);
@@ -106,7 +106,7 @@ public class DummyHandlerVisitorTest {
 	@After
 	public void tearDown() throws Exception {
 		deleteOldSettings();
-		// §R°£±M®×
+		// åˆªé™¤å°ˆæ¡ˆ
 		javaProjectMaker.deleteProject();
 	}
 	
@@ -121,24 +121,24 @@ public class DummyHandlerVisitorTest {
 	
 	@Test
 	public void testDetectDummyHandler() {
-		// ½T»{ªì©l­È
+		// ç¢ºèªåˆå§‹å€¼
 		assertEquals(0, dummyHandlerVisitor.getDummyList().size());
 		
-		//#1 ¥¿±`ªºDummyHandler
+		//#1 æ­£å¸¸çš„DummyHandler
 		MethodInvocation methodInvocation = ASTNodeFinder
 				.getMethodInvocationByMethodNameAndCode(compilationUnit,
 				"true_printStackTrace_public", "e.printStackTrace()").get(0);
 		dummyHandlerVisitor.detectDummyHandler(methodInvocation);
 		assertEquals(1, dummyHandlerVisitor.getDummyList().size());
 
-		//#2 ¦³throw
+		//#2 æœ‰throw
 		methodInvocation = ASTNodeFinder
 			.getMethodInvocationByMethodNameAndCode(compilationUnit,
 			"false_throwAndPrint", "e.printStackTrace()").get(0);
 		dummyHandlerVisitor.detectDummyHandler(methodInvocation);
 		assertEquals(1, dummyHandlerVisitor.getDummyList().size());
 		
-		//#3 ´ú Catch ¥~­±
+		//#3 æ¸¬ Catch å¤–é¢
 		methodInvocation = ASTNodeFinder
 		.getMethodInvocationByMethodNameAndCode(compilationUnit,
 		"true_printStackTrace_protected", "fis.read()").get(0);
@@ -147,14 +147,14 @@ public class DummyHandlerVisitorTest {
 	}
 
 	/**
-	 * ¥t¥~´ú¸Õ­Y try statement ¦ì©ó«D  try statement ¤§¤¤®É¡A¬O§_·|¥¿½T°»´ú
+	 * å¦å¤–æ¸¬è©¦è‹¥ try statement ä½æ–¼é  try statement ä¹‹ä¸­æ™‚ï¼Œæ˜¯å¦æœƒæ­£ç¢ºåµæ¸¬
 	 * @throws Exception 
 	 */
 	@Test
 	public void testDetectDummyHandlerWithTryStatementInNonTryStatement() throws Exception {
 		CompilationUnit compilationUnitWithTSINTS;
 		
-		// ·s«Ø¥ß´ú¸Õ¥Îªº DummyHandlerExampleWithTryStatementInNonTryStatement
+		// æ–°å»ºç«‹æ¸¬è©¦ç”¨çš„ DummyHandlerExampleWithTryStatementInNonTryStatement
 		javaFile2String.clear();
 		javaFile2String.read(DummyHandlerExampleWithTryStatementInNonTryStatement.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
@@ -167,21 +167,21 @@ public class DummyHandlerVisitorTest {
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
-		// ¨ú±oAST
+		// å–å¾—AST
 		compilationUnitWithTSINTS = (CompilationUnit) parser.createAST(null); 
 		compilationUnitWithTSINTS.recordModifications();
 		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnitWithTSINTS);
 
-		// ½T»{ªì©l­È
+		// ç¢ºèªåˆå§‹å€¼
 		assertEquals(0, dummyHandlerVisitor.getDummyList().size());
 		
 		// do this test
 		compilationUnitWithTSINTS.accept(dummyHandlerVisitor);
 		
-		// ÅçÃÒÁ`¦@§ì¨ì´X­Óbad smell
+		// é©—è­‰ç¸½å…±æŠ“åˆ°å¹¾å€‹bad smell
 		assertEquals(2, dummyHandlerVisitor.getDummyList().size());
 	}
 	
@@ -189,7 +189,7 @@ public class DummyHandlerVisitorTest {
 	public void testDetectDummyHandlerWithNestedTryStatement() throws Exception {
 		CompilationUnit compilationUnitWithTSINTS;
 		
-		// ·s«Ø¥ß´ú¸Õ¥Îªº DummyHandlerWithNestedTryStatement
+		// æ–°å»ºç«‹æ¸¬è©¦ç”¨çš„ DummyHandlerWithNestedTryStatement
 		javaFile2String.clear();
 		javaFile2String.read(DummyHandlerWithNestedTryStatement.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
@@ -202,21 +202,21 @@ public class DummyHandlerVisitorTest {
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
-		// ¨ú±oAST
+		// å–å¾—AST
 		compilationUnitWithTSINTS = (CompilationUnit) parser.createAST(null); 
 		compilationUnitWithTSINTS.recordModifications();
 		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnitWithTSINTS);
 
-		// ½T»{ªì©l­È
+		// ç¢ºèªåˆå§‹å€¼
 		assertEquals(0, dummyHandlerVisitor.getDummyList().size());
 		
 		// do this test
 		compilationUnitWithTSINTS.accept(dummyHandlerVisitor);
 		
-		// ÅçÃÒÁ`¦@§ì¨ì´X­Óbad smell
+		// é©—è­‰ç¸½å…±æŠ“åˆ°å¹¾å€‹bad smell
 		assertEquals(6, dummyHandlerVisitor.getDummyList().size());
 	}
 	
@@ -225,7 +225,7 @@ public class DummyHandlerVisitorTest {
 		Method method = DummyHandlerVisitor.class.getDeclaredMethod("addDummyHandlerSmellInfo", MethodInvocation.class);
 		method.setAccessible(true);
 		
-		// ½T»{ªì©l­È
+		// ç¢ºèªåˆå§‹å€¼
 		setEmptySetting();
 		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnit);
 		compilationUnit.accept(dummyHandlerVisitor);
@@ -234,7 +234,7 @@ public class DummyHandlerVisitorTest {
 		// ePrintStackTrace case
 		dummyHandlerPatternsInXML = new String[] {SmellSettings.EXTRARULE_ePrintStackTrace};
 		setNewSettingsWithExtraRules(dummyHandlerPatternsInXML);
-		//   ¤À§O´ú¸Õ¡G¥ş³¡¨Ò¤l¡B²Å¦X¨Ò¤l¡B¤£²Å¦X¨Ò¤l ¬O§_¦³§ì¥X
+		//   åˆ†åˆ¥æ¸¬è©¦ï¼šå…¨éƒ¨ä¾‹å­ã€ç¬¦åˆä¾‹å­ã€ä¸ç¬¦åˆä¾‹å­ æ˜¯å¦æœ‰æŠ“å‡º
 		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnit);
 		compilationUnit.accept(dummyHandlerVisitor);
 		assertEquals(10, dummyHandlerVisitor.getDummyList().size());
@@ -250,7 +250,7 @@ public class DummyHandlerVisitorTest {
 		Method method = DummyHandlerVisitor.class.getDeclaredMethod("addDummyHandlerSmellInfo", MethodInvocation.class);
 		method.setAccessible(true);
 		
-		// ½T»{ªì©l­È
+		// ç¢ºèªåˆå§‹å€¼
 		setEmptySetting();
 		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnit);
 		compilationUnit.accept(dummyHandlerVisitor);
@@ -260,7 +260,7 @@ public class DummyHandlerVisitorTest {
 				SmellSettings.EXTRARULE_SystemErrPrint, SmellSettings.EXTRARULE_SystemErrPrintln,
 				SmellSettings.EXTRARULE_SystemOutPrint, SmellSettings.EXTRARULE_SystemOutPrint};
 		setNewSettingsWithExtraRules(dummyHandlerPatternsInXML);
-		//   ¤À§O´ú¸Õ¡G¥ş³¡¨Ò¤l¡B²Å¦X¨Ò¤l¡B¤£²Å¦X¨Ò¤l ¬O§_¦³§ì¥X
+		//   åˆ†åˆ¥æ¸¬è©¦ï¼šå…¨éƒ¨ä¾‹å­ã€ç¬¦åˆä¾‹å­ã€ä¸ç¬¦åˆä¾‹å­ æ˜¯å¦æœ‰æŠ“å‡º
 		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnit);
 		compilationUnit.accept(dummyHandlerVisitor);
 		assertEquals(6, dummyHandlerVisitor.getDummyList().size());
@@ -289,7 +289,7 @@ public class DummyHandlerVisitorTest {
 		Method method = DummyHandlerVisitor.class.getDeclaredMethod("addDummyHandlerSmellInfo", MethodInvocation.class);
 		method.setAccessible(true);
 		
-		// ½T»{ªì©l­È
+		// ç¢ºèªåˆå§‹å€¼
 		setEmptySetting();
 		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnit);
 		compilationUnit.accept(dummyHandlerVisitor);
@@ -297,7 +297,7 @@ public class DummyHandlerVisitorTest {
 		// JavaUtilLoggingLogger case
 		dummyHandlerPatternsInXML = new String[] {SmellSettings.EXTRARULE_JavaUtilLoggingLogger};
 		setNewSettingsWithExtraRules(dummyHandlerPatternsInXML);
-		//   ¤À§O´ú¸Õ¡G¥ş³¡¨Ò¤l¡B²Å¦X¨Ò¤l¡B¤£²Å¦X¨Ò¤l ¬O§_¦³§ì¥X
+		//   åˆ†åˆ¥æ¸¬è©¦ï¼šå…¨éƒ¨ä¾‹å­ã€ç¬¦åˆä¾‹å­ã€ä¸ç¬¦åˆä¾‹å­ æ˜¯å¦æœ‰æŠ“å‡º
 		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnit);
 		compilationUnit.accept(dummyHandlerVisitor);
 		assertEquals(2, dummyHandlerVisitor.getDummyList().size());
@@ -326,7 +326,7 @@ public class DummyHandlerVisitorTest {
 		Method method = DummyHandlerVisitor.class.getDeclaredMethod("addDummyHandlerSmellInfo", MethodInvocation.class);
 		method.setAccessible(true);
 		
-		// ½T»{ªì©l­È
+		// ç¢ºèªåˆå§‹å€¼
 		setEmptySetting();
 		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnit);
 		compilationUnit.accept(dummyHandlerVisitor);
@@ -334,7 +334,7 @@ public class DummyHandlerVisitorTest {
 		// OrgApacheLog4j case
 		dummyHandlerPatternsInXML = new String[] {SmellSettings.EXTRARULE_OrgApacheLog4j};
 		setNewSettingsWithExtraRules(dummyHandlerPatternsInXML);
-		//   ¤À§O´ú¸Õ¡G¥ş³¡¨Ò¤l¡B²Å¦X¨Ò¤l¡B¤£²Å¦X¨Ò¤l ¬O§_¦³§ì¥X
+		//   åˆ†åˆ¥æ¸¬è©¦ï¼šå…¨éƒ¨ä¾‹å­ã€ç¬¦åˆä¾‹å­ã€ä¸ç¬¦åˆä¾‹å­ æ˜¯å¦æœ‰æŠ“å‡º
 		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnit);
 		compilationUnit.accept(dummyHandlerVisitor);
 		assertEquals(1, dummyHandlerVisitor.getDummyList().size());
@@ -355,27 +355,27 @@ public class DummyHandlerVisitorTest {
 	}
 
 	/**
-	 * ´ú¸Õ·í¨Ï¥ÎªÌ¦Û­qªºtype1¬O§_¯à§ì¨ìOuter class
-	 * ¥¼´ú¸Õ§¹¦¨
+	 * æ¸¬è©¦ç•¶ä½¿ç”¨è€…è‡ªè¨‚çš„type1æ˜¯å¦èƒ½æŠ“åˆ°Outer class
+	 * æœªæ¸¬è©¦å®Œæˆ
 	 */
 	@Test
 	public void testAddDummyHandlerSmellInfoForUserPatternType1() {
 		String testClassPattern = UserDefineDummyHandlerFish.class.getName() + ".*";
 		
-		// ½T»{ªì©l­È
+		// ç¢ºèªåˆå§‹å€¼
 		setEmptySetting();
 		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnit);
 		compilationUnit.accept(dummyHandlerVisitor);
 		assertEquals(0, dummyHandlerVisitor.getDummyList().size());
 
-		// ½T»{¥ş³¡ªºExample¤¤«ê¦³°»´ú¨ì¨â¦¸©I¥s
+		// ç¢ºèªå…¨éƒ¨çš„Exampleä¸­æ°æœ‰åµæ¸¬åˆ°å…©æ¬¡å‘¼å«
 		smellSettings.addDummyHandlerPattern(testClassPattern, true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnit);
 		compilationUnit.accept(dummyHandlerVisitor);
 		assertEquals(2, dummyHandlerVisitor.getDummyList().size());
 		
-		// ½T»{·í¨Ï¥ÎªÌ¥¼¤Ä¿ï®É¤£·|°»´ú¨ì
+		// ç¢ºèªç•¶ä½¿ç”¨è€…æœªå‹¾é¸æ™‚ä¸æœƒåµæ¸¬åˆ°
 		setEmptySetting();
 		smellSettings.addDummyHandlerPattern(testClassPattern, false);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
@@ -386,7 +386,7 @@ public class DummyHandlerVisitorTest {
 	
 	@Test
 	public void testAddDummyHandlerSmellInfoWithUserDefinedPatternAndDetecting() {
-		// ¨Ï¥ÎªÌ¦Û©w¸q *.toString ªºPattern¡A¨Ã¥B­n¨D­n°»´ú
+		// ä½¿ç”¨è€…è‡ªå®šç¾© *.toString çš„Patternï¼Œä¸¦ä¸”è¦æ±‚è¦åµæ¸¬
 		setEmptySetting();
 		smellSettings.addDummyHandlerPattern("*.toString", true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
@@ -396,7 +396,7 @@ public class DummyHandlerVisitorTest {
 
 		MethodInvocation mi = null;
 
-		// ²Å¦X *.toString ªºµ{¦¡½X -> e.toString()
+		// ç¬¦åˆ *.toString çš„ç¨‹å¼ç¢¼ -> e.toString()
 		mi = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(
 				compilationUnit, "true_systemOutPrintlnWithoutE",
 				"e.toString()").get(0);
@@ -404,7 +404,7 @@ public class DummyHandlerVisitorTest {
 		dummyHandlerVisitor.detectDummyHandler(mi);
 		assertEquals(1, dummyHandlerVisitor.getDummyList().size());
 
-		// ¤£²Å¦X *.toString ªºµ{¦¡½X -> e.toString.toCharArray()
+		// ä¸ç¬¦åˆ *.toString çš„ç¨‹å¼ç¢¼ -> e.toString.toCharArray()
 		mi = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(
 				compilationUnit, "true_systemOutPrintlnWithoutE",
 				"e.toString().toCharArray()").get(0);
@@ -415,7 +415,7 @@ public class DummyHandlerVisitorTest {
 	
 	@Test
 	public void testAddDummyHandlerSmellInfoWithUserDefinedPatternButNotDetecting() { 
-		// ¨Ï¥ÎªÌ¦³¦Û©w¸q *.toString ªºPattern¡A¦ı¬O¤£­n°»´ú
+		// ä½¿ç”¨è€…æœ‰è‡ªå®šç¾© *.toString çš„Patternï¼Œä½†æ˜¯ä¸è¦åµæ¸¬
 		setEmptySetting();
 		smellSettings.addDummyHandlerPattern("*.toString", false);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
@@ -423,7 +423,7 @@ public class DummyHandlerVisitorTest {
 		compilationUnit.accept(dummyHandlerVisitor);
 		assertEquals(0, dummyHandlerVisitor.getDummyList().size());
 		
-		// ¨Ï¥ÎªÌ¿é¤J§ï¬° *.toString(), ¤£·|³Qµø¦P¬O *.toString
+		// ä½¿ç”¨è€…è¼¸å…¥æ”¹ç‚º *.toString(), ä¸æœƒè¢«è¦–åŒæ˜¯ *.toString
 		setEmptySetting();
 		smellSettings.addDummyHandlerPattern("*.toString()", true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
@@ -433,8 +433,8 @@ public class DummyHandlerVisitorTest {
 	}
 
 	/**
-	 * ´ú¸Õ·í¨Ï¥ÎªÌ¦Û­qªºtype3¬O§_¯à§ì¨ì
-	 * ¦P®É´ú¸ÕaddDummyHandlerSmellInfo()¤¤¡A¹J¨ì§t¦³"<>"library·|¦Û°ÊÂà¦¨"<"¤§«eªº¤l¦r¦ê
+	 * æ¸¬è©¦ç•¶ä½¿ç”¨è€…è‡ªè¨‚çš„type3æ˜¯å¦èƒ½æŠ“åˆ°
+	 * åŒæ™‚æ¸¬è©¦addDummyHandlerSmellInfo()ä¸­ï¼Œé‡åˆ°å«æœ‰"<>"libraryæœƒè‡ªå‹•è½‰æˆ"<"ä¹‹å‰çš„å­å­—ä¸²
 	 */
 	@Test
 	public void testAddDummyHandlerSmellInfoForUserPatternType3WithBracket() {
@@ -452,14 +452,14 @@ public class DummyHandlerVisitorTest {
 		TryStatement tryStatement;
 		CatchClause catchStatement;
 
-		// ´ú¸Õ ²Å¦Xªº¨Ò¤l ¬O§_·|§ì¥X
+		// æ¸¬è©¦ ç¬¦åˆçš„ä¾‹å­ æ˜¯å¦æœƒæŠ“å‡º
 		MethodDeclaration md = null;
 		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "false_throwAndPrint");
 		tryStatement = (TryStatement) md.getBody().statements().get(0);
 		catchStatement = (CatchClause) tryStatement.catchClauses().get(0);
 		assertTrue(dummyHandlerVisitor.isThrowStatementInCatchClause(catchStatement));
 		
-		// ´ú¸Õ ¤£²Å¦X¨Ò¤l ¬O§_·|§ì¥X
+		// æ¸¬è©¦ ä¸ç¬¦åˆä¾‹å­ æ˜¯å¦æœƒæŠ“å‡º
 		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "true_DummyHandlerTryNestedTry");
 		tryStatement = (TryStatement) md.getBody().statements().get(1);
 		catchStatement = (CatchClause) tryStatement.catchClauses().get(0);

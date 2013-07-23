@@ -6,8 +6,8 @@ import ntut.csie.robusta.agile.exception.RTag;
 import ntut.csie.robusta.agile.exception.Robustness;
 
 /**
- * ³o­ÓClass¨S¦³Ä~©ÓCloseable¡A¦ı¬O¦³closeªºmethod¡A
- * ¦Ó¥Bcloseªºmethod¤£·|©ß¥X¨Ò¥~¡C
+ * é€™å€‹Classæ²’æœ‰ç¹¼æ‰¿Closeableï¼Œä½†æ˜¯æœ‰closeçš„methodï¼Œ
+ * è€Œä¸”closeçš„methodä¸æœƒæ‹‹å‡ºä¾‹å¤–ã€‚
  * @author Charles
  *
  */

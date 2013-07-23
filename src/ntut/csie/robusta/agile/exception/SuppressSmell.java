@@ -11,18 +11,18 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Documented
-// PARAMETER§R±¼¡A¦bcatch¸Ì­±ªºannotation¥Îant javac·|compile¤£¹L
+// PARAMETERåˆªæ‰ï¼Œåœ¨catchè£¡é¢çš„annotationç”¨ant javacæœƒcompileä¸é
 @Target({ METHOD, PARAMETER, CONSTRUCTOR, LOCAL_VARIABLE })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SuppressSmell {
-	/* annotation¸Ì­±¤£¯à¦³¹L¦h¸ê°T¡A§_«hant javac·|compile¤£¹L 
-	//ignore exceptionªºtype
+	/* annotationè£¡é¢ä¸èƒ½æœ‰éå¤šè³‡è¨Šï¼Œå¦å‰‡ant javacæœƒcompileä¸é 
+	//ignore exceptionçš„type
 	public static final String CS_EMPTY_CATCH_BLOCK = "Empty_Catch_Block";
 	
-	//Dummy Handlerªºtype
+	//Dummy Handlerçš„type
 	public static final String CS_DUMMY_HANDLER = "Dummy_Handler";
 	
-	//Nested Try Blockªºtype
+	//Nested Try Blockçš„type
 	public static final String CS_NESTED_TRY_BLOCK = "Nested_Try_Block";
 	
 	//Unprotected Main Program

@@ -100,7 +100,7 @@ public class ASTHandler {
 		}
 		if (root != null) {
 
-			ConsoleLog.debug("[ASTHandler][createAST]" + ((IJavaElement) input).getElementName() + "--->ªá¶O¡G" + (endTime - startTime) + " ms");
+			ConsoleLog.debug("[ASTHandler][createAST]" + ((IJavaElement) input).getElementName() + "--->èŠ±è²»ï¼š" + (endTime - startTime) + " ms");
 		}
 		return root;
 	}
@@ -127,10 +127,10 @@ public class ASTHandler {
 	
 
 	/**
-	 * §PÂ_¬O§_¬°Checked Exception
+	 * åˆ¤æ–·æ˜¯å¦ç‚ºChecked Exception
 	 * 
 	 * @param typeBinding
-	 * @return Y:¬OChecked Exception N:§_
+	 * @return Y:æ˜¯Checked Exception N:å¦
 	 */
 	public static boolean isCheckedException(ITypeBinding typeBinding) {
 		try {
@@ -142,12 +142,12 @@ public class ASTHandler {
 	}
 
 	/**
-	 * ¬O§_¬°«ü©wÃþ«¬ªº¹ê¨Ò
+	 * æ˜¯å¦ç‚ºæŒ‡å®šé¡žåž‹çš„å¯¦ä¾‹
 	 * 
 	 * @param typeBinding
 	 * @param typeName
-	 *            «ü©w¤§Ãþ«¬¦WºÙ(§¹¾ã¦WºÙ)
-	 * @return Y:¬O N:§_
+	 *            æŒ‡å®šä¹‹é¡žåž‹åç¨±(å®Œæ•´åç¨±)
+	 * @return Y:æ˜¯ N:å¦
 	 */
 	public static boolean isInstance(ITypeBinding typeBinding, String typeName) {
 		
@@ -160,7 +160,7 @@ public class ASTHandler {
 			return true;
 		}
 
-		// §PÂ_¤÷Ãþ§O
+		// åˆ¤æ–·çˆ¶é¡žåˆ¥
 		ITypeBinding superClass = typeBinding.getSuperclass();
 		if (superClass != null) {
 			if (superClass.getQualifiedName().equals(typeName)) {
@@ -168,7 +168,7 @@ public class ASTHandler {
 			}
 		}
 
-		// §PÂ_¤¶­±
+		// åˆ¤æ–·ä»‹é¢
 		ITypeBinding[] interfaceType = typeBinding.getInterfaces();
 		if (interfaceType != null && interfaceType.length > 0) {
 			for (int i = 0, size = interfaceType.length; i < size; i++) {

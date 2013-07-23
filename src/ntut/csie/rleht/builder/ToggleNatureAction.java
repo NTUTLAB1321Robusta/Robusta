@@ -80,7 +80,7 @@ public class ToggleNatureAction implements IObjectActionDelegate {
 			IProjectDescription description = project.getDescription();
 			String[] natures = description.getNatureIds();
 
-			// ¨S¦³³]©wÀÉ¦s¦b®É¡AÀ°¨Ï¥ÎªÌ¹w³]¬°©Ò¦³ªº±ø¥ó³£¤Ä¿ï
+			// æ²’æœ‰è¨­å®šæª”å­˜åœ¨æ™‚ï¼Œå¹«ä½¿ç”¨è€…é è¨­ç‚ºæ‰€æœ‰çš„æ¢ä»¶éƒ½å‹¾é¸
 			SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 			smellSettings.activateAllConditions(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 			
@@ -93,7 +93,7 @@ public class ToggleNatureAction implements IObjectActionDelegate {
 					description.setNatureIds(newNatures);
 					project.setDescription(description, null);
 					
-					// §R°£Maker
+					// åˆªé™¤Maker
 					project.accept(new RLResourceVisitor());
 					return;
 				}

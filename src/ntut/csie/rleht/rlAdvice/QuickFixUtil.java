@@ -29,7 +29,7 @@ import org.eclipse.jdt.core.dom.TypeLiteral;
 
 
 /**
- * »`¶°¤Fquickfix®É¡A±`¥Îªº­×§ï°Ê§@
+ * è’é›†äº†quickfixæ™‚ï¼Œå¸¸ç”¨çš„ä¿®æ”¹å‹•ä½œ
  * @author Charles
  * @version 0.0.1
  */
@@ -40,15 +40,15 @@ public class QuickFixUtil {
 
 	/**
 	 * @see ntut.csie.csdet.quickfix.DHQuickFix#deleteStatement
-	 * ²M°£¯S©wªºExpressionStatement
-	 * ¥Ø«e³Ì±`¥Î¨Ó²M°£System.out.print / printStackTrace
+	 * æ¸…é™¤ç‰¹å®šçš„ExpressionStatement
+	 * ç›®å‰æœ€å¸¸ç”¨ä¾†æ¸…é™¤System.out.print / printStackTrace
 	 * @param statements
 	 * @param delStrings
 	 */
 	public void deleteStatement(List<Statement> statements, String[] delStrings) {
 		if(statements.size() != 0) {
 			for(int i = 0; i<statements.size(); i++) {
-				//TODO ·Q¿ìªk§O¥Îinstanceof
+				//TODO æƒ³è¾¦æ³•åˆ¥ç”¨instanceof
 				if(statements.get(i) instanceof ExpressionStatement) {
 					ExpressionStatement expStatement = (ExpressionStatement) statements.get(i);
 					for(int j=0; j<delStrings.length; j++) {
@@ -65,18 +65,18 @@ public class QuickFixUtil {
 	
 	/**
 	 * @see ntut.csie.csdet.quickfix.DHQuickFix#addAnnotationRoot
-	 * ¦bMethod ¤W­±¡A¼W¥[RL Annotation¡]¤@¨Ö§âclass import¶i¨Ó¡^
+	 * åœ¨Method ä¸Šé¢ï¼Œå¢åŠ RL Annotationï¼ˆä¸€ä½µæŠŠclass importé€²ä¾†ï¼‰
 	 * @param actRoot
-	 * @param currentMethodDeclarationNode ¥²¶·¬OMethodDeclarationªºASTNode
-	 * @param rlValue robustness levelªº­È
-	 * @param exceptionClass ¨Ò¥~ªºÃş§O
+	 * @param currentMethodDeclarationNode å¿…é ˆæ˜¯MethodDeclarationçš„ASTNode
+	 * @param rlValue robustness levelçš„å€¼
+	 * @param exceptionClass ä¾‹å¤–çš„é¡åˆ¥
 	 */
 	@SuppressWarnings("unchecked")
 	public void addAnnotationRoot(CompilationUnit actRoot,
 			ASTNode currentMethodDeclarationNode, int rlValue,
 			String exceptionClass) {
-		// ­n«Ø¥ß@Robustness(value={@RTag(level=1, exception=java.lang.RuntimeException.class)})³o¼ËªºAnnotation
-		// «Ø¥ßAnnotation root
+		// è¦å»ºç«‹@Robustness(value={@RTag(level=1, exception=java.lang.RuntimeException.class)})é€™æ¨£çš„Annotation
+		// å»ºç«‹Annotation root
 		
 		AST ast = currentMethodDeclarationNode.getAST();
 		NormalAnnotation root = ast.newNormalAnnotation();
@@ -96,8 +96,8 @@ public class QuickFixUtil {
 			rlary.expressions().add(getRLAnnotation(ast, rlValue, exceptionClass));
 		} else {
 			for (RLMessage rlmsg : currentMethodRLList) {
-				// §âÂÂªºannotation¥[¶i¥h
-				// §PÂ_¦pªG¹J¨ì­«½Æªº´N¤£­n¥[annotation
+				// æŠŠèˆŠçš„annotationåŠ é€²å»
+				// åˆ¤æ–·å¦‚æœé‡åˆ°é‡è¤‡çš„å°±ä¸è¦åŠ annotation
 				
 				if((!rlmsg.getRLData().getExceptionType().toString().contains(exceptionClass)) && (rlmsg.getRLData().getLevel() == rlValue))				
 					rlary.expressions().add(getRLAnnotation(ast, rlmsg.getRLData().getLevel(), rlmsg.getRLData().getExceptionType()));	
@@ -106,7 +106,7 @@ public class QuickFixUtil {
 			
 			List<IExtendedModifier> modifiers = method.modifiers();
 			for (int i = 0, size = modifiers.size(); i < size; i++) {
-				// §ä¨ìÂÂ¦³ªºannotation«á±N¥¦²¾°£
+				// æ‰¾åˆ°èˆŠæœ‰çš„annotationå¾Œå°‡å®ƒç§»é™¤
 				if (modifiers.get(i).isAnnotation() && modifiers.get(i).toString().indexOf("Robustness") != -1) {
 					method.modifiers().remove(i);
 					break;
@@ -116,20 +116,20 @@ public class QuickFixUtil {
 		if (rlary.expressions().size() > 0) {
 			method.modifiers().add(0, root);
 		}
-		// ±NRLªºlibrary¥[¶i¨Ó
+		// å°‡RLçš„libraryåŠ é€²ä¾†
 		addImportDeclaration(actRoot);
 	}
 	
 	/**
 	 * @see ntut.csie.csdet.quickfix.DHQuickFix#addImportDeclaration
-	 * import Robustness & Tag class¡A¥H§Qannotation¨Ï¥Î
+	 * import Robustness & Tag classï¼Œä»¥åˆ©annotationä½¿ç”¨
 	 * @param actRoot
 	 */
 	@SuppressWarnings("unchecked")
 	private void addImportDeclaration(CompilationUnit actRoot) {
-		// §PÂ_¬O§_¤w¸gImport Robustness¤ÎRLªº«Å§i
+		// åˆ¤æ–·æ˜¯å¦å·²ç¶“Import RobustnessåŠRLçš„å®£å‘Š
 		List<ImportDeclaration> importList = actRoot.imports();
-		// ¬O§_¤w¦s¦bRobustness¤ÎRLªº«Å§i
+		// æ˜¯å¦å·²å­˜åœ¨RobustnessåŠRLçš„å®£å‘Š
 		boolean isImportRobustnessClass = false;
 		boolean isImportRLClass = false;
 
@@ -155,14 +155,14 @@ public class QuickFixUtil {
 	
 	/**
 	 * @see ntut.csie.csdet.quickfix.DHQuickFix#getRLAnnotation
-	 * ²£¥ÍRL Annotation¤§RL¸ê®Æ
+	 * ç”¢ç”ŸRL Annotationä¹‹RLè³‡æ–™
 	 * @param ast: AST Object
-	 * @param levelVal: ±j°·«×µ¥¯Å
-	 * @param excption: ¨Ò¥~Ãş§O
+	 * @param levelVal: å¼·å¥åº¦ç­‰ç´š
+	 * @param excption: ä¾‹å¤–é¡åˆ¥
 	 * @return NormalAnnotation AST Node
 	 */
 	private NormalAnnotation getRLAnnotation(AST ast, int levelVal,String excption) {
-		//­n«Ø¥ß@Robustness(value={@RTag(level=1, exception=java.lang.RuntimeException.class)})³o¼ËªºAnnotation
+		//è¦å»ºç«‹@Robustness(value={@RTag(level=1, exception=java.lang.RuntimeException.class)})é€™æ¨£çš„Annotation
 		NormalAnnotation rl = ast.newNormalAnnotation();
 		rl.setTypeName(ast.newSimpleName("RTag"));
 
@@ -188,26 +188,26 @@ public class QuickFixUtil {
 
 	/**
 	 * @see ntut.csie.csdet.quickfix.DHQuickFix#addThrowStatement
-	 * ¦bCatchClause¸Ì­±¡A¼W¥[throw xxxException
+	 * åœ¨CatchClauseè£¡é¢ï¼Œå¢åŠ throw xxxException
 	 * @param cc
 	 * @param currentMethodDeclarationNode
 	 * @param exceptionClass
 	 */
 	public void addThrowStatement(ASTNode cc, AST currentMethodDeclarationNode, String exceptionClass) {
-		// ¨ú±o¸Ócatch()¤¤ªºexception variable
+		// å–å¾—è©²catch()ä¸­çš„exception variable
 		SingleVariableDeclaration svd = (SingleVariableDeclaration) cc.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
 		CatchClause clause = (CatchClause) cc;
-		// ¦Û¦æ«Ø¥ß¤@­Óthrow statement¥[¤J
+		// è‡ªè¡Œå»ºç«‹ä¸€å€‹throw statementåŠ å…¥
 		ThrowStatement throwStatement = currentMethodDeclarationNode.newThrowStatement();
 		
-		// ±Nthrowªºvariable¶Ç¤J
+		// å°‡throwçš„variableå‚³å…¥
 		ClassInstanceCreation cic = currentMethodDeclarationNode.newClassInstanceCreation();
 		// throw new RuntimeException()
 		cic.setType(currentMethodDeclarationNode.newSimpleType(currentMethodDeclarationNode.newSimpleName(exceptionClass)));
-		// ±Nthrow new RuntimeException(ex)¬A¸¹¤¤¥[¤J°Ñ¼Æ
+		// å°‡throw new RuntimeException(ex)æ‹¬è™Ÿä¸­åŠ å…¥åƒæ•¸
 		cic.arguments().add(currentMethodDeclarationNode.newSimpleName(svd.resolveBinding().getName()));
 
-		// ±N·s«Ø¥ßªº¸`ÂI¼g¦^
+		// å°‡æ–°å»ºç«‹çš„ç¯€é»å¯«å›
 		throwStatement.setExpression(cic);
 		clause.getBody().statements().add(throwStatement);
 	}
@@ -216,21 +216,21 @@ public class QuickFixUtil {
 		actRoot.recordModifications();
 		AST ast = currentMethodNode.getAST();
 
-		// ·Ç³Æ¦bCatch Caluse¤¤¥[¤Jthrow exception
-		// ¦¬¶°¸Ómethod©Ò¦³ªºcatch clause
+		// æº–å‚™åœ¨Catch Caluseä¸­åŠ å…¥throw exception
+		// æ”¶é›†è©²methodæ‰€æœ‰çš„catch clause
 		ASTCatchCollect catchCollector = new ASTCatchCollect();
 		currentMethodNode.accept(catchCollector);
 		List<CatchClause> catchList = catchCollector.getMethodList();
 
 		for (int i = 0; i < catchList.size(); i++) {
-			//§ä¨ì¸ÓCatch(¦pªGCatchªº¦ì¸m»P«ö¤UQuick¨º¦æªº°_©l¦ì¸m¬Û¦P)
+			//æ‰¾åˆ°è©²Catch(å¦‚æœCatchçš„ä½ç½®èˆ‡æŒ‰ä¸‹Quické‚£è¡Œçš„èµ·å§‹ä½ç½®ç›¸åŒ)
 //			if (catchList.get(i).getStartPosition() == Integer.parseInt(srcPos)) {
-				//«Ø¥ßRL Annotation
+				//å»ºç«‹RL Annotation
 				addAnnotationRoot(actRoot, currentMethodNode, rlValue, exception);
 				
-				//¦bcatch clause¤¤«Ø¥ßthrow statement
+				//åœ¨catch clauseä¸­å»ºç«‹throw statement
 				addThrowStatement(catchList.get(i), ast);
-				//ÀË¬d¦bmethod«e­±¦³¨S¦³throw exception
+				//æª¢æŸ¥åœ¨methodå‰é¢æœ‰æ²’æœ‰throw exception
 				addThrownException(ast, exception, currentMethodNode);
 
 //			}
@@ -238,29 +238,29 @@ public class QuickFixUtil {
 	}
 	
 	/**
-	 * ¦bcatchClause¸Ì­±¡A¥[¤Wthrow e
+	 * åœ¨catchClauseè£¡é¢ï¼ŒåŠ ä¸Šthrow e
 	 * @param cc
 	 * @param ast
 	 */
 	private void addThrowStatement(CatchClause cc, AST ast) {
-		// ¨ú±o¸Ócatch()¤¤ªºexception variable
+		// å–å¾—è©²catch()ä¸­çš„exception variable
 		SingleVariableDeclaration svd = (SingleVariableDeclaration) cc.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
 
-		// ¦Û¦æ«Ø¥ß¤@­Óthrow statement¥[¤J
+		// è‡ªè¡Œå»ºç«‹ä¸€å€‹throw statementåŠ å…¥
 		ThrowStatement ts = ast.newThrowStatement();
 
-		// ¨ú±oCatch«áExceptionªºÅÜ¼Æ
+		// å–å¾—Catchå¾ŒExceptionçš„è®Šæ•¸
 		SimpleName name = ast.newSimpleName(svd.resolveBinding().getName());		
 		
-		// ¥[¨ìthrow statement
+		// åŠ åˆ°throw statement
 		ts.setExpression(name);
 
-		// ±N·s«Ø¥ßªº¸`ÂI¼g¦^
+		// å°‡æ–°å»ºç«‹çš„ç¯€é»å¯«å›
 		cc.getBody().statements().add(ts);
 	}
 	
 	/**
-	 * ¦bMethod«á­±¥[¤Wthrows exception
+	 * åœ¨Methodå¾Œé¢åŠ ä¸Šthrows exception
 	 * @param ast
 	 * @param exception
 	 * @param currentMethodNode

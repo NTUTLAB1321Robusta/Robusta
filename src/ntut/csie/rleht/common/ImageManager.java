@@ -32,8 +32,8 @@ public class ImageManager {
 
 		}
 		catch (Exception ex) {
-			logger.error("[init] ¨ú±o¥Ø¿ı¥¢±Ñ¡I ",ex);
-			ErrorLog.getInstance().logWarning("¨ú±o¥Ø¿ı¥¢±Ñ¡I", ex);
+			logger.error("[init] å–å¾—ç›®éŒ„å¤±æ•—ï¼ ",ex);
+			ErrorLog.getInstance().logWarning("å–å¾—ç›®éŒ„å¤±æ•—ï¼", ex);
 		}
 
 		File file = new File(url.getPath());

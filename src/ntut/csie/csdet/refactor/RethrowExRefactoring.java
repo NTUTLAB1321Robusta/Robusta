@@ -66,7 +66,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * Rethrow Unchecked exceptionªº¨ãÅé¾Ş§@³£¦b³o­Óclass¤¤
+ * Rethrow Unchecked exceptionçš„å…·é«”æ“ä½œéƒ½åœ¨é€™å€‹classä¸­
  * @author chewei
  */
 
@@ -75,28 +75,28 @@ public class RethrowExRefactoring extends Refactoring {
 	
 	private IJavaProject project;
 	
-	// ¬ö¿ıcode smellªºtype
+	// ç´€éŒ„code smellçš„type
 	private String problem;
-	// ¨Ï¥ÎªÌ©Ò¿ï¾ÜªºException Type
+	// ä½¿ç”¨è€…æ‰€é¸æ“‡çš„Exception Type
 	private IType exType;
 	
-	// ¨Ï¥ÎªÌ©ÒÂI¿ïªºMarker
+	// ä½¿ç”¨è€…æ‰€é»é¸çš„Marker
 	private IMarker marker;
 	
 	private IOpenable actOpenable;
 	
-	// user ©Ò¶ñ¼g­n¥á¥XªºException,¹w³]¬ORunTimeException
+	// user æ‰€å¡«å¯«è¦ä¸Ÿå‡ºçš„Exception,é è¨­æ˜¯RunTimeException
 	private String exceptionType;
 	
 	private TextFileChange textFileChange;
 	
-	// ¥Ø«emethodªºRL Annotation¸ê°T
+	// ç›®å‰methodçš„RL Annotationè³‡è¨Š
 	private List<RLMessage> currentMethodRLList = null;
 	
-	// ¦s©ñ¥Ø«e­n­×§ïªº.javaÀÉ
+	// å­˜æ”¾ç›®å‰è¦ä¿®æ”¹çš„.javaæª”
 	private CompilationUnit actRoot;
 	
-	// ¦s©ñ¥Ø«e©Ò­nfixªºmethod node
+	// å­˜æ”¾ç›®å‰æ‰€è¦fixçš„method node
 	private MethodDeclaration currentMethodNode = null;
 	
 	private List<MarkerInfo> currentExList = null;
@@ -114,9 +114,9 @@ public class RethrowExRefactoring extends Refactoring {
 	@Override
 	public RefactoringStatus checkFinalConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
-			// ¥h­×§ïAST Tree
+			// å»ä¿®æ”¹AST Tree
 			collectChange(marker.getResource());
-			// ¤£»İcheck final condition
+			// ä¸éœ€check final condition
 			RefactoringStatus status = new RefactoringStatus();		
 			return status;
 	}
@@ -124,7 +124,7 @@ public class RethrowExRefactoring extends Refactoring {
 	@Override
 	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
-		// ¤£»İcheck initial condition
+		// ä¸éœ€check initial condition
 		RefactoringStatus status = new RefactoringStatus();		
 		return status;
 	}
@@ -132,8 +132,8 @@ public class RethrowExRefactoring extends Refactoring {
 	@Override
 	public Change createChange(IProgressMonitor pm)
 								throws CoreException, OperationCanceledException {
-		// 2010.07.20 ¤§«eªº¼gªk¡APreviewªºToken¤£·|ÅÜ¦â
-		// §â­nÅÜ§óªºµ²ªG¥]¦¨composite¶Ç¥X¥h
+		// 2010.07.20 ä¹‹å‰çš„å¯«æ³•ï¼ŒPreviewçš„Tokenä¸æœƒè®Šè‰²
+		// æŠŠè¦è®Šæ›´çš„çµæœåŒ…æˆcompositeå‚³å‡ºå»
 		// Change[] changes = new Change[] {textFileChange};
 		// CompositeChange change = new CompositeChange("Rethrow Unchecked Exception", changes);
 
@@ -142,10 +142,10 @@ public class RethrowExRefactoring extends Refactoring {
 		CompilationUnitChange result = new CompilationUnitChange(name, unit);
 		result.setSaveMode(TextFileChange.KEEP_SAVE_STATE);
 
-		// ±N­×§ïµ²ªG³]¸m¦bCompilationUnitChange
+		// å°‡ä¿®æ”¹çµæœè¨­ç½®åœ¨CompilationUnitChange
 		TextEdit edits = textFileChange.getEdit();
 		result.setEdit(edits);
-		// ±N­×§ïµ²ªG³]¦¨Group¡A·|Åã¥Ü¦bPreview¤W¤è¸`ÂI¡C
+		// å°‡ä¿®æ”¹çµæœè¨­æˆGroupï¼Œæœƒé¡¯ç¤ºåœ¨Previewä¸Šæ–¹ç¯€é»ã€‚
 		result.addTextEditGroup(new TextEditGroup("Rethrow Unchecked Exception", 
 								new TextEdit[] {edits} ));
 
@@ -158,7 +158,7 @@ public class RethrowExRefactoring extends Refactoring {
 	}
 
 	/**
-	 * §âmarker¶Ç¶i¨Ó¨Ñ¦¹class¦s¨ú¤@¨Çcode smell¸ê°T
+	 * æŠŠmarkerå‚³é€²ä¾†ä¾›æ­¤classå­˜å–ä¸€äº›code smellè³‡è¨Š
 	 * @param marker
 	 */
 	public void setMarker(IMarker marker) {
@@ -167,7 +167,7 @@ public class RethrowExRefactoring extends Refactoring {
 	}
 	
 	/**
-	 * parse AST Tree¨Ã¨ú±o­n­×§ïªºmethod node
+	 * parse AST Treeä¸¦å–å¾—è¦ä¿®æ”¹çš„method node
 	 * @param resource
 	 */
 	private void collectChange(IResource resource) {
@@ -175,9 +175,9 @@ public class RethrowExRefactoring extends Refactoring {
 			problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
 			methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
 
-			// ¨ú±oMethod¬ÛÃö¸ê°T
+			// å–å¾—Methodç›¸é—œè³‡è¨Š
 			if (findMethod(resource)) {
-				// ¥h­×§ïAST Treeªº¤º®e
+				// å»ä¿®æ”¹AST Treeçš„å…§å®¹
 				rethrowException();
 			}
 		} catch (CoreException e) {
@@ -186,13 +186,13 @@ public class RethrowExRefactoring extends Refactoring {
 	}
 	
 	/**
-	 * ¨ú±oMethod¬ÛÃö¸ê°T
-	 * @param resource		¨Ó·½
-	 * @param methodIdx		MethodªºIndex
-	 * @return				¬O§_¦¨¥\
+	 * å–å¾—Methodç›¸é—œè³‡è¨Š
+	 * @param resource		ä¾†æº
+	 * @param methodIdx		Methodçš„Index
+	 * @return				æ˜¯å¦æˆåŠŸ
 	 */
 	private boolean findMethod(IResource resource) { 
-		// ¨ú±o­n­×§ïªºCompilationUnit
+		// å–å¾—è¦ä¿®æ”¹çš„CompilationUnit
 		if (resource instanceof IFile && resource.getName().endsWith(".java")) {
 			try {
 				IJavaElement javaElement = JavaCore.create(resource);
@@ -207,20 +207,20 @@ public class RethrowExRefactoring extends Refactoring {
 				parser.setResolveBindings(true);
 				actRoot = (CompilationUnit) parser.createAST(null);
 				
-				// ¨ú±o¸Óclass©Ò¦³ªºmethod
+				// å–å¾—è©²classæ‰€æœ‰çš„method
 				ASTMethodCollector methodCollector = new ASTMethodCollector();
 				actRoot.accept(methodCollector);
 				List<MethodDeclaration> methodList = methodCollector.getMethodList();
 				
-				// ¨ú±o¥Ø«e­n³Q­×§ïªºmethod node
+				// å–å¾—ç›®å‰è¦è¢«ä¿®æ”¹çš„method node
 				currentMethodNode = methodList.get(Integer.parseInt(methodIdx));
 				if (currentMethodNode != null) {
-					// ¨ú±o³o­ÓmethodªºRL¸ê°T
+					// å–å¾—é€™å€‹methodçš„RLè³‡è¨Š
 					ExceptionAnalyzer exVisitor = new ExceptionAnalyzer(this.actRoot, currentMethodNode.getStartPosition(), 0);
 					currentMethodNode.accept(exVisitor);
 					currentMethodRLList = exVisitor.getMethodRLAnnotationList();
 
-					// §PÂ_¬OIgnore Ex or Dummy handler¨Ã¨ú±ocode smellªºList
+					// åˆ¤æ–·æ˜¯Ignore Ex or Dummy handlerä¸¦å–å¾—code smellçš„List
 					if(problem.equals(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK)) {
 						IgnoreExceptionVisitor visitor = new IgnoreExceptionVisitor(this.actRoot);
 						currentMethodNode.accept(visitor);
@@ -240,7 +240,7 @@ public class RethrowExRefactoring extends Refactoring {
 	}
 	
 	/**
-	 *«Ø¥ßThrow Exceptionªº¸ê°T 
+	 *å»ºç«‹Throw Exceptionçš„è³‡è¨Š 
 	 */
 	@Robustness(value = { @RTag(level = 1, exception = RuntimeException.class) })
 	private void rethrowException() {
@@ -248,26 +248,26 @@ public class RethrowExRefactoring extends Refactoring {
 			actRoot.recordModifications();
 			AST ast = currentMethodNode.getAST();
 			
-			// ·Ç³Æ¦bCatch Clause¤¤¥[¤Jthrow exception
-			// ¨ú±oEH smellªº¸ê°T
+			// æº–å‚™åœ¨Catch Clauseä¸­åŠ å…¥throw exception
+			// å–å¾—EH smellçš„è³‡è¨Š
 			msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
 			MarkerInfo markerInfo = currentExList.get(Integer.parseInt(msgIdx));
-			// ¦¬¶°¸Ómethod©Ò¦³ªºcatch clause
+			// æ”¶é›†è©²methodæ‰€æœ‰çš„catch clause
 			ASTCatchCollect catchCollector = new ASTCatchCollect();
 			currentMethodNode.accept(catchCollector);
 			List<CatchClause> catchList = catchCollector.getMethodList();
 			
-			// ¥h¤ñ¹ïstartPosition,§ä¥X­n­×§ïªºcatch
+			// å»æ¯”å°startPosition,æ‰¾å‡ºè¦ä¿®æ”¹çš„catch
 			for (int i =0; i < catchList.size(); i++) {
 				if(catchList.get(i).getStartPosition() == markerInfo.getPosition()) {
 					catchIdx = i;
-					// ¦bcatch clause¤¤«Ø¥ßthrow statement
+					// åœ¨catch clauseä¸­å»ºç«‹throw statement
 					addThrowStatement(catchList.get(i), ast);
 					if(smellSettings.isAddingRobustnessAnnotation()) {
-						// «Ø¥ßRLAnnotation
+						// å»ºç«‹RLAnnotation
 						addAnnotationRoot(ast);
 					}
-					// ¥[¤J¥¼importªºLibrary(¹J¨ìRuntimeException´N¤£¥Î¥[Library)
+					// åŠ å…¥æœªimportçš„Library(é‡åˆ°RuntimeExceptionå°±ä¸ç”¨åŠ Library)
 					if (!exceptionType.equals("RuntimeException")) {
 						addImportDeclaration();
 						checkMethodThrow(ast);
@@ -275,7 +275,7 @@ public class RethrowExRefactoring extends Refactoring {
 					}
 				}
 			}
-			// ¼g¦^Edit¤¤
+			// å¯«å›Editä¸­
 			applyChange();
 		}catch (Exception e) {
 			throw new RuntimeException(e);
@@ -283,7 +283,7 @@ public class RethrowExRefactoring extends Refactoring {
 	}
 	
 	/**
-	 * ÀË¬d¦bmethod«e­±¦³¨S¦³throw exception
+	 * æª¢æŸ¥åœ¨methodå‰é¢æœ‰æ²’æœ‰throw exception
 	 * @param ast
 	 */
 	private void checkMethodThrow(AST ast) {
@@ -304,36 +304,36 @@ public class RethrowExRefactoring extends Refactoring {
 	}
 	
 	/**
-	 * ¦bcatch¤¤¼W¥[throw new RuntimeException(..)
+	 * åœ¨catchä¸­å¢åŠ throw new RuntimeException(..)
 	 * @param cc
 	 * @param ast
 	 */
 	private void addThrowStatement(CatchClause cc, AST ast) {
-		// ¨ú±o¸Ócatch()¤¤ªºexception variable
+		// å–å¾—è©²catch()ä¸­çš„exception variable
 		SingleVariableDeclaration svd = (SingleVariableDeclaration) cc
 		.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
-		// ¦Û¦æ«Ø¥ß¤@­Óthrow statement¥[¤J
+		// è‡ªè¡Œå»ºç«‹ä¸€å€‹throw statementåŠ å…¥
 		ThrowStatement ts = ast.newThrowStatement();
-		// ±Nthrowªºvariable¶Ç¤J
+		// å°‡throwçš„variableå‚³å…¥
 		ClassInstanceCreation cic = ast.newClassInstanceCreation();
 		//throw new RuntimeException()
 		cic.setType(ast.newSimpleType(ast.newSimpleName(exceptionType)));
-		// ±Nthrow new RuntimeException(ex)¬A¸¹¤¤¥[¤J°Ñ¼Æ 
+		// å°‡throw new RuntimeException(ex)æ‹¬è™Ÿä¸­åŠ å…¥åƒæ•¸ 
 		cic.arguments().add(ast.newSimpleName(svd.resolveBinding().getName()));
 		
-		// ¨ú±oCatchClause©Ò¦³ªºstatement,±N¬ÛÃöprint¨Ò¥~¸ê°TªºªF¦è²¾°£
+		// å–å¾—CatchClauseæ‰€æœ‰çš„statement,å°‡ç›¸é—œprintä¾‹å¤–è³‡è¨Šçš„æ±è¥¿ç§»é™¤
 		List<Statement> statement = cc.getBody().statements();
 		if(problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)) {
-			// °²¦p­nfixªºcode smell¬Odummy handler,´N­n§âcatch¤¤ªº¦C¦L¸ê°T§R°£
+			// å‡å¦‚è¦fixçš„code smellæ˜¯dummy handler,å°±è¦æŠŠcatchä¸­çš„åˆ—å°è³‡è¨Šåˆªé™¤
 			deleteStatement(statement);
 		}
-		// ±N·s«Ø¥ßªº¸`ÂI¼g¦^
+		// å°‡æ–°å»ºç«‹çš„ç¯€é»å¯«å›
 		ts.setExpression(cic);
 		statement.add(ts);	
 	}
 	
 	/**
-	 * FIXME - °Ñ¼Æ¨S¨Ï¥Î¨ì 2012.3.30
+	 * FIXME - åƒæ•¸æ²’ä½¿ç”¨åˆ° 2012.3.30
 	 * @param markerInfo
 	 */
 	private void applyChange() {		
@@ -349,20 +349,20 @@ public class RethrowExRefactoring extends Refactoring {
 	}
 	
 	/**
-	 * ¦bRethrow¤§«e,¥ı±N¬ÛÃöªºprint¦r¦ê³£²M°£±¼
+	 * åœ¨Rethrowä¹‹å‰,å…ˆå°‡ç›¸é—œçš„printå­—ä¸²éƒ½æ¸…é™¤æ‰
 	 */
 	private void deleteStatement(List<Statement> statementTemp) {
-		// ±qCatch Clause¸Ì­±­åªR¨âºØ±¡§Î
+		// å¾Catch Clauseè£¡é¢å‰–æå…©ç¨®æƒ…å½¢
 		if(statementTemp.size() != 0) {
 			for(int i=0;i<statementTemp.size();i++) {		
 				if(statementTemp.get(i) instanceof ExpressionStatement ) {
 					ExpressionStatement statement = (ExpressionStatement) statementTemp.get(i);
-					// ¹J¨ìSystem.out.print or printStackTrace´N§â¥Lremove±¼
+					// é‡åˆ°System.out.print or printStackTraceå°±æŠŠä»–removeæ‰
 					if (statement.getExpression().toString().contains("System.out.print") ||
 						statement.getExpression().toString().contains("printStackTrace") ||
 						statement.getExpression().toString().contains("System.err.print")) {	
 						statementTemp.remove(i);
-						// ²¾°£§¹¤§«áArrayListªº¦ì¸m·|­«·s½Õ¾ã¹L,©Ò¥H§Q¥Î»¼¦^¨ÓÄ~Äò©¹¤U§ä²Å¦Xªº±ø¥ó¨Ã²¾°£
+						// ç§»é™¤å®Œä¹‹å¾ŒArrayListçš„ä½ç½®æœƒé‡æ–°èª¿æ•´é,æ‰€ä»¥åˆ©ç”¨éå›ä¾†ç¹¼çºŒå¾€ä¸‹æ‰¾ç¬¦åˆçš„æ¢ä»¶ä¸¦ç§»é™¤
 						i--;
 					}
 				}			
@@ -371,8 +371,8 @@ public class RethrowExRefactoring extends Refactoring {
 	}
 	
 	private void addAnnotationRoot(AST ast) {
-		// ­n«Ø¥ß@Robustness(value={@RTag(level=1, exception=java.lang.RuntimeException.class)})³o¼ËªºAnnotation
-		// «Ø¥ßAnnotation root
+		// è¦å»ºç«‹@Robustness(value={@RTag(level=1, exception=java.lang.RuntimeException.class)})é€™æ¨£çš„Annotation
+		// å»ºç«‹Annotation root
 		NormalAnnotation root = ast.newNormalAnnotation();
 		root.setTypeName(ast.newSimpleName("Robustness"));
 
@@ -388,11 +388,11 @@ public class RethrowExRefactoring extends Refactoring {
 		} else {
 		
 			for(RLMessage rlmsg : currentMethodRLList) {
-				// §âÂÂªºannotation¥[¶i¥h
+				// æŠŠèˆŠçš„annotationåŠ é€²å»
 				int pos = rlmsg.getRLData().getExceptionType().toString().lastIndexOf(".");
 				String cut = rlmsg.getRLData().getExceptionType().toString().substring(pos+1);
 				
-				// ¦pªG¦³¦³RL annotation­«½Æ´N¤£¥[¶i¥h
+				// å¦‚æœæœ‰æœ‰RL annotationé‡è¤‡å°±ä¸åŠ é€²å»
 				if((!cut.equals(exceptionType)) && (rlmsg.getRLData().getLevel() == 1)) {					
 					rlary.expressions().add(
 							getRLAnnotation(ast, rlmsg.getRLData().getLevel(), rlmsg.getRLData().getExceptionType()));	
@@ -402,7 +402,7 @@ public class RethrowExRefactoring extends Refactoring {
 			
 			List<IExtendedModifier> modifiers = method.modifiers();
 			for (int i = 0, size = modifiers.size(); i < size; i++) {
-				// §ä¨ìÂÂ¦³ªºannotation«á±N¥¦²¾°£
+				// æ‰¾åˆ°èˆŠæœ‰çš„annotationå¾Œå°‡å®ƒç§»é™¤
 				if (modifiers.get(i).isAnnotation() && modifiers.get(i).toString().indexOf("Robustness") != -1) {
 					method.modifiers().remove(i);
 					break;
@@ -412,27 +412,27 @@ public class RethrowExRefactoring extends Refactoring {
 		if (rlary.expressions().size() > 0) {
 			method.modifiers().add(0, root);
 		}
-		// ±NRLªºlibrary¥[¶i¨Ó
+		// å°‡RLçš„libraryåŠ é€²ä¾†
 		addImportRLDeclaration();
 	}
 	
 	
 	/**
-	 * ²£¥ÍRL Annotation¤§RL¸ê®Æ
+	 * ç”¢ç”ŸRL Annotationä¹‹RLè³‡æ–™
 	 * @param ast:AST Object
-	 * @param levelVal:±j°·«×µ¥¯Å
-	 * @param exClass:¨Ò¥~Ãş§O
+	 * @param levelVal:å¼·å¥åº¦ç­‰ç´š
+	 * @param exClass:ä¾‹å¤–é¡åˆ¥
 	 * @return NormalAnnotation AST Node
 	 */
 	private NormalAnnotation getRLAnnotation(AST ast, int levelVal, String excption) {
-		// ­n«Ø¥ß@Robustness(value={@RTag(level=1, exception=java.lang.RuntimeException.class)})³o¼ËªºAnnotation
+		// è¦å»ºç«‹@Robustness(value={@RTag(level=1, exception=java.lang.RuntimeException.class)})é€™æ¨£çš„Annotation
 		NormalAnnotation rl = ast.newNormalAnnotation();
 		rl.setTypeName(ast.newSimpleName(RTag.class.getSimpleName().toString()));
 
 		// level = 1
 		MemberValuePair level = ast.newMemberValuePair();
 		level.setName(ast.newSimpleName(RTag.LEVEL));
-		//throw statement ¹w³]level = 1
+		//throw statement é è¨­level = 1
 		level.setValue(ast.newNumberLiteral(String.valueOf(levelVal)));
 		rl.values().add(level);
 
@@ -440,7 +440,7 @@ public class RethrowExRefactoring extends Refactoring {
 		MemberValuePair exception = ast.newMemberValuePair();
 		exception.setName(ast.newSimpleName(RTag.EXCEPTION));
 		TypeLiteral exclass = ast.newTypeLiteral();
-		// ¹w³]¬°RuntimeException
+		// é è¨­ç‚ºRuntimeException
 		exclass.setType(ast.newSimpleType(ast.newName(excption)));
 		exception.setValue(exclass);
 		rl.values().add(exception);
@@ -449,11 +449,11 @@ public class RethrowExRefactoring extends Refactoring {
 	}
 	
 	/**
-	 * §PÂ_¬O§_¦³¥¼¥[¤JªºLibrary,¦ıthrow RuntimeExceptionªº±¡ªp­n±Æ°£
-	 * ¦]¬°throw RuntimeException¤£»İimport Library
+	 * åˆ¤æ–·æ˜¯å¦æœ‰æœªåŠ å…¥çš„Library,ä½†throw RuntimeExceptionçš„æƒ…æ³è¦æ’é™¤
+	 * å› ç‚ºthrow RuntimeExceptionä¸éœ€import Library
 	 */
 	private void addImportDeclaration() {
-		// §PÂ_¬O§_¦³import library
+		// åˆ¤æ–·æ˜¯å¦æœ‰import library
 		boolean isImportLibrary = false;
 		List<ImportDeclaration> importList = actRoot.imports();
 		for(ImportDeclaration id : importList) {
@@ -461,7 +461,7 @@ public class RethrowExRefactoring extends Refactoring {
 				isImportLibrary = true;
 		}
 		
-		// °²¦p¨S¦³import´N¥[¤J¨ìAST¤¤
+		// å‡å¦‚æ²’æœ‰importå°±åŠ å…¥åˆ°ASTä¸­
 		AST rootAst = actRoot.getAST(); 
 		if(!isImportLibrary) {
 			ImportDeclaration imp = rootAst.newImportDeclaration();
@@ -471,7 +471,7 @@ public class RethrowExRefactoring extends Refactoring {
 	}
 
 	private void addImportRLDeclaration() {
-		// §PÂ_¬O§_¤w¸gImport Robustness¤ÎRLªº«Å§i
+		// åˆ¤æ–·æ˜¯å¦å·²ç¶“Import RobustnessåŠRLçš„å®£å‘Š
 		List<ImportDeclaration> importList = actRoot.imports();
 		boolean isImportRobustnessClass = false;
 		boolean isImportRLClass = false;
@@ -496,29 +496,29 @@ public class RethrowExRefactoring extends Refactoring {
 	}
 	
 	/**
-	 * ¬ö¿ıuser©Ò­nthrowªºexception type
+	 * ç´€éŒ„useræ‰€è¦throwçš„exception type
 	 * @param name : exception type
 	 */
 	public RefactoringStatus setExceptionName(String name) {
-		// °²¦p¨Ï¥ÎªÌ¨S¦³¶ñ¼g¥ô¦óªF¦è,§âRefactoringStatus³]¦¨Error
+		// å‡å¦‚ä½¿ç”¨è€…æ²’æœ‰å¡«å¯«ä»»ä½•æ±è¥¿,æŠŠRefactoringStatusè¨­æˆError
 		if(name.length() == 0) {
 			return RefactoringStatus.createFatalErrorStatus("Please Choose an Exception Type");
 		} else {
-			// °²¦p¦³¼g´N§â¥L¦s¤U¨Ó
+			// å‡å¦‚æœ‰å¯«å°±æŠŠä»–å­˜ä¸‹ä¾†
 			exceptionType = name;
 			return new RefactoringStatus();
 		}		
 	}
 	
 	/**
-	 * ¨ú±oJavaProject
+	 * å–å¾—JavaProject
 	 */
 	public IJavaProject getProject() {
 		return project;
 	}
 	
 	/**
-	 * Àx¦s­nThrowªºException¦ì¸m(­nimport¨Ï¥Î)
+	 * å„²å­˜è¦Throwçš„Exceptionä½ç½®(è¦importä½¿ç”¨)
 	 * @param type
 	 */
 	public void setExType(IType type) {		
@@ -526,36 +526,36 @@ public class RethrowExRefactoring extends Refactoring {
 	}
 	
 	/**
-	 * ¥æ´«Annotation¶¶§Ç¡A¦A©w¦ì
+	 * äº¤æ›Annotationé †åºï¼Œå†å®šä½
 	 */
 	public void changeAnnotation() {
 		if (methodIdx != null && msgIdx != null) {
-			// ¥æ´«Annotationªº¶¶§Ç
+			// äº¤æ›Annotationçš„é †åº
 			new RLOrderFix().run(marker.getResource(), methodIdx, msgIdx);
-			// ©w¦ì
+			// å®šä½
 			selectSourceLine();
 		}
 	}
 	
 	/**
-	 * ¨ú±oThrow Statement¦æ¼Æ
-	 * @param catchIdx	catchªºindex
-	 * @return			¤Ï¥Õ¦æ¼Æ
+	 * å–å¾—Throw Statementè¡Œæ•¸
+	 * @param catchIdx	catchçš„index
+	 * @return			åç™½è¡Œæ•¸
 	 */
 	private int getThrowStatementSourceLine(int catchIdx) {
-		// ¤Ï¥Õ¦æ¼Æ
+		// åç™½è¡Œæ•¸
 		int selectLine = -1;
 
 		if (catchIdx != -1) {
 			ASTCatchCollect catchCollector = new ASTCatchCollect();
 			currentMethodNode.accept(catchCollector);
 			List<CatchClause> catchList = catchCollector.getMethodList();
-			// ´M§äThrow statementªº¦æ¼Æ
+			// å°‹æ‰¾Throw statementçš„è¡Œæ•¸
 			List<?> catchStatements = catchList.get(catchIdx).getBody().statements();
 			for (int i = 0; i < catchStatements.size(); i++) {
 				if (catchStatements.get(i) instanceof ThrowStatement) {
 					ThrowStatement statement = (ThrowStatement) catchStatements.get(i);
-					// ½Ö¥i¥H§i¶D§Ú¡A¬°¤°»òselectLine­n´î¤@¥H«á¤~¦^¶Ç? charles 20120912
+					// èª°å¯ä»¥å‘Šè¨´æˆ‘ï¼Œç‚ºä»€éº¼selectLineè¦æ¸›ä¸€ä»¥å¾Œæ‰å›å‚³? charles 20120912
 					selectLine = this.actRoot.getLineNumber(statement.getStartPosition()) - 1;
 					return selectLine;
 				}
@@ -565,35 +565,35 @@ public class RethrowExRefactoring extends Refactoring {
 	}
 	
 	/**
-	 * ¤Ï¥Õ«ü©w¦æ¼Æ
-	 * @param marker		±ı¤Ï¥ÕStatementªºResource
-	 * @param methodIdx		±ı¤Ï¥ÕStatementªºMethod Index
-	 * @param catchIdx		±ı¤Ï¥ÕStatementªºCatch Index
+	 * åç™½æŒ‡å®šè¡Œæ•¸
+	 * @param marker		æ¬²åç™½Statementçš„Resource
+	 * @param methodIdx		æ¬²åç™½Statementçš„Method Index
+	 * @param catchIdx		æ¬²åç™½Statementçš„Catch Index
 	 */
 	private void selectSourceLine() {
-		// ­«·s¨ú±oMethod¸ê°T
+		// é‡æ–°å–å¾—Methodè³‡è¨Š
 		boolean isOK = findMethod(marker.getResource());
 		if (isOK) {
 			try {
 				ICompilationUnit cu = (ICompilationUnit) actOpenable;
 				Document document = new Document(cu.getBuffer().getContents());
-				// ¨ú±o¥Ø«eªºEditPart
+				// å–å¾—ç›®å‰çš„EditPart
 				IEditorPart editorPart = EditorUtils.getActiveEditor();
 				ITextEditor editor = (ITextEditor) editorPart;
 	
-				// ¨ú±o¤Ï¥ÕStatementªº¦æ¼Æ
+				// å–å¾—åç™½Statementçš„è¡Œæ•¸
 				int selectLine = getThrowStatementSourceLine(catchIdx);
-				// ­Y¤Ï¥Õ¦æ¼Æ¬°
+				// è‹¥åç™½è¡Œæ•¸ç‚º
 				if (selectLine == -1) {
-					// ¨ú±oMethodªº°_ÂI¦ì¸m
+					// å–å¾—Methodçš„èµ·é»ä½ç½®
 					int srcPos = currentMethodNode.getStartPosition();
-					// ¥ÎMethod°_ÂI¦ì¸m¨ú±oMethod¦ì©ó²Ä´X¦æ¼Æ(°_©l¦æ¼Æ±q0¶}©l¡A¤£¬O1¡A©Ò¥H´î1)
+					// ç”¨Methodèµ·é»ä½ç½®å–å¾—Methodä½æ–¼ç¬¬å¹¾è¡Œæ•¸(èµ·å§‹è¡Œæ•¸å¾0é–‹å§‹ï¼Œä¸æ˜¯1ï¼Œæ‰€ä»¥æ¸›1)
 					selectLine = actRoot.getLineNumber(srcPos) - 1;
 				}
-				//¨ú±o¤Ï¥Õ¦æ¼Æ¦bSourceCodeªº¦æ¼Æ¸ê®Æ
+				//å–å¾—åç™½è¡Œæ•¸åœ¨SourceCodeçš„è¡Œæ•¸è³‡æ–™
 				IRegion lineInfo = document.getLineInformation(selectLine);
 
-				//¤Ï¥Õ¸Ó¦æ ¦bQuick fix§¹¤§«á,¥i¥H±N´å¼Ğ©w¦ì¦bQuick Fix¨º¦æ
+				//åç™½è©²è¡Œ åœ¨Quick fixå®Œä¹‹å¾Œ,å¯ä»¥å°‡æ¸¸æ¨™å®šä½åœ¨Quick Fixé‚£è¡Œ
 				editor.selectAndReveal(lineInfo.getOffset(), lineInfo.getLength());
 			} catch (JavaModelException e) {
 				logger.error("[Rethrow checked Exception] EXCEPTION ", e);

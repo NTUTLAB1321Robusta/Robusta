@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 public class OverLoggingAction implements IMarkerResolution {
 	private static Logger logger = LoggerFactory.getLogger(OverLoggingAction.class);
-	// code smellªº°T®§
+	// code smellçš„è¨Šæ¯
 	private String label;
 	
 	public OverLoggingAction(String label) {
@@ -25,7 +25,7 @@ public class OverLoggingAction implements IMarkerResolution {
 	@Override
 	public void run(IMarker marker) {
 		try {
-			// Ä²µoMarker¬O§_¬°OverLogging
+			// è§¸ç™¼Markeræ˜¯å¦ç‚ºOverLogging
 			String problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
 			if(problem != null && (problem.equals(RLMarkerAttribute.CS_OVER_LOGGING))) {
 				OverLoggingRefactor refactor = new OverLoggingRefactor();

@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * ¦bmark¸ê®Æ¤§«e¡A¦³«Ü¦h§äStatement¡A»`¶°messageªº°Ê§@
+ * åœ¨markè³‡æ–™ä¹‹å‰ï¼Œæœ‰å¾ˆå¤šæ‰¾Statementï¼Œè’é›†messageçš„å‹•ä½œ
  * @author Charles
  * @version 0.0.1
  */
@@ -23,7 +23,7 @@ public class GainMarkerInfoUtil {
 	private static Logger logger = LoggerFactory.getLogger(GainMarkerInfoUtil.class);
 	
 	/**
-	 * §ä¥X³Qmark¨º¦æªº¬ÛÃö¸ê°T
+	 * æ‰¾å‡ºè¢«marké‚£è¡Œçš„ç›¸é—œè³‡è¨Š
 	 * @param marker
 	 * @param actRoot
 	 * @param currentMethodNode
@@ -44,7 +44,7 @@ public class GainMarkerInfoUtil {
 	}
 	
 	/**
-	 * §ä¨ì±ı­×§ïªºµ{¦¡½X¸ê°T
+	 * æ‰¾åˆ°æ¬²ä¿®æ”¹çš„ç¨‹å¼ç¢¼è³‡è¨Š
 	 * @param msgIdx
 	 * @param actRoot
 	 * @param currentMethodNode
@@ -53,14 +53,14 @@ public class GainMarkerInfoUtil {
 	public String findMoveLine(String msgIdx, CompilationUnit actRoot, ASTNode currentMethodNode) {
 		RLAnalyzer rlVisitor = new RLAnalyzer(actRoot); 
 		currentMethodNode.accept(rlVisitor);
-		//¦³try blockªº¡A¤~¦³¥i¯à´£¨Ñquick fix
+		//æœ‰try blockçš„ï¼Œæ‰æœ‰å¯èƒ½æä¾›quick fix
 		List<RLAdviceMessage> ccList = rlVisitor.getExceptionRLAdviceList();
 		RLAdviceMessage csMsg = ccList.get(Integer.parseInt(msgIdx));
 		return csMsg.getStatement();
 	}
 	
 	/**
-	 * §ä¥X³Qmarkªº¨º¦æ¡AÄİ©ó­ş­Ótry node
+	 * æ‰¾å‡ºè¢«markçš„é‚£è¡Œï¼Œå±¬æ–¼å“ªå€‹try node
 	 * @param node
 	 * @param moveLine
 	 * @return

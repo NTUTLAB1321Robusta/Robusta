@@ -48,20 +48,20 @@ public class QuickFixCoreTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		// ·Ç³Æ´ú¸ÕÀÉ®×¼Ë¥»¤º®e
+		// æº–å‚™æ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹
 		javaProjectMaker = new JavaProjectMaker(projectNameString);
 		javaProjectMaker.setJREDefaultContainer();
 		
-		// ·s¼W±ı¸ü¤Jªºlibrary
+		// æ–°å¢æ¬²è¼‰å…¥çš„library
 		javaProjectMaker.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR + "/log4j-1.2.15.jar");
 		
-		// ­Yexample code¤¤¦³robustness notation«h¦³¦¹¦æ¥i¥HÅı½sÄ¶³q¹L
+		// è‹¥example codeä¸­æœ‰robustness notationå‰‡æœ‰æ­¤è¡Œå¯ä»¥è®“ç·¨è­¯é€šé
 		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(
 				JavaProjectMaker.FOLDERNAME_LIB_JAR,
 				JavaProjectMaker.FOLDERNAME_BIN_CLASS);
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/" + JavaProjectMaker.FOLDERNAME_LIB_JAR + JavaProjectMaker.FOLDERNAME_LIB_JAR);
 
-		// «Ø¥ß·sªºÀÉ®×DummyAndIgnoreExample
+		// å»ºç«‹æ–°çš„æª”æ¡ˆDummyAndIgnoreExample
 		javaFile2String = new JavaFileToString();
 		javaFile2String.read(DummyAndIgnoreExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
@@ -70,7 +70,7 @@ public class QuickFixCoreTest {
 				"package " + DummyAndIgnoreExample.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		
-		// Ä~Äò«Ø¥ß´ú¸Õ¥ÎªºUserDefineDummyHandlerFish
+		// ç¹¼çºŒå»ºç«‹æ¸¬è©¦ç”¨çš„UserDefineDummyHandlerFish
 		javaFile2String.clear();
 		javaFile2String.read(UserDefineDummyHandlerFish.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
@@ -83,7 +83,7 @@ public class QuickFixCoreTest {
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
 	}
@@ -91,10 +91,10 @@ public class QuickFixCoreTest {
 	@After
 	public void tearDown() throws Exception {
 		File xmlFile = new File(JDomUtil.getWorkspace() + File.separator + "CSPreference.xml");
-		// ¦pªGxmlÀÉ®×¦s¦b¡A«h§R°£¤§
+		// å¦‚æœxmlæª”æ¡ˆå­˜åœ¨ï¼Œå‰‡åˆªé™¤ä¹‹
 		if(xmlFile.exists())
 			assertTrue(xmlFile.delete());
-		// §R°£±M®×
+		// åˆªé™¤å°ˆæ¡ˆ
 		javaProjectMaker.deleteProject();
 	}
 
@@ -160,12 +160,12 @@ public class QuickFixCoreTest {
 
 	@Ignore
 	public void testPerformChange() throws Exception {
-		fail("¥Ø«e¤£ª¾¹D¦p¦ó¦bUnit Test¤¤§ì¨ìEditorPart¡A©Ò¥H¥¼¹ê§@");
+		fail("ç›®å‰ä¸çŸ¥é“å¦‚ä½•åœ¨Unit Testä¸­æŠ“åˆ°EditorPartï¼Œæ‰€ä»¥æœªå¯¦ä½œ");
 	}
 	
 	@Ignore
 	public void testApplyChange() throws Exception {
-		fail("¥Ø«e¤£ª¾¹D¦p¦ó¦bUnit Test¤¤§ì¨ìEditorPart¡A©Ò¥H¥¼¹ê§@");
+		fail("ç›®å‰ä¸çŸ¥é“å¦‚ä½•åœ¨Unit Testä¸­æŠ“åˆ°EditorPartï¼Œæ‰€ä»¥æœªå¯¦ä½œ");
 	}
 	
 }

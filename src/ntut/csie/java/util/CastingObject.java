@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.TreeMap;
 
 /**
- * ³o­Ó class¬O±qStackOverFlow§ä¨Óªº¡C
- * ¥¦ªº¥Øªº¬O§ÚÀ°§U§Ú­Ì¦bcastingª«¥ó®É­Ô¡A³z¹L³o¨ÇÀË¬d¾÷¨î¡AÅıjavaªºwarning¤£·|¥X²{¡C
+ * é€™å€‹ classæ˜¯å¾StackOverFlowæ‰¾ä¾†çš„ã€‚
+ * å®ƒçš„ç›®çš„æ˜¯æˆ‘å¹«åŠ©æˆ‘å€‘åœ¨castingç‰©ä»¶æ™‚å€™ï¼Œé€éé€™äº›æª¢æŸ¥æ©Ÿåˆ¶ï¼Œè®“javaçš„warningä¸æœƒå‡ºç¾ã€‚
  * @author charles
  *
  */

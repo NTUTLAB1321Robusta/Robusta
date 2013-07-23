@@ -29,10 +29,10 @@ public class UserDefinedMethodAnalyzer {
 	}
 	
 	/**
-	 * §PÂ_³o­ÓLibrary¬O¤£¬O¨Ï¥ÎªÌ©w¸qªºLibrary¡C
+	 * åˆ¤æ–·é€™å€‹Libraryæ˜¯ä¸æ˜¯ä½¿ç”¨è€…å®šç¾©çš„Libraryã€‚
 	 * @param node
-	 * @return true¡A³o­Ónode²Å¦X¨Ï¥ÎªÌ©w¸qªºLibrary¡A¥~³¡µ{¦¡¥i¥H¦Ò¼{¥[¤Wmarker<br />
-	 * 		   false¡A³o­Ónode¤£²Å¦X¨Ï¥ÎªÌ©w¸qªºLibrary¡C
+	 * @return trueï¼Œé€™å€‹nodeç¬¦åˆä½¿ç”¨è€…å®šç¾©çš„Libraryï¼Œå¤–éƒ¨ç¨‹å¼å¯ä»¥è€ƒæ…®åŠ ä¸Šmarker<br />
+	 * 		   falseï¼Œé€™å€‹nodeä¸ç¬¦åˆä½¿ç”¨è€…å®šç¾©çš„Libraryã€‚
 	 */
 	public boolean analyzeLibrary(MethodInvocation node) {
 		if(methodTreeMap.isEmpty()) {
@@ -42,7 +42,7 @@ public class UserDefinedMethodAnalyzer {
 		Iterator<String> userDefinedMethodIterator = methodTreeMap.keySet().iterator();
 		while(userDefinedMethodIterator.hasNext()) {
 			String condition = userDefinedMethodIterator.next();
-			// ¥Ø«eª¾¹Dªº±¡ªp¡GOverride Closeableªºclose¡A¨Ï¨ä¤£·|©ß¥XIOException¡A·|³y¦¨resolveMethodBinding¬°null
+			// ç›®å‰çŸ¥é“çš„æƒ…æ³ï¼šOverride Closeableçš„closeï¼Œä½¿å…¶ä¸æœƒæ‹‹å‡ºIOExceptionï¼Œæœƒé€ æˆresolveMethodBindingç‚ºnull
 			if(node.resolveMethodBinding() == null) {
 				continue;
 			}
@@ -54,10 +54,10 @@ public class UserDefinedMethodAnalyzer {
 	}
 	
 	/**
-	 * §PÂ_³o­Ó¤èªk(method / Lib+method)¬O¤£¬O¨Ï¥ÎªÌ©w¸qªºmethod
+	 * åˆ¤æ–·é€™å€‹æ–¹æ³•(method / Lib+method)æ˜¯ä¸æ˜¯ä½¿ç”¨è€…å®šç¾©çš„method
 	 * @param node
-	 * @return true¡A³o­Ónode²Å¦X¨Ï¥ÎªÌ©w¸qªºmethod¡A¥~³¡µ{¦¡¥i¥H¦Ò¼{¥[¤Wmarker<br />
-	 * 		   false¡A³o­Ónode¤£²Å¦X¨Ï¥ÎªÌ©w¸qªºmethod¡C
+	 * @return trueï¼Œé€™å€‹nodeç¬¦åˆä½¿ç”¨è€…å®šç¾©çš„methodï¼Œå¤–éƒ¨ç¨‹å¼å¯ä»¥è€ƒæ…®åŠ ä¸Šmarker<br />
+	 * 		   falseï¼Œé€™å€‹nodeä¸ç¬¦åˆä½¿ç”¨è€…å®šç¾©çš„methodã€‚
 	 */
 	public boolean analyzeMethods(MethodInvocation node) {
 		if(methodTreeMap.isEmpty()) {
@@ -87,11 +87,11 @@ public class UserDefinedMethodAnalyzer {
 			return false;
 		}
 		
-		// method name²Å¦X¡A¥B¬OSmellSettings.UserDefinedConstraintsType.Method
+		// method nameç¬¦åˆï¼Œä¸”æ˜¯SmellSettings.UserDefinedConstraintsType.Method
 		if(methodTreeMap.get(matchedKey) == SmellSettings.UserDefinedConstraintsType.Method) {
 			return true;
 		} else {
-		// method name²Å¦X¡A¥B¬OSmellSettings.UserDefinedConstraintsType.FullQulifiedMethod
+		// method nameç¬¦åˆï¼Œä¸”æ˜¯SmellSettings.UserDefinedConstraintsType.FullQulifiedMethod
 			String declareClass = matchedKey.substring(0, dotIndex - 1);
 			if(node.resolveMethodBinding().getDeclaringClass().getQualifiedName().equals(declareClass)) {
 				return true;
@@ -101,27 +101,27 @@ public class UserDefinedMethodAnalyzer {
 	}
 	
 	/**
-	 * §PÂ_careless cleanupªºextra rule
+	 * åˆ¤æ–·careless cleanupçš„extra rule
 	 * @param node
 	 * @param root
 	 * @return
 	 */
 	public boolean analyzeExtraRule(MethodInvocation node, CompilationUnit root) {
-		// ¨S¦³¤Ä¿ïcareless cleanup¡A«h¤£³B²z
+		// æ²’æœ‰å‹¾é¸careless cleanupï¼Œå‰‡ä¸è™•ç†
 		if(methodTreeMap.isEmpty()) {
 			return false;
 		}
 		
-		// ¨S§âextra rule¤Ä¿ï¡A«h¤£³B²z
+		// æ²’æŠŠextra ruleå‹¾é¸ï¼Œå‰‡ä¸è™•ç†
 		if(methodTreeMap.get(SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD) == null) {
 			return false;
 		}
 		
-//		// ÀË¬dMethodInvocation¬O§_¦bfinally¸Ì­±
+//		// æª¢æŸ¥MethodInvocationæ˜¯å¦åœ¨finallyè£¡é¢
 //		if(NodeUtils.isMethodInvocationInFinally(node))
 //			return false;
 		
-		//  ÀË¬d¶Ç¤Jªº°Ñ¼Æ¬O§_¦³¹ê§@closeableªº
+		//  æª¢æŸ¥å‚³å…¥çš„åƒæ•¸æ˜¯å¦æœ‰å¯¦ä½œcloseableçš„
 		boolean isCloseable = NodeUtils.isParameterImplemented(node, Closeable.class);
 		
 		ASTNode mdNode = (node.resolveMethodBinding() != null) ? root.findDeclaringNode(node.resolveMethodBinding().getMethodDeclaration()): null;
@@ -135,7 +135,7 @@ public class UserDefinedMethodAnalyzer {
 	}
 	
 	/**
-	 * ¨ú±o¬O§_°»´úªº³]©w
+	 * å–å¾—æ˜¯å¦åµæ¸¬çš„è¨­å®š
 	 * @return
 	 */
 	public boolean getEnable() {

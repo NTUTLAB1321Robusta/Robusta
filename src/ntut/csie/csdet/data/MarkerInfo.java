@@ -9,7 +9,7 @@ import java.util.Map;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 
 /**
- * °O¿ı¨C¤@ºØcode smellªº¬ÛÃö¸ê°T
+ * è¨˜éŒ„æ¯ä¸€ç¨®code smellçš„ç›¸é—œè³‡è¨Š
  * @author chewei
  */
 
@@ -27,7 +27,7 @@ public class MarkerInfo {
 	private String methodName;
 	
 	/*
-	 * °£¤FNT¥H¥~¥Ø«e³£¥Î³o­Ó¡A¥¼¨ÓÀ³§ï¬°»PNT¬Û¦P
+	 * é™¤äº†NTä»¥å¤–ç›®å‰éƒ½ç”¨é€™å€‹ï¼Œæœªä¾†æ‡‰æ”¹ç‚ºèˆ‡NTç›¸åŒ
 	 */
 	public MarkerInfo(String type, ITypeBinding typeBinding, String statement, int pos, int lineNumber, String exceptionType) {
 		this.cstype = type;
@@ -36,12 +36,12 @@ public class MarkerInfo {
 		this.position = pos;
 		this.lineNumber = lineNumber;
 		this.exceptionType = exceptionType;
-		// Method Name ¥¼©w¸q¡A¥ıµ¹ªÅ¦r¦ê
+		// Method Name æœªå®šç¾©ï¼Œå…ˆçµ¦ç©ºå­—ä¸²
 		methodName = "";
 	}
 
 	/*
-	 * NT ¨Ï¥Î¡Aªş±a Method Name ¸ê°Tµ¹ Report ¥Î
+	 * NT ä½¿ç”¨ï¼Œé™„å¸¶ Method Name è³‡è¨Šçµ¦ Report ç”¨
 	 */
 	public MarkerInfo(String type, ITypeBinding typeBinding, String statement,
 			int pos, int lineNumber, String exceptionType, String methodName) {
@@ -92,8 +92,8 @@ public class MarkerInfo {
 	}
 	
 	/**
-	 * ¦¹bad smell¬O§_¦btry statement¤¤
-	 * falseªí¥Ü¤£¦btry¸Ì­±¡A true¤Ï¤§
+	 * æ­¤bad smellæ˜¯å¦åœ¨try statementä¸­
+	 * falseè¡¨ç¤ºä¸åœ¨tryè£¡é¢ï¼Œ trueåä¹‹
 	 * @return 
 	 */
 	public boolean getIsInTry() {
@@ -137,8 +137,8 @@ public class MarkerInfo {
 	}
 
 	/**
-	 * ¨Ï¥ÎªÌ³]©wªº±ø¥ó¥i¯à·|³y¦¨¦P¤@¦æµ{¦¡½X³y¦¨ªºbad smell³Q°O¿ı¨â¦¸¡C
-	 * ¦¹°Æµ{¦¡¦®¦b³B²z³o­Ó°İÃD¡C
+	 * ä½¿ç”¨è€…è¨­å®šçš„æ¢ä»¶å¯èƒ½æœƒé€ æˆåŒä¸€è¡Œç¨‹å¼ç¢¼é€ æˆçš„bad smellè¢«è¨˜éŒ„å…©æ¬¡ã€‚
+	 * æ­¤å‰¯ç¨‹å¼æ—¨åœ¨è™•ç†é€™å€‹å•é¡Œã€‚
 	 * @param nestedTryStatementList
 	 * @return
 	 */

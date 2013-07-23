@@ -21,46 +21,46 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
 /**
- * Åıuser©w¸q¤@¨ÇÂ²³æªºdetect rule
+ * è®“userå®šç¾©ä¸€äº›ç°¡å–®çš„detect rule
  * @author chewei
  */
 public class DummyHandlerPage extends APropertyPage{
-	// ©ñcode templateªº°Ï°ì
+	// æ”¾code templateçš„å€åŸŸ
 	private StyledText templateArea;
-	// ¬O§_­n®·®»System.out.println() and print()ªº«ö¶s
+	// æ˜¯å¦è¦æ•æ‰System.out.println() and print()çš„æŒ‰éˆ•
 	private Button sysoBtn;
-	// ¬O§_­n®·®»e.printStackTraceªºbutton
+	// æ˜¯å¦è¦æ•æ‰e.printStackTraceçš„button
 	private Button eprintBtn;
-	// ¬O§_­n®·®»log4jªºbutton
+	// æ˜¯å¦è¦æ•æ‰log4jçš„button
 	private Button log4jBtn;
-	// ¬O§_­n®·®»java.util.loggingªºbutton
+	// æ˜¯å¦è¦æ•æ‰java.util.loggingçš„button
 	private Button javaUtillogBtn;
-	// ¹w³]ªºtemplateªº¦r«¬­·®æ
+	// é è¨­çš„templateçš„å­—å‹é¢¨æ ¼
 	StyleRange[] sampleStyles = new StyleRange[9];
-	// code template«e¥b³¡¤º®e
+	// code templateå‰åŠéƒ¨å…§å®¹
 	private String mainText;
-	//¡@code templateªºµ²§À"}"
+	//ã€€code templateçš„çµå°¾"}"
 	private String endText;
-	// system.out.printlnªºbuttonªº¦r¦ê
+	// system.out.printlnçš„buttonçš„å­—ä¸²
 	private String sysoText;
-	// e.printªºbuttonªº¦r¦ê
+	// e.printçš„buttonçš„å­—ä¸²
 	private String eprintText;
-	// log4jªºbuttonªº¦r¦ê
+	// log4jçš„buttonçš„å­—ä¸²
 	private String log4jText;
-	// java.util.loggingªº¦r¦ê
+	// java.util.loggingçš„å­—ä¸²
 	private String javaUtillogText;
-	// ¥´¶}extraRuleDialogªº«ö¶s
+	// æ‰“é–‹extraRuleDialogçš„æŒ‰éˆ•
 	private Button extraRuleBtn;
 	// Library Data
 	private TreeMap<String, Boolean> libMap = new TreeMap<String, Boolean>();
-	// ­t³d³B²zÅª¼gXML
+	// è² è²¬è™•ç†è®€å¯«XML
 	private SmellSettings smellSettings;
 
 	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
 	
 	public DummyHandlerPage(Composite composite, CSPropertyPage page, SmellSettings smellSettings) {
 		super(composite,page);
-		//µ{¦¡½Xªº¤º®e
+		//ç¨‹å¼ç¢¼çš„å…§å®¹
 		mainText =			"try {   \n" +
 							"    // code in here\n" +
 							"} catch (Exception e) { \n";
@@ -74,67 +74,67 @@ public class DummyHandlerPage extends APropertyPage{
 							"    java_logger.info(e.getMessage()"+ "); \n";
 
 		this.smellSettings = smellSettings;
-		//¥[¤J­¶­±ªº¤º®e
+		//åŠ å…¥é é¢çš„å…§å®¹
 		addFirstSection(composite);
 	}
 	
 	private void addFirstSection(final Composite dummyHandlerPage) {
 		libMap = smellSettings.getSemllPatterns(SmellSettings.SMELL_DUMMYHANDLER);
-		/// ¹w³]°»´ú±ø¥ó  ///
+		/// é è¨­åµæ¸¬æ¢ä»¶  ///
 		final Label detectSettingsLabel = new Label(dummyHandlerPage, SWT.NONE);
 		detectSettingsLabel.setText(resource.getString("detect.rule"));
 		detectSettingsLabel.setLocation(10, 10);
 		detectSettingsLabel.pack();
-		//¬O§_°»´úe.printStackTraceªº«ö¶s
+		//æ˜¯å¦åµæ¸¬e.printStackTraceçš„æŒ‰éˆ•
 		eprintBtn = new Button(dummyHandlerPage, SWT.CHECK);
 		eprintBtn.setText(resource.getString("print.stack.trace"));
 		eprintBtn.setLocation(detectSettingsLabel.getLocation().x+10, getLowerRightCoordinate(detectSettingsLabel).y+5);
 		eprintBtn.pack();
 		eprintBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
-				//«ö¤U«ö¶s¦Ó§ïÅÜText¤å¦r©MÃC¦â
+				//æŒ‰ä¸‹æŒ‰éˆ•è€Œæ”¹è®ŠTextæ–‡å­—å’Œé¡è‰²
 				adjustText();
 				adjustFont();
 			}
 		});
 		eprintBtn.setSelection(smellSettings.isExtraRuleExist(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_ePrintStackTrace));
 		
-		//¬O§_°»´úSystem.out.printªº«ö¶s
+		//æ˜¯å¦åµæ¸¬System.out.printçš„æŒ‰éˆ•
 		sysoBtn = new Button(dummyHandlerPage, SWT.CHECK);
 		sysoBtn.setText(resource.getString("system.out.print"));
 		sysoBtn.setLocation(detectSettingsLabel.getLocation().x+10, getLowerRightCoordinate(eprintBtn).y+5);
 		sysoBtn.pack();
 		sysoBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
-				//«ö¤U«ö¶s¦Ó§ïÅÜText¤å¦r©MÃC¦â
+				//æŒ‰ä¸‹æŒ‰éˆ•è€Œæ”¹è®ŠTextæ–‡å­—å’Œé¡è‰²
 				adjustText();
 				adjustFont();
 			}
 		});
 		sysoBtn.setSelection(smellSettings.isExtraRuleExist(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_SystemOutPrint));
 		
-		//¬O§_°»´úLog4jªº«ö¶s
+		//æ˜¯å¦åµæ¸¬Log4jçš„æŒ‰éˆ•
 		log4jBtn = new Button(dummyHandlerPage, SWT.CHECK);
 		log4jBtn.setText(resource.getString("detect.log4j"));
 		log4jBtn.setLocation(detectSettingsLabel.getLocation().x+10, getLowerRightCoordinate(sysoBtn).y+5);
 		log4jBtn.pack();
 		log4jBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
-				//«ö¤U«ö¶s¦Ó§ïÅÜText¤å¦r©MÃC¦â
+				//æŒ‰ä¸‹æŒ‰éˆ•è€Œæ”¹è®ŠTextæ–‡å­—å’Œé¡è‰²
 				adjustText();
 				adjustFont();
 			}
 		});
 		log4jBtn.setSelection(smellSettings.isExtraRuleExist(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_OrgApacheLog4j));
 		
-		//¬O§_°»´úJavaUtillogªº«ö¶s
+		//æ˜¯å¦åµæ¸¬JavaUtillogçš„æŒ‰éˆ•
 		javaUtillogBtn = new Button(dummyHandlerPage, SWT.CHECK);
 		javaUtillogBtn.setText(resource.getString("detect.logger"));
 		javaUtillogBtn.setLocation(detectSettingsLabel.getLocation().x+10, getLowerRightCoordinate(log4jBtn).y+5);
 		javaUtillogBtn.pack();
 		javaUtillogBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
-				//«ö¤U«ö¶s¦Ó§ïÅÜText¤å¦r©MÃC¦â
+				//æŒ‰ä¸‹æŒ‰éˆ•è€Œæ”¹è®ŠTextæ–‡å­—å’Œé¡è‰²
 				adjustText();
 				adjustFont();
 			}
@@ -159,7 +159,7 @@ public class DummyHandlerPage extends APropertyPage{
 			}
 		});
 
-		/// ¤À¹j½u ///
+		/// åˆ†éš”ç·š ///
 		final Label separateLabel1 = new Label(dummyHandlerPage, SWT.VERTICAL | SWT.SEPARATOR);
 		separateLabel1.setLocation(getLowerRightCoordinate(javaUtillogBtn).x+28, 5);
 		separateLabel1.setSize(1, getLowerRightCoordinate(javaUtillogBtn).y-5);
@@ -180,24 +180,24 @@ public class DummyHandlerPage extends APropertyPage{
 		templateArea.setSize(458, 263);
 		templateArea.setEditable(false);
 
-		//¤À¹j½u»PTemplateµ¥ªø(¨ú³Ìªøªº)
+		//åˆ†éš”ç·šèˆ‡Templateç­‰é•·(å–æœ€é•·çš„)
 		if (getLowerRightCoordinate(separateLabel2).x < 458)
 			separateLabel2.setSize(458, 1);
 		else
 			templateArea.setSize(getLowerRightCoordinate(separateLabel2).x, 263);
 
-		//¸ü¤J¹w©wªº¦r«¬¡BÃC¦â
+		//è¼‰å…¥é å®šçš„å­—å‹ã€é¡è‰²
 		addSampleStyle(dummyHandlerPage.getDisplay());
 
-		//½Õ¾ãTextªº¤å¦r
+		//èª¿æ•´Textçš„æ–‡å­—
 		adjustText();
 
-		//½Õ¾ãµ{¦¡½XªºÃC¦â
+		//èª¿æ•´ç¨‹å¼ç¢¼çš„é¡è‰²
 		adjustFont();
 	}
 	
 	/**
-	 * ½Õ¾ãTextªº¤å¦r
+	 * èª¿æ•´Textçš„æ–‡å­—
 	 */
 	private void adjustText() {
 		String temp = mainText;
@@ -216,7 +216,7 @@ public class DummyHandlerPage extends APropertyPage{
 	}
 
 	/**
-	 * ±Nµ{¦¡½X¤¤ªº¥i¯à·|¥Î¨ìªº¦r«¬¡BÃC¦â¥ı¦æ¿é¤J
+	 * å°‡ç¨‹å¼ç¢¼ä¸­çš„å¯èƒ½æœƒç”¨åˆ°çš„å­—å‹ã€é¡è‰²å…ˆè¡Œè¼¸å…¥
 	 * @param display
 	 */
 	private void addSampleStyle(Display display) {
@@ -224,7 +224,7 @@ public class DummyHandlerPage extends APropertyPage{
 		sampleStyles[0] = new StyleRange();
 		sampleStyles[0].fontStyle = SWT.BOLD;
 		sampleStyles[0].foreground = display.getSystemColor(SWT.COLOR_DARK_MAGENTA);
-		// µù¸Ñ
+		// è¨»è§£
 		sampleStyles[1] = new StyleRange();
 		sampleStyles[1].fontStyle = SWT.ITALIC;
 		sampleStyles[1].foreground = display.getSystemColor(SWT.COLOR_DARK_GREEN);
@@ -240,7 +240,7 @@ public class DummyHandlerPage extends APropertyPage{
 		sampleStyles[4] = new StyleRange();
 		sampleStyles[4].fontStyle = SWT.ITALIC;
 		sampleStyles[4].foreground = display.getSystemColor(SWT.COLOR_BLUE);
-		// µù¸Ñ
+		// è¨»è§£
 		sampleStyles[5] = new StyleRange();
 		sampleStyles[5].fontStyle = SWT.ITALIC;
 		sampleStyles[5].foreground = display.getSystemColor(SWT.COLOR_DARK_GREEN);		
@@ -248,7 +248,7 @@ public class DummyHandlerPage extends APropertyPage{
 		sampleStyles[6] = new StyleRange();
 		sampleStyles[6].fontStyle = SWT.ITALIC;
 		sampleStyles[6].foreground = display.getSystemColor(SWT.COLOR_BLUE);
-		// µù¸Ñ
+		// è¨»è§£
 		sampleStyles[7] = new StyleRange();
 		sampleStyles[7].fontStyle = SWT.ITALIC;
 		sampleStyles[7].foreground = display.getSystemColor(SWT.COLOR_DARK_GREEN);	
@@ -259,13 +259,13 @@ public class DummyHandlerPage extends APropertyPage{
 	}
 	
 	/**
-	 * ±Nµ{¦¡½X¤¤ªºTry ,catch,out¼Ğ¤WÃC¦â
+	 * å°‡ç¨‹å¼ç¢¼ä¸­çš„Try ,catch,outæ¨™ä¸Šé¡è‰²
 	 */
 	private void adjustFont() {
-		//¥Ø«e¤å¦rªø«×
+		//ç›®å‰æ–‡å­—é•·åº¦
 		int textLength = mainText.length();
 
-		//(styles©Mranges)»İ­n°t¸m¦h¤ÖªÅ¶¡
+		//(styleså’Œranges)éœ€è¦é…ç½®å¤šå°‘ç©ºé–“
 		int spaceSize = 6;
 		if (sysoBtn.getSelection())
 			spaceSize+=4;
@@ -274,53 +274,53 @@ public class DummyHandlerPage extends APropertyPage{
 		if (javaUtillogBtn.getSelection())
 			spaceSize+=4;
 
-		//ranges¬°¦r«¬­·®æªº¦ì¸m½d³ò¡A®Ú¾ÚspaceSize¨Ó¨M©w»İ­n¦h¤ÖªÅ¶¡
+		//rangesç‚ºå­—å‹é¢¨æ ¼çš„ä½ç½®ç¯„åœï¼Œæ ¹æ“šspaceSizeä¾†æ±ºå®šéœ€è¦å¤šå°‘ç©ºé–“
 		int[] ranges = new int[spaceSize];
-		//¦r«¬ªº­·®æ¡A®Ú¾ÚspaceSize¨Ó¨M©w»İ­n¦h¤ÖªÅ¶¡
+		//å­—å‹çš„é¢¨æ ¼ï¼Œæ ¹æ“šspaceSizeä¾†æ±ºå®šéœ€è¦å¤šå°‘ç©ºé–“
 		StyleRange[] styles = new StyleRange[spaceSize/2];
 
-		//ranges©Mstylesªºindex
+		//rangeså’Œstylesçš„index
 		int range_i=0;
 		int style_i=0;
 
-		//¥»¤å(try catch)¤å¦rªº¹ïÀ³¦ì¸m(¨â­Ó¤@²Õ{°_©l¦ì¸m,­Ó¼Æ})
+		//æœ¬æ–‡(try catch)æ–‡å­—çš„å°æ‡‰ä½ç½®(å…©å€‹ä¸€çµ„{èµ·å§‹ä½ç½®,å€‹æ•¸})
 		int[] main = new int[] {0,3,13,15,31,5};
-		//§â¥»¤å(try catch)¤å¦rªº¦r«¬­·®æ©M¹ïÀ³ªº¦ì¸m¦s¤J
+		//æŠŠæœ¬æ–‡(try catch)æ–‡å­—çš„å­—å‹é¢¨æ ¼å’Œå°æ‡‰çš„ä½ç½®å­˜å…¥
 		for (int i=0;i<3;i++)
 			styles[style_i++] = sampleStyles[i];
 		for (int i=0;i<6;i++)
 			ranges[range_i++] = main[i];
 
-		//¦pªGe.printStack¿ï¶µ³Q¿ï¤¤
+		//å¦‚æœe.printStacké¸é …è¢«é¸ä¸­
 		if (eprintBtn.getSelection())
 			textLength += eprintText.length();
-		//¦pªGSystemOut¿ï¶µ³Q¿ï¤¤
+		//å¦‚æœSystemOuté¸é …è¢«é¸ä¸­
 		if (sysoBtn.getSelection()) {
-			//SystemOut¤å¦rªº¹ïÀ³¦ì¸m(¬Û¹ï¦ì¸m+¥Ø«e¦ì³¹ªºªø«×)
+			//SystemOutæ–‡å­—çš„å°æ‡‰ä½ç½®(ç›¸å°ä½ç½®+ç›®å‰ä½ç« çš„é•·åº¦)
 			int[] syso = new int[] {11 + textLength,3,38 + textLength,3};
-			//§â¥»¤åSystemOut¤å¦rªº¦r«¬­·®æ©M¹ïÀ³ªº¦ì¸m¦s¤J
+			//æŠŠæœ¬æ–‡SystemOutæ–‡å­—çš„å­—å‹é¢¨æ ¼å’Œå°æ‡‰çš„ä½ç½®å­˜å…¥
 			for (int i=0;i<4;i++)
 				ranges[range_i++] = syso[i];
 			for (int i=3;i<5;i++)
 				styles[style_i++] = sampleStyles[i];
 			textLength += sysoText.length();
 		}
-		//¦pªGLog4j¿ï¶µ³Q¿ï¤¤
+		//å¦‚æœLog4jé¸é …è¢«é¸ä¸­
 		if (log4jBtn.getSelection()) {
-			//Log4J¤å¦rªº¹ïÀ³¦ì¸m(¬Û¹ï¦ì¸m+¥Ø«e¦ì³¹ªºªø«×)
+			//Log4Jæ–‡å­—çš„å°æ‡‰ä½ç½®(ç›¸å°ä½ç½®+ç›®å‰ä½ç« çš„é•·åº¦)
 			int[] log4j = new int[] {4+textLength,14,23+textLength,6,};
-			//§â¥»¤åLog4j¤å¦rªº¦r«¬­·®æ©M¹ïÀ³ªº¦ì¸m¦s¤J
+			//æŠŠæœ¬æ–‡Log4jæ–‡å­—çš„å­—å‹é¢¨æ ¼å’Œå°æ‡‰çš„ä½ç½®å­˜å…¥
 			for (int i=0;i<4;i++)
 				ranges[range_i++] = log4j[i];			
 			for (int i=5;i<7;i++)
 				styles[style_i++] = sampleStyles[i];
 			textLength += log4jText.length();
 		}
-		//¦pªGJavaUtillog¿ï¶µ³Q¿ï¤¤
+		//å¦‚æœJavaUtillogé¸é …è¢«é¸ä¸­
 		if (javaUtillogBtn.getSelection()) {
-			//javaUtillog¤å¦rªº¹ïÀ³¦ì¸m(¬Û¹ï¦ì¸m+¥Ø«e¦ì³¹ªºªø«×)
+			//javaUtillogæ–‡å­—çš„å°æ‡‰ä½ç½®(ç›¸å°ä½ç½®+ç›®å‰ä½ç« çš„é•·åº¦)
 			int[] javaUtillog = new int[] {4 + textLength,33,43 + textLength,11};
-			//§â¥»¤åJavaUtillog¤å¦rªº¦r«¬­·®æ©M¹ïÀ³ªº¦ì¸m¦s¤J
+			//æŠŠæœ¬æ–‡JavaUtillogæ–‡å­—çš„å­—å‹é¢¨æ ¼å’Œå°æ‡‰çš„ä½ç½®å­˜å…¥
 			for (int i=0;i<4;i++)
 				ranges[range_i++] = javaUtillog[i];
 			for (int i=7;i<9;i++)
@@ -328,7 +328,7 @@ public class DummyHandlerPage extends APropertyPage{
 			textLength += javaUtillogText.length();
 		}
 
-		//§â¦r«¬ªº­·®æ©M­·®æªº½d³ò®M¥Î¦bTemplate¤W
+		//æŠŠå­—å‹çš„é¢¨æ ¼å’Œé¢¨æ ¼çš„ç¯„åœå¥—ç”¨åœ¨Templateä¸Š
 		templateArea.setStyleRanges(ranges, styles);
 	}
 
@@ -354,14 +354,14 @@ public class DummyHandlerPage extends APropertyPage{
 		if(javaUtillogBtn.getSelection())
 			smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_JavaUtilLoggingLogger);
 		
-		// ¦s¤J¨Ï¥ÎªÌ¦Û­qRule
+		// å­˜å…¥ä½¿ç”¨è€…è‡ªè¨‚Rule
 		Iterator<String> userDefinedCodeIterator = libMap.keySet().iterator();
 		while(userDefinedCodeIterator.hasNext()) {
 			String key = userDefinedCodeIterator.next();
 			smellSettings.addDummyHandlerPattern(key, libMap.get(key));
 		}
 
-		// ±NÀÉ®×¼g¦^
+		// å°‡æª”æ¡ˆå¯«å›
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		return true;
 	}

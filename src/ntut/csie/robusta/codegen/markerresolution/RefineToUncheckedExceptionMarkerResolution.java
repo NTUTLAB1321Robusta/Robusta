@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * ¦bMarker¤W­±ªºQuick Fix¤¤¥[¤JRefactoring(Rethrow Unchecked Exception)ªº¥\¯à
+ * åœ¨Markerä¸Šé¢çš„Quick Fixä¸­åŠ å…¥Refactoring(Rethrow Unchecked Exception)çš„åŠŸèƒ½
  * @author chewei
  */
 
@@ -33,26 +33,26 @@ public class RefineToUncheckedExceptionMarkerResolution implements IMarkerResolu
 
 	@Override
 	public void run(IMarker marker) {
-		//¨Ï¥ÎªÌÂI¿ïignore ex ©ÎªÌdummy handlerªºmarker®É,·|¥h§ä´M¹ïÀ³ªºRefactor¤èªk
+		//ä½¿ç”¨è€…é»é¸ignore ex æˆ–è€…dummy handlerçš„markeræ™‚,æœƒå»æ‰¾å°‹å°æ‡‰çš„Refactoræ–¹æ³•
 		String problem;
 		try {
 			problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
 			/*
-			 * ¨ä¹ê¦bQuickFixer¸Ì­±¡A¨C­Ówarning³£¤w¸g¨M©w·|ªş¤W­şºØresolution¡A
-			 * ³o¸Ì¨ä¹ê¤£¥Î¯S¦a¦A°µ¤@¦¸Ãa¨ı¹DÃş«¬ªº§PÂ_¤~¹ï¡A°£«D¨C­ÓÃa¨ı¹D³£·|¶]¶i¨Ó¡C
-			 * Åı§Ú­ÌÄ~Äò¸Õ¤U¥h¡C
+			 * å…¶å¯¦åœ¨QuickFixerè£¡é¢ï¼Œæ¯å€‹warningéƒ½å·²ç¶“æ±ºå®šæœƒé™„ä¸Šå“ªç¨®resolutionï¼Œ
+			 * é€™è£¡å…¶å¯¦ä¸ç”¨ç‰¹åœ°å†åšä¸€æ¬¡å£å‘³é“é¡å‹çš„åˆ¤æ–·æ‰å°ï¼Œé™¤éæ¯å€‹å£å‘³é“éƒ½æœƒè·‘é€²ä¾†ã€‚
+			 * è®“æˆ‘å€‘ç¹¼çºŒè©¦ä¸‹å»ã€‚
 			 */
 			if (((problem == null) || (!problem.equals(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK))) &&
 				((problem == null) || (!problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)))){
 				return;
 			}
 
-			// «Ø¥ß¾Ş§@Refactorªºª«¥ó,¨Ã±Nmarker¶Ç¶i¥h¥H§Q¤§«á¨ú±ocode smell¬ÛÃö¸ê°T
+			// å»ºç«‹æ“ä½œRefactorçš„ç‰©ä»¶,ä¸¦å°‡markerå‚³é€²å»ä»¥åˆ©ä¹‹å¾Œå–å¾—code smellç›¸é—œè³‡è¨Š
 			RefineExceptionRefactoring refactoring = new RefineExceptionRefactoring(marker);
 
 			/*
-			 * 1. ±Ò°ÊRefactor dialog (¨Ï¥ÎªÌÁÙ¬O¥i¥H­n¨D©ß¥X Checked Exception¡A³oÃäºâ¬OBug)
-			 * 2. ¨Ï¥ÎªÌ©ß¥X¬Y¨ÇUnchecked Exception·|¥¢±Ñ¡A¥i¯à­ì¦]¬O¨º¨Ç¨Ò¥~Ãş«¬ªº«Øºc¤l¨S¦³throwable
+			 * 1. å•Ÿå‹•Refactor dialog (ä½¿ç”¨è€…é‚„æ˜¯å¯ä»¥è¦æ±‚æ‹‹å‡º Checked Exceptionï¼Œé€™é‚Šç®—æ˜¯Bug)
+			 * 2. ä½¿ç”¨è€…æ‹‹å‡ºæŸäº›Unchecked Exceptionæœƒå¤±æ•—ï¼Œå¯èƒ½åŸå› æ˜¯é‚£äº›ä¾‹å¤–é¡å‹çš„å»ºæ§‹å­æ²’æœ‰throwable
 			 */
 			CodeSmellRefactoringWizard csRefactoringWizard = new CodeSmellRefactoringWizard(refactoring);
 			csRefactoringWizard.setUserInputPage(new RethrowExInputPage("Rethrow Unchecked Exception"));
@@ -61,7 +61,7 @@ public class RefineToUncheckedExceptionMarkerResolution implements IMarkerResolu
 				new RefactoringWizardOpenOperation(csRefactoringWizard);
 			operation.run(new Shell(), "Rethrow Unchecked Exception");
 
-//			//­YAnnotation¶¶§Ç¤£¹ï¡A«h¥æ´«¶¶§Ç¡C³Ì«á¦A©w¦ì
+//			//è‹¥Annotationé †åºä¸å°ï¼Œå‰‡äº¤æ›é †åºã€‚æœ€å¾Œå†å®šä½
 //			refactoring.changeAnnotation();
 			
 		} catch (CoreException e) {

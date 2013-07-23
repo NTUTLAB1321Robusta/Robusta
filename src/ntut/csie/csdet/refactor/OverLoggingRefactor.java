@@ -40,37 +40,37 @@ import org.slf4j.LoggerFactory;
 public class OverLoggingRefactor {
 	private static Logger logger = LoggerFactory.getLogger(OverLoggingRefactor.class);
 	private IMarker marker = null;
-	// Class(CompilationUnit)ªº¬ÛÃö¸ê°T
+	// Class(CompilationUnit)çš„ç›¸é—œè³‡è¨Š
 	private IOpenable actOpenable = null;
 	private CompilationUnit actRoot = null;
-	// ¦s©ñ¥Ø«e©Ò­nfixªºmethod node
+	// å­˜æ”¾ç›®å‰æ‰€è¦fixçš„method node
 	private MethodDeclaration currentMethodNode = null;
-	// ¦s©ñ¦P¤@­ÓClass¤º­nfixªºmethod
+	// å­˜æ”¾åŒä¸€å€‹Classå…§è¦fixçš„method
 	private List<MethodDeclaration> methodNodeList = new ArrayList<MethodDeclaration>();
-	// ¥Ø«eMethod¤ºªºOverLogging
+	// ç›®å‰Methodå…§çš„OverLogging
 	private List<MarkerInfo> currentLoggingList = new ArrayList<MarkerInfo>();
-	// ¦s©ñ¦P¤@­ÓClass¤º­nfixªºmethod¤º¡A©Ò¥X²{ªºOverLogging
+	// å­˜æ”¾åŒä¸€å€‹Classå…§è¦fixçš„methodå…§ï¼Œæ‰€å‡ºç¾çš„OverLogging
 	private List<List<MarkerInfo>> loggingList = new ArrayList<List<MarkerInfo>>();
 	private List<CompilationUnit> unitList = new ArrayList<CompilationUnit>();
 	
 	public void refator(IMarker marker) {
 		try {
-			// ¨ú±oMarkerªº¸ê°T
+			// å–å¾—Markerçš„è³‡è¨Š
 			String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
 			if(obtainResource(marker.getResource())) {
-				// ¨ú±oMethod¬ÛÃö¸ê°T
+				// å–å¾—Methodç›¸é—œè³‡è¨Š
 				bindMethod(Integer.parseInt(methodIdx));
-				// ¥[¤J¦Ü§R°£¦W³æ
+				// åŠ å…¥è‡³åˆªé™¤åå–®
 				unitList.add(actRoot);
-				// ¨ú±oMethodªºLogging¸ê°T
+				// å–å¾—Methodçš„Loggingè³‡è¨Š
 				traceCallerMethod(methodNodeList.get(0));
 				traceCalleeMethod(methodNodeList.get(0));
-				// ­Y§ó°ÊCompilationUnit«á¦A§ó°Ê·|¥X¿ù
-				// ©Ò¥H§â©Ò¦³­n§R°£ªºLogging³£°O¿ı°_¨Ó¡A¦A¤@¦¸§R°£
+				// è‹¥æ›´å‹•CompilationUnitå¾Œå†æ›´å‹•æœƒå‡ºéŒ¯
+				// æ‰€ä»¥æŠŠæ‰€æœ‰è¦åˆªé™¤çš„Loggingéƒ½è¨˜éŒ„èµ·ä¾†ï¼Œå†ä¸€æ¬¡åˆªé™¤
 				for (CompilationUnit unit : unitList) {
-					// §R°£List¤¤ªºOverLogging (¤@¦¸¥H¤@­ÓClass¬°³æ¦ì§R°£)
+					// åˆªé™¤Listä¸­çš„OverLogging (ä¸€æ¬¡ä»¥ä¸€å€‹Classç‚ºå–®ä½åˆªé™¤)
 					deleteMessage(unit);
-					// ±N©Ò­nÅÜ§óªº¤º®e¼g¦^Edit¤¤
+					// å°‡æ‰€è¦è®Šæ›´çš„å…§å®¹å¯«å›Editä¸­
 					applyChange();
 				}
 			}
@@ -80,9 +80,9 @@ public class OverLoggingRefactor {
 	}
 
 	/**
-	 * ¨ú±oClass(CompilationUnit)ªº¬ÛÃö¸ê°T
+	 * å–å¾—Class(CompilationUnit)çš„ç›¸é—œè³‡è¨Š
 	 * @param resource
-	 * @return			¬O§_¦¨¥\¨ú±o
+	 * @return			æ˜¯å¦æˆåŠŸå–å¾—
 	 */
 	public boolean obtainResource(IResource resource) {
 		if (resource instanceof IFile && resource.getName().endsWith(".java")) {
@@ -108,27 +108,27 @@ public class OverLoggingRefactor {
 	}
 	
 	/**
-	 * ¨ú±oMethod¬ÛÃö¸ê°T(¤wª¾MethodIndex)
+	 * å–å¾—Methodç›¸é—œè³‡è¨Š(å·²çŸ¥MethodIndex)
 	 * @param methodIdx
 	 */
 	public void bindMethod(int methodIdx) {			
-		// ¨ú±o¸Óclass©Ò¦³ªºmethod
+		// å–å¾—è©²classæ‰€æœ‰çš„method
 		ASTMethodCollector methodCollector = new ASTMethodCollector();
 		actRoot.accept(methodCollector);
 		List<MethodDeclaration> methodList = methodCollector.getMethodList();
 		
-		// ¨ú±o¥Ø«e­n³Q­×§ïªºmethod node
+		// å–å¾—ç›®å‰è¦è¢«ä¿®æ”¹çš„method node
 		MethodDeclaration tempNode = methodList.get(methodIdx);
 		currentMethodNode = tempNode;
 
-		// ´M§ä¸Ómethod¤ºªºOverLogging
+		// å°‹æ‰¾è©²methodå…§çš„OverLogging
 		OverLoggingDetector loggingDetector = new OverLoggingDetector(actRoot, tempNode);
 		loggingDetector.detect();
-		// ¨ú±o±M®×¤¤OverLogging
+		// å–å¾—å°ˆæ¡ˆä¸­OverLogging
 		List<MarkerInfo> overLogggingTemp = loggingDetector.getOverLoggingList();
 		currentLoggingList = overLogggingTemp;
 
-		// ­Y¨S¦³OverLogging«h¤£°O¿ı
+		// è‹¥æ²’æœ‰OverLoggingå‰‡ä¸è¨˜éŒ„
 		if (overLogggingTemp.size() != 0 && !isExistence(tempNode)) {
 			methodNodeList.add(tempNode);
 			loggingList.add(overLogggingTemp);
@@ -136,13 +136,13 @@ public class OverLoggingRefactor {
 	}
 	
 	/**
-	 * ©¹¤W¤@¼hTrace¡A§ä¥XCallerªºOverLogging¸ê°T
+	 * å¾€ä¸Šä¸€å±¤Traceï¼Œæ‰¾å‡ºCallerçš„OverLoggingè³‡è¨Š
 	 * @param currentNode
 	 */
 	private void traceCallerMethod(MethodDeclaration methodDeclaration) {
-		// ±qMethodDeclaration¨ú±oIMthod
+		// å¾MethodDeclarationå–å¾—IMthod
 		IMethod method = (IMethod) methodDeclaration.resolveBinding().getJavaElement();
-		// ¨ú±oMethodªºCaller
+		// å–å¾—Methodçš„Caller
 		IMember[] methodArray = new IMember[] {method};
 		MethodWrapper[] callerMethodWrapper = CallHierarchy.getDefault().getCallerRoots(methodArray);
 		MethodWrapper[] callers = null;
@@ -152,20 +152,20 @@ public class OverLoggingRefactor {
 		
 		if (callerMethodWrapper.length == 1 && callers.length != 0) {
 			for (MethodWrapper methodWrapper : callers) {
-				// ¨ú±ocallerªºIMethod
+				// å–å¾—callerçš„IMethod
 				IMethod callerMethod = (IMethod) methodWrapper.getMember();
 				boolean isOK = obtainResource(callerMethod.getResource());
 				if(isOK)
 					bindMethod(callerMethod);
 
-				// ¬O§_¦³OverLogging¡A¨S¦³´N¤£³B²z (§Y¤§«á´N¤£°µ§R°£°Ê§@)
+				// æ˜¯å¦æœ‰OverLoggingï¼Œæ²’æœ‰å°±ä¸è™•ç† (å³ä¹‹å¾Œå°±ä¸åšåˆªé™¤å‹•ä½œ)
 				if (isLoggingExist() && isOK) {
-					// ¦¹Class¬O§_¤w¸g¦s¦b©óList¤¤
+					// æ­¤Classæ˜¯å¦å·²ç¶“å­˜åœ¨æ–¼Listä¸­
 					addFixList();
 				}
 
-				// °»´ú¬O§_Ä~ÄòTrace¤W¤@¼hCaller
-				// ­YException¤S¶Ç¨ì¤W¤@¼h¡A«hÄ~Äò°»´ú
+				// åµæ¸¬æ˜¯å¦ç¹¼çºŒTraceä¸Šä¸€å±¤Caller
+				// è‹¥Exceptionåˆå‚³åˆ°ä¸Šä¸€å±¤ï¼Œå‰‡ç¹¼çºŒåµæ¸¬
 				if (getIsKeepTrace(method, callerMethod))
 					traceCallerMethod(currentMethodNode);
 			}
@@ -173,31 +173,31 @@ public class OverLoggingRefactor {
 	}
 	
 	/**
-	 * ¨ú±oMethod¬ÛÃö¸ê°T(¥uª¾¹D­ş­ÓMethod)
+	 * å–å¾—Methodç›¸é—œè³‡è¨Š(åªçŸ¥é“å“ªå€‹Method)
 	 * @param method
 	 */
 	public void bindMethod(IMethod method) {
-		// ¨ú±o¸Óclass©Ò¦³ªºmethod
+		// å–å¾—è©²classæ‰€æœ‰çš„method
 		ASTMethodCollector methodCollector = new ASTMethodCollector();
 		actRoot.accept(methodCollector);
 		List<MethodDeclaration> methodList = methodCollector.getMethodList();
 		
 		int methodIdx = -1;
-		// ­Y¤£¾å±omethodIndex´N±qmethodList¤¤¥h¤ñ¸û¨Ó¨ú±o
+		// è‹¥ä¸æ›‰å¾—methodIndexå°±å¾methodListä¸­å»æ¯”è¼ƒä¾†å–å¾—
 		methodIdx = findMethodIndex(method, methodList);
 
-		// ¨ú±o¥Ø«e­n³Q­×§ïªºmethod node
+		// å–å¾—ç›®å‰è¦è¢«ä¿®æ”¹çš„method node
 		MethodDeclaration tempNode = methodList.get(methodIdx);
 		currentMethodNode = tempNode;
 		
-		// ´M§ä¸Ómethod¤ºªºOverLogging
+		// å°‹æ‰¾è©²methodå…§çš„OverLogging
 		OverLoggingDetector loggingDetector = new OverLoggingDetector(actRoot, tempNode);
 		loggingDetector.detect();
-		// ¨ú±o±M®×¤¤OverLogging
+		// å–å¾—å°ˆæ¡ˆä¸­OverLogging
 		List<MarkerInfo> overLogggingTemp = loggingDetector.getOverLoggingList();
 		currentLoggingList = overLogggingTemp;
 
-		// ­Y¨S¦³OverLogging«h¤£°O¿ı
+		// è‹¥æ²’æœ‰OverLoggingå‰‡ä¸è¨˜éŒ„
 		if (overLogggingTemp.size() != 0 && !isExistence(tempNode)) {
 			methodNodeList.add(tempNode);
 			loggingList.add(overLogggingTemp);
@@ -205,21 +205,21 @@ public class OverLoggingRefactor {
 	}
 	
 	/**
-	 * ¨ú±oMethodªºIndex
-	 * @param callerMethod	³Q¤ñ¸ûªºMethod
-	 * @param methodList	¸Óclass¤¤¥ş³¡ªºMethod
-	 * @return				¦ì©óclass¤¤²Ä´X­ÓMethod
+	 * å–å¾—Methodçš„Index
+	 * @param callerMethod	è¢«æ¯”è¼ƒçš„Method
+	 * @param methodList	è©²classä¸­å…¨éƒ¨çš„Method
+	 * @return				ä½æ–¼classä¸­ç¬¬å¹¾å€‹Method
 	 */
 	private int findMethodIndex(IMethod callerMethod, List<MethodDeclaration> methodList) {
-		// Âà´«¦¨MethodDeclaration
+		// è½‰æ›æˆMethodDeclaration
 		ASTNode methodNode = transMethodNode(callerMethod);
 
-		// ­pºâ¥L¦ì©óMethod List¤¤­ş¤@­Óindex
+		// è¨ˆç®—ä»–ä½æ–¼Method Listä¸­å“ªä¸€å€‹index
 		int methodIndex = -1;
 		if (methodNode != null) {
 			for (MethodDeclaration method : methodList){
 				methodIndex++;
-				// »P­n§äªºµ{¦¡¬O§_¬Û¦P
+				// èˆ‡è¦æ‰¾çš„ç¨‹å¼æ˜¯å¦ç›¸åŒ
 				if (method.toString().equals(methodNode.toString()))
 					return methodIndex;
 			}
@@ -228,7 +228,7 @@ public class OverLoggingRefactor {
 	}
 
 	/**
-	 * IMethodÂà´«¦¨ASTNode MethodDeclaration
+	 * IMethodè½‰æ›æˆASTNode MethodDeclaration
 	 * @param method	IMethod
 	 * @return			MethodDeclaration(ASTNode)
 	 */
@@ -236,23 +236,23 @@ public class OverLoggingRefactor {
 		MethodDeclaration md = null;
 
 		try {
-			// Parser JarÀÉ®É¡A·|¨ú¤£¨ìICompilationUnit
+			// Parser Jaræª”æ™‚ï¼Œæœƒå–ä¸åˆ°ICompilationUnit
 			if (method.getCompilationUnit() == null)
 				return null;
 
-			// ²£¥ÍAST
+			// ç”¢ç”ŸAST
 			ASTParser parserAST = ASTParser.newParser(AST.JLS3);
 			parserAST.setKind(ASTParser.K_COMPILATION_UNIT);
 			parserAST.setSource(method.getCompilationUnit());
 			parserAST.setResolveBindings(true);
 			ASTNode unit = parserAST.createAST(null);
 
-			// ¨ú±oASTªºMethod³¡¥÷
+			// å–å¾—ASTçš„Methodéƒ¨ä»½
 			NodeFinder nodeFinder = new NodeFinder(method.getSourceRange().getOffset(), method.getSourceRange().getLength());
 			unit.accept(nodeFinder);
 			ASTNode methodNode = nodeFinder.getCoveredNode();
 
-			// ­Y¦¹ASTNodeÄİ©óMethodDeclaration¡A«hÂà«¬
+			// è‹¥æ­¤ASTNodeå±¬æ–¼MethodDeclarationï¼Œå‰‡è½‰å‹
 			if(methodNode instanceof MethodDeclaration)
 				md = (MethodDeclaration) methodNode;
 		} catch (JavaModelException e) {
@@ -262,13 +262,13 @@ public class OverLoggingRefactor {
 	}
 	
 	/**
-	 * ©¹¤U¤@¼hTrace¡A§ä¥XCallerªºOverLogging¸ê°T
+	 * å¾€ä¸‹ä¸€å±¤Traceï¼Œæ‰¾å‡ºCallerçš„OverLoggingè³‡è¨Š
 	 * @param methodDeclaration
 	 */
 	private void traceCalleeMethod(MethodDeclaration methodDeclaration) {
-		// ±qMethodDeclaration¨ú±oIMthod
+		// å¾MethodDeclarationå–å¾—IMthod
 		IMethod method = (IMethod) methodDeclaration.resolveBinding().getJavaElement();
-		// ¨ú±oMethodªºCallee
+		// å–å¾—Methodçš„Callee
 		IMember[] methodArray = new IMember[] {method};
 		MethodWrapper[] calleeMethodWrapper = CallHierarchy.getDefault().getCalleeRoots(methodArray);
 		MethodWrapper[] callers = null, callees = null;
@@ -284,19 +284,19 @@ public class OverLoggingRefactor {
 				IMethod calleeMethod = (IMethod) methodWrapper.getMember();
 				try {
 					String[] calleeType = calleeMethod.getExceptionTypes();
-					// ­YCallee¦³throws Exception
+					// è‹¥Calleeæœ‰throws Exception
 					for (String type : calleeType) {
 						boolean isOK = obtainResource(calleeMethod.getResource());
 						if(isOK)
 							bindMethod(calleeMethod);
 
-						// ¬O§_¦³OverLogging¡A¨S¦³´N¤£³B²z (§Y¤§«á´N¤£°µ§R°£°Ê§@)
+						// æ˜¯å¦æœ‰OverLoggingï¼Œæ²’æœ‰å°±ä¸è™•ç† (å³ä¹‹å¾Œå°±ä¸åšåˆªé™¤å‹•ä½œ)
 						if (isLoggingExist() && isOK) {
-							// ¦¹Class¬O§_¤w¸g¦s¦b©óList¤¤
+							// æ­¤Classæ˜¯å¦å·²ç¶“å­˜åœ¨æ–¼Listä¸­
 							addFixList();
 						}
 
-						// Ä~Äò¤U¤@¼hTrace
+						// ç¹¼çºŒä¸‹ä¸€å±¤Trace
 						traceCalleeMethod(currentMethodNode);
 					}
 				} catch (JavaModelException e) {
@@ -307,25 +307,25 @@ public class OverLoggingRefactor {
 	}
 	
 	/**
-	 * §R°£Message
+	 * åˆªé™¤Message
 	 */
 	public void deleteMessage(CompilationUnit unit) {
 		try {
 			actRoot = unit;
 			actRoot.recordModifications();
 			actOpenable = (IOpenable)actRoot.getJavaElement();
-			// ­Y¦³½Æ¼Æ­ÓMethod­n­×§ï
+			// è‹¥æœ‰è¤‡æ•¸å€‹Methodè¦ä¿®æ”¹
 			for (int i=0; i < methodNodeList.size(); i++) {
-				// ¦¬¶°¸Ómethod©Ò¦³ªºcatch clause
+				// æ”¶é›†è©²methodæ‰€æœ‰çš„catch clause
 				ASTCatchCollect catchCollector = new ASTCatchCollect();
 				methodNodeList.get(i).accept(catchCollector);
 				List<CatchClause> catchList = catchCollector.getMethodList();
-				// §R°£¸ÓMethod¤ºªºCatch¤¤ªºLogging Statement
+				// åˆªé™¤è©²Methodå…§çš„Catchä¸­çš„Logging Statement
 				for (MarkerInfo msg : loggingList.get(i)) {
-					// ¥h¤ñ¹ïstartPosition,§ä¥X­n­×§ïªº¸`ÂI
+					// å»æ¯”å°startPosition,æ‰¾å‡ºè¦ä¿®æ”¹çš„ç¯€é»
 					for (CatchClause cc : catchList) {
 						if (cc.getStartPosition() == msg.getPosition()) {
-							// §R°£Catch¤ºªºLogging Statement
+							// åˆªé™¤Catchå…§çš„Logging Statement
 							deleteCatchStatement(cc, msg);
 							break;
 						}
@@ -338,20 +338,20 @@ public class OverLoggingRefactor {
 	}
 	
 	/**
-	 * §R°£Catch¤º¦³OverLogging MarkerªºLogging°Ê§@
+	 * åˆªé™¤Catchå…§æœ‰OverLogging Markerçš„Loggingå‹•ä½œ
 	 * @param cc
 	 * @param msg
 	 */
 	private void deleteCatchStatement(CatchClause cc, MarkerInfo msg) {
-		// ¨ú±oCatchClause©Ò¦³ªºstatement¡A±NOverLogging¸ê°TªºªF¦è²¾°£
+		// å–å¾—CatchClauseæ‰€æœ‰çš„statementï¼Œå°‡OverLoggingè³‡è¨Šçš„æ±è¥¿ç§»é™¤
 		List<?> statementList = cc.getBody().statements();
 		
-		// ¤ñ¹ïCatch¤º©Ò¦³ªºStatement
+		// æ¯”å°Catchå…§æ‰€æœ‰çš„Statement
 		for (int i=0; i < statementList.size(); i++) {
 			if (statementList.get(i) instanceof ExpressionStatement ) {
 				ExpressionStatement statement = (ExpressionStatement) statementList.get(i);
 
-				// ­Y¬°¿ï¾Üªº¦æ¼Æ¡A«h§R°£¦¹¦æ
+				// è‹¥ç‚ºé¸æ“‡çš„è¡Œæ•¸ï¼Œå‰‡åˆªé™¤æ­¤è¡Œ
 				int line = actRoot.getLineNumber(statement.getStartPosition());
 				if (line == msg.getLineNumber())
 					statementList.remove(i);
@@ -360,7 +360,7 @@ public class OverLoggingRefactor {
 	}
 	
 	/**
-	 * ±N©Ò­nÅÜ§óªº¤º®e¼g¦^Edit¤¤
+	 * å°‡æ‰€è¦è®Šæ›´çš„å…§å®¹å¯«å›Editä¸­
 	 */
 	private void applyChange() {
 		try {
@@ -378,14 +378,14 @@ public class OverLoggingRefactor {
 	}
 	
 	/**
-	 * °»´ú¬O§_Ä~ÄòTrace¤W¤@¼hCaller(Exception¬O§_¶Ç¨ì¤W¤@¼h)
+	 * åµæ¸¬æ˜¯å¦ç¹¼çºŒTraceä¸Šä¸€å±¤Caller(Exceptionæ˜¯å¦å‚³åˆ°ä¸Šä¸€å±¤)
 	 * @param methodDeclaration
 	 * @param callerMethod
-	 * @return					¬O§_Ä~ÄòTrace
+	 * @return					æ˜¯å¦ç¹¼çºŒTrace
 	 */
 	private boolean getIsKeepTrace(IMethod method, IMethod callerMethod) {
 		MethodDeclaration methodNode = transMethodNode(callerMethod);
-		// °»´ú¬O§_±NException¶Ç¨ì¤W¤@¼h
+		// åµæ¸¬æ˜¯å¦å°‡Exceptionå‚³åˆ°ä¸Šä¸€å±¤
 		OverLoggingVisitor visitor = new OverLoggingVisitor(actRoot, method.getElementName());				
 		methodNode.accept(visitor);
 
@@ -393,20 +393,20 @@ public class OverLoggingRefactor {
 	}
 	
 	/**
-	 * ½T»{¦¹Class¬O§_¤w¸g¦s¦b©óList¤¤¡C
-	 * ­Y¦s¦b«h¦bCompilationUnit¤¤·s¼W±ı­×§ïªºMethod¡F­Y¤£¦s¦b«h·s¼WCompilationUnit¦ÜList
+	 * ç¢ºèªæ­¤Classæ˜¯å¦å·²ç¶“å­˜åœ¨æ–¼Listä¸­ã€‚
+	 * è‹¥å­˜åœ¨å‰‡åœ¨CompilationUnitä¸­æ–°å¢æ¬²ä¿®æ”¹çš„Methodï¼›è‹¥ä¸å­˜åœ¨å‰‡æ–°å¢CompilationUnitè‡³List
 	 */
 	private void addFixList() {
 		boolean isExistence = false;
 
 		for (CompilationUnit unit: unitList) {
-			// §PÂ_CompilationUnit¬O§_»PList¤¤ªº¬Û¦P
+			// åˆ¤æ–·CompilationUnitæ˜¯å¦èˆ‡Listä¸­çš„ç›¸åŒ
 			if (unit.toString().equals(actRoot.toString())) {
 				isExistence = true;
 				break;
 			}
 		}
-		// ­Y¨S¥[¤J¡A«h·s¥[¤J¦ÜList
+		// è‹¥æ²’åŠ å…¥ï¼Œå‰‡æ–°åŠ å…¥è‡³List
 		if (!isExistence)
 			unitList.add(actRoot);
 	}
@@ -427,8 +427,8 @@ public class OverLoggingRefactor {
 	}
 	
 	/**
-	 * ²{¦b³o­ÓMethod¤º¬O§_¦³OverLogging
-	 * @return	¬O§_¦³OverLogging
+	 * ç¾åœ¨é€™å€‹Methodå…§æ˜¯å¦æœ‰OverLogging
+	 * @return	æ˜¯å¦æœ‰OverLogging
 	 */
 	public boolean isLoggingExist() {
 		if (currentLoggingList == null || currentLoggingList.size() == 0)

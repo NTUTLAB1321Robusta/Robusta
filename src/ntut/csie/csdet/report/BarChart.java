@@ -29,14 +29,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * ¹Ïªí
+ * åœ–è¡¨
  * @author Shiau
  */
 public class BarChart {
 	public enum LEVEL { PROJECT_LEVEL, PACKAGE_LEVEL, CLASS_LEVEL }
 	private static Logger logger = LoggerFactory.getLogger(BarChart.class);
 
-	//Reportªº¸ê®Æ
+	//Reportçš„è³‡æ–™
 	private ReportModel model;
 	
 	BarChart(ReportModel model) {
@@ -44,32 +44,32 @@ public class BarChart {
 	}
 
 	/**
-	 * ²£¥Í¹Ïªí
+	 * ç”¢ç”Ÿåœ–è¡¨
 	 */
 	public void build() {
 		if (model != null) {
-			//TODO ¨Ï¥ÎenumÂ²¤Æµ{¦¡
+			//TODO ä½¿ç”¨enumç°¡åŒ–ç¨‹å¼
 
-			//«Ø¥ßProject SummaryªºSmell¸ê°T
+			//å»ºç«‹Project Summaryçš„Smellè³‡è¨Š
 	        CategoryDataset dataset = createProjectDataset();
-	        //²£¥ÍChart
+	        //ç”¢ç”ŸChart
 	        JFreeChart chart = createChart(dataset, "Exception Handling Code Smells Chart", "", true);
-	        //¿é¥X¦¨JPG
+	        //è¼¸å‡ºæˆJPG
 	        outputJPGFile(chart, "Report", 800, 500);
-	        //«Ø¥ßPackage LevelªºSmell¸ê°T
+	        //å»ºç«‹Package Levelçš„Smellè³‡è¨Š
 	        dataset = createPackageDataset();
-	        //²£¥ÍChart
+	        //ç”¢ç”ŸChart
 	        chart = createChart(dataset, "Packages List", "Package Name",  false);
-	        //¿é¥X¦¨JPG
+	        //è¼¸å‡ºæˆJPG
 	        outputJPGFile(chart, "PackageReport", 800, 420);
 
 	        for (int i = 0; i < model.getPackagesSize(); i++) {
 	        	if(model.getPackage(i).getTotalSmellSize() > 0) {
-			        //«Ø¥ßClass LevelªºSmell¸ê°T
+			        //å»ºç«‹Class Levelçš„Smellè³‡è¨Š
 			        dataset = createClassDataset(model.getPackage(i));
-			        //²£¥ÍChart
+			        //ç”¢ç”ŸChart
 			        chart = createChart(dataset, model.getPackage(i).getPackageName(), "Class Name", false);
-			        //¿é¥X¦¨JPG
+			        //è¼¸å‡ºæˆJPG
 			        outputJPGFile(chart, "ClassReport_" + i, 600, 420);
 	        	}
 	        }
@@ -81,7 +81,7 @@ public class BarChart {
 	 */
 	private CategoryDataset createProjectDataset() {
 		DefaultCategoryDataset data = new DefaultCategoryDataset();
-		//·s¼W¸ê®Æ(""¬O¬°¤F³]©w¦P¤@Äæ¦ì¥Î¬Û¦P¦WºÙ)
+		//æ–°å¢è³‡æ–™(""æ˜¯ç‚ºäº†è¨­å®šåŒä¸€æ¬„ä½ç”¨ç›¸åŒåç¨±)
 		if(model.getTotalSmellCount() == 0){
 			return null;
 		}
@@ -106,9 +106,9 @@ public class BarChart {
 		for (int i=0; i < model.getPackagesSize(); i++) {
 			PackageModel packageModel = model.getPackage(i);
 			if(packageModel.getTotalSmellSize() > 0) {
-				//Package ¦WºÙ¤Ó±`©Ò¥H¨Ï¥Î¥N½X
+				//Package åç¨±å¤ªå¸¸æ‰€ä»¥ä½¿ç”¨ä»£ç¢¼
 				//data.addValue(packageModel.getTotalSmellSize(), "", packageModel.getPackageName());
-				//·s¼W¸ê®Æ(""¬O¬°¤F³]©w¦P¤@Äæ¦ì¥Î¬Û¦P¦WºÙ)
+				//æ–°å¢è³‡æ–™(""æ˜¯ç‚ºäº†è¨­å®šåŒä¸€æ¬„ä½ç”¨ç›¸åŒåç¨±)
 				data.addValue(packageModel.getTotalSmellSize(), "", "P" + String.valueOf(i));
 			}
 		}
@@ -125,7 +125,7 @@ public class BarChart {
 		for (int i=0; i < packageModel.getClassSize(); i++) {
 			ClassModel classModel = packageModel.getClass(i);
 			if(classModel.getTotalSmell() > 0) {
-				//·s¼W¸ê®Æ(""¬O¬°¤F³]©w¦P¤@Äæ¦ì¥Î¬Û¦P¦WºÙ)
+				//æ–°å¢è³‡æ–™(""æ˜¯ç‚ºäº†è¨­å®šåŒä¸€æ¬„ä½ç”¨ç›¸åŒåç¨±)
 				data.addValue(classModel.getTotalSmell(), "", classModel.getClassName());
 			}
 		}
@@ -150,12 +150,12 @@ public class BarChart {
 
 		CategoryPlot plot = chart.getCategoryPlot();
 		plot.setNoDataMessage("No data available");
-		///ChartªºÃC¦â³]©w///
+		///Chartçš„é¡è‰²è¨­å®š///
 		chart.setBackgroundPaint(Color.white);
 		plot.setBackgroundPaint(Color.lightGray);
 		plot.setDomainGridlinePaint(Color.white);
 		plot.setRangeGridlinePaint(Color.white);
-		//¨C±øBarªºÃC¦â
+		//æ¯æ¢Barçš„é¡è‰²
 		CategoryItemRenderer renderer;
 		if (isDifferColor) {
 			renderer = new CustomRenderer(new Paint[] {	Color.red, Color.blue, Color.green,
@@ -166,10 +166,10 @@ public class BarChart {
 
 		renderer.setBaseItemLabelGenerator(new LabelGenerator(null));
 		renderer.setBaseItemLabelsVisible(true);
-		//½Õ¾ã¨Ï¹Ïªí¶¡¶Z¤£¥X²{¤p¼ÆÂI
+		//èª¿æ•´ä½¿åœ–è¡¨é–“è·ä¸å‡ºç¾å°æ•¸é»
 		NumberAxis numberaxis = (NumberAxis)plot.getRangeAxis();
 		numberaxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-		//³]©w¨C±øBar¤W­±ªº¦r¼Ë
+		//è¨­å®šæ¯æ¢Barä¸Šé¢çš„å­—æ¨£
 		renderer.setBaseItemLabelFont(new Font("Arial", Font.BOLD, 14));
 		renderer.setBasePositiveItemLabelPosition(new ItemLabelPosition(ItemLabelAnchor.OUTSIDE12, TextAnchor.BASELINE_CENTER));
 		plot.setRenderer(renderer);
@@ -179,13 +179,13 @@ public class BarChart {
 //		domainAxis.setMaximumCategoryLabelWidthRatio(25);
 //		domainAxis.setMaximumCategoryLabelLines(100);
 
-		//­Y¬°Package Level±N¹Ï¤ù¤å¦r§ï¦¨ª½ªº(Package Level¤å¦r¨Ï¥Î¥N½X)
+		//è‹¥ç‚ºPackage Levelå°‡åœ–ç‰‡æ–‡å­—æ”¹æˆç›´çš„(Package Levelæ–‡å­—ä½¿ç”¨ä»£ç¢¼)
 		if (title.equals("Packages List"))
 			domainAxis.setCategoryLabelPositions(CategoryLabelPositions.STANDARD);
 		else
 			domainAxis.setCategoryLabelPositions(CategoryLabelPositions.UP_45);
 
-		//­Y­nÅã¥Ü¬Û¦PÃC¦â¡A«h±NBar»PBar¤§¶¡ªº¶¡¶ZÁY¤p
+		//è‹¥è¦é¡¯ç¤ºç›¸åŒé¡è‰²ï¼Œå‰‡å°‡Barèˆ‡Barä¹‹é–“çš„é–“è·ç¸®å°
 		if (isDifferColor)
 			domainAxis.setCategoryMargin(0.5f);
 		else
@@ -195,19 +195,19 @@ public class BarChart {
 	}
 
     /**
-     * ¿é¥XJPGs
+     * è¼¸å‡ºJPGs
      */
     private void outputJPGFile(JFreeChart chart, String fileName, int sizeX, int sizeY) {
     	FileOutputStream fos_jpg = null;
     	try {
 			fos_jpg = new FileOutputStream(model.getFilePath(fileName + ".jpg", true));
-			//TODO ¸ÕµÛ±N¹Ï¤ù§ï¬°ClassÄæ§ï¬°Áa®y¼Ğ
-			//­Y¬°Class Level¡A·íClass­Ó¼Æ¶W¹L14­Ó®É¡A±N¹Ï¤ù©ñ¤j
+			//TODO è©¦è‘—å°‡åœ–ç‰‡æ”¹ç‚ºClassæ¬„æ”¹ç‚ºç¸±åº§æ¨™
+			//è‹¥ç‚ºClass Levelï¼Œç•¶Classå€‹æ•¸è¶…é14å€‹æ™‚ï¼Œå°‡åœ–ç‰‡æ”¾å¤§
 			if (sizeX == 600 && chart.getCategoryPlot().getCategories() != null)
 				if (chart.getCategoryPlot().getCategories().size() > 14)
 					sizeX += (chart.getCategoryPlot().getCategories().size() - 14)*45;
 
-			//¿é¥XJPG (µù¡G¤£¥¢¯uªºªø«×800X400)
+			//è¼¸å‡ºJPG (è¨»ï¼šä¸å¤±çœŸçš„é•·åº¦800X400)
 			ChartUtilities.writeChartAsJPEG(fos_jpg, 1.0f, chart, sizeX, sizeY);
 		} catch (FileNotFoundException e) {
 			logger.error("[File Not Found Exception] EXCEPTION ", e);
@@ -233,7 +233,7 @@ public class BarChart {
 
 
     /**
-     * ³]©w¹Ïªí¨C­ÓÄæ¤£¦PÃC¦â
+     * è¨­å®šåœ–è¡¨æ¯å€‹æ¬„ä¸åŒé¡è‰²
      * @author Shiau
      */
     @SuppressWarnings("serial")
@@ -302,7 +302,7 @@ public class BarChart {
 				if (v != 0)
 					//you can apply something format here
 					result = nf.format(value).toString()+ "("+ this.formatter.format(v/base) + ")";
-				//Á×§Kvalue¬°0®ÉÅã¥Ü¿ù»~¡Aª½±µÅã¥Ü¬°0
+				//é¿å…valueç‚º0æ™‚é¡¯ç¤ºéŒ¯èª¤ï¼Œç›´æ¥é¡¯ç¤ºç‚º0
 				else
 					result = nf.format(value).toString()+ "("+ this.formatter.format(0) + ")";
 			}						
@@ -311,7 +311,7 @@ public class BarChart {
 		}
 
 		/**
-		 * ­pºâ¹ÏªíÄæ¦ì¦Ê¤À¤ñ
+		 * è¨ˆç®—åœ–è¡¨æ¬„ä½ç™¾åˆ†æ¯”
 		 * @param dataset
 		 * @param series
 		 * @return

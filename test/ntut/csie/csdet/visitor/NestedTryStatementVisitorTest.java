@@ -39,7 +39,7 @@ public class NestedTryStatementVisitorTest {
 		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.FOLDERNAME_LIB_JAR, JavaProjectMaker.FOLDERNAME_BIN_CLASS);
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/" + JavaProjectMaker.RL_LIBRARY_PATH);
 		javaProjectMaker.setJREDefaultContainer();
-		// ®Ú¾Ú´ú¸ÕÀÉ®×¼Ë¥»¤º®e«Ø¥ß·sªºÀÉ®×
+		// æ ¹æ“šæ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹å»ºç«‹æ–°çš„æª”æ¡ˆ
 		javaFile2String.read(NestedTryStatementExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				NestedTryStatementExample.class.getPackage().getName(),
@@ -52,15 +52,15 @@ public class NestedTryStatementVisitorTest {
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(
 				JavaCore.createCompilationUnitFrom(
 						ResourcesPlugin.getWorkspace().
 						getRoot().getFile(nestedTryExamplePath)));
 		parser.setResolveBindings(true);
-		// «Ø¥ßXML
+		// å»ºç«‹XML
 		createSettings(true);
-		// ¨ú±oAST
+		// å–å¾—AST
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
 		nestedTryStatementVisitor = new NestedTryStatementVisitor(compilationUnit);
@@ -107,7 +107,7 @@ public class NestedTryStatementVisitorTest {
 	}
 	
 	/**
-	 * ¬ö¿ı©Ò¦³badSmell¤º®e¥H¤Î¦æ¸¹
+	 * ç´€éŒ„æ‰€æœ‰badSmellå…§å®¹ä»¥åŠè¡Œè™Ÿ
 	 * @param badSmellList
 	 * @return
 	 */

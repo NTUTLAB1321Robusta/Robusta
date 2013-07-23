@@ -78,7 +78,7 @@ public class EHSmellView extends ViewPart implements IShowInSource {
 	
 	public void init(IViewSite site) throws PartInitException {
 		super.setSite(site);
-		//¥[¤J¥¿¦b¨Ï¥ÎEditªºListener
+		//åŠ å…¥æ­£åœ¨ä½¿ç”¨Editçš„Listener
 		if (this.eventHandler == null) {
 			this.eventHandler = new EHSmellViewEventHandler(this);
 			site.getWorkbenchWindow().getSelectionService().addPostSelectionListener(eventHandler);
@@ -92,16 +92,16 @@ public class EHSmellView extends ViewPart implements IShowInSource {
 	 * it.
 	 */
 	public void createPartControl(Composite parent) {
-		//«Ø¸msmellList
+		//å»ºç½®smellList
 		buildTableList(parent);
-		//«Ø¸msmellListªºListener
+		//å»ºç½®smellListçš„Listener
 		smellListTableDoubleClick();
 		
-		//TODO MenuÁÙ¥¼¼g
-		//«Ø¸mMenu
+		//TODO Menué‚„æœªå¯«
+		//å»ºç½®Menu
 		buildMenu();
 
-		ConsoleLog.debug("ªì©l¤Æ§¹¦¨¡I");
+		ConsoleLog.debug("åˆå§‹åŒ–å®Œæˆï¼");
 		try {
 			IEditorPart part = EditorUtils.getActiveEditor();
 			if (part instanceof ITextEditor) {
@@ -125,7 +125,7 @@ public class EHSmellView extends ViewPart implements IShowInSource {
 	// GUI
 	// *************************************************************************
 	/**
-	 * «Ø¸mMenu
+	 * å»ºç½®Menu
 	 */
 	private void buildMenu() {
 		//hook context menu
@@ -149,7 +149,7 @@ public class EHSmellView extends ViewPart implements IShowInSource {
 	}
 
 	/**
-	 * «Ø¸msmellList
+	 * å»ºç½®smellList
 	 */
 	private void buildTableList(Composite parent) {
 		smellList = new Table(parent, SWT.SINGLE | SWT.FULL_SELECTION | SWT.HIDE_SELECTION);
@@ -164,11 +164,11 @@ public class EHSmellView extends ViewPart implements IShowInSource {
 	}
 
 	/**
-	 * ±N¸ê®ÆÅã¥Ü¦bViewªºTable¤W
+	 * å°‡è³‡æ–™é¡¯ç¤ºåœ¨Viewçš„Tableä¸Š
 	 * @param list
 	 */
 	private void showExListTableContent() {
-		//²M°£ªí®æ
+		//æ¸…é™¤è¡¨æ ¼
 		this.smellList.removeAll();
 		this.smellList.clearAll();
 
@@ -180,15 +180,15 @@ public class EHSmellView extends ViewPart implements IShowInSource {
 			TableItem item = new TableItem(smellList, SWT.NONE);
 			item.setData(String.valueOf(idx));
 
-			//²Ä¤@¦æÅã¥Ü¦æ¼Æ
+			//ç¬¬ä¸€è¡Œé¡¯ç¤ºè¡Œæ•¸
 			item.setText(0, String.valueOf(msg.getLineNumber()));
-			//§âSmell Typeªº©³½u§ï¦¨ªÅ®æ
+			//æŠŠSmell Typeçš„åº•ç·šæ”¹æˆç©ºæ ¼
 			String smellType = msg.getCodeSmellType();
 			smellType = smellType.replace('_' , ' ');
-			//²Ä¤G¦æÅã¥ÜSmell Type
+			//ç¬¬äºŒè¡Œé¡¯ç¤ºSmell Type
 			item.setText(1, smellType);
 
-			//¦pªG«ü¨ìªº¦æ¼Æ¬OSmellªº¦æ¼Æ
+			//å¦‚æœæŒ‡åˆ°çš„è¡Œæ•¸æ˜¯Smellçš„è¡Œæ•¸
 			if (currentLineNumber == msg.getLineNumber()) {
 				item.setBackground(new Color(null,0,255,0));
 			}
@@ -234,10 +234,10 @@ public class EHSmellView extends ViewPart implements IShowInSource {
 				return;
 			}
 
-			// §PÂ_¥Ø«e½s¿è¾¹¤Î¤å¥ó¬O§_¬°²{¦³View§e²{ªº
+			// åˆ¤æ–·ç›®å‰ç·¨è¼¯å™¨åŠæ–‡ä»¶æ˜¯å¦ç‚ºç¾æœ‰Viewå‘ˆç¾çš„
 			if (this.changeDocument || !model.hasData() || part != actEditor) {
-				ConsoleLog.debug("[handleSelectionChanged4Editor]­«·s¦A¨ú±oJava¤å¥ó¤Î½s¿è¾¹!");
-				// ­«·s¦A¨ú±oJava¤å¥ó¤Î½s¿è¾¹
+				ConsoleLog.debug("[handleSelectionChanged4Editor]é‡æ–°å†å–å¾—Javaæ–‡ä»¶åŠç·¨è¼¯å™¨!");
+				// é‡æ–°å†å–å¾—Javaæ–‡ä»¶åŠç·¨è¼¯å™¨
 				if (part instanceof ITextEditor && (EditorUtils.getJavaInput((ITextEditor) part) != null)) {
 					try {
 						this.getEditorInput((ITextEditor) part);
@@ -249,8 +249,8 @@ public class EHSmellView extends ViewPart implements IShowInSource {
 					}
 				}
 			} else {
-				// ¤å¥ó¤Î½s¿è¾¹¬°²{¦sªº
-				ConsoleLog.debug("[handleSelectionChanged4Editor]¤å¥ó¤Î½s¿è¾¹¬°²{¦sªº!");
+				// æ–‡ä»¶åŠç·¨è¼¯å™¨ç‚ºç¾å­˜çš„
+				ConsoleLog.debug("[handleSelectionChanged4Editor]æ–‡ä»¶åŠç·¨è¼¯å™¨ç‚ºç¾å­˜çš„!");
 				ConsoleLog.debug("[handleSelectionChanged4Editor]offset=" + offset + ",length=" + length);
 			}
 
@@ -284,7 +284,7 @@ public class EHSmellView extends ViewPart implements IShowInSource {
 	}
 
 	public ShowInContext getShowInContext() {
-		//²¾¨ìEclipse 3.4³oÃä·|µo¥Ínull point exception,©Ò¥H³oÃä§ï¦¨³o¼Ë 
+		//ç§»åˆ°Eclipse 3.4é€™é‚Šæœƒç™¼ç”Ÿnull point exception,æ‰€ä»¥é€™é‚Šæ”¹æˆé€™æ¨£ 
 		IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
 		if (editor == null)	return null;
 
@@ -336,12 +336,12 @@ public class EHSmellView extends ViewPart implements IShowInSource {
 		editor.horizontalAlignment = SWT.LEFT;
 		editor.grabHorizontal = true;
 
-		//Table«ö¨â¤U®É¯à¦Û°Ê¸õ¨ì¸Ó¦æµ{¦¡½X
+		//TableæŒ‰å…©ä¸‹æ™‚èƒ½è‡ªå‹•è·³åˆ°è©²è¡Œç¨‹å¼ç¢¼
 		smellList.addListener(SWT.DefaultSelection, new Listener() {
 			public void handleEvent(Event e) {
-				//¨ú±oTable¸Ìªº©Ò¦³Äæ¦ì
+				//å–å¾—Tableè£¡çš„æ‰€æœ‰æ¬„ä½
 				TableItem[] allItems = smellList.getItems();
-				//¨ú±oÂI¿ïªºItem
+				//å–å¾—é»é¸çš„Item
 				TableItem[] selection = smellList.getSelection();
 				if (selection.length >= 1) {
 					int pos = Integer.parseInt(selection[0].getText()) -1;
@@ -352,12 +352,12 @@ public class EHSmellView extends ViewPart implements IShowInSource {
 					} catch (BadLocationException e1) {
 						logger.error("[BadLocation] EXCEPTION ",e);
 					}
-					//´å¼Ğ©w¦ì
+					//æ¸¸æ¨™å®šä½
 					actEditor.selectAndReveal(lineInfo.getOffset(), 0);
-					//²M±¼©Ò¦³ªºItemÃC¦â
+					//æ¸…æ‰æ‰€æœ‰çš„Itemé¡è‰²
 					for (TableItem a:allItems)
 						a.setBackground(null);
-					//§âÂI¿ïªºItem¼Ğ¤WÃC¦â
+					//æŠŠé»é¸çš„Itemæ¨™ä¸Šé¡è‰²
 					selection[0].setBackground(new Color(null,0,255,0));
 				}
 			}

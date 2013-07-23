@@ -5,8 +5,8 @@ import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
 import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
 
 /**
- * ®Ú¾Ú§ÚÅªµ{¦¡½Xªºµo²{¡A¨ä¹ê§Ú­ÌRobusta¥u»İ­n¤@­ÓRefactoringWizard´N°÷¤F....XD
- * §Ú­Ì¨Ã¨S¦³»İ­n¦h¼Ë¤ÆªºRefactoringWizard¡A©Ò¥H§Ú·|§â¨ä¥Lªº¬å±¼¡C
+ * æ ¹æ“šæˆ‘è®€ç¨‹å¼ç¢¼çš„ç™¼ç¾ï¼Œå…¶å¯¦æˆ‘å€‘Robustaåªéœ€è¦ä¸€å€‹RefactoringWizardå°±å¤ äº†....XD
+ * æˆ‘å€‘ä¸¦æ²’æœ‰éœ€è¦å¤šæ¨£åŒ–çš„RefactoringWizardï¼Œæ‰€ä»¥æˆ‘æœƒæŠŠå…¶ä»–çš„ç æ‰ã€‚
  * @author charles
  *
  */
@@ -19,7 +19,7 @@ public class CodeSmellRefactoringWizard extends RefactoringWizard {
 	}
 
 	/**
-	 * ³]©wUserInputWizardPage
+	 * è¨­å®šUserInputWizardPage
 	 * @param userInputPage
 	 */
 	public void setUserInputPage(UserInputWizardPage userInputPage) {
@@ -28,7 +28,7 @@ public class CodeSmellRefactoringWizard extends RefactoringWizard {
 	
 	@Override
 	protected void addUserInputPages() {
-		// ¦pªG¨S¦³³]©wuser input page¡A´N·|©ß¥X¨Ò¥~Äµ§i
+		// å¦‚æœæ²’æœ‰è¨­å®šuser input pageï¼Œå°±æœƒæ‹‹å‡ºä¾‹å¤–è­¦å‘Š
 		if(userInputPage == null) {
 			throw new RuntimeException("UserInputPageIsNotSet");
 		}

@@ -14,20 +14,20 @@ import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
 /**
- * ¦bMethodDeclaration¸Ì­±¡A´M§ä¬Y¤@­Ómethod invocationªºclass instance creation node¡C
+ * åœ¨MethodDeclarationè£¡é¢ï¼Œå°‹æ‰¾æŸä¸€å€‹method invocationçš„class instance creation nodeã€‚
  * (new FileInputStream(""))
  * @author charles
  *
  */
 public class ClassInstanceCreationVisitor extends ASTVisitor {
-	/** ´M§ä«Ø¥ß³o­ÓInstanceªºnode (new FileInputStream("")) */
+	/** å°‹æ‰¾å»ºç«‹é€™å€‹Instanceçš„node (new FileInputStream("")) */
 	private ClassInstanceCreation cic = null;
 	private SimpleName declaringVariable = null;
 	private List<Expression> argumentsOfMethodInvocation = null;
 	
 	public ClassInstanceCreationVisitor(MethodInvocation methodInvocation) {
 		/*
-		 * §ä¥X³o­ÓMethodInvocation«Å§iªºÅÜ¼Æ
+		 * æ‰¾å‡ºé€™å€‹MethodInvocationå®£å‘Šçš„è®Šæ•¸
 		 */
 		declaringVariable = NodeUtils.getMethodInvocationBindingVariableSimpleName(methodInvocation.getExpression());
 		argumentsOfMethodInvocation = methodInvocation.arguments();
@@ -38,7 +38,7 @@ public class ClassInstanceCreationVisitor extends ASTVisitor {
 //			return false;
 //		}
 //		
-//		// ¦pªG³o­Ófis = new FileInputStream("")
+//		// å¦‚æœé€™å€‹fis = new FileInputStream("")
 //		if(node.resolveBinding().equals(declaringVariable.resolveBinding())){
 //			classInstanceCreation = (ClassInstanceCreation) node.getInitializer();
 //			return false;
@@ -54,7 +54,7 @@ public class ClassInstanceCreationVisitor extends ASTVisitor {
 					return false;
 				}
 				VariableDeclarationFragment vdf = (VariableDeclarationFragment)node.getParent();
-				// ¦pªG³o­Ófis = new FileInputStream("")
+				// å¦‚æœé€™å€‹fis = new FileInputStream("")
 				if(vdf.resolveBinding().equals(declaringVariable.resolveBinding())){
 					cic = node;
 					return false;
@@ -96,7 +96,7 @@ public class ClassInstanceCreationVisitor extends ASTVisitor {
 	}
 	
 	/**
-	 * §ä¨ì«Å§iªº¦a¤è
+	 * æ‰¾åˆ°å®£å‘Šçš„åœ°æ–¹
 	 * @return
 	 */
 	public ClassInstanceCreation getClassInstanceCreation() {

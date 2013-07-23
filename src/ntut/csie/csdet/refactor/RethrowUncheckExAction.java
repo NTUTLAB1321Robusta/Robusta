@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * ¦bMarker¤W­±ªºQuick Fix¤¤¥[¤JRefactoring(Rethrow Unchecked Exception)ªº¥\¯à
+ * åœ¨Markerä¸Šé¢çš„Quick Fixä¸­åŠ å…¥Refactoring(Rethrow Unchecked Exception)çš„åŠŸèƒ½
  * @author chewei
  */
 
@@ -30,24 +30,24 @@ public class RethrowUncheckExAction implements IMarkerResolution{
 
 	@Override
 	public void run(IMarker marker) {
-		//¨Ï¥ÎªÌÂI¿ïignore ex ©ÎªÌdummy handlerªºmarker®É,·|¥h§ä´M¹ïÀ³ªºRefactor¤èªk
+		//ä½¿ç”¨è€…é»é¸ignore ex æˆ–è€…dummy handlerçš„markeræ™‚,æœƒå»æ‰¾å°‹å°æ‡‰çš„Refactoræ–¹æ³•
 		try {
 			String problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
 			if ((problem != null && problem.equals(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK)) ||
 					(problem != null && problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER))){
-				//«Ø¥ß¾Ş§@Refactorªºª«¥ó,¨Ã±Nmarker¶Ç¶i¥h¥H§Q¤§«á¨ú±ocode smell¬ÛÃö¸ê°T
+				//å»ºç«‹æ“ä½œRefactorçš„ç‰©ä»¶,ä¸¦å°‡markerå‚³é€²å»ä»¥åˆ©ä¹‹å¾Œå–å¾—code smellç›¸é—œè³‡è¨Š
 				RethrowExRefactoring refactoring = new RethrowExRefactoring();				
 				refactoring.setMarker(marker);
-				//±Ò°ÊRefactor dialog
+				//å•Ÿå‹•Refactor dialog
 				RefactoringWizardOpenOperation operation = 
 					new RefactoringWizardOpenOperation(new RethrowExWizard(refactoring, 0));
 				operation.run(new Shell(), "Rethrow Unchecked Exception");
 
-				//­YAnnotation¶¶§Ç¤£¹ï¡A«h¥æ´«¶¶§Ç¡C³Ì«á¦A©w¦ì
+				//è‹¥Annotationé †åºä¸å°ï¼Œå‰‡äº¤æ›é †åºã€‚æœ€å¾Œå†å®šä½
 				refactoring.changeAnnotation();
 			}
 		} catch (Exception e) {
-			// ·|©ß¥Xªº§Q¥~«¬¦³InterruptedException¡BCoreException
+			// æœƒæ‹‹å‡ºçš„åˆ©å¤–å‹æœ‰InterruptedExceptionã€CoreException
 			logger.error("[Refactor][My Extract Method] EXCEPTION ", e);
 		}
 	}

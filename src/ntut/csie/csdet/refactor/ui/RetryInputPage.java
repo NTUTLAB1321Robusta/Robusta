@@ -30,17 +30,17 @@ import org.slf4j.LoggerFactory;
 public class RetryInputPage extends UserInputWizardPage {
 	private static Logger logger = LoggerFactory.getLogger(RetryInputPage.class);
 	
-	//retryªºÅÜ¼Æ¦WºÙ
+	//retryçš„è®Šæ•¸åç¨±
 	private Text retryText;
-	//³Ì¤jretry¦¸¼Æ	
+	//æœ€å¤§retryæ¬¡æ•¸	
 	private Text maxNum;
-	//³Ì¤jretry¦¸¼ÆªºÅÜ¼Æ¦WºÙ
+	//æœ€å¤§retryæ¬¡æ•¸çš„è®Šæ•¸åç¨±
 	private Text maxAttempt;	
-	//attemptªºÅÜ¼Æ¦WºÙ
+	//attemptçš„è®Šæ•¸åç¨±
 	private Text attempt;
-	//¶ñ¼g­nthrowªºException type	
+	//å¡«å¯«è¦throwçš„Exception type	
 	private Text exNameField;
-	//¨Ï¥ÎªÌ©Ò¿ï¾ÜªºException Type
+	//ä½¿ç”¨è€…æ‰€é¸æ“‡çš„Exception Type
 	private IType exType;
 	
 	public RetryInputPage(String name) {
@@ -100,7 +100,7 @@ public class RetryInputPage extends UserInputWizardPage {
 		retryText.setText("retry");
 		final GridData gd_retryText = new GridData(SWT.FILL, SWT.CENTER, true, false);
 		retryText.setLayoutData(gd_retryText);
-		//°²¦p¤º®e³Q§ó§ïªº¸Ü,±N¸ê°T¦s¨ìRetryRefactoring
+		//å‡å¦‚å…§å®¹è¢«æ›´æ”¹çš„è©±,å°‡è³‡è¨Šå­˜åˆ°RetryRefactoring
 		retryText.addModifyListener(new ModifyListener(){
 			public void modifyText(ModifyEvent e) {
 				handleInputChange();				
@@ -121,24 +121,24 @@ public class RetryInputPage extends UserInputWizardPage {
 
 		exNameField = createNameField(composite);		
 		exNameField.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		// ¹w³]©ß¥XRuntimeException
+		// é è¨­æ‹‹å‡ºRuntimeException
 		exNameField.setText("RuntimeException");
 		
-		//Browse Button ¥Î¨Ó©I¥sSelection Dialog
+		//Browse Button ç”¨ä¾†å‘¼å«Selection Dialog
 		final Button browseButton= new Button(composite, SWT.PUSH);
 		browseButton.setText("&Browse...");
 		GridData data= new GridData();
 		data.horizontalAlignment= GridData.END;
 		browseButton.setLayoutData(data);
 		
-		//°²¦p¤º®e³Q§ó§ïªº¸Ü,±N¸ê°T¦s¨ìRetryRefactoring
+		//å‡å¦‚å…§å®¹è¢«æ›´æ”¹çš„è©±,å°‡è³‡è¨Šå­˜åˆ°RetryRefactoring
 		exNameField.addModifyListener(new ModifyListener(){
 			public void modifyText(ModifyEvent e) {
 				handleInputChange();				
 			}			
 		});
 		
-		//³Q«ö¤Uªº®É­Ô¥h¶}±ÒSelection Dialog
+		//è¢«æŒ‰ä¸‹çš„æ™‚å€™å»é–‹å•ŸSelection Dialog
 		browseButton.addSelectionListener(new SelectionAdapter(){
 			@Override
 			public void widgetSelected(SelectionEvent event) {
@@ -156,7 +156,7 @@ public class RetryInputPage extends UserInputWizardPage {
 	}
 
 	/**
-	 * °²¤JText¤¤ªºªF¦è¦³§ïÅÜ®É­n³B²z
+	 * å‡å…¥Textä¸­çš„æ±è¥¿æœ‰æ”¹è®Šæ™‚è¦è™•ç†
 	 */
 	private void handleInputChange(){	
 		RefactoringStatus status = new RefactoringStatus();
@@ -167,14 +167,14 @@ public class RetryInputPage extends UserInputWizardPage {
 		status.merge(refactoring.setRetryVariable(retryText.getText()));
 		status.merge(refactoring.setExceptionName(exNameField.getText()));
 		
-		//°²¦p­nThrowªºexception¨S¦³import¶i¨Óªº¸Ü,¥i§Q¥Î«O¯dªºtype¨Óimport		
+		//å‡å¦‚è¦Throwçš„exceptionæ²’æœ‰importé€²ä¾†çš„è©±,å¯åˆ©ç”¨ä¿ç•™çš„typeä¾†import		
 		refactoring.setExType(exType);
-		//¥ı½T»{¦³¨S¦³errorªº±¡§Î
+		//å…ˆç¢ºèªæœ‰æ²’æœ‰errorçš„æƒ…å½¢
 		setPageComplete(!status.hasError());
 		int severity = status.getSeverity();
 		String message = status.getMessageMatchingSeverity(severity);
 		if(severity >= RefactoringStatus.INFO){
-			//¦³Errorªº±¡§Î´N§â¥L³]©w¶i¨Ó
+			//æœ‰Errorçš„æƒ…å½¢å°±æŠŠä»–è¨­å®šé€²ä¾†
 			setMessage(message,RefactoringStatus.WARNING);
 		}else{
 			setMessage("",NONE);
@@ -183,7 +183,7 @@ public class RetryInputPage extends UserInputWizardPage {
 	
 	
 	/**
-	 * ¶ñ¼gException TypeªºText UI³]¸m 
+	 * å¡«å¯«Exception Typeçš„Text UIè¨­ç½® 
 	 */
 	private Text createNameField(Composite result) {
 		Text field= new Text(result, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -192,7 +192,7 @@ public class RetryInputPage extends UserInputWizardPage {
 	}
 	
 	/**
-	 * ¨ú±oRefactoringªºª«¥ó«¬ºA
+	 * å–å¾—Refactoringçš„ç‰©ä»¶å‹æ…‹
 	 * @return
 	 */
 	private RetryRefactoring getRetryRefactoring(){
@@ -201,23 +201,23 @@ public class RetryInputPage extends UserInputWizardPage {
 	
 	
 	/**
-	 * ¸õ¥XDialogÅı¨Ï¥ÎªÌ¿ï¾Ü­nThrowªºClass
+	 * è·³å‡ºDialogè®“ä½¿ç”¨è€…é¸æ“‡è¦Throwçš„Class
 	 * @return
 	 */
 	private IType selectExType(){
 
 		try {
-			//¨ú±o¦s¦bgetRethrowExRefactoring¤¤ªºproject
+			//å–å¾—å­˜åœ¨getRethrowExRefactoringä¸­çš„project
 			IJavaProject project = getRetryRefactoring().getProject();	
-			//TODO »İ­n¥Î¨ìªº³¡¤À
-			//³z¹LEclipse ©Ò´£¨ÑªºDialog¨Ó§ä´M±M®×¤¤©Ò¦³ªºclass or library......µ¥µ¥
+			//TODO éœ€è¦ç”¨åˆ°çš„éƒ¨åˆ†
+			//é€éEclipse æ‰€æä¾›çš„Dialogä¾†æ‰¾å°‹å°ˆæ¡ˆä¸­æ‰€æœ‰çš„class or library......ç­‰ç­‰
 			IType type = project.findType("java.lang.Exception");
 			IJavaSearchScope scope = SearchEngine.createHierarchyScope(type);
 			SelectionStatusDialog dialog = (SelectionStatusDialog) JavaUI.createTypeDialog(getShell(), getContainer(), scope, IJavaElementSearchConstants.CONSIDER_ALL_TYPES, false);
 			dialog.setTitle("Choose Exception type");
 			dialog.setMessage("Choose the Exception type  to Rethrow:");
 			if(dialog.open() == Window.OK){
-				//«ö¤Uok«á¦^¶Ç¨Ï¥ÎªÌ©Ò¿ï¾Üªº
+				//æŒ‰ä¸‹okå¾Œå›å‚³ä½¿ç”¨è€…æ‰€é¸æ“‡çš„
 				return (IType)dialog.getFirstResult();
 			}
 		} catch (JavaModelException e) {			

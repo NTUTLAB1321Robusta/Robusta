@@ -52,17 +52,17 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	
 	public static final String BUILDER_ID = "ntut.csie.rleht.builder.RLBuilder";
 
-	// ©µ¦ùproblem view¦nÅı¦Û¤vªºmarker¥i¥H¥[¶i¥hview¤¤
+	// å»¶ä¼¸problem viewå¥½è®“è‡ªå·±çš„markerå¯ä»¥åŠ é€²å»viewä¸­
 	public static final String MARKER_TYPE = "ntut.csie.rleht.builder.RLProblem";
 
-	// ¨Ï¥ÎªÌ©Ò³]©wªº¬O§_°»´úEH Smell³]©w
+	// ä½¿ç”¨è€…æ‰€è¨­å®šçš„æ˜¯å¦åµæ¸¬EH Smellè¨­å®š
 	private TreeMap<String, Boolean> detSmellSetting = new TreeMap<String, Boolean>();
 	
 	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
 
 	/**
-	 * ±N¬ÛÃö¨Ò¥~¸ê°T¶K¤Wmarker(RLMessage)
-	 * ¨Ï¥Î©ó@RL®É 
+	 * å°‡ç›¸é—œä¾‹å¤–è³‡è¨Šè²¼ä¸Šmarker(RLMessage)
+	 * ä½¿ç”¨æ–¼@RLæ™‚ 
 	 */
 	private void addMarker(IFile file, String message, int lineNumber, int severity, String mtype, RLMessage msg,
 			int msgIdx, int methodIdx) {
@@ -89,7 +89,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	}
 	
 	/**
-	 * ±N¬ÛÃö¨Ò¥~¸ê°T¶K¤Wmarker
+	 * å°‡ç›¸é—œä¾‹å¤–è³‡è¨Šè²¼ä¸Šmarker
 	 * @param file
 	 * @param errmsg
 	 * @param severityLevel
@@ -123,7 +123,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	}
 
 	/**
-	 * ±N¬ÛÃö¨Ò¥~¸ê°T¶K¤Wmarker(SSMessage)
+	 * å°‡ç›¸é—œä¾‹å¤–è³‡è¨Šè²¼ä¸Šmarker(SSMessage)
 	 */
 	private void addMarker(IFile file, String message, int lineNumber, int severity, String mtype, SSMessage msg,
 			int msgIdx, int methodIdx) {
@@ -162,7 +162,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	}
 	
 	/*
-	 * ¨C¦¸¦³buildªº®É­Ô,³£·|invoke³o­Ómethod
+	 * æ¯æ¬¡æœ‰buildçš„æ™‚å€™,éƒ½æœƒinvokeé€™å€‹method
 	 * 
 	 * @see org.eclipse.core.internal.events.InternalBuilder#build(int,
 	 *      java.util.Map, org.eclipse.core.runtime.IProgressMonitor)
@@ -184,12 +184,12 @@ public class RLBuilder extends IncrementalProjectBuilder {
 			}
 		}
 		long end = System.currentTimeMillis();
-		System.out.println("RLBuildªá¶O®É¶¡ " + (end - start) + " milli second.");
+		System.out.println("RLBuildèŠ±è²»æ™‚é–“ " + (end - start) + " milli second.");
 		return null;
 	}
 
 	/**
-	 * ¶i¦æfullBuild or inrementalBuild®É,³£·|¥h©I¥s³o­Ómethod
+	 * é€²è¡ŒfullBuild or inrementalBuildæ™‚,éƒ½æœƒå»å‘¼å«é€™å€‹method
 	 * @param resource
 	 */
 	private void checkBadSmells(IResource resource) {
@@ -198,8 +198,8 @@ public class RLBuilder extends IncrementalProjectBuilder {
 			deleteMarkers(file);
 
 			try {
-				/* STEP1:°w¹ï¨C¤@­ÓJavaµ{¦¡ªºMethodÀË¬dRLAnnotation */
-				/*       ¨Ã¥B§ä¥X±M®×¤¤©Ò¦³ªºCode Smell  */
+				/* STEP1:é‡å°æ¯ä¸€å€‹Javaç¨‹å¼çš„Methodæª¢æŸ¥RLAnnotation */
+				/*       ä¸¦ä¸”æ‰¾å‡ºå°ˆæ¡ˆä¸­æ‰€æœ‰çš„Code Smell  */
 
 				IJavaElement javaElement = JavaCore.create(resource);
 
@@ -212,7 +212,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				ASTMethodCollector methodCollector = new ASTMethodCollector();
 				root.accept(methodCollector);
 				
-				// ¨ú±o±M®×¤¤©Ò¦³ªºmethod
+				// å–å¾—å°ˆæ¡ˆä¸­æ‰€æœ‰çš„method
 				List<MethodDeclaration> methodList = methodCollector.getMethodList();
 
 				ExceptionAnalyzer visitor = null;
@@ -223,33 +223,33 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				
 				OverLoggingDetector loggingDetector = null;
 
-				// ¥Ø«emethodªºException¸ê°T
+				// ç›®å‰methodçš„Exceptionè³‡è¨Š
 				List<RLMessage> currentMethodExList = null;
 
-				// ¥Ø«emethodªºRL Annotation¸ê°T
+				// ç›®å‰methodçš„RL Annotationè³‡è¨Š
 				List<RLMessage> currentMethodRLList = null;
 
 				List<SSMessage> suppressSmellList = null;
 				
-				// ¥Ø«emethod¤ºªºUnprotected Main¸ê°T
+				// ç›®å‰methodå…§çš„Unprotected Mainè³‡è¨Š
 				List<MarkerInfo> unprotectedMain = null;
 				
-				// ¥Ø«emethod¤ºªºOverLogging¸ê°T
+				// ç›®å‰methodå…§çš„OverLoggingè³‡è¨Š
 				List<MarkerInfo> overLoggingList = null;
 				
-				// §ä´M±M®×¤¤©Ò¦³ªºOverwritten Lead Exception
-				// FIXME ¥¼¥[¤J SuppressSmell ªº§@¥Î, ©Î³\¥i°Ñ¦Ò ReportBuilder ªº§@ªk
+				// æ‰¾å°‹å°ˆæ¡ˆä¸­æ‰€æœ‰çš„Overwritten Lead Exception
+				// FIXME æœªåŠ å…¥ SuppressSmell çš„ä½œç”¨, æˆ–è¨±å¯åƒè€ƒ ReportBuilder çš„ä½œæ³•
 				OverwrittenLeadExceptionVisitor oleVisitor = new OverwrittenLeadExceptionVisitor(root);
 				root.accept(oleVisitor);
 				List<MarkerInfo> overwrittenList = oleVisitor.getOverwrittenList();
 				for(int oleIndex = 0; oleIndex < overwrittenList.size(); oleIndex++) {
 					MarkerInfo markerInfo = overwrittenList.get(oleIndex);
 					String errmsg = this.resource.getString("ex.smell.type.undealt") + markerInfo.getCodeSmellType() + this.resource.getString("ex.smell.type");
-					this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, markerInfo, oleIndex, -1);  // methodIdx ¨S¦³¥Î¡A¬G¥ıµ¹-1
+					this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, markerInfo, oleIndex, -1);  // methodIdx æ²’æœ‰ç”¨ï¼Œæ•…å…ˆçµ¦-1
 				}
 
-				// §ä´M±M®×¤¤©Ò¦³ªº nested try
-				// FIXME ¥¼¥[¤J SuppressSmell ªº§@¥Î, ©Î³\¥i°Ñ¦Ò ReportBuilder ªº§@ªk
+				// æ‰¾å°‹å°ˆæ¡ˆä¸­æ‰€æœ‰çš„ nested try
+				// FIXME æœªåŠ å…¥ SuppressSmell çš„ä½œç”¨, æˆ–è¨±å¯åƒè€ƒ ReportBuilder çš„ä½œæ³•
 				NestedTryStatementVisitor nestedTryStatementVisitor = new NestedTryStatementVisitor(root);
 				root.accept(nestedTryStatementVisitor);
 				List<MarkerInfo> nestedTryList = nestedTryStatementVisitor.getNestedTryStatementList();
@@ -257,7 +257,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				for(MarkerInfo markerInfo : nestedTryList) {
 					ntsIndex++;
 					String errmsg = this.resource.getString("ex.smell.type.undealt") + markerInfo.getCodeSmellType() + this.resource.getString("ex.smell.type");
-					this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, markerInfo, ntsIndex, -1);  // methodIdx ¥ıµ¹-1
+					this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, markerInfo, ntsIndex, -1);  // methodIdx å…ˆçµ¦-1
 				}
 				
 				int methodIdx = -1;
@@ -274,13 +274,13 @@ public class RLBuilder extends IncrementalProjectBuilder {
 					// SuppressSmell
 					TreeMap<String,Boolean> detMethodSmell = new TreeMap<String,Boolean>();
 					TreeMap<String, List<Integer>> detCatchSmell = new TreeMap<String, List<Integer>>();
-					// ±N¨Ï¥ÎªÌ³]©w½Æ»s¹L¨Ó
+					// å°‡ä½¿ç”¨è€…è¨­å®šè¤‡è£½éä¾†
 					detMethodSmell = CastingObject.castTreeMap(detSmellSetting.clone(), String.class, Boolean.class);
 
-					// Àx¦sSuppressSmell³]©w
+					// å„²å­˜SuppressSmellè¨­å®š
 					inputSuppressData(suppressSmellList, detMethodSmell, detCatchSmell);
 					
-					// §ä´M±M®×¤¤©Ò¦³ªºignore Exception
+					// æ‰¾å°‹å°ˆæ¡ˆä¸­æ‰€æœ‰çš„ignore Exception
 					IgnoreExceptionVisitor ieVisitor = new IgnoreExceptionVisitor(root);
 					method.accept(ieVisitor);
 					List<MarkerInfo> ignoreList = ieVisitor.getIgnoreList();
@@ -289,7 +289,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 						List<Integer> posList = detCatchSmell.get(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK);
 						for(MarkerInfo markerInfo : ignoreList) {
 							csIdx++;
-							// §PÂ_¨Ï¥ÎªÌ¦³¨S¦³¦bCatch¤º¶KAnnotation¡A§í¨îSmell Marker
+							// åˆ¤æ–·ä½¿ç”¨è€…æœ‰æ²’æœ‰åœ¨Catchå…§è²¼Annotationï¼ŒæŠ‘åˆ¶Smell Marker
 							if (suppressMarker(posList, markerInfo.getPosition()))
 								continue;
 							String errmsg = this.resource.getString("ex.smell.type.undealt") + markerInfo.getCodeSmellType() + this.resource.getString("ex.smell.type");
@@ -297,27 +297,27 @@ public class RLBuilder extends IncrementalProjectBuilder {
 						}
 					}
 					
-					// ¨ú±o±M®×¤¤dummy handler
+					// å–å¾—å°ˆæ¡ˆä¸­dummy handler
 					DummyHandlerVisitor dhVisitor = new DummyHandlerVisitor(root);
 					method.accept(dhVisitor);
 					List<MarkerInfo> dummyList = dhVisitor.getDummyList();
 					csIdx = -1;
-					// Dummy List¤£¬°Null¡A¥B¨Ï¥ÎªÌ¨S¦³§í¨îMethod¤º©Ò¦³ªºDummy Handler Marker
+					// Dummy Listä¸ç‚ºNullï¼Œä¸”ä½¿ç”¨è€…æ²’æœ‰æŠ‘åˆ¶Methodå…§æ‰€æœ‰çš„Dummy Handler Marker
 					if(detMethodSmell.get(RLMarkerAttribute.CS_DUMMY_HANDLER)) {
 						List<Integer> posList = detCatchSmell.get(RLMarkerAttribute.CS_DUMMY_HANDLER);
-						// ±N¨C­Ódummy handler³£¶K¤Wmarker
+						// å°‡æ¯å€‹dummy handleréƒ½è²¼ä¸Šmarker
 						for (MarkerInfo markerInfo : dummyList) {
 							csIdx++;
-							// §PÂ_¨Ï¥ÎªÌ¦³¨S¦³¦bCatch¤º¶KAnnotation¡A§í¨îSmell Marker
+							// åˆ¤æ–·ä½¿ç”¨è€…æœ‰æ²’æœ‰åœ¨Catchå…§è²¼Annotationï¼ŒæŠ‘åˆ¶Smell Marker
 							if (suppressMarker(posList, markerInfo.getPosition()))
 								continue;
 							String errmsg = this.resource.getString("ex.smell.type.undealt") + markerInfo.getCodeSmellType() + this.resource.getString("ex.smell.type");
-							// ¶Kmarker
+							// è²¼marker
 							this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, markerInfo, csIdx, methodIdx);
 						}
 					}
 
-					// §ä´M±M®×¤¤©Ò¦³ªºCareless Cleanup
+					// æ‰¾å°‹å°ˆæ¡ˆä¸­æ‰€æœ‰çš„Careless Cleanup
 					CarelessCleanupVisitor2 carelessCleanupVisitor = new CarelessCleanupVisitor2(root);
 					method.accept(carelessCleanupVisitor);
 					List<MarkerInfo> carelessCleanupList = carelessCleanupVisitor.getCarelessCleanupList();
@@ -326,12 +326,12 @@ public class RLBuilder extends IncrementalProjectBuilder {
 						for(MarkerInfo markerInfo : carelessCleanupList) {
 							csIdx++;
 							String errmsg = this.resource.getString("ex.smell.type.undealt") + markerInfo.getCodeSmellType() + this.resource.getString("ex.smell.type");
-							// ¶KMarker
+							// è²¼Marker
 							this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, markerInfo, csIdx, methodIdx);
 						}
 					}
 
-					// ´M§ä±M®×¤¤©Ò¦³¥i¥Hµ¹¤©RL«ØÄ³ªºstatements
+					// å°‹æ‰¾å°ˆæ¡ˆä¸­æ‰€æœ‰å¯ä»¥çµ¦äºˆRLå»ºè­°çš„statements
 //					eaVisitor = new RLAnalyzer(root);
 //					method.accept(eaVisitor);
 //					csIdx = -1;
@@ -343,9 +343,9 @@ public class RLBuilder extends IncrementalProjectBuilder {
 //							for(int i = 0; i<msg.getRobustnessLevel().length; i++){
 //								if(msg.getRobustnessLevel()[i].getExString().contains(msg.getExceptionType())){
 //									errmsg.append(msg.getStatement());
-//									errmsg.append("¹ï¨Ò¥~").append(msg.getRobustnessLevel()[i].getExString());
-//									errmsg.append("³B²zµ¥¯Å¡A");
-//									errmsg.append("¹F¨ìRL").append(msg.getRobustnessLevel()[i].getLevel());
+//									errmsg.append("å°ä¾‹å¤–").append(msg.getRobustnessLevel()[i].getExString());
+//									errmsg.append("è™•ç†ç­‰ç´šï¼Œ");
+//									errmsg.append("é”åˆ°RL").append(msg.getRobustnessLevel()[i].getLevel());
 //								}
 //							}
 //							this.addMarker(file, errmsg.toString(), IMarker.SEVERITY_INFO,
@@ -353,43 +353,43 @@ public class RLBuilder extends IncrementalProjectBuilder {
 //						}
 //					}
 					
-					// ´M§ä¸Ómethod¤ºªºOverLogging
+					// å°‹æ‰¾è©²methodå…§çš„OverLogging
 					loggingDetector = new OverLoggingDetector(root, method);
 					if(loggingDetector != null) {
 						loggingDetector.detect();
-						// ¨ú±o±M®×¤¤OverLogging
+						// å–å¾—å°ˆæ¡ˆä¸­OverLogging
 						overLoggingList = loggingDetector.getOverLoggingList();
 	
-						// ¨Ì¾Ú©Ò¨ú±oªºcode smell¨Ó¶KMarker
+						// ä¾æ“šæ‰€å–å¾—çš„code smellä¾†è²¼Marker
 						csIdx = -1;
-						// ¨Ï¥ÎªÌ¨S¦³§í¨îMethod¤º©Ò¦³ªºOverLogging Marker
+						// ä½¿ç”¨è€…æ²’æœ‰æŠ‘åˆ¶Methodå…§æ‰€æœ‰çš„OverLogging Marker
 						if(detMethodSmell.get(RLMarkerAttribute.CS_OVER_LOGGING)){
 							List<Integer> posList = detCatchSmell.get(RLMarkerAttribute.CS_OVER_LOGGING);
 							for(MarkerInfo msg : overLoggingList) {
 								csIdx++;
-								// §PÂ_¨Ï¥ÎªÌ¦³¨S¦³¦bCatch¤º¶KAnnotation¡A§í¨îSmell Marker
+								// åˆ¤æ–·ä½¿ç”¨è€…æœ‰æ²’æœ‰åœ¨Catchå…§è²¼Annotationï¼ŒæŠ‘åˆ¶Smell Marker
 								if (suppressMarker(posList, msg.getPosition()))
 									continue;
 								String errmsg = this.resource.getString("ex.smell.type.undealt") + msg.getCodeSmellType() + this.resource.getString("ex.smell.type");
-								// ¶Kmarker
+								// è²¼marker
 								this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, msg, csIdx, methodIdx);	
 							}
 						}
 					}
 					
-					// ´M§ä¸Ómethod¤ºªºunprotected main program
+					// å°‹æ‰¾è©²methodå…§çš„unprotected main program
 					mainVisitor = new UnprotectedMainProgramVisitor(root);
 					method.accept(mainVisitor);
 					unprotectedMain = mainVisitor.getUnprotedMainList();
 
-					// ¨Ì¾Ú©Ò¨ú±oªºcode smell¨Ó¶KMarker
+					// ä¾æ“šæ‰€å–å¾—çš„code smellä¾†è²¼Marker
 					csIdx = -1;
-					// ¨Ï¥ÎªÌ¨S¦³§í¨îMethod¤ºªºUnprotected Main Marker
+					// ä½¿ç”¨è€…æ²’æœ‰æŠ‘åˆ¶Methodå…§çš„Unprotected Main Marker
 					if(detMethodSmell.get(RLMarkerAttribute.CS_UNPROTECTED_MAIN)) {
 						for (MarkerInfo msg : unprotectedMain) {
 							csIdx++;
 							String errmsg = this.resource.getString("ex.smell.type.undealt") + msg.getCodeSmellType() + this.resource.getString("ex.smell.type");
-							// ¶Kmarker
+							// è²¼marker
 							this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, msg, csIdx, methodIdx);	
 						}
 					}
@@ -397,13 +397,13 @@ public class RLBuilder extends IncrementalProjectBuilder {
 					RLChecker checker = new RLChecker();
 					currentMethodExList = checker.check(visitor);
 					
-					// ÀË¬d@RL¬O§_¦s¦b(¥á¥Xªº¨Ò¥~¬O§_³Qµù°O)
+					// æª¢æŸ¥@RLæ˜¯å¦å­˜åœ¨(ä¸Ÿå‡ºçš„ä¾‹å¤–æ˜¯å¦è¢«è¨»è¨˜)
 					int msgIdx = -1;
 					for (RLMessage msg : currentMethodExList) {
 						msgIdx++;
 						if (msg.getRLData().getLevel() >= 0) {
 							if (!msg.isHandling()) {
-//								pig ­×§ï¡A±N¯Ê¤Ö RL notation ®ÉªºÄµ§i¼È®Éµù¸Ñ±¼
+//								pig ä¿®æ”¹ï¼Œå°‡ç¼ºå°‘ RL notation æ™‚çš„è­¦å‘Šæš«æ™‚è¨»è§£æ‰
 //								String errmsg = this.resource.getString("tag.undefine1") + msg.getRLData().getExceptionType() + this.resource.getString("tag.undefine2");
 //								this.addMarker(file, errmsg.toString(), msg.getLineNumber(), IMarker.SEVERITY_WARNING,
 //										RLMarkerAttribute.ERR_NO_RL, msg, msgIdx, methodIdx);
@@ -414,13 +414,13 @@ public class RLBuilder extends IncrementalProjectBuilder {
 					int ssIdx = -1;
 					for (SSMessage msg : suppressSmellList) {
 						ssIdx++;
-						// Smell¦WºÙ¿ù»~
+						// Smellåç¨±éŒ¯èª¤
 						if (msg.isFaultName()) {
 							String errmsg = this.resource.getString("error.smell.name");
 							this.addMarker(file, errmsg, msg.getLineNumber(),
 									IMarker.SEVERITY_ERROR, RLMarkerAttribute.ERR_SS_FAULT_NAME, msg, ssIdx,
 									methodIdx);
-						// ¨S¦³¥ô¦óSmell
+						// æ²’æœ‰ä»»ä½•Smell
 						} else if (msg.getSmellList().size() == 0) {
 							String errmsg = this.resource.getString("null.smell.name");
 							this.addMarker(file, errmsg, msg.getLineNumber(),
@@ -435,7 +435,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 
 						int lineNumber = root.getLineNumber(method.getStartPosition());
 
-						// ÀË¬d@RL²M³æ¤ºªºlevel¬O§_¥¿½T
+						// æª¢æŸ¥@RLæ¸…å–®å…§çš„levelæ˜¯å¦æ­£ç¢º
 						if (!RLData.validLevel(msg.getRLData().getLevel())) {
 							String errmsg = this.resource.getString("tag.level1") + msg.getRLData().getLevel() + 
 											this.resource.getString("tag.level2") + msg.getRLData().getExceptionType() + 
@@ -445,7 +445,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 									RLMarkerAttribute.ERR_RL_LEVEL, msg, msgIdx, methodIdx);
 						}
 
-						// ÀË¬d@RL²M³æ¤ºªºexceptionÃş§O¶¥¼h¬O§_¥¿½T
+						// æª¢æŸ¥@RLæ¸…å–®å…§çš„exceptioné¡åˆ¥éšå±¤æ˜¯å¦æ­£ç¢º
 						int idx2 = 0;
 						for (RLMessage msg2 : currentMethodRLList) {
 							if (msgIdx >= idx2++) {
@@ -479,15 +479,15 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	}
 
 	/**
-	 * Àx¦sSuppress Smellªº³]©w
+	 * å„²å­˜Suppress Smellçš„è¨­å®š
 	 * @param suppressSmellList
 	 * @param detMethodSmell
 	 * @param detCatchSmell
 	 */
 	private void inputSuppressData(List<SSMessage> suppressSmellList,
 		TreeMap<String, Boolean> detMethodSmell, TreeMap<String, List<Integer>> detCatchSmell) {
-		/// ªì©l¤Æ³]©w ///
-		// ¹w³]¨C­ÓSmell³£°»´ú
+		/// åˆå§‹åŒ–è¨­å®š ///
+		// é è¨­æ¯å€‹Smelléƒ½åµæ¸¬
 //		for (String smellType : RLMarkerAttribute.CS_TOTAL_TYPE)
 //			detMethodSmell.put(smellType, true);
 
@@ -495,14 +495,14 @@ public class RLBuilder extends IncrementalProjectBuilder {
 			detCatchSmell.put(smellType, new ArrayList<Integer>());
 
 		for (SSMessage msg : suppressSmellList) {
-			// ­Y¬°Method¤Wªº³]©w
+			// è‹¥ç‚ºMethodä¸Šçš„è¨­å®š
 			if (!msg.isInCatch()) {
-				// ­Y¨Ï¥ÎªÌ°»´ú­ş­ÓSmell¤£°»´ú¡A´N§â¸ÓSmell°»´ú³]©w¬°false
+				// è‹¥ä½¿ç”¨è€…åµæ¸¬å“ªå€‹Smellä¸åµæ¸¬ï¼Œå°±æŠŠè©²Smellåµæ¸¬è¨­å®šç‚ºfalse
 				for (String smellType : msg.getSmellList())
 					detMethodSmell.put(smellType, false);
-			// ­Y¬°Catch¤ºªº³]©w
+			// è‹¥ç‚ºCatchå…§çš„è¨­å®š
 			} else {
-				// ­Y¨Ï¥ÎªÌ³]©wCatch¤ºSmell¤£°»´ú¡A°O¿ı¸ÓSmell©Ò¦bªºCatch¦ì¸m
+				// è‹¥ä½¿ç”¨è€…è¨­å®šCatchå…§Smellä¸åµæ¸¬ï¼Œè¨˜éŒ„è©²Smellæ‰€åœ¨çš„Catchä½ç½®
 				for (String smellType : msg.getSmellList()) {
 					List<Integer> smellPosList = detCatchSmell.get(smellType);
 					if (smellPosList != null)
@@ -513,7 +513,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	}
 
 	/**
-	 * §PÂ_¬O§_­n¤£¶KMarker
+	 * åˆ¤æ–·æ˜¯å¦è¦ä¸è²¼Marker
 	 * @param smellPosList
 	 * @param pos
 	 * @return
@@ -521,7 +521,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	private boolean suppressMarker(List<Integer> smellPosList, int pos) {
 		if(smellPosList != null) {
 			for (Integer index : smellPosList)
-				// ­YCatch¦ì¸m¬Û¦P¡Aªí¥Ü­n§í¨îªºMarker¬°¦P¤@­ÓMarker
+				// è‹¥Catchä½ç½®ç›¸åŒï¼Œè¡¨ç¤ºè¦æŠ‘åˆ¶çš„Markerç‚ºåŒä¸€å€‹Marker
 				if (pos == index)
 					return true;
 		}
@@ -593,7 +593,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 		Document docJDom = JDomUtil.readXMLFile();
 
 		if(docJDom != null) {
-			// ±qXML¸ÌÅª¥X¤§«eªº³]©w
+			// å¾XMLè£¡è®€å‡ºä¹‹å‰çš„è¨­å®š
 			Element root = docJDom.getRootElement();
 			if (root.getChild(JDomUtil.DetectSmellTag) != null) {
 				Element rule = root.getChild(JDomUtil.DetectSmellTag).getChild("rule");

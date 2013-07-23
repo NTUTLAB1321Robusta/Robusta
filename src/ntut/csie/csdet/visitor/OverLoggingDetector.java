@@ -25,16 +25,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * OverLoggingªºCode Smell
+ * OverLoggingçš„Code Smell
  * @author Shiau
  */
 public class OverLoggingDetector {
 	private static Logger logger = LoggerFactory.getLogger(OverLoggingDetector.class);
-	// Àx¦s©Ò§ä¨ìªºOverLoging 
+	// å„²å­˜æ‰€æ‰¾åˆ°çš„OverLoging 
 	private List<MarkerInfo> overLoggingList = new ArrayList<MarkerInfo>();
-	// AST Treeªºroot(ÀÉ®×¦WºÙ)
+	// AST Treeçš„root(æª”æ¡ˆåç¨±)
 	private CompilationUnit root;
-	// ³Ì©³¼hªºMethod
+	// æœ€åº•å±¤çš„Method
 	private MethodDeclaration startMethod;
 	
 	private OverLoggingVisitor visitor;
@@ -50,31 +50,31 @@ public class OverLoggingDetector {
 	}
 	
 	/**
-	 * ´M¬dMethod
+	 * å°‹æŸ¥Method
 	 */
 	public void detect() {
-		// ±NMethodDeclaration(AST)Âà´«¦¨IMethod
+		// å°‡MethodDeclaration(AST)è½‰æ›æˆIMethod
 		IMethod method = (IMethod) startMethod.resolveBinding().getJavaElement();
-		// ¸ÑªRAST¬İ¦³¨S¦³µo¥ÍLogging¤Sthrow Exception (ªÅ¥Õ¦r¦êªí¥Ü³Ì©³¼hMethod)
+		// è§£æASTçœ‹æœ‰æ²’æœ‰ç™¼ç”ŸLoggingåˆthrow Exception (ç©ºç™½å­—ä¸²è¡¨ç¤ºæœ€åº•å±¤Method)
 		visitor = new OverLoggingVisitor(root, method.getElementName());
 		startMethod.accept(visitor);
-		// ¬O§_Ä~Äò°»´ú
+		// æ˜¯å¦ç¹¼çºŒåµæ¸¬
 		if (visitor.getIsKeepTrace()) {
-			// ¨Ï¥Î»¼°j§PÂ_¬O§_µo¥ÍOverLogging¡A­YOverLogging«h°O¿ı¨äMessage
+			// ä½¿ç”¨éè¿´åˆ¤æ–·æ˜¯å¦ç™¼ç”ŸOverLoggingï¼Œè‹¥OverLoggingå‰‡è¨˜éŒ„å…¶Message
 			if (detectOverLogging(method))
 				overLoggingList = visitor.getOverLoggingList();
 		}
 	}
 	
 	/**
-	 * §PÂ_¬O§_OverLogging
-	 * @param method		³QCallªºMethod
-	 * @param baseException	³Ì©³¼hªºException
-	 * @return				¬O§_OverLogging
+	 * åˆ¤æ–·æ˜¯å¦OverLogging
+	 * @param method		è¢«Callçš„Method
+	 * @param baseException	æœ€åº•å±¤çš„Exception
+	 * @return				æ˜¯å¦OverLogging
 	 */
 	private boolean detectOverLogging(IMethod method) {
-		//TODO ´¿µo¥ÍInternal Error
-		//©¹¤U¤@¼hÁÚ¶i
+		//TODO æ›¾ç™¼ç”ŸInternal Error
+		//å¾€ä¸‹ä¸€å±¤é‚é€²
 		IMember[] methodArray = new IMember[] {method};
 		MethodWrapper[] currentMW = CallHierarchy.getDefault().getCallerRoots(methodArray);
 		if (currentMW.length != 1)
@@ -85,62 +85,62 @@ public class OverLoggingDetector {
 		 * MethodWrapper[] calls = currentMW.getCalls(new NullProgressMonitor());
 		 */
 
-		// ­Y¦³Caller
+		// è‹¥æœ‰Caller
 		if (calls.length != 0) {
 			for (MethodWrapper mw : calls) {
 				if (mw.getMember() instanceof IMethod) {
 					IMethod callerMethod = (IMethod) mw.getMember();
 
-					// Á×§KRecursive¡A­YCaller Method¤´µM¬O¦Û¤v´N¤£°»´ú
+					// é¿å…Recursiveï¼Œè‹¥Caller Methodä»ç„¶æ˜¯è‡ªå·±å°±ä¸åµæ¸¬
 					if (callerMethod.equals(method))
 						continue;
 
-					// IMethodÂà¦¨MethodDeclaration ASTNode
+					// IMethodè½‰æˆMethodDeclaration ASTNode
 					MethodDeclaration methodNode = transMethodNode(callerMethod);
 
-					// methodNode¥X¿ù®É¡A´N¤£°»´ú
+					// methodNodeå‡ºéŒ¯æ™‚ï¼Œå°±ä¸åµæ¸¬
 					if (methodNode == null)
 						continue;
 
-					// ¸ÑªRAST¬İ¨Ï¥Î¦¹MethodªºCatch Block¤¤¦³¨S¦³µo¥ÍLogging
+					// è§£æASTçœ‹ä½¿ç”¨æ­¤Methodçš„Catch Blockä¸­æœ‰æ²’æœ‰ç™¼ç”ŸLogging
 					methodNode.accept(visitor);
 
-					// ­Y¦³Logging°Ê§@«h¦^¶Ç¦³Logging¤£¦A©¹¤U°»´ú
+					// è‹¥æœ‰Loggingå‹•ä½œå‰‡å›å‚³æœ‰Loggingä¸å†å¾€ä¸‹åµæ¸¬
 					if (visitor.getIsLogging())
 						return true;
 
-					// ¬O§_©¹¤W¤@¼h°lÂÜ
+					// æ˜¯å¦å¾€ä¸Šä¸€å±¤è¿½è¹¤
 					if (visitor.getIsKeepTrace()) {
-						// ­Y¤W¤@¼hµ²ªG¬°OverLogging´N¦^¶Çtrue¡A§_«hÄ~Äò
+						// è‹¥ä¸Šä¸€å±¤çµæœç‚ºOverLoggingå°±å›å‚³trueï¼Œå¦å‰‡ç¹¼çºŒ
 						if (detectOverLogging(callerMethod))
 							return true;
 					}
 				}
 			}
 		}
-		//¨S¦³Caller¡A©Î©Ò¦³Caller¶]§¹¤´¨S¦³
+		//æ²’æœ‰Callerï¼Œæˆ–æ‰€æœ‰Callerè·‘å®Œä»æ²’æœ‰
 		return false;
 	}
 
 	/**
-	 * Âà´«¦¨ASTNode MethodDeclaration
+	 * è½‰æ›æˆASTNode MethodDeclaration
 	 * @param method
 	 * @return
 	 */
 	private MethodDeclaration transMethodNode(IMethod method) {
 		MethodDeclaration md = null;
-		// Parser JarÀÉ®É¡A·|¨ú¤£¨ìICompilationUnit
+		// Parser Jaræª”æ™‚ï¼Œæœƒå–ä¸åˆ°ICompilationUnit
 		if (method.getCompilationUnit() == null) {
 			return null;
 		}
-		// ²£¥ÍAST
+		// ç”¢ç”ŸAST
 		ASTParser parserAST = ASTParser.newParser(AST.JLS3);
 		parserAST.setKind(ASTParser.K_COMPILATION_UNIT);
 		parserAST.setSource(method.getCompilationUnit());
 		parserAST.setResolveBindings(true);
 		CompilationUnit root = (CompilationUnit) parserAST.createAST(null);
 
-		// ¨ú±oMethodDeclaration
+		// å–å¾—MethodDeclaration
 		if (method.getParent() instanceof IType) {
 			TypeDeclaration td = findTypeDeclaration(root, (IType) method.getParent());
 			try {
@@ -153,9 +153,9 @@ public class OverLoggingDetector {
 	}
 
 	/**
-	 * ´M§äType Declaration
-	 * @param root	­n´M§äªºType Declaration©Ò¦bªºComplilationUnit
-	 * @param type	­n´M§äªºType DeclarationªºITypeDeclaration
+	 * å°‹æ‰¾Type Declaration
+	 * @param root	è¦å°‹æ‰¾çš„Type Declarationæ‰€åœ¨çš„ComplilationUnit
+	 * @param type	è¦å°‹æ‰¾çš„Type Declarationçš„ITypeDeclaration
 	 * @return
 	 */
 	private TypeDeclaration findTypeDeclaration(CompilationUnit root, IType type) {
@@ -168,10 +168,10 @@ public class OverLoggingDetector {
 	}
 
 	/**
-	 * ´M§äMethod Declaration
-	 * @param type		­n´M§äªºMethod Declaration©Ò¦bªºType Declaration
-	 * @param method	­n´M§äªºMethod DeclarationªºIMethod
-	 * @return			null:¨S¦³§ä¨ì
+	 * å°‹æ‰¾Method Declaration
+	 * @param type		è¦å°‹æ‰¾çš„Method Declarationæ‰€åœ¨çš„Type Declaration
+	 * @param method	è¦å°‹æ‰¾çš„Method Declarationçš„IMethod
+	 * @return			null:æ²’æœ‰æ‰¾åˆ°
 	 */
 	private MethodDeclaration findMethodDeclaration(TypeDeclaration type, IMethod method) throws JavaModelException {
 		ISourceRange sourceRange = method.getSourceRange();
@@ -188,7 +188,7 @@ public class OverLoggingDetector {
 	}
 	
 	/**
-	 * ¨ú±oOverLogging¸ê°T
+	 * å–å¾—OverLoggingè³‡è¨Š
 	 * @return
 	 */
 	public List<MarkerInfo> getOverLoggingList() {

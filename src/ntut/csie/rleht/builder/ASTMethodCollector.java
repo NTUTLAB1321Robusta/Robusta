@@ -7,7 +7,7 @@ import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 
 /**
- * ¦¬¶°©Ò¦³class¤¤ªºmethod
+ * æ”¶é›†æ‰€æœ‰classä¸­çš„method
  * @author allen
  */
 public class ASTMethodCollector extends ASTVisitor {

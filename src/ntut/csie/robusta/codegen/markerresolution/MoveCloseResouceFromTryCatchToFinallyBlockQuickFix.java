@@ -63,31 +63,31 @@ public class MoveCloseResouceFromTryCatchToFinallyBlockQuickFix implements IMark
 		if(methodDeclaration == null) {
 			return;
 		}
-		// ­n²¾°Êªº¨º¦æµ{¦¡½Xªºªø«×(method invocation»Pexpression statement¥u®t¤@­Ó¤À¸¹¡A©Ò¥Hlength¥u®t1)
+		// è¦ç§»å‹•çš„é‚£è¡Œç¨‹å¼ç¢¼çš„é•·åº¦(method invocationèˆ‡expression statementåªå·®ä¸€å€‹åˆ†è™Ÿï¼Œæ‰€ä»¥lengthåªå·®1)
 		int movelineLength = getMovelineLength(msgIdx, compilationUnit, methodDeclaration);
 		ASTNode closeResourceNode = NodeFinder.perform(compilationUnit, Integer.parseInt(srcPos), movelineLength);
 		TryStatement closeResourceNodeParent = (TryStatement)NodeUtils.getSpecifiedParentNode(closeResourceNode, ASTNode.TRY_STATEMENT);
 		if(closeResourceNodeParent != null) {
 			// move node from try/catch to finally
 			
-			//1. §ä¨ì¨Ã½Õ¾ãÅÜ¼Æ«Å§iªº¦a¤è
+			//1. æ‰¾åˆ°ä¸¦èª¿æ•´è®Šæ•¸å®£å‘Šçš„åœ°æ–¹
 			VariableDeclarationStatementFinderVisitor vdsf = 
 				new VariableDeclarationStatementFinderVisitor((MethodInvocation) closeResourceNode);
 			compilationUnit.accept(vdsf);
 			VariableDeclarationStatement variableDeclarationOfCloseResource = vdsf.getFoundVariableDeclarationStatement();
 			ASTNode variableDeclarationOfCloseResourceOfTry = NodeUtils.getSpecifiedParentNode(variableDeclarationOfCloseResource, ASTNode.TRY_STATEMENT);
 
-			// ¦pªG«Å§iªºµ{¦¡½X»PÃö³¬¸ê·½ªºµ{¦¡½X³£¦b¦P¤@­ÓTryStatement¸Ì­±¡A´N­n½Õ¾ã«Å§i¦ì¸m
+			// å¦‚æœå®£å‘Šçš„ç¨‹å¼ç¢¼èˆ‡é—œé–‰è³‡æºçš„ç¨‹å¼ç¢¼éƒ½åœ¨åŒä¸€å€‹TryStatementè£¡é¢ï¼Œå°±è¦èª¿æ•´å®£å‘Šä½ç½®
 			if((variableDeclarationOfCloseResourceOfTry != null) && 
 			   (variableDeclarationOfCloseResourceOfTry.equals(closeResourceNodeParent))) {
 				quickFixCore.moveOutVariableDeclarationStatementFromTry(closeResourceNodeParent, variableDeclarationOfCloseResource, compilationUnit.getAST(), methodDeclaration);
 			}
 			
-			//2. ÀË¬d¬O§_­n¼W¥[finally
+			//2. æª¢æŸ¥æ˜¯å¦è¦å¢åŠ finally
 			Block finallyBlock = quickFixCore.getFinallyBlock(closeResourceNodeParent, compilationUnit);
 
-			//3. ²¾°Êclose¨ìfinally
-				// (method invocation»Pexpression statement¥u®t¤@­Ó¤À¸¹¡A©Ò¥Hlength¥u®t1)
+			//3. ç§»å‹•closeåˆ°finally
+				// (method invocationèˆ‡expression statementåªå·®ä¸€å€‹åˆ†è™Ÿï¼Œæ‰€ä»¥lengthåªå·®1)
 			quickFixCore.moveNodeToFinally(closeResourceNodeParent, NodeFinder.perform(compilationUnit, Integer.parseInt(srcPos), movelineLength + 1), finallyBlock);
 		} else {
 			// node not in try statement
@@ -124,10 +124,10 @@ public class MoveCloseResouceFromTryCatchToFinallyBlockQuickFix implements IMark
 	}
 	
 	/**
-	 * §ä¥XÃa¨ı¹Dµ{¦¡½Xªº¦r¤¸¼Æ
-	 * @param msgIdx ¦b³o­ÓMethodDeclaration¸Ì­±¡A¥L¬O²Ä´X­Óbad smell
+	 * æ‰¾å‡ºå£å‘³é“ç¨‹å¼ç¢¼çš„å­—å…ƒæ•¸
+	 * @param msgIdx åœ¨é€™å€‹MethodDeclarationè£¡é¢ï¼Œä»–æ˜¯ç¬¬å¹¾å€‹bad smell
 	 * @param compilationUnit
-	 * @param methodDeclaration Ãa¨ı¹Dµ{¦¡½X©Ò¦bªºMethodDeclaration
+	 * @param methodDeclaration å£å‘³é“ç¨‹å¼ç¢¼æ‰€åœ¨çš„MethodDeclaration
 	 * @return
 	 */
 	private int getMovelineLength(String msgIdx, CompilationUnit compilationUnit, MethodDeclaration methodDeclaration) {

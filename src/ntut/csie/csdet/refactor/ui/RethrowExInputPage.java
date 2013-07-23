@@ -30,16 +30,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * ´£¨Ñ¤@­Ó¤¶­±µ¹user,Åıuser¥i¥H¿ï¾Ü­nRethrow¤°»ò¼ËªºException type
+ * æä¾›ä¸€å€‹ä»‹é¢çµ¦user,è®“userå¯ä»¥é¸æ“‡è¦Rethrowä»€éº¼æ¨£çš„Exception type
  * @author chewei
  */
 public class RethrowExInputPage extends UserInputWizardPage {
 	private static Logger logger = LoggerFactory.getLogger(RethrowExInputPage.class);
 	
 	
-	//¶ñ¼g­nthrowªºExcpetion type
+	//å¡«å¯«è¦throwçš„Excpetion type
 	private Text exNameField;
-	//¨Ï¥ÎªÌ©Ò¿ï¾ÜªºException Type
+	//ä½¿ç”¨è€…æ‰€é¸æ“‡çš„Exception Type
 	private IType exType;
 	
 	public RethrowExInputPage(String name) {
@@ -67,23 +67,23 @@ public class RethrowExInputPage extends UserInputWizardPage {
 
 		exNameField = createNameField(composite);		
 		exNameField.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		// ¹w³]©ß¥XRuntimeException
+		// é è¨­æ‹‹å‡ºRuntimeException
 		exNameField.setText("RuntimeException");
 		
-		//Browse Button ¥Î¨Ó©I¥sSelection Dialog
+		//Browse Button ç”¨ä¾†å‘¼å«Selection Dialog
 		final Button browseButton= new Button(composite, SWT.PUSH);
 		browseButton.setText("&Browse...");
 		GridData data= new GridData();
 		data.horizontalAlignment= GridData.END;
 		browseButton.setLayoutData(data);
-		//°²¦p¤º®e³Q§ó§ïªº¸Ü,±N¸ê°T¦s¨ìRethrowExRefactoring
+		//å‡å¦‚å…§å®¹è¢«æ›´æ”¹çš„è©±,å°‡è³‡è¨Šå­˜åˆ°RethrowExRefactoring
 		exNameField.addModifyListener(new ModifyListener(){
 			public void modifyText(ModifyEvent e) {
 				handleInputChange();				
 			}			
 		});
 		
-		//³Q«ö¤Uªº®É­Ô¥h¶}±ÒSelection Dialog
+		//è¢«æŒ‰ä¸‹çš„æ™‚å€™å»é–‹å•ŸSelection Dialog
 		browseButton.addSelectionListener(new SelectionAdapter(){
 			@Override
 			public void widgetSelected(SelectionEvent event) {
@@ -96,12 +96,12 @@ public class RethrowExInputPage extends UserInputWizardPage {
 		exNameField.setFocus();
 		exNameField.selectAll();
 		
-		//¨Ï¥ÎªÌ¥¼§ó§ïText¤º®e¡A¦Óª½±µ«ö½T©w¡A·|°õ¦æ¦¹¦æ¡C§_«hText¤º®e·|§ì¤£¨ì¡C
+		//ä½¿ç”¨è€…æœªæ›´æ”¹Textå…§å®¹ï¼Œè€Œç›´æ¥æŒ‰ç¢ºå®šï¼ŒæœƒåŸ·è¡Œæ­¤è¡Œã€‚å¦å‰‡Textå…§å®¹æœƒæŠ“ä¸åˆ°ã€‚
 		handleInputChange();		
 	}
 	
 	/**
-	 * ¨ú±oRefactoringªºª«¥ó«¬ºA
+	 * å–å¾—Refactoringçš„ç‰©ä»¶å‹æ…‹
 	 * @return
 	 */
 	private RethrowExRefactoring getRethrowExRefactoring(){
@@ -109,7 +109,7 @@ public class RethrowExInputPage extends UserInputWizardPage {
 	}
 	
 	/**
-	 * ¶ñ¼gException TypeªºText UI³]¸m 
+	 * å¡«å¯«Exception Typeçš„Text UIè¨­ç½® 
 	 */
 	private Text createNameField(Composite result) {
 		Text field= new Text(result, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -118,20 +118,20 @@ public class RethrowExInputPage extends UserInputWizardPage {
 	}
 	
 	/**
-	 * °²¤JText¤¤ªºªF¦è¦³§ïÅÜ®É­n³B²z
+	 * å‡å…¥Textä¸­çš„æ±è¥¿æœ‰æ”¹è®Šæ™‚è¦è™•ç†
 	 */
 	private void handleInputChange(){	
 		RefactoringStatus status = new RefactoringStatus();
 		RethrowExRefactoring refactoring = getRethrowExRefactoring();
 		status.merge(refactoring.setExceptionName(exNameField.getText()));
-		//°²¦p­nThrowªºexception¨S¦³import¶i¨Óªº¸Ü,¥i§Q¥Î«O¯dªºtype¨Óimport		
+		//å‡å¦‚è¦Throwçš„exceptionæ²’æœ‰importé€²ä¾†çš„è©±,å¯åˆ©ç”¨ä¿ç•™çš„typeä¾†import		
 		refactoring.setExType(exType);
-		//¥ı½T»{¦³¨S¦³errorªº±¡§Î
+		//å…ˆç¢ºèªæœ‰æ²’æœ‰errorçš„æƒ…å½¢
 		setPageComplete(!status.hasError());
 		int severity = status.getSeverity();
 		String message = status.getMessageMatchingSeverity(severity);
 		if(severity >= RefactoringStatus.INFO){
-			//¦³Errorªº±¡§Î´N§â¥L³]©w¶i¨Ó
+			//æœ‰Errorçš„æƒ…å½¢å°±æŠŠä»–è¨­å®šé€²ä¾†
 			setMessage(message,RefactoringStatus.WARNING);
 		}else{
 			setMessage("",NONE);
@@ -139,21 +139,21 @@ public class RethrowExInputPage extends UserInputWizardPage {
 	}
 	
 	/**
-	 * ¸õ¥XDialogÅı¨Ï¥ÎªÌ¿ï¾Ü­nThrowªºClass
+	 * è·³å‡ºDialogè®“ä½¿ç”¨è€…é¸æ“‡è¦Throwçš„Class
 	 * @return
 	 */
 	private IType selectExType(){
-		//¨ú±o¦s¦bgetRethrowExRefactoring¤¤ªºproject
+		//å–å¾—å­˜åœ¨getRethrowExRefactoringä¸­çš„project
 		IJavaProject project = getRethrowExRefactoring().getProject();
 		
 //		IJavaElement[] elements = new IJavaElement[] {project};
 //		IJavaSearchScope scope = SearchEngine.createJavaSearchScope(elements);
-		//³z¹LEclipse ©Ò´£¨ÑªºDialog¨Ó§ä´M±M®×¤¤©Ò¦³ªºclass or library......µ¥µ¥
+		//é€éEclipse æ‰€æä¾›çš„Dialogä¾†æ‰¾å°‹å°ˆæ¡ˆä¸­æ‰€æœ‰çš„class or library......ç­‰ç­‰
 		try {	
-			//´M§ä©Ò¦³¥i¥H©ß¥Xªº¨Ò¥~Ãş«¬
+			//å°‹æ‰¾æ‰€æœ‰å¯ä»¥æ‹‹å‡ºçš„ä¾‹å¤–é¡å‹
 			IType type = project.findType("java.lang.Exception");
 			
-			//·|§ä¨ì¥şWorkSpaceªºjava.lang.Exception
+			//æœƒæ‰¾åˆ°å…¨WorkSpaceçš„java.lang.Exception
 //			IJavaSearchScope scope = SearchEngine.createHierarchyScope(type);
 
 			ITypeHierarchy hierarchy = type.newTypeHierarchy(project, new NullProgressMonitor());
@@ -168,7 +168,7 @@ public class RethrowExInputPage extends UserInputWizardPage {
 			dialog.setTitle("Choose Exception type");
 			dialog.setMessage("Choose the Exception type to Rethrow:");
 			if(dialog.open() == Window.OK){
-				//«ö¤Uok«á¦^¶Ç¨Ï¥ÎªÌ©Ò¿ï¾Üªº
+				//æŒ‰ä¸‹okå¾Œå›å‚³ä½¿ç”¨è€…æ‰€é¸æ“‡çš„
 				return (IType)dialog.getFirstResult();
 			}
 		} catch (JavaModelException e) {			

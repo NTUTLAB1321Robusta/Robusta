@@ -13,7 +13,7 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 /**
- * ¥D­n¬O¥Î¨Ó«Ø¥ßXMLÀÉªº(¦s©ñ¦bworkspaceªº¤U­±,©Ò¦³±M®×¦@¨É¤@­ÓconfigÀÉ)
+ * ä¸»è¦æ˜¯ç”¨ä¾†å»ºç«‹XMLæª”çš„(å­˜æ”¾åœ¨workspaceçš„ä¸‹é¢,æ‰€æœ‰å°ˆæ¡ˆå…±äº«ä¸€å€‹configæª”)
  * @author chewei
  */
 
@@ -57,9 +57,9 @@ public class JDomUtil {
 	public static Element createXMLContent(){
 		Document docJDOM = readXMLFile();	
 		Element elementRoot ;
-		//¥ı¨ú±odocJDOM,¤£¦s¦b´N±q¥ı«Ø¥ß¤@­Ó
+		//å…ˆå–å¾—docJDOM,ä¸å­˜åœ¨å°±å¾å…ˆå»ºç«‹ä¸€å€‹
 		if(docJDOM == null){
-			// «Ø¥ß¤@­Óroot
+			// å»ºç«‹ä¸€å€‹root
 			elementRoot = new Element(root);
 			docJDOM = new Document(elementRoot);				
 		}else{
@@ -69,7 +69,7 @@ public class JDomUtil {
 	}
 	
 	/**
-	 * ¿é¥Xxml file
+	 * è¼¸å‡ºxml file
 	 * @param docXML
 	 * @param path
 	 */
@@ -82,13 +82,13 @@ public class JDomUtil {
 			xmlOut.output(docXML,System.out);
 			fout.close();
 		}catch(IOException e){
-			System.out.println("XML¿é¥X¥¢±Ñ¡I¡I¡I¡I");
+			System.out.println("XMLè¼¸å‡ºå¤±æ•—ï¼ï¼ï¼ï¼");
 			throw new RuntimeException(e);
 		}
 	}
 	
 	/**
-	 * ¨ú±odocument,¶¶«K§PÂ_xmlÀÉ¥»¨Ó¦³¨S¦³¦s¦b
+	 * å–å¾—document,é †ä¾¿åˆ¤æ–·xmlæª”æœ¬ä¾†æœ‰æ²’æœ‰å­˜åœ¨
 	 * @return
 	 */
 	public static Document readXMLFile(){
@@ -96,7 +96,7 @@ public class JDomUtil {
 		File xmlPath = new File(path);
 		if(xmlPath.exists()){
 			Document docJDOM = null;
-			//«Ø¥ßSAXBuiler¨Óparse¤º®e
+			//å»ºç«‹SAXBuilerä¾†parseå…§å®¹
 			SAXBuilder builder = new SAXBuilder();
 			try{
 				docJDOM = builder.build(xmlPath);
@@ -114,7 +114,7 @@ public class JDomUtil {
 	}
 	
 	/**
-	 * ¨ú±oworkspaceªº¦ì¸m
+	 * å–å¾—workspaceçš„ä½ç½®
 	 * @return
 	 */
 	public static String getWorkspace(){

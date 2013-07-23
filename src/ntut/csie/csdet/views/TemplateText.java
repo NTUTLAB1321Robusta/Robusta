@@ -44,10 +44,10 @@ public class TemplateText {
 	}
 
 	/**
-	 * ¸ÑªR¤å¦r(§â¤å¦rToken©î¸Ñ¡A¨Ã§â¨C­ÓToken¹ïÀ³¤@­ÓStyle)
-	 * @param text		¿é¤J¤å¦r
-	 * @param textList	Àx¦s¨C¤@­ÓToken
-	 * @param typeList	Àx¦s¨C¤@­ÓTokenªºStyle
+	 * è§£ææ–‡å­—(æŠŠæ–‡å­—Tokenæ‹†è§£ï¼Œä¸¦æŠŠæ¯å€‹Tokenå°æ‡‰ä¸€å€‹Style)
+	 * @param text		è¼¸å…¥æ–‡å­—
+	 * @param textList	å„²å­˜æ¯ä¸€å€‹Token
+	 * @param typeList	å„²å­˜æ¯ä¸€å€‹Tokençš„Style
 	 */
 	private void parserText() {
 		int i = 0;
@@ -56,7 +56,7 @@ public class TemplateText {
 		String temp = "";
 		for (; i < text.length(); i++) {
 			if (!isContinue && !isError) {
-				//¹J¨ì¶i¦æParser
+				//é‡åˆ°é€²è¡ŒParser
 				if (i == text.length()-1 || text.charAt(i) ==  ' ' ||
 					text.charAt(i) ==  '\n' || text.charAt(i) ==  '\t'){
 					textList.add(temp);
@@ -70,7 +70,7 @@ public class TemplateText {
 					} else {
 						typeList.add(STYLE_NULL);
 					}
-					//§â¸Ó²Å¸¹("\n" "\t"...)¥[¤J
+					//æŠŠè©²ç¬¦è™Ÿ("\n" "\t"...)åŠ å…¥
 					textList.add(String.valueOf(text.charAt(i)));
 					typeList.add(STYLE_NULL);
 					temp = "";
@@ -80,7 +80,7 @@ public class TemplateText {
 					typeList.add(STYLE_FIELD);
 					temp = "";
 					temp += text.charAt(i);
-				//¹J¨ì"/"¬°µù¸Ñ
+				//é‡åˆ°"/"ç‚ºè¨»è§£
 				} else if (text.charAt(i) == '/') {
 					isContinue = true;
 					textList.add(temp);
@@ -98,7 +98,7 @@ public class TemplateText {
 					temp += text.charAt(i);
 				}
 			} else if (isContinue) {
-				//µù¸Ñ ¹JªÅ¥Õ¤´°»´ú¡Aª½¦Ü´«¦æ¬°¤î
+				//è¨»è§£ é‡ç©ºç™½ä»åµæ¸¬ï¼Œç›´è‡³æ›è¡Œç‚ºæ­¢
 				if (text.charAt(i) == '\n') {
 					temp += text.charAt(i);
 					isContinue = false;
@@ -108,21 +108,21 @@ public class TemplateText {
 				} else {
 					if (text.length() > i+4 &&
 						text.substring(i,i+4).equals("TODO")) {
-						//§â¤§«eªºµù¸Ñ¦s°_¨Ó
+						//æŠŠä¹‹å‰çš„è¨»è§£å­˜èµ·ä¾†
 						textList.add(temp);
 						typeList.add(STYLE_COMMENT);
 						temp = "";
-						//¥[¤J·sªºTaskµù¸Ñ
+						//åŠ å…¥æ–°çš„Taskè¨»è§£
 						textList.add("TODO");
 						typeList.add(STYLE_TASK);
-						//«ü¼Ğ²¾¨ìTask Tokenµ²§ô¦ì¸m
+						//æŒ‡æ¨™ç§»åˆ°Task TokençµæŸä½ç½®
 						i+=3;
 					} else {
 						temp += text.charAt(i);
 					}
 				}
 			} else if (isError) {
-				//µù¸Ñ ¹JªÅ¥Õ¤´°»´ú¡Aª½¦Ü´«¦æ¬°¤î
+				//è¨»è§£ é‡ç©ºç™½ä»åµæ¸¬ï¼Œç›´è‡³æ›è¡Œç‚ºæ­¢
 				if (text.charAt(i) == '$') {
 					isError = false;
 					textList.add(temp);
@@ -136,10 +136,10 @@ public class TemplateText {
 	}
 	
 	/**
-	 * ±N¤å¦rToken©MStyle¡A¨ú±o¥X°_©l¦ì¸m©Mªø«×¡BStyle
+	 * å°‡æ–‡å­—Tokenå’ŒStyleï¼Œå–å¾—å‡ºèµ·å§‹ä½ç½®å’Œé•·åº¦ã€Style
 	 * @param display
-	 * @param counter	¦r¼Æ(¬ö¿ı°_ÂI)
-	 * @return			¦^¶Ç¦r¼Æ
+	 * @param counter	å­—æ•¸(ç´€éŒ„èµ·é»)
+	 * @return			å›å‚³å­—æ•¸
 	 */
 	public int setTemplateStyle(Display display, int counter) {
 		clearLocationData();
@@ -148,9 +148,9 @@ public class TemplateText {
 			if (typeList.get(i) != STYLE_NULL) {
 				//Style
 				styleList.add(this.getStyle(display, typeList.get(i)));
-				//°_©l¦ì¸m
+				//èµ·å§‹ä½ç½®
 				locationList.add(counter);
-				//ªø«×
+				//é•·åº¦
 				locationList.add(textList.get(i).length());
 			}
 			counter += textList.get(i).length();
@@ -159,9 +159,9 @@ public class TemplateText {
 	}
 
 	/**
-	 * ¨ú±oµ{¦¡½X¤¤·|¥Î¨ìªº¦r«¬¡BÃC¦â
+	 * å–å¾—ç¨‹å¼ç¢¼ä¸­æœƒç”¨åˆ°çš„å­—å‹ã€é¡è‰²
 	 * @param display
-	 * @param type	StyleºØÃş
+	 * @param type	Styleç¨®é¡
 	 */
 	private StyleRange getStyle(Display display, int type) {
 		StyleRange style = new StyleRange();
@@ -219,7 +219,7 @@ public class TemplateText {
 		return styleList;
 	}
 	public StyleRange[] getStyleArrray() {
-		//±NListÂà¦¨Array
+		//å°‡Listè½‰æˆArray
 		StyleRange[] calleeStyles = styleList.toArray(new StyleRange[styleList.size()]);
 		return calleeStyles;
 	}
@@ -228,9 +228,9 @@ public class TemplateText {
 		return locationList;
 	}	
 	public int[] getLocationArray() {
-		//±NListÂà¦¨Array
+		//å°‡Listè½‰æˆArray
 		Integer[] rangeInteger = locationList.toArray(new Integer[locationList.size()]);
-		//±NInteger Array Âà¦¨ int Array
+		//å°‡Integer Array è½‰æˆ int Array
 		int[] rangeInt = ArrayUtils.toPrimitive(rangeInteger);
 		return rangeInt;
 	}

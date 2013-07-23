@@ -22,7 +22,7 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.TryStatement;
 
 /**
- * ±q«ü©wªº±M®×¤¤ªºÃş§O¨ú±oCompilationUnit
+ * å¾æŒ‡å®šçš„å°ˆæ¡ˆä¸­çš„é¡åˆ¥å–å¾—CompilationUnit
  * @author charles
  *
  */
@@ -32,21 +32,21 @@ public class ASTNodeFinder {
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin
 				.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
-		// ¨ú±oAST
+		// å–å¾—AST
 		CompilationUnit compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
 		return compilationUnit;
 	}
 
 	/**
-	 * ±q«ü©wclass´M§ä¯S©w¸`ÂI
-	 * ¦pªG§ä¤£¨ì¯S©w¸`ÂI¡A«h¦^¶Çnull¡C
-	 * @param className «ü©wclass¦WºÙ
-	 * @param lineNumber ¸Óclass¦æ¸¹
+	 * å¾æŒ‡å®šclasså°‹æ‰¾ç‰¹å®šç¯€é»
+	 * å¦‚æœæ‰¾ä¸åˆ°ç‰¹å®šç¯€é»ï¼Œå‰‡å›å‚³nullã€‚
+	 * @param className æŒ‡å®šclassåç¨±
+	 * @param lineNumber è©²classè¡Œè™Ÿ
 	 * @return
 	 * @throws IOException 
 	 * @throws CoreException 
@@ -56,10 +56,10 @@ public class ASTNodeFinder {
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
-		// ¨ú±oAST
+		// å–å¾—AST
 		CompilationUnit compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
 		
@@ -71,7 +71,7 @@ public class ASTNodeFinder {
 	}
 	
 	/**
-	 * ®Ú¾Ú¯S©wªºMethod Name§ä¦^MethodDeclaration Node <br />
+	 * æ ¹æ“šç‰¹å®šçš„Method Nameæ‰¾å›MethodDeclaration Node <br />
 	 * Known Issue: {@link NameOfMethodDeclarationVisitor}
 	 * @param clazz
 	 * @param projectName
@@ -86,7 +86,7 @@ public class ASTNodeFinder {
 	}
 
 	/**
-	 * ®Ú¾Ú«ü©wªºMethod Name¡A§ä¥XjavaÀÉ¤¤¡A²Ä¤@­Ó²Å¦X¦¹Method NameªºMethodDeclaration
+	 * æ ¹æ“šæŒ‡å®šçš„Method Nameï¼Œæ‰¾å‡ºjavaæª”ä¸­ï¼Œç¬¬ä¸€å€‹ç¬¦åˆæ­¤Method Nameçš„MethodDeclaration
 	 * @param compilationUnit
 	 * @param methodName
 	 * @return
@@ -102,8 +102,8 @@ public class ASTNodeFinder {
 	}
 	
 	/**
-	 * ®Ú¾Ú«ü©wªºMethodName¡A§ä¥X³o­ÓMethod©Ò¦³ªºTryStatement¡C
-	 * (±_ª¬ªºTry¤£·|¥t¥~³Q§ì¥X¨Ó)
+	 * æ ¹æ“šæŒ‡å®šçš„MethodNameï¼Œæ‰¾å‡ºé€™å€‹Methodæ‰€æœ‰çš„TryStatementã€‚
+	 * (å·¢ç‹€çš„Tryä¸æœƒå¦å¤–è¢«æŠ“å‡ºä¾†)
 	 * @param compilationUnit
 	 * @param methodName
 	 * @return
@@ -135,9 +135,9 @@ public class ASTNodeFinder {
 	}
 	
 	/**
-	 * ±q±_ª¬ªºTryStatement¤¤¨ú¥X¤º¼hªºTryStatement
-	 * @param outerTryStatment ¦³±_ª¬µ²ºcªºTryStatement
-	 * @param subNodeTypeOfOuterTryStatement ®Ú¾Ú¶Ç¤JASTNode Type¡A¨M©w­n±qTryBlock¸Ì­±¥h¨úTryStatement©Î¬O±q Catch Clause¸Ì­±¥h¨ú TryStatement
+	 * å¾å·¢ç‹€çš„TryStatementä¸­å–å‡ºå…§å±¤çš„TryStatement
+	 * @param outerTryStatment æœ‰å·¢ç‹€çµæ§‹çš„TryStatement
+	 * @param subNodeTypeOfOuterTryStatement æ ¹æ“šå‚³å…¥ASTNode Typeï¼Œæ±ºå®šè¦å¾TryBlockè£¡é¢å»å–TryStatementæˆ–æ˜¯å¾ Catch Clauseè£¡é¢å»å– TryStatement
 	 * @return
 	 */
 	public static List<TryStatement> getTryStatementInNestedTryStatement(TryStatement outerTryStatment, int subNodeTypeOfOuterTryStatement) {
@@ -148,10 +148,10 @@ public class ASTNodeFinder {
 	}
 	
 	/**
-	 * ±q±_ª¬ªºTryStatement¤¤¡A»`¶°TryStatement¡C<br />
-	 * ¥i¥H¿ï¾Ü±qTry Block¸Ì­±»`¶°¡A¤]¥i¥H¿ï¾Ü±qCatch Clause¸Ì­±»`¶°¡C<br />
-	 * lacks: ¦pªG¿ï¾Ü±qCatchClause¸Ì­±»`¶°¡A·|¥h´M§ä©Ò¦³CatchClause¸Ì­±ªºTryStatement¡A¦Ó¤£¯à«ü©w¯S©wªºCatchClause¡C
-	 * lacks: ¥Ø«e¥u¦³¦Ò¼{±_ª¬µ²ºc¥u¦³¤@¼hªº±¡ªp¡A¦A¦h¥i¯à·|¶W¥G¹w´Á¡C
+	 * å¾å·¢ç‹€çš„TryStatementä¸­ï¼Œè’é›†TryStatementã€‚<br />
+	 * å¯ä»¥é¸æ“‡å¾Try Blockè£¡é¢è’é›†ï¼Œä¹Ÿå¯ä»¥é¸æ“‡å¾Catch Clauseè£¡é¢è’é›†ã€‚<br />
+	 * lacks: å¦‚æœé¸æ“‡å¾CatchClauseè£¡é¢è’é›†ï¼Œæœƒå»å°‹æ‰¾æ‰€æœ‰CatchClauseè£¡é¢çš„TryStatementï¼Œè€Œä¸èƒ½æŒ‡å®šç‰¹å®šçš„CatchClauseã€‚
+	 * lacks: ç›®å‰åªæœ‰è€ƒæ…®å·¢ç‹€çµæ§‹åªæœ‰ä¸€å±¤çš„æƒ…æ³ï¼Œå†å¤šå¯èƒ½æœƒè¶…ä¹é æœŸã€‚
 	 * @author charles
 	 *
 	 */
@@ -162,8 +162,8 @@ public class ASTNodeFinder {
 		
 		/**
 		 * 
-		 * @param nestedTryStatement ¨ã¦³±_ª¬µ²ºcªºTryStatement
-		 * @param subNodeTypeOfOuterTryStatement §A·Q­n«õªºTryStatement¦bTry Block¸Ì­±ÁÙ¬O¦bCatch Clause¸Ì­±¡A½Ğµ¹©wASTNode Type¡C
+		 * @param nestedTryStatement å…·æœ‰å·¢ç‹€çµæ§‹çš„TryStatement
+		 * @param subNodeTypeOfOuterTryStatement ä½ æƒ³è¦æŒ–çš„TryStatementåœ¨Try Blockè£¡é¢é‚„æ˜¯åœ¨Catch Clauseè£¡é¢ï¼Œè«‹çµ¦å®šASTNode Typeã€‚
 		 */
 		public TryStatementInNestedTryStatementVisitor(TryStatement nestedTryStatement, int subNodeTypeOfOuterTryStatement) {
 			bigTryStatement = nestedTryStatement;
@@ -192,8 +192,8 @@ public class ASTNodeFinder {
 	}
 	
 	/**
-	 * §Q¥ÎMethod Name§ä¨ì«ü©wªºMethodDeclaration Node¡C<br />
-	 * Known Issue: ¦pªGClass¤¤¾Ö¦³¨â­Ó¨Ï¥Î¬Û¦P¦WºÙªºMethod¡A¥u·|¦^¶Ç³Ì¥ı§ä¨ìªº¨º­Ó¡C
+	 * åˆ©ç”¨Method Nameæ‰¾åˆ°æŒ‡å®šçš„MethodDeclaration Nodeã€‚<br />
+	 * Known Issue: å¦‚æœClassä¸­æ“æœ‰å…©å€‹ä½¿ç”¨ç›¸åŒåç¨±çš„Methodï¼Œåªæœƒå›å‚³æœ€å…ˆæ‰¾åˆ°çš„é‚£å€‹ã€‚
 	 * @author charles
 	 *
 	 */
@@ -231,9 +231,9 @@ public class ASTNodeFinder {
 	}
 	
 	/**
-	 * §Q¥ÎMethodName»Pµ{¦¡½X¤ù¬q§ä¨ì©ÒÄİªºMethodInvocation node¡C
-	 * ¦]¬°²Å¦Xªºµ{¦¡½X¤ù¬q¥i¯à¦³¦h­Ó¡A©Ò¥H¦^¶Ç§ä¨ìªºMethodInvocation Node¥HListªí¥Ü¡C
-	 * ¦pªGµ{¦¡½X¤ù¬q©Ò²Å¦XªºNode¤£¬OMethodInvocation¡A
+	 * åˆ©ç”¨MethodNameèˆ‡ç¨‹å¼ç¢¼ç‰‡æ®µæ‰¾åˆ°æ‰€å±¬çš„MethodInvocation nodeã€‚
+	 * å› ç‚ºç¬¦åˆçš„ç¨‹å¼ç¢¼ç‰‡æ®µå¯èƒ½æœ‰å¤šå€‹ï¼Œæ‰€ä»¥å›å‚³æ‰¾åˆ°çš„MethodInvocation Nodeä»¥Listè¡¨ç¤ºã€‚
+	 * å¦‚æœç¨‹å¼ç¢¼ç‰‡æ®µæ‰€ç¬¦åˆçš„Nodeä¸æ˜¯MethodInvocationï¼Œ
 	 * @author charles
 	 *
 	 */

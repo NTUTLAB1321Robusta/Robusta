@@ -13,7 +13,7 @@ import java.util.jar.JarFile;
 
 /**
  * Capture from Apache Ant project which is named FileUtils.java
- * CarelessClenanupAntExample ¤¤·|¨Ï¥Î¨ì³o¤ä Class ¦³ÃöÃö³¬¦ê¬yªº method
+ * CarelessClenanupAntExample ä¸­æœƒä½¿ç”¨åˆ°é€™æ”¯ Class æœ‰é—œé—œé–‰ä¸²æµçš„ method
  */
 public class CarelessCleanupExampleForAntDefinition {
 	public static void close(Writer device) {

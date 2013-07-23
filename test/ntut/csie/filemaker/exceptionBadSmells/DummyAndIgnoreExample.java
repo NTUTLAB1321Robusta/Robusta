@@ -83,7 +83,7 @@ public class DummyAndIgnoreExample {
 	}
 	
 	/**
-	 * ¦P®É´ú¸Õ­Y¦bcatch¤º¥X²{ªºexpression statement¤º§tªº¤£¬Omethod invocation®É¡A¬O§_¯à¥¿±`¹B¦æ
+	 * åŒæ™‚æ¸¬è©¦è‹¥åœ¨catchå…§å‡ºç¾çš„expression statementå…§å«çš„ä¸æ˜¯method invocationæ™‚ï¼Œæ˜¯å¦èƒ½æ­£å¸¸é‹è¡Œ
 	 */
 	public void true_systemOutPrintlnWithE() {
 		FileInputStream fis = null;
@@ -104,16 +104,16 @@ public class DummyAndIgnoreExample {
 			fis.read();
 		} catch (IOException e) {
 			System.out.println("I am Dummy.");	//	DummyHandler
-			// ¨Ï¥ÎªÌ¦Û­qtype2 - *.toString®É - true
+			// ä½¿ç”¨è€…è‡ªè¨‚type2 - *.toStringæ™‚ - true
 			e.toString();
-			// ¨Ï¥ÎªÌ¦Û­qtype2 - *.toString®É´ú*.toCharArray - false
+			// ä½¿ç”¨è€…è‡ªè¨‚type2 - *.toStringæ™‚æ¸¬*.toCharArray - false
 			e.toString().toCharArray();
 		}
 	}
 
 	/**
-	 * ´ú¸Õ¨Ï¥ÎªÌ¦Û­qtype3
-	 * ¦P®É´ú¸ÕaddDummyHandlerSmellInfoªº¥h<>¥\¯à¬O§_¯à¥¿±`¹B¦æ
+	 * æ¸¬è©¦ä½¿ç”¨è€…è‡ªè¨‚type3
+	 * åŒæ™‚æ¸¬è©¦addDummyHandlerSmellInfoçš„å»<>åŠŸèƒ½æ˜¯å¦èƒ½æ­£å¸¸é‹è¡Œ
 	 */
 	public void true_systemOutAndPrintStack() {
 		FileInputStream fis = null;
@@ -123,7 +123,7 @@ public class DummyAndIgnoreExample {
 		} catch (IOException e) {
 			e.printStackTrace();	//	DummyHandler
 			System.out.println(e);	//	DummyHandler
-			// ¨Ï¥ÎªÌ¦Û­qtype3 - java.util.ArrayList.add®É - true
+			// ä½¿ç”¨è€…è‡ªè¨‚type3 - java.util.ArrayList.addæ™‚ - true
 			ArrayList<Boolean> booleanList = new ArrayList<Boolean>();
 			booleanList.add(true);
 		}
@@ -272,7 +272,7 @@ public class DummyAndIgnoreExample {
 	}
 
 	/**
-	 * ¦bcatch¤º¨Ï¥Îouter class¨Ó´ú¸Õ¨Ï¥ÎªÌ¦Û­qªºpattern
+	 * åœ¨catchå…§ä½¿ç”¨outer classä¾†æ¸¬è©¦ä½¿ç”¨è€…è‡ªè¨‚çš„pattern
 	 */
 	public void false_userPatternType1WhitOuterClass() {
 		FileInputStream fis = null;
@@ -281,17 +281,17 @@ public class DummyAndIgnoreExample {
 			fis.read();
 		} catch (IOException e) {
 			UserDefineDummyHandlerFish userDefineDummyHandlerFish = new UserDefineDummyHandlerFish();
-			// ¨Ï¥ÎªÌ¦Û­qtype1 - [javaFilePath].UserDefineDummyHandlerFish.*®É - true
+			// ä½¿ç”¨è€…è‡ªè¨‚type1 - [javaFilePath].UserDefineDummyHandlerFish.*æ™‚ - true
 			userDefineDummyHandlerFish.eat();
 			/*
-			 * ¨Ï¥ÎªÌ¦Û­qtype1 - [javaFilePath].UserDefineDummyHandlerFish.*®É - true
-			 * swim()¦³¥h©I¥sSystem.out.println¡A¦ı¤£·|³Q¡u*.toString¡v°»´ú¨ì
+			 * ä½¿ç”¨è€…è‡ªè¨‚type1 - [javaFilePath].UserDefineDummyHandlerFish.*æ™‚ - true
+			 * swim()æœ‰å»å‘¼å«System.out.printlnï¼Œä½†ä¸æœƒè¢«ã€Œ*.toStringã€åµæ¸¬åˆ°
 			 */
 			userDefineDummyHandlerFish.swim();
 			/*
-			 * ¨Ï¥ÎªÌ¦Û­qtype1 - [javaFilePath].UserDefineDummyHandlerFish.*®É - false
-			 * ÁöµM¨Ï¥ÎuserDefineDummyHandlerFish¡A¦ı¦¹method¬OÄ~©ÓObject¨Óªº¡A¬G¤£³Q°O¤J
-			 * ­YÅıuserDefineDummyHandlerFish override¦¹method¡A´N·|³Q°O¤J
+			 * ä½¿ç”¨è€…è‡ªè¨‚type1 - [javaFilePath].UserDefineDummyHandlerFish.*æ™‚ - false
+			 * é›–ç„¶ä½¿ç”¨userDefineDummyHandlerFishï¼Œä½†æ­¤methodæ˜¯ç¹¼æ‰¿Objectä¾†çš„ï¼Œæ•…ä¸è¢«è¨˜å…¥
+			 * è‹¥è®“userDefineDummyHandlerFish overrideæ­¤methodï¼Œå°±æœƒè¢«è¨˜å…¥
 			 */
 			userDefineDummyHandlerFish.toString();
 		}

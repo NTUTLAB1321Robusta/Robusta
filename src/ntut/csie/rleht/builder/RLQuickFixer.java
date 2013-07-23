@@ -49,7 +49,7 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 			if (problem.equals(RLMarkerAttribute.ERR_RL_LEVEL)) {
 				for (int i = RLData.LEVEL_MIN; i <= RLData.LEVEL_MAX; i++) {
 					markerList.add(new RLQuickFix(resource.getString("err.rl.level") + i + " (" + exception + ")", i, errMsg));
-					logger.debug("ÅÜ§ó¦¨level=" + i + " (" + exception + ")");
+					logger.debug("è®Šæ›´æˆlevel=" + i + " (" + exception + ")");
 				}
 			} else if (problem.equals(RLMarkerAttribute.ERR_NO_RL)) {
 				if (!RLData.validLevel(RLUtils.str2int(level, -1))) {
@@ -60,28 +60,28 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				markerList.add(new RLQuickFix(resource.getString("err.rl.duplicate") + exception + ")",errMsg));
 			} else if (problem.equals(RLMarkerAttribute.ERR_RL_INSTANCE)) {
 				markerList.add(new RLQuickFix(resource.getString("err.rl.instance") + marker.getAttribute(IMarker.MESSAGE) + ")",errMsg));
-				// SuppressSmell¤º¨S¦³¦WºÙ
+				// SuppressSmellå…§æ²’æœ‰åç¨±
 			} else if (problem.equals(RLMarkerAttribute.ERR_SS_NO_SMELL)) {
 				boolean inCatch = Boolean.valueOf((String)marker.getAttribute(RLMarkerAttribute.SS_IN_CATCH));
 				String[] smellList;
-				if (inCatch)	//­YMarker¦ì©óCatch¤º
+				if (inCatch)	//è‹¥Markerä½æ–¼Catchå…§
 					smellList = RLMarkerAttribute.CS_CATCH_TYPE;
-				else			//­YMarker¦ì©óMethod¤W
+				else			//è‹¥Markerä½æ–¼Methodä¸Š
 					smellList = RLMarkerAttribute.CS_TOTAL_TYPE;
 
 				for (int i= 0; i < smellList.length; i++) {
 					String type = smellList[i];
 					markerList.add(new CSQuickFix(resource.getString("err.ss.no.smell") + type, type, inCatch));
 				}
-				// SuppressSmell¤ºSmell¦WºÙ¿ù»~
+				// SuppressSmellå…§Smellåç¨±éŒ¯èª¤
 			} else if (problem.equals(RLMarkerAttribute.ERR_SS_FAULT_NAME)) {
 				boolean inCatch = Boolean.valueOf((String)marker.getAttribute(RLMarkerAttribute.SS_IN_CATCH));
 				String faultName = (String) marker.getAttribute(RLMarkerAttribute.ERR_SS_FAULT_NAME);
 
 				String[] smellList;
-				if (inCatch)	//­YMarker¦ì©óCatch¤º
+				if (inCatch)	//è‹¥Markerä½æ–¼Catchå…§
 					smellList = RLMarkerAttribute.CS_CATCH_TYPE;
-				else			//­YMarker¦ì©óMethod¤W
+				else			//è‹¥Markerä½æ–¼Methodä¸Š
 					smellList = RLMarkerAttribute.CS_TOTAL_TYPE;
 
 				for (String type : smellList) {
@@ -89,25 +89,25 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 					if (!isDetect)
 						markerList.add(new CSQuickFix(resource.getString("err.ss.fault.name1") + " " + faultName + " " + resource.getString("err.ss.fault.name2") + " " + type, type, inCatch));
 				}
-				// ¸I¨ìIgnore ExceptionªºQuick fix and refactor¤èªk
+				// ç¢°åˆ°Ignore Exceptionçš„Quick fix and refactoræ–¹æ³•
 			} else if(problem.equals(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK)) {
 				markerList.add(new RefineRuntimeExceptionQuickFix("Quick Fix==>Rethrow RuntimeException"));
 				markerList.add(new RethrowUncheckExAction("Refactor==>Rethrow Unchecked Excetpion"));
 				markerList.add(new ThrowCheckedExceptionQuickFix("Quick Fix==>Throw Checked Exception"));
-				// ¸I¨ìDummy HandlerªºQuick fix and refactor¤èªk
+				// ç¢°åˆ°Dummy Handlerçš„Quick fix and refactoræ–¹æ³•
 			} else if(problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)) {
 				markerList.add(new RefineRuntimeExceptionQuickFix("Quick Fix==>Refine to RuntimeException"));
 				markerList.add(new RethrowUncheckExAction("Refactor==>Rethrow Unchecked Excetpion"));
 				markerList.add(new ThrowCheckedExceptionQuickFix("Quick Fix==>Throw Checked Exception"));
-				// ¸I¨ìNested Try blockªºrefactor
+				// ç¢°åˆ°Nested Try blockçš„refactor
 			} else if(problem.equals(RLMarkerAttribute.CS_NESTED_TRY_BLOCK)) {
 				markerList.add(new NTQuickFix("Please use Eclipse refactor==>Extract Method"));
-				// ¸I¨ìUnprotected Main programªºQuick fix
+				// ç¢°åˆ°Unprotected Main programçš„Quick fix
 			} else if(problem.equals(RLMarkerAttribute.CS_UNPROTECTED_MAIN)) {
 				markerList.add(new MoveCodeIntoBigOuterTryQuickFix("Quick Fix==>Add Big outer try block"));
-				// ¸I¨ìCareless CleanUpªºQuick fix and refactor¤èªk
+				// ç¢°åˆ°Careless CleanUpçš„Quick fix and refactoræ–¹æ³•
 			} else if(problem.equals(RLMarkerAttribute.CS_CARELESS_CLEANUP)){
-				//¥u¦³CCMessage¤~·|¦³³o­Ó¡A©Ò¥H¥u¯à¦b³oÃäget
+				//åªæœ‰CCMessageæ‰æœƒæœ‰é€™å€‹ï¼Œæ‰€ä»¥åªèƒ½åœ¨é€™é‚Šget
 				boolean withTryBlock = false;
 				if(marker.getAttribute(RLMarkerAttribute.CCU_WITH_TRY) != null){
 					withTryBlock = (Boolean) marker.getAttribute(RLMarkerAttribute.CCU_WITH_TRY);
@@ -118,7 +118,7 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				if ((withTryBlock) && (exceptionType == null)) {
 					markerList.add(new MoveCloseResouceFromTryCatchToFinallyBlockQuickFix("Quick Fix==>Move code to finally block"));
 
-				// FIXME - MethodInv. not in try block, should use "Three steps to refactor" ¥ªÃä»¡©ú¬°­ì¥»ºc·Q¡A¥Ø«e¹ïÀ³¤èªk¬°¤£´£¨Ñ¥ô¦ó¥\¯à
+				// FIXME - MethodInv. not in try block, should use "Three steps to refactor" å·¦é‚Šèªªæ˜Žç‚ºåŽŸæœ¬æ§‹æƒ³ï¼Œç›®å‰å°æ‡‰æ–¹æ³•ç‚ºä¸æä¾›ä»»ä½•åŠŸèƒ½
 				} else if ((!withTryBlock) && (exceptionType == null)) {
 					//  Surround MethodDeclaration Body with big outer Try and close in finally
 
@@ -126,25 +126,25 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				} else if ((withTryBlock) && (exceptionType != null)) {
 					markerList.add(new CarelessCleanUpAction("Refactor==>Use Extract Method"));
 				} else {
-					// »Ý­n´£¨ÑRefactoringªº¥\¯à
+					// éœ€è¦æä¾›Refactoringçš„åŠŸèƒ½
 				}
 					
-				// ¸I¨ìOverLoggingªºQuick fix and refactor¤èªk
+				// ç¢°åˆ°OverLoggingçš„Quick fix and refactoræ–¹æ³•
 			}else if(problem.equals(RLMarkerAttribute.CS_OVER_LOGGING)){
 				markerList.add(new RemoveOverLoggingStatementQuickFix("Quick Fix==>Remove Logging"));
 //				markerList.add(new OLRefactoring("Refactor==>Remove Reference Logging"));
 				markerList.add(new OverLoggingAction("Refactor==>Remove Reference Logging"));
-				//¹J¨ì¥i¥H«ØÄ³ªº¤èªk
+				//é‡åˆ°å¯ä»¥å»ºè­°çš„æ–¹æ³•
 			}else if(problem.equals(RLMarkerAttribute.CS_EXCEPTION_RLADVICE)){
 				String advice = (String) marker.getAttribute(IMarker.MESSAGE);
-				//¦³RL annotation¡A¤~¬O¦³©ß¥X³o­Ó¨Ò¥~(§Ú¦³°½°½À°throw eªº³£µw¤WRL)
+				//æœ‰RL annotationï¼Œæ‰æ˜¯æœ‰æ‹‹å‡ºé€™å€‹ä¾‹å¤–(æˆ‘æœ‰å·å·å¹«throw eçš„éƒ½ç¡¬ä¸ŠRL)
 				if(advice.contains(RTag.class.getSimpleName())){
 					markerList.add(new AchieveRL1QuickFix("RL1 quick gene ==> Rethrow Unckecked Exception"));
 				}
 			} else if(problem.equals(RLMarkerAttribute.CS_OVERWRITTEN_LEAD_EXCEPTION)) {
 				markerList.add(new ExtractMethodMarkerResolution("Refactor==>Use Extract Method"));
 			}
-			//ListÂàArray
+			//Listè½‰Array
 			IMarkerResolution[] markerArray = markerList.toArray(new IMarkerResolution[markerList.size()]);
 			return markerArray;
 		} catch (CoreException ex) {

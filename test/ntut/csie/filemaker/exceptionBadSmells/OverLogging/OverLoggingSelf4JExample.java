@@ -13,7 +13,7 @@ public class OverLoggingSelf4JExample {
 	Logger self4jLogger = LoggerFactory.getLogger(this.getClass());
 	
 	/** --------------------------------------------------------------------------- *
-	 * 								Self4J·í§@¨Ï¥ÎªÌ¦Û­q								*
+	 * 								Self4Jç•¶ä½œä½¿ç”¨è€…è‡ªè¨‚								*
 	 * ---------------------------------------------------------------------------- */
 	/** ---------------------Call Chain In Normal Case----------------------------- */
 	/* ----------------------Call Chain In the Same Class-------------------------- */
@@ -22,7 +22,7 @@ public class OverLoggingSelf4JExample {
 		try {
 			theSecondOrderInTheSameClassWithSelf4J();
 		} catch(IOException e) {
-			// Call chain³Ì¤W¼h¤£·|¼Ğ¥ÜOverLogging
+			// Call chainæœ€ä¸Šå±¤ä¸æœƒæ¨™ç¤ºOverLogging
 			self4jLogger.error(e.getMessage() + "theFirstOrderInTheSameClassWithSelf4J");
 		}
 	}
@@ -45,7 +45,7 @@ public class OverLoggingSelf4JExample {
 		} catch(IOException e) {
 			e.printStackTrace();
 			System.out.println(e);
-			// ¨S¦³log°Ê§@¡A¦ı¬O¦³©¹¤W©ß¡A¬G»İ­nÄ~Äò°lÂÜ
+			// æ²’æœ‰logå‹•ä½œï¼Œä½†æ˜¯æœ‰å¾€ä¸Šæ‹‹ï¼Œæ•…éœ€è¦ç¹¼çºŒè¿½è¹¤
 			throw e;
 		}
 	}
@@ -68,7 +68,7 @@ public class OverLoggingSelf4JExample {
 			OverLoggingTheFirstOrderClass outer = new OverLoggingTheFirstOrderClass();
 			outer.calleeWithSelf4J();
 		} catch(IOException e) {
-			// Call chain³Ì¤W¼h¤£·|¼Ğ¥ÜOverLogging
+			// Call chainæœ€ä¸Šå±¤ä¸æœƒæ¨™ç¤ºOverLogging
 			self4jLogger.error(e.getMessage() + "calleeInOutterClassWithSelf4J");
 		}
 	}
@@ -81,7 +81,7 @@ public class OverLoggingSelf4JExample {
 			theSecondOrderInTheSameClassWithJavaLogAndSomeConditions();
 			theFifthOrderInTheSameClassWithJavaLogAndSomeConditions();
 		} catch (IOException e) {
-			// Call chain³Ì¤W¼h¤£·|¼Ğ¥ÜOverLogging
+			// Call chainæœ€ä¸Šå±¤ä¸æœƒæ¨™ç¤ºOverLogging
 			self4jLogger.error(e.getMessage() + "theFirstOrderInTheSameClassWithJavaLogAndSomeConditions");
 		}
 	}
@@ -105,7 +105,7 @@ public class OverLoggingSelf4JExample {
 		} catch(FileNotFoundException e) {
 			e.printStackTrace();
 			System.out.println(e);
-			// ¨Ò¥~Âà«¬¡A¦ı¬O¦³±a¤J¤§«eªº¨Ò¥~¸ê°T¡A©Ò¥H­nÄ~Äò°lÂÜ
+			// ä¾‹å¤–è½‰å‹ï¼Œä½†æ˜¯æœ‰å¸¶å…¥ä¹‹å‰çš„ä¾‹å¤–è³‡è¨Šï¼Œæ‰€ä»¥è¦ç¹¼çºŒè¿½è¹¤
 			throw new IOException(e);
 		}
 	}
@@ -128,7 +128,7 @@ public class OverLoggingSelf4JExample {
 			theSixthOrderInTheSameClassWithJavaLogAndSomeConditions();
 		} catch(FileNotFoundException e) {
 			self4jLogger.error(e.getMessage() + "theSecondOrderInTheSameClassWithJavaLogAndSomeConditions");
-			// ©ß¥ş·sªº¨Ò¥~¡A©Ò¥H¤£Ä~Äò°lÂÜ
+			// æ‹‹å…¨æ–°çš„ä¾‹å¤–ï¼Œæ‰€ä»¥ä¸ç¹¼çºŒè¿½è¹¤
 			throw new IOException();
 		}
 	}
@@ -152,7 +152,7 @@ public class OverLoggingSelf4JExample {
 			OverLoggingTheFirstOrderClass outer = new OverLoggingTheFirstOrderClass();
 			outer.calleeWithSelf4J();
 		} catch(IOException e) {
-			// Call chain³Ì¤W¼h¤£·|¼Ğ¥ÜOverLogging
+			// Call chainæœ€ä¸Šå±¤ä¸æœƒæ¨™ç¤ºOverLogging
 			self4jLogger.error(e.getMessage() + "calleeInOutterClassWithSelf4JAndSomeConditions");
 		}
 	}

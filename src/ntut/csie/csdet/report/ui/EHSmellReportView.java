@@ -41,42 +41,42 @@ public class EHSmellReportView extends ViewPart {
 
 	//Report ToolBar
 	private ToolBar toolbar;
-	//Project¿ï³æ
+	//Projecté¸å–®
 	private Combo projectCombo;
 	//Report Browser
 	static Browser browser;
-	//Reportªº¸ê®Æ
+	//Reportçš„è³‡æ–™
 	private ReportModel data;
-	//Filterªº«öÁä°Ê§@
+	//Filterçš„æŒ‰éµå‹•ä½œ
 	private Action filterAction;
-	//Select Reportªº«öÁä°Ê§@
+	//Select Reportçš„æŒ‰éµå‹•ä½œ
 	private Action selectAction;
 	
 	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
 
 	@Override
 	public void createPartControl(Composite parent) {
-		//Composite©w¦ì
+		//Compositeå®šä½
 		FormLayout layout = new FormLayout();
 		parent.setLayout(layout);
 
-		//«Ø¸mView¤WªºToolBar
+		//å»ºç½®Viewä¸Šçš„ToolBar
 		buildToolItem(parent);
 
-		//«Ø¸mView¸ÌªºBrowser
+		//å»ºç½®Viewè£¡çš„Browser
 		buildBrowser(parent);
 		
-		//«Ø¸mView¸ÌªºToolBar 
+		//å»ºç½®Viewè£¡çš„ToolBar 
 		buildToolBar(parent);
 	}
 
 	/**
-	 * «Ø¸mView¸ÌªºBrowser
+	 * å»ºç½®Viewè£¡çš„Browser
 	 * @param parent
 	 * @param status 
 	 */
 	private void buildBrowser(Composite parent) {
-		///°t¸mBrowser¦ì¸m///
+		///é…ç½®Browserä½ç½®///
 		FormData  browserForm = new FormData();
 		browserForm.bottom = new FormAttachment(100, -5);
 		browserForm.left = new FormAttachment(0, 0);
@@ -84,38 +84,38 @@ public class EHSmellReportView extends ViewPart {
 		browserForm.top = new FormAttachment(toolbar, 5, SWT.DEFAULT);
 		browser = new Browser(parent, SWT.NONE);
 		browser.setLayoutData(browserForm);
-		//¹w³]Browser¶}©l®Éªº°T®§
+		//é è¨­Browseré–‹å§‹æ™‚çš„è¨Šæ¯
 		browser.setText(resource.getString("SmellReport.browser.default"));
 		browser.addLocationListener(new BrowserControl());
 	}
 
 	/**
-	 * «Ø¸mView¸ÌªºToolBar
+	 * å»ºç½®Viewè£¡çš„ToolBar
 	 */
 	private void buildToolItem(Composite parent) {
 		toolbar = new ToolBar(parent, SWT.NONE);
-		///°t¸mToolBar¦ì¸m///
+		///é…ç½®ToolBarä½ç½®///
 		FormData toolbarForm = new FormData();
 		toolbarForm.top = new FormAttachment(0, 5);
 		toolbar.setLayoutData(toolbarForm);
 		
-		///«Ø¸mproduct ToolItem///
+		///å»ºç½®product ToolItem///
 		final ToolItem itemGenerate = new ToolItem(toolbar, SWT.PUSH);
 		itemGenerate.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
 				IProject[] projectList  = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 
-				// ¨S¦³³]©wÀÉ¦s¦b®É¡AÀ°¨Ï¥ÎªÌ¹w³]¬°©Ò¦³ªº±ø¥ó³£¤Ä¿ï
+				// æ²’æœ‰è¨­å®šæª”å­˜åœ¨æ™‚ï¼Œå¹«ä½¿ç”¨è€…é è¨­ç‚ºæ‰€æœ‰çš„æ¢ä»¶éƒ½å‹¾é¸
 				SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 				smellSettings.activateAllConditions(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 				
-				//­Y¦³¿ï¾ÜProject´N²£¥Í³øªí¡A¨Ã§âBrowser«ü¦V°O­¶
+				//è‹¥æœ‰é¸æ“‡Projectå°±ç”¢ç”Ÿå ±è¡¨ï¼Œä¸¦æŠŠBrowseræŒ‡å‘è¨˜é 
 				for (IProject project : projectList) {
 					if (project.getName().equals(projectCombo.getItem(projectCombo.getSelectionIndex()))) {
 
-						//­«·s°t¸m·sªºModel¸ê®Æ
+						//é‡æ–°é…ç½®æ–°çš„Modelè³‡æ–™
 						data = new ReportModel();
-						//²£¥ÍReport
+						//ç”¢ç”ŸReport
 						buildReport(project);
 
 						break;
@@ -126,11 +126,11 @@ public class EHSmellReportView extends ViewPart {
 		itemGenerate.setText(resource.getString("SmellReport.generate"));
 		itemGenerate.setImage(ImageManager.getInstance().get("unchecked"));
 
-		///«Ø¸mRefresh ToolItem///
+		///å»ºç½®Refresh ToolItem///
 		final ToolItem itemRefresh = new ToolItem(toolbar, SWT.PUSH);
 		itemRefresh.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
-				//­Y«ö¤URefreshÁä¡A­«·s§ì¨úprojectCombo¤º®e
+				//è‹¥æŒ‰ä¸‹Refreshéµï¼Œé‡æ–°æŠ“å–projectComboå…§å®¹
 				projectCombo.removeAll();
 				bindProjectCombo();
 				projectCombo.setFocus();
@@ -140,9 +140,9 @@ public class EHSmellReportView extends ViewPart {
 		itemRefresh.setImage(ImageManager.getInstance().get("refresh"));
 
 		projectCombo = new Combo(parent, SWT.NONE);
-		//§â±M®×¦WºÙÅã¥Ü¦bCombo¤W
+		//æŠŠå°ˆæ¡ˆåç¨±é¡¯ç¤ºåœ¨Comboä¸Š
 		bindProjectCombo();
-		///«Ø¸mprojectCombo (»PToolBar¨S¦³Ãö«Y)///
+		///å»ºç½®projectCombo (èˆ‡ToolBaræ²’æœ‰é—œä¿‚)///
 		FormData comboForm = new FormData();
 		comboForm.bottom = new FormAttachment(0, 30);
 		comboForm.top = new FormAttachment(0, 10);
@@ -152,19 +152,19 @@ public class EHSmellReportView extends ViewPart {
 	}
 
 	/**
-	 * ²£¥ÍReport
+	 * ç”¢ç”ŸReport
 	 * @param project
 	 * @return
 	 */
 	private void buildReport(IProject project) {
-		//¥ı¥X²{´£¥Ü°T®§µ¹user,¦]¬°ºâcoverage­nªá¤@¬q®É¶¡
-		//¥ıÅıjob¥h¶]builder,­pºâcode coverage
+		//å…ˆå‡ºç¾æç¤ºè¨Šæ¯çµ¦user,å› ç‚ºç®—coverageè¦èŠ±ä¸€æ®µæ™‚é–“
+		//å…ˆè®“jobå»è·‘builder,è¨ˆç®—code coverage
 		final ProgressActionJob job = new ProgressActionJob(resource.getString("SmellReport.generateReportProgressBarTitle"), project, data);
 		
-		//³]©wÀu¥ı¶¶§Ç
+		//è¨­å®šå„ªå…ˆé †åº
 		job.setPriority(Job.SHORT);
 		
-		//»PPlugin§@µ²¦X
+		//èˆ‡Pluginä½œçµåˆ
 		final IWorkbenchSiteProgressService progressService = 
 			(IWorkbenchSiteProgressService) RLEHTPlugin.getDefault().getWorkbench().
 			getActiveWorkbenchWindow().getActivePage().getActivePart().getSite()
@@ -173,31 +173,31 @@ public class EHSmellReportView extends ViewPart {
 				RLEHTPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow()
 				.getActivePage().getActivePart().getSite().getShell(), job);
 
-		//¦b³oÃä¥Î¤@­Ólistenre¥hÅ¥Job§¹¦¨ªº¨Æ¥ó
+		//åœ¨é€™é‚Šç”¨ä¸€å€‹listenreå»è½Jobå®Œæˆçš„äº‹ä»¶
 		job.addJobChangeListener(new JobChangeAdapter() {
 			public void done(IJobChangeEvent event) {
 				if(event.getResult().isOK()) {
 					
-					//Browser¶}±Ò¹w³]¦ì¸mHTML
+					//Browseré–‹å•Ÿé è¨­ä½ç½®HTML
 					if (browser != null)
 						openHTM();
 				}
 			}
 		});
 
-		//job°Ê§@
+		//jobå‹•ä½œ
 		job.schedule();
 	}
 	
 	/**
-	 * «Ø¸mView¤WªºToolBar
+	 * å»ºç½®Viewä¸Šçš„ToolBar
 	 * @param parent 
 	 */
 	private void buildToolBar(Composite parent) {
 		IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
 		filterAction = new Action() {
 			public void run() {
-				//«ö¤U«á¸õ¥XFilter Dialog
+				//æŒ‰ä¸‹å¾Œè·³å‡ºFilter Dialog
 				FilterDialog filter = new FilterDialog(new Shell());
 				filter.open();
 			}
@@ -208,7 +208,7 @@ public class EHSmellReportView extends ViewPart {
 
 		selectAction = new Action() {
 			public void run() {
-				//«ö¤U«á¸õ¥XSelect Report Dialog
+				//æŒ‰ä¸‹å¾Œè·³å‡ºSelect Report Dialog
 				SelectReportDialog selectDialog = new SelectReportDialog(new Shell(), getProjectList());
 				selectDialog.open();
 				if(!selectDialog.getReportPath().equals("")){
@@ -222,7 +222,7 @@ public class EHSmellReportView extends ViewPart {
 	}
 
 	/**
-	 * §â±M®×¦WºÙÅã¥Ü¦bCombo¤W
+	 * æŠŠå°ˆæ¡ˆåç¨±é¡¯ç¤ºåœ¨Comboä¸Š
 	 */
 	private void bindProjectCombo() {
 		List<String> projectList = getProjectList();
@@ -238,7 +238,7 @@ public class EHSmellReportView extends ViewPart {
 	}
 
 	/**
-	 * Àò¨ú¥ş³¡±M®×¦WºÙ
+	 * ç²å–å…¨éƒ¨å°ˆæ¡ˆåç¨±
 	 * @return
 	 */
 	private List<String> getProjectList() {
@@ -258,16 +258,16 @@ public class EHSmellReportView extends ViewPart {
 	}
 	
 	/**
-	 * ±q¹w³]¸ô®|¤W¥´¶}HTM
+	 * å¾é è¨­è·¯å¾‘ä¸Šæ‰“é–‹HTM
 	 */
 	public void openHTM() {
 		try {
 			//for different SWT Thread
 			PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable(){
 				public void run() {
-					//¨ú±o¹w³]¸ô®|
+					//å–å¾—é è¨­è·¯å¾‘
 					String showPath = "file:///" + data.getFilePath("sample.html", true);
-					//¶}±Òºô§}
+					//é–‹å•Ÿç¶²å€
 					browser.setUrl(showPath);
 				}
 			});

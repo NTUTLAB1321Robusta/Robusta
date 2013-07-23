@@ -4,7 +4,7 @@ import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
 
 /**
- * Careless CleanUp RefactoringªºWizard,wizard¤§¤U·|¦³page
+ * Careless CleanUp Refactoringçš„Wizard,wizardä¹‹ä¸‹æœƒæœ‰page
  * @author Min
  */
 public class ExtractCleanUpMethodWizard  extends RefactoringWizard{
@@ -17,7 +17,7 @@ public class ExtractCleanUpMethodWizard  extends RefactoringWizard{
 	
 	@Override
 	protected void addUserInputPages() {
-		//¥[¤JMy Extract MethodªºPage
+		//åŠ å…¥My Extract Methodçš„Page
 		addPage(new ExtractCleanUpMethodInputPage("Extract CleanUp Method"));
 		
 	}

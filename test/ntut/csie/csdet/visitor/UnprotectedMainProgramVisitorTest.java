@@ -49,7 +49,7 @@ public class UnprotectedMainProgramVisitorTest {
 		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.FOLDERNAME_LIB_JAR, JavaProjectMaker.FOLDERNAME_BIN_CLASS);
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/" + JavaProjectMaker.RL_LIBRARY_PATH);
 		javaProjectMaker.setJREDefaultContainer();
-		// ®Ú¾Ú´ú¸ÕÀÉ®×¼Ë¥»¤º®e«Ø¥ß·sªºÀÉ®×
+		// æ ¹æ“šæ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹å»ºç«‹æ–°çš„æª”æ¡ˆ
 		// unit1
 		javaFile2String.read(UnprotectedMainProgramExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
@@ -124,17 +124,17 @@ public class UnprotectedMainProgramVisitorTest {
 				, "package " + UnprotectedMainProgramWithoutCatchRightExceptionExample.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
-		// «Ø¥ßXML
+		// å»ºç«‹XML
 		CreateSettings();
 		/** unit1 */ 
 		Path path1 = new Path(PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramExample.class, testProjectName));
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path1)));
 		parser.setResolveBindings(true);
-		// ¨ú±oAST
+		// å–å¾—AST
 		unit1 = (CompilationUnit) parser.createAST(null); 
 		unit1.recordModifications();
 		/** unit2 */
@@ -142,10 +142,10 @@ public class UnprotectedMainProgramVisitorTest {
 		//Create AST to parse
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path2)));
 		parser.setResolveBindings(true);
-		// ¨ú±oAST
+		// å–å¾—AST
 		unit2 = (CompilationUnit) parser.createAST(null); 
 		unit2.recordModifications();
 		/** unit3 */
@@ -153,10 +153,10 @@ public class UnprotectedMainProgramVisitorTest {
 		//Create AST to parse
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path3)));
 		parser.setResolveBindings(true);
-		// ¨ú±oAST
+		// å–å¾—AST
 		unit3 = (CompilationUnit) parser.createAST(null); 
 		unit3.recordModifications();
 		/** unit4 */
@@ -164,10 +164,10 @@ public class UnprotectedMainProgramVisitorTest {
 		//Create AST to parse
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path4)));
 		parser.setResolveBindings(true);
-		// ¨ú±oAST
+		// å–å¾—AST
 		unit4 = (CompilationUnit) parser.createAST(null);
 		unit4.recordModifications();
 		/** unit5 */
@@ -175,10 +175,10 @@ public class UnprotectedMainProgramVisitorTest {
 		//Create AST to parse
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path5)));
 		parser.setResolveBindings(true);
-		// ¨ú±oAST
+		// å–å¾—AST
 		unit5 = (CompilationUnit) parser.createAST(null);
 		unit5.recordModifications();
 		/** unit6 */
@@ -186,10 +186,10 @@ public class UnprotectedMainProgramVisitorTest {
 		//Create AST to parse
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path6)));
 		parser.setResolveBindings(true);
-		// ¨ú±oAST
+		// å–å¾—AST
 		unit6 = (CompilationUnit) parser.createAST(null);
 		unit6.recordModifications();
 		/** unit7 */
@@ -197,10 +197,10 @@ public class UnprotectedMainProgramVisitorTest {
 		//Create AST to parse
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path7)));
 		parser.setResolveBindings(true);
-		// ¨ú±oAST
+		// å–å¾—AST
 		unit7 = (CompilationUnit) parser.createAST(null);
 		unit7.recordModifications();
 		/** unit8 */
@@ -208,10 +208,10 @@ public class UnprotectedMainProgramVisitorTest {
 		//Create AST to parse
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path8)));
 		parser.setResolveBindings(true);
-		// ¨ú±oAST
+		// å–å¾—AST
 		unit8 = (CompilationUnit) parser.createAST(null);
 		unit8.recordModifications();
 		/** unit9 */
@@ -219,10 +219,10 @@ public class UnprotectedMainProgramVisitorTest {
 		//Create AST to parse
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path9)));
 		parser.setResolveBindings(true);
-		// ¨ú±oAST
+		// å–å¾—AST
 		unit9 = (CompilationUnit) parser.createAST(null);
 		unit9.recordModifications();
 	}
@@ -230,10 +230,10 @@ public class UnprotectedMainProgramVisitorTest {
 	@After
 	public void tearDown() throws Exception {
 		File xmlFile = new File(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		// ¦pªGxmlÀÉ®×¦s¦b¡A«h§R°£¤§
+		// å¦‚æœxmlæª”æ¡ˆå­˜åœ¨ï¼Œå‰‡åˆªé™¤ä¹‹
 		if(xmlFile.exists())
 			assertTrue(xmlFile.delete());
-		// §R°£±M®×
+		// åˆªé™¤å°ˆæ¡ˆ
 		javaProjectMaker.deleteProject();
 	}
 	
@@ -297,8 +297,8 @@ public class UnprotectedMainProgramVisitorTest {
 		MethodDeclaration md = list.get(0);
 		// check precondition
 		assertEquals(1, md.getBody().statements().size());
-		// ¦pªGmain function¤W­±¦³annotationªº¸Ü¡A¸Ómethodªº°_©l¦ì¸m·|±qannotation¶}©lºâ°_
-		// ¬Gmarker¥²¶·¥[¦b¤U¤@¦æ
+		// å¦‚æœmain functionä¸Šé¢æœ‰annotationçš„è©±ï¼Œè©²methodçš„èµ·å§‹ä½ç½®æœƒå¾annotationé–‹å§‹ç®—èµ·
+		// æ•…markerå¿…é ˆåŠ åœ¨ä¸‹ä¸€è¡Œ
 		assertEquals(7, unit1.getLineNumber(md.getStartPosition()));
 		// test target
 		Method getLineNumber = UnprotectedMainProgramVisitor.class.getDeclaredMethod("getLineNumber", MethodDeclaration.class);
@@ -314,7 +314,7 @@ public class UnprotectedMainProgramVisitorTest {
 		md = list.get(0);
 		// check precondition
 		assertEquals(1, md.getBody().statements().size());
-		// ¦]¬°main function¤W­±¨S¦³annotation¡A©Ò¥Hmain function¦b²Ä´X¦æ¡Amarker´N¥[¦b²Ä´X¦æ
+		// å› ç‚ºmain functionä¸Šé¢æ²’æœ‰annotationï¼Œæ‰€ä»¥main functionåœ¨ç¬¬å¹¾è¡Œï¼Œmarkerå°±åŠ åœ¨ç¬¬å¹¾è¡Œ
 		assertEquals(4, unit2.getLineNumber(md.getStartPosition()));
 		// test target & check postcondition
 		assertEquals(4, getLineNumber.invoke(mainVisitor, md));

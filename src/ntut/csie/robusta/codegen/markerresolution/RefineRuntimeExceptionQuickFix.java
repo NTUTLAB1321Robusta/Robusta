@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * ±NCatch¨ìªº¨Ò¥~Âà«¬¦¨RuntimeException©ß¥X¡A¨Ã¥B²¾°£System.out.println©Îe.printStackTraceµ¥¸ê°T
+ * å°‡Catchåˆ°çš„ä¾‹å¤–è½‰å‹æˆRuntimeExceptionæ‹‹å‡ºï¼Œä¸¦ä¸”ç§»é™¤System.out.printlnæˆ–e.printStackTraceç­‰è³‡è¨Š
  * @author Charles
  *
  */
@@ -27,7 +27,7 @@ public class RefineRuntimeExceptionQuickFix implements IMarkerResolution {
 	private QuickFixCore quickFixCore;
 	
 	private String label;
-	//¬ö¿ıcode smellªºtype
+	//ç´€éŒ„code smellçš„type
 	private String problem;
 
 	private String srcPos;
@@ -70,18 +70,18 @@ public class RefineRuntimeExceptionQuickFix implements IMarkerResolution {
 		}
 
 		if(smellSettings.isAddingRobustnessAnnotation()) {
-			// «Ø¥ßRobustness Annotation
+			// å»ºç«‹Robustness Annotation
 			quickFixCore.generateRobustnessLevelAnnotation(methodDeclaration, 1, RuntimeException.class);
 			
-			// ¦bMethod¤W«Å§i¨Ò¥~©ß¥X
+			// åœ¨Methodä¸Šå®£å‘Šä¾‹å¤–æ‹‹å‡º
 			quickFixCore.generateThrowExceptionOnMethodDeclaration(methodDeclaration, RuntimeException.class);
 		}
-		// ²¾°£dummy handlerªº±Ô­z
+		// ç§»é™¤dummy handlerçš„æ•˜è¿°
 		quickFixCore.removeNodeInCatchClause(exactlyCatchClause, ".printStackTrace()", "System.out.print", "System.err.print");
-		// ¥[¤W©ß¥X¨Ò¥~ throw new xxxException
+		// åŠ ä¸Šæ‹‹å‡ºä¾‹å¤– throw new xxxException
 		quickFixCore.addThrowRefinedExceptionInCatchClause(exactlyCatchClause, RuntimeException.class);
 
-		// ¼g¦^Edit¤¤
+		// å¯«å›Editä¸­
 		quickFixCore.applyChange();
 	}
 	
@@ -98,7 +98,7 @@ public class RefineRuntimeExceptionQuickFix implements IMarkerResolution {
 				return methodIdx;
 			}
 			methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
-			//Àx¦s«ö¤UQuickFix¸Ó¦æªºµ{¦¡°_©l¦ì¸m
+			//å„²å­˜æŒ‰ä¸‹QuickFixè©²è¡Œçš„ç¨‹å¼èµ·å§‹ä½ç½®
 			srcPos = marker.getAttribute(RLMarkerAttribute.RL_INFO_SRC_POS).toString();
 			return methodIdx;
 		} catch (CoreException e) {

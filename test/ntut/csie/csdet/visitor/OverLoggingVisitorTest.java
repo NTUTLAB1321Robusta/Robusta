@@ -53,17 +53,17 @@ public class OverLoggingVisitorTest {
 	@Before
 	public void setUp() throws Exception {
 		projectName = "OverLoggingExampleProject";
-		// Åª¨ú´ú¸ÕÀÉ®×¼Ë¥»¤º®e
+		// è®€å–æ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹
 		javaFile2String = new JavaFileToString();
 		javaProjectMaker = new JavaProjectMaker(projectName);
-		// ·s¼W±ı¸ü¤Jªºlibrary
+		// æ–°å¢æ¬²è¼‰å…¥çš„library
 		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.FOLDERNAME_LIB_JAR, JavaProjectMaker.FOLDERNAME_BIN_CLASS);
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/" + JavaProjectMaker.RL_LIBRARY_PATH);
 		javaProjectMaker.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR + "/log4j-1.2.15.jar");
 		javaProjectMaker.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR + "/slf4j-api-1.5.0.jar");
 		javaProjectMaker.setJREDefaultContainer();
 		
-		// ®Ú¾Ú´ú¸ÕÀÉ®×¼Ë¥»¤º®e«Ø¥ß·sªºÀÉ®×
+		// æ ¹æ“šæ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹å»ºç«‹æ–°çš„æª”æ¡ˆ
 		javaFile2String.read(OverLoggingIntegrationExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(OverLoggingIntegrationExample.class.getPackage().getName(),
 										OverLoggingIntegrationExample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
@@ -113,7 +113,7 @@ public class OverLoggingVisitorTest {
 										+ ";\n" + javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
-		// «Ø¥ßXML
+		// å»ºç«‹XML
 		CreateSettings();
 		
 		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(OverLoggingJavaLogExample.class, projectName));
@@ -121,10 +121,10 @@ public class OverLoggingVisitorTest {
 		// Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
-		// ¨ú±oAST
+		// å–å¾—AST
 		overLoggingJavaLogExampleUnit = (CompilationUnit) parser.createAST(null); 
 		overLoggingJavaLogExampleUnit.recordModifications();
 		
@@ -133,10 +133,10 @@ public class OverLoggingVisitorTest {
 		// Create AST to parse
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
-		// ¨ú±oAST
+		// å–å¾—AST
 		overLoggingLog4JExampleUnit = (CompilationUnit) parser.createAST(null); 
 		overLoggingLog4JExampleUnit.recordModifications();
 		
@@ -145,10 +145,10 @@ public class OverLoggingVisitorTest {
 		// Create AST to parse
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
-		// ¨ú±oAST
+		// å–å¾—AST
 		overLoggingSelf4JExampleUnit = (CompilationUnit) parser.createAST(null); 
 		overLoggingSelf4JExampleUnit.recordModifications();
 	}
@@ -156,10 +156,10 @@ public class OverLoggingVisitorTest {
 	@After
 	public void tearDown() throws Exception {
 		File xmlFile = new File(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		// ¦pªGxmlÀÉ®×¦s¦b¡A«h§R°£¤§
+		// å¦‚æœxmlæª”æ¡ˆå­˜åœ¨ï¼Œå‰‡åˆªé™¤ä¹‹
 		if(xmlFile.exists())
 			assertTrue(xmlFile.delete());
-		// §R°£±M®×
+		// åˆªé™¤å°ˆæ¡ˆ
 		javaProjectMaker.deleteProject();
 	}
 	
@@ -262,7 +262,7 @@ public class OverLoggingVisitorTest {
 		List<MethodDeclaration> methodList = methodCollector.getMethodList();
 		List<MarkerInfo> markerInfoList = new ArrayList<MarkerInfo>();
 		for(MethodDeclaration node : methodList) {
-			// ¦b³o¸Ì¥Î¨ì§Oªºclass¡A¨ä¹ê¬O¤£¦nªº¡A¦ı¬OOverLoggingVisitor¤£¹³¨ä¥Lvisitor¥u­naccept¤@¦¸´N¯à¥ş³¡§ì¨ì
+			// åœ¨é€™è£¡ç”¨åˆ°åˆ¥çš„classï¼Œå…¶å¯¦æ˜¯ä¸å¥½çš„ï¼Œä½†æ˜¯OverLoggingVisitorä¸åƒå…¶ä»–visitoråªè¦acceptä¸€æ¬¡å°±èƒ½å…¨éƒ¨æŠ“åˆ°
 			OverLoggingDetector detector = new OverLoggingDetector(overLoggingJavaLogExampleUnit, node);
 			detector.detect();
 			markerInfoList.addAll(detector.getOverLoggingList());
@@ -275,7 +275,7 @@ public class OverLoggingVisitorTest {
 		methodList = methodCollector.getMethodList();
 		markerInfoList = new ArrayList<MarkerInfo>();
 		for(MethodDeclaration node : methodList) {
-			// ¦b³o¸Ì¥Î¨ì§Oªºclass¡A¨ä¹ê¬O¤£¦nªº¡A¦ı¬OOverLoggingVisitor¤£¹³¨ä¥Lvisitor¥u­naccept¤@¦¸´N¯à¥ş³¡§ì¨ì
+			// åœ¨é€™è£¡ç”¨åˆ°åˆ¥çš„classï¼Œå…¶å¯¦æ˜¯ä¸å¥½çš„ï¼Œä½†æ˜¯OverLoggingVisitorä¸åƒå…¶ä»–visitoråªè¦acceptä¸€æ¬¡å°±èƒ½å…¨éƒ¨æŠ“åˆ°
 			OverLoggingDetector detector = new OverLoggingDetector(overLoggingLog4JExampleUnit, node);
 			detector.detect();
 			markerInfoList.addAll(detector.getOverLoggingList());
@@ -290,7 +290,7 @@ public class OverLoggingVisitorTest {
 		methodList = methodCollector.getMethodList();
 		markerInfoList = new ArrayList<MarkerInfo>();
 		for(MethodDeclaration node : methodList) {
-			// ¦b³o¸Ì¥Î¨ì§Oªºclass¡A¨ä¹ê¬O¤£¦nªº¡A¦ı¬OOverLoggingVisitor¤£¹³¨ä¥Lvisitor¥u­naccept¤@¦¸´N¯à¥ş³¡§ì¨ì
+			// åœ¨é€™è£¡ç”¨åˆ°åˆ¥çš„classï¼Œå…¶å¯¦æ˜¯ä¸å¥½çš„ï¼Œä½†æ˜¯OverLoggingVisitorä¸åƒå…¶ä»–visitoråªè¦acceptä¸€æ¬¡å°±èƒ½å…¨éƒ¨æŠ“åˆ°
 			OverLoggingDetector detector = new OverLoggingDetector(overLoggingSelf4JExampleUnit, node);
 			detector.detect();
 			markerInfoList.addAll(detector.getOverLoggingList());

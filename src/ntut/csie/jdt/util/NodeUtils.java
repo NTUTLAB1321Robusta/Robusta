@@ -18,8 +18,8 @@ import org.eclipse.jdt.core.dom.TryStatement;
 
 public class NodeUtils {
 	/**
-	 * §PÂ_«ü©wªºclass¬O§_¬°¯S©winterfaceªº¹ê§@¡C
-	 * @param ASTNode¤WªºITypeBinding¡A¦³¥i¯à¬OClass©Î¬OInterface
+	 * åˆ¤æ–·æŒ‡å®šçš„classæ˜¯å¦ç‚ºç‰¹å®šinterfaceçš„å¯¦ä½œã€‚
+	 * @param ASTNodeä¸Šçš„ITypeBindingï¼Œæœ‰å¯èƒ½æ˜¯Classæˆ–æ˜¯Interface
 	 * @param looking4interface
 	 * @return
 	 */
@@ -41,7 +41,7 @@ public class NodeUtils {
 	}
 	
 	/**
-	 * ÀË¬dMethodInvocation¬O§_¦bfinally¸Ì­±
+	 * æª¢æŸ¥MethodInvocationæ˜¯å¦åœ¨finallyè£¡é¢
 	 * @param node
 	 * @return
 	 */
@@ -62,7 +62,7 @@ public class NodeUtils {
 	}
 	
 	/**
-	 * §PÂ_MethodInvocation¶Ç¤Jªº°Ñ¼Æ¬O§_¦³¹ê§@«ü©wªº¤¶­±
+	 * åˆ¤æ–·MethodInvocationå‚³å…¥çš„åƒæ•¸æ˜¯å¦æœ‰å¯¦ä½œæŒ‡å®šçš„ä»‹é¢
 	 * @param node
 	 * @param looking4Interface
 	 * @return
@@ -79,8 +79,8 @@ public class NodeUtils {
 	}
 	
 	/**
-	 * ±q¿é¤Jªº¸`ÂI¶}©l¡A´M§ä¯S©wªº¤÷¸`ÂI¡C
-	 * ¦pªG§ä¤£¨ì¯S©w¤÷¸`ÂI¡A«h¦^¶Çnull
+	 * å¾è¼¸å…¥çš„ç¯€é»é–‹å§‹ï¼Œå°‹æ‰¾ç‰¹å®šçš„çˆ¶ç¯€é»ã€‚
+	 * å¦‚æœæ‰¾ä¸åˆ°ç‰¹å®šçˆ¶ç¯€é»ï¼Œå‰‡å›å‚³null
 	 * @param startNode
 	 * @param nodeType
 	 * @return
@@ -90,11 +90,11 @@ public class NodeUtils {
 		if(startNode == null)
 			return startNode;
 		ASTNode parentNode = startNode.getParent();
-		// ¦pªGparentNode¬Onull¡Aªí¥Ü¶Ç¶i¨Óªºnode¤w¸g¬OrootNode(CompilationUnit)
+		// å¦‚æœparentNodeæ˜¯nullï¼Œè¡¨ç¤ºå‚³é€²ä¾†çš„nodeå·²ç¶“æ˜¯rootNode(CompilationUnit)
 		if(parentNode != null) {
 			while(parentNode.getNodeType() != nodeType) {
 				parentNode = parentNode.getParent();
-				// µL½a°j°é²×¤î±ø¥ó - ¤w¸g¨S¦³parentNode
+				// ç„¡çª®è¿´åœˆçµ‚æ­¢æ¢ä»¶ - å·²ç¶“æ²’æœ‰parentNode
 				if (parentNode == null) {
 					break;
 				}
@@ -120,12 +120,12 @@ public class NodeUtils {
 	}
 	
 	public static ITypeBinding[] getMethodInvocationThrownCheckedExceptions(MethodInvocation node) {
-		// ¦pªG¨Ï¥ÎªÌ¶i¦æ¤F§Ö³t­×´_¡A«h·|»`¶°¨ìListRewriteªº¸ê°T¡Anode.resolveMethodBinding()·|ÅÜ¦¨null
+		// å¦‚æœä½¿ç”¨è€…é€²è¡Œäº†å¿«é€Ÿä¿®å¾©ï¼Œå‰‡æœƒè’é›†åˆ°ListRewriteçš„è³‡è¨Šï¼Œnode.resolveMethodBinding()æœƒè®Šæˆnull
 		if(node.resolveMethodBinding() == null) {
 			return null;
 		}
 		
-		// visit­ì©lµ{¦¡½Xªº®É­Ô¡A¥i¥H»`¶°¨ìnode.resolveMethodBinding()
+		// visitåŸå§‹ç¨‹å¼ç¢¼çš„æ™‚å€™ï¼Œå¯ä»¥è’é›†åˆ°node.resolveMethodBinding()
 		if(node.resolveMethodBinding().getExceptionTypes().length <= 0) {
 			return null;
 		}
@@ -134,9 +134,9 @@ public class NodeUtils {
 	}
 	
 	/**
-	 * ÀË¬dmethod invocationªºµ{¦¡½X¬O¤£¬OÃö³¬¸ê·½ªº°Ê§@
-	 * @param root method invocation©Ò¦bªºjavaÀÉ®×
-	 * @param node ­n³QÀË¬dªºµ{¦¡½X
+	 * æª¢æŸ¥method invocationçš„ç¨‹å¼ç¢¼æ˜¯ä¸æ˜¯é—œé–‰è³‡æºçš„å‹•ä½œ
+	 * @param root method invocationæ‰€åœ¨çš„javaæª”æ¡ˆ
+	 * @param node è¦è¢«æª¢æŸ¥çš„ç¨‹å¼ç¢¼
 	 * @return
 	 */
 	public static boolean isCloseResourceMethodInvocation(CompilationUnit root, MethodInvocation node) {
@@ -166,18 +166,18 @@ public class NodeUtils {
 	}
 	
 	/**
-	 * ÀË¬d¬O§_¹ê§@Closeable#closeªºµ{¦¡½X
+	 * æª¢æŸ¥æ˜¯å¦å¯¦ä½œCloseable#closeçš„ç¨‹å¼ç¢¼
 	 * @param node 
-	 * @return ¦pªG³o­Ónode¹ê§@Closeable¦Ó¥B¬Ocloseªº°Ê§@¡A¤~·|¦^¶ÇTrue¡A¨ä¾l¤@«ß¦^¶ÇFalse¡C
+	 * @return å¦‚æœé€™å€‹nodeå¯¦ä½œCloseableè€Œä¸”æ˜¯closeçš„å‹•ä½œï¼Œæ‰æœƒå›å‚³Trueï¼Œå…¶é¤˜ä¸€å¾‹å›å‚³Falseã€‚
 	 */
 	public static boolean isNodeACloseCodeAndImplementatedCloseable(MethodInvocation node) {
-		// ´M§ämethod name¬°close
+		// å°‹æ‰¾method nameç‚ºclose
 		if(!node.getName().toString().equals("close")) {
 			return false;
 		}
 
 		/*
-		 *	´M§ä³o­Óclose¬O¤£¬O¹ê§@Closeable 
+		 *	å°‹æ‰¾é€™å€‹closeæ˜¯ä¸æ˜¯å¯¦ä½œCloseable 
 		 */
 		if (NodeUtils.isITypeBindingImplemented(node.resolveMethodBinding()
 				.getDeclaringClass(), Closeable.class)) {
@@ -188,12 +188,12 @@ public class NodeUtils {
 	}
 	
 	/**
-	 * ¦pªG¬Oxx.close()ªº§Î¦¡¡A«h¥i¥H±qxxªºSimpleName¨ú±oBindingªºÅÜ¼Æ¦WºÙ
+	 * å¦‚æœæ˜¯xx.close()çš„å½¢å¼ï¼Œå‰‡å¯ä»¥å¾xxçš„SimpleNameå–å¾—Bindingçš„è®Šæ•¸åç¨±
 	 * @param expression
 	 * @return
 	 */
 	public static SimpleName getMethodInvocationBindingVariableSimpleName(Expression expression) {
-		// ¦pªG¬Oclose(xxx)ªº§Î¦¡¡A«h¶Ç¶i¨Óªºexpression¬°null
+		// å¦‚æœæ˜¯close(xxx)çš„å½¢å¼ï¼Œå‰‡å‚³é€²ä¾†çš„expressionç‚ºnull
 		if(expression == null) {
 			return null;
 		}

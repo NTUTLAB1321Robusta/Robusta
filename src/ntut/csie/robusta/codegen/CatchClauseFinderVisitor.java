@@ -6,9 +6,9 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TryStatement;
 
 public class CatchClauseFinderVisitor extends ASTVisitor {
-	/**	±N§ä¨ìªºCatchClause¦s¦b³o¸Ì */
+	/**	å°‡æ‰¾åˆ°çš„CatchClauseå­˜åœ¨é€™è£¡ */
 	private CatchClause foundCatchClause;
-	/** ­n§äªºCatchClause©Ò¦b¦ì¸m */
+	/** è¦æ‰¾çš„CatchClauseæ‰€åœ¨ä½ç½® */
 	private int ccStartPosition;
 	
 	public CatchClauseFinderVisitor(int startPosition) {

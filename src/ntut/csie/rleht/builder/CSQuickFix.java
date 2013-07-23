@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Quick Fix SuppressSmell Annotation
  * @author Shiau
- * °Ñ¦Ò¸ê®Æ¡G
+ * åƒè€ƒè³‡æ–™ï¼š
  * SuppressWarnings
  * org.eclipse.jdt.internal.ui.text.correction.SuppressWarningsSubProcessor
  * org.eclipse.jdt.internal.ui.text.correction.QuickFixProcessor
@@ -60,21 +60,21 @@ import org.slf4j.LoggerFactory;
 public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMarkerResolution2 {
 	private static Logger logger = LoggerFactory.getLogger(CSQuickFix.class);
 
-	/** ¤u¨ãÄæ«ö¶s¼ĞÅÒªº¦WºÙ */
+	/** å·¥å…·æ¬„æŒ‰éˆ•æ¨™ç±¤çš„åç¨± */
 	private String label;
-	/** Annotation¬O§_¥[¦bCatch¤¤¡A§_«h¥[¦bMethod¤W */
+	/** Annotationæ˜¯å¦åŠ åœ¨Catchä¸­ï¼Œå¦å‰‡åŠ åœ¨Methodä¸Š */
 	private boolean inCatch;
-	/** ¦s©ñ¥Ø«e­n­×§ïªº.javaÀÉ */
+	/** å­˜æ”¾ç›®å‰è¦ä¿®æ”¹çš„.javaæª” */
 	private CompilationUnit actRoot;
-	/** ¥Ø«eªºMethod AST Node */
+	/** ç›®å‰çš„Method AST Node */
 	private ASTNode currentMethodNode = null;
-	/** SmellªºType */
+	/** Smellçš„Type */
 	private String markerType;
 	/** AST Rewrite */
 	private ASTRewrite rewrite;	
-	/** marker¦bSourceªº¶}©l¦ì¸m */
+	/** markeråœ¨Sourceçš„é–‹å§‹ä½ç½® */
 	private String markerStartPos;
-	/** marker©Ò¦bªºCatch Index */
+	/** markeræ‰€åœ¨çš„Catch Index */
 	private int catchIdx = -1;
 	
 	public CSQuickFix(String label, boolean inCatch) {
@@ -106,18 +106,18 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 				boolean isok = findMethod(marker.getResource(), Integer.parseInt(methodIdx));
 
 				if (isok) {
-					// ¬O§_¥[¦bCatch¤º¡A§_«h¦bMethod¤W
+					// æ˜¯å¦åŠ åœ¨Catchå…§ï¼Œå¦å‰‡åœ¨Methodä¸Š
 					if (inCatch) {
-						// ¨ú±o±ı­×§ïASTNode
+						// å–å¾—æ¬²ä¿®æ”¹ASTNode
 						CatchClause cc = getCatchClause();	
 						SingleVariableDeclaration svd = cc.getException();
 	
-						// ­×§ïSuppressSmell Annotation°T®§
+						// ä¿®æ”¹SuppressSmell Annotationè¨Šæ¯
 						replaceSuppressSmellAnnotation(svd.modifiers(), faultName);
 					} else {
-						// ¨ú±o±ı­×§ïªºASTNode
+						// å–å¾—æ¬²ä¿®æ”¹çš„ASTNode
 						MethodDeclaration method = (MethodDeclaration) currentMethodNode;
-						// ±NAnnotation°T®§¼W¥[¨ì«ü©wMethod¤W
+						// å°‡Annotationè¨Šæ¯å¢åŠ åˆ°æŒ‡å®šMethodä¸Š
 						replaceSuppressSmellAnnotation(method.modifiers(), faultName);
 					}
 				}
@@ -127,24 +127,24 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 
 				boolean isok = findMethod(marker.getResource(), Integer.parseInt(methodIdx));
 				if (isok) {
-					// ¬O§_¥[¦bCatch¤º¡A§_«h¦bMethod¤W
+					// æ˜¯å¦åŠ åœ¨Catchå…§ï¼Œå¦å‰‡åœ¨Methodä¸Š
 					if (inCatch) {
-						// ¨ú±o±ı­×§ïASTNode
+						// å–å¾—æ¬²ä¿®æ”¹ASTNode
 						CatchClause cc = getCatchClause();
 
 						SingleVariableDeclaration svd = cc.getException();
 						
-						// ±NAnnotation°T®§¼W¥[¨ì«ü©wCatch¤¤
+						// å°‡Annotationè¨Šæ¯å¢åŠ åˆ°æŒ‡å®šCatchä¸­
 						addSuppressSmellAnnotation(svd, svd.modifiers(), SingleVariableDeclaration.MODIFIERS2_PROPERTY);
 					} else {
-						// ¨ú±o±ı­×§ïªºASTNode
+						// å–å¾—æ¬²ä¿®æ”¹çš„ASTNode
 						MethodDeclaration method = (MethodDeclaration) currentMethodNode;
-						// ±NAnnotation°T®§¼W¥[¨ì«ü©wMethod¤W
+						// å°‡Annotationè¨Šæ¯å¢åŠ åˆ°æŒ‡å®šMethodä¸Š
 						addSuppressSmellAnnotation(method, method.modifiers(), method.getModifiersProperty());
 					}
 				}
 			}
-			// ©w¦ì¨ìAnnotation¸Ó¦æ
+			// å®šä½åˆ°Annotationè©²è¡Œ
 			selectLine(marker, methodIdx);
 		} catch (CoreException e) {
 			ErrorLog.getInstance().logError("[CSQuickFix]", e);
@@ -152,10 +152,10 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 	}
 
 	/**
-	 * ¨ú±oMethodªº¸ê°T
+	 * å–å¾—Methodçš„è³‡è¨Š
 	 * @param resource
-	 * @param methodIdx		methodªºIndex
-	 * @return				¬O§_¦¨¥\
+	 * @param methodIdx		methodçš„Index
+	 * @return				æ˜¯å¦æˆåŠŸ
 	 */
 	private boolean findMethod(IResource resource, int methodIdx) {
 		if (resource instanceof IFile && resource.getName().endsWith(".java")) {
@@ -187,7 +187,7 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 	}
 	
 	/**
-	 * ¨ú±oMarker©Ò¦bªºCatch Clause
+	 * å–å¾—Markeræ‰€åœ¨çš„Catch Clause
 	 * @return
 	 */
 	private CatchClause getCatchClause() {
@@ -195,12 +195,12 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 		currentMethodNode.accept(catchCollector);
 		List<CatchClause> catchList = catchCollector.getMethodList();
 
-		//­Y¤w¨ú±oCatch¦ì¸m¡A«hª½±µ¿é¥X
+		//è‹¥å·²å–å¾—Catchä½ç½®ï¼Œå‰‡ç›´æ¥è¼¸å‡º
 		if (catchIdx != -1)
 			return catchList.get(catchIdx);
 
 		for (int i = 0; i < catchList.size(); i++) {
-			//§ä¨ì¸ÓCatch(¦pªGCatchªº¦ì¸m»P«ö¤UQuick¨º¦æªº°_©l¦ì¸m¬Û¦P)
+			//æ‰¾åˆ°è©²Catch(å¦‚æœCatchçš„ä½ç½®èˆ‡æŒ‰ä¸‹Quické‚£è¡Œçš„èµ·å§‹ä½ç½®ç›¸åŒ)
 			if (catchList.get(i).getStartPosition() == Integer.parseInt(markerStartPos)) {
 				catchIdx = i;
 				return catchList.get(i);
@@ -210,7 +210,7 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 	}
 
 	/**
-	 * ·s¼WSuppressSmell Annotation°T®§
+	 * æ–°å¢SuppressSmell Annotationè¨Šæ¯
 	 * 
 	 * @param node
 	 * @param modifiers
@@ -220,16 +220,16 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 		AST ast = currentMethodNode.getAST();
 		rewrite = ASTRewrite.create(ast);
 
-		// ¥[¤JSuppressSmell Library 
+		// åŠ å…¥SuppressSmell Library 
 		addImportDeclaration();
 
-		// «Ø¥ßAnnotation root
+		// å»ºç«‹Annotation root
 		Annotation existing = findExistingAnnotation(modifiers);
 		
 		StringLiteral newStringLiteral = ast.newStringLiteral();
 		newStringLiteral.setLiteralValue(markerType);
 
-		// SuppressSmell Annotation¤£¦s¦b
+		// SuppressSmell Annotationä¸å­˜åœ¨
 		if (existing == null) {
 			
 			ListRewrite listRewrite = rewrite.getListRewrite(node, property);
@@ -240,7 +240,7 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 			newAnnot.setValue(newStringLiteral);
 
 			listRewrite.insertFirst(newAnnot, null);
-		// ­Y¤w¦s¦b @SuppressSmell()
+		// è‹¥å·²å­˜åœ¨ @SuppressSmell()
 		} else if (existing instanceof SingleMemberAnnotation) {
 			SingleMemberAnnotation annotation= (SingleMemberAnnotation) existing;
 			Expression value= annotation.getValue();
@@ -248,7 +248,7 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 			if (!addSuppressArgument(rewrite, value, newStringLiteral)) {
 				rewrite.set(existing, SingleMemberAnnotation.VALUE_PROPERTY, newStringLiteral, null);
 			}
-		// ­Y¤w¦s¦b @SuppressSmell(value={})
+		// è‹¥å·²å­˜åœ¨ @SuppressSmell(value={})
 		} else if (existing instanceof NormalAnnotation) {
 			NormalAnnotation annotation = (NormalAnnotation) existing;
 			Expression value = findValue(annotation.values());
@@ -263,12 +263,12 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 				listRewrite.insertFirst(pair, null);
 			}
 		}
-		// ±N­nÅÜ§óªº¸ê®Æ¼g¦^¦ÜDocument¤¤ 
+		// å°‡è¦è®Šæ›´çš„è³‡æ–™å¯«å›è‡³Documentä¸­ 
 		applyChange(rewrite);
 	}
 
 	/**
-	 * ¥[¤JSuppressSmellªºArgument
+	 * åŠ å…¥SuppressSmellçš„Argument
 	 * @param rewrite
 	 * @param value
 	 * @param newStringLiteral
@@ -290,50 +290,50 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 	}
 
 	/**
-	 * ­×§ïSuppressSmell Annotation°T®§
+	 * ä¿®æ”¹SuppressSmell Annotationè¨Šæ¯
 	 * @param list 
 	 * @param faultName 
 	 */
 	private void replaceSuppressSmellAnnotation(List<?> modifiers, String faultName) {
-		// ¨ú±o±ı­×§ïªºASTNode
+		// å–å¾—æ¬²ä¿®æ”¹çš„ASTNode
 		AST ast = currentMethodNode.getAST();
 		rewrite = ASTRewrite.create(ast);
 
 		StringLiteral newStringLiteral = ast.newStringLiteral();
 		newStringLiteral.setLiteralValue(markerType);
 		
-		// «Ø¥ßAnnotation root
+		// å»ºç«‹Annotation root
 		Annotation existing = findExistingAnnotation(modifiers);
 		if (existing instanceof SingleMemberAnnotation) {
 			SingleMemberAnnotation annotation= (SingleMemberAnnotation) existing;
 			Expression value= annotation.getValue();
 			
 			replaceSuppressArgument(newStringLiteral, value, faultName);
-		// ­Y¤w¦s¦b @SuppressSmell(value={})
+		// è‹¥å·²å­˜åœ¨ @SuppressSmell(value={})
 		} else if (existing instanceof NormalAnnotation) {
 			NormalAnnotation annotation = (NormalAnnotation) existing;
 			Expression value = findValue(annotation.values());
 
 			replaceSuppressArgument(newStringLiteral, value, faultName);
 		}
-		// ±N­nÅÜ§óªº¸ê®Æ¼g¦^¦ÜDocument¤¤ 
+		// å°‡è¦è®Šæ›´çš„è³‡æ–™å¯«å›è‡³Documentä¸­ 
 		applyChange();
 	}
 
 	/**
-	 * ­×§ïSuppressSmellªºArgument
+	 * ä¿®æ”¹SuppressSmellçš„Argument
 	 * @param newStringLiteral
 	 * @param value
 	 * @param faultName 
 	 */
 	private void replaceSuppressArgument(StringLiteral newStringLiteral, Expression value, String faultName) {
-		// ­YAnnotation¸Ì¥u¦³String Literalª½±µ­×§ï
+		// è‹¥Annotationè£¡åªæœ‰String Literalç›´æ¥ä¿®æ”¹
 		if (value instanceof StringLiteral) {
 			rewrite.replace(value, newStringLiteral, null);
-		// ­YAnnotation¸Ì¦³Array¡A´M§äFault Name¦A¨ú¥N
+		// è‹¥Annotationè£¡æœ‰Arrayï¼Œå°‹æ‰¾Fault Nameå†å–ä»£
 		} else if (value instanceof ArrayInitializer) {
 			ArrayInitializer ai = (ArrayInitializer) value;
-			// ´M§äfault name¨Ã­×§ï¬°¨Ï¥ÎªÌ©Ò¿ï¾ÜªºSmell Type
+			// å°‹æ‰¾fault nameä¸¦ä¿®æ”¹ç‚ºä½¿ç”¨è€…æ‰€é¸æ“‡çš„Smell Type
 			for(Object obj: ai.expressions()) {
 				StringLiteral sl = (StringLiteral)obj;
 				if (sl.getLiteralValue().equals(faultName)) {
@@ -345,8 +345,8 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 	}
 	
 	/**
-	 * ¨ú±oAnnotationªºKey Value
-	 * Annotation(value={} <= ³o­Ó)
+	 * å–å¾—Annotationçš„Key Value
+	 * Annotation(value={} <= é€™å€‹)
 	 * @param keyValues
 	 * @return
 	 */
@@ -360,7 +360,7 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 	}
 
 	/**
-	 * ´M§ä¤w¦s¦bªºSuppressSmell Annotation
+	 * å°‹æ‰¾å·²å­˜åœ¨çš„SuppressSmell Annotation
 	 * @param modifiers
 	 * @return
 	 */
@@ -388,12 +388,12 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 	}
 
 	/**
-	 * §PÂ_¬O§_¦³import SuppressSmell Library¡A­Y¨S¦³«h§â¥¦¥[¤J
+	 * åˆ¤æ–·æ˜¯å¦æœ‰import SuppressSmell Libraryï¼Œè‹¥æ²’æœ‰å‰‡æŠŠå®ƒåŠ å…¥
 	 */
 	private void addImportDeclaration() {
-		// §PÂ_¬O§_¤w¸gImport Robustness¤ÎRLªº«Å§i
+		// åˆ¤æ–·æ˜¯å¦å·²ç¶“Import RobustnessåŠRLçš„å®£å‘Š
 		ListRewrite listRewrite = rewrite.getListRewrite(this.actRoot, CompilationUnit.IMPORTS_PROPERTY);
-		// ´M§ä¦³¨S¦³import ntut.csie.robusta.agile.exception.SuppressSmell;
+		// å°‹æ‰¾æœ‰æ²’æœ‰import ntut.csie.robusta.agile.exception.SuppressSmell;
 		boolean isSuppressSmellClass = false;
 		for (Object obj : listRewrite.getRewrittenList()) {
 			ImportDeclaration id = (ImportDeclaration)obj;
@@ -401,7 +401,7 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 				isSuppressSmellClass = true;
 			}			
 		}
-		// ­Y¥¼¥[¤JSuppressSmell Class¡A«h¥[¤Jimport
+		// è‹¥æœªåŠ å…¥SuppressSmell Classï¼Œå‰‡åŠ å…¥import
 		AST rootAst = this.actRoot.getAST();
 		if (!isSuppressSmellClass) {
 			ImportDeclaration imp = rootAst.newImportDeclaration();
@@ -411,10 +411,10 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 	}
 	
 //	/**
-//	 * ±N­nÅÜ§óªº¸ê®Æ¼g¦^¦ÜDocument¤¤
+//	 * å°‡è¦è®Šæ›´çš„è³‡æ–™å¯«å›è‡³Documentä¸­
 //	 */
 //	private void applyChange(){
-//		// ¼g¦^Edit¤¤
+//		// å¯«å›Editä¸­
 //		try {
 //			ICompilationUnit cu = (ICompilationUnit) actOpenable;
 //			Document document = new Document(cu.getBuffer().getContents());
@@ -429,7 +429,7 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 //	}
 //
 //	/**
-//	 * Catch¸gAST¥[¤JAnnotation«á¡AException·|´«¨ì²Ä¤G¦æ
+//	 * Catchç¶“ASTåŠ å…¥Annotationå¾Œï¼ŒExceptionæœƒæ›åˆ°ç¬¬äºŒè¡Œ
 //	 * @param cu
 //	 * @param document
 //	 * @param anno
@@ -438,7 +438,7 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 //	 */
 //	private void deleteCatchClauseSpace(ICompilationUnit cu, Document document,	Annotation anno)
 //			throws BadLocationException, JavaModelException {
-//		// ´M§äAnnotation«áªº´«¦æ¡BªÅ®æ¡B'\t'ªø«×
+//		// å°‹æ‰¾Annotationå¾Œçš„æ›è¡Œã€ç©ºæ ¼ã€'\t'é•·åº¦
 //		int length = 2;
 //		while (true) {
 //			char inp = document.getChar(anno.getStartPosition()+ anno.getLength() + length);
@@ -446,46 +446,46 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 //				break;
 //			length++;
 //		}
-//		// ±NAnnotation«áªº´«¦æ¡BªÅ®æ¡B'\t'¥Î" "¨ú¥N
+//		// å°‡Annotationå¾Œçš„æ›è¡Œã€ç©ºæ ¼ã€'\t'ç”¨" "å–ä»£
 //		document.replace(anno.getStartPosition()+ anno.getLength(), length, " ");
 //		cu.getBuffer().setContents(document.get());
 //	}
 	
 	/**
-	 * ´å¼Ğ©w¦ì(©w¦ì¨ìRL Annotation¨º¦æ)
+	 * æ¸¸æ¨™å®šä½(å®šä½åˆ°RL Annotationé‚£è¡Œ)
 	 * @param marker
 	 * @param methodIdx
 	 * @throws JavaModelException
 	 */
 	private void selectLine(IMarker marker, String methodIdx) throws JavaModelException {
-		// ­«·s¨ú±o·sªºMethod¸ê°T(¦]¬°¸ê®Æ¤w§ïÅÜ¡Amethod¨º¨Ç¸ê°T¬OÂÂªº)
+		// é‡æ–°å–å¾—æ–°çš„Methodè³‡è¨Š(å› ç‚ºè³‡æ–™å·²æ”¹è®Šï¼Œmethodé‚£äº›è³‡è¨Šæ˜¯èˆŠçš„)
 		boolean isok = findMethod(marker.getResource(), Integer.parseInt(methodIdx));
 		if (isok) {
 			ICompilationUnit cu = (ICompilationUnit) actOpenable;
 			Document document = new Document(cu.getBuffer().getContents());
 			
-			// ¨ú±o¥Ø«eªºEditPart
+			// å–å¾—ç›®å‰çš„EditPart
 			IEditorPart editorPart = EditorUtils.getActiveEditor();
 			ITextEditor editor = (ITextEditor) editorPart;
 
 			try {
 				if (inCatch) {
-					// ¨ú±oCatch Clause
+					// å–å¾—Catch Clause
 					CatchClause cc = getCatchClause();
-					// ¨ú±oAnnotation
+					// å–å¾—Annotation
 					Annotation anno  = findExistingAnnotation(cc.getException().modifiers());
 					
-					// ¤Ï¥Õ¸Ó¦æ ¦bQuick fix§¹¤§«á,¥i¥H±N´å¼Ğ©w¦ì¦bQuick Fix¨º¦æ
+					// åç™½è©²è¡Œ åœ¨Quick fixå®Œä¹‹å¾Œ,å¯ä»¥å°‡æ¸¸æ¨™å®šä½åœ¨Quick Fixé‚£è¡Œ
 					editor.selectAndReveal(anno.getStartPosition(), anno.getLength());
 				} else {
-					// ¨ú±oMethodªº°_ÂI¦ì¸m
+					// å–å¾—Methodçš„èµ·é»ä½ç½®
 					int srcPos = currentMethodNode.getStartPosition();
-					// ¥ÎMethod°_ÂI¦ì¸m¨ú±oMethod¦ì©ó²Ä´X¦æ¼Æ(°_©l¦æ¼Æ±q0¶}©l¡A¤£¬O1¡A©Ò¥H´î1)
+					// ç”¨Methodèµ·é»ä½ç½®å–å¾—Methodä½æ–¼ç¬¬å¹¾è¡Œæ•¸(èµ·å§‹è¡Œæ•¸å¾0é–‹å§‹ï¼Œä¸æ˜¯1ï¼Œæ‰€ä»¥æ¸›1)
 					int numLine = this.actRoot.getLineNumber(srcPos) - 1;
 	
-					// ¨ú±o¦æ¼Æªº¸ê®Æ
+					// å–å¾—è¡Œæ•¸çš„è³‡æ–™
 					IRegion lineInfo = document.getLineInformation(numLine);
-					// ¤Ï¥Õ¸Ó¦æ ¦bQuick fix§¹¤§«á,¥i¥H±N´å¼Ğ©w¦ì¦bQuick Fix¨º¦æ
+					// åç™½è©²è¡Œ åœ¨Quick fixå®Œä¹‹å¾Œ,å¯ä»¥å°‡æ¸¸æ¨™å®šä½åœ¨Quick Fixé‚£è¡Œ
 					editor.selectAndReveal(lineInfo.getOffset(), lineInfo.getLength());
 				}
 			} catch (BadLocationException e) {
@@ -501,9 +501,9 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 
 	@Override
 	public Image getImage() {
-		// Resource IconsªºAnnotation¹Ï¥Ü
+		// Resource Iconsçš„Annotationåœ–ç¤º
 		// return ImageManager.getInstance().get("annotation");
-		// ¤º«Øªº
+		// å…§å»ºçš„
 		return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_ANNOTATION);
 	}
 

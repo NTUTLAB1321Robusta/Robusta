@@ -17,9 +17,9 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TryStatement;
 
 public class UnprotectedMainProgramVisitor extends ASTVisitor {
-	// Àx¦s©Ò§ä¨ìªºUnprotected main Program 
+	// å„²å­˜æ‰€æ‰¾åˆ°çš„Unprotected main Program 
 	private List<MarkerInfo> unprotectedMainList;	
-	// AST treeªºroot(ÀÉ®×¦WºÙ)
+	// AST treeçš„root(æª”æ¡ˆåç¨±)
 	private CompilationUnit root;
 	private boolean isDetectingUnprotectedMainProgramSmell;
 	
@@ -32,17 +32,17 @@ public class UnprotectedMainProgramVisitor extends ASTVisitor {
 	}
 	
 	/**
-	 * ¥ı®Ú¾Ú³]©wÀÉªº¸ê°T¡A¨M©w­n¤£­nÄ~Äò«ô³X¡A
-	 * ¦A´M§ämain function
+	 * å…ˆæ ¹æ“šè¨­å®šæª”çš„è³‡è¨Šï¼Œæ±ºå®šè¦ä¸è¦ç¹¼çºŒæ‹œè¨ªï¼Œ
+	 * å†å°‹æ‰¾main function
 	 */
 	public boolean visit(MethodDeclaration node) {
 		if(!isDetectingUnprotectedMainProgramSmell)
 			return false;
-		// parse AST tree¬İ¬İ¬O§_¦³void main(java.lang.String[])
+		// parse AST treeçœ‹çœ‹æ˜¯å¦æœ‰void main(java.lang.String[])
 		if (node.resolveBinding().toString().contains("void main(java.lang.String[])")) {
 			List<?> statement = node.getBody().statements();
 			if(processMainFunction(statement)) {
-				//¦pªG¦³§ä¨ìcode smell´N±N¨ä¥[¤J
+				//å¦‚æœæœ‰æ‰¾åˆ°code smellå°±å°‡å…¶åŠ å…¥
 				MarkerInfo markerInfo = new MarkerInfo(RLMarkerAttribute.CS_UNPROTECTED_MAIN, null,											
 										node.toString(),node.getStartPosition(),
 										getLineNumber(node), null);
@@ -54,56 +54,56 @@ public class UnprotectedMainProgramVisitor extends ASTVisitor {
 	}
 	
 	/**
-	 * ÀË¬dmain function¤¤¬O§_¦³code smell
+	 * æª¢æŸ¥main functionä¸­æ˜¯å¦æœ‰code smell
 	 * @param statement
 	 * @return
 	 */
 	private boolean processMainFunction(List<?> statement) {
 		if (statement.size() == 0) {
-			// main function¸Ì­±¤°»ò³£¨S¦³´N¤£ºâ¬Ocode smell
+			// main functionè£¡é¢ä»€éº¼éƒ½æ²’æœ‰å°±ä¸ç®—æ˜¯code smell
 			return false;
 		} else if (statement.size() == 1) {
 			if (((ASTNode)statement.get(0)).getNodeType() == ASTNode.TRY_STATEMENT) {
 				List<?> catchList = ((TryStatement)statement.get(0)).catchClauses();
 				for (int i = 0; i < catchList.size(); i++) {
 					SingleVariableDeclaration svd = ((CatchClause)catchList.get(i)).getException();
-					// ¦pªG¦³tryÁÙ­n§PÂ_catch¬O§_¬°catch(Exception ..)
+					// å¦‚æœæœ‰tryé‚„è¦åˆ¤æ–·catchæ˜¯å¦ç‚ºcatch(Exception ..)
 					if (svd.getType().resolveBinding().getQualifiedName().equals(Exception.class.getName()) ||
 						svd.getType().resolveBinding().getQualifiedName().equals(RuntimeException.class.getName())) {
-						//¦pªG¦³catch(Exception ..)´N¤£ºâcode smell
+						//å¦‚æœæœ‰catch(Exception ..)å°±ä¸ç®—code smell
 						return false;
 					}
 				}
 			}
 			return true;
 		} else {
-			/* ¦pªGMain Block¦³¨âºØ¥H¤Wªºstatement,´Nªí¥Ü¦³ªF¦è¨S³Q
-			 * Try block¥]¦í,©ÎªÌ®Ú¥»¨S¦³try block
+			/* å¦‚æœMain Blockæœ‰å…©ç¨®ä»¥ä¸Šçš„statement,å°±è¡¨ç¤ºæœ‰æ±è¥¿æ²’è¢«
+			 * Try blockåŒ…ä½,æˆ–è€…æ ¹æœ¬æ²’æœ‰try block
 			 */
 			return true;
 		}
 	}
 
 	/**
-	 * ®Ú¾ÚstartPosition¨Ó¨ú±o¦æ¼Æ
+	 * æ ¹æ“šstartPositionä¾†å–å¾—è¡Œæ•¸
 	 */
 	private int getLineNumber(MethodDeclaration method) {
 		int position = method.getStartPosition();
 		List<?> modifiers = method.modifiers();
 		for (int i = 0, size = modifiers.size(); i < size; i++) {
-			// ¦pªG­ì¥»main function¤W¦³annotationªº¸Ü,marker·|ÅÜ¦¨¼Ğ¦bannotation¨º¦æ
-			// ©Ò¥H³z¹L´M§äpublic¨º¦æªº¦ì¸m,¨Ó¨ú±omarker­n¼Ğ¥Üªº¦æ¼Æ
+			// å¦‚æœåŸæœ¬main functionä¸Šæœ‰annotationçš„è©±,markeræœƒè®Šæˆæ¨™åœ¨annotationé‚£è¡Œ
+			// æ‰€ä»¥é€éå°‹æ‰¾publicé‚£è¡Œçš„ä½ç½®,ä¾†å–å¾—markerè¦æ¨™ç¤ºçš„è¡Œæ•¸
 			if ((!((IExtendedModifier)modifiers.get(i)).isAnnotation()) && (modifiers.get(i).toString().contains("public"))) {
 				position = ((ASTNode)modifiers.get(i)).getStartPosition();
 				break;
 			}
 		}
-		//¦pªG¨S¦³annotation,´N¥i¥Hª½±µ¨ú±omain function¨º¦æ
+		//å¦‚æœæ²’æœ‰annotation,å°±å¯ä»¥ç›´æ¥å–å¾—main functioné‚£è¡Œ
 		return root.getLineNumber(position);
 	}
 
 	/**
-	 * ¨ú±ounprotected Mainªº²M³æ
+	 * å–å¾—unprotected Mainçš„æ¸…å–®
 	 */
 	public List<MarkerInfo> getUnprotedMainList(){
 		return unprotectedMainList;

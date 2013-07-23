@@ -5,7 +5,7 @@ import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
 
 /**
- * Refactoringªºwizard,wizard¤§¤U·|¦³page
+ * Refactoringçš„wizard,wizardä¹‹ä¸‹æœƒæœ‰page
  * @author chewei
  */
 
@@ -18,7 +18,7 @@ public class RethrowExWizard extends RefactoringWizard {
 
 	@Override
 	protected void addUserInputPages() {
-		//¥[¤JRethrow exceptionªºPage
+		//åŠ å…¥Rethrow exceptionçš„Page
 		addPage(new RethrowExInputPage("Rethrow Unchecked Exception"));
 		
 	}

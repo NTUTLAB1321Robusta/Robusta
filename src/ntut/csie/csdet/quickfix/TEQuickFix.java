@@ -33,22 +33,22 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * ¦bMarker¤W­±ªºQuick Fix¤¤¥[¤Jª½±µThrow Checked Exceptionªº¥\¯à
+ * åœ¨Markerä¸Šé¢çš„Quick Fixä¸­åŠ å…¥ç›´æ¥Throw Checked Exceptionçš„åŠŸèƒ½
  * @author Shiau
  */
 public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 	private static Logger logger = LoggerFactory.getLogger(TEQuickFix.class);
 
 	private String label;
-	//¬ö¿ıcode smellªºtype
+	//ç´€éŒ„code smellçš„type
 	private String problem;
 
-	// ¥Ø«emethodªºRL Annotation¸ê°T
+	// ç›®å‰methodçš„RL Annotationè³‡è¨Š
 	private List<RLMessage> currentMethodRLList = null;
 
-	//«ö¤UQuickFix¸Ó¦æªºµ{¦¡°_©l¦ì¸m(Catch¦ì¸m)
+	//æŒ‰ä¸‹QuickFixè©²è¡Œçš„ç¨‹å¼èµ·å§‹ä½ç½®(Catchä½ç½®)
 	private String srcPos;
-	//§R±¼ªºStatement¼Æ¥Ø
+	//åˆªæ‰çš„Statementæ•¸ç›®
 	private int delStatement = 0;
 
 	public TEQuickFix(String label) {
@@ -67,23 +67,23 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 			
 			if(problem != null && (problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)) || 
 								  (problem.equals(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK))) {
-				//¦pªG¸I¨ìdummy handler,«h±Nexception rethrow
+				//å¦‚æœç¢°åˆ°dummy handler,å‰‡å°‡exception rethrow
 				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
 				String msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
 				String exception = marker.getAttribute(RLMarkerAttribute.RL_INFO_EXCEPTION).toString();
-				//Àx¦s«ö¤UQuickFix¸Ó¦æªºµ{¦¡°_©l¦ì¸m
+				//å„²å­˜æŒ‰ä¸‹QuickFixè©²è¡Œçš„ç¨‹å¼èµ·å§‹ä½ç½®
 				srcPos = marker.getAttribute(RLMarkerAttribute.RL_INFO_SRC_POS).toString();
 
 				boolean isok = this.findCurrentMethod(marker.getResource(), Integer.parseInt(methodIdx));
 				if(isok) {
 					currentMethodRLList = findRLList();
 					
-					//±NMethod¥[¤JThrow Exception¡A¨Ã¦^¶ÇCatchªºIndex
+					//å°‡MethodåŠ å…¥Throw Exceptionï¼Œä¸¦å›å‚³Catchçš„Index
 					int catchIdx = rethrowException(exception,Integer.parseInt(msgIdx));
 
-					//½Õ¾ãRL Annotation¶¶§Ç TODO «İ­×¥¿
+					//èª¿æ•´RL Annotationé †åº TODO å¾…ä¿®æ­£
 					//new RLOrderFix().run(marker.getResource(), methodIdx, msgIdx);
-					//¤Ï¥Õ«ü©w¦æ¼Æ (¼È®É¤£»İ­n¤Ï¥Õ¦æ¼Æ)
+					//åç™½æŒ‡å®šè¡Œæ•¸ (æš«æ™‚ä¸éœ€è¦åç™½è¡Œæ•¸)
 					//selectSourceLine(marker, methodIdx, catchIdx);
 				}
 			}
@@ -93,14 +93,14 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 	}
 
 	/**
-	 * ¨ú±oRL Annotation List
-	 * @param resource		¨Ó·½
-	 * @param methodIdx		MethodªºIndex
-	 * @return				¬O§_¦¨¥\
+	 * å–å¾—RL Annotation List
+	 * @param resource		ä¾†æº
+	 * @param methodIdx		Methodçš„Index
+	 * @return				æ˜¯å¦æˆåŠŸ
 	 */
 	private List<RLMessage> findRLList() {
 		if (currentMethodNode != null) {
-			//¨ú±o³o­ÓmethodªºRL¸ê°T
+			//å–å¾—é€™å€‹methodçš„RLè³‡è¨Š
 			ExceptionAnalyzer exVisitor = new ExceptionAnalyzer(this.actRoot, currentMethodNode.getStartPosition(), 0);
 			currentMethodNode.accept(exVisitor);
 			return exVisitor.getMethodRLAnnotationList();
@@ -109,7 +109,7 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 	}
 	
 	/**
-	 * ±N¸Ómethod Throw Checked Exception
+	 * å°‡è©²method Throw Checked Exception
 	 * @param exception
 	 * @param msgIdx
 	 * @return				
@@ -117,22 +117,22 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 	private int rethrowException(String exception, int msgIdx) {
 		AST ast = currentMethodNode.getAST();
 
-		//·Ç³Æ¦bCatch Caluse¤¤¥[¤Jthrow exception
-		//¦¬¶°¸Ómethod©Ò¦³ªºcatch clause
+		//æº–å‚™åœ¨Catch Caluseä¸­åŠ å…¥throw exception
+		//æ”¶é›†è©²methodæ‰€æœ‰çš„catch clause
 		ASTCatchCollect catchCollector = new ASTCatchCollect();
 		currentMethodNode.accept(catchCollector);
 		List<CatchClause> catchList = catchCollector.getMethodList();
 
 		for (int i = 0; i < catchList.size(); i++) {
-			//§ä¨ì¸ÓCatch(¦pªGCatchªº¦ì¸m»P«ö¤UQuick¨º¦æªº°_©l¦ì¸m¬Û¦P)
+			//æ‰¾åˆ°è©²Catch(å¦‚æœCatchçš„ä½ç½®èˆ‡æŒ‰ä¸‹Quické‚£è¡Œçš„èµ·å§‹ä½ç½®ç›¸åŒ)
 			if (catchList.get(i).getStartPosition() == Integer.parseInt(srcPos)) {
-				//«Ø¥ßRL Annotation
+				//å»ºç«‹RL Annotation
 				addAnnotationRoot(exception, ast);
-				//¦bcatch clause¤¤«Ø¥ßthrow statement
+				//åœ¨catch clauseä¸­å»ºç«‹throw statement
 				addThrowStatement(catchList.get(i), ast);
-				//ÀË¬d¦bmethod«e­±¦³¨S¦³throw exception
+				//æª¢æŸ¥åœ¨methodå‰é¢æœ‰æ²’æœ‰throw exception
 				checkMethodThrow(ast, exception);
-				//¼g¦^Edit¤¤
+				//å¯«å›Editä¸­
 				this.applyChange();
 				return i;
 			}
@@ -142,8 +142,8 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 
 	@SuppressWarnings("unchecked")
 	private void addAnnotationRoot(String exception,AST ast) {
-		//­n«Ø¥ß@Robustness(value={@RTag(level=1, exception=java.lang.RuntimeException.class)})³o¼ËªºAnnotation
-		//«Ø¥ßAnnotation root
+		//è¦å»ºç«‹@Robustness(value={@RTag(level=1, exception=java.lang.RuntimeException.class)})é€™æ¨£çš„Annotation
+		//å»ºç«‹Annotation root
 		NormalAnnotation root = ast.newNormalAnnotation();
 		root.setTypeName(ast.newSimpleName("Robustness"));
 
@@ -159,8 +159,8 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 			rlary.expressions().add(getRLAnnotation(ast,1,exception));
 		}else{
 			for (RLMessage rlmsg : currentMethodRLList) {
-				//§âÂÂªºannotation¥[¶i¥h
-				//§PÂ_¦pªG¹J¨ì­«½Æªº´N¤£­n¥[annotation
+				//æŠŠèˆŠçš„annotationåŠ é€²å»
+				//åˆ¤æ–·å¦‚æœé‡åˆ°é‡è¤‡çš„å°±ä¸è¦åŠ annotation
 				int pos = rlmsg.getRLData().getExceptionType().toString().lastIndexOf(".");
 				String cut = rlmsg.getRLData().getExceptionType().toString().substring(pos+1);
 
@@ -173,7 +173,7 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 
 			List<IExtendedModifier> modifiers = method.modifiers();
 			for (int i = 0, size = modifiers.size(); i < size; i++) {
-				//§ä¨ìÂÂ¦³ªºannotation«á±N¥¦²¾°£
+				//æ‰¾åˆ°èˆŠæœ‰çš„annotationå¾Œå°‡å®ƒç§»é™¤
 				if (modifiers.get(i).isAnnotation() && modifiers.get(i).toString().indexOf("Robustness") != -1) {
 					method.modifiers().remove(i);
 					break;
@@ -183,26 +183,26 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 		if (rlary.expressions().size() > 0) {
 			method.modifiers().add(0, root);
 		}
-		//±NRLªºlibrary¥[¶i¨Ó
+		//å°‡RLçš„libraryåŠ é€²ä¾†
 		addImportDeclaration();
 	}
 	
 	/**
-	 * ²£¥ÍRL Annotation¤§RL¸ê®Æ
+	 * ç”¢ç”ŸRL Annotationä¹‹RLè³‡æ–™
 	 * @param ast: AST Object
-	 * @param levelVal:±j°·«×µ¥¯Å
-	 * @param exClass:¨Ò¥~Ãş§O
+	 * @param levelVal:å¼·å¥åº¦ç­‰ç´š
+	 * @param exClass:ä¾‹å¤–é¡åˆ¥
 	 * @return NormalAnnotation AST Node
 	 */
 	private NormalAnnotation getRLAnnotation(AST ast, int levelVal,String excption) {
-		//­n«Ø¥ß@Robustness(value={@RTag(level=1, exception=java.lang.RuntimeException.class)})³o¼ËªºAnnotation
+		//è¦å»ºç«‹@Robustness(value={@RTag(level=1, exception=java.lang.RuntimeException.class)})é€™æ¨£çš„Annotation
 		NormalAnnotation rl = ast.newNormalAnnotation();
 		rl.setTypeName(ast.newSimpleName("RTag"));
 
 		// level = 1
 		MemberValuePair level = ast.newMemberValuePair();
 		level.setName(ast.newSimpleName("level"));
-		//throw statement ¹w³]level = 1
+		//throw statement é è¨­level = 1
 		level.setValue(ast.newNumberLiteral(String.valueOf(levelVal)));
 		rl.values().add(level);
 
@@ -210,7 +210,7 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 		MemberValuePair exception = ast.newMemberValuePair();
 		exception.setName(ast.newSimpleName("exception"));
 		TypeLiteral exclass = ast.newTypeLiteral();
-		// ¹w³]¬°RuntimeException
+		// é è¨­ç‚ºRuntimeException
 		exclass.setType(ast.newSimpleType(ast.newName(excption)));
 		exception.setValue(exclass);
 		rl.values().add(exception);
@@ -219,7 +219,7 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 	}
 
 	private void addImportDeclaration() {
-		// §PÂ_¬O§_¤w¸gImport Robustness¤ÎRLªº«Å§i
+		// åˆ¤æ–·æ˜¯å¦å·²ç¶“Import RobustnessåŠRLçš„å®£å‘Š
 		List<ImportDeclaration> importList = this.actRoot.imports();
 		boolean isImportRobustnessClass = false;
 		boolean isImportRLClass = false;
@@ -247,54 +247,54 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 	}
 
 	/**
-	 * ¦bcatch¤¤¼W¥[throw checked exception
+	 * åœ¨catchä¸­å¢åŠ throw checked exception
 	 * 
 	 * @param cc
 	 * @param ast
 	 */
 	private void addThrowStatement(CatchClause cc, AST ast) {
-		//¨ú±o¸Ócatch()¤¤ªºexception variable
+		//å–å¾—è©²catch()ä¸­çš„exception variable
 		SingleVariableDeclaration svd = 
 			(SingleVariableDeclaration) cc.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
 
-		//¦Û¦æ«Ø¥ß¤@­Óthrow statement¥[¤J
+		//è‡ªè¡Œå»ºç«‹ä¸€å€‹throw statementåŠ å…¥
 		ThrowStatement ts = ast.newThrowStatement();
 
-		//¨ú±oCatch«áExceptionªºÅÜ¼Æ
+		//å–å¾—Catchå¾ŒExceptionçš„è®Šæ•¸
 		SimpleName name = ast.newSimpleName(svd.resolveBinding().getName());		
 		
-		//¥[¨ìthrow statement
+		//åŠ åˆ°throw statement
 		ts.setExpression(name);
 
-		//¨ú±oCatchClause©Ò¦³ªºstatement,±N¬ÛÃöprint¨Ò¥~¸ê°TªºªF¦è²¾°£
+		//å–å¾—CatchClauseæ‰€æœ‰çš„statement,å°‡ç›¸é—œprintä¾‹å¤–è³‡è¨Šçš„æ±è¥¿ç§»é™¤
 		List statement = cc.getBody().statements();
 
 		delStatement = statement.size();
 		if(problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)) {	
-			//°²¦p­nfixªºcode smell¬Odummy handler,´N­n§âcatch¤¤ªº¦C¦L¸ê°T§R°£
+			//å‡å¦‚è¦fixçš„code smellæ˜¯dummy handler,å°±è¦æŠŠcatchä¸­çš„åˆ—å°è³‡è¨Šåˆªé™¤
 			deleteStatement(statement);
 		}
 		delStatement -= statement.size();
 
-		//±N·s«Ø¥ßªº¸`ÂI¼g¦^
+		//å°‡æ–°å»ºç«‹çš„ç¯€é»å¯«å›
 		statement.add(ts);
 	}
 
 	/**
-	 * ¦bRethrow¤§«e,¥ı±N¬ÛÃöªºprint¦r¦ê³£²M°£±¼
+	 * åœ¨Rethrowä¹‹å‰,å…ˆå°‡ç›¸é—œçš„printå­—ä¸²éƒ½æ¸…é™¤æ‰
 	 */
 	private void deleteStatement(List<Statement> statementTemp) {
-		// ±qCatch Clause¸Ì­±­åªR¨âºØ±¡§Î
+		// å¾Catch Clauseè£¡é¢å‰–æå…©ç¨®æƒ…å½¢
 		if(statementTemp.size() != 0){
 			for(int i=0;i<statementTemp.size();i++) {			
 				if(statementTemp.get(i) instanceof ExpressionStatement ) {
 					ExpressionStatement statement = (ExpressionStatement) statementTemp.get(i);
-					// ¹J¨ìSystem.out.print or printStackTrace´N§â¥Lremove±¼
+					// é‡åˆ°System.out.print or printStackTraceå°±æŠŠä»–removeæ‰
 					if (statement.getExpression().toString().contains("System.out.print") ||
 						statement.getExpression().toString().contains("printStackTrace")) {
 
 						statementTemp.remove(i);
-						//²¾°£§¹¤§«áArrayListªº¦ì¸m·|­«·s½Õ¾ã¹L,©Ò¥H§Q¥Î»¼¦^¨ÓÄ~Äò©¹¤U§ä²Å¦Xªº±ø¥ó¨Ã²¾°£
+						//ç§»é™¤å®Œä¹‹å¾ŒArrayListçš„ä½ç½®æœƒé‡æ–°èª¿æ•´é,æ‰€ä»¥åˆ©ç”¨éå›ä¾†ç¹¼çºŒå¾€ä¸‹æ‰¾ç¬¦åˆçš„æ¢ä»¶ä¸¦ç§»é™¤
 						deleteStatement(statementTemp);
 					}
 				}
@@ -303,7 +303,7 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 	}
 
 	/**
-	 * ÀË¬d¦bmethod«e­±¦³¨S¦³throw exception
+	 * æª¢æŸ¥åœ¨methodå‰é¢æœ‰æ²’æœ‰throw exception
 	 * 
 	 * @param ast
 	 * @param exception 
@@ -327,35 +327,35 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 	}
 	
 //	/**
-//	 * ¤Ï¥Õ«ü©w¦æ¼Æ
-//	 * @param marker		±ı¤Ï¥ÕStatementªºResource
-//	 * @param methodIdx		±ı¤Ï¥ÕStatementªºMethod Index
-//	 * @param catchIdx		±ı¤Ï¥ÕStatementªºCatch Index
+//	 * åç™½æŒ‡å®šè¡Œæ•¸
+//	 * @param marker		æ¬²åç™½Statementçš„Resource
+//	 * @param methodIdx		æ¬²åç™½Statementçš„Method Index
+//	 * @param catchIdx		æ¬²åç™½Statementçš„Catch Index
 //	 */
 //	private void selectSourceLine(IMarker marker, String methodIdx, int catchIdx) {
-//		//­«·s¨ú±oMethod¸ê°T
+//		//é‡æ–°å–å¾—Methodè³‡è¨Š
 //		boolean isOK = this.findCurrentMethod(marker.getResource(),Integer.parseInt(methodIdx));
 //		if (isOK) {
 //			try {
 //				ICompilationUnit cu = (ICompilationUnit) actOpenable;
 //				Document document = new Document(cu.getBuffer().getContents());
-//				//¨ú±o¥Ø«eªºEditPart
+//				//å–å¾—ç›®å‰çš„EditPart
 //				IEditorPart editorPart = EditorUtils.getActiveEditor();
 //				ITextEditor editor = (ITextEditor) editorPart;
 //
-//				//¨ú±o¤Ï¥ÕStatementªº¦æ¼Æ
+//				//å–å¾—åç™½Statementçš„è¡Œæ•¸
 //				int selectLine = getThrowStatementSourceLine(catchIdx);
-//				//­Y¤Ï¥Õ¦æ¼Æ¬°
+//				//è‹¥åç™½è¡Œæ•¸ç‚º
 //				if (selectLine == -1) {
-//					//¨ú±oMethodªº°_ÂI¦ì¸m
+//					//å–å¾—Methodçš„èµ·é»ä½ç½®
 //					int srcPos = currentMethodNode.getStartPosition();
-//					//¥ÎMethod°_ÂI¦ì¸m¨ú±oMethod¦ì©ó²Ä´X¦æ¼Æ(°_©l¦æ¼Æ±q0¶}©l¡A¤£¬O1¡A©Ò¥H´î1)
+//					//ç”¨Methodèµ·é»ä½ç½®å–å¾—Methodä½æ–¼ç¬¬å¹¾è¡Œæ•¸(èµ·å§‹è¡Œæ•¸å¾0é–‹å§‹ï¼Œä¸æ˜¯1ï¼Œæ‰€ä»¥æ¸›1)
 //					selectLine = this.actRoot.getLineNumber(srcPos)-1;
 //				}
-//				//¨ú±o¤Ï¥Õ¦æ¼Æ¦bSourceCodeªº¦æ¼Æ¸ê®Æ
+//				//å–å¾—åç™½è¡Œæ•¸åœ¨SourceCodeçš„è¡Œæ•¸è³‡æ–™
 //				IRegion lineInfo = document.getLineInformation(selectLine);
 //
-//				//¤Ï¥Õ¸Ó¦æ ¦bQuick fix§¹¤§«á,¥i¥H±N´å¼Ğ©w¦ì¦bQuick Fix¨º¦æ
+//				//åç™½è©²è¡Œ åœ¨Quick fixå®Œä¹‹å¾Œ,å¯ä»¥å°‡æ¸¸æ¨™å®šä½åœ¨Quick Fixé‚£è¡Œ
 //				editor.selectAndReveal(lineInfo.getOffset(), lineInfo.getLength());
 //			} catch (JavaModelException e) {
 //				logger.error("[Rethrow checked Exception] EXCEPTION ",e);
@@ -366,21 +366,21 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 //	}
 	
 //	/**
-//	 * ¨ú±oThrow Statement¦æ¼Æ
-//	 * @param catchIdx	catchªºindex
-//	 * @return			¤Ï¥Õ¦æ¼Æ
+//	 * å–å¾—Throw Statementè¡Œæ•¸
+//	 * @param catchIdx	catchçš„index
+//	 * @return			åç™½è¡Œæ•¸
 //	 */
 //	private int getThrowStatementSourceLine(int catchIdx) {
-//		//¤Ï¥Õ¦æ¼Æ
+//		//åç™½è¡Œæ•¸
 //		int selectLine = -1;
 //
 //		if (catchIdx != -1) {
 //			ASTCatchCollect catchCollector = new ASTCatchCollect();
 //			currentMethodNode.accept(catchCollector);
 //			List<ASTNode> catchList = catchCollector.getMethodList();
-//			//¨ú±o«ü©wªºCatch
+//			//å–å¾—æŒ‡å®šçš„Catch
 //			CatchClause clause = (CatchClause) catchList.get(catchIdx);
-//			//´M§äThrow statementªº¦æ¼Æ
+//			//å°‹æ‰¾Throw statementçš„è¡Œæ•¸
 //			List catchStatements = clause.getBody().statements();
 //			for (int i = 0; i < catchStatements.size(); i++) {
 //				if (catchStatements.get(i) instanceof ThrowStatement) {

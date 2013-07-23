@@ -39,11 +39,11 @@ public class CatchClauseFinderVisitorTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		// ·Ç³Æ´ú¸ÕÀÉ®×¼Ë¥»¤º®e
+		// æº–å‚™æ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹
 		javaProjectMaker = new JavaProjectMaker(testProjectName);
 		javaProjectMaker.setJREDefaultContainer();
 
-		// «Ø¥ß·sªºÀÉ®×DummyAndIgnoreExample
+		// å»ºç«‹æ–°çš„æª”æ¡ˆDummyAndIgnoreExample
 		javaFile2String = new JavaFileToString();
 		javaFile2String.read(CatchClauseSampleCode.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
@@ -56,10 +56,10 @@ public class CatchClauseFinderVisitorTest {
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
-		// ¨ú±oAST
+		// å–å¾—AST
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
 	}
@@ -71,7 +71,7 @@ public class CatchClauseFinderVisitorTest {
 
 	@Test
 	public void testCatchClauseFinderVisitor_2CatchClause() {
-		// ¤£ª¾¹D¬°¤°»ò¡A´ú¸Õ®É­Ô¡AASTView¤W­±¬İ¨ìªº¼Æ¦rÁÙ­n´î¤@¡Aµª®×¤~·|¥¿½T¡C¹ê»Ú¥Îªº®É­Ô¨S®t¡C
+		// ä¸çŸ¥é“ç‚ºä»€éº¼ï¼Œæ¸¬è©¦æ™‚å€™ï¼ŒASTViewä¸Šé¢çœ‹åˆ°çš„æ•¸å­—é‚„è¦æ¸›ä¸€ï¼Œç­”æ¡ˆæ‰æœƒæ­£ç¢ºã€‚å¯¦éš›ç”¨çš„æ™‚å€™æ²’å·®ã€‚
 		int targetCatchClauseStartPosition = 476 - 1;
 		CatchClauseFinderVisitor catchClauseFinder = new CatchClauseFinderVisitor(targetCatchClauseStartPosition);
 		compilationUnit.accept(catchClauseFinder);

@@ -32,17 +32,17 @@ import org.eclipse.swt.widgets.TableItem;
  * @author Shiau
  */
 public class SelectReportDialog  extends Dialog {
-	//Delete¥N½X
+	//Deleteä»£ç¢¼
 	private final int DELETE_SELECTION = 3337;
 
 	private Combo projectCombo;
 	private Table reportTable;
 
-	//¨Ï¥ÎªÌ©Ò¿ï¾ÜªºReport Path
+	//ä½¿ç”¨è€…æ‰€é¸æ“‡çš„Report Path
 	private String filePath;
-	//¥ş³¡ªºProject
+	//å…¨éƒ¨çš„Project
 	private List<String> projectList = new ArrayList<String>();
-	//¯S©w±M®×©³¤U¤º¥ş³¡ªºReport Path
+	//ç‰¹å®šå°ˆæ¡ˆåº•ä¸‹å…§å…¨éƒ¨çš„Report Path
 	private List<File> fileList = new ArrayList<File>();
 	
 	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
@@ -66,14 +66,14 @@ public class SelectReportDialog  extends Dialog {
 		Label label = new Label(composite,SWT.None);
 		label.setText(resource.getString("project.name"));
 
-		//«Ø¸mTable
+		//å»ºç½®Table
 		buildTable(composite);
 
 		return composite;
 	}
 	
 	/**
-	 * «Ø¸mTable
+	 * å»ºç½®Table
 	 * @param composite
 	 */
 	private void buildTable(Composite composite) {
@@ -86,11 +86,11 @@ public class SelectReportDialog  extends Dialog {
 			}
 		});
 
-		//§âProject¦WºÙ¥[¤J¦ÜProjectCombo
+		//æŠŠProjectåç¨±åŠ å…¥è‡³ProjectCombo
 		for (String projectName : projectList)
 			projectCombo.add(projectName);
 
-		//ProjectList¹w³]¬°²Ä¤@­Ó
+		//ProjectListé è¨­ç‚ºç¬¬ä¸€å€‹
 		if (projectList.size() >= 0)
 			projectCombo.select(0);
 
@@ -112,18 +112,18 @@ public class SelectReportDialog  extends Dialog {
 	    //add listener
 	    reportTable.addMouseListener(new MouseAdapter() {
 			public void mouseDoubleClick(MouseEvent e) {
-				//­YÂI¿ï¨ìItem¨â¤U¡A¦p¦P«ö¤U½T©w
+				//è‹¥é»é¸åˆ°Itemå…©ä¸‹ï¼Œå¦‚åŒæŒ‰ä¸‹ç¢ºå®š
 				if (reportTable.getSelectionIndex() != -1)
 					okPressed();
 			}
 	    });
 
-	    //§ó·sTable¤º®e
+	    //æ›´æ–°Tableå…§å®¹
 	    updateTable();
 	}
 	
 	/**
-	 * §ó·sTable
+	 * æ›´æ–°Table
 	 */
 	private void updateTable() {	
 		//clear old item
@@ -137,10 +137,10 @@ public class SelectReportDialog  extends Dialog {
 		for (File file : fileList) {
 			String fileName = file.getName();
 
-			//¦bTable¤º¥[¤J·sªºItem
+			//åœ¨Tableå…§åŠ å…¥æ–°çš„Item
 			TableItem tableItem = new TableItem(reportTable, SWT.NONE);
 
-			//¨ú±o³øªí¦WºÙªº¤é´Á
+			//å–å¾—å ±è¡¨åç¨±çš„æ—¥æœŸ
 			int index = fileName.indexOf("_");
 			Date date = new Date(Long.parseLong(fileName.substring(0,index)));
 
@@ -149,34 +149,34 @@ public class SelectReportDialog  extends Dialog {
 	}
 
 	/**
-	 * ¨ú±oProject¤ºªºReport¸ê°T
+	 * å–å¾—Projectå…§çš„Reportè³‡è¨Š
 	 * @return
 	 */
 	public void getFileList() {
-		//¨ú±o¨Ï¥ÎªÌ¨Ï¿ï¾ÜªºProject Name
+		//å–å¾—ä½¿ç”¨è€…ä½¿é¸æ“‡çš„Project Name
 		String projectName = projectList.get(projectCombo.getSelectionIndex());
-		//¨ú±oWorkSpace
+		//å–å¾—WorkSpace
 		String workPath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toString();
 
-		//Report¥Ø¿ı
+		//Reportç›®éŒ„
 		File directory = new File(workPath + "/" + projectName + "/" + projectName + "_Report/");
 		
-		//¨ú±o¥Ø¿ı¤º¨C¤@­Ó¸ê®Æ§¨¸ô®|
+		//å–å¾—ç›®éŒ„å…§æ¯ä¸€å€‹è³‡æ–™å¤¾è·¯å¾‘
 		File[] allFolder = directory.listFiles();
 		
-		//­YProject¥¼«Ø¥ßReport¸ô®|
+		//è‹¥Projectæœªå»ºç«‹Reportè·¯å¾‘
 		if (allFolder == null)
 			return;
 
 		for (File folder: allFolder) {
 			if (folder.isDirectory()) {
-				//¨ú±o°ÆÀÉ¦W¬°.htmlªºÀÉ®×
+				//å–å¾—å‰¯æª”åç‚º.htmlçš„æª”æ¡ˆ
 				File[] files = folder.listFiles(new FilenameFilter() {
 					public boolean accept(File dir, String name) {
 						return name.endsWith(".html");
 					}
 				});
-				//§âReport¸ê°T°O¿ı
+				//æŠŠReportè³‡è¨Šè¨˜éŒ„
 				for (File file : files)
 					fileList.add(file);
 			}
@@ -184,7 +184,7 @@ public class SelectReportDialog  extends Dialog {
 	}
 	
 	/**
-	 * ©w¸q«öÁä
+	 * å®šç¾©æŒ‰éµ
 	 */
 	protected void createButtonsForButtonBar(Composite parent) {
 		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
@@ -193,26 +193,26 @@ public class SelectReportDialog  extends Dialog {
 	}
 	
 	/**
-	 * ­Y«ö¤UDelete¡A§R°£¨Ï¥ÎªÌ©Ò¿ï¾Ü¤§Report
+	 * è‹¥æŒ‰ä¸‹Deleteï¼Œåˆªé™¤ä½¿ç”¨è€…æ‰€é¸æ“‡ä¹‹Report
 	 */
 	protected void buttonPressed(int buttonId) {
 		super.buttonPressed(buttonId);
-		//­Y«ö¤UDelete
+		//è‹¥æŒ‰ä¸‹Delete
 		if(buttonId == DELETE_SELECTION){ //delete by selection
 			int[] selectIdx = reportTable.getSelectionIndices();
 			
-			//§R°£©Ò¦³¿ï¨úªºReport
+			//åˆªé™¤æ‰€æœ‰é¸å–çš„Report
 			if (selectIdx.length != 0) {
 				for (int index : selectIdx) {
-					//¨ú±oReport¸ê®Æ§¨
+					//å–å¾—Reportè³‡æ–™å¤¾
 					File reportFolder = fileList.get(index).getParentFile();
 
-					//§R°£¸ê®Æ§¨¤º©Ò¦³ÀÉ®×
+					//åˆªé™¤è³‡æ–™å¤¾å…§æ‰€æœ‰æª”æ¡ˆ
 					File[] allFile = reportFolder.listFiles();
 					for (File file: allFile)
 						file.delete();
 
-					//§R°£¸ê®Æ§¨
+					//åˆªé™¤è³‡æ–™å¤¾
 					reportFolder.delete();
 				}
 				updateTable();
@@ -221,7 +221,7 @@ public class SelectReportDialog  extends Dialog {
 	}
 
 	/**
-	 * ­Y«ö¤UOKÁä¡A°O¿ı¨Ï¥ÎªÌ©Ò¿ï¨úªºReport¸ô®|
+	 * è‹¥æŒ‰ä¸‹OKéµï¼Œè¨˜éŒ„ä½¿ç”¨è€…æ‰€é¸å–çš„Reportè·¯å¾‘
 	 */
 	protected void okPressed() {	
 		int index = reportTable.getSelectionIndex();
@@ -233,7 +233,7 @@ public class SelectReportDialog  extends Dialog {
 	}
 	
 	/**
-	 * ¨ú±o¨Ï¥ÎªÌ©Ò¿ï¨úªºReport¦WºÙ
+	 * å–å¾—ä½¿ç”¨è€…æ‰€é¸å–çš„Reportåç¨±
 	 * @return
 	 */
 	public String getReportPath() {

@@ -60,12 +60,12 @@ public class ReportBuilderTest {
 	@Before
 	public void setUp() throws Exception {
 		
-		// Åª¨ú´ú¸ÕÀÉ®×¼Ë¥»¤º®e
+		// è®€å–æ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹
 		javaFileToString = new JavaFileToString();
 		javaProjectMaker = new JavaProjectMaker(projectName);
 		javaProjectMaker.setJREDefaultContainer();
 
-		// ·s¼W±ı¸ü¤Jªºlibrary
+		// æ–°å¢æ¬²è¼‰å…¥çš„library
 		javaProjectMaker
 				.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR
 						+ "/log4j-1.2.15.jar");
@@ -75,7 +75,7 @@ public class ReportBuilderTest {
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/"
 				+ JavaProjectMaker.RL_LIBRARY_PATH);
 
-		// ®Ú¾Ú´ú¸ÕÀÉ®×¼Ë¥»¤º®e«Ø¥ß·sªºÀÉ®×
+		// æ ¹æ“šæ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹å»ºç«‹æ–°çš„æª”æ¡ˆ
 		javaFileToString.read(DummyAndIgnoreExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				DummyAndIgnoreExample.class.getPackage().getName(),
@@ -105,11 +105,11 @@ public class ReportBuilderTest {
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
 		
-		// ¨ú±oAST
+		// å–å¾—AST
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
 	}
@@ -117,22 +117,22 @@ public class ReportBuilderTest {
 	@After
 	public void tearDown() throws Exception {
 		File xmlFile = new File(JDomUtil.getWorkspace() + File.separator + "CSPreference.xml");
-		// ¦pªGxmlÀÉ®×¦s¦b¡A«h§R°£¤§
+		// å¦‚æœxmlæª”æ¡ˆå­˜åœ¨ï¼Œå‰‡åˆªé™¤ä¹‹
 		if(xmlFile.exists())
 			assertTrue(xmlFile.delete());
-		// §R°£±M®×
+		// åˆªé™¤å°ˆæ¡ˆ
 		javaProjectMaker.deleteProject();
 	}
 
 	@Test
 	public void testCountFileLOC() throws Exception {
 		
-		/** ¥¿½T¸ô®|¤Uªºclass file */
+		/** æ­£ç¢ºè·¯å¾‘ä¸‹çš„class file */
 		Method countFileLOC = ReportBuilder.class.getDeclaredMethod("countFileLOC", String.class);
 		countFileLOC.setAccessible(true);
-		// ÀË¬d´ú¸Õ±M®×ÀÉ®×ªº¦æ¼Æ
+		// æª¢æŸ¥æ¸¬è©¦å°ˆæ¡ˆæª”æ¡ˆçš„è¡Œæ•¸
 		assertEquals(299, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(DummyAndIgnoreExample.class, projectName)));
-		/** ¸ô®|¤£¥¿½T©ÎªÌ¤£¦s¦bªºclass file */
+		/** è·¯å¾‘ä¸æ­£ç¢ºæˆ–è€…ä¸å­˜åœ¨çš„class file */
 		assertEquals(0, countFileLOC.invoke(reportBuilder, "not/exist/example.java"));
 	}
 	
@@ -141,7 +141,7 @@ public class ReportBuilderTest {
 		IJavaProject javaPrj = JavaCore.create(project);
 		IPackageFragmentRoot[] roots = javaPrj.getAllPackageFragmentRoots();
 		
-		// ÀË¬dprecondition
+		// æª¢æŸ¥precondition
 		assertEquals(13, roots.length);
 		for(int i = 0; i < roots.length; i++) {
 			if(i == roots.length - 1)
@@ -149,11 +149,11 @@ public class ReportBuilderTest {
 			else
 				assertTrue(roots[i].getPath().toString().endsWith(".jar"));
 		}
-		// °õ¦æ´ú¸Õ¹ï¶H
+		// åŸ·è¡Œæ¸¬è©¦å°è±¡
 		Method getSourcePaths = ReportBuilder.class.getDeclaredMethod("getSourcePaths", IJavaProject.class);
 		getSourcePaths.setAccessible(true);
 		List<IPackageFragmentRoot> srcPaths = (List)getSourcePaths.invoke(reportBuilder, javaPrj);
-		// ÅçÃÒµ²ªG¡A±Æ°£jarÀÉ¸ô®|¡A¥u­nsrc¸ê°T
+		// é©—è­‰çµæœï¼Œæ’é™¤jaræª”è·¯å¾‘ï¼Œåªè¦srcè³‡è¨Š
 		assertEquals(1, srcPaths.size());
 		assertEquals("F/DummyHandlerTest/src", srcPaths.get(0).getUnderlyingResource().toString());
 	}
@@ -198,7 +198,7 @@ public class ReportBuilderTest {
 			for (int j = 0; j < packages.length; j++) {
 				if (packages[j].getElementType() == IJavaElement.PACKAGE_FRAGMENT) {
 					IPackageFragment iPackageFgt = (IPackageFragment) packages[j];
-					// i = 2 ¦¹®É¤~·|§ä¨ìntut.csie³o­Ópackage
+					// i = 2 æ­¤æ™‚æ‰æœƒæ‰¾åˆ°ntut.csieé€™å€‹package
 					if(j >= 2) {
 						assertTrue((Boolean)isConformMultiPackageFormat.invoke(reportBuilder, iPackageFgt, "ntut.csie.EH_STAR"));
 						assertTrue((Boolean)isConformMultiPackageFormat.invoke(reportBuilder, iPackageFgt, "EH_LEFTsrcEH_RIGHTntut.csie.EH_STAR"));
@@ -224,7 +224,7 @@ public class ReportBuilderTest {
 		IJavaProject javaPrj = JavaCore.create(project);
 		List<IPackageFragmentRoot> root = reportBuilder.getSourcePaths(javaPrj);
 		
-		/** ¦pªGisAllPackage¬°true¡A«h¨C­Ó³£­n°O¿ı */
+		/** å¦‚æœisAllPackageç‚ºtrueï¼Œå‰‡æ¯å€‹éƒ½è¦è¨˜éŒ„ */
 		for(int i = 0; i < root.size(); i++) {
 			String folderName = root.get(i).getElementName();
 			IJavaElement[] packages = root.get(i).getChildren();
@@ -236,9 +236,9 @@ public class ReportBuilderTest {
 			}
 		}
 		
-		/** ¦pªG¦³¨Ï¥Îfilter¡A«h¥u¦³¦b²Å¦Xfilter±ø¥óªº¤~­n°O¿ı */
+		/** å¦‚æœæœ‰ä½¿ç”¨filterï¼Œå‰‡åªæœ‰åœ¨ç¬¦åˆfilteræ¢ä»¶çš„æ‰è¦è¨˜éŒ„ */
 		isAllPackage.set(reportBuilder, false);
-		// ³]©wfilter rule
+		// è¨­å®šfilter rule
 		ArrayList<ArrayList<String>> ruleList = new ArrayList<ArrayList<String>>();
 		ArrayList<String> tempList = new ArrayList<String>();
 		tempList.add("EH_LEFTsrcEH_RIGHT");
@@ -399,7 +399,7 @@ public class ReportBuilderTest {
 		
 		ASTMethodCollector methodCollector = new ASTMethodCollector();
 		compilationUnit.accept(methodCollector);
-		// ¨ú±o±M®×¤¤©Ò¦³ªºmethod
+		// å–å¾—å°ˆæ¡ˆä¸­æ‰€æœ‰çš„method
 		List<MethodDeclaration> methodList = methodCollector.getMethodList();
 		
 		for(int i = 0; i < methodList.size(); i++) {
@@ -409,7 +409,7 @@ public class ReportBuilderTest {
 			TreeMap<String, Boolean> detMethodSmell = new TreeMap<String, Boolean>();
 			TreeMap<String, List<Integer>> detCatchSmell = new TreeMap<String, List<Integer>>();
 			inputSuppressData.invoke(reportBuilder, suppressSmellList, detMethodSmell, detCatchSmell);
-			// FIXME - ¥Ñ©ó¥Ø«e´ú¸Õ½d¥»¨S¦³suppress marker½d¨Ò¡A¬GsuppressSmellList¬°0
+			// FIXME - ç”±æ–¼ç›®å‰æ¸¬è©¦ç¯„æœ¬æ²’æœ‰suppress markerç¯„ä¾‹ï¼Œæ•…suppressSmellListç‚º0
 			assertEquals(0, suppressSmellList.size());
 			assertEquals(7, detMethodSmell.size());
 			assertEquals(3, detCatchSmell.size());
@@ -441,10 +441,10 @@ public class ReportBuilderTest {
 		DummyHandlerVisitor dhVisitor = new DummyHandlerVisitor(compilationUnit);
 		ASTMethodCollector methodCollector = new ASTMethodCollector();
 		compilationUnit.accept(methodCollector);
-		// ¨ú±o±M®×¤¤©Ò¦³ªºmethod
+		// å–å¾—å°ˆæ¡ˆä¸­æ‰€æœ‰çš„method
 		List<MethodDeclaration> methodList = methodCollector.getMethodList();
 		methodList.get(10).accept(dhVisitor);
-		/* FIXME - ¼È®ÉÂà´«¥Î¡Aµ¥¥ş³¡³£´«¦¨MarkerInfo´N¤£»İ­n³o­ÓLOOP */
+		/* FIXME - æš«æ™‚è½‰æ›ç”¨ï¼Œç­‰å…¨éƒ¨éƒ½æ›æˆMarkerInfoå°±ä¸éœ€è¦é€™å€‹LOOP */
 		List<MarkerInfo> dhList = dhVisitor.getDummyList();
 		List<MarkerInfo> tempList = new ArrayList<MarkerInfo>();
 		for(int i = 0; i < dhList.size(); i++) {
@@ -470,16 +470,16 @@ public class ReportBuilderTest {
 		model.setAccessible(true);
 		ReportModel reportModel = (ReportModel)model.get(reportBuilder); 
 		
-		// ¨ú±o¥Ø«e±M®×
+		// å–å¾—ç›®å‰å°ˆæ¡ˆ
 		IJavaProject javaPrj = JavaCore.create(project);
 		List<IPackageFragmentRoot> root = reportBuilder.getSourcePaths(javaPrj);
 		for(int i = 0; i < root.size(); i++) {
-			// ¨ú±oRoot©³¤Uªº©Ò¦³Package
+			// å–å¾—Rootåº•ä¸‹çš„æ‰€æœ‰Package
 			IJavaElement[] packages = root.get(i).getChildren();
 			for(IJavaElement iJavaElement : packages) {
 				if (iJavaElement.getElementType() == IJavaElement.PACKAGE_FRAGMENT) {
 					IPackageFragment iPackageFgt = (IPackageFragment) iJavaElement;
-					// ¨ú±oPackage©³¤Uªºclass
+					// å–å¾—Packageåº•ä¸‹çš„class
 					ICompilationUnit[] compilationUnits = iPackageFgt.getCompilationUnits();
 					for(int j = 0; j < compilationUnits.length; j++) {
 						PackageModel newPackageModel = reportModel.addSmellList(iPackageFgt.getElementName());
@@ -494,7 +494,7 @@ public class ReportBuilderTest {
 		assertEquals(0, reportModel.getCarelessCleanUpTotalSize());
 		assertEquals(19, reportModel.getDummyTotalSize());
 		assertEquals(0, reportModel.getIgnoreTotalSize());
-		// ¨Ò¤l¤º¨ä¹ê¦³¤T­Ó NT¡A¦ı¦]¬°³]©wÀÉ¨Ã¨S¦³­n°»´ú NT¡A¬G¼Æ¶q¬° 0
+		// ä¾‹å­å…§å…¶å¯¦æœ‰ä¸‰å€‹ NTï¼Œä½†å› ç‚ºè¨­å®šæª”ä¸¦æ²’æœ‰è¦åµæ¸¬ NTï¼Œæ•…æ•¸é‡ç‚º 0
 		assertEquals(0, reportModel.getNestedTryTotalSize());
 		assertEquals(0, reportModel.getOverLoggingTotalSize());
 	}
@@ -520,9 +520,9 @@ public class ReportBuilderTest {
 	
 	@Test
 	public void testGetFilterSettings() throws Exception {
-		/** ¨S¦³xml¡A«h¹w³]°»´ú¥ş³¡ */
+		/** æ²’æœ‰xmlï¼Œå‰‡é è¨­åµæ¸¬å…¨éƒ¨ */
 		File xmlFile = new File(JDomUtil.getWorkspace() + File.separator + "CSPreference.xml");
-		// ¦pªGxmlÀÉ®×¦s¦b¡A«h§R°£¤§
+		// å¦‚æœxmlæª”æ¡ˆå­˜åœ¨ï¼Œå‰‡åˆªé™¤ä¹‹
 		if(xmlFile.exists())
 			assertTrue(xmlFile.delete());
 		
@@ -539,7 +539,7 @@ public class ReportBuilderTest {
 		List<String> ruleList = (List)filterRuleList.get(reportBuilder);
 		assertEquals(0, ruleList.size());
 		
-		/** xml¦s¦b¡A¥B¸Ì­±¦³³]©w¡A«h¨Ì¾Ú¤º®eªº³]©w¨Ó°»´ú */
+		/** xmlå­˜åœ¨ï¼Œä¸”è£¡é¢æœ‰è¨­å®šï¼Œå‰‡ä¾æ“šå…§å®¹çš„è¨­å®šä¾†åµæ¸¬ */
 		ForTestGetFilterSettings();
 		
 		getFilterSettings.invoke(reportBuilder);
@@ -553,16 +553,16 @@ public class ReportBuilderTest {
 //	@Test
 	public void testRun() throws Exception {
 		reportBuilder.run();
-		// ¦pªG¤£°±1¬í¡A¶]test suite·|±¾±¼(¬õ¿O)¡A»{¬°¥i¯à¬Oeclipse¦Û¤vªºthreadªº°İÃD
+		// å¦‚æœä¸åœ1ç§’ï¼Œè·‘test suiteæœƒæ›æ‰(ç´…ç‡ˆ)ï¼Œèªç‚ºå¯èƒ½æ˜¯eclipseè‡ªå·±çš„threadçš„å•é¡Œ
 		Thread.sleep(1000);
-		fail("µ²ªG¥¼ÅçÃÒ");
+		fail("çµæœæœªé©—è­‰");
 	}
 
 	private void ForTestGetFilterSettings() {
-		//¨úªºXMLªºroot
+		//å–çš„XMLçš„root
 		Element root = JDomUtil.createXMLContent();
 
-		// «Ø¥ßreport filterªºtag
+		// å»ºç«‹report filterçš„tag
 		Element filter = new Element(JDomUtil.EHSmellFilterTaq);
 		Element filterRules = new Element("filter");
 		
@@ -578,13 +578,13 @@ public class ReportBuilderTest {
 
 		root.addContent(filter);
 
-		//±NÀÉ®×¼g¦^
+		//å°‡æª”æ¡ˆå¯«å›
 		String path = JDomUtil.getWorkspace() + File.separator + "CSPreference.xml";
 		JDomUtil.OutputXMLFile(root.getDocument(), path);
 	}
 	
 	/**
-	 * «Ø¥ßCSPreference.xmlÀÉ®×
+	 * å»ºç«‹CSPreference.xmlæª”æ¡ˆ
 	 */
 	private void CreateSettings() {
 		smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);

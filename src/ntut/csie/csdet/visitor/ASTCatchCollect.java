@@ -7,7 +7,7 @@ import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CatchClause;
 
 /**
- * »`¶°±M®×¤¤©Ò¦³ªºcatch clause
+ * è’é›†å°ˆæ¡ˆä¸­æ‰€æœ‰çš„catch clause
  * @author chewei
  */
 

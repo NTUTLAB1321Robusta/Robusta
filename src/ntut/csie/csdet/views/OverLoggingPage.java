@@ -20,35 +20,35 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
 /**
- * OverLogging Setting­¶­±
+ * OverLogging Settingé é¢
  * @author Shiau
  */
 public class OverLoggingPage extends APropertyPage {	
-	//Detect LoggingªºRule
+	//Detect Loggingçš„Rule
 	private TreeMap<String, Boolean> libMap = new TreeMap<String, Boolean>();
 
-	//Exception§Y¨ÏÂà«¬¤´Ä~Äò°»´úªºbutton
+	//Exceptionå³ä½¿è½‰å‹ä»ç¹¼çºŒåµæ¸¬çš„button
 	private Button detectTransExBtn;
-	//¬O§_­n®·®»log4jªºbutton
+	//æ˜¯å¦è¦æ•æ‰log4jçš„button
 	private Button log4jBtn;
-	//¬O§_­n®·®»java.util.loggingªºbutton
+	//æ˜¯å¦è¦æ•æ‰java.util.loggingçš„button
 	private Button javaUtillogBtn;
-	//¥´¶}extraRuleDialogªº«ö¶s
+	//æ‰“é–‹extraRuleDialogçš„æŒ‰éˆ•
 	private Button extraRuleBtn;
 	
-	//©ñcode templateªº°Ï°ì
+	//æ”¾code templateçš„å€åŸŸ
 	private StyledText callerTemplate;
-	//©ñcode templateªº°Ï°ì
+	//æ”¾code templateçš„å€åŸŸ
 	private StyledText calleeTemplate;
 
-	//CalleeTamplate©MCallerTamplateªº¤º®e ©M ¦r«¬­·®æ
+	//CalleeTamplateå’ŒCallerTamplateçš„å…§å®¹ å’Œ å­—å‹é¢¨æ ¼
 	private TemplateText calleeText = new TemplateText("", false);
 	private TemplateText callerText = new TemplateText("", false);
 
-	//CalleeTamplate©MCallerTamplateªº¤º®e
+	//CalleeTamplateå’ŒCallerTamplateçš„å…§å®¹
 	private String callee, calleeOrg, calleeTrans;
 	private String callerHead, callerOrg, callerTrans, callerTail;
-	// ­t³d³B²zÅª¼gXML
+	// è² è²¬è™•ç†è®€å¯«XML
 	private SmellSettings smellSettings;
 	
 	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
@@ -60,86 +60,86 @@ public class OverLoggingPage extends APropertyPage {
 
 		this.smellSettings = smellSettings;
 		
-		//¥[¤J­¶­±ªº¤º®e
+		//åŠ å…¥é é¢çš„å…§å®¹
 		addFirstSection(composite);
 	}
 
 	private void initailState() {
-		//TODO callee«e¥b³¡throws RuntimeException¡A­n§ï¦¨Throw FileNotFoundException
-		/// CalleeTemplateµ{¦¡½Xªº¤º®e ///
-		//¤å¦r«e¥b¬q
+		//TODO calleeå‰åŠéƒ¨throws RuntimeExceptionï¼Œè¦æ”¹æˆThrow FileNotFoundException
+		/// CalleeTemplateç¨‹å¼ç¢¼çš„å…§å®¹ ///
+		//æ–‡å­—å‰åŠæ®µ
 		callee = 	"public void A() throws RuntimeException {\n" +
 				 	"\ttry {\n" +
 				 	"\t// Do Something\n" +
 				 	"\t} catch (FileNotFoundException e) {\n" +
 				 	"\t\tlogger.info(e);	//OverLogging\n";
 
-		//¤å¦r«á¥b¬q(¿ï¶µ¥´¤Ä«e)
+		//æ–‡å­—å¾ŒåŠæ®µ(é¸é …æ‰“å‹¾å‰)
 		calleeOrg = "\t\tthrow e;\n" +
 					"\t}\n" +
 				 	"}";
 
-		//¤å¦r«á¥b¬q(¿ï¶µ¥´¤Ä«á)
+		//æ–‡å­—å¾ŒåŠæ®µ(é¸é …æ‰“å‹¾å¾Œ)
 		calleeTrans = "\t\tthrow new RuntimeException(e);	//Transform Exception Type\n" +
 		 			 "\t}\n" +
 		 			 "}";
 
-		/// CallerTemplateµ{¦¡½Xªº¤º®e ///
-		//¤å¦r«e¬q
+		/// CallerTemplateç¨‹å¼ç¢¼çš„å…§å®¹ ///
+		//æ–‡å­—å‰æ®µ
 		callerHead = "public void B() {\n" +
 					"\ttry {\n" +
 					"\t\tA();\t\t\t//call method A\n";
 
-		//¤å¦r¤¤¬q(¿ï¶µ¥´¤Ä«e)
+		//æ–‡å­—ä¸­æ®µ(é¸é …æ‰“å‹¾å‰)
 		callerOrg = "\t} catch (FileNotFoundException e) {\n";
 
-		//¤å¦r¤¤¬q(¿ï¶µ¥´¤Ä«á)
+		//æ–‡å­—ä¸­æ®µ(é¸é …æ‰“å‹¾å¾Œ)
 		callerTrans = "\t} catch (RuntimeException e) { //Catch Transform Exception Type\n";
 
-		//¤å¦r«á¬q
+		//æ–‡å­—å¾Œæ®µ
 		callerTail = "\t\tlogger.info(e);\t//use log\n" +
 					"\t}\n" +
 					"}";
 	}
 	
 	/**
-	 * ¥[¤J­¶­±ªº¤º®e
+	 * åŠ å…¥é é¢çš„å…§å®¹
 	 * @param overLoggingPage
 	 */
 	private void addFirstSection(final Composite overLoggingPage) {
 		libMap = smellSettings.getSemllPatterns(SmellSettings.SMELL_OVERLOGGING);
-		// °»´ú±ø¥óLabel
+		// åµæ¸¬æ¢ä»¶Label
 		final Label detectSettingsLabel = new Label(overLoggingPage, SWT.NONE);
 		detectSettingsLabel.setText(resource.getString("detect.rule"));
 		detectSettingsLabel.setLocation(10, 10);
 		detectSettingsLabel.pack();
-		//¬O§_§Y¨ÏÂà«¬¤´°»´úªº«ö¶s
+		//æ˜¯å¦å³ä½¿è½‰å‹ä»åµæ¸¬çš„æŒ‰éˆ•
 		detectTransExBtn = new Button(overLoggingPage, SWT.CHECK);
 		detectTransExBtn.setText(resource.getString("cast.exception"));
 		detectTransExBtn.setLocation(detectSettingsLabel.getLocation().x+10, getLowerRightCoordinate(detectSettingsLabel).y + 5);
 		detectTransExBtn.pack();
 		detectTransExBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
-				//«ö¤U«ö¶s¦Ó§ïÅÜText¤å¦r©MÃC¦â
+				//æŒ‰ä¸‹æŒ‰éˆ•è€Œæ”¹è®ŠTextæ–‡å­—å’Œé¡è‰²
 				adjustText();
 				adjustFont(overLoggingPage.getDisplay());
 			}
 		});
 		detectTransExBtn.setSelection(smellSettings.isExtraRuleExist(SmellSettings.SMELL_OVERLOGGING, SmellSettings.EXTRARULE_OVERLOGGING_DETECTWRAPPINGEXCEPTION));
 
-		/// Customize©w¸q°»´ú±ø¥ó Label ///
+		/// Customizeå®šç¾©åµæ¸¬æ¢ä»¶ Label ///
 		final Label detectSettingsLabel2 = new Label(overLoggingPage, SWT.NONE);
 		detectSettingsLabel2.setText(resource.getString("customize.rule"));
 		detectSettingsLabel2.setLocation(getLowerRightCoordinate(detectTransExBtn).x + 85, 11);
 		detectSettingsLabel2.pack();
-		//¬O§_°»´úLog4jªº«ö¶s
+		//æ˜¯å¦åµæ¸¬Log4jçš„æŒ‰éˆ•
 		log4jBtn = new Button(overLoggingPage, SWT.CHECK);
 		log4jBtn.setLocation(detectSettingsLabel2.getLocation().x+10, getLowerRightCoordinate(detectSettingsLabel2).y + 5);
 		log4jBtn.setText(resource.getString("detect.log4j"));
 		log4jBtn.pack();
 		log4jBtn.setSelection(smellSettings.isExtraRuleExist(SmellSettings.SMELL_OVERLOGGING, SmellSettings.EXTRARULE_OrgApacheLog4j));
 		
-		//¬O§_°»´úJavaUtillogªº«ö¶s
+		//æ˜¯å¦åµæ¸¬JavaUtillogçš„æŒ‰éˆ•
 		javaUtillogBtn = new Button(overLoggingPage, SWT.CHECK);
 		javaUtillogBtn.setText(resource.getString("detect.logger"));
 		javaUtillogBtn.setLocation(detectSettingsLabel2.getLocation().x+10, getLowerRightCoordinate(log4jBtn).y + 5);
@@ -159,7 +159,7 @@ public class OverLoggingPage extends APropertyPage {
 			}
 		});
 
-		/// ¤À¹j½u ///
+		/// åˆ†éš”ç·š ///
 		final Label separateLabel1 = new Label(overLoggingPage, SWT.VERTICAL | SWT.SEPARATOR);
 		separateLabel1.setLocation(getLowerRightCoordinate(detectTransExBtn).x+70, 5);
 		separateLabel1.setSize(1, getLowerRightCoordinate(extraRuleBtn).y - 5);
@@ -184,7 +184,7 @@ public class OverLoggingPage extends APropertyPage {
 		callerTemplate.setBounds(detectSettingsLabel.getLocation().x, getLowerRightCoordinate(calleeTemplate).y+10, 485, 132);
 		callerTemplate.setEditable(false);
 
-		//¤À¹j½u»PTemplateµ¥ªø(¨ú³Ìªøªº)
+		//åˆ†éš”ç·šèˆ‡Templateç­‰é•·(å–æœ€é•·çš„)
 		if (getLowerRightCoordinate(separateLabel2).x < 485)
 			separateLabel2.setSize(485, 1);
 		else {
@@ -192,17 +192,17 @@ public class OverLoggingPage extends APropertyPage {
 			callerTemplate.setSize(getLowerRightCoordinate(separateLabel2).x, 132);
 		}
 
-		//½Õ¾ãTextªº¤å¦r
+		//èª¿æ•´Textçš„æ–‡å­—
 		adjustText();
-		//½Õ¾ãµ{¦¡½XªºÃC¦â
+		//èª¿æ•´ç¨‹å¼ç¢¼çš„é¡è‰²
 		adjustFont(overLoggingPage.getDisplay());
 	}
 	
 	/**
-	 * ½Õ¾ãTextªº¤å¦r
+	 * èª¿æ•´Textçš„æ–‡å­—
 	 */
 	private void adjustText() {
-		/// CalleeTemplateªº¦r«¬­·®æªº¦ì¸m½d³ò ///
+		/// CalleeTemplateçš„å­—å‹é¢¨æ ¼çš„ä½ç½®ç¯„åœ ///
 		String calleeTemp = "";
 
 		calleeTemp += callee;
@@ -211,11 +211,11 @@ public class OverLoggingPage extends APropertyPage {
 		else
 			calleeTemp += calleeTrans;
 
-		//³]©wTemplateªº¤º®e
+		//è¨­å®šTemplateçš„å…§å®¹
 		calleeTemplate.setText(calleeTemp);
 		calleeText.setTemplateText(calleeTemp, false);
 		
-		/// CallerTemplateªº¦r«¬­·®æªº¦ì¸m½d³ò ///
+		/// CallerTemplateçš„å­—å‹é¢¨æ ¼çš„ä½ç½®ç¯„åœ ///
 		String callerTemp = "";
 
 		callerTemp += callerHead;
@@ -225,28 +225,28 @@ public class OverLoggingPage extends APropertyPage {
 			callerTemp += callerTrans;
 		callerTemp += callerTail;
 
-		//³]©wTemplateªº¤º®e
+		//è¨­å®šTemplateçš„å…§å®¹
 		callerTemplate.setText(callerTemp);
 		callerText.setTemplateText(callerTemp, false);
 	}
 	
 	/**
-	 * ±Nµ{¦¡½X¤¤ªº¤å¦r¼Ğ¤WÃC¦â
+	 * å°‡ç¨‹å¼ç¢¼ä¸­çš„æ–‡å­—æ¨™ä¸Šé¡è‰²
 	 */
 	private void adjustFont(Display display) {
-		/// ³]¸mCalleeTemplateªº¦r«¬­·®æªº¦ì¸m½d³ò ///
+		/// è¨­ç½®CalleeTemplateçš„å­—å‹é¢¨æ ¼çš„ä½ç½®ç¯„åœ ///
 		calleeText.setTemplateStyle(display, 0);
-		//§â¦r«¬ªº­·®æ©M­·®æªº½d³ò®M¥Î¦bCalleeTemplate¤W
+		//æŠŠå­—å‹çš„é¢¨æ ¼å’Œé¢¨æ ¼çš„ç¯„åœå¥—ç”¨åœ¨CalleeTemplateä¸Š
 		calleeTemplate.setStyleRanges(calleeText.getLocationArray(), calleeText.getStyleArrray());
 
-		/// ³]¸mCalleeTemplateªº¦r«¬­·®æªº¦ì¸m½d³ò ///
+		/// è¨­ç½®CalleeTemplateçš„å­—å‹é¢¨æ ¼çš„ä½ç½®ç¯„åœ ///
 		callerText.setTemplateStyle(display, 0);
-		//§â¦r«¬ªº­·®æ©M­·®æªº½d³ò®M¥Î¦bCallerTemplate¤W
+		//æŠŠå­—å‹çš„é¢¨æ ¼å’Œé¢¨æ ¼çš„ç¯„åœå¥—ç”¨åœ¨CallerTemplateä¸Š
 		callerTemplate.setStyleRanges(callerText.getLocationArray(), callerText.getStyleArrray());
 	}
 
 	/**
-	 * Àx¦s¨Ï¥ÎªÌ³]©w
+	 * å„²å­˜ä½¿ç”¨è€…è¨­å®š
 	 */
 	@Override
 	public boolean storeSettings() {
@@ -263,14 +263,14 @@ public class OverLoggingPage extends APropertyPage {
 			smellSettings.addExtraRule(SmellSettings.SMELL_OVERLOGGING, SmellSettings.EXTRARULE_JavaUtilLoggingLogger);
 		
 		
-		// ¦s¤J¨Ï¥ÎªÌ¦Û­qRule
+		// å­˜å…¥ä½¿ç”¨è€…è‡ªè¨‚Rule
 		Iterator<String> userDefinedCodeIterator = libMap.keySet().iterator();
 		while(userDefinedCodeIterator.hasNext()) {
 			String key = userDefinedCodeIterator.next();
 			smellSettings.addOverLoggingPattern(key, libMap.get(key));
 		}
 		
-		//±NÀÉ®×¼g¦^
+		//å°‡æª”æ¡ˆå¯«å›
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		return true;
 	}

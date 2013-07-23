@@ -16,8 +16,8 @@ import ntut.csie.robusta.util.PathUtils;
 public class JarFileMaker {
 	public int BUFFER_SIZE = 10240;
 	/**
-	 * @param archiveFile «ü©w²£¥ÍJarÀÉªº¸ô®| + ÀÉ¦W
-	 * @param binFolder ¶Ç¤JbinªºlistFile
+	 * @param archiveFile æŒ‡å®šç”¢ç”ŸJaræª”çš„è·¯å¾‘ + æª”å
+	 * @param binFolder å‚³å…¥binçš„listFile
 	 * @param fullPackageName
 	 */
 	public void createJarFile(File archiveFile, File binFolder, String fullPackageName) {
@@ -63,14 +63,14 @@ public class JarFileMaker {
 	}
 	
 	/**
-	 * ®Ú¾Ú¡u.¡v¤À¹jpackage name
+	 * æ ¹æ“šã€Œ.ã€åˆ†éš”package name
 	 * @param name
 	 * @return
 	 */
 	private String[] splitNameByDot(String name) {
 		String[] result = new String[1];
 		if(name.indexOf(".") != -1) {
-			// ¨â­Ó¡u\¡v¬O¨â­Ó¶¥¬qªº¸õ²æ¦r¤¸, »Pfolderªº±×½uµLÃö
+			// å…©å€‹ã€Œ\ã€æ˜¯å…©å€‹éšæ®µçš„è·³è„«å­—å…ƒ, èˆ‡folderçš„æ–œç·šç„¡é—œ
 			return name.split("\\.");
 		}
 		result[0] = name;
@@ -78,7 +78,7 @@ public class JarFileMaker {
 	}
 	
 	/**
-	 * »`¶°­n¥]JarÀÉªºclass
+	 * è’é›†è¦åŒ…Jaræª”çš„class
 	 * @param binFolder
 	 * @param fullPackageName
 	 * @return

@@ -23,23 +23,23 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
 public class CarelessCleanUpPage  extends APropertyPage {
-	// ©ñcode templateªº°Ï°ì
+	// æ”¾code templateçš„å€åŸŸ
 	private StyledText templateArea;
-	//¬O§_­n°»´ú¨Ï¥ÎªÌ¦Û­q¤èªkªº«ö¶s
+	//æ˜¯å¦è¦åµæ¸¬ä½¿ç”¨è€…è‡ªè¨‚æ–¹æ³•çš„æŒ‰éˆ•
 	private Button btnIsDetectReleaseResourceCodeInClass;
-	// ¤£°»´úªºtemplate¦r«¬­·®æ
+	// ä¸åµæ¸¬çš„templateå­—å‹é¢¨æ ¼
 	StyleRange[] beforeSampleStyles = new StyleRange[5];
-	// °»´úªºtemplateªº¦r«¬­·®æ
+	// åµæ¸¬çš„templateçš„å­—å‹é¢¨æ ¼
 	StyleRange[] afterSampleStyles = new StyleRange[9];
-	// code template Before detectªº¤º®e
+	// code template Before detectçš„å…§å®¹
 	private String beforeText;
-	// code template After detectªº¤º®e
+	// code template After detectçš„å…§å®¹
 	private String afterText;
-	// ¥´¶}extraRuleDialogªº«ö¶s
+	// æ‰“é–‹extraRuleDialogçš„æŒ‰éˆ•
 	private Button extraRuleBtn;
 	// Library Data
 	private TreeMap<String, Boolean> userDefinedCode = new TreeMap<String, Boolean>();
-	// ­t³d³B²zÅª¼gXML
+	// è² è²¬è™•ç†è®€å¯«XML
 	private SmellSettings smellSettings;
 
 	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
@@ -47,7 +47,7 @@ public class CarelessCleanUpPage  extends APropertyPage {
 	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
 	public CarelessCleanUpPage(Composite composite, CSPropertyPage page, SmellSettings smellSettings){
 		super(composite,page);
-		//¤£°»´ú®É,TextBoxªº¤º®e
+		//ä¸åµæ¸¬æ™‚,TextBoxçš„å…§å®¹
 		beforeText ="FileInputStream in = null;\n" +
 					"try {   \n" +
 					"     in = new FileInputStream(path);\n"+
@@ -56,7 +56,7 @@ public class CarelessCleanUpPage  extends APropertyPage {
 					"} catch (IOException e) { \n"+
 					"}";
 		
-		//°»´ú®É,TextBoxªº¤º®e
+		//åµæ¸¬æ™‚,TextBoxçš„å…§å®¹
 		afterText =	"FileInputStream in = null;\n" +
 					"try {   \n" +
 	                "     in = new FileInputStream(path);\n"+
@@ -71,16 +71,16 @@ public class CarelessCleanUpPage  extends APropertyPage {
 		            "}";
 
 		this.smellSettings = smellSettings;
-		//¥[¤J­¶­±ªº¤º®e
+		//åŠ å…¥é é¢çš„å…§å®¹
 		addFirstSection(composite);
 	}
 
 	/**
-	 * ¥[¤J­¶­±ªº¤º®e
+	 * åŠ å…¥é é¢çš„å…§å®¹
 	 */
 	private void addFirstSection(final Composite CarelessCleanUpPage){
 		userDefinedCode = smellSettings.getSemllPatterns(SmellSettings.SMELL_CARELESSCLEANUP);
-		// °»´ú±ø¥ó
+		// åµæ¸¬æ¢ä»¶
 		final Label detectSettingsLabel = new Label(CarelessCleanUpPage, SWT.NONE);
 		detectSettingsLabel.setText(resource.getString("detect.rule"));
 		detectSettingsLabel.setLocation(10, 10);
@@ -94,7 +94,7 @@ public class CarelessCleanUpPage  extends APropertyPage {
 		btnIsDetectReleaseResourceCodeInClass.pack();
 		btnIsDetectReleaseResourceCodeInClass.addSelectionListener(new SelectionAdapter(){
 			public void widgetSelected(final SelectionEvent e1){
-				//«ö¤U«ö¶s¦Ó§ïÅÜText¤å¦r©MÃC¦â
+				//æŒ‰ä¸‹æŒ‰éˆ•è€Œæ”¹è®ŠTextæ–‡å­—å’Œé¡è‰²
 				adjustText();
 				adjustFont();
 			}
@@ -117,11 +117,11 @@ public class CarelessCleanUpPage  extends APropertyPage {
 				userDefinedCode = dialog.getLibMap();
 			}
 		});
-		//­Y­n°»´ú,±Nbutton¥´¤Ä,¨Ã§ïÅÜTextBoxªº¤å¦r©MÃC¦â
+		//è‹¥è¦åµæ¸¬,å°‡buttonæ‰“å‹¾,ä¸¦æ”¹è®ŠTextBoxçš„æ–‡å­—å’Œé¡è‰²
 		btnIsDetectReleaseResourceCodeInClass.setSelection(
 			smellSettings.isExtraRuleExist(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD));
 
-		/// ¤À¹j½u ///
+		/// åˆ†éš”ç·š ///
 		final Label separateLabel1 = new Label(CarelessCleanUpPage, SWT.VERTICAL | SWT.SEPARATOR);
 		separateLabel1.setLocation(getLowerRightCoordinate(btnIsDetectReleaseResourceCodeInClass).x+10, 5);
 		separateLabel1.setSize(1, getLowerRightCoordinate(btnIsDetectReleaseResourceCodeInClass).y+5);
@@ -143,25 +143,25 @@ public class CarelessCleanUpPage  extends APropertyPage {
 		templateArea.setEditable(false);
 		templateArea.setText(beforeText);
 		
-		//¤À¹j½u»PTemplateµ¥ªø(¨ú³Ìªøªº)
+		//åˆ†éš”ç·šèˆ‡Templateç­‰é•·(å–æœ€é•·çš„)
 		if (getLowerRightCoordinate(separateLabel2).x < 458)
 			separateLabel2.setSize(458, 1);
 		else
 			templateArea.setSize(getLowerRightCoordinate(separateLabel2).x, 300);
 		
-		//¸ü¤J¹w©wªº¦r«¬¡BÃC¦â
+		//è¼‰å…¥é å®šçš„å­—å‹ã€é¡è‰²
 		addBeforeSampleStyle(CarelessCleanUpPage.getDisplay());	
 		addAfterSampleStyle(CarelessCleanUpPage.getDisplay());
 		
-		//½Õ¾ãTextBoxªº¤å¦r
+		//èª¿æ•´TextBoxçš„æ–‡å­—
 		adjustText();
 
-		//½Õ¾ãµ{¦¡½XªºÃC¦â
+		//èª¿æ•´ç¨‹å¼ç¢¼çš„é¡è‰²
 		adjustFont();
 	}
 	
 	/**
-	 * ½Õ¾ãTextBoxªº¤å¦r
+	 * èª¿æ•´TextBoxçš„æ–‡å­—
 	 */
 	private void adjustText(){
 		String temp=beforeText;
@@ -173,7 +173,7 @@ public class CarelessCleanUpPage  extends APropertyPage {
 	}
 	
 	/**
-	 * ±Nµ{¦¡½X¤¤¥i¯à·|¥Î¨ìªº¦r«¬¡BÃC¦â¥ı¦æ¸ü¤J(¤£°»´ú)
+	 * å°‡ç¨‹å¼ç¢¼ä¸­å¯èƒ½æœƒç”¨åˆ°çš„å­—å‹ã€é¡è‰²å…ˆè¡Œè¼‰å…¥(ä¸åµæ¸¬)
 	 * @param display
 	 */
 	private void addBeforeSampleStyle(Display display){
@@ -185,11 +185,11 @@ public class CarelessCleanUpPage  extends APropertyPage {
 		beforeSampleStyles[1] = new StyleRange();
 		beforeSampleStyles[1].fontStyle = SWT.BOLD;
 		beforeSampleStyles[1].foreground = display.getSystemColor(SWT.COLOR_DARK_MAGENTA);
-		// µù¸Ñ
+		// è¨»è§£
 		beforeSampleStyles[2] = new StyleRange();
 		beforeSampleStyles[2].fontStyle = SWT.ITALIC;
 		beforeSampleStyles[2].foreground = display.getSystemColor(SWT.COLOR_DARK_GREEN);
-		// µù¸Ñ
+		// è¨»è§£
 		beforeSampleStyles[3] = new StyleRange();
 		beforeSampleStyles[3].fontStyle = SWT.ITALIC;
 		beforeSampleStyles[3].foreground = display.getSystemColor(SWT.COLOR_DARK_GREEN);
@@ -200,7 +200,7 @@ public class CarelessCleanUpPage  extends APropertyPage {
 	}
 	
 	/**
-	 * ±Nµ{¦¡½X¤¤¥i¯à·|¥Î¨ìªº¦r«¬¡BÃC¦â¥ı¦æ¸ü¤J(­n°»´ú)
+	 * å°‡ç¨‹å¼ç¢¼ä¸­å¯èƒ½æœƒç”¨åˆ°çš„å­—å‹ã€é¡è‰²å…ˆè¡Œè¼‰å…¥(è¦åµæ¸¬)
 	 * @param display
 	 */
 	private void addAfterSampleStyle(Display display){
@@ -212,15 +212,15 @@ public class CarelessCleanUpPage  extends APropertyPage {
 		afterSampleStyles[1] = new StyleRange();
 		afterSampleStyles[1].fontStyle = SWT.BOLD;
 		afterSampleStyles[1].foreground = display.getSystemColor(SWT.COLOR_DARK_MAGENTA);		
-		// µù¸Ñ
+		// è¨»è§£
 		afterSampleStyles[2] = new StyleRange();
 		afterSampleStyles[2].fontStyle = SWT.ITALIC;
 		afterSampleStyles[2].foreground = display.getSystemColor(SWT.COLOR_DARK_GREEN);
-		// µù¸Ñ
+		// è¨»è§£
 		afterSampleStyles[3] = new StyleRange();
 		afterSampleStyles[3].fontStyle = SWT.ITALIC;
 		afterSampleStyles[3].foreground = display.getSystemColor(SWT.COLOR_DARK_GREEN);
-		// µù¸Ñ
+		// è¨»è§£
 		afterSampleStyles[4] = new StyleRange();
 		afterSampleStyles[4].fontStyle = SWT.ITALIC;
 		afterSampleStyles[4].foreground = display.getSystemColor(SWT.COLOR_DARK_GREEN);
@@ -236,45 +236,45 @@ public class CarelessCleanUpPage  extends APropertyPage {
 		afterSampleStyles[7] = new StyleRange();
 		afterSampleStyles[7].fontStyle = SWT.BOLD;
 		afterSampleStyles[7].foreground = display.getSystemColor(SWT.COLOR_DARK_MAGENTA);
-		// µù¸Ñ
+		// è¨»è§£
 		afterSampleStyles[8] = new StyleRange();
 		afterSampleStyles[8].fontStyle = SWT.ITALIC;
 		afterSampleStyles[8].foreground = display.getSystemColor(SWT.COLOR_DARK_GREEN);
 	}
 	
 	/**
-	 * ½Õ¾ãTextBoxªº¤å¦rªº¦r«¬©MÃC¦â
+	 * èª¿æ•´TextBoxçš„æ–‡å­—çš„å­—å‹å’Œé¡è‰²
 	 */
 	private void adjustFont(){
-		//­YButton¨S¦³³Q¤Ä¿ï
+		//è‹¥Buttonæ²’æœ‰è¢«å‹¾é¸
 		if(!btnIsDetectReleaseResourceCodeInClass.getSelection()){
-			//¤£°»´ú®É,Templateªº¦r«¬­·®æªº¦ì¸m½d³ò
+			//ä¸åµæ¸¬æ™‚,Templateçš„å­—å‹é¢¨æ ¼çš„ä½ç½®ç¯„åœ
 			int[] beforeRange=new int[]{21,4,27,3,75,23,115,19,137,5};
-			//¨ú±o¤£°»´úªºtemplate¦r«¬­·®æ
+			//å–å¾—ä¸åµæ¸¬çš„templateå­—å‹é¢¨æ ¼
 			StyleRange[] beforeStyles=new StyleRange[5];
 			for(int i=0;i<beforeSampleStyles.length;i++){
 				beforeStyles[i]=beforeSampleStyles[i];
 			}
-			//§â¦r«¬ªº­·®æ©M­·®æªº½d³ò®M¥Î¦bTemplate¤W
+			//æŠŠå­—å‹çš„é¢¨æ ¼å’Œé¢¨æ ¼çš„ç¯„åœå¥—ç”¨åœ¨Templateä¸Š
 			templateArea.setStyleRanges(beforeRange, beforeStyles);
 		}
 		
-		//­YButton¦³³Q¤Ä¿ï
+		//è‹¥Buttonæœ‰è¢«å‹¾é¸
 		if(btnIsDetectReleaseResourceCodeInClass.getSelection()){
-			//°»´ú®É,Templateªº¦r«¬­·®æªº¦ì¸m½d³ò
+			//åµæ¸¬æ™‚,Templateçš„å­—å‹é¢¨æ ¼çš„ä½ç½®ç¯„åœ
 			int[] afterRange=new int[]{21,4,27,3,75,23,104,22,143,18,164,5,192,6,199,4,236,20};
-			//¨ú±o­n°»´úªºtemplate¦r«¬­·®æ
+			//å–å¾—è¦åµæ¸¬çš„templateå­—å‹é¢¨æ ¼
 			StyleRange[] afterStyles=new StyleRange[9];
 			for(int i=0;i<afterSampleStyles.length;i++){
 				afterStyles[i]=afterSampleStyles[i];
 			}
-			//§â¦r«¬ªº­·®æ©M­·®æªº½d³ò®M¥Î¦bTemplate¤W
+			//æŠŠå­—å‹çš„é¢¨æ ¼å’Œé¢¨æ ¼çš„ç¯„åœå¥—ç”¨åœ¨Templateä¸Š
 			templateArea.setStyleRanges(afterRange, afterStyles);
 		}
 	}
 	
 	/**
-	 * Àx¦s¨Ï¥ÎªÌ³]©w
+	 * å„²å­˜ä½¿ç”¨è€…è¨­å®š
 	 */
 	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
 	@Override
@@ -283,21 +283,21 @@ public class CarelessCleanUpPage  extends APropertyPage {
 		smellSettings.removeExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
 		
 		/* 
-		 * §PÂ_³o­ÓSmellªºExtra Rule¬O¤£¬O­n³Q°»´ú¡C
-		 * ¦pªG³Q¥´¤Ä´N¬O­n³Q°»´ú¡C
+		 * åˆ¤æ–·é€™å€‹Smellçš„Extra Ruleæ˜¯ä¸æ˜¯è¦è¢«åµæ¸¬ã€‚
+		 * å¦‚æœè¢«æ‰“å‹¾å°±æ˜¯è¦è¢«åµæ¸¬ã€‚
 		 */
 		if(btnIsDetectReleaseResourceCodeInClass.getSelection()) {
 			smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
 		}
 		
-		// ¦s¤J¨Ï¥ÎªÌ¦Û­qRule
+		// å­˜å…¥ä½¿ç”¨è€…è‡ªè¨‚Rule
 		Iterator<String> userDefinedCodeIterator = userDefinedCode.keySet().iterator();
 		while(userDefinedCodeIterator.hasNext()) {
 			String key = userDefinedCodeIterator.next();
 			smellSettings.addCarelessCleanupPattern(key, userDefinedCode.get(key));
 		}
 		
-		// ±NÀÉ®×¼g¦^
+		// å°‡æª”æ¡ˆå¯«å›
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		return true;
 	}

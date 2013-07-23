@@ -3,7 +3,7 @@ package ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup;
 import java.io.Closeable;
 
 /**
- * ³o­ÓClassÁöµMÄ~©ÓCloseable¡A¦ı¬O±Ncloseªºmethod override¦¨¤£·|©ß¨Ò¥~
+ * é€™å€‹Classé›–ç„¶ç¹¼æ‰¿Closeableï¼Œä½†æ˜¯å°‡closeçš„method overrideæˆä¸æœƒæ‹‹ä¾‹å¤–
  * @author pig
  */
 

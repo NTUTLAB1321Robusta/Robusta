@@ -7,7 +7,7 @@ import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 
 /**
- * ÀË¬dCatchClause¸Ì­±¦³¨S¦³ThrowStatement
+ * æª¢æŸ¥CatchClauseè£¡é¢æœ‰æ²’æœ‰ThrowStatement
  * @author charles
  *
  */

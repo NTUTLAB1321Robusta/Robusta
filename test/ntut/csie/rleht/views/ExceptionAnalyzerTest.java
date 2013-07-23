@@ -48,20 +48,20 @@ public class ExceptionAnalyzerTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		// Åª¨ú´ú¸ÕÀÉ®×¼Ë¥»¤º®e
+		// è®€å–æ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹
 		javaFileToString = new JavaFileToString();
 		javaFileToString.read(SuppressWarningExampleForAnalyzer.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker = new JavaProjectMaker("ExceptionAnalyerTest");
 		javaProjectMaker.setJREDefaultContainer();
 		
-		// ·s¼W±ı¸ü¤Jªº library
+		// æ–°å¢æ¬²è¼‰å…¥çš„ library
 		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(
 				JavaProjectMaker.FOLDERNAME_LIB_JAR,
 				JavaProjectMaker.FOLDERNAME_BIN_CLASS);
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/"
 				+ JavaProjectMaker.RL_LIBRARY_PATH);
 		
-		// ®Ú¾Ú´ú¸ÕÀÉ®×¼Ë¥»¤º®e«Ø¥ß·sªºÀÉ®×
+		// æ ¹æ“šæ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹å»ºç«‹æ–°çš„æª”æ¡ˆ
 		javaProjectMaker.createJavaFile(
 				SuppressWarningExampleForAnalyzer.class.getPackage().getName(),
 				SuppressWarningExampleForAnalyzer.class.getSimpleName()
@@ -76,7 +76,7 @@ public class ExceptionAnalyzerTest {
 				, "package " + UnprotectedMainProgramWithoutTryExample.class.getPackage().getName() + ";\n"
 				+ javaFileToString.getFileContent());
 		
-		// «Ø¥ß XML
+		// å»ºç«‹ XML
 		CreateSettings();
 		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(SuppressWarningExampleForAnalyzer.class, javaProjectMaker.getProjectName()));
 		
@@ -84,11 +84,11 @@ public class ExceptionAnalyzerTest {
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		
-		// ³]©w­n³Q«Ø¥ß AST ªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ AST çš„æª”æ¡ˆ
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
 		
-		// ¨ú±o AST
+		// å–å¾— AST
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
 	}
@@ -96,10 +96,10 @@ public class ExceptionAnalyzerTest {
 	@After
 	public void tearDown() throws Exception {
 		File xmlFile = new File(JDomUtil.getWorkspace() + File.separator + "CSPreference.xml");
-		// ¦pªG XML ÀÉ®×¦s¦b¡A«h§R°£¤§
+		// å¦‚æœ XML æª”æ¡ˆå­˜åœ¨ï¼Œå‰‡åˆªé™¤ä¹‹
 		if(xmlFile.exists())
 			assertTrue(xmlFile.delete());
-		// §R°£±M®×
+		// åˆªé™¤å°ˆæ¡ˆ
 		javaProjectMaker.deleteProject();
 	}
 	
@@ -108,7 +108,7 @@ public class ExceptionAnalyzerTest {
 //		ASTMethodCollector collector = new ASTMethodCollector();
 //		compilationUnit.accept(collector);
 //		
-//		// Àx¦s±M°Ï
+//		// å„²å­˜å°ˆå€
 //		List<MethodDeclaration> methodList = collector.getMethodList();
 //		List<MarkerInfo> totalNTList = new ArrayList<MarkerInfo>();
 //		List<RLMessage> totalMethodRLList = new ArrayList<RLMessage>();
@@ -151,12 +151,12 @@ public class ExceptionAnalyzerTest {
 //		assertEquals(218,totalMethodRLList.get(4).getLineNumber());
 //		assertEquals(231,totalMethodRLList.get(5).getLineNumber());
 //
-//		assertEquals("suppress warning ªº¸ê°T¦b nested ©³¤U¤£·|³Q°O¿ı¨ì¡CÀ³¸Ó¬O26­Ó¡A¦ı¬O¥Ø«e¥\¯à¥u¯àÀË¬d¨ì19­Ó",19, totalSSList.size());
+//		assertEquals("suppress warning çš„è³‡è¨Šåœ¨ nested åº•ä¸‹ä¸æœƒè¢«è¨˜éŒ„åˆ°ã€‚æ‡‰è©²æ˜¯26å€‹ï¼Œä½†æ˜¯ç›®å‰åŠŸèƒ½åªèƒ½æª¢æŸ¥åˆ°19å€‹",19, totalSSList.size());
 //	}
 
 	@Ignore
 	public void testExceptionAnalyzerWithBooleanArgument() {
-		fail("²Ä¤GºØoverloadingªºExceptionAnalyzer¥¼³Q´ú¸Õ");
+		fail("ç¬¬äºŒç¨®overloadingçš„ExceptionAnalyzeræœªè¢«æ¸¬è©¦");
 	}
 	
 	@Test
@@ -239,7 +239,7 @@ public class ExceptionAnalyzerTest {
 //		}
 //		
 //		/*
-//		 * µo¥Í nested try ©Ò¦bªº line number
+//		 * ç™¼ç”Ÿ nested try æ‰€åœ¨çš„ line number
 //		 */
 //		int[] lineNumber = { 78, 98, 254, 258, 308, 324, 443, 447 };
 //		
@@ -248,7 +248,7 @@ public class ExceptionAnalyzerTest {
 //		}
 //		
 //		/*
-//		 * ¤£¦A method ¤W
+//		 * ä¸å† method ä¸Š
 //		 */
 //		assertEquals(0, totalMethodRLList.size());
 //		
@@ -258,10 +258,10 @@ public class ExceptionAnalyzerTest {
 //		assertEquals(8, totalNTList.size());
 //		
 //		/*
-//		 * ¦b±_ª¬ try-catch ­n¦b catch ¤W suppress bad smell ®É
-//		 * ¤ÏÆ[¦b method ¤W suppress bad smell ®É¥i¥H¥¿½Tªº³Q suppress
+//		 * åœ¨å·¢ç‹€ try-catch è¦åœ¨ catch ä¸Š suppress bad smell æ™‚
+//		 * åè§€åœ¨ method ä¸Š suppress bad smell æ™‚å¯ä»¥æ­£ç¢ºçš„è¢« suppress
 //		 */
-//		assertEquals("suppress warning ªº¸ê°T¦b nested ©³¤U¤£·|³Q°O¿ı¨ì¡C¹w­p­n§ì¨ì15­Ó¡A¦ı¬O¥Ø«e¥\¯à¥u¯à§ì¨ì9­Ó", 9, totalSSList.size());
+//		assertEquals("suppress warning çš„è³‡è¨Šåœ¨ nested åº•ä¸‹ä¸æœƒè¢«è¨˜éŒ„åˆ°ã€‚é è¨ˆè¦æŠ“åˆ°15å€‹ï¼Œä½†æ˜¯ç›®å‰åŠŸèƒ½åªèƒ½æŠ“åˆ°9å€‹", 9, totalSSList.size());
 //	}
 	
 	@Test
@@ -269,7 +269,7 @@ public class ExceptionAnalyzerTest {
 		Method methodFindExceptionTypes = ExceptionAnalyzer.class.getDeclaredMethod("findExceptionTypes", ASTNode.class, ITypeBinding[].class);
 		methodFindExceptionTypes.setAccessible(true);
 		
-		// ¸ê®Æ²£¥Í
+		// è³‡æ–™ç”¢ç”Ÿ
 		ASTMethodCollector astMethodCollector = new ASTMethodCollector();
 		compilationUnit.accept(astMethodCollector);
 		List<MethodDeclaration> methodlist = astMethodCollector.getMethodList();
@@ -280,7 +280,7 @@ public class ExceptionAnalyzerTest {
 		ClassInstanceCreation cic = (ClassInstanceCreation)statement.getExpression();
 		
 		// Class Instance Creation
-		// ªì©lª¬ºA
+		// åˆå§‹ç‹€æ…‹
 		exceptionAnalyzer = new ExceptionAnalyzer(compilationUnit, methodlist.get(7).getStartPosition(), 0);
 		totalRLList.addAll(exceptionAnalyzer.getExceptionList());
 		assertEquals(0, totalRLList.size());
@@ -288,7 +288,7 @@ public class ExceptionAnalyzerTest {
 		totalRLList.addAll(exceptionAnalyzer.getExceptionList());
 		assertEquals(1, totalRLList.size());
 		
-		// ²M°£¸ê®Æ
+		// æ¸…é™¤è³‡æ–™
 		exceptionAnalyzer = new ExceptionAnalyzer(compilationUnit, methodlist.get(6).getStartPosition(), 0);
 		totalRLList = new ArrayList<RLMessage>();
 		assertEquals(0, totalRLList.size());
@@ -299,7 +299,7 @@ public class ExceptionAnalyzerTest {
 		cic = (ClassInstanceCreation) assignment.getRightHandSide();
 		methodFindExceptionTypes.invoke(exceptionAnalyzer, (ASTNode) cic, cic.resolveConstructorBinding().getExceptionTypes());
 		
-		// Å|¥[´ú¸Õ
+		// ç–ŠåŠ æ¸¬è©¦
 		totalRLList.addAll(exceptionAnalyzer.getExceptionList());
 		totalRLList.addAll(exceptionAnalyzer.getExceptionList());
 		assertEquals(2, totalRLList.size());
@@ -328,12 +328,12 @@ public class ExceptionAnalyzerTest {
 			methodGetMethodAnnotation.invoke(exceptionAnalyzer, methodlist.get(i));
 			totalRLList.addAll(exceptionAnalyzer.getMethodRLAnnotationList());
 		}
-		// §ì¨ì 6 ­Ó Tag µù°Oªº method overloading for addRL(RLMessage rlmsg, int currentCatch)
+		// æŠ“åˆ° 6 å€‹ Tag è¨»è¨˜çš„ method overloading for addRL(RLMessage rlmsg, int currentCatch)
 		assertEquals(6, totalRLList.size());
 		for (int i = 0; i < totalRLList.size(); i++) {
 			methodAddRLForInt.invoke(exceptionAnalyzer, totalRLList.get(i), i);
 		}
-		// ±N 6 ­Ó Tag µù°Oªº method §Q¥Î addRL ³o­Ó method ¬O§_¦¨¥\¥[¤J 
+		// å°‡ 6 å€‹ Tag è¨»è¨˜çš„ method åˆ©ç”¨ addRL é€™å€‹ method æ˜¯å¦æˆåŠŸåŠ å…¥ 
 		assertEquals(6, exceptionAnalyzer.getExceptionList().size());
 
 		totalRLList =  new ArrayList<RLMessage>();
@@ -344,10 +344,10 @@ public class ExceptionAnalyzerTest {
 			methodGetMethodAnnotation.invoke(exceptionAnalyzer, methodlist.get(i));
 			totalRLList.addAll(exceptionAnalyzer.getMethodRLAnnotationList());
 		}
-		// §ì¨ì 6 ­Ó Tag µù°Oªº method overloading for addRL(RLMessage rlmsg, String key) 
+		// æŠ“åˆ° 6 å€‹ Tag è¨»è¨˜çš„ method overloading for addRL(RLMessage rlmsg, String key) 
 		assertEquals(6, totalRLList.size());
 		for (int i = 0; i < totalRLList.size(); i++) {
-			methodAddRLForString.invoke(exceptionAnalyzer, totalRLList.get(i), "¤÷¥À¿Ëªºid«s½Ş¤e¿å." + i);
+			methodAddRLForString.invoke(exceptionAnalyzer, totalRLList.get(i), "çˆ¶æ¯è¦ªçš„idå“€è±¬å‰è¸¹." + i);
 		}
 		assertEquals(6, exceptionAnalyzer.getExceptionList().size());
 	}

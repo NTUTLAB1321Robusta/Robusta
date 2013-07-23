@@ -56,7 +56,7 @@ public class RefineExceptionRefactoring extends Refactoring {
 	}
 
 	/**
-	 * ³o­Ó¦W¦r·|Åã¥Ü¦b Undo Redo ²M³æ¤W­±
+	 * é€™å€‹åå­—æœƒé¡¯ç¤ºåœ¨ Undo Redo æ¸…å–®ä¸Šé¢
 	 */
 	@Override
 	public String getName() {
@@ -64,8 +64,8 @@ public class RefineExceptionRefactoring extends Refactoring {
 	}
 
 	/**
-	 * ¨Ï¥Î­«ºc«eªºªì©lª¬ºA¡A«ØÄ³¥ıÀË¬dµ{¦¡½X¬O§_¦³¿ù»~¡C
-	 * ¥i¥H³]©w¦¨¡uµ{¦¡½XµL¿ù»~¤~´£¨Ñ­«ºc¥\¯à¡v¡C
+	 * ä½¿ç”¨é‡æ§‹å‰çš„åˆå§‹ç‹€æ…‹ï¼Œå»ºè­°å…ˆæª¢æŸ¥ç¨‹å¼ç¢¼æ˜¯å¦æœ‰éŒ¯èª¤ã€‚
+	 * å¯ä»¥è¨­å®šæˆã€Œç¨‹å¼ç¢¼ç„¡éŒ¯èª¤æ‰æä¾›é‡æ§‹åŠŸèƒ½ã€ã€‚
 	 */
 	@Override
 	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
@@ -77,7 +77,7 @@ public class RefineExceptionRefactoring extends Refactoring {
 	public RefactoringStatus checkFinalConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
 		RefactoringStatus status = new RefactoringStatus();
-		// TODO ­n¦p¦óÅı°O¿ı¹Lªº§ïÅÜ¡A¦b¨Ï¥ÎªÌ¿ï¾Übackªº®É­Ô¤@¨ÖRoll back??
+		// TODO è¦å¦‚ä½•è®“è¨˜éŒ„éçš„æ”¹è®Šï¼Œåœ¨ä½¿ç”¨è€…é¸æ“‡backçš„æ™‚å€™ä¸€ä½µRoll back??
 		AST cuAST = compilationUnit.getAST();
 		CatchClauseFinderVisitor catchClauseFinder = new CatchClauseFinderVisitor(catchClauseStartPosition);
 		compilationUnit.accept(catchClauseFinder);
@@ -88,11 +88,11 @@ public class RefineExceptionRefactoring extends Refactoring {
 		}
 		QuickFixUtils.removeStatementsInCatchClause(exactlyCatchClause, ".printStackTrace()", "System.out.print", "System.err.print");
 		QuickFixUtils.addThrowRefinedException(exactlyCatchClause, cuAST, exceptionName);
-		// ¤£¬O©ß¥X RuntimeException´N­nÀ°¥Limport (¨ä¹êUnchecked Exception³£¤£¥Îimport¡A¦ı¬O§Ú¥ı¤£ºŞ°Õ)
+		// ä¸æ˜¯æ‹‹å‡º RuntimeExceptionå°±è¦å¹«ä»–import (å…¶å¯¦Unchecked Exceptionéƒ½ä¸ç”¨importï¼Œä½†æ˜¯æˆ‘å…ˆä¸ç®¡å•¦)
 		if(!exceptionName.equals(RuntimeException.class.getSimpleName())) {
 			QuickFixUtils.addImportDeclaration(compilationUnit, exceptionType);
 		}
-		// ¦pªG©ß¥Xªº¬OChecked exception¡A´N­nÀ°¥L«Å§i¦bmethod¤W­±
+		// å¦‚æœæ‹‹å‡ºçš„æ˜¯Checked exceptionï¼Œå°±è¦å¹«ä»–å®£å‘Šåœ¨methodä¸Šé¢
 		if(!Clazz.isUncheckedException(exceptionName)) {
 			QuickFixUtils.addThrowExceptionOnMethodDeclaration(
 					cuAST, 
@@ -111,21 +111,21 @@ public class RefineExceptionRefactoring extends Refactoring {
 		CompilationUnitChange result = new CompilationUnitChange(name, unit);
 		result.setSaveMode(TextFileChange.KEEP_SAVE_STATE);
 
-		// ±N­×§ïµ²ªG³]¸m¦bCompilationUnitChange
+		// å°‡ä¿®æ”¹çµæœè¨­ç½®åœ¨CompilationUnitChange
 		TextEdit edits = applyRefactoringChange().getEdit();
 		result.setEdit(edits);
-		// ±N­×§ïµ²ªG³]¦¨Group¡A·|Åã¥Ü¦bPreview¤W¤è¸`ÂI¡C
+		// å°‡ä¿®æ”¹çµæœè¨­æˆGroupï¼Œæœƒé¡¯ç¤ºåœ¨Previewä¸Šæ–¹ç¯€é»ã€‚
 		result.addTextEditGroup(new TextEditGroup("Rethrow Unchecked Exception", 
 								new TextEdit[] {edits} ));
 		return result;
 	}
 
 	public RefactoringStatus setExceptionName(String name) {
-		// °²¦p¨Ï¥ÎªÌ¨S¦³¶ñ¼g¥ô¦óªF¦è,§âRefactoringStatus³]¦¨Error
+		// å‡å¦‚ä½¿ç”¨è€…æ²’æœ‰å¡«å¯«ä»»ä½•æ±è¥¿,æŠŠRefactoringStatusè¨­æˆError
 		if(name.length() == 0) {
 			return RefactoringStatus.createFatalErrorStatus("Please Choose an Exception Type");
 		} else {
-			// °²¦p¦³¼g´N§â¥L¦s¤U¨Ó
+			// å‡å¦‚æœ‰å¯«å°±æŠŠä»–å­˜ä¸‹ä¾†
 			exceptionName = name;
 			return new RefactoringStatus();
 		}
@@ -140,7 +140,7 @@ public class RefineExceptionRefactoring extends Refactoring {
 	}
 	
 	/**
-	 * ®M¥ÎRefactoring­nÅÜ§óªº¤º®e
+	 * å¥—ç”¨Refactoringè¦è®Šæ›´çš„å…§å®¹
 	 * @param textFileChange
 	 * @throws CoreException 
 	 */

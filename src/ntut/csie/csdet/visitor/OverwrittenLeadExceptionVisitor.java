@@ -23,8 +23,8 @@ import org.eclipse.jdt.core.dom.TryStatement;
 public class OverwrittenLeadExceptionVisitor extends ASTVisitor {
 	private CompilationUnit root;
 	private List<MarkerInfo> overwrittenLeadList;
-	private boolean isTarget; // true:´N·|³QÀË¬d¬°OW¡Ffalse:¤£ÀË¬d
-	private boolean inFinally;// true:¦b¥Ø«e¸`ÂI¤¤³Ì¤W¼hªºfinally block¸Ì­±¡Ffalse:¦b¨ä¥L¥ô¦ó¦a¤è
+	private boolean isTarget; // true:å°±æœƒè¢«æª¢æŸ¥ç‚ºOWï¼›false:ä¸æª¢æŸ¥
+	private boolean inFinally;// true:åœ¨ç›®å‰ç¯€é»ä¸­æœ€ä¸Šå±¤çš„finally blockè£¡é¢ï¼›false:åœ¨å…¶ä»–ä»»ä½•åœ°æ–¹
 	private boolean isDetectingOverwrittenLeadExceptionSmell;
 	private Block outterFinally;
 	
@@ -39,7 +39,7 @@ public class OverwrittenLeadExceptionVisitor extends ASTVisitor {
 	}
 	
 	/**
-	 * ®Ú¾Ú³]©wÀÉªº¸ê°T¡A¨M©w­n¤£­n«ô³X¾ã´Ê¾ğ¡C
+	 * æ ¹æ“šè¨­å®šæª”çš„è³‡è¨Šï¼Œæ±ºå®šè¦ä¸è¦æ‹œè¨ªæ•´æ£µæ¨¹ã€‚
 	 */
 	public boolean visit(MethodDeclaration node) {
 		isTarget = false;
@@ -49,11 +49,11 @@ public class OverwrittenLeadExceptionVisitor extends ASTVisitor {
 	}
 	
 	public boolean visit(TryStatement node) {
-		// try statement ¨S¦³ catch clause¡A´N­n°»´útry block¡A³o±ø¥ó¬O¥Î¨Ó§PÂ_¸Ì­±ªºtry statement¥Îªº
+		// try statement æ²’æœ‰ catch clauseï¼Œå°±è¦åµæ¸¬try blockï¼Œé€™æ¢ä»¶æ˜¯ç”¨ä¾†åˆ¤æ–·è£¡é¢çš„try statementç”¨çš„
 		if(node.catchClauses().size() != 0)
 			isTarget = false;
 		
-		// try ¥~­±¨S¦³ try ªí¥Ü¥¦¬O³Ì¥~¼h¡A«hªì©l¤Æ±ø¥ó 
+		// try å¤–é¢æ²’æœ‰ try è¡¨ç¤ºå®ƒæ˜¯æœ€å¤–å±¤ï¼Œå‰‡åˆå§‹åŒ–æ¢ä»¶ 
 		if(NodeUtils.getSpecifiedParentNode(node, ASTNode.TRY_STATEMENT) == null) {
 			isTarget = false;
 			inFinally = false;
@@ -77,13 +77,13 @@ public class OverwrittenLeadExceptionVisitor extends ASTVisitor {
 	
 	public boolean visit(Block node) {
 		ASTNode parentNode = NodeUtils.getSpecifiedParentNode(node, ASTNode.TRY_STATEMENT);
-		// blockªº¤÷¿Ë¬Otry statement
+		// blockçš„çˆ¶è¦ªæ˜¯try statement
 		if(parentNode != null && parentNode.getNodeType() == ASTNode.TRY_STATEMENT) {
-			// ¤÷¿Ë¦³finally block¡A¥B¤÷¿Ëªºfinally blockµ¥©ó³o­Óblock¡Aªí¥Ü³o¬O§Ú­Ì­n§äªºfinally block
+			// çˆ¶è¦ªæœ‰finally blockï¼Œä¸”çˆ¶è¦ªçš„finally blockç­‰æ–¼é€™å€‹blockï¼Œè¡¨ç¤ºé€™æ˜¯æˆ‘å€‘è¦æ‰¾çš„finally block
 			if(((TryStatement) parentNode).getFinally() != null && ((TryStatement) parentNode).getFinally().getStartPosition() == node.getStartPosition()) {
 				inFinally = true;
 				isTarget = true;
-				// ¬ö¿ı²Ä¤@¼hfinally block
+				// ç´€éŒ„ç¬¬ä¸€å±¤finally block
 				if(outterFinally == null)
 					outterFinally = node;
 			}
@@ -95,7 +95,7 @@ public class OverwrittenLeadExceptionVisitor extends ASTVisitor {
 	public boolean visit(MethodInvocation node) {
 		if(isTarget) {
 			ITypeBinding[] exTypes =  node.resolveMethodBinding().getExceptionTypes();
-			// method invocation·|©ßchecked exceptionªº¸Ü
+			// method invocationæœƒæ‹‹checked exceptionçš„è©±
 			if(exTypes.length > 0)
 				addMarkerInfo(node);
 		}
@@ -105,7 +105,7 @@ public class OverwrittenLeadExceptionVisitor extends ASTVisitor {
 	public boolean visit(SuperMethodInvocation node) {
 		if(isTarget) {
 			ITypeBinding[] exTypes =  node.resolveMethodBinding().getExceptionTypes();
-			// method invocation·|©ßchecked exceptionªº¸Ü
+			// method invocationæœƒæ‹‹checked exceptionçš„è©±
 			if(exTypes.length > 0)
 				addMarkerInfo(node);
 		}
@@ -114,11 +114,11 @@ public class OverwrittenLeadExceptionVisitor extends ASTVisitor {
 	
 	public void endVisit(Block node) {
 		TryStatement parentNode = (node.getParent().getNodeType() == ASTNode.TRY_STATEMENT) ? (TryStatement)node.getParent() : null;
-		// §PÂ_¬O§_Â÷¶}finally block
+		// åˆ¤æ–·æ˜¯å¦é›¢é–‹finally block
 		if(parentNode != null && parentNode.getFinally() != null && parentNode.getFinally().getStartPosition() == node.getStartPosition()) {
 			isTarget = false;
 		}
-		// §PÂ_¬O§_Â÷¶}²Ä¤@¼hfinally block
+		// åˆ¤æ–·æ˜¯å¦é›¢é–‹ç¬¬ä¸€å±¤finally block
 		if(outterFinally != null && outterFinally.getStartPosition() == node.getStartPosition()) {
 			inFinally = false;
 			outterFinally = null;

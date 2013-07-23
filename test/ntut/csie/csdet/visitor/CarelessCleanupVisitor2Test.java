@@ -44,7 +44,7 @@ public class CarelessCleanupVisitor2Test {
 		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.FOLDERNAME_LIB_JAR, JavaProjectMaker.FOLDERNAME_BIN_CLASS);
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/" + JavaProjectMaker.RL_LIBRARY_PATH);
 		javaProjectMaker.setJREDefaultContainer();
-		// ®Ú¾Ú´ú¸ÕÀÉ®×¼Ë¥»¤º®e«Ø¥ß·sªºÀÉ®×
+		// æ ¹æ“šæ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹å»ºç«‹æ–°çš„æª”æ¡ˆ
 		javaFile2String.read(CarelessCleanupExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				CarelessCleanupExample.class.getPackage().getName(),
@@ -69,7 +69,7 @@ public class CarelessCleanupVisitor2Test {
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
-		/* ´ú¸Õ¨Ï¥ÎªÌ³]©wPattern®É­Ô¨Ï¥Î */
+		/* æ¸¬è©¦ä½¿ç”¨è€…è¨­å®šPatternæ™‚å€™ä½¿ç”¨ */
 		javaFile2String.read(UserDefinedCarelessCleanupWeather.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				UserDefinedCarelessCleanupWeather.class.getPackage().getName(),
@@ -99,15 +99,15 @@ public class CarelessCleanupVisitor2Test {
 		
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(
 				JavaCore.createCompilationUnitFrom(
 						ResourcesPlugin.getWorkspace().
 						getRoot().getFile(ccExamplePath)));
 		parser.setResolveBindings(true);
-		// «Ø¥ßXML
+		// å»ºç«‹XML
 		CreateSettings();
-		// ¨ú±oAST
+		// å–å¾—AST
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
 		carelessCleanupVisitor = new CarelessCleanupVisitor2(compilationUnit);
@@ -122,19 +122,19 @@ public class CarelessCleanupVisitor2Test {
 		}
 	}
 	
-	// line 470 »P495 in CarelessCleaupExample ¤£ºâ¬O careless cleanup
+	// line 470 èˆ‡495 in CarelessCleaupExample ä¸ç®—æ˜¯ careless cleanup
 	
 	@Test
 	public void testGetCarelessCleanupListWithoutExtraRules() {
-		/* ­«·s²£¥Í³]©wÀÉ */
+		/* é‡æ–°ç”¢ç”Ÿè¨­å®šæª” */
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		// ¦]¬°Setup®É­Ô¤w¸g²£¥X¤@­Ó¦³ExtraRuleªº³]©wÀÉ¡A²{¦b­n¯S¦a§âExtraRule²¾°£±¼¨Ó´ú¸Õ¡C
+		// å› ç‚ºSetupæ™‚å€™å·²ç¶“ç”¢å‡ºä¸€å€‹æœ‰ExtraRuleçš„è¨­å®šæª”ï¼Œç¾åœ¨è¦ç‰¹åœ°æŠŠExtraRuleç§»é™¤æ‰ä¾†æ¸¬è©¦ã€‚
 		smellSettings.removeExtraRule(
 			SmellSettings.SMELL_CARELESSCLEANUP,
 			SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		
-		// ­«·s²£¥ÍVisitor¡A¨Ï±o³]©w­È¦³¦s¤JCarelessCleaupVisitor
+		// é‡æ–°ç”¢ç”ŸVisitorï¼Œä½¿å¾—è¨­å®šå€¼æœ‰å­˜å…¥CarelessCleaupVisitor
 		carelessCleanupVisitor = new CarelessCleanupVisitor2(compilationUnit);
 		
 		int carelessCleanupSmellCount = 0;
@@ -165,15 +165,15 @@ public class CarelessCleanupVisitor2Test {
 	
 	@Test
 	public void testGetCarelessCleanupListWithUserDefiendLibs() throws Exception {	
-		// ²£¥Í³]©wÀÉ
+		// ç”¢ç”Ÿè¨­å®šæª”
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		smellSettings.addCarelessCleanupPattern(UserDefinedCarelessCleanupWeather.class.getName() + ".*", true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 
-		// ­«·s²£¥ÍVisitor¡A¨Ï±o³]©w­È¦³¦s¤JCarelessCleaupVisitor
+		// é‡æ–°ç”¢ç”ŸVisitorï¼Œä½¿å¾—è¨­å®šå€¼æœ‰å­˜å…¥CarelessCleaupVisitor
 		carelessCleanupVisitor = new CarelessCleanupVisitor2(compilationUnit);
 		
-		// °»´úµ²ªG
+		// åµæ¸¬çµæœ
 		int carelessCleanupSmellCount = 0;
 		assertNotNull(compilationUnit);
 		assertNotNull(carelessCleanupVisitor);
@@ -188,15 +188,15 @@ public class CarelessCleanupVisitor2Test {
 	
 	@Test
 	public void testGetCarelessCleanupListWithUserDefiendFullQualifiedMethods() throws Exception {	
-		// ²£¥Í³]©wÀÉ
+		// ç”¢ç”Ÿè¨­å®šæª”
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		smellSettings.addCarelessCleanupPattern(UserDefinedCarelessCleanupWeather.class.getName() + ".bark", true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		
-		// ­«·s²£¥ÍVisitor¡A¨Ï±o³]©w­È¦³¦s¤JCarelessCleaupVisitor
+		// é‡æ–°ç”¢ç”ŸVisitorï¼Œä½¿å¾—è¨­å®šå€¼æœ‰å­˜å…¥CarelessCleaupVisitor
 		carelessCleanupVisitor = new CarelessCleanupVisitor2(compilationUnit);
 		
-		// °»´úµ²ªG
+		// åµæ¸¬çµæœ
 		int carelessCleanupSmellCount = 0;
 		assertNotNull(compilationUnit);
 		assertNotNull(carelessCleanupVisitor);
@@ -211,15 +211,15 @@ public class CarelessCleanupVisitor2Test {
 	
 	@Test
 	public void testGetCarelessCleanupListWithUserDefiendMethods() throws Exception {	
-		// ²£¥Í³]©wÀÉ
+		// ç”¢ç”Ÿè¨­å®šæª”
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		smellSettings.addCarelessCleanupPattern("*.bark", true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		
-		// ­«·s²£¥ÍVisitor¡A¨Ï±o³]©w­È¦³¦s¤JCarelessCleaupVisitor
+		// é‡æ–°ç”¢ç”ŸVisitorï¼Œä½¿å¾—è¨­å®šå€¼æœ‰å­˜å…¥CarelessCleaupVisitor
 		carelessCleanupVisitor = new CarelessCleanupVisitor2(compilationUnit);
 		
-		// °»´úµ²ªG
+		// åµæ¸¬çµæœ
 		int carelessCleanupSmellCount = 0;
 		assertNotNull(compilationUnit);
 		assertNotNull(carelessCleanupVisitor);
@@ -234,15 +234,15 @@ public class CarelessCleanupVisitor2Test {
 	
 	@Test
 	public void testGetCarelessCleanupListWithUserDefiendOnlyMethods() throws Exception {	
-		// ²£¥Í³]©wÀÉ
+		// ç”¢ç”Ÿè¨­å®šæª”
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		smellSettings.addCarelessCleanupPattern("rain", true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		
-		// ­«·s²£¥ÍVisitor¡A¨Ï±o³]©w­È¦³¦s¤JCarelessCleaupVisitor
+		// é‡æ–°ç”¢ç”ŸVisitorï¼Œä½¿å¾—è¨­å®šå€¼æœ‰å­˜å…¥CarelessCleaupVisitor
 		carelessCleanupVisitor = new CarelessCleanupVisitor2(compilationUnit);
 		
-		// °»´úµ²ªG
+		// åµæ¸¬çµæœ
 		int carelessCleanupSmellCount = 0;
 		assertNotNull(compilationUnit);
 		assertNotNull(carelessCleanupVisitor);
@@ -256,7 +256,7 @@ public class CarelessCleanupVisitor2Test {
 	}
 	
 	/**
-	 * ¬ö¿ı©Ò¦³badSmell¤º®e¥H¤Î¦æ¸¹
+	 * ç´€éŒ„æ‰€æœ‰badSmellå…§å®¹ä»¥åŠè¡Œè™Ÿ
 	 * @param badSmellList
 	 * @return
 	 */

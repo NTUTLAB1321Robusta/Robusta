@@ -14,11 +14,11 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 
 /**
- * ºëÂ²ª© °»´ú±ø¥ó¥ş¤Äªº±¡ªp¤U¡A¦Û©w¸q³¡¤À¥[¤J close ©Òµo²{¤§¨Ò¤l
+ * ç²¾ç°¡ç‰ˆ åµæ¸¬æ¢ä»¶å…¨å‹¾çš„æƒ…æ³ä¸‹ï¼Œè‡ªå®šç¾©éƒ¨åˆ†åŠ å…¥ close æ‰€ç™¼ç¾ä¹‹ä¾‹å­
  */
 public class CarelessCleanupAntExample {
 	/**
-	 * ¬OÃa¨ı¹Dªº¨Ò¤l CCII §ì±o¨ì CCI ¨S§ì¨ìªº¨Ò¤l
+	 * æ˜¯å£å‘³é“çš„ä¾‹å­ CCII æŠ“å¾—åˆ° CCI æ²’æŠ“åˆ°çš„ä¾‹å­
 	 * 
 	 * @throws IOException
 	 */
@@ -28,17 +28,17 @@ public class CarelessCleanupAntExample {
 		try {
 			zipFile(is, zOut);
 		} finally {
-			CarelessCleanupExampleForAntDefinition.close(is);// ³o­Ó¤£¬O!
+			CarelessCleanupExampleForAntDefinition.close(is);// é€™å€‹ä¸æ˜¯!
 		}
 		try {
 			zipFile(is, zOut);
 		} finally {
-			CarelessCleanupExampleForAntDefinition.close(is);// CCII »{¬°¬OÃa¨ı¹D
+			CarelessCleanupExampleForAntDefinition.close(is);// CCII èªç‚ºæ˜¯å£å‘³é“
 		}
 	}
 
 	/**
-	 * ¬OÃa¨ı¹Dªº¨Ò¤l CCII §ì±o¨ì CCI ¨S§ì¨ìªº¨Ò¤l
+	 * æ˜¯å£å‘³é“çš„ä¾‹å­ CCII æŠ“å¾—åˆ° CCI æ²’æŠ“åˆ°çš„ä¾‹å­
 	 * 
 	 * @throws IOException
 	 */
@@ -47,17 +47,17 @@ public class CarelessCleanupAntExample {
 		try {
 			zipFile(is, zOut);
 		} finally {
-			is.close();// ³o­Ó¤£¬O!
+			is.close();// é€™å€‹ä¸æ˜¯!
 		}
 		try {
 			zipFile(is, zOut);
 		} finally {
-			is.close();// CCII »{¬°¬OÃa¨ı¹D
+			is.close();// CCII èªç‚ºæ˜¯å£å‘³é“
 		}
 	}
 
 	/**
-	 * Example ¤¤»İ­n¥Î¨ìªº method ·|©ß¥X IOException ¥i¥H¤£¥ÎºŞ
+	 * Example ä¸­éœ€è¦ç”¨åˆ°çš„ method æœƒæ‹‹å‡º IOException å¯ä»¥ä¸ç”¨ç®¡
 	 * 
 	 * @throws IOException
 	 */
@@ -73,7 +73,7 @@ public class CarelessCleanupAntExample {
 	private static final int BUFFER_SIZE = 1024;
 
 	/**
-	 * ¬OÃa¨ı¹Dªº¨Ò¤l CCII §ì±o¨ì CCI ¨S§ì¨ìªº¨Ò¤l
+	 * æ˜¯å£å‘³é“çš„ä¾‹å­ CCII æŠ“å¾—åˆ° CCI æ²’æŠ“åˆ°çš„ä¾‹å­
 	 * 
 	 * @throws IOException
 	 */
@@ -82,25 +82,25 @@ public class CarelessCleanupAntExample {
 		try {
 		} finally {
 			fos.flush();
-			fos.close();// CCII »{¬°¬OÃa¨ı¹D
+			fos.close();// CCII èªç‚ºæ˜¯å£å‘³é“
 		}
 	}
 
 	/**
-	 * [v] Also detct...... ­·¶¶¨ºÃä¦³¨Ò¤l¡I§ì¨ìªº¨º¦æ±N¸ê·½¥áµ¹¨ä¥L method ©Ò¨Ï¥Î¡A¦ı¨S¦³­n±N¸ê·½Ãö³¬¡A¦ı CCI
-	 * ¤´µM§ì¥X¨Ó¡C
+	 * [v] Also detct...... é¢¨é †é‚£é‚Šæœ‰ä¾‹å­ï¼æŠ“åˆ°çš„é‚£è¡Œå°‡è³‡æºä¸Ÿçµ¦å…¶ä»– method æ‰€ä½¿ç”¨ï¼Œä½†æ²’æœ‰è¦å°‡è³‡æºé—œé–‰ï¼Œä½† CCI
+	 * ä»ç„¶æŠ“å‡ºä¾†ã€‚
 	 */
 	private BufferedReader reader;
 
 	/**
-	 * ¤£¬OÃa¨ı¹Dªº¨Ò¤l CCI §ì±o¨ì CCII ¨S§ì¨ìªº¨Ò¤l
+	 * ä¸æ˜¯å£å‘³é“çš„ä¾‹å­ CCI æŠ“å¾—åˆ° CCII æ²’æŠ“åˆ°çš„ä¾‹å­
 	 * 
 	 * @throws IOException
 	 */
 	public void closeCCIINotCatch() throws IOException {
 		if (reader != null) {
 			
-			reader.close();// CCI »{¬°¬OÃa¨ı¹D
+			reader.close();// CCI èªç‚ºæ˜¯å£å‘³é“
 		}
 	}
 
@@ -108,32 +108,32 @@ public class CarelessCleanupAntExample {
 		private PrintStream ps;
 
 		/**
-		 * ¤£¬OÃa¨ı¹Dªº¨Ò¤l CCI §ì±o¨ì CCII ¨S§ì¨ìªº¨Ò¤l
+		 * ä¸æ˜¯å£å‘³é“çš„ä¾‹å­ CCI æŠ“å¾—åˆ° CCII æ²’æŠ“åˆ°çš„ä¾‹å­
 		 */
 		void completeWithUserDefinition() {
-			CarelessCleanupExampleForAntDefinition.close(ps);// CCI »{¬°¬OÃa¨ı¹D
+			CarelessCleanupExampleForAntDefinition.close(ps);// CCI èªç‚ºæ˜¯å£å‘³é“
 		}
 	}
 
 	/**
-	 * ¤£¬OÃa¨ı¹Dªº¨Ò¤l CCI §ì±o¨ì CCII ¨S§ì¨ìªº¨Ò¤l
+	 * ä¸æ˜¯å£å‘³é“çš„ä¾‹å­ CCI æŠ“å¾—åˆ° CCII æ²’æŠ“åˆ°çš„ä¾‹å­
 	 * 
 	 * @throws IOException
 	 */
 	public void setOutput(OutputStream out) throws IOException {
 		if (out != System.out) {
-			out.close();// CCI »{¬°¬OÃa¨ı¹D
+			out.close();// CCI èªç‚ºæ˜¯å£å‘³é“
 		}
 	}
 
 	private URLConnection conn;
 
 	/**
-	 * ¤£¬OÃa¨ı¹Dªº¨Ò¤l CCI §ì±o¨ì CCII ¨S§ì¨ìªº¨Ò¤l
+	 * ä¸æ˜¯å£å‘³é“çš„ä¾‹å­ CCI æŠ“å¾—åˆ° CCII æ²’æŠ“åˆ°çš„ä¾‹å­
 	 */
 	private synchronized void close() {
 		try {
-			CarelessCleanupExampleForAntDefinition.close(conn);// CCI »{¬°¬OÃa¨ı¹D
+			CarelessCleanupExampleForAntDefinition.close(conn);// CCI èªç‚ºæ˜¯å£å‘³é“
 		} finally {
 			conn = null;
 		}
@@ -142,7 +142,7 @@ public class CarelessCleanupAntExample {
 	private MessageDigest messageDigest = null;
 
 	/**
-	 * ¬OÃa¨ı¹Dªº¨Ò¤l CCI §ì±o¨ì CCII ¨S§ì¨ìªº¨Ò¤l
+	 * æ˜¯å£å‘³é“çš„ä¾‹å­ CCI æŠ“å¾—åˆ° CCII æ²’æŠ“åˆ°çš„ä¾‹å­
 	 */
 	public String getValue(File file) {
 		String checksum = null;
@@ -152,8 +152,8 @@ public class CarelessCleanupAntExample {
 				fis = new FileInputStream(file);
 				DigestInputStream dis = new DigestInputStream(fis,
 						messageDigest);
-				dis.close();// CCI »{¬°¬OÃa¨ı¹D
-				fis.close();// CCI »{¬°¬OÃa¨ı¹D
+				dis.close();// CCI èªç‚ºæ˜¯å£å‘³é“
+				fis.close();// CCI èªç‚ºæ˜¯å£å‘³é“
 			} catch (Exception e) {
 				return null;
 			}
@@ -166,15 +166,15 @@ public class CarelessCleanupAntExample {
 	private RandomAccessFile raf = null;
 
 	/**
-	 * ¬OÃa¨ı¹Dªº¨Ò¤l CCI
-	 * §ì±o¨ì CCII ¨S§ì¨ìªº¨Ò¤l
+	 * æ˜¯å£å‘³é“çš„ä¾‹å­ CCI
+	 * æŠ“å¾—åˆ° CCII æ²’æŠ“åˆ°çš„ä¾‹å­
 	 */
 	public CarelessCleanupAntExample(File file) throws IOException {
 		try {
 			raf = new RandomAccessFile(file, "rw");
 		} catch (IOException e) {
 			try {
-				raf.close();// CCI »{¬°¬OÃa¨ı¹D
+				raf.close();// CCI èªç‚ºæ˜¯å£å‘³é“
 			} catch (IOException inner) {
 			}
 		}

@@ -10,6 +10,6 @@ public class UserDefinedCarelessCleanupDog {
 	
 	@Robustness(value = { @RTag(level = 1, exception = java.lang.Exception.class) })
 	public void bite() throws Exception{
-		throw new Exception("´r§£§U•h");
+		throw new Exception("Âí¨‰∏ç‰∏ãÂéª");
 	}
 }

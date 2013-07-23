@@ -14,7 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class JDomUtilTest {
-	// ³o­ÓFixtureManager¬O±Mªù¥Î¨Ó»s³y´ú¸Õ¥Î±M®×ªº¡C¦bShiau¤§«eªº¾Çªø¼gªº¡C
+	// é€™å€‹FixtureManageræ˜¯å°ˆé–€ç”¨ä¾†è£½é€ æ¸¬è©¦ç”¨å°ˆæ¡ˆçš„ã€‚åœ¨Shiauä¹‹å‰çš„å­¸é•·å¯«çš„ã€‚
 	FixtureManager fm;
 	IType type;
 	private String root = "CodeSmellDetect";
@@ -61,7 +61,7 @@ public class JDomUtilTest {
 	}
 	
 	/**
-	 * ´ú¸ÕXMLÀÉ®×¤£¦s¦bªº±¡§Î
+	 * æ¸¬è©¦XMLæª”æ¡ˆä¸å­˜åœ¨çš„æƒ…å½¢
 	 */
 	@Test
 	public void testReadXMLFile_1() {
@@ -71,11 +71,11 @@ public class JDomUtilTest {
 	}
 	
 	/**
-	 * °²³]¤w¸g¦³¤@­ÓXMLÀÉ®×¦s¦b
+	 * å‡è¨­å·²ç¶“æœ‰ä¸€å€‹XMLæª”æ¡ˆå­˜åœ¨
 	 */
 	@Test
 	public void testReadXMLFile_2(){
-		// ¦Û¤v¥ı»s³y¤@­Óxml file
+		// è‡ªå·±å…ˆè£½é€ ä¸€å€‹xml file
 		Element elementRoot = new Element(root);
 		Document docJDOM = new Document(elementRoot);
 		String workpsace = JDomUtil.getWorkspace();

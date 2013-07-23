@@ -70,7 +70,7 @@ public class CarelessCleanUpRefactorTest {
 		javaFile2String = new JavaFileToString();
 		javaProjectMaker = new JavaProjectMaker(testProjectName);
 		javaProjectMaker.setJREDefaultContainer();
-		// ®Ú¾Ú´ú¸ÕÀÉ®×¼Ë¥»¤º®e«Ø¥ß·sªºÀÉ®×
+		// æ ¹æ“šæ¸¬è©¦æª”æ¡ˆæ¨£æœ¬å…§å®¹å»ºç«‹æ–°çš„æª”æ¡ˆ
 		javaFile2String.read(CarelessCleanupExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				CarelessCleanupExample.class.getPackage().getName(),
@@ -95,7 +95,7 @@ public class CarelessCleanUpRefactorTest {
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
-		/* ´ú¸Õ¨Ï¥ÎªÌ³]©wPattern®É­Ô¨Ï¥Î */
+		/* æ¸¬è©¦ä½¿ç”¨è€…è¨­å®šPatternæ™‚å€™ä½¿ç”¨ */
 		javaFile2String.read(UserDefinedCarelessCleanupWeather.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				UserDefinedCarelessCleanupWeather.class.getPackage().getName(),
@@ -131,7 +131,7 @@ public class CarelessCleanUpRefactorTest {
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// ³]©w­n³Q«Ø¥ßASTªºÀÉ®×
+		// è¨­å®šè¦è¢«å»ºç«‹ASTçš„æª”æ¡ˆ
 		parser.setSource(
 				JavaCore.createCompilationUnitFrom(
 						ResourcesPlugin.getWorkspace().
@@ -139,7 +139,7 @@ public class CarelessCleanUpRefactorTest {
 		parser.setResolveBindings(true);
 		
 		CreateSettings();
-		// ¨ú±oAST
+		// å–å¾—AST
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
 		
@@ -149,10 +149,10 @@ public class CarelessCleanUpRefactorTest {
 	@After
 	public void tearDown() throws Exception {
 		File xmlFile = new File(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		// ¦pªGxmlÀÉ®×¦s¦b¡A«h§R°£¤§
+		// å¦‚æœxmlæª”æ¡ˆå­˜åœ¨ï¼Œå‰‡åˆªé™¤ä¹‹
 		if(xmlFile.exists())
 			assertTrue(xmlFile.delete());
-		// §R°£±M®×
+		// åˆªé™¤å°ˆæ¡ˆ
 		javaProjectMaker.deleteProject();
 	}
 	
@@ -184,7 +184,7 @@ public class CarelessCleanUpRefactorTest {
 		assertEquals("CarelessCleanupExample.java (not open) [in ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup [in src [in CarelessCleanupExampleProject]]]", actOpenable.get(refactor).toString());
 		assertNotNull(actRoot.get(refactor));
 		assertEquals(	"/** \n" + 
-						" * ·|³QCarelessCleanupVisitor¦bfileOutputStream.close();¥[¤Wmark(¨â³B)\n" +
+						" * æœƒè¢«CarelessCleanupVisitoråœ¨fileOutputStream.close();åŠ ä¸Šmark(å…©è™•)\n" +
 						" * @param context\n" +
 						" * @param outputFile\n" +
 						" * @throws IOException\n" + 
@@ -216,7 +216,7 @@ public class CarelessCleanUpRefactorTest {
 		ASTNode node = refactor.getCurrentMethodNode();
 		assertEquals(ASTNode.METHOD_DECLARATION, node.getNodeType());
 		assertEquals(	"/** \n" + 
-						" * ·|³QCarelessCleanupVisitor¦bfileOutputStream.close();¥[¤Wmark(¨â³B)\n" +
+						" * æœƒè¢«CarelessCleanupVisitoråœ¨fileOutputStream.close();åŠ ä¸Šmark(å…©è™•)\n" +
 						" * @param context\n" +
 						" * @param outputFile\n" +
 						" * @throws IOException\n" + 
@@ -282,7 +282,7 @@ public class CarelessCleanUpRefactorTest {
 	}
 	
 	/**
-	 * setNewMethodModifierType©MsetNewMethodLogType¤@°_´ú
+	 * setNewMethodModifierTypeå’ŒsetNewMethodLogTypeä¸€èµ·æ¸¬
 	 * @throws Exception
 	 */
 	@Test
@@ -381,7 +381,7 @@ public class CarelessCleanUpRefactorTest {
 		// if statement with size > 1
 		assertEquals(	"<FATALERROR\n" +
 						"\t\n" +
-						"FATALERROR: §PÂ_¦¡¤º¦³¨ä¥¦ªºµ{¦¡½X\n" +
+						"FATALERROR: åˆ¤æ–·å¼å…§æœ‰å…¶å®ƒçš„ç¨‹å¼ç¢¼\n" +
 						"Context: <Unspecified context>\n" +
 						"code: none\n" +
 						"Data: null\n>", refactor.checkInitialConditions(null).toString());
@@ -487,7 +487,7 @@ public class CarelessCleanUpRefactorTest {
 		MethodDeclaration md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, nameOfWillBeTestedMethod);
 		TryStatement tryStatement = ASTNodeFinder.getTryStatementNodeListByMethodDeclarationName(compilationUnit, nameOfWillBeTestedMethod).get(0);
 		/**
-		 * Ãö³¬¦ê¬yªºµ{¦¡½Xstartposition¬O1580
+		 * é—œé–‰ä¸²æµçš„ç¨‹å¼ç¢¼startpositionæ˜¯1580
 		 */
 		MarkerInfo marker = new MarkerInfo(null, null, null, 1580, 54, null);
 		Field smellMessage = CarelessCleanUpRefactor.class.getDeclaredField("smellMessage");
@@ -664,7 +664,7 @@ public class CarelessCleanUpRefactorTest {
 	}
 	
 	/**
-	 * FIXME - ¥¼§¹¥ş¼ÒÀÀ¥¿½T
+	 * FIXME - æœªå®Œå…¨æ¨¡æ“¬æ­£ç¢º
 	 * @throws Exception
 	 */
 	@Test
@@ -686,7 +686,7 @@ public class CarelessCleanUpRefactorTest {
 		assertEquals("import ntut.csie.robusta.agile.exception.RTag;\n", imports.get(7).toString());
 		assertEquals("import ntut.csie.robusta.agile.exception.Robustness;\n", imports.get(8).toString());
 		
-		// ¼ÒÀÀ¥[¤J¤@­Ómethod¡A¦Ó»İ­nimport­ì¥»¨S¦³ªºpackage
+		// æ¨¡æ“¬åŠ å…¥ä¸€å€‹methodï¼Œè€Œéœ€è¦importåŸæœ¬æ²’æœ‰çš„package
 		ImportDeclaration imp = compilationUnit.getAST().newImportDeclaration();
 		imp.setName(compilationUnit.getAST().newName("java.io.IOError"));
 		compilationUnit.imports().add(imp);
@@ -772,7 +772,7 @@ public class CarelessCleanUpRefactorTest {
 		
 		// check precondition
 		assertEquals(	"/** \n" +
-						" * ·|³QCarelessCleanupVisitor¦bfileOutputStream.close();¥[¤Wmark\n" +
+						" * æœƒè¢«CarelessCleanupVisitoråœ¨fileOutputStream.close();åŠ ä¸Šmark\n" +
 						" * @param context\n" +
 						" * @param outputFile\n" +
 						" */\n" +
@@ -798,7 +798,7 @@ public class CarelessCleanUpRefactorTest {
 		addMethodInFinally.invoke(refactor, md.getAST(), tryStatement.getFinally());
 		// check postcondition
 		assertEquals(	"/** \n" +
-				" * ·|³QCarelessCleanupVisitor¦bfileOutputStream.close();¥[¤Wmark\n" +
+				" * æœƒè¢«CarelessCleanupVisitoråœ¨fileOutputStream.close();åŠ ä¸Šmark\n" +
 				" * @param context\n" +
 				" * @param outputFile\n" +
 				" */\n" +

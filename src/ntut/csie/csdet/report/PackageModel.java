@@ -4,22 +4,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * ¦s¨úPackage¤ºªºReport¬ÛÃö¸ê°T
+ * å­˜å–Packageå…§çš„Reportç›¸é—œè³‡è¨Š
  * @author Shiau
  */
 public class PackageModel {
-	//¦s¨úPackage¤W¤@¼hªº¸ê®Æ§¨¦WºÙ(ex:src¡Btest)
+	//å­˜å–Packageä¸Šä¸€å±¤çš„è³‡æ–™å¤¾åç¨±(ex:srcã€test)
 	private String folderName = "";
-	//¦s¨úPackageªº¦WºÙ
+	//å­˜å–Packageçš„åç¨±
 	private String packageName = "";
-	//¦s¨úClassModel
+	//å­˜å–ClassModel
 	private List<ClassModel> classModel = new ArrayList<ClassModel>();
-	//¦s¨úLOC¼Æ¥Ø
+	//å­˜å–LOCæ•¸ç›®
 	private int totalLine = 0;
 
-	///¦s¨úPackageªº¦WºÙ///
+	///å­˜å–Packageçš„åç¨±///
 	public String getPackageName() {
-		//­Y¨S¦³¸ê®Æ§¨¦WºÙ¡A«hª½±µÅã¥ÜPackage¦WºÙ
+		//è‹¥æ²’æœ‰è³‡æ–™å¤¾åç¨±ï¼Œå‰‡ç›´æ¥é¡¯ç¤ºPackageåç¨±
 		if (folderName != "")
 			return folderName + "/" + packageName;
 		else
@@ -28,7 +28,7 @@ public class PackageModel {
 	public void setPackageName(String packageName) {
 		this.packageName = packageName;
 	}
-	///¦s¨úFolderªº¦WºÙ///
+	///å­˜å–Folderçš„åç¨±///
 	public String getFolderName() {
 		return folderName;
 	}
@@ -36,12 +36,12 @@ public class PackageModel {
 		this.folderName = folderName;
 	}
 	
-	///·s¼WClass¸ê®Æ///
+	///æ–°å¢Classè³‡æ–™///
 	public void addClassModel(ClassModel data) {
 		classModel.add(data);
 	}
 	
-	///¨ú±oPackage¤ºªºClassMethod///
+	///å–å¾—Packageå…§çš„ClassMethod///
 	public int getClassSize() {
 		return classModel.size();
 	}
@@ -52,7 +52,7 @@ public class PackageModel {
 			return classModel.get(i);
 	}
 		
-	///¨ú±o¦¹PackageªºSmell¼Æ¶q///
+	///å–å¾—æ­¤Packageçš„Smellæ•¸é‡///
 	public int getIgnoreSize() {
 		int ignoreSize = 0;
 		for (ClassModel cm : classModel)
@@ -107,7 +107,7 @@ public class PackageModel {
 			   getCarelessCleanUpSize() + getOverLoggingSize() + getOverwrittenSize();
 	}
 	
-	//¦s¨úµ{¦¡ªºLOC
+	//å­˜å–ç¨‹å¼çš„LOC
 	public int getTotalLine() {
 		return totalLine;
 	}

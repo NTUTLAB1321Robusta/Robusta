@@ -9,13 +9,13 @@ import org.eclipse.ui.PartInitException;
 public class RLUtils {
 
 	/**
-	 * ¦r¦êÂà¼Æ¦r
+	 * å­—ä¸²è½‰æ•¸å­—
 	 * 
 	 * @param str
-	 *            ¦r¦ê
+	 *            å­—ä¸²
 	 * @param def
-	 *            ¹w³]­È(·íÂà´«¤£¦¨¥\®É¡A·|¦^¶Ç¹w³]­È)
-	 * @return ¼Æ¦r
+	 *            é è¨­å€¼(ç•¶è½‰æ›ä¸æˆåŠŸæ™‚ï¼Œæœƒå›å‚³é è¨­å€¼)
+	 * @return æ•¸å­—
 	 */
 	public static int str2int(String str, int def) {
 		if (str == null) {

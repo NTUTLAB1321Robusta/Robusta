@@ -26,70 +26,70 @@ import org.eclipse.jdt.launching.JavaRuntime;
 import org.osgi.framework.Bundle;
 
 /**
- * ²£¥Í±M®×¥H¤Î±M®×¤¤ªºjavaÀÉ¡C
- * step 1. «Ø¥ß¿é¥X¸ê®Æ§¨{@link #createOutputFolder()}
- * step 2. ³]©wJRE{@link #setJREDefaultContainer()}
- * step 3. ª½±µ²£¥ÍjavaÀÉ(@link {@link #createJavaFile(String, String, String)}
+ * ç”¢ç”Ÿå°ˆæ¡ˆä»¥åŠå°ˆæ¡ˆä¸­çš„javaæª”ã€‚
+ * step 1. å»ºç«‹è¼¸å‡ºè³‡æ–™å¤¾{@link #createOutputFolder()}
+ * step 2. è¨­å®šJRE{@link #setJREDefaultContainer()}
+ * step 3. ç›´æ¥ç”¢ç”Ÿjavaæª”(@link {@link #createJavaFile(String, String, String)}
  * @author charles
  *
  */
 public class JavaProjectMaker {
-	/** ­n³Q²£¥Íªº±M®× */
+	/** è¦è¢«ç”¢ç”Ÿçš„å°ˆæ¡ˆ */
 	IProject _project;
-	/** ·Q³Q²£¥Íªº±M®×¬OJava Project */
+	/** æƒ³è¢«ç”¢ç”Ÿçš„å°ˆæ¡ˆæ˜¯Java Project */
 	IJavaProject _javaproject;
-	/** functional codeªº¸ê®Æ§¨¦WºÙ */
+	/** functional codeçš„è³‡æ–™å¤¾åç¨± */
 	String sourceCodeFolderName;
-	/** test codeªº¸ê®Æ§¨¦WºÙ */
+	/** test codeçš„è³‡æ–™å¤¾åç¨± */
 	String testCodeFolderName;
-	/** ±M®×¦WºÙ */
+	/** å°ˆæ¡ˆåç¨± */
 	String projectName;
-	/** Àx¦sRL.jarªº¸ô®| */
+	/** å„²å­˜RL.jarçš„è·¯å¾‘ */
 	String libraryPath;
 	
-	/** ¦s©ñfunctional codeªº¸ê®Æ§¨*/
+	/** å­˜æ”¾functional codeçš„è³‡æ–™å¤¾*/
 	public static final int FUNTIONAL_CODE_FOLDER = 16;
-	/** ¦s©ñunit test codeªº¸ê®Æ§¨ */
+	/** å­˜æ”¾unit test codeçš„è³‡æ–™å¤¾ */
 	public static final int UNITTEST_CODE_FOLDER = 17;
-	/** ©w¸q±j°·«×µ¥¯Åªºclass¦ì©ó­ş­ÓPackage */
+	/** å®šç¾©å¼·å¥åº¦ç­‰ç´šçš„classä½æ–¼å“ªå€‹Package */
 	public static final String RL_PACKAGE_NAME = "ntut.csie.robusta.agile.exception";
 	
-	/** ±M®×¦s©ñJarÀÉªº¸ê®Æ§¨¦WºÙ */
+	/** å°ˆæ¡ˆå­˜æ”¾Jaræª”çš„è³‡æ–™å¤¾åç¨± */
 	public static final String FOLDERNAME_LIB_JAR = "lib";
-	/** ±M®×¦s©ñClassÀÉªº¸ê®Æ§¨¦WºÙ */
+	/** å°ˆæ¡ˆå­˜æ”¾Classæª”çš„è³‡æ–™å¤¾åç¨± */
 	public static final String FOLDERNAME_BIN_CLASS = "bin";
-	/** ´ú¸Õµ{¦¡½X¸ê®Æ§¨ªº¦WºÙ */
+	/** æ¸¬è©¦ç¨‹å¼ç¢¼è³‡æ–™å¤¾çš„åç¨± */
 	public static final String FOLDERNAME_TEST = "test";
-	/** ¥\¯à©Êµ{¦¡½Xªº¸ê®Æ§¨¦WºÙ */
+	/** åŠŸèƒ½æ€§ç¨‹å¼ç¢¼çš„è³‡æ–™å¤¾åç¨± */
 	public static final String FOLDERNAME_SOURCE = "src";
-	/** ¨ú±oRL.jarªº¸ô®| */
+	/** å–å¾—RL.jarçš„è·¯å¾‘ */
 	public static final String RL_LIBRARY_PATH = FOLDERNAME_LIB_JAR
 			+ "/ntut.csie.robusta.agile.exception_1.0.0.jar";
-	/** java °ÆÀÉ¦W */
+	/** java å‰¯æª”å */
 	public static final String JAVA_FILE_EXTENSION = ".java";
 	/**
-	 * ²£¥Í¤@­ÓJava±M®×¡C
-	 * ¥Îªk¡G<br />
-	 * 1. new JavaProjectMaker(String)«Øºc<br />
-	 * 2. setJREDefaultContainer()³]©wJRE<br />
-	 * 3. addAgileExceptionClasses() ²£¥ÍRL.jar<br />
-	 * 4. addJarFromXXXToBuildPath(String)±N«ü©wªºjarÀÉ¥[¤J¦ÜReferenced Libraries<br />
-	 * 5. createJavaFile(String, String, String)²£¥ÍjavaÀÉ<br />
-	 * ¨ä¥LÃö©ó²£¥Í¸ê®Æ§¨¡A²£¥Ípackageªº¤èªk¡A³£¥i¥H¤£¥Î©I¥s¡C
+	 * ç”¢ç”Ÿä¸€å€‹Javaå°ˆæ¡ˆã€‚
+	 * ç”¨æ³•ï¼š<br />
+	 * 1. new JavaProjectMaker(String)å»ºæ§‹<br />
+	 * 2. setJREDefaultContainer()è¨­å®šJRE<br />
+	 * 3. addAgileExceptionClasses() ç”¢ç”ŸRL.jar<br />
+	 * 4. addJarFromXXXToBuildPath(String)å°‡æŒ‡å®šçš„jaræª”åŠ å…¥è‡³Referenced Libraries<br />
+	 * 5. createJavaFile(String, String, String)ç”¢ç”Ÿjavaæª”<br />
+	 * å…¶ä»–é—œæ–¼ç”¢ç”Ÿè³‡æ–™å¤¾ï¼Œç”¢ç”Ÿpackageçš„æ–¹æ³•ï¼Œéƒ½å¯ä»¥ä¸ç”¨å‘¼å«ã€‚
 	 * @param projectName
 	 * @throws CoreException
 	 */
 	public JavaProjectMaker(String projectName) throws CoreException {
-		// ¨ú±oworkspace
+		// å–å¾—workspace
 		IWorkspaceRoot workspace = ResourcesPlugin.getWorkspace().getRoot();
-		// ³]©w±M®×¦WºÙ
+		// è¨­å®šå°ˆæ¡ˆåç¨±
 		_project = workspace.getProject(projectName);
-		// ²£¥Í.project
+		// ç”¢ç”Ÿ.project
 		_project.create(null);
-		// ±N±M®×¥´¶}(¹w³]¦bworkspace¤¤¬OÃö³¬)
+		// å°‡å°ˆæ¡ˆæ‰“é–‹(é è¨­åœ¨workspaceä¸­æ˜¯é—œé–‰)
 		_project.open(null);
 		_javaproject = JavaCore.create(_project);
-		// ²£¥Í.classpath
+		// ç”¢ç”Ÿ.classpath
 		IProjectDescription projectDescription = _project.getDescription();
 		projectDescription.setNatureIds(new String[] { JavaCore.NATURE_ID });
 		_project.setDescription(projectDescription, null);
@@ -97,14 +97,14 @@ public class JavaProjectMaker {
 		
 		this.projectName = projectName; 
 		
-		/* ¹w³]¸ê®Æ§¨¬Osrc & test */
+		/* é è¨­è³‡æ–™å¤¾æ˜¯src & test */
 		sourceCodeFolderName = FOLDERNAME_SOURCE;
 		testCodeFolderName = FOLDERNAME_TEST;
 		libraryPath = _project.getLocation().toFile().getAbsolutePath() + "/" + RL_LIBRARY_PATH;
 	}
 	
 	/**
-	 * ²£¥Í¸ê®Æ§¨
+	 * ç”¢ç”Ÿè³‡æ–™å¤¾
 	 * @param folderName
 	 * @throws CoreException
 	 */
@@ -114,7 +114,7 @@ public class JavaProjectMaker {
 	}
 
 	/**
-	 * µ¥»ù©ócreateOutputFolder("bin")
+	 * ç­‰åƒ¹æ–¼createOutputFolder("bin")
 	 * @throws CoreException
 	 */
 	public void createOutputFolder() throws CoreException {
@@ -122,7 +122,7 @@ public class JavaProjectMaker {
 	}
 	
 	/**
-	 * «Ø¥ßbinary folder¡A³q±`´N¬O¦s©ñ.classÀÉªº¸ê®Æ§¨¡C
+	 * å»ºç«‹binary folderï¼Œé€šå¸¸å°±æ˜¯å­˜æ”¾.classæª”çš„è³‡æ–™å¤¾ã€‚
 	 * @param folderName
 	 * @throws CoreException
 	 */
@@ -134,7 +134,7 @@ public class JavaProjectMaker {
 	}
 	
 	/**
-	 * µ¥»ù©ócreateSourceFolder(&quot;src&quot;);
+	 * ç­‰åƒ¹æ–¼createSourceFolder(&quot;src&quot;);
 	 * @throws CoreException
 	 */
 	public void createSourceFolder() throws CoreException {
@@ -142,23 +142,23 @@ public class JavaProjectMaker {
 	}
 	
 	/**
-	 * ¦b±M®×¤¤²£¥Í¸ê®Æ§¨ªº®É­Ô¡A¥i¥H³]©w¸ê®Æ§¨¬°Source(source code folder)¡C
-	 * ³o­Ómethod¡A´N¬O¦b·s¼W¤@­Ósource code folder¡C
-	 * @param folderName ¨Ï¥ÎªÌ·Q­n²£¥Íªº¸ê®Æ§¨¦WºÙ¡C¦pªG¶Ç¤Jnull¡A«h¹w³]¸ê®Æ§¨¦W¦r¬°src¡C
-	 * @param folderType ¨Ï¥ÎªÌ·Q­n²£¥Íªº¸ê®Æ§¨¬O¥Î¨Ó¦s©ñfunctional code©Î¬Otest code¡A¥i¥H¦b³o¸Ì³]©wtype¡C
+	 * åœ¨å°ˆæ¡ˆä¸­ç”¢ç”Ÿè³‡æ–™å¤¾çš„æ™‚å€™ï¼Œå¯ä»¥è¨­å®šè³‡æ–™å¤¾ç‚ºSource(source code folder)ã€‚
+	 * é€™å€‹methodï¼Œå°±æ˜¯åœ¨æ–°å¢ä¸€å€‹source code folderã€‚
+	 * @param folderName ä½¿ç”¨è€…æƒ³è¦ç”¢ç”Ÿçš„è³‡æ–™å¤¾åç¨±ã€‚å¦‚æœå‚³å…¥nullï¼Œå‰‡é è¨­è³‡æ–™å¤¾åå­—ç‚ºsrcã€‚
+	 * @param folderType ä½¿ç”¨è€…æƒ³è¦ç”¢ç”Ÿçš„è³‡æ–™å¤¾æ˜¯ç”¨ä¾†å­˜æ”¾functional codeæˆ–æ˜¯test codeï¼Œå¯ä»¥åœ¨é€™è£¡è¨­å®štypeã€‚
 	 * @throws CoreException
 	 */
 	public void createSourceFolder(String folderName, int folderType) throws CoreException {
 		IFolder sourceFolder = _project.getFolder(folderName);
 		sourceFolder.create(false, true, null);
 		IPackageFragmentRoot root = _javaproject.getPackageFragmentRoot(sourceFolder);
-		// .classÀÉ®×¤¤¡A¤w¸g¦s¦bªº¤º®e
+		// .classæª”æ¡ˆä¸­ï¼Œå·²ç¶“å­˜åœ¨çš„å…§å®¹
 		IClasspathEntry[] existedEntries = _javaproject.getRawClasspath();
-		// ·Ç³Æ¼g¤J.classÀÉªº¤º®e
+		// æº–å‚™å¯«å…¥.classæª”çš„å…§å®¹
 		IClasspathEntry[] extendedEntries = new IClasspathEntry[existedEntries.length + 1];
-		// §âÂÂªºentry½Æ»s°_¨Ó
+		// æŠŠèˆŠçš„entryè¤‡è£½èµ·ä¾†
 		System.arraycopy(existedEntries, 0, extendedEntries, 0, existedEntries.length);
-		// ªş¥[¤W¨Ï¥ÎªÌ«ü©wªºsource¸ê®Æ§¨
+		// é™„åŠ ä¸Šä½¿ç”¨è€…æŒ‡å®šçš„sourceè³‡æ–™å¤¾
 		extendedEntries[existedEntries.length] = JavaCore.newSourceEntry(root.getPath());
 		_javaproject.setRawClasspath(extendedEntries, null);
 		
@@ -166,7 +166,7 @@ public class JavaProjectMaker {
 	}
 
 	/**
-	 * ¦pªG¨Ï¥ÎªÌ²£¥Íªº¸ê®Æ§¨¬O¦s©ñsource code/test codeªº¸ê®Æ§¨¡A¦W¦r·|³Q°O¿ı°_¨Ó
+	 * å¦‚æœä½¿ç”¨è€…ç”¢ç”Ÿçš„è³‡æ–™å¤¾æ˜¯å­˜æ”¾source code/test codeçš„è³‡æ–™å¤¾ï¼Œåå­—æœƒè¢«è¨˜éŒ„èµ·ä¾†
 	 * @param folderName
 	 * @param folderType
 	 */
@@ -179,7 +179,7 @@ public class JavaProjectMaker {
 	}
 
 	/**
-	 * ³]©wCompile¥ÎªºJRE(¿ï¾Ü¹w³]ªºJRE)¡C
+	 * è¨­å®šCompileç”¨çš„JRE(é¸æ“‡é è¨­çš„JRE)ã€‚
 	 * @throws JavaModelException
 	 */
 	public void setJREDefaultContainer() throws JavaModelException {
@@ -191,12 +191,12 @@ public class JavaProjectMaker {
 	}
 	
 	/**
-	 * ²£¥Ípackage¡C¥i¥Hª½±µ¥Îa.b.c²£¥Í¦h¼h¸ê®Æ§¨¡A§Ya¸ê®Æ§¨¤U­±¦³b¸ê®Æ§¨¡AµM«áb¸ê®Æ§¨¥]§tc¸ê®Æ§¨¡C
-	 * @param packageName ¥i¥Hª½±µ¿é¤Ja.b.cªº®æ¦¡¡C
+	 * ç”¢ç”Ÿpackageã€‚å¯ä»¥ç›´æ¥ç”¨a.b.cç”¢ç”Ÿå¤šå±¤è³‡æ–™å¤¾ï¼Œå³aè³‡æ–™å¤¾ä¸‹é¢æœ‰bè³‡æ–™å¤¾ï¼Œç„¶å¾Œbè³‡æ–™å¤¾åŒ…å«cè³‡æ–™å¤¾ã€‚
+	 * @param packageName å¯ä»¥ç›´æ¥è¼¸å…¥a.b.cçš„æ ¼å¼ã€‚
 	 * @throws CoreException 
 	 */
 	public IPackageFragment createPackage(String packageName) throws CoreException {
-		// ¦pªGsource¸ê®Æ§¨¤£¦s¦b¡A´N­n¥ı²£¥Í¤@­Ó
+		// å¦‚æœsourceè³‡æ–™å¤¾ä¸å­˜åœ¨ï¼Œå°±è¦å…ˆç”¢ç”Ÿä¸€å€‹
 		IFolder sourceFolder = _project.getFolder(sourceCodeFolderName);
 		if(!sourceFolder.exists()) {
 			createSourceFolder();
@@ -206,10 +206,10 @@ public class JavaProjectMaker {
 	}
 	
 	/**
-	 * ²£¥Í¤@­ÓjavaÀÉ(class)¡C
-	 * @param packageName §A·Q§âjavaÀÉ©ñ¦b­ş­Ópackage¤U­±¡C¥i¥Hª½±µ¿é¤Ja.b.c.dªº®æ¦¡¡C
-	 * @param className ³o­ÓjavaÀÉªºÀÉ¦W(class¦W¦r)¡C
-	 * @param content javaÀÉªº¤º®e¡C
+	 * ç”¢ç”Ÿä¸€å€‹javaæª”(class)ã€‚
+	 * @param packageName ä½ æƒ³æŠŠjavaæª”æ”¾åœ¨å“ªå€‹packageä¸‹é¢ã€‚å¯ä»¥ç›´æ¥è¼¸å…¥a.b.c.dçš„æ ¼å¼ã€‚
+	 * @param className é€™å€‹javaæª”çš„æª”å(classåå­—)ã€‚
+	 * @param content javaæª”çš„å…§å®¹ã€‚
 	 * @throws CoreException 
 	 */
 	public void createJavaFile(String packageName, String className, String content) throws CoreException {
@@ -217,35 +217,35 @@ public class JavaProjectMaker {
 	}
 	
 	/**
-	 * ²£¥Í¤@­ÓJUnit´ú¸Õ½d¨ÒÀÉ(°ÆÀÉ¦W.java)¡C
-	 * @param packageName §A·Q§âjavaÀÉ©ñ¦b­ş­Ópackage¤U­±¡C¥i¥Hª½±µ¿é¤Ja.b.c.dªº®æ¦¡¡C
-	 * @param className ³o­Ótest caseÀÉªºÀÉ¦W(xxx.java)¡C
-	 * @param content test caseÀÉªº¤º®e¡C
+	 * ç”¢ç”Ÿä¸€å€‹JUnitæ¸¬è©¦ç¯„ä¾‹æª”(å‰¯æª”å.java)ã€‚
+	 * @param packageName ä½ æƒ³æŠŠjavaæª”æ”¾åœ¨å“ªå€‹packageä¸‹é¢ã€‚å¯ä»¥ç›´æ¥è¼¸å…¥a.b.c.dçš„æ ¼å¼ã€‚
+	 * @param className é€™å€‹test caseæª”çš„æª”å(xxx.java)ã€‚
+	 * @param content test caseæª”çš„å…§å®¹ã€‚
 	 * @throws CoreException 
 	 */
 	public void createTestCase(String packageName, String className, String content) throws CoreException {
-		// ²£¥Í¤@­ÓJUnit test case
+		// ç”¢ç”Ÿä¸€å€‹JUnit test case
 		createDotJavaFile(packageName, className, content, UNITTEST_CODE_FOLDER);
 	}
 
 	/**
-	 * ²£¥Í¤@­Ó°ÆÀÉ¦W¬°javaªºÀÉ®×
+	 * ç”¢ç”Ÿä¸€å€‹å‰¯æª”åç‚ºjavaçš„æª”æ¡ˆ
 	 * 
-	 * @param packageName ¥i¥Hª½±µ¿é¤Ja.b.c.dªº®æ¦¡
-	 * @param className ¤]¬OjavaÀÉ¦W
-	 * @param content javaÀÉ®×¤º®e
+	 * @param packageName å¯ä»¥ç›´æ¥è¼¸å…¥a.b.c.dçš„æ ¼å¼
+	 * @param className ä¹Ÿæ˜¯javaæª”å
+	 * @param content javaæª”æ¡ˆå…§å®¹
 	 * @param type
-	 *            FUNTIONAL_CODE | UNITTEST_CODE <br />(½Ğ¥Î
-	 *            {@link JavaProjectMaker#FUNTIONAL_CODE_FOLDER}©M
-	 *            {@link JavaProjectMaker#UNITTEST_CODE_FOLDER}«ü©w)
+	 *            FUNTIONAL_CODE | UNITTEST_CODE <br />(è«‹ç”¨
+	 *            {@link JavaProjectMaker#FUNTIONAL_CODE_FOLDER}å’Œ
+	 *            {@link JavaProjectMaker#UNITTEST_CODE_FOLDER}æŒ‡å®š)
 	 * @throws CoreException
 	 */
 	private void createDotJavaFile(String packageName, String className, String content, int type) throws CoreException {
 		String folderName = "";
-		// ©ñ¦bsrc¸ê®Æ§¨
+		// æ”¾åœ¨srcè³‡æ–™å¤¾
 		if(type == FUNTIONAL_CODE_FOLDER) {
 			folderName = sourceCodeFolderName;
-		// ©ñ¦btest¸ê®Æ§¨
+		// æ”¾åœ¨testè³‡æ–™å¤¾
 		} else if (type == UNITTEST_CODE_FOLDER) {
 			folderName = testCodeFolderName;
 		}
@@ -258,32 +258,32 @@ public class JavaProjectMaker {
 			ipf = root.getPackageFragment(packageName);
 		}
 		
-		/* §PÂ_¶Ç¶i¨ÓªºÀÉ¦W¦³¨S¦³°ÆÀÉ¦W(.java)¡A¦pªG¨S¦³´NÀ°¥L¥[¤W¥h */
+		/* åˆ¤æ–·å‚³é€²ä¾†çš„æª”åæœ‰æ²’æœ‰å‰¯æª”å(.java)ï¼Œå¦‚æœæ²’æœ‰å°±å¹«ä»–åŠ ä¸Šå» */
 		if(!className.endsWith(JAVA_FILE_EXTENSION)) {
 			className += JAVA_FILE_EXTENSION;
 		}
 		
-		// ²£¥ÍjavaÀÉ
+		// ç”¢ç”Ÿjavaæª”
 		ipf.createCompilationUnit(className, content, false, null);
 	}
 	
 	/**
-	 * ±qPlug-in±M®×¤¤ªºjarÀÉ¡A¥[¤J¬°´ú¸Õ±M®×ªºReferenced Libraries
-	 * @param jarFilePath jarÀÉ¦b±M®×¤Uªº¬Û¹ï¸ô®|
+	 * å¾Plug-inå°ˆæ¡ˆä¸­çš„jaræª”ï¼ŒåŠ å…¥ç‚ºæ¸¬è©¦å°ˆæ¡ˆçš„Referenced Libraries
+	 * @param jarFilePath jaræª”åœ¨å°ˆæ¡ˆä¸‹çš„ç›¸å°è·¯å¾‘
 	 * @throws IOException 
 	 * @throws JavaModelException 
 	 */
 	public void addJarFromProjectToBuildPath(String jarFilePath) throws IOException, JavaModelException {
-		// jarÀÉªº¸ô®|
+		// jaræª”çš„è·¯å¾‘
 		Path jarPath = null;
 		
-		/* ¥ÎBundle©MPLUGIN-ID§ä¥XjarÀÉ¸ô®| */
+		/* ç”¨Bundleå’ŒPLUGIN-IDæ‰¾å‡ºjaræª”è·¯å¾‘ */
 		Bundle bundle = Platform.getBundle(RLEHTPlugin.PLUGIN_ID);
 		URL jarURL = bundle.getEntry(jarFilePath);
 		URL localJarURL = FileLocator.toFileURL(jarURL);
 		jarPath = new Path(localJarURL.getPath());
 		
-		/* ±N§ä¥X¨ÓªºjarÀÉ¸ô®|¡A¼g¤J.classpath */
+		/* å°‡æ‰¾å‡ºä¾†çš„jaræª”è·¯å¾‘ï¼Œå¯«å…¥.classpath */
 		IClasspathEntry[] existedEntries = _javaproject.getRawClasspath();
 		IClasspathEntry[] extendedEntries = new IClasspathEntry[existedEntries.length + 1];
 		System.arraycopy(existedEntries, 0, extendedEntries, 0, existedEntries.length);
@@ -292,17 +292,17 @@ public class JavaProjectMaker {
 	}
 	
 	/**
-	 * ±q´ú¸Õ±M®×¤¤ªºjarÀÉ¡A¥[¤J¬°´ú¸Õ±M®×ªºReferenced Libraries
-	 * @param jarFilePath jarÀÉ¦b±M®×¤Uªº¬Û¹ï¸ô®|
+	 * å¾æ¸¬è©¦å°ˆæ¡ˆä¸­çš„jaræª”ï¼ŒåŠ å…¥ç‚ºæ¸¬è©¦å°ˆæ¡ˆçš„Referenced Libraries
+	 * @param jarFilePath jaræª”åœ¨å°ˆæ¡ˆä¸‹çš„ç›¸å°è·¯å¾‘
 	 * @throws IOException 
 	 * @throws JavaModelException 
 	 */
 	public void addJarFromTestProjectToBuildPath(String jarFilePath) throws IOException, JavaModelException {
 		File libFile = new File(_project.getLocation().toFile().getAbsolutePath() + jarFilePath);
-		// jarÀÉªº¸ô®|
+		// jaræª”çš„è·¯å¾‘
 		Path jarPath = new Path(libFile.getPath());
 		
-		/* ±N§ä¥X¨ÓªºjarÀÉ¸ô®|¡A¼g¤J.classpath */
+		/* å°‡æ‰¾å‡ºä¾†çš„jaræª”è·¯å¾‘ï¼Œå¯«å…¥.classpath */
 		IClasspathEntry[] existedEntries = _javaproject.getRawClasspath();
 		IClasspathEntry[] extendedEntries = new IClasspathEntry[existedEntries.length + 1];
 		System.arraycopy(existedEntries, 0, extendedEntries, 0, existedEntries.length);
@@ -312,9 +312,9 @@ public class JavaProjectMaker {
 	}
 	
 	/**
-	 * ±N©w¸q±j°·«×µ¥¯Åµù°OªºClassÀÉ¡A¥´¥]¦¨Jar¨Ã©ñ¨ì«İ´ú±M®×ªºlib¸ê®Æ§¨¤¤
-	 * @param libFoldername ¦s©ñ.jarÀÉªº¸ê®Æ§¨
-	 * @param binFoldername ¦s©ñ.classÀÉªº¸ê®Æ§¨
+	 * å°‡å®šç¾©å¼·å¥åº¦ç­‰ç´šè¨»è¨˜çš„Classæª”ï¼Œæ‰“åŒ…æˆJarä¸¦æ”¾åˆ°å¾…æ¸¬å°ˆæ¡ˆçš„libè³‡æ–™å¤¾ä¸­
+	 * @param libFoldername å­˜æ”¾.jaræª”çš„è³‡æ–™å¤¾
+	 * @param binFoldername å­˜æ”¾.classæª”çš„è³‡æ–™å¤¾
 	 * @throws CoreException
 	 */
 	public void packAgileExceptionClasses2JarIntoLibFolder(String libFoldername, String binFoldername) throws CoreException {
@@ -325,7 +325,7 @@ public class JavaProjectMaker {
 	}
 	
 	/**
-	 * §R°£¥Ñ«Øºc¤¸«Ø¥ßªº±M®×
+	 * åˆªé™¤ç”±å»ºæ§‹å…ƒå»ºç«‹çš„å°ˆæ¡ˆ
 	 * @throws CoreException 
 	 */
 	public synchronized void deleteProject() throws CoreException {
@@ -333,7 +333,7 @@ public class JavaProjectMaker {
     }
 	
 	/**
-	 * ¨ú±o±M®×¦WºÙ
+	 * å–å¾—å°ˆæ¡ˆåç¨±
 	 * @return projectName
 	 */
 	public String getProjectName() {
