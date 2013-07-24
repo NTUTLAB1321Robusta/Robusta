@@ -4,8 +4,8 @@ import ntut.csie.csdet.data.CSMessageTest;
 import ntut.csie.csdet.data.MarkerInfoTest;
 import ntut.csie.csdet.preference.SmellSettingsTest;
 import ntut.csie.csdet.report.ClassModelTest;
-import ntut.csie.csdet.views.CarelessCleanUpPageTest;
 import ntut.csie.jdt.util.ClazzTest;
+
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
@@ -17,8 +17,6 @@ import org.junit.runners.Suite;
 	SmellSettingsTest.class,
 
 	ClassModelTest.class,
-	
-	CarelessCleanUpPageTest.class,
 	
 	ClazzTest.class
 })

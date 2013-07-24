@@ -29,7 +29,7 @@ public class CarelessCleanupVisitor3Test {
 	JavaFileToString javaFile2String;
 	JavaProjectMaker javaProjectMaker;
 	CompilationUnit compilationUnit;
-	CarelessCleanupVisitor2 carelessCleanupVisitor;
+	CarelessCleanupVisitor carelessCleanupVisitor;
 	SmellSettings smellSettings;
 	
 	@Before
@@ -74,7 +74,7 @@ public class CarelessCleanupVisitor3Test {
 		// 取得AST
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
-		carelessCleanupVisitor = new CarelessCleanupVisitor2(compilationUnit);
+		carelessCleanupVisitor = new CarelessCleanupVisitor(compilationUnit);
 	}
 
 	@After

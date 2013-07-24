@@ -110,12 +110,13 @@ public class QuickFixCoreTest {
 
 	@Test
 	public void testRemoveNodeInCatchClause() {
-		QuickFixCore quickFixCore = new QuickFixCore();
-		quickFixCore.setJavaFileModifiable(ResourcesPlugin.getWorkspace().getRoot().findMember(path));
-		TryStatement tryStatement = ASTNodeFinder.getTryStatementNodeListByMethodDeclarationName(quickFixCore.getCompilationUnit(), "true_printStackTrace_public").get(0);
-		CatchClause catchClause = (CatchClause) tryStatement.catchClauses().get(0);
-		quickFixCore.removeNodeInCatchClause(catchClause, "e.printStackTrace();");
-		quickFixCore.applyChange();
+//		QuickFixCore quickFixCore = new QuickFixCore();
+//		quickFixCore.setJavaFileModifiable(ResourcesPlugin.getWorkspace().getRoot().findMember(path));
+//		TryStatement tryStatement = ASTNodeFinder.getTryStatementNodeListByMethodDeclarationName(quickFixCore.getCompilationUnit(), "true_printStackTrace_public").get(0);
+//		CatchClause catchClause = (CatchClause) tryStatement.catchClauses().get(0);
+//		quickFixCore.removeNodeInCatchClause(catchClause, "e.printStackTrace();");
+//		quickFixCore.applyChange();
+		fail("執行applyChange會有問題");
 	}
 
 	@Test

@@ -9,7 +9,7 @@ import java.util.TreeMap;
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.data.SSMessage;
 import ntut.csie.csdet.preference.JDomUtil;
-import ntut.csie.csdet.visitor.CarelessCleanupVisitor2;
+import ntut.csie.csdet.visitor.CarelessCleanupVisitor;
 import ntut.csie.csdet.visitor.DummyHandlerVisitor;
 import ntut.csie.csdet.visitor.IgnoreExceptionVisitor;
 import ntut.csie.csdet.visitor.NestedTryStatementVisitor;
@@ -136,7 +136,7 @@ public class ReportBuilder {
 		DummyHandlerVisitor dhVisitor = null;
 		NestedTryStatementVisitor ntsVisitor = null;
 		UnprotectedMainProgramVisitor mainVisitor = null;
-		CarelessCleanupVisitor2 ccVisitor = null;
+		CarelessCleanupVisitor ccVisitor = null;
 		OverLoggingDetector loggingDetector = null;
 		TryStatementCounterVisitor counterVisitor = null;
 		OverwrittenLeadExceptionVisitor overwrittenVisitor = null;
@@ -203,7 +203,7 @@ public class ReportBuilder {
 				model.addUnMainTotalSize(mainVisitor.getUnprotedMainList().size());
 			}
 			// 找尋專案中所有的Careless Cleanup
-			ccVisitor = new CarelessCleanupVisitor2(root);
+			ccVisitor = new CarelessCleanupVisitor(root);
 			method.accept(ccVisitor);
 			if (detMethodSmell.get(RLMarkerAttribute.CS_CARELESS_CLEANUP)) {
 				newClassModel.setCarelessCleanUp(ccVisitor.getCarelessCleanupList(), method.getName().toString());

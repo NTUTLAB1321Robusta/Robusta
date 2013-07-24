@@ -13,7 +13,6 @@ import java.net.SocketTimeoutException;
 import java.util.zip.DataFormatException;
 
 import junit.framework.TestCase;
-
 import ntut.csie.robusta.agile.exception.RTag;
 import ntut.csie.robusta.agile.exception.Robustness;
 
@@ -505,6 +504,7 @@ public class NestedTryStatementExample {
     private static Method testCaseMethod = null;
     static {
         try {
+        	testCaseMethod.isAccessible();
             testCaseMethod = TestCase.class.getMethod("getName", new Class[0]);
         } catch (NoSuchMethodException e) {
             // pre JUnit 3.7

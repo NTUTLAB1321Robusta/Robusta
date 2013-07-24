@@ -15,7 +15,6 @@ import java.util.List;
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.visitor.CarelessCleanupVisitor;
-import ntut.csie.csdet.visitor.CarelessCleanupVisitor2;
 import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 import ntut.csie.filemaker.ASTNodeFinder;
 import ntut.csie.filemaker.JavaFileToString;
@@ -322,7 +321,7 @@ public class CarelessCleanUpRefactorTest {
 	
 	@Test
 	public void testDetectIfStatementSize() throws Exception {
-		CarelessCleanupVisitor2 visitor = new CarelessCleanupVisitor2(compilationUnit);
+		CarelessCleanupVisitor visitor = new CarelessCleanupVisitor(compilationUnit);
 		compilationUnit.accept(visitor);
 		
 		tempMarker.setAttribute(RLMarkerAttribute.RL_MSG_INDEX, "11");

@@ -33,7 +33,7 @@ public class CarelessCleanupVisitor2Test {
 	JavaFileToString javaFile2String;
 	JavaProjectMaker javaProjectMaker;
 	CompilationUnit compilationUnit;
-	CarelessCleanupVisitor2 carelessCleanupVisitor;
+	CarelessCleanupVisitor carelessCleanupVisitor;
 	SmellSettings smellSettings;
 
 	@Before
@@ -110,7 +110,7 @@ public class CarelessCleanupVisitor2Test {
 		// 取得AST
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
-		carelessCleanupVisitor = new CarelessCleanupVisitor2(compilationUnit);
+		carelessCleanupVisitor = new CarelessCleanupVisitor(compilationUnit);
 	}
 
 	@After
@@ -135,7 +135,7 @@ public class CarelessCleanupVisitor2Test {
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		
 		// 重新產生Visitor，使得設定值有存入CarelessCleaupVisitor
-		carelessCleanupVisitor = new CarelessCleanupVisitor2(compilationUnit);
+		carelessCleanupVisitor = new CarelessCleanupVisitor(compilationUnit);
 		
 		int carelessCleanupSmellCount = 0;
 		assertNotNull(compilationUnit);
@@ -171,7 +171,7 @@ public class CarelessCleanupVisitor2Test {
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 
 		// 重新產生Visitor，使得設定值有存入CarelessCleaupVisitor
-		carelessCleanupVisitor = new CarelessCleanupVisitor2(compilationUnit);
+		carelessCleanupVisitor = new CarelessCleanupVisitor(compilationUnit);
 		
 		// 偵測結果
 		int carelessCleanupSmellCount = 0;
@@ -194,7 +194,7 @@ public class CarelessCleanupVisitor2Test {
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		
 		// 重新產生Visitor，使得設定值有存入CarelessCleaupVisitor
-		carelessCleanupVisitor = new CarelessCleanupVisitor2(compilationUnit);
+		carelessCleanupVisitor = new CarelessCleanupVisitor(compilationUnit);
 		
 		// 偵測結果
 		int carelessCleanupSmellCount = 0;
@@ -217,7 +217,7 @@ public class CarelessCleanupVisitor2Test {
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		
 		// 重新產生Visitor，使得設定值有存入CarelessCleaupVisitor
-		carelessCleanupVisitor = new CarelessCleanupVisitor2(compilationUnit);
+		carelessCleanupVisitor = new CarelessCleanupVisitor(compilationUnit);
 		
 		// 偵測結果
 		int carelessCleanupSmellCount = 0;
@@ -240,7 +240,7 @@ public class CarelessCleanupVisitor2Test {
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		
 		// 重新產生Visitor，使得設定值有存入CarelessCleaupVisitor
-		carelessCleanupVisitor = new CarelessCleanupVisitor2(compilationUnit);
+		carelessCleanupVisitor = new CarelessCleanupVisitor(compilationUnit);
 		
 		// 偵測結果
 		int carelessCleanupSmellCount = 0;
