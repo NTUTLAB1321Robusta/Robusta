@@ -140,8 +140,6 @@
     	<delete quiet="true" dir="${bin-folder}"/>
     	<delete quiet="true" dir="${result-folder}"/>
     	<delete quiet="true" dir="${basedir}/../../junit-workspace" />
-    		<!--<fileset dir="${basedir}/../../junit-workspace" excludes=".metadate"/>
-    	</delete>-->
         <mkdir dir="${bin-folder}"/>
     	<mkdir dir="${result-folder}"/>
     	<mkdir dir="${xml-folder}"/>
@@ -240,6 +238,7 @@
 	<target name="pde-test">
 		<property file="${basedir}/build.properties"/>
 		<java jvm="javaw.exe" jar="${eclipse-home}/plugins/org.eclipse.equinox.launcher_1.1.1.R36x_v20101122_1400.jar" fork="yes" maxmemory="512m">
+			<jvmarg value="-Dfile.encoding=UTF-8" />
 			<arg line="-version 3" />
 			<arg line="-os win32" />
 			<arg line="-ws win32" />
@@ -263,20 +262,21 @@
 			<sysproperty key="DEBUG" value="true" />
 			<arg line="ntut.csie.AllTest.AllJUnitPluginTests ${pde.test.port}" />
 			<jvmarg value="-Duser=admin -Dpasswd=admin" />
-			<classpath refid="Robusta.classpath"/>
+			<classpath refid="Robusta.classpath" />
 		</java>
 	</target>
 	
 	<!-- run junit test -->
 	<target name="junit-test">
-		<junit printsummary="yes">
+		<junit printsummary="yes" fork="yes">
+			<jvmarg value="-Dfile.encoding=UTF-8" />
 			<formatter type="xml"/>
 			<batchtest todir="${xml-folder}">
 				<fileset dir="${bin-folder}">
-					<include name="**/AllJUnitTests.class"/>
+					<include name="**/AllJUnitTests.class" />
 				</fileset>
 			</batchtest>
-			<classpath refid="Robusta.classpath"/>
+			<classpath refid="Robusta.classpath" />
 		</junit>
 	</target>
 	
