@@ -75,7 +75,7 @@
         <pathelement location="${eclipse-home}/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar"/>
         <pathelement location="${eclipse-home}/plugins/org.eclipse.jdt.astview_1.1.3.jar"/>
         <pathelement location="${eclipse-home}/plugins/org.eclipse.jdt.core.manipulation_1.3.0.v20100520-0800.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant.jar"/>
+        <!--<pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant.jar"/>-->
         <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-antlr.jar"/>
         <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-apache-bcel.jar"/>
         <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-apache-bsf.jar"/>
