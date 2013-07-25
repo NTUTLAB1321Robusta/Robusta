@@ -49,7 +49,7 @@ public class CarelessCleanupVisitorTest {
 		javaProjectMaker.createJavaFile(
 				CarelessCleanupExample.class.getPackage().getName(),
 				CarelessCleanupExample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + CarelessCleanupExample.class.getPackage().getName() + ";%n"
+				"package " + CarelessCleanupExample.class.getPackage().getName() + ";"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
@@ -57,7 +57,7 @@ public class CarelessCleanupVisitorTest {
 		javaProjectMaker.createJavaFile(
 				ClassWithNotThrowingExceptionCloseable.class.getPackage().getName(),
 				ClassWithNotThrowingExceptionCloseable.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + ClassWithNotThrowingExceptionCloseable.class.getPackage().getName() + ";%n"
+				"package " + ClassWithNotThrowingExceptionCloseable.class.getPackage().getName() + ";"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
@@ -65,7 +65,7 @@ public class CarelessCleanupVisitorTest {
 		javaProjectMaker.createJavaFile(
 				ClassImplementCloseable.class.getPackage().getName(),
 				ClassImplementCloseable.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + ClassImplementCloseable.class.getPackage().getName() + ";%n"
+				"package " + ClassImplementCloseable.class.getPackage().getName() + ";"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
@@ -74,7 +74,7 @@ public class CarelessCleanupVisitorTest {
 		javaProjectMaker.createJavaFile(
 				UserDefinedCarelessCleanupWeather.class.getPackage().getName(),
 				UserDefinedCarelessCleanupWeather.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + UserDefinedCarelessCleanupWeather.class.getPackage().getName() + ";%n"
+				"package " + UserDefinedCarelessCleanupWeather.class.getPackage().getName() + ";"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
@@ -82,7 +82,7 @@ public class CarelessCleanupVisitorTest {
 		javaProjectMaker.createJavaFile(
 				UserDefinedCarelessCleanupDog.class.getPackage().getName(),
 				UserDefinedCarelessCleanupDog.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + UserDefinedCarelessCleanupDog.class.getPackage().getName() + ";%n"
+				"package " + UserDefinedCarelessCleanupDog.class.getPackage().getName() + ";"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
@@ -90,7 +90,7 @@ public class CarelessCleanupVisitorTest {
 		javaProjectMaker.createJavaFile(
 				ClassImplementCloseableWithoutThrowException.class.getPackage().getName(),
 				ClassImplementCloseableWithoutThrowException.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + ClassImplementCloseableWithoutThrowException.class.getPackage().getName() + ";%n"
+				"package " + ClassImplementCloseableWithoutThrowException.class.getPackage().getName() + ";"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
@@ -146,7 +146,7 @@ public class CarelessCleanupVisitorTest {
 		}
 		assertEquals(
 				colloectBadSmellListContent(carelessCleanupVisitor.getCarelessCleanupList()),
-				22, carelessCleanupSmellCount);
+				28, carelessCleanupSmellCount);
 	}
 	
 	@Test
@@ -160,7 +160,7 @@ public class CarelessCleanupVisitorTest {
 		}
 		assertEquals(
 				colloectBadSmellListContent(carelessCleanupVisitor.getCarelessCleanupList()),
-				24, carelessCleanupSmellCount);
+				31, carelessCleanupSmellCount);
 	}
 	
 	@Test
@@ -183,7 +183,7 @@ public class CarelessCleanupVisitorTest {
 		}
 		assertEquals(
 				colloectBadSmellListContent(carelessCleanupVisitor.getCarelessCleanupList()),
-				27, carelessCleanupSmellCount);
+				37, carelessCleanupSmellCount);
 	}
 	
 	@Test
@@ -206,7 +206,7 @@ public class CarelessCleanupVisitorTest {
 		}
 		assertEquals(
 				colloectBadSmellListContent(carelessCleanupVisitor.getCarelessCleanupList()),
-				25, carelessCleanupSmellCount);
+				33, carelessCleanupSmellCount);
 	}
 	
 	@Test
@@ -229,7 +229,7 @@ public class CarelessCleanupVisitorTest {
 		}
 		assertEquals(
 				colloectBadSmellListContent(carelessCleanupVisitor.getCarelessCleanupList()),
-				26, carelessCleanupSmellCount);
+				34, carelessCleanupSmellCount);
 	}
 	
 	@Test
@@ -252,7 +252,7 @@ public class CarelessCleanupVisitorTest {
 		}
 		assertEquals(
 				colloectBadSmellListContent(carelessCleanupVisitor.getCarelessCleanupList()),
-				25, carelessCleanupSmellCount);
+				33, carelessCleanupSmellCount);
 	}
 	
 	/**

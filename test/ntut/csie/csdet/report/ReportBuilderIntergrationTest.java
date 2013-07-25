@@ -1,8 +1,10 @@
 package ntut.csie.csdet.report;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import ntut.csie.csdet.preference.SmellSettings;
@@ -24,10 +26,11 @@ import ntut.csie.filemaker.exceptionBadSmells.OverLogging.OverLoggingTheFirstOrd
 import ntut.csie.filemaker.exceptionBadSmells.OverLogging.OverLoggingTheSecondOrderClass;
 import ntut.csie.filemaker.exceptionBadSmells.OverLogging.OverLoggingTheThirdOrderClass;
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramExample;
+import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithCatchRuntimeExceptionExample;
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithTry;
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithTryAtLastStatement;
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithTryAtMiddleStatement;
-import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithCatchRuntimeExceptionExample;
+import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithoutCatchRightExceptionExample;
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithoutStatementExample;
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithoutTryExample;
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedmainProgramWithTryAtFirstStatement;
@@ -273,10 +276,21 @@ public class ReportBuilderIntergrationTest {
 				+ ";\n" + javaFileToString.getFileContent());
 		javaFileToString.clear();
 		
+		javaFileToString.read(UnprotectedMainProgramWithoutCatchRightExceptionExample.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaProjectMaker.createJavaFile(
+				UnprotectedMainProgramWithoutCatchRightExceptionExample.class.getPackage().getName(),
+				UnprotectedMainProgramWithoutCatchRightExceptionExample.class.getSimpleName()
+				+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
+				+ UnprotectedMainProgramWithoutCatchRightExceptionExample.class.getPackage().getName()
+				+ ";\n" + javaFileToString.getFileContent());
+		javaFileToString.clear();
+		
 		InitailSetting();
 		
 		project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 		reportModel = new ReportModel();
+		reportModel.setProjectName(project.getName());
+		reportModel.setBuildTime();
 		reportBuilder = new ReportBuilder(project, reportModel);
 	}
 	
@@ -391,30 +405,18 @@ public class ReportBuilderIntergrationTest {
 		Method countFileLOC = ReportBuilder.class.getDeclaredMethod("countFileLOC", String.class);
 		countFileLOC.setAccessible(true);
 		// 檢查測試專案檔案的行數
-		assertEquals(495, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(NestedTryStatementExample.class, projectName)));
-		assertEquals(565, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(CarelessCleanupExample.class, projectName)));
-		assertEquals(17, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(ClassImplementCloseable.class, projectName)));
-		assertEquals(16, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(ClassImplementCloseableWithoutThrowException.class, projectName)));
-		assertEquals(28, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(ClassWithNotThrowingExceptionCloseable.class, projectName)));
-		assertEquals(15, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(UserDefinedCarelessCleanupDog.class, projectName)));
-		assertEquals(27, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(UserDefinedCarelessCleanupWeather.class, projectName)));
-		assertEquals(11, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(OverLoggingIntegrationExample.class, projectName)));
+		assertEquals(537, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(NestedTryStatementExample.class, projectName)));
+		assertEquals(763, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(CarelessCleanupExample.class, projectName)));
 		assertEquals(199, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(OverLoggingJavaLogExample.class, projectName)));
 		assertEquals(174, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(OverLoggingLog4JExample.class, projectName)));
 		assertEquals(159, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(OverLoggingSelf4JExample.class, projectName)));
 		assertEquals(55, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(OverLoggingTheFirstOrderClass.class, projectName)));
 		assertEquals(55, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(OverLoggingTheSecondOrderClass.class, projectName)));
 		assertEquals(52, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(OverLoggingTheThirdOrderClass.class, projectName)));
-		assertEquals(17, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramExample.class, projectName)));
-		assertEquals(11, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithCatchRuntimeExceptionExample.class, projectName)));
-		assertEquals(6, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithoutStatementExample.class, projectName)));
-		assertEquals(8, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithoutTryExample.class, projectName)));
-		assertEquals(21, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithTry.class, projectName)));
-		assertEquals(13, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(UnprotectedmainProgramWithTryAtFirstStatement.class, projectName)));
-		assertEquals(13, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithTryAtLastStatement.class, projectName)));
-		assertEquals(13, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithTryAtMiddleStatement.class, projectName)));
 		/** 路徑不正確或者不存在的class file */
 		assertEquals(0, countFileLOC.invoke(reportBuilder, "not/exist/example.java"));
+		/** 副檔名不是java的文字檔案是可以被計算出行數的，這邊是因為沒有產生此檔案，故等於不存在的檔案 */
+		assertEquals(0, countFileLOC.invoke(reportBuilder, "/ReportBuilderIntergrationTest/src/ntut/csie/filemaker/exceptionBadSmells/NestedTryStatementExample.txt"));
 	}
 	
 	/**
@@ -443,14 +445,21 @@ public class ReportBuilderIntergrationTest {
 		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
 		assertTrue(reportModel.getUnMainTotalSize() == 0);
 		CreateNestedTrySettings();
-		reportBuilder.run();
+
+		Method getFilterSettings = ReportBuilder.class.getDeclaredMethod("getFilterSettings");
+		Method analysisProject = ReportBuilder.class.getDeclaredMethod("analysisProject", IProject.class);
+		getFilterSettings.setAccessible(true);
+		analysisProject.setAccessible(true);
+		getFilterSettings.invoke(reportBuilder);
+		analysisProject.invoke(reportBuilder, project);
+		
 		assertEquals(0, reportModel.getDummyTotalSize());
 		assertEquals(0, reportModel.getIgnoreTotalSize());
 		assertEquals(0, reportModel.getCarelessCleanUpTotalSize());
-		assertEquals(25, reportModel.getNestedTryTotalSize());
+		assertEquals(27, reportModel.getNestedTryTotalSize());
 		assertEquals(0, reportModel.getOverLoggingTotalSize());
 		assertEquals(0, reportModel.getUnMainTotalSize());
-		assertEquals(25, reportModel.getTotalSmellCount());
+		assertEquals(27, reportModel.getTotalSmellCount());
 	}
 	
 	@Test
@@ -462,7 +471,14 @@ public class ReportBuilderIntergrationTest {
 		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
 		assertTrue(reportModel.getUnMainTotalSize() == 0);
 		CreateUnprotectedMainProgramSettings();
-		reportBuilder.run();
+
+		Method getFilterSettings = ReportBuilder.class.getDeclaredMethod("getFilterSettings");
+		Method analysisProject = ReportBuilder.class.getDeclaredMethod("analysisProject", IProject.class);
+		getFilterSettings.setAccessible(true);
+		analysisProject.setAccessible(true);
+		getFilterSettings.invoke(reportBuilder);
+		analysisProject.invoke(reportBuilder, project);
+		
 		assertEquals(0, reportModel.getDummyTotalSize());
 		assertEquals(0, reportModel.getIgnoreTotalSize());
 		assertEquals(0, reportModel.getCarelessCleanUpTotalSize());
@@ -481,14 +497,21 @@ public class ReportBuilderIntergrationTest {
 		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
 		assertTrue(reportModel.getUnMainTotalSize() == 0);
 		CreateCarelessCleanupSettings();
-		reportBuilder.run();
+
+		Method getFilterSettings = ReportBuilder.class.getDeclaredMethod("getFilterSettings");
+		Method analysisProject = ReportBuilder.class.getDeclaredMethod("analysisProject", IProject.class);
+		getFilterSettings.setAccessible(true);
+		analysisProject.setAccessible(true);
+		getFilterSettings.invoke(reportBuilder);
+		analysisProject.invoke(reportBuilder, project);
+		
 		assertEquals(0, reportModel.getDummyTotalSize());
 		assertEquals(0, reportModel.getIgnoreTotalSize());
-		assertEquals(30, reportModel.getCarelessCleanUpTotalSize());
+		assertEquals(38, reportModel.getCarelessCleanUpTotalSize());
 		assertEquals(0, reportModel.getNestedTryTotalSize());
 		assertEquals(0, reportModel.getOverLoggingTotalSize());
 		assertEquals(0, reportModel.getUnMainTotalSize());
-		assertEquals(30, reportModel.getTotalSmellCount());
+		assertEquals(38, reportModel.getTotalSmellCount());
 	}
 
 	@Test
@@ -500,7 +523,14 @@ public class ReportBuilderIntergrationTest {
 		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
 		assertTrue(reportModel.getUnMainTotalSize() == 0);
 		CreateOverloggingSettings();
-		reportBuilder.run();
+
+		Method getFilterSettings = ReportBuilder.class.getDeclaredMethod("getFilterSettings");
+		Method analysisProject = ReportBuilder.class.getDeclaredMethod("analysisProject", IProject.class);
+		getFilterSettings.setAccessible(true);
+		analysisProject.setAccessible(true);
+		getFilterSettings.invoke(reportBuilder);
+		analysisProject.invoke(reportBuilder, project);
+		
 		assertEquals(0, reportModel.getDummyTotalSize());
 		assertEquals(0, reportModel.getIgnoreTotalSize());
 		assertEquals(0, reportModel.getCarelessCleanUpTotalSize());
@@ -519,14 +549,21 @@ public class ReportBuilderIntergrationTest {
 		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
 		assertTrue(reportModel.getUnMainTotalSize() == 0);
 		CreateCarelessCleanupWithoutExtraRuleSettings();
-		reportBuilder.run();
+
+		Method getFilterSettings = ReportBuilder.class.getDeclaredMethod("getFilterSettings");
+		Method analysisProject = ReportBuilder.class.getDeclaredMethod("analysisProject", IProject.class);
+		getFilterSettings.setAccessible(true);
+		analysisProject.setAccessible(true);
+		getFilterSettings.invoke(reportBuilder);
+		analysisProject.invoke(reportBuilder, project);
+		
 		assertEquals(0, reportModel.getDummyTotalSize());
 		assertEquals(0, reportModel.getIgnoreTotalSize());
-		assertEquals(28, reportModel.getCarelessCleanUpTotalSize());
+		assertEquals(35, reportModel.getCarelessCleanUpTotalSize());
 		assertEquals(0, reportModel.getNestedTryTotalSize());
 		assertEquals(0, reportModel.getOverLoggingTotalSize());
 		assertEquals(0, reportModel.getUnMainTotalSize());
-		assertEquals(28, reportModel.getTotalSmellCount());
+		assertEquals(35, reportModel.getTotalSmellCount());
 	}
 	
 	@Test
@@ -538,14 +575,21 @@ public class ReportBuilderIntergrationTest {
 		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
 		assertTrue(reportModel.getUnMainTotalSize() == 0);
 		CreateCarelessCleanupWithoutUserDefinitionSettings();
-		reportBuilder.run();
+
+		Method getFilterSettings = ReportBuilder.class.getDeclaredMethod("getFilterSettings");
+		Method analysisProject = ReportBuilder.class.getDeclaredMethod("analysisProject", IProject.class);
+		getFilterSettings.setAccessible(true);
+		analysisProject.setAccessible(true);
+		getFilterSettings.invoke(reportBuilder);
+		analysisProject.invoke(reportBuilder, project);
+		
 		assertEquals(0, reportModel.getDummyTotalSize());
 		assertEquals(0, reportModel.getIgnoreTotalSize());
-		assertEquals(26, reportModel.getCarelessCleanUpTotalSize());
+		assertEquals(31, reportModel.getCarelessCleanUpTotalSize());
 		assertEquals(0, reportModel.getNestedTryTotalSize());
 		assertEquals(0, reportModel.getOverLoggingTotalSize());
 		assertEquals(0, reportModel.getUnMainTotalSize());
-		assertEquals(26, reportModel.getTotalSmellCount());
+		assertEquals(31, reportModel.getTotalSmellCount());
 	}
 	
 	@Test
@@ -557,7 +601,14 @@ public class ReportBuilderIntergrationTest {
 		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
 		assertTrue(reportModel.getUnMainTotalSize() == 0);
 		CreateOverloggingWithoutExtraRuleSettings();
-		reportBuilder.run();
+
+		Method getFilterSettings = ReportBuilder.class.getDeclaredMethod("getFilterSettings");
+		Method analysisProject = ReportBuilder.class.getDeclaredMethod("analysisProject", IProject.class);
+		getFilterSettings.setAccessible(true);
+		analysisProject.setAccessible(true);
+		getFilterSettings.invoke(reportBuilder);
+		analysisProject.invoke(reportBuilder, project);
+		
 		assertEquals(0, reportModel.getDummyTotalSize());
 		assertEquals(0, reportModel.getIgnoreTotalSize());
 		assertEquals(0, reportModel.getCarelessCleanUpTotalSize());
@@ -576,7 +627,14 @@ public class ReportBuilderIntergrationTest {
 		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
 		assertTrue(reportModel.getUnMainTotalSize() == 0);
 		CreateOverloggingWithoutUserDefinition();
-		reportBuilder.run();
+
+		Method getFilterSettings = ReportBuilder.class.getDeclaredMethod("getFilterSettings");
+		Method analysisProject = ReportBuilder.class.getDeclaredMethod("analysisProject", IProject.class);
+		getFilterSettings.setAccessible(true);
+		analysisProject.setAccessible(true);
+		getFilterSettings.invoke(reportBuilder);
+		analysisProject.invoke(reportBuilder, project);
+		
 		assertEquals(0, reportModel.getDummyTotalSize());
 		assertEquals(0, reportModel.getIgnoreTotalSize());
 		assertEquals(0, reportModel.getCarelessCleanUpTotalSize());
@@ -602,19 +660,26 @@ public class ReportBuilderIntergrationTest {
 		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
 		assertTrue(reportModel.getUnMainTotalSize() == 0);
 		CreateAllSettings();
-		reportBuilder.run();
+		
+		Method getFilterSettings = ReportBuilder.class.getDeclaredMethod("getFilterSettings");
+		Method analysisProject = ReportBuilder.class.getDeclaredMethod("analysisProject", IProject.class);
+		getFilterSettings.setAccessible(true);
+		analysisProject.setAccessible(true);
+		getFilterSettings.invoke(reportBuilder);
+		analysisProject.invoke(reportBuilder, project);
+		
 		assertEquals(0,reportModel.getDummyTotalSize());
 		assertEquals(0,reportModel.getIgnoreTotalSize());
-		assertEquals(30, reportModel.getCarelessCleanUpTotalSize());
-		assertEquals(25, reportModel.getNestedTryTotalSize());
+		assertEquals(38, reportModel.getCarelessCleanUpTotalSize());
+		assertEquals(27, reportModel.getNestedTryTotalSize());
 		assertEquals(26, reportModel.getOverLoggingTotalSize());
 		assertEquals(6, reportModel.getUnMainTotalSize());
-		assertEquals(130, reportModel.getTryCounter());
-		assertEquals(151, reportModel.getCatchCounter());
-		assertEquals(21, reportModel.getFinallyCounter());
+		assertEquals(144, reportModel.getTryCounter());
+		assertEquals(155, reportModel.getCatchCounter());
+		assertEquals(32, reportModel.getFinallyCounter());
 		assertEquals(4, reportModel.getPackagesSize());
 		assertEquals(projectName, reportModel.getProjectName());
-		assertEquals(1970, reportModel.getTotalLine());
-		assertEquals(87, reportModel.getTotalSmellCount());
+		assertEquals(2222, reportModel.getTotalLine());
+		assertEquals(97, reportModel.getTotalSmellCount());
 	}
 }
