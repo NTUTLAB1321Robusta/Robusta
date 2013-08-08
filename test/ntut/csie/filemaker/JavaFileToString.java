@@ -11,19 +11,12 @@ import java.util.Scanner;
  * 讀取專案內java檔的內容。
  * 方便讀取一些bad smell的code，在Unit test時，寫成測試用的code。
  * @author Charles
- *
  */
 public class JavaFileToString {
-	/**	用來讀取class的串流 */
-	FileInputStream fileInputStream;
-	/** 掃描串流，轉成文字 */
-	Scanner scanner;
 	/** 儲存檔案的文字 */
 	StringBuilder stringBuilder;
 
 	public JavaFileToString() {
-		fileInputStream = null;
-		scanner = null;
 		stringBuilder = new StringBuilder();
 	}
 
@@ -46,6 +39,11 @@ public class JavaFileToString {
 	 * @throws FileNotFoundException
 	 */
 	public void read(Class<?> clazz, String folder, String extension) throws FileNotFoundException {
+		/**	用來讀取class的串流 */
+		FileInputStream fileInputStream = null;
+		/** 掃描串流，轉成文字 */
+		Scanner scanner = null;
+		
 		String classCanonicalName = clazz.getCanonicalName();
 		String classPath = classCanonicalName.replace('.', '/');
 		String lineSeparator = System.getProperty("line.separator");
