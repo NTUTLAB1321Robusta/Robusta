@@ -19,12 +19,12 @@ public class JavaFileToString {
 	/** 掃描串流，轉成文字 */
 	Scanner scanner;
 	/** 儲存檔案的文字 */
-	StringBuilder sb;
+	StringBuilder stringBuilder;
 
 	public JavaFileToString() {
 		fileInputStream = null;
 		scanner = null;
-		sb = new StringBuilder();
+		stringBuilder = new StringBuilder();
 	}
 
 	/**
@@ -59,7 +59,7 @@ public class JavaFileToString {
 			
 			// 把檔案串流，文字一行一行讀出來
 			while(scanner.hasNextLine()) {
-				sb.append(scanner.nextLine() + lineSeparator);
+				stringBuilder.append(scanner.nextLine() + lineSeparator);
 			}
 		} catch (FileNotFoundException e) {
 			throw e;
@@ -74,7 +74,7 @@ public class JavaFileToString {
 	 * @return
 	 */
 	public String getFileContent() {
-		return sb.toString();
+		return stringBuilder.toString();
 	}
 	
 	/**
@@ -82,7 +82,7 @@ public class JavaFileToString {
 	 * @return
 	 */
 	public void clear() {
-		sb = new StringBuilder();
+		stringBuilder = new StringBuilder();
 	}
 	
 	/**
