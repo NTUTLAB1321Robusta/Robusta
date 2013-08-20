@@ -60,6 +60,8 @@ public class JavaProjectMaker {
 	public static final String FOLDERNAME_BIN_CLASS = "bin";
 	/** 測試程式碼資料夾的名稱 */
 	public static final String FOLDERNAME_TEST = "test";
+	/** 進行實驗用的工具資料夾 */
+	public static final String FOLDERNAME_EXPERIMENT = "experiment";
 	/** 功能性程式碼的資料夾名稱 */
 	public static final String FOLDERNAME_SOURCE = "src";
 	/** 取得RL.jar的路徑 */
