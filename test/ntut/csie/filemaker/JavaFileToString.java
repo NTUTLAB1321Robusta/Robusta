@@ -47,11 +47,12 @@ public class JavaFileToString {
 		String classCanonicalName = clazz.getCanonicalName();
 		String classPath = classCanonicalName.replace('.', '/');
 		String lineSeparator = System.getProperty("line.separator");
-		try {
-			File classFile = new File("./" + folder + "/" + classPath + extension);
-			fileInputStream = new FileInputStream(classFile);
-			scanner = new Scanner(fileInputStream);
 
+		File classFile = new File("./" + folder + "/" + classPath + extension);
+		fileInputStream = new FileInputStream(classFile);
+		scanner = new Scanner(fileInputStream);
+		
+		try {
 			// 跳過package的那行不要儲存
 			scanner.nextLine();
 			
@@ -59,8 +60,6 @@ public class JavaFileToString {
 			while(scanner.hasNextLine()) {
 				stringBuilder.append(scanner.nextLine() + lineSeparator);
 			}
-		} catch (FileNotFoundException e) {
-			throw e;
 		} finally {
 			scanner.close();
 			closeStream(fileInputStream);
