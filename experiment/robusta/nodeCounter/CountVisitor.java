@@ -1,4 +1,4 @@
-package ntut.csie.csdet.visitor;
+package robusta.nodeCounter;
 
 import ntut.csie.jdt.util.NodeUtils;
 
@@ -27,10 +27,18 @@ import org.eclipse.jdt.core.dom.TypeDeclarationStatement;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 
+/**
+ * 計算總共有多少 statement 位於偵測的 class 內的特定位置中
+ * @author crimson
+ */
+/*
+ * FIXME 計算上有Bug, 針對DummyAndIgnoreExample偵測時，得到136/39/4
+ * 當把finally-catch內的「e.printStackTrace()」註解掉時，的到135/38/3，明顯有誤
+ */
 public class CountVisitor extends ASTVisitor {
-	private int catchCounter = 0;
-	private int finallyCounter = 0;
-	private int totalCount = 0;
+	private int statementInCatchCounter = 0;
+	private int statementInFinallyCounter = 0;
+	private int statementInTryStatement = 0;
 	private CompilationUnit unit;
 	private TryStatement tryStatement;
 	
@@ -45,7 +53,7 @@ public class CountVisitor extends ASTVisitor {
 	public boolean visit(TryStatement node) {
 		if(NodeUtils.getSpecifiedParentNode(node, ASTNode.TRY_STATEMENT) == null) {
 			tryStatement = node;
-			totalCount++;
+			statementInTryStatement++;
 //			System.out.println("totalCount " + unit.getLineNumber(node.getStartPosition()));
 		}
 		judgement(node);
@@ -60,7 +68,7 @@ public class CountVisitor extends ASTVisitor {
 	public boolean visit(Block node) {
 		if(tryStatement != null && tryStatement.getFinally() != null) {
 			if(tryStatement.getFinally().getStartPosition() == node.getStartPosition()) {
-				totalCount++;
+				statementInTryStatement++;
 //				System.out.println("totalCount " + unit.getLineNumber(node.getStartPosition()));
 				return true;
 			}
@@ -68,14 +76,14 @@ public class CountVisitor extends ASTVisitor {
 		if(NodeUtils.getSpecifiedParentNode(node, ASTNode.TRY_STATEMENT) != null) {
 			ASTNode tryStatement = NodeUtils.getSpecifiedParentNode(node, ASTNode.TRY_STATEMENT);
 			if(((TryStatement)tryStatement).getFinally() != null && ((TryStatement)tryStatement).getFinally().getStartPosition() == node.getStartPosition()) {
-				totalCount++;
+				statementInTryStatement++;
 //				System.out.println("totalCount " + unit.getLineNumber(node.getStartPosition()));
 				if(NodeUtils.getSpecifiedParentNode(node, ASTNode.CATCH_CLAUSE) != null) {
-					catchCounter++;
+					statementInCatchCounter++;
 //					System.out.println("catchCounter " + unit.getLineNumber(node.getStartPosition()));
 				}
 				if(isStatementInFinally(node)) {
-					finallyCounter++;
+					statementInFinallyCounter++;
 //					System.out.println("finallyCounter " + unit.getLineNumber(node.getStartPosition()));
 				}
 			}
@@ -88,15 +96,15 @@ public class CountVisitor extends ASTVisitor {
 		ASTNode catchBlock = NodeUtils.getSpecifiedParentNode(node, ASTNode.CATCH_CLAUSE);
 		
 		if(tryBlock != null) {
-			totalCount++;
+			statementInTryStatement++;
 //			System.out.println("totalCount " + unit.getLineNumber(node.getStartPosition()));
 		}
 		if(catchBlock != null) {
-			catchCounter++;
+			statementInCatchCounter++;
 //			System.out.println("catchCounter " + unit.getLineNumber(node.getStartPosition()));
 		}
 		if(isStatementInFinally(node)) {
-			finallyCounter++;
+			statementInFinallyCounter++;
 //			System.out.println("finallyCounter " + unit.getLineNumber(node.getStartPosition()));
 		}
 	}
@@ -223,26 +231,26 @@ public class CountVisitor extends ASTVisitor {
 	}
 	
 	public int getCatchCount() {
-		return catchCounter;
+		return statementInCatchCounter;
 	}
 	
 	public int getFinallyCount() {
-		return finallyCounter;
+		return statementInFinallyCounter;
 	}
 	
 	public int getTotalCount() {
-		return totalCount;
+		return statementInTryStatement;
 	}
 	
 	public void setCatchCount(int count) {
-		catchCounter+=count;
+		statementInCatchCounter+=count;
 	}
 	
 	public void setFinallyCount(int count) {
-		finallyCounter+=count;
+		statementInFinallyCounter+=count;
 	}
 	
 	public void setTotalCount(int count) {
-		totalCount+=count;
+		statementInTryStatement+=count;
 	}
 }
