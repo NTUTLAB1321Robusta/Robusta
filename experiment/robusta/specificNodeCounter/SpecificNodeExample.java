@@ -30,4 +30,14 @@ public class SpecificNodeExample {
 			}
 		}
 	}
+
+	public void tryWithoutCatchClause() throws IOException {
+		FileInputStream fis = null;
+		try {
+			fis = new FileInputStream("");
+			fis.read();
+		} finally {
+			fis.close();
+		}
+	}
 }

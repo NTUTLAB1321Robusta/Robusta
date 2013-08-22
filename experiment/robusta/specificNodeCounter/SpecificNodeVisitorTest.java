@@ -69,13 +69,13 @@ public class SpecificNodeVisitorTest {
 	public void testVisitTryStatement() {
 		specificNodeVisitor = new SpecificNodeVisitor(ASTNode.TRY_STATEMENT);
 		compilationUnit.accept(specificNodeVisitor);
-		assertEquals(3, specificNodeVisitor.getCount());
+		assertEquals(4, specificNodeVisitor.getCount());
 	}
 
 	@Test
-	public void testVisitTryStatement1() {
+	public void testVisitCatchClause() {
 		specificNodeVisitor = new SpecificNodeVisitor(ASTNode.CATCH_CLAUSE);
 		compilationUnit.accept(specificNodeVisitor);
-		assertEquals(45, specificNodeVisitor.getCount());
+		assertEquals(4, specificNodeVisitor.getCount());
 	}
 }
