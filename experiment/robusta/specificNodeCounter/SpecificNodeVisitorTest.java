@@ -1,15 +1,12 @@
 package robusta.specificNodeCounter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 
-import ntut.csie.csdet.visitor.IgnoreExceptionVisitor;
 import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
-import ntut.csie.filemaker.exceptionBadSmells.IgnoredCheckedExceptionExample;
-import ntut.csie.filemaker.exceptionBadSmells.UserDefineDummyHandlerFish;
 import ntut.csie.robusta.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -19,6 +16,7 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -67,15 +65,35 @@ public class SpecificNodeVisitorTest {
 	
 	@Test
 	public void testVisitTryStatement() {
-		specificNodeVisitor = new SpecificNodeVisitor(ASTNode.TRY_STATEMENT);
+		specificNodeVisitor = new SpecificNodeVisitor();
+		specificNodeVisitor.addNodeType(ASTNode.TRY_STATEMENT);
 		compilationUnit.accept(specificNodeVisitor);
-		assertEquals(4, specificNodeVisitor.getCount());
+		assertEquals(7, specificNodeVisitor.getCount());
 	}
 
 	@Test
 	public void testVisitCatchClause() {
-		specificNodeVisitor = new SpecificNodeVisitor(ASTNode.CATCH_CLAUSE);
+		specificNodeVisitor = new SpecificNodeVisitor();
+		specificNodeVisitor.addNodeType(ASTNode.CATCH_CLAUSE);
 		compilationUnit.accept(specificNodeVisitor);
-		assertEquals(4, specificNodeVisitor.getCount());
+		assertEquals(7, specificNodeVisitor.getCount());
+	}
+
+	@Test
+	public void testVisitTryStatementAndCatchClause() {
+		specificNodeVisitor = new SpecificNodeVisitor();
+		specificNodeVisitor.addNodeType(ASTNode.TRY_STATEMENT);
+		specificNodeVisitor.addNodeType(ASTNode.CATCH_CLAUSE);
+		compilationUnit.accept(specificNodeVisitor);
+		assertEquals(14, specificNodeVisitor.getCount());
+	}
+
+	@Test
+	public void testVisitAllTypesOfStatement() {
+		specificNodeVisitor = new SpecificNodeVisitor();
+		specificNodeVisitor.addStatementAsNodeType();
+		compilationUnit.accept(specificNodeVisitor);
+		assertEquals(67, specificNodeVisitor.getCount());
+		// 沒有block時是43，有時是67
 	}
 }
