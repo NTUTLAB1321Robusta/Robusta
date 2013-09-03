@@ -49,6 +49,7 @@ public class ClassInstanceCreationVisitor extends ASTVisitor {
 	public boolean visit(ClassInstanceCreation node) {
 		int parentNodeType = node.getParent().getNodeType();
 		switch(parentNodeType) {
+			// case: 宣告物件，並 create instance 指定給某個參考
 			case ASTNode.VARIABLE_DECLARATION_FRAGMENT:
 				if(declaringVariable == null) {
 					return false;
@@ -67,6 +68,7 @@ public class ClassInstanceCreationVisitor extends ASTVisitor {
 					}
 				}
 				break;
+			// case: create instance 並指定給某個參考
 			case ASTNode.ASSIGNMENT:
 				Assignment assignment = (Assignment) node.getParent();
 				Expression leftHandside = assignment.getLeftHandSide();

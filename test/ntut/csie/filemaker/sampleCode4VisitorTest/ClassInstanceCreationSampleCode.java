@@ -31,4 +31,10 @@ public class ClassInstanceCreationSampleCode {
 			fos.close();
 		}
 	}
+
+	public void createInstanceOutside(FileOutputStream fileOS) throws IOException {
+		fileOS.flush();
+		fileOS.close();
+	}
+	
 }
