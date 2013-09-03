@@ -68,8 +68,8 @@ public class ClassInstanceCreationVisitorTest {
 	public final void testOneLineCreation() {
 		ASTNode methodDelcaration = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "createInstanceOneLine");
 		// 從fos.flush();找出建立instance的地方
-		MethodInvocation fosFlush = (MethodInvocation)NodeFinder.perform(compilationUnit, 365, 11);
-		ASTNode fosCreation = NodeFinder.perform(compilationUnit, 304, 38);
+		MethodInvocation fosFlush = (MethodInvocation)NodeFinder.perform(compilationUnit, 338, 11);
+		ASTNode fosCreation = NodeFinder.perform(compilationUnit, 277, 38);
 		classInstanceCreationVisitor = new ClassInstanceCreationVisitor(fosFlush);
 		methodDelcaration.accept(classInstanceCreationVisitor);
 		assertEquals(fosCreation, classInstanceCreationVisitor.getClassInstanceCreation());
@@ -79,8 +79,8 @@ public class ClassInstanceCreationVisitorTest {
 	public final void testTwoLineCreation() {
 		ASTNode methodDelcaration = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "createInstanceTwoLine");
 		// 從fos.flush();找出建立instance的地方
-		MethodInvocation fosFlush = (MethodInvocation)NodeFinder.perform(compilationUnit, 562, 11);
-		ASTNode fosCreation = NodeFinder.perform(compilationUnit, 501, 38);
+		MethodInvocation fosFlush = (MethodInvocation)NodeFinder.perform(compilationUnit, 535, 11);
+		ASTNode fosCreation = NodeFinder.perform(compilationUnit, 474, 38);
 		classInstanceCreationVisitor = new ClassInstanceCreationVisitor(fosFlush);
 		methodDelcaration.accept(classInstanceCreationVisitor);
 		assertEquals(fosCreation, classInstanceCreationVisitor.getClassInstanceCreation());
@@ -90,8 +90,8 @@ public class ClassInstanceCreationVisitorTest {
 	public final void testTwoLineAndNewNew() {
 		ASTNode methodDelcaration = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "createInstanceTwoLineAndNewNew");
 		// 從fos.flush();找出建立instance的地方
-		MethodInvocation fosFlush = (MethodInvocation)NodeFinder.perform(compilationUnit, 823, 11);
-		ASTNode fosCreation = NodeFinder.perform(compilationUnit, 725, 53);
+		MethodInvocation fosFlush = (MethodInvocation)NodeFinder.perform(compilationUnit, 796, 11);
+		ASTNode fosCreation = NodeFinder.perform(compilationUnit, 698, 53);
 		classInstanceCreationVisitor = new ClassInstanceCreationVisitor(fosFlush);
 		methodDelcaration.accept(classInstanceCreationVisitor);
 		assertEquals(fosCreation, classInstanceCreationVisitor.getClassInstanceCreation());
@@ -104,7 +104,7 @@ public class ClassInstanceCreationVisitorTest {
 	public final void testCreateOutside() {
 		ASTNode methodDelcaration = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "createInstanceOutside");
 		// 從fileOS.close();找出建立instance的地方
-		MethodInvocation fileOSClose = (MethodInvocation)NodeFinder.perform(compilationUnit, 968, 14);
+		MethodInvocation fileOSClose = (MethodInvocation)NodeFinder.perform(compilationUnit, 941, 14);
 		classInstanceCreationVisitor = new ClassInstanceCreationVisitor(fileOSClose);
 		methodDelcaration.accept(classInstanceCreationVisitor);
 		assertEquals(null, classInstanceCreationVisitor.getClassInstanceCreation());
