@@ -60,7 +60,7 @@ public class CarelessCleanupExample {
 	}
 	
 	/**
-	 * 會被CarelessCleanupVisitor在fileOutputStream.close();加上mark
+	 * 會被CarelessCleanupVisitor在兩個.close()前加上mark
 	 * @param context
 	 * @param outputFile
 	 */
@@ -474,31 +474,6 @@ public class CarelessCleanupExample {
 		}
 	}
 
-	/**
-	 * 會被CarelessCleanupVisitor在method宣告處加上mark
-	 * (因為使用者會想要在catch轉型使用functional code處理例外時，
-	 * 應該是不希望method的宣告會拋出例外，所以finally不應該拋出例外。)
-	 * @throws IOException
-	 */
-	@Robustness(value = { @RTag(level = 2, exception = java.io.IOException.class) })
-	public void y_closeStreamInFinallyButThrowsExceptionOnlyInFinally() throws IOException {
-		int a =10;
-		while (a > 0) {
-			FileWriter fw = null;
-			try {
-				if (a == 5) {
-					fw = new FileWriter("filepath");
-					fw.write("fileContents");
-				}
-			} catch (IOException e) {
-				throw e;
-			} finally {
-				fw.close();
-			}
-			a--;
-		}
-	}
-	
 	//=========要在設定檔裡面加上使用者偵測條件，才能判斷出以下method是否有careless cleanup=========//
 	
 	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
@@ -613,7 +588,6 @@ public class CarelessCleanupExample {
 	}
 	
 	/**
-	 * 傳進來的資源，要在此處關閉。
 	 * @param fis
 	 * @throws IOException
 	 */

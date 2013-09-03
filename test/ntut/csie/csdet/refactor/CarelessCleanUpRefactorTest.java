@@ -535,7 +535,7 @@ public class CarelessCleanUpRefactorTest {
 		nameOfWillBeTestedMethod = "y2_closeStreamInCatchClause";
 		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, nameOfWillBeTestedMethod);
 		tryStatement = ASTNodeFinder.getTryStatementNodeListByMethodDeclarationName(compilationUnit, nameOfWillBeTestedMethod).get(0);
-		marker = new MarkerInfo(null, null, null, 5079, 161, null);
+		marker = new MarkerInfo(null, null, null, 5065, 161, null);
 		smellMessage.set(refactor, marker);
 		
 		// check precondition
@@ -577,7 +577,7 @@ public class CarelessCleanUpRefactorTest {
 		nameOfWillBeTestedMethod = "y_closeStreamInFinallyButThrowsExceptionInCatchAndFinally";
 		md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, nameOfWillBeTestedMethod);
 		tryStatement = ASTNodeFinder.getTryStatementNodeListByMethodDeclarationName(compilationUnit, nameOfWillBeTestedMethod).get(0);
-		marker = new MarkerInfo(null, null, null, 13566, 471, null);
+		marker = new MarkerInfo(null, null, null, 13552, 471, null);
 		smellMessage.set(refactor, marker);
 		
 		// check precondition
@@ -615,7 +615,7 @@ public class CarelessCleanUpRefactorTest {
 	public void testMoveInstance() throws Exception {
 		ASTMethodCollector methodCollector = new ASTMethodCollector();
 		compilationUnit.accept(methodCollector);
-		MethodDeclaration md = (MethodDeclaration)methodCollector.getMethodList().get(31);
+		MethodDeclaration md = (MethodDeclaration)methodCollector.getMethodList().get(30);
 		TryStatement tryStatement = (TryStatement)md.getBody().statements().get(0);
 		
 		Field currentMethodNode = CarelessCleanUpRefactor.class.getDeclaredField("currentMethodNode");
@@ -716,7 +716,7 @@ public class CarelessCleanUpRefactorTest {
 	public void testCreateNewMethod() throws Exception {
 		ASTMethodCollector methodCollector = new ASTMethodCollector();
 		compilationUnit.accept(methodCollector);
-		MethodDeclaration md = (MethodDeclaration)methodCollector.getMethodList().get(31);
+		MethodDeclaration md = (MethodDeclaration)methodCollector.getMethodList().get(30);
 		TryStatement tryStatement = (TryStatement)md.getBody().statements().get(0);
 		
 		ExpressionStatement mi = (ExpressionStatement)tryStatement.getBody().statements().get(2);
@@ -819,7 +819,7 @@ public class CarelessCleanUpRefactorTest {
 				"}\n", md.toString());
 		
 		/** try statement with finally block and new close method itself, expression statement is "closeStreamWithoutThrowingException(fi);" */
-		md = (MethodDeclaration)methodCollector.getMethodList().get(30);
+		md = (MethodDeclaration)methodCollector.getMethodList().get(29);
 		tryStatement = (TryStatement)md.getBody().statements().get(1);
 		currentMethodNode.set(refactor, md);
 		es = (ExpressionStatement)((CatchClause)tryStatement.catchClauses().get(0)).getBody().statements().remove(0);

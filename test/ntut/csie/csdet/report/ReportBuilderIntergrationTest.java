@@ -406,7 +406,7 @@ public class ReportBuilderIntergrationTest {
 		countFileLOC.setAccessible(true);
 		// 檢查測試專案檔案的行數
 		assertEquals(537, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(NestedTryStatementExample.class, projectName)));
-		assertEquals(763, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(CarelessCleanupExample.class, projectName)));
+		assertEquals(737, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(CarelessCleanupExample.class, projectName)));
 		assertEquals(199, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(OverLoggingJavaLogExample.class, projectName)));
 		assertEquals(174, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(OverLoggingLog4JExample.class, projectName)));
 		assertEquals(159, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(OverLoggingSelf4JExample.class, projectName)));
@@ -674,12 +674,12 @@ public class ReportBuilderIntergrationTest {
 		assertEquals(27, reportModel.getNestedTryTotalSize());
 		assertEquals(26, reportModel.getOverLoggingTotalSize());
 		assertEquals(6, reportModel.getUnMainTotalSize());
-		assertEquals(144, reportModel.getTryCounter());
-		assertEquals(155, reportModel.getCatchCounter());
-		assertEquals(32, reportModel.getFinallyCounter());
+		assertEquals(143, reportModel.getTryCounter());
+		assertEquals(154, reportModel.getCatchCounter());
+		assertEquals(31, reportModel.getFinallyCounter());
 		assertEquals(4, reportModel.getPackagesSize());
 		assertEquals(projectName, reportModel.getProjectName());
-		assertEquals(2222, reportModel.getTotalLine());
+		assertEquals(2196, reportModel.getTotalLine());
 		assertEquals(97, reportModel.getTotalSmellCount());
 	}
 }
