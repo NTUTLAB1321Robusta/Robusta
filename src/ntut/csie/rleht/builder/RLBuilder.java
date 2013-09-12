@@ -195,7 +195,9 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	 * @param resource
 	 */
 	private void checkBadSmells(IResource resource) {
-		if (resource instanceof IFile && resource.getFullPath().segment(1).equals("src") && resource.getFileExtension().equals("java")) {
+		//LMC
+		if (resource instanceof IFile && resource.getFileExtension().equals("java") &&
+			!resource.getFullPath().segment(1).toLowerCase().contains("test")) {
 			IFile file = (IFile) resource;
 			deleteMarkers(file);
 
