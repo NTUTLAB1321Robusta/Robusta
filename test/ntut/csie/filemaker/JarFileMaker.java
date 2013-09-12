@@ -16,8 +16,8 @@ import ntut.csie.robusta.util.PathUtils;
 public class JarFileMaker {
 	public int BUFFER_SIZE = 10240;
 	/**
-	 * @param archiveFile 指定產生Jar檔的路徑 + 檔名
-	 * @param binFolder 傳入bin的listFile
+	 * @param archiveFile Path and file name for the created Jar file
+	 * @param binFolder the listFile of bin
 	 * @param fullPackageName
 	 */
 	public void createJarFile(File archiveFile, File binFolder, String fullPackageName) {
@@ -63,14 +63,14 @@ public class JarFileMaker {
 	}
 	
 	/**
-	 * 根據「.」分隔package name
+	 * split package name by "."
 	 * @param name
 	 * @return
 	 */
 	private String[] splitNameByDot(String name) {
 		String[] result = new String[1];
 		if(name.indexOf(".") != -1) {
-			// 兩個「\」是兩個階段的跳脫字元, 與folder的斜線無關
+			// double "\" is the escape character, not the path
 			return name.split("\\.");
 		}
 		result[0] = name;
@@ -78,7 +78,7 @@ public class JarFileMaker {
 	}
 	
 	/**
-	 * 蒐集要包Jar檔的class
+	 * Collect all class for packing a jar file.
 	 * @param binFolder
 	 * @param fullPackageName
 	 * @return
