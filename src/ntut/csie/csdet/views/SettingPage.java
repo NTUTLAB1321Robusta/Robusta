@@ -45,6 +45,13 @@ public class SettingPage extends APropertyPage {
 	/** Checkbox，選擇是否要將壞味道程式碼反白 */
 	private Button checkbox_HighlightSmellCode;
 	
+	/** Preference group */
+	private Group preferenceGroup;
+	/** Checkbox for show warning to add RL annotation */
+	private Button checkbox_ShowWarning;
+	private boolean[] preferenceList;
+	protected final int PRE_COUNT = 1;
+	
 	private boolean isDetectingAllSmells = false;
 	private boolean[] detSmellList;
 	private boolean isShowWarning = false;
@@ -92,6 +99,9 @@ public class SettingPage extends APropertyPage {
 		detSmellList = new boolean[RLMarkerAttribute.CS_TOTAL_TYPE.length];
 		for (int i =0; i < detSmellList.length; i++)
 			detSmellList[i] = true;
+		
+		preferenceList = new boolean[PRE_COUNT];
+		preferenceList[0] = true; 
 
 		tempText = new TemplateText[RLMarkerAttribute.CS_TOTAL_TYPE.length];
 		String temp =	"try {\n" +
@@ -162,7 +172,7 @@ public class SettingPage extends APropertyPage {
 				"}\n";
 				
 		tempText[6] = new TemplateText(temp, isShowWarning);
-		
+				
 		descText = new String[RLMarkerAttribute.CS_TOTAL_TYPE.length];
 		descText[0] = resource.getString("empty.catch.description");
 		descText[1] = resource.getString("dummy.handler.description");
@@ -188,6 +198,11 @@ public class SettingPage extends APropertyPage {
 		
 		for(int i = 0; i < RLMarkerAttribute.CS_TOTAL_TYPE.length; i++) {
 			detSmellList[i] = Boolean.parseBoolean(smellElements[i].getAttributeValue(SmellSettings.ATTRIBUTE_ISDETECTING));
+		}
+		Element[] prefElements = new Element[PRE_COUNT];
+		prefElements[0] = smellSettings.getPreference(SmellSettings.PRE_SHOWWARNING);
+		for(int i=0; i<PRE_COUNT; i++){
+			preferenceList[i] = Boolean.parseBoolean(prefElements[i].getAttributeValue(SmellSettings.ATTRIBUTE_ENABLE));
 		}
 	}
 
@@ -232,11 +247,28 @@ public class SettingPage extends APropertyPage {
 //				jarFileMaker.createJarFile(jar, test, "ntut.csie.robusta.agile.exception");
 //			}
 //		});
-
+		
+		// Preferences
+		preferenceGroup = new Group(selectComposite, SWT.NONE);
+		preferenceGroup.setText(resource.getString("settingPage.preference"));
+		preferenceGroup.setLocation(10, 5);
+		checkbox_ShowWarning = new Button(preferenceGroup, SWT.CHECK);
+		checkbox_ShowWarning.setText(resource.getString("settingPage.showRLWarning"));
+		checkbox_ShowWarning.setLocation(10, 20);
+		checkbox_ShowWarning.pack();
+		checkbox_ShowWarning.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(final SelectionEvent e) {
+				preferenceList[0] = checkbox_ShowWarning.getSelection();
+				//setUserSetting();
+			}
+		});
+		preferenceGroup.pack();
+		
+		
 		// 上半部，選擇要偵測的Smell群組
 		smellTypeGroup = new Group(selectComposite, SWT.NONE);
 		smellTypeGroup.setText(resource.getString("settingPage.smell.type"));
-		smellTypeGroup.setLocation(10, 5);
+		smellTypeGroup.setLocation(10, getLowerRightCoordinate(preferenceGroup).y + 5);
 
 		//是否要選擇性偵測的Button
 		checkbox_DetectAllSmells = new Button(smellTypeGroup, SWT.CHECK);
@@ -323,6 +355,9 @@ public class SettingPage extends APropertyPage {
 				detSmellList[i] = isDetectingAllSmells;
 			item[i].setChecked(detSmellList[i]);
 		}
+		for(int i=0; i<PRE_COUNT; i++) {
+			checkbox_ShowWarning.setSelection(preferenceList[i]);
+		}
 	}
 	
 	private void changeTemplateText(int index) {
@@ -363,6 +398,7 @@ public class SettingPage extends APropertyPage {
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_OVERLOGGING, SmellSettings.ATTRIBUTE_ISDETECTING, item[5].getChecked());
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_OVERWRITTENLEADEXCEPTION, SmellSettings.ATTRIBUTE_ISDETECTING, item[6].getChecked());
 
+		smellSettings.setPreferenceAttribute(SmellSettings.PRE_SHOWWARNING, SmellSettings.ATTRIBUTE_ENABLE, preferenceList[0]);
 		//將檔案寫回
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		return true;

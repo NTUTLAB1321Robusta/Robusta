@@ -10,6 +10,7 @@ import java.util.TreeMap;
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.data.SSMessage;
 import ntut.csie.csdet.preference.JDomUtil;
+import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.visitor.CarelessCleanupVisitor;
 import ntut.csie.csdet.visitor.DummyHandlerVisitor;
 import ntut.csie.csdet.visitor.IgnoreExceptionVisitor;
@@ -18,6 +19,7 @@ import ntut.csie.csdet.visitor.OverLoggingDetector;
 import ntut.csie.csdet.visitor.OverwrittenLeadExceptionVisitor;
 import ntut.csie.csdet.visitor.SuppressWarningVisitor;
 import ntut.csie.csdet.visitor.UnprotectedMainProgramVisitor;
+import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 import ntut.csie.java.util.CastingObject;
 import ntut.csie.rleht.common.ASTHandler;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
@@ -403,10 +405,13 @@ public class RLBuilder extends IncrementalProjectBuilder {
 						msgIdx++;
 						if (msg.getRLData().getLevel() >= 0) {
 							if (!msg.isHandling()) {
-//								pig 修改，將缺少 RL notation 時的警告暫時註解掉
-//								String errmsg = this.resource.getString("tag.undefine1") + msg.getRLData().getExceptionType() + this.resource.getString("tag.undefine2");
-//								this.addMarker(file, errmsg.toString(), msg.getLineNumber(), IMarker.SEVERITY_WARNING,
-//										RLMarkerAttribute.ERR_NO_RL, msg, msgIdx, methodIdx);
+								SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+								if(smellSettings.getPreferenceAttribute(SmellSettings.PRE_SHOWWARNING))
+								{
+									String errmsg = this.resource.getString("tag.undefine1") + msg.getRLData().getExceptionType() + this.resource.getString("tag.undefine2");
+									this.addMarker(file, errmsg.toString(), msg.getLineNumber(), IMarker.SEVERITY_WARNING,
+											RLMarkerAttribute.ERR_NO_RL, msg, msgIdx, methodIdx);
+								}
 							}
 						}
 					}

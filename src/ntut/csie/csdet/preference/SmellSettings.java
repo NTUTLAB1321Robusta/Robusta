@@ -48,6 +48,9 @@ public class SmellSettings {
 	public final static String ATTRIBUTE_ISDETECTING = "isDetecting";	
 	public final static String ATTRIBUTE_ENABLE = "enable";	
 	
+	public final static String TAG_PREFERENCE = "Preferences";
+	public final static String PRE_SHOWWARNING = "ShowWarning";
+		
 	public final static String SMELL_EMPTYCATCHBLOCK = "EmptyCatchBlock";
 	public final static String SMELL_DUMMYHANDLER = "DummyHandler";
 	public final static String SMELL_NESTEDTRYBLOCK = "NestedTryBlock";
@@ -178,12 +181,43 @@ public class SmellSettings {
 		}
 		return tagAnnotationTypeElement;
 	}
+	
+	public Element getPreference(String preferenceName){
+		Element root = settingDoc.getRootElement();
+		List<?> elements = root.getChildren(TAG_PREFERENCE);
+		Element tagPreferenceElement = null;
+		for (Object s : elements) {
+			Element preferenceElement = (Element)s;
+			if(preferenceElement.getAttribute(ATTRIBUTE_NAME).getValue().equals(preferenceName)) {
+				tagPreferenceElement = preferenceElement;
+				return tagPreferenceElement;
+			}
+		}
+		
+		if(tagPreferenceElement == null) {
+			tagPreferenceElement = new Element(TAG_PREFERENCE);
+			tagPreferenceElement.setAttribute(ATTRIBUTE_NAME, preferenceName);
+			tagPreferenceElement.setAttribute(ATTRIBUTE_ENABLE, String.valueOf(true));
+			root.addContent(tagPreferenceElement);
+		}
+		return tagPreferenceElement;
+	}
 		
 	public void setSmellTypeAttribute(String badSmellName, String attributeName, Boolean attributeValue) {
 		Element badSmellElement = getSmellType(badSmellName);
 		badSmellElement.setAttribute(attributeName, String.valueOf(attributeValue));
 	}
 	
+	public void setPreferenceAttribute(String preferenceName, String attributeName, Boolean attributeValue){
+		Element preElement = getPreference(preferenceName);
+		preElement.setAttribute(attributeName, String.valueOf(attributeValue));
+	}
+	
+	public boolean getPreferenceAttribute(String attributeName) {
+		Element preElement = getPreference(attributeName);
+		return Boolean.parseBoolean(preElement.getAttributeValue(ATTRIBUTE_ENABLE));		
+	}
+		
 	public void addDummyHandlerPattern(String patternName, boolean isDetecting) {
 		addPattern(SMELL_DUMMYHANDLER, patternName, isDetecting);
 	}
@@ -490,7 +524,7 @@ public class SmellSettings {
 		addExtraRule(SMELL_OVERLOGGING, EXTRARULE_OVERLOGGING_DETECTWRAPPINGEXCEPTION);
 		addExtraRule(SMELL_OVERLOGGING, EXTRARULE_JavaUtilLoggingLogger);
 		addExtraRule(SMELL_OVERLOGGING, EXTRARULE_OrgApacheLog4j);
-		
+		setPreferenceAttribute(PRE_SHOWWARNING, ATTRIBUTE_ENABLE, true);
 		writeXMLFile(path);
 	}
 }
