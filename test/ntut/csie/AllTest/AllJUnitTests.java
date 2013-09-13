@@ -4,6 +4,7 @@ import ntut.csie.csdet.data.CSMessageTest;
 import ntut.csie.csdet.data.MarkerInfoTest;
 import ntut.csie.csdet.preference.SmellSettingsTest;
 import ntut.csie.csdet.report.ClassModelTest;
+import ntut.csie.filemaker.JarFileMakerTest;
 import ntut.csie.filemaker.test.JavaFileToStringTest;
 import ntut.csie.jdt.util.ClazzTest;
 
@@ -21,7 +22,9 @@ import org.junit.runners.Suite;
 	
 	ClazzTest.class,
 	
-	JavaFileToStringTest.class
+	JavaFileToStringTest.class,
+	
+	JarFileMakerTest.class
 })
 public class AllJUnitTests {
 }
