@@ -16,7 +16,6 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -80,20 +79,23 @@ public class SpecificNodeVisitorTest {
 	}
 
 	@Test
-	public void testVisitTryStatementAndCatchClause() {
-		specificNodeVisitor = new SpecificNodeVisitor();
-		specificNodeVisitor.addNodeType(ASTNode.TRY_STATEMENT);
-		specificNodeVisitor.addNodeType(ASTNode.CATCH_CLAUSE);
-		compilationUnit.accept(specificNodeVisitor);
-		assertEquals(14, specificNodeVisitor.getCount());
-	}
-
-	@Test
 	public void testVisitAllTypesOfStatement() {
 		specificNodeVisitor = new SpecificNodeVisitor();
 		specificNodeVisitor.addStatementAsNodeType();
 		compilationUnit.accept(specificNodeVisitor);
-		assertEquals(67, specificNodeVisitor.getCount());
-		// 沒有block時是43，有時是67
+		assertEquals(43, specificNodeVisitor.getCount());
 	}
+
+	@Test
+	/**
+	 * 如果同時符合幾種類別（例如重複加入）時不會重複計算
+	 */
+	public void testVisitMultiMatch() {
+		specificNodeVisitor = new SpecificNodeVisitor();
+		specificNodeVisitor.addStatementAsNodeType();
+		specificNodeVisitor.addNodeType(ASTNode.TRY_STATEMENT);  // 重複
+		compilationUnit.accept(specificNodeVisitor);
+		assertEquals(43, specificNodeVisitor.getCount());
+	}
+
 }

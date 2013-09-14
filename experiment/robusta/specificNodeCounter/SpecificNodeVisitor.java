@@ -47,10 +47,6 @@ public class SpecificNodeVisitor extends ASTVisitor {
 		specificNodeTypes.add(index);
 	}
 
-	public int getCount() {
-		return counter;
-	}
-
 	/**
 	 * 將「Statement」新增到要偵測的 node types 中
 	 */
@@ -59,8 +55,9 @@ public class SpecificNodeVisitor extends ASTVisitor {
 		 * 此處認為這些types的交集即為statement，因為
 		 * 	一、參考了 <code>Statement</code> 開頭註解中對JLS3的敘述（敘述中缺少SwitchCase）
 		 * 	二、檢查過所有使用到 <code>Statement</code> 的同 package 的 class
+		 * 
+		 * 另外故意忽略 Block，因為人的直覺上 Block 並不是 Statement
 		 */
-		specificNodeTypes.add(ASTNode.BLOCK);
 		specificNodeTypes.add(ASTNode.IF_STATEMENT);
 		specificNodeTypes.add(ASTNode.FOR_STATEMENT);
 		specificNodeTypes.add(ASTNode.ENHANCED_FOR_STATEMENT);
@@ -82,5 +79,9 @@ public class SpecificNodeVisitor extends ASTVisitor {
 		specificNodeTypes.add(ASTNode.CONSTRUCTOR_INVOCATION);
 		specificNodeTypes.add(ASTNode.SUPER_CONSTRUCTOR_INVOCATION);
 		specificNodeTypes.add(ASTNode.SWITCH_CASE);
+	}
+
+	public int getCount() {
+		return counter;
 	}
 }
