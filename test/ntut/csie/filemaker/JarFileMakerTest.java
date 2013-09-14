@@ -2,10 +2,13 @@ package ntut.csie.filemaker;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Method;
-import java.nio.file.Files;
+import java.nio.channels.FileChannel;
+
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -28,6 +31,29 @@ public class JarFileMakerTest {
 	    folder.delete();
 	}
 	
+	private static void copyFile(File sourceFile, File destFile) throws IOException {
+	    if(!destFile.exists()) {
+	        destFile.createNewFile();
+	    }
+	    FileChannel source = null;
+	    FileChannel destination = null;
+	    try {
+	        source = new FileInputStream(sourceFile).getChannel();
+	        destination = new FileOutputStream(destFile).getChannel();
+	        long count = 0;
+	        long size = source.size();              
+	        while((count += destination.transferFrom(source, count, size-count))<size);
+	    }
+	    finally {
+	        if(source != null) {
+	            source.close();
+	        }
+	        if(destination != null) {
+	            destination.close();
+	        }
+	    }
+	}
+	
 	private static final String BIN_FOLDER = "./TestFolder";
 	private static final String TARGET_FOLDER = "./TestFolder/TargetFolder";
 	@BeforeClass
@@ -43,14 +69,14 @@ public class JarFileMakerTest {
 		//Create empty text file for file1 level2
 		OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
 		writer.close();
-		Files.copy(file.toPath(), new File(BIN_FOLDER + "./text1.txt").toPath());
+		copyFile(file, new File(BIN_FOLDER + "./text1.txt"));
 		
 		//Create not empty file for file2 level2
 		file = new File(path2);
 		writer = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
 		writer.write("This string make me not be empty");
 		writer.close();
-		Files.copy(file.toPath(), new File(BIN_FOLDER + "./text2.txt").toPath());
+		copyFile(file, new File(BIN_FOLDER + "./text2.txt"));
 	}
 	
 	@AfterClass

@@ -700,7 +700,6 @@ public class SmellSettingsTest {
 				"<SmellTypes name=\"OverLogging\" isDetecting=\"true\"><extraRule name=\"DetectWrappingExcetion\" />" +
 				"<extraRule name=\"java.util.logging.Logger\" /><extraRule name=\"org.apache.log4j\" />" +
 				"</SmellTypes>"	+
-				"<Preferences name=\"ShowWarning\" enable=\"true\" />" +
 				"</CodeSmells>",
 				fileContent);
 	}
