@@ -253,7 +253,7 @@ public class SettingPage extends APropertyPage {
 		preferenceGroup.setText(resource.getString("settingPage.preference"));
 		preferenceGroup.setLocation(10, 5);
 		checkbox_ShowWarning = new Button(preferenceGroup, SWT.CHECK);
-		checkbox_ShowWarning.setText(resource.getString("settingPage.showRLWarning"));
+		checkbox_ShowWarning.setText(resource.getString("settingPage.remindRLAnnotation"));
 		checkbox_ShowWarning.setLocation(10, 20);
 		checkbox_ShowWarning.pack();
 		checkbox_ShowWarning.addSelectionListener(new SelectionAdapter() {
