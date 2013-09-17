@@ -7,9 +7,6 @@ import java.io.FileOutputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
 
-import ntut.csie.robusta.agile.exception.RTag;
-import ntut.csie.robusta.agile.exception.Robustness;
-
 public class OverwrittenLeadExceptionExample {
 	/**
 	 * 沒有Finally Block，不會被加上mark
@@ -34,7 +31,6 @@ public class OverwrittenLeadExceptionExample {
 	 * @param outputFile
 	 * @throws IOException
 	 */
-	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void withFinally(byte[] context, File outputFile) throws IOException {
 		FileOutputStream fileOutputStream = null;
 		try {
@@ -55,7 +51,6 @@ public class OverwrittenLeadExceptionExample {
 	 * @param outputFile
 	 * @throws IOException
 	 */
-	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void closeStreamInIfStatementWithFinally(byte[] context, File outputFile) throws IOException {
 		FileOutputStream fileOutputStream = null;
 		try {
@@ -77,7 +72,6 @@ public class OverwrittenLeadExceptionExample {
 	 * @param outputFile
 	 * @throws IOException
 	 */
-	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void closeStreamInWhileStatementWithFinally(byte[] context, File outputFile) throws IOException {
 		FileOutputStream fileOutputStream = null;
 		try {
@@ -124,7 +118,6 @@ public class OverwrittenLeadExceptionExample {
 	 * @param outputFile
 	 * @throws IOException
 	 */
-	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void closeStreamInNestedTryStatementWithFinally(byte[] context, File outputFile) throws IOException {
 		FileOutputStream fileOutputStream = null;
 		try {
@@ -151,7 +144,6 @@ public class OverwrittenLeadExceptionExample {
 	 * @param outputFile
 	 * @throws IOException
 	 */
-	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void closeStreamInNestedTryStatementWithoutCatch(byte[] context, File outputFile) throws IOException {
 		FileOutputStream fileOutputStream = null;
 		try {
@@ -176,7 +168,6 @@ public class OverwrittenLeadExceptionExample {
 	 * @param outputFile
 	 * @throws IOException
 	 */
-	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void closeStreamInNestedTryStatementInCatchWithFinally(byte[] context, File outputFile) throws IOException {
 		FileOutputStream fileOutputStream = null, fileOutputStream2 = null;
 		try {
@@ -217,7 +208,6 @@ public class OverwrittenLeadExceptionExample {
 	 * @param outputFile
 	 * @throws IOException
 	 */
-	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void closeStreamInNestedTryStatementInCatchWithoutFinally(byte[] context, File outputFile) throws IOException {
 		FileOutputStream fileOutputStream = null, fileOutputStream2 = null;
 		try {
@@ -255,7 +245,6 @@ public class OverwrittenLeadExceptionExample {
 	 * @param outputFile
 	 * @throws IOException
 	 */
-	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void closeStreamInThreeNestedTryStatement(byte[] context, File outputFile) throws IOException {
 		FileOutputStream fileOutputStream = null, fileOutputStream2 = null, fileOutputStream3 = null;
 		try {
@@ -296,7 +285,6 @@ public class OverwrittenLeadExceptionExample {
 	 * @param outputFile
 	 * @throws IOException
 	 */
-	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void closeStreamInThreeNestedTryStatementInCatch(byte[] context, File outputFile) throws IOException {
 		FileOutputStream fileOutputStream = null, fileOutputStream2 = null, fileOutputStream3 = null;
 		try {
@@ -354,7 +342,6 @@ public class OverwrittenLeadExceptionExample {
 	 * @param outputFile
 	 * @throws IOException
 	 */
-	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void closeStreamInThreeNestedTryStatementInBoth(byte[] context, File outputFile) {
 		FileOutputStream fileOutputStream = null, fileOutputStream2 = null, fileOutputStream3 = null;
 		try {
@@ -421,7 +408,6 @@ public class OverwrittenLeadExceptionExample {
 	 * @param outputFile
 	 * @throws IOException
 	 */
-	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void closeStreamInThreeNestedTryStatementInCatch2(byte[] context, File outputFile) throws IOException {
 		FileOutputStream fileOutputStream = null, fileOutputStream2 = null, fileOutputStream3 = null;
 		try {
@@ -480,7 +466,6 @@ public class OverwrittenLeadExceptionExample {
 	 * @param outputFile
 	 * @throws IOException
 	 */
-	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void closeStreamInThreeNestedTryStatement2(byte[] context, File outputFile) throws IOException {
 		FileOutputStream fileOutputStream = null, fileOutputStream2 = null, fileOutputStream3 = null;
 		try {
@@ -519,7 +504,6 @@ public class OverwrittenLeadExceptionExample {
 	 * 
 	 * @Author pig
 	 */
-	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void overwrittenInTryBlock(String filePath, byte[] context)
 			throws IOException {
 		FileOutputStream fis = null;
@@ -541,7 +525,6 @@ public class OverwrittenLeadExceptionExample {
 	 * @Author pig
 	 */
 	@SuppressWarnings("finally")
-	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void throwButWithoutExceptionBeforeWithDH() throws IOException {
 		try {
 		} finally {
@@ -556,7 +539,6 @@ public class OverwrittenLeadExceptionExample {
 	 * 
 	 * @Author pig
 	 */
-	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void throwButWithoutExceptionBeforeWithDH(String filePath,
 			byte[] context) throws IOException {
 		FileOutputStream fis = null;
@@ -577,7 +559,6 @@ public class OverwrittenLeadExceptionExample {
 	 * 
 	 * @Author pig
 	 */
-	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void throwButWithoutExceptionBeforeWithECB(String filePath,
 			byte[] context) throws IOException {
 		FileOutputStream fis = null;
@@ -596,7 +577,6 @@ public class OverwrittenLeadExceptionExample {
 	 * 
 	 * @Author pig
 	 */
-	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void tryWithCatchInTryBlock(String filePath,
 			byte[] context) throws IOException {
 		FileOutputStream fis = null;
@@ -619,7 +599,6 @@ public class OverwrittenLeadExceptionExample {
 	 * 
 	 * @Author pig
 	 */
-	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void tryWithFinallyInTryBlock(String filePath,
 			byte[] context) throws IOException {
 		FileOutputStream fis = null;
@@ -646,7 +625,6 @@ public class OverwrittenLeadExceptionExample {
 	 * 
 	 * @Author pig
 	 */
-	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public static void tryWithFinallyOutOfTryBlock() throws IOException {
 		try {
 		} finally {
@@ -668,7 +646,6 @@ public class OverwrittenLeadExceptionExample {
 	 * @Author pig
 	 */
 	@SuppressWarnings("finally")
-	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public static void multiNestedTryTryWithFinally1() throws IOException {
 		try {
 			try {
@@ -688,7 +665,6 @@ public class OverwrittenLeadExceptionExample {
 	 * 未找出來的Ground truth例子
 	 * @throws FileNotFoundException 
 	 */
-	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public FilterInputStream antGTExample1() throws FileNotFoundException {
 		return new FilterInputStream(new FileInputStream(new File(""))) {
 	         public void close() throws IOException {
@@ -707,7 +683,6 @@ public class OverwrittenLeadExceptionExample {
 	 * 未找出來的Ground truth例子
 	 * @throws FileNotFoundException 
 	 */
-	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void antGTExample2(byte[] context, File outputFile) throws IOException {
 		FileOutputStream fileOutputStream = null, fileOutputStream2 = null;
 		try {
