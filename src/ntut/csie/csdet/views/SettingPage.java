@@ -200,7 +200,7 @@ public class SettingPage extends APropertyPage {
 			detSmellList[i] = Boolean.parseBoolean(smellElements[i].getAttributeValue(SmellSettings.ATTRIBUTE_ISDETECTING));
 		}
 		Element[] prefElements = new Element[PRE_COUNT];
-		prefElements[0] = smellSettings.getPreference(SmellSettings.PRE_SHOWWARNING);
+		prefElements[0] = smellSettings.getPreference(SmellSettings.PRE_SHOWRLANNOTATIONWARNING);
 		for(int i=0; i<PRE_COUNT; i++){
 			preferenceList[i] = Boolean.parseBoolean(prefElements[i].getAttributeValue(SmellSettings.ATTRIBUTE_ENABLE));
 		}
@@ -398,7 +398,7 @@ public class SettingPage extends APropertyPage {
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_OVERLOGGING, SmellSettings.ATTRIBUTE_ISDETECTING, item[5].getChecked());
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_OVERWRITTENLEADEXCEPTION, SmellSettings.ATTRIBUTE_ISDETECTING, item[6].getChecked());
 
-		smellSettings.setPreferenceAttribute(SmellSettings.PRE_SHOWWARNING, SmellSettings.ATTRIBUTE_ENABLE, preferenceList[0]);
+		smellSettings.setPreferenceAttribute(SmellSettings.PRE_SHOWRLANNOTATIONWARNING, SmellSettings.ATTRIBUTE_ENABLE, preferenceList[0]);
 		//將檔案寫回
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		return true;

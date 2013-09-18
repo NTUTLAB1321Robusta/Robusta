@@ -729,36 +729,36 @@ public class SmellSettingsTest {
 	@Test
 	public void testGetPreference() throws Exception {
 		assertFalse(smellSettingFile.exists());
-		smellSettings.getPreference(SmellSettings.PRE_SHOWWARNING);
+		smellSettings.getPreference(SmellSettings.PRE_SHOWRLANNOTATIONWARNING);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		assertTrue(smellSettingFile.exists());
 		String fileContent = readFileContents(smellSettingFile);
 		assertEquals(
 				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-				"<CodeSmells><Preferences name=\"ShowWarning\" enable=\"true\" />" +
+				"<CodeSmells><Preferences name=\"ShowRLAnnotationWarning\" enable=\"true\" />" +
 				"</CodeSmells>", fileContent);
 	}
 	
 	@Test
 	public void testGetPreferenceAttribute() {
 		assertFalse(smellSettingFile.exists());
-		smellSettings.getPreference(SmellSettings.PRE_SHOWWARNING);
+		smellSettings.getPreference(SmellSettings.PRE_SHOWRLANNOTATIONWARNING);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		assertTrue(smellSettingFile.exists());
-		assertTrue(smellSettings.getPreferenceAttribute(SmellSettings.PRE_SHOWWARNING));
+		assertTrue(smellSettings.getPreferenceAttribute(SmellSettings.PRE_SHOWRLANNOTATIONWARNING));
 	}
 	
 	@Test
 	public void testSetPreferenceAttribute() {
 		assertFalse(smellSettingFile.exists());
-		smellSettings.getPreference(SmellSettings.PRE_SHOWWARNING);
+		smellSettings.getPreference(SmellSettings.PRE_SHOWRLANNOTATIONWARNING);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
-		assertTrue(smellSettings.getPreferenceAttribute(SmellSettings.PRE_SHOWWARNING));
-		smellSettings.setPreferenceAttribute(SmellSettings.PRE_SHOWWARNING, SmellSettings.ATTRIBUTE_ENABLE, false);
+		assertTrue(smellSettings.getPreferenceAttribute(SmellSettings.PRE_SHOWRLANNOTATIONWARNING));
+		smellSettings.setPreferenceAttribute(SmellSettings.PRE_SHOWRLANNOTATIONWARNING, SmellSettings.ATTRIBUTE_ENABLE, false);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
-		assertFalse(smellSettings.getPreferenceAttribute(SmellSettings.PRE_SHOWWARNING));
-		smellSettings.setPreferenceAttribute(SmellSettings.PRE_SHOWWARNING, SmellSettings.ATTRIBUTE_ENABLE, true);
+		assertFalse(smellSettings.getPreferenceAttribute(SmellSettings.PRE_SHOWRLANNOTATIONWARNING));
+		smellSettings.setPreferenceAttribute(SmellSettings.PRE_SHOWRLANNOTATIONWARNING, SmellSettings.ATTRIBUTE_ENABLE, true);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
-		assertTrue(smellSettings.getPreferenceAttribute(SmellSettings.PRE_SHOWWARNING));
+		assertTrue(smellSettings.getPreferenceAttribute(SmellSettings.PRE_SHOWRLANNOTATIONWARNING));
 	}
 }

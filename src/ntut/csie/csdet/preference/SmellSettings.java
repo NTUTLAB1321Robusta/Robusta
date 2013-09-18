@@ -49,7 +49,7 @@ public class SmellSettings {
 	public final static String ATTRIBUTE_ENABLE = "enable";	
 	
 	public final static String TAG_PREFERENCE = "Preferences";
-	public final static String PRE_SHOWWARNING = "ShowWarning";
+	public final static String PRE_SHOWRLANNOTATIONWARNING = "ShowRLAnnotationWarning";
 		
 	public final static String SMELL_EMPTYCATCHBLOCK = "EmptyCatchBlock";
 	public final static String SMELL_DUMMYHANDLER = "DummyHandler";

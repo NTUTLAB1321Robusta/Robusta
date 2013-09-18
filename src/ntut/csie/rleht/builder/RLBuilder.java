@@ -407,7 +407,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 						if (msg.getRLData().getLevel() >= 0) {
 							if (!msg.isHandling()) {
 								SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-								if(smellSettings.getPreferenceAttribute(SmellSettings.PRE_SHOWWARNING))
+								if(smellSettings.getPreferenceAttribute(SmellSettings.PRE_SHOWRLANNOTATIONWARNING))
 								{
 									String errmsg = this.resource.getString("tag.undefine1") + msg.getRLData().getExceptionType() + this.resource.getString("tag.undefine2");
 									this.addMarker(file, errmsg.toString(), msg.getLineNumber(), IMarker.SEVERITY_WARNING,
