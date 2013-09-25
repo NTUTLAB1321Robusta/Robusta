@@ -164,14 +164,15 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	}
 	
 	/*
-	 * 每次有build的時候,都會invoke這個method
+	 * this method will be invoked every build
 	 * 
 	 * @see org.eclipse.core.internal.events.InternalBuilder#build(int,
 	 *      java.util.Map, org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	protected IProject[] build(int kind, @SuppressWarnings("rawtypes") Map args, IProgressMonitor monitor) throws CoreException {
 		getDetectSettings();
-		
+
+		logger.debug("[RLBuilder] START !!");
 		long start = System.currentTimeMillis();
 		if (kind == FULL_BUILD) {
 			fullBuild(monitor);
@@ -186,6 +187,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 			}
 		}
 		long end = System.currentTimeMillis();
+		logger.debug("[RLBuilder] END !!");
 		System.out.println("RLBuild花費時間 " + (end - start) + " milli second.");
 		return null;
 	}
@@ -542,21 +544,13 @@ public class RLBuilder extends IncrementalProjectBuilder {
 		}
 	}
 
+	
 	protected void fullBuild(final IProgressMonitor monitor) throws CoreException {
-		logger.debug("[RLBuilder] START !!");
-		try {
-			getProject().accept(new RLResourceVisitor());
-		}
-		catch (CoreException e) {
-		}
-		logger.debug("[RLBuilder] END !!");
+		getProject().accept(new RLResourceVisitor());
 	}
 
 	protected void incrementalBuild(IResourceDelta delta, IProgressMonitor monitor) throws CoreException {
-		// the visitor does the work.
-		logger.debug("[RLBuilder] START !!");
 		delta.accept(new RLMethodDeltaVisitor());
-		logger.debug("[RLBuilder] END !!");
 	}
 
 	// =========================================================================
@@ -569,19 +563,13 @@ public class RLBuilder extends IncrementalProjectBuilder {
 		 */
 		public boolean visit(IResourceDelta delta) throws CoreException {
 			IResource resource = delta.getResource();
-			switch (delta.getKind()) {
-				case IResourceDelta.ADDED:
-					// handle added resource
-					checkBadSmells(resource);
-					break;
-				case IResourceDelta.REMOVED:
-					// handle removed resource
-					break;
-				case IResourceDelta.CHANGED:
-					// handle changed resource
-					checkBadSmells(resource);
-					break;
-			}
+			/*
+			 * do nothing when the IResourceDelta is REMOVED
+			 * otherwise have to call checkBadSmells()
+			 */
+			if(delta.getKind() != IResourceDelta.REMOVED) {
+				checkBadSmells(resource);
+			} 
 			// return true to continue visiting children.
 			return true;
 		}
