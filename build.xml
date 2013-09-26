@@ -4,7 +4,7 @@
  ****************************************************************************-->
 <project name="Robusta" default="all">
 	<property environment="env"/>
-    <property name="eclipse-home" value="${env.ECLIPSE_HOME}"/>
+    <property name="ECLIPSE_HOME" value="${env.ECLIPSE_HOME}"/>
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.6"/>
     <property name="source" value="1.6"/>
@@ -30,76 +30,75 @@
 	
 	<!-- project lib -->
 	<path id="Plug-in Dependencies.libraryclasspath">
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.ui_3.6.2.M20110203-1100.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.swt_3.6.2.v3659c.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.swt.win32.win32.x86_3.6.2.v3659c.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.jface_3.6.2.M20110210-1200.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.core.commands_3.6.0.I20100512-1500.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.ui.workbench_3.6.2.M20110210-1200.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.core.runtime_3.6.0.v20100505.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.osgi_3.6.2.R36x_v20110210.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.equinox.common_3.6.0.v20100503.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.core.jobs_3.5.1.R36x_v20100824.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.core.runtime.compatibility.registry_3.3.0.v20100520/runtime_registry_compatibility.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.core.runtime.source_3.6.0.v20100505.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.equinox.registry_3.5.0.v20100503.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.equinox.preferences_3.3.0.v20100503.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.core.contenttype_3.4.100.v20100505-1235.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.equinox.app_1.3.1.R36x_v20100803.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.jdt_3.6.1.v201102101200.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.jdt.core_3.6.2.v_A76_R36x.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.jdt.compiler.apt_1.0.300.v20100513-0845.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.jdt.compiler.tool_1.0.100.v_A76_R36x.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.core.resources_3.6.1.R36x_v20110131-1630.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.ltk.core.refactoring_3.5.101.r362_v20101117-0800.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.ltk.ui.refactoring_3.5.0.v20100526-0800.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.jface.text_3.6.1.r361_v20100825-0800.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.text_3.5.0.v20100601-1300.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.ui.editors_3.6.1.r361_v20100825-0800.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.core.filebuffers_3.5.100.v20100520-0800.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.jdt.ui_3.6.2.r362_v20110203.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.ui.workbench.texteditor_3.6.1.r361_v20100714-0800.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.ui.console_3.5.0.v20100526.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.ui.ide_3.6.2.M20101201-0800.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.compare_3.5.101.R36x_v20100929-0800.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.compare.core_3.5.101.R36x_v20100929-0800.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.jdt.junit_3.6.1.r361_v20100825-0800.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.jdt.junit.core_3.6.1.r361_v20100825-0800.jar"/>
-        <pathelement location="${eclipse-home}/plugins/net.java.amateras.umleditor_1.3.1.jar"/>
-        <pathelement location="${eclipse-home}/plugins/net.java.amateras.umleditor.java_1.3.1.jar"/>
-        <pathelement location="${eclipse-home}/plugins/net.java.amateras.xstream_1.3.1.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.draw2d_3.6.2.v20110128-0100.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.gef_3.6.2.v20110110-2020.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.jdt.launching_3.5.200.v20110105_r362.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.junit_4.8.1.v4_8_1_v20100427-1100/junit.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.jdt.astview_1.1.3.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.jdt.core.manipulation_1.3.0.v20100520-0800.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-antlr.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-apache-bcel.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-apache-bsf.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-apache-log4j.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-apache-oro.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-apache-regexp.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-apache-resolver.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-commons-logging.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-commons-net.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-jai.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-javamail.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-jdepend.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-jmf.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-jsch.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-junit.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-launcher.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-netrexx.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-nodeps.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-starteam.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-stylebook.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-swing.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-trax.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-weblogic.jar"/>
-        <pathelement location="${eclipse-home}/plugins/org.eclipse.ui.views_3.5.1.M20110202-0800.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui_3.6.2.M20110203-1100.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.swt_3.6.2.v3659c.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.swt.win32.win32.x86_64_3.6.2.v3659c.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jface_3.6.2.M20110210-1200.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.commands_3.6.0.I20100512-1500.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui.workbench_3.6.2.M20110210-1200.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.runtime_3.6.0.v20100505.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.osgi_3.6.2.R36x_v20110210.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.equinox.common_3.6.0.v20100503.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.jobs_3.5.1.R36x_v20100824.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.runtime.compatibility.registry_3.3.0.v20100520/runtime_registry_compatibility.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.equinox.registry_3.5.0.v20100503.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.equinox.preferences_3.3.0.v20100503.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.contenttype_3.4.100.v20100505-1235.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.equinox.app_1.3.1.R36x_v20100803.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jdt_3.6.1.v201102101200.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jdt.core_3.6.2.v_A76_R36x.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jdt.compiler.apt_1.0.300.v20100513-0845.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jdt.compiler.tool_1.0.100.v_A76_R36x.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.resources_3.6.1.R36x_v20110131-1630.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ltk.core.refactoring_3.5.101.r362_v20101117-0800.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ltk.ui.refactoring_3.5.0.v20100526-0800.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jface.text_3.6.1.r361_v20100825-0800.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.text_3.5.0.v20100601-1300.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui.editors_3.6.1.r361_v20100825-0800.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.filebuffers_3.5.100.v20100520-0800.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jdt.ui_3.6.2.r362_v20110203.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui.workbench.texteditor_3.6.1.r361_v20100714-0800.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui.console_3.5.0.v20100526.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui.ide_3.6.2.M20101201-0800.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.compare_3.5.101.R36x_v20100929-0800.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.compare.core_3.5.101.R36x_v20100929-0800.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jdt.junit_3.6.1.r361_v20100825-0800.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jdt.junit.core_3.6.1.r361_v20100825-0800.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/net.java.amateras.umleditor_1.3.4.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/net.java.amateras.umleditor.java_1.3.4.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/net.java.amateras.xstream_1.3.4.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.draw2d_3.6.2.v20110128-0100.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.gef_3.6.2.v20110110-2020.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jdt.launching_3.5.200.v20110105_r362.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.junit_4.8.1.v4_8_1_v20100427-1100/junit.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jdt.astview_1.1.7.201103211622.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jdt.core.manipulation_1.3.0.v20100520-0800.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-antlr.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-apache-bcel.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-apache-bsf.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-apache-log4j.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-apache-oro.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-apache-regexp.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-apache-resolver.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-commons-logging.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-commons-net.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-jai.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-javamail.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-jdepend.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-jmf.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-jsch.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-junit.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-launcher.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-netrexx.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-nodeps.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-starteam.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-stylebook.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-swing.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-trax.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-weblogic.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui.views_3.5.1.M20110202-0800.jar"/>
         <pathelement location="lib/commons-lang-2.3.jar"/>
         <pathelement location="lib/slf4j-api-1.5.0.jar"/>
         <pathelement location="lib/slf4j-log4j12-1.5.0.jar"/>
@@ -111,9 +110,15 @@
     </path>
 	
 	<path id="Robusta.classpath">
+		<pathelement location="bin"/>
+        <pathelement location="lib/"/>
+        <pathelement location="lib/net.java.amateras.umleditor_1.3.1.jar"/>
+        <pathelement location="lib/net.java.amateras.umleditor.java_1.3.1.jar"/>
+        <pathelement location="lib/net.java.amateras.xstream_1.3.1.jar"/>
+        <pathelement location="lib/org.eclipse.draw2d_3.2.100.v20070529.jar"/>
+        <pathelement location="lib/org.eclipse.gef_3.2.101.v20070814.jar"/>
+        <pathelement location="lib/org.eclipse.jdt.astview_1.1.3.jar"/>
 	 	<path refid="Plug-in Dependencies.libraryclasspath"/>
-	 	<fileset dir="${basedir}/lib" includes="**/*.jar"/>
-		<pathelement path="${basedir}/bin"/>
     </path>
 	
 	<!-- OS picker -->
@@ -199,7 +204,7 @@
 	<!-- wrap bin folder to test jar file -->
 	<target name="product-test-jar">
 		<jar destfile="${plugin-folder}/${jar-file-name}" filesetmanifest="mergewithoutmain" basedir="${bin-folder}"/>
-		<copy file="${plugin-folder}/${jar-file-name}" todir="${eclipse-home}/plugins" overwrite="true" />
+		<copy file="${plugin-folder}/${jar-file-name}" todir="${ECLIPSE_HOME}/plugins" overwrite="true" />
     </target>
 	
 	<!-- run pde junit test -->
@@ -232,17 +237,17 @@
 		
 		<delete quiet="true" file="pde_test_port.properties"/>
 		<delete quiet="true" file="${plugin-folder}/${jar-file-name}"/>
-		<delete quiet="true" file="${eclipse-home}/plugins/${jar-file-name}"/>
+		<delete quiet="true" file="${ECLIPSE_HOME}/plugins/${jar-file-name}"/>
 	</target>
 	
 	<target name="pde-test">
 		<property file="${basedir}/build.properties"/>
-		<java jvm="javaw.exe" jar="${eclipse-home}/plugins/org.eclipse.equinox.launcher_1.1.1.R36x_v20101122_1400.jar" fork="yes" maxmemory="512m">
+		<java jvm="javaw.exe" jar="${ECLIPSE_HOME}/plugins/org.eclipse.equinox.launcher_1.1.1.R36x_v20101122_1400.jar" fork="yes" maxmemory="512m">
 			<jvmarg value="-Dfile.encoding=UTF-8" />
 			<arg line="-version 3" />
 			<arg line="-os win32" />
 			<arg line="-ws win32" />
-			<arg line="-arch x86" />
+			<arg line="-arch x86_64" />
 			<arg line="-port ${pde.test.port}" />
 			<arg line="-testpluginname ${plugin-name}" />
 			<arg line="-testLoaderClass org.eclipse.jdt.internal.junit4.runner.JUnit4TestLoader" />

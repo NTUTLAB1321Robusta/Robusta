@@ -142,7 +142,7 @@ public class ReportBuilderTest {
 		IPackageFragmentRoot[] roots = javaPrj.getAllPackageFragmentRoots();
 		
 		// 檢查precondition
-		assertEquals(13, roots.length);
+		assertEquals(11, roots.length);
 		for(int i = 0; i < roots.length; i++) {
 			if(i == roots.length - 1)
 				assertEquals(JavaProjectMaker.FOLDERNAME_SOURCE, roots[i].getElementName());
