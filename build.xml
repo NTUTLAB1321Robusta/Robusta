@@ -28,6 +28,7 @@
 	<property name="pde-test-data" value="${basedir}/../../junit-workspace" />
 	<property name="pde-test-dev" value="file:${basedir}/../.metadata/.plugins/org.eclipse.pde.core/pde-junit/dev.properties" />
 	
+	
 	<!-- project lib -->
 	<path id="Plug-in Dependencies.libraryclasspath">
         <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui_3.6.2.M20110203-1100.jar"/>
