@@ -15,6 +15,7 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
@@ -52,6 +53,11 @@ public class DummyHandlerVisitor extends ASTVisitor {
 		return false;
 	}
 	
+	@Override
+	public boolean visit(Initializer node) {
+		return isDetectingDummyHandlerSmell;
+	}
+
 	public void detectDummyHandler(MethodInvocation node) {
 		ASTNode parentCatchClauseNode = NodeUtils.getSpecifiedParentNode(node, ASTNode.CATCH_CLAUSE);
 		/*

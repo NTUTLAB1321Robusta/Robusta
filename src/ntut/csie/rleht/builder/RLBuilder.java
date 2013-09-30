@@ -43,6 +43,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -264,6 +265,20 @@ public class RLBuilder extends IncrementalProjectBuilder {
 					String errmsg = this.resource.getString("ex.smell.type.undealt") + markerInfo.getCodeSmellType() + this.resource.getString("ex.smell.type");
 					this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, markerInfo, ntsIndex, -1);  // methodIdx 先給-1
 				}
+				
+				//Detect dummy handler for initializer
+				DummyHandlerVisitor dmhVisitor = new DummyHandlerVisitor(root);
+				ASTInitializerCollector initializerCollector = new ASTInitializerCollector();
+				root.accept(initializerCollector);
+				for(Initializer init : initializerCollector.getInitializerList())
+					init.accept(dmhVisitor);
+				List<MarkerInfo> dmList = dmhVisitor.getDummyList();
+				for(int dmIndex = 0; dmIndex < dmList.size(); dmIndex++) {
+					MarkerInfo markerInfo = dmList.get(dmIndex);
+					String errmsg = this.resource.getString("ex.smell.type.undealt") + markerInfo.getCodeSmellType() + this.resource.getString("ex.smell.type");
+					this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, markerInfo, dmIndex, -1);  // methodIdx = -1 => not support quickfix right now
+				}
+				
 				
 				int methodIdx = -1;
 				for (MethodDeclaration method : methodList) {

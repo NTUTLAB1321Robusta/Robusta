@@ -131,7 +131,7 @@ public class ReportBuilderTest {
 		Method countFileLOC = ReportBuilder.class.getDeclaredMethod("countFileLOC", String.class);
 		countFileLOC.setAccessible(true);
 		// 檢查測試專案檔案的行數
-		assertEquals(299, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(DummyAndIgnoreExample.class, projectName)));
+		assertEquals(310, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(DummyAndIgnoreExample.class, projectName)));
 		/** 路徑不正確或者不存在的class file */
 		assertEquals(0, countFileLOC.invoke(reportBuilder, "not/exist/example.java"));
 	}
@@ -492,7 +492,8 @@ public class ReportBuilderTest {
 		assertEquals(25, reportModel.getCatchCounter());
 		assertEquals(2, reportModel.getFinallyCounter());
 		assertEquals(0, reportModel.getCarelessCleanUpTotalSize());
-		assertEquals(19, reportModel.getDummyTotalSize());
+		//19 dummy handler in methods and 1 dummy handler in an initializer
+		assertEquals(20, reportModel.getDummyTotalSize());
 		assertEquals(0, reportModel.getIgnoreTotalSize());
 		// 例子內其實有三個 NT，但因為設定檔並沒有要偵測 NT，故數量為 0
 		assertEquals(0, reportModel.getNestedTryTotalSize());

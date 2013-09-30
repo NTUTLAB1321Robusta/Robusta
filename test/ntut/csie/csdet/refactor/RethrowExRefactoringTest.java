@@ -143,7 +143,7 @@ public class RethrowExRefactoringTest {
 		assertEquals(-1, getThrowStatementSourceLine.invoke(refactoring, 0));
 		/** 反白到try-catch block且catch中有throw statement */
 		currentMethodNode.set(refactoring, ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "false_throwAndSystemOut"));
-		assertEquals(208-1, getThrowStatementSourceLine.invoke(refactoring, 0));
+		assertEquals(219-1, getThrowStatementSourceLine.invoke(refactoring, 0));
 	}
 	
 	@Test

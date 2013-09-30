@@ -96,9 +96,12 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				markerList.add(new ThrowCheckedExceptionQuickFix("Quick Fix==>Throw Checked Exception"));
 				// 碰到Dummy Handler的Quick fix and refactor方法
 			} else if(problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)) {
-				markerList.add(new RefineRuntimeExceptionQuickFix("Quick Fix==>Refine to RuntimeException"));
-				markerList.add(new RethrowUncheckExAction("Refactor==>Rethrow Unchecked Excetpion"));
-				markerList.add(new ThrowCheckedExceptionQuickFix("Quick Fix==>Throw Checked Exception"));
+				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
+				if(!methodIdx.equals("-1")) {
+					markerList.add(new RefineRuntimeExceptionQuickFix("Quick Fix==>Refine to RuntimeException"));
+					markerList.add(new RethrowUncheckExAction("Refactor==>Rethrow Unchecked Excetpion"));
+					markerList.add(new ThrowCheckedExceptionQuickFix("Quick Fix==>Throw Checked Exception"));
+				}
 				// 碰到Nested Try block的refactor
 			} else if(problem.equals(RLMarkerAttribute.CS_NESTED_TRY_BLOCK)) {
 				markerList.add(new NTQuickFix("Please use Eclipse refactor==>Extract Method"));

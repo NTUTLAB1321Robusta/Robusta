@@ -20,6 +20,7 @@ import ntut.csie.csdet.visitor.TryStatementCounterVisitor;
 import ntut.csie.csdet.visitor.UnprotectedMainProgramVisitor;
 import ntut.csie.jcis.builder.core.internal.support.LOCCounter;
 import ntut.csie.jcis.builder.core.internal.support.LOCData;
+import ntut.csie.rleht.builder.ASTInitializerCollector;
 import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 
@@ -35,6 +36,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.jdom.Attribute;
 import org.jdom.Element;
@@ -176,6 +178,19 @@ public class ReportBuilder {
 		List<MarkerInfo> nestedTryList = checkCatchSmell(ntsVisitor.getNestedTryStatementList(), detCatchSmell.get(RLMarkerAttribute.CS_NESTED_TRY_BLOCK));
 		newClassModel.addNestedTryList(nestedTryList);
 		model.addNestedTotalTrySize(nestedTryList.size());
+		
+		//Dummy handler in the initializer block
+		ASTInitializerCollector initializerCollector = new ASTInitializerCollector();
+		root.accept(initializerCollector);
+		for(Initializer initializer : initializerCollector.getInitializerList()) {
+			if (detMethodSmell.get(RLMarkerAttribute.CS_DUMMY_HANDLER)) {
+				dhVisitor = new DummyHandlerVisitor(root);
+				initializer.accept(dhVisitor);
+				List<MarkerInfo> dummyList = checkCatchSmell(dhVisitor.getDummyList(), detCatchSmell.get(RLMarkerAttribute.CS_DUMMY_HANDLER));
+				newClassModel.setDummyList(dummyList, initializer.getClass().getSimpleName());
+				model.addDummyTotalSize(dummyList.size());
+			}
+		}
 		
 		// 目前的Method AST Node
 		for (MethodDeclaration method : methodList) {

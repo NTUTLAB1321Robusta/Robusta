@@ -14,6 +14,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jdt.core.IClasspathEntry;
@@ -185,11 +186,7 @@ public class JavaProjectMaker {
 	 * @throws JavaModelException
 	 */
 	public void setJREDefaultContainer() throws JavaModelException {
-		IClasspathEntry[] existedEntries = _javaproject.getRawClasspath();
-		IClasspathEntry[] extendedEntries = new IClasspathEntry[existedEntries.length + 1];
-		System.arraycopy(existedEntries, 0, extendedEntries, 0, existedEntries.length);
-		extendedEntries[existedEntries.length] = JavaRuntime.getDefaultJREContainerEntry();
-		_javaproject.setRawClasspath(extendedEntries, null);
+		addClasspathEntryToBuildPath(JavaRuntime.getDefaultJREContainerEntry(), null);
 	}
 	
 	/**
@@ -286,13 +283,22 @@ public class JavaProjectMaker {
 		jarPath = new Path(localJarURL.getPath());
 		
 		/* 將找出來的jar檔路徑，寫入.classpath */
+		addClasspathEntryToBuildPath(JavaCore.newLibraryEntry(jarPath, null, null), null);
+	}
+
+	/**
+	 * Add class path entry to inner project's class path
+	 */
+	public void addClasspathEntryToBuildPath(IClasspathEntry classpathEntry,
+			IProgressMonitor progressMonitor) throws JavaModelException {
 		IClasspathEntry[] existedEntries = _javaproject.getRawClasspath();
 		IClasspathEntry[] extendedEntries = new IClasspathEntry[existedEntries.length + 1];
-		System.arraycopy(existedEntries, 0, extendedEntries, 0, existedEntries.length);
-		extendedEntries[existedEntries.length] = JavaCore.newLibraryEntry(jarPath, null, null);
-		_javaproject.setRawClasspath(extendedEntries, null);
+		System.arraycopy(existedEntries, 0, extendedEntries, 0,
+				existedEntries.length);
+		extendedEntries[existedEntries.length] = classpathEntry;
+		_javaproject.setRawClasspath(extendedEntries, progressMonitor);
 	}
-	
+
 	/**
 	 * 從測試專案中的jar檔，加入為測試專案的Referenced Libraries
 	 * @param jarFilePath jar檔在專案下的相對路徑
@@ -305,11 +311,7 @@ public class JavaProjectMaker {
 		Path jarPath = new Path(libFile.getPath());
 		
 		/* 將找出來的jar檔路徑，寫入.classpath */
-		IClasspathEntry[] existedEntries = _javaproject.getRawClasspath();
-		IClasspathEntry[] extendedEntries = new IClasspathEntry[existedEntries.length + 1];
-		System.arraycopy(existedEntries, 0, extendedEntries, 0, existedEntries.length);
-		extendedEntries[existedEntries.length] = JavaCore.newLibraryEntry(jarPath, null, null);
-		_javaproject.setRawClasspath(extendedEntries, null);
+		addClasspathEntryToBuildPath(JavaCore.newLibraryEntry(jarPath, null, null), null);
 		
 	}
 	

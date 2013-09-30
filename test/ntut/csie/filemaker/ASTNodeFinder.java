@@ -17,6 +17,7 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.TryStatement;
@@ -255,6 +256,12 @@ public class ASTNodeFinder {
 			return false;
 		}
 		
+		//Never lookup in the initializer
+		@Override
+		public boolean visit(Initializer node) {
+			return false;
+		}
+
 		public boolean visit(MethodInvocation node) {
 			if(node.toString().equals(codeName)) {
 				foundNodeList.add(node);

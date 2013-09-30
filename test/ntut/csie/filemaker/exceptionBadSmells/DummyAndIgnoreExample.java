@@ -82,6 +82,17 @@ public class DummyAndIgnoreExample {
 		}
 	}
 	
+	//Dummy handler in initializer
+	{
+		FileInputStream fis = null;
+		try {
+			fis = new FileInputStream("");
+			fis.read();
+		} catch (IOException e) {
+			e.printStackTrace();	//	DummyHandler
+		}
+	}
+	
 	/**
 	 * 同時測試若在catch內出現的expression statement內含的不是method invocation時，是否能正常運行
 	 */

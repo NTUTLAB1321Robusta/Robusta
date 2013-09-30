@@ -237,12 +237,12 @@ public class DummyHandlerVisitorTest {
 		//   分別測試：全部例子、符合例子、不符合例子 是否有抓出
 		dummyHandlerVisitor = new DummyHandlerVisitor(compilationUnit);
 		compilationUnit.accept(dummyHandlerVisitor);
-		assertEquals(10, dummyHandlerVisitor.getDummyList().size());
+		assertEquals(11, dummyHandlerVisitor.getDummyList().size());
 
 		MethodInvocation mi = null;
 		mi = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(compilationUnit, "true_printStackTrace_protected", "e.printStackTrace()").get(0);
 		method.invoke(dummyHandlerVisitor, mi);
-		assertEquals(11, dummyHandlerVisitor.getDummyList().size());
+		assertEquals(12, dummyHandlerVisitor.getDummyList().size());
 	}
 	
 	@Test
