@@ -40,7 +40,7 @@ public class RobustaSettingsTest {
 		assertTrue(robustaSettingFile.exists());
 		String fileContent = readFileContents(robustaSettingFile);
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-				+ "<RobustaProjectSettings />", fileContent);
+				+ "<RobustaSettings />", fileContent);
 	}
 
 	@Test
@@ -50,7 +50,7 @@ public class RobustaSettingsTest {
 		assertTrue(robustaSettingFile.exists());
 		String fileContent = readFileContents(robustaSettingFile);
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-				+ "<RobustaProjectSettings />", fileContent);
+				+ "<RobustaSettings />", fileContent);
 	}
 
 	private String readFileContents(File file) throws Exception {
@@ -74,16 +74,16 @@ public class RobustaSettingsTest {
 		String fileContent = readFileContents(robustaSettingFile);
 		assertEquals(
 				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-						+ "<RobustaProjectSettings><ProjectDetect FolderName=\"src\" enable=\"true\" />"
-						+ "</RobustaProjectSettings>", fileContent);
+						+ "<RobustaSettings><ProjectDetect FolderName=\"src\" enable=\"true\" />"
+						+ "</RobustaSettings>", fileContent);
 
 		// setting file exist
 		robustaSettings = new RobustaSettings(robustaSettingFile, "FirstTest");
 		fileContent = readFileContents(robustaSettingFile);
 		assertEquals(
 				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-						+ "<RobustaProjectSettings><ProjectDetect FolderName=\"src\" enable=\"true\" />"
-						+ "</RobustaProjectSettings>", fileContent);
+						+ "<RobustaSettings><ProjectDetect FolderName=\"src\" enable=\"true\" />"
+						+ "</RobustaSettings>", fileContent);
 
 		// setting file exist and add new element
 		robustaSettings = new RobustaSettings(robustaSettingFile, "FirstTest");
@@ -92,9 +92,9 @@ public class RobustaSettingsTest {
 		fileContent = readFileContents(robustaSettingFile);
 		assertEquals(
 				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-						+ "<RobustaProjectSettings><ProjectDetect FolderName=\"src\" enable=\"true\" />"
+						+ "<RobustaSettings><ProjectDetect FolderName=\"src\" enable=\"true\" />"
 						+ "<ProjectDetect FolderName=\"srcTest\" enable=\"true\" />"
-						+ "</RobustaProjectSettings>", fileContent);
+						+ "</RobustaSettings>", fileContent);
 
 		// setting file exist and add existed element
 		robustaSettings.getProjectDetect("srcTest");
@@ -102,9 +102,9 @@ public class RobustaSettingsTest {
 		fileContent = readFileContents(robustaSettingFile);
 		assertEquals(
 				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-						+ "<RobustaProjectSettings><ProjectDetect FolderName=\"src\" enable=\"true\" />"
+						+ "<RobustaSettings><ProjectDetect FolderName=\"src\" enable=\"true\" />"
 						+ "<ProjectDetect FolderName=\"srcTest\" enable=\"true\" />"
-						+ "</RobustaProjectSettings>", fileContent);
+						+ "</RobustaSettings>", fileContent);
 
 	}
 
@@ -118,9 +118,9 @@ public class RobustaSettingsTest {
 		String fileContent = readFileContents(robustaSettingFile);
 		assertEquals(
 				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-						+ "<RobustaProjectSettings><ProjectDetect FolderName=\"src\" enable=\"false\" />"
+						+ "<RobustaSettings><ProjectDetect FolderName=\"src\" enable=\"false\" />"
 						+ "<ProjectDetect FolderName=\"srcTest\" enable=\"false\" />"
-						+ "</RobustaProjectSettings>", fileContent);
+						+ "</RobustaSettings>", fileContent);
 	}
 
 	@Test
@@ -141,7 +141,7 @@ public class RobustaSettingsTest {
 		// 檢查檔案內容是否正確
 		String fileContent = readFileContents(robustaSettingFile);
 		assertEquals(
-				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><RobustaProjectSettings />",
+				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><RobustaSettings />",
 				fileContent);
 	}
 
@@ -165,7 +165,7 @@ public class RobustaSettingsTest {
 		// 檢查檔案內容是否正確
 		String fileContent = readFileContents(robustaSettingFile);
 		assertEquals(
-				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><RobustaProjectSettings />",
+				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><RobustaSettings />",
 				fileContent);
 	}
 
@@ -173,7 +173,7 @@ public class RobustaSettingsTest {
 	public void testWriteNewXMLFile_OtherTextWriterWriteRobustaSettingXMLFormatFileAfterSmellSettingInstanceIsCreated()
 			throws Exception {
 		// 生成一個文字檔案，裡面是舊有的XML設定檔
-		String xmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><RobustaProjectSettings><ProjectDetect FolderName=\"src\" enable=\"true\"></ProjectDetect></RobustaProjectSettings>";
+		String xmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><RobustaSettings><ProjectDetect FolderName=\"src\" enable=\"true\"></ProjectDetect></RobustaSettings>";
 		FileWriter fw = new FileWriter(robustaSettingFile);
 		fw.write(xmlString);
 		fw.close();
@@ -189,7 +189,7 @@ public class RobustaSettingsTest {
 		// 檢查檔案內容是否正確
 		String fileContent = readFileContents(robustaSettingFile);
 		assertEquals(
-				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><RobustaProjectSettings />",
+				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><RobustaSettings />",
 				fileContent);
 
 	}
