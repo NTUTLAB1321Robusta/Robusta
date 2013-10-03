@@ -5,6 +5,7 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.TreeMap;
 
+import ntut.csie.csdet.preference.RobustaSettings;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.jdt.util.NodeUtils;
 import ntut.csie.robusta.agile.exception.RTag;
@@ -26,6 +27,15 @@ public class UserDefinedMethodAnalyzer {
 		SmellSettings smellSettings = new SmellSettings(SETTINGFILEPATH);
 		methodTreeMap = smellSettings.getSmellSettings(SmellSettings.SMELL_CARELESSCLEANUP);
 		isEnable = smellSettings.isDetectingSmell(SmellSettings.SMELL_CARELESSCLEANUP);
+	}
+	
+	public static String getRobustaSettingXMLPath(String projectName) {
+		return ResourcesPlugin.getWorkspace().getRoot().getLocation()
+				.toOSString()
+				+ File.separator
+				+ projectName
+				+ File.separator
+				+ RobustaSettings.SETTING_FILENAME;
 	}
 	
 	/**

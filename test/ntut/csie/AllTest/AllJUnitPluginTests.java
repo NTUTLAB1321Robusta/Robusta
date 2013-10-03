@@ -1,5 +1,6 @@
 package ntut.csie.AllTest;
 
+import ntut.csie.csdet.preference.RobustaSettingsTest;
 import ntut.csie.csdet.quickfix.BaseQuickFixTest;
 import ntut.csie.csdet.refactor.CarelessCleanUpRefactorTest;
 import ntut.csie.csdet.refactor.OverLoggingRefactorTest;
@@ -82,7 +83,10 @@ import org.junit.runners.Suite;
 	ExpressionStatementStringFinderVisitorTest.class,
 	//QuickFixCoreTest.class,
 	StatementFinderVisitorTest.class,
-	VariableDeclarationStatementFinderVisitorTest.class
+	VariableDeclarationStatementFinderVisitorTest.class,
+	RobustaSettingsTest.class,
+	
+	
 })
 public class AllJUnitPluginTests {
 }

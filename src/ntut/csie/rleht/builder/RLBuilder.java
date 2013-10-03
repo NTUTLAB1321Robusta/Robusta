@@ -9,7 +9,9 @@ import java.util.TreeMap;
 
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.data.SSMessage;
+import ntut.csie.csdet.preference.DetectFile;
 import ntut.csie.csdet.preference.JDomUtil;
+import ntut.csie.csdet.preference.RobustaSettings;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.visitor.CarelessCleanupVisitor;
 import ntut.csie.csdet.visitor.DummyHandlerVisitor;
@@ -36,6 +38,7 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
@@ -198,11 +201,9 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	 * @param resource
 	 */
 	private void checkBadSmells(IResource resource) {
-		if (resource instanceof IFile && resource.getFileExtension().equals("java") &&
-			!resource.getFullPath().segment(1).toLowerCase().contains("test")) {
+		if (isIResourceNeedToBeDetected(resource)) {
 			IFile file = (IFile) resource;
 			deleteMarkers(file);
-
 			try {
 				/* STEP1:針對每一個Java程式的Method檢查RLAnnotation */
 				/*       並且找出專案中所有的Code Smell  */
@@ -507,6 +508,42 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	 * @param detMethodSmell
 	 * @param detCatchSmell
 	 */
+	private boolean isIResourceNeedToBeDetected(IResource resource) {
+		if(resource instanceof IFile) {
+			return isJavaFile(resource) && isUserWantToDetect(resource); 
+		}
+		return false;
+	}
+
+	/**
+	 * check if the resource is java file
+	 */
+	private boolean isJavaFile(IResource resource) {
+		try {
+			return resource.getFileExtension().equals("java");
+		} catch (NullPointerException e) {
+			// maybe resource has no extension
+			return false;
+		}
+	}
+
+	/**
+	 * check if user want to detect this file
+	 * TODO for now, default is not detect source folder name contain "test"
+	 * 		but it will change to decide by user
+	 */
+	private boolean isUserWantToDetect(IResource resource) {
+		IPath path = resource.getFullPath();
+		String projectName = path.segment(0);
+
+		RobustaSettings robustaSettings = new RobustaSettings(
+				UserDefinedMethodAnalyzer.getRobustaSettingXMLPath(projectName),
+				projectName);
+
+		String folderName = path.segment(1);
+
+		return robustaSettings.getProjectDetectAttribute(folderName);	
+	}
 	private void inputSuppressData(List<SSMessage> suppressSmellList,
 		TreeMap<String, Boolean> detMethodSmell, TreeMap<String, List<Integer>> detCatchSmell) {
 		/// 初始化設定 ///
