@@ -139,7 +139,7 @@ public class SelectedFolderPage extends APropertyPage {
 		// create checkbox in group
 		checkbox_DetectAllFolder = new Button(folderGroup, SWT.CHECK);
 		checkbox_DetectAllFolder.setText(resource
-				.getString("selectedFolderPage.showFolderList"));
+				.getString("selectedFolderPage.checkAllFolder"));
 		checkbox_DetectAllFolder.setLocation(10, 20);
 		checkbox_DetectAllFolder.pack();
 		checkbox_DetectAllFolder.setSelection(isFolderSelect);
