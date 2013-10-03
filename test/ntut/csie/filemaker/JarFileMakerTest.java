@@ -118,15 +118,7 @@ public class JarFileMakerTest {
 		Assert.assertTrue(file.exists());
 		
 	}
-	@Test(timeout = 10)
-	public void testCreateJarFileTimeOut() {
-		JarFileMaker jarFileMaker = new JarFileMaker();
-		File file = new File("./compress.jar");
-		File binFolder = new File(BIN_FOLDER);
-		jarFileMaker.createJarFile(file, binFolder, "test.TestFolder");
-		Assert.assertTrue(file.exists());
-	}
-	
+
 	@Test(expected = RuntimeException.class)
 	public void testCreateJarFileNullParam() throws Exception {
 		try {
