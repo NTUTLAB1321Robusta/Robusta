@@ -173,9 +173,11 @@
 		<copy includeemptydirs="false" todir="${bin-folder}/lib">
 			<fileset dir="${lib-folder}"/>
 		</copy>
+    	<!-- Temporary remove the language folder
     	<copy includeemptydirs="false" todir="${bin-folder}">
 			<fileset dir="${basedir}/language"/>
 		</copy>
+		-->
     	<copy includeemptydirs="false" todir="${bin-folder}/META-INF">
 			<fileset dir="${basedir}/META-INF"/>
 		</copy>
@@ -192,6 +194,8 @@
 		<copy file="${basedir}/plugin.xml" tofile="${bin-folder}/plugin.xml"/>
     	<copy file="${basedir}/plugin.properties" tofile="${bin-folder}/plugin.properties"/>
     	<copy file="${basedir}/build.properties" tofile="${bin-folder}/build.properties"/>
+    	<copy file="${basedir}/robusta_en_US.properties" tofile="${bin-folder}/robusta_en_US.properties"/>
+    	<copy file="${basedir}/robusta_zh_TW.properties" tofile="${bin-folder}/robusta_zh_TW.properties"/>
     </target>
 	
 	<!-- compile project -->
