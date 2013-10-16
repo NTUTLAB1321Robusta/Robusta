@@ -1,5 +1,6 @@
 package ntut.csie.AllTest;
 
+import ntut.csie.csdet.preference.ReportDescriptionTest;
 import ntut.csie.csdet.preference.RobustaSettingsTest;
 import ntut.csie.csdet.quickfix.BaseQuickFixTest;
 import ntut.csie.csdet.refactor.CarelessCleanUpRefactorTest;
@@ -85,6 +86,7 @@ import org.junit.runners.Suite;
 	StatementFinderVisitorTest.class,
 	VariableDeclarationStatementFinderVisitorTest.class,
 	RobustaSettingsTest.class,
+	ReportDescriptionTest.class,
 	
 	
 })
