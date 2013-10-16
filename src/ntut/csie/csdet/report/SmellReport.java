@@ -103,7 +103,7 @@ public class SmellReport {
 		Element summary = new Element("Summary");
 		summary.addContent(new Element("ProjectName").addContent(model.getProjectName()));
 		summary.addContent(new Element("DateTime").addContent(model.getBuildTime()));
-		summary.addContent(new Element("JPGPath").addContent("file:///" + model.getFilePath("Report.jpg", true)));
+		summary.addContent(new Element("JPGPath").addContent(model.getRelativeFilePathWithProjectReportPath("Report.jpg", true)));
 		if (model.isDerectAllproject()) {
 			//若偵測全部則印出
 			summary.addContent(new Element("Filter").addContent("[All Project]"));		
@@ -151,7 +151,7 @@ public class SmellReport {
 	private void printAllPackageList(Element root) {
 		///AllPackage List資料輸出///
 		Element allPackageList = new Element("AllPackageList");
-		allPackageList.addContent(new Element("JPGPath").addContent("file:///" + model.getFilePath("PackageReport.jpg", true)));
+		allPackageList.addContent(new Element("JPGPath").addContent(model.getRelativeFilePathWithProjectReportPath("PackageReport.jpg", true)));
 		List<Element> packageList = new ArrayList<Element>(); 
 		for (int i=0; i < model.getPackagesSize(); i++) {
 			PackageModel packageModel = model.getPackage(i);
@@ -235,7 +235,7 @@ public class SmellReport {
 				packages.addContent(new Element("CloseID").addContent(pkTemp.getPackageName() + "Close"));
 				packages.addContent(new Element("TableID").addContent("Table" + pkTemp.getPackageName()));
 				packages.addContent(new Element("ImageID").addContent("Image" + pkTemp.getPackageName()));
-				packages.addContent(new Element("JPGPath").addContent("file:///" + model.getFilePath("ClassReport_" + i + ".jpg", true)));
+				packages.addContent(new Element("JPGPath").addContent(model.getRelativeFilePathWithProjectReportPath("ClassReport_" + i + ".jpg", true)));
 				Element classList = new Element("ClassList");
 				for (int j=0; j<pkTemp.getClassSize(); j++) {
 					ClassModel clTemp = pkTemp.getClass(j);

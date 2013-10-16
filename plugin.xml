@@ -66,7 +66,7 @@
   	  <builder hasNature="true">
          <run class="ntut.csie.rleht.builder.RLBuilder"/>
       </builder>
-   </extension>   
+   </extension>
    <extension
          id="ntut.csie.rleht.builder.RLNature"
          name="RLNature"
@@ -185,6 +185,18 @@
             id="CodeSmellDetectingSettings"
             name="Robusta Detecting Settings" >
       </page>
+   </extension>
+   <extension
+         id="standalone"
+         point="org.eclipse.core.runtime.applications">
+      <application
+            cardinality="singleton-global"
+            thread="main"
+            visible="true">
+         <run
+               class="ntut.csie.rleht.StandAloneApp">
+         </run>
+      </application>
    </extension>
 
 </plugin>

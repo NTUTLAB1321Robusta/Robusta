@@ -79,6 +79,9 @@ public class ClassInstanceCreationVisitor extends ASTVisitor {
 				if (leftSimpleName == null) {
 					return true;
 				}
+				if(declaringVariable == null) {
+					return false;
+				}
 				if (leftSimpleName.resolveBinding().equals(
 						declaringVariable.resolveBinding())) {
 					cic = node;

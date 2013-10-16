@@ -1,6 +1,8 @@
 package ntut.csie.csdet.report;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -133,6 +135,19 @@ public class ReportModel {
 			return (projectPath + "/" + buildTime.getTime() + "/" + buildTime.getTime() + "_" + fileName);
 		else
 			return (projectPath + "/" + fileName);
+	}
+	
+	public String getRelativeFilePathWithProjectReportPath(String fileName, boolean isAddTime)
+	{
+		String absolutePath = getFilePath(fileName, isAddTime);
+		String relativePath;
+		try {
+			String projectReportPath = projectPath + (isAddTime? "/" + buildTime.getTime(): "");
+			relativePath = (new URI(projectReportPath)).relativize(new URI(absolutePath)).toString();
+		} catch (URISyntaxException e) {
+			 throw new RuntimeException(e.getMessage());
+		}
+		return relativePath;
 	}
 
 	/**
