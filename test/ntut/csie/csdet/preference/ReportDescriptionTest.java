@@ -17,10 +17,11 @@ import org.junit.Test;
 public class ReportDescriptionTest {
 	private File reportDescriptionFile;
 	private ReportDescription reportDescription;
-	
+
 	@Before
 	public void setUp() throws Exception {
-		reportDescriptionFile = new File("./", ReportDescription.SETTING_FILENAME);
+		reportDescriptionFile = new File("./",
+				ReportDescription.SETTING_FILENAME);
 		if (reportDescriptionFile.exists()) {
 			assertTrue(reportDescriptionFile.delete());
 		}
@@ -54,15 +55,15 @@ public class ReportDescriptionTest {
 	}
 
 	private String readFileContents(File file) throws Exception {
-		StringBuilder sb = new StringBuilder();
-		BufferedReader br = new BufferedReader(new InputStreamReader(
+		StringBuilder stringBuilder = new StringBuilder();
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(
 				new FileInputStream(file)));
 		String lineContent;
-		while ((lineContent = br.readLine()) != null) {
-			sb.append(lineContent);
+		while ((lineContent = bufferedReader.readLine()) != null) {
+			stringBuilder.append(lineContent);
 		}
-		br.close();
-		return sb.toString();
+		bufferedReader.close();
+		return stringBuilder.toString();
 	}
 
 	@Test
@@ -101,15 +102,16 @@ public class ReportDescriptionTest {
 		fileContent = readFileContents(reportDescriptionFile);
 		assertEquals(
 				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-				+ "<Reports><Report name=\"MonSep16090034CST2013\" description=\"\" />"
-				+ "<Report name=\"ThuOct10105702CST2013\" description=\"\" />"
-				+ "</Reports>", fileContent);
+						+ "<Reports><Report name=\"MonSep16090034CST2013\" description=\"\" />"
+						+ "<Report name=\"ThuOct10105702CST2013\" description=\"\" />"
+						+ "</Reports>", fileContent);
 	}
 
 	@Test
 	public void testSetProjectDetectAttribute() throws Exception {
 		reportDescriptionFile.createNewFile();
-		reportDescription.setDescriptionAttribute("MonSep16090034CST2013", "description","report description");
+		reportDescription.setDescriptionAttribute("MonSep16090034CST2013",
+				"description", "report description");
 		reportDescription.writeXMLFile(reportDescriptionFile.getPath());
 		String fileContent = readFileContents(reportDescriptionFile);
 		assertEquals(
@@ -117,54 +119,61 @@ public class ReportDescriptionTest {
 						+ "<Reports><Report name=\"MonSep16090034CST2013\" description=\"report description\" />"
 						+ "</Reports>", fileContent);
 	}
+
 	@Test
 	public void getDescriptionAttribute() {
 		assertFalse(reportDescriptionFile.exists());
 		reportDescription.getDescription("MonSep16090034CST2013");
 		reportDescription.writeXMLFile(reportDescriptionFile.getPath());
 		assertTrue(reportDescriptionFile.exists());
-		assertEquals("", reportDescription.getDescriptionAttribute("MonSep16090034CST2013"));
-		reportDescription.setDescriptionAttribute("MonSep16090034CST2013",ReportDescription.ATTRIBUTE_DESCRIPTION,"report description");
-		assertEquals("report description", reportDescription.getDescriptionAttribute("MonSep16090034CST2013"));
-		
+		assertEquals("",
+				reportDescription
+						.getDescriptionAttribute("MonSep16090034CST2013"));
+		reportDescription.setDescriptionAttribute("MonSep16090034CST2013",
+				ReportDescription.ATTRIBUTE_DESCRIPTION, "report description");
+		assertEquals("report description",
+				reportDescription
+						.getDescriptionAttribute("MonSep16090034CST2013"));
+
 	}
-	@Test 
-	public void deleteElementInXml() throws Exception{
+
+	@Test
+	public void deleteElementInXml() throws Exception {
 		assertFalse(reportDescriptionFile.exists());
 		reportDescription.getDescription("MonSep16090034CST2013");
-		reportDescription.setDescriptionAttribute("MonSep16090034CST2013",ReportDescription.ATTRIBUTE_DESCRIPTION, "new description");
+		reportDescription.setDescriptionAttribute("MonSep16090034CST2013",
+				ReportDescription.ATTRIBUTE_DESCRIPTION, "new description");
 		reportDescription.writeXMLFile(reportDescriptionFile.getPath());
-		reportDescription.setDescriptionAttribute("ThuOct10105702CST2013",ReportDescription.ATTRIBUTE_DESCRIPTION, "create on Thu");
+		reportDescription.setDescriptionAttribute("ThuOct10105702CST2013",
+				ReportDescription.ATTRIBUTE_DESCRIPTION, "create on Thu");
 		reportDescription.writeXMLFile(reportDescriptionFile.getPath());
 		String fileContent = readFileContents(reportDescriptionFile);
 		assertEquals(
 				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-				+ "<Reports><Report name=\"MonSep16090034CST2013\" description=\"new description\" />"
-				+ "<Report name=\"ThuOct10105702CST2013\" description=\"create on Thu\" />"
-				+ "</Reports>", fileContent);
+						+ "<Reports><Report name=\"MonSep16090034CST2013\" description=\"new description\" />"
+						+ "<Report name=\"ThuOct10105702CST2013\" description=\"create on Thu\" />"
+						+ "</Reports>", fileContent);
 		reportDescription.deleteElementInXml("MonSep16090034CST2013");
 		reportDescription.writeXMLFile(reportDescriptionFile.getPath());
 		fileContent = readFileContents(reportDescriptionFile);
 		assertEquals(
 				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-				+ "<Reports>"
-				+ "<Report name=\"ThuOct10105702CST2013\" description=\"create on Thu\" />"
-				+ "</Reports>", fileContent);
+						+ "<Reports>"
+						+ "<Report name=\"ThuOct10105702CST2013\" description=\"create on Thu\" />"
+						+ "</Reports>", fileContent);
 	}
 
 	@Test
 	public void testWriteXMLFile() throws Exception {
 		reportDescription.writeXMLFile(reportDescriptionFile.getPath());
 		assertTrue(reportDescriptionFile.exists());
-		String fileContent=readFileContents(reportDescriptionFile);
-		assertEquals(
-				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><Reports />",
+		String fileContent = readFileContents(reportDescriptionFile);
+		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Reports />",
 				fileContent);
 	}
-	
+
 	@Test
-	public void testWriteXMLFile_OverwriteNonXMLFormatFile()
-			throws Exception{
+	public void testWriteXMLFile_OverwriteNonXMLFormatFile() throws Exception {
 		String chineseString = "天地玄黃宇宙洪荒";
 		FileWriter fw = new FileWriter(reportDescriptionFile);
 		fw.write(chineseString);
@@ -180,11 +189,10 @@ public class ReportDescriptionTest {
 
 		// 檢查檔案內容是否正確
 		String fileContent = readFileContents(reportDescriptionFile);
-		assertEquals(
-				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><Reports />",
+		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Reports />",
 				fileContent);
 	}
-	
+
 	@Test
 	public void testWriteNewXMLFile_OtherTextWriterWriteRobustaSettingXMLFormatFileAfterSmellSettingInstanceIsCreated()
 			throws Exception {
@@ -197,12 +205,8 @@ public class ReportDescriptionTest {
 		reportDescription.writeXMLFile(reportDescriptionFile.getPath());
 		assertTrue(reportDescriptionFile.exists());
 		String fileContent = readFileContents(reportDescriptionFile);
-		assertEquals(
-				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><Reports />",
+		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><Reports />",
 				fileContent);
-
 	}
-
-	
 
 }

@@ -14,19 +14,19 @@ import java.util.List;
  * @author Shiau
  */
 public class ReportModel {
-	//Smell資訊
+	// Smell資訊
 	private List<PackageModel> smellList = new ArrayList<PackageModel>();
-	//Filter條綿是否為全偵測
+	// Filter條綿是否為全偵測
 	private boolean derectAllproject;
-	
+
 	private Date buildTime;
-	//Filter條件
+	// Filter條件
 	private List<String> filterRuleList = new ArrayList<String>();
-	//專案名稱
+	// 專案名稱
 	private String projectName = "";
-	//儲存路徑
+	// 儲存路徑
 	private String projectPath = "";
-	//Smell總數
+	// Smell總數
 	private int ignoreTotalSize = 0;
 	private int dummyTotalSize = 0;
 	private int unMainTotalSize = 0;
@@ -34,7 +34,7 @@ public class ReportModel {
 	private int carelessCleanUpSize = 0;
 	private int overLoggingSize = 0;
 	private int overwrittenSize = 0;
-	//取得code counter
+	// 取得code counter
 	private int tryCounter = 0;
 	private int catchCounter = 0;
 	private int finallyCounter = 0;
@@ -47,13 +47,13 @@ public class ReportModel {
 		buildTime = calendar.getTime();
 	}
 	public String getBuildTime() {
-		//設定格式 顯示秒數
+		// 設定格式 顯示秒數
         DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,DateFormat.LONG);
 
         return df.format(buildTime);
 	}
 	
-	///增加Smell的總數///
+	// 增加Smell的總數
 	public void addIgnoreTotalSize(int ignoreSize) {
 		this.ignoreTotalSize += ignoreSize;
 	}
@@ -76,7 +76,7 @@ public class ReportModel {
 		this.overwrittenSize += overwrittenSize;
 	}
 	
-	///取得Smell的總數///
+	// 取得Smell的總數
 	public int getIgnoreTotalSize() {
 			return ignoreTotalSize;
 	}
@@ -103,7 +103,7 @@ public class ReportModel {
 				+ getCarelessCleanUpTotalSize() + getOverLoggingTotalSize() + getOverwrittenTotalSize();
 	}
 
-	///設定或取得Project的名稱///
+	// 設定或取得Project的名稱
 	public void setProjectName(String projectName) {
 		this.projectName = projectName;
 	}
@@ -111,19 +111,21 @@ public class ReportModel {
 		return projectName;
 	}
 
-	///設定或取得Project的路徑///
+	// 設定或取得Project的路徑
 	public String getProjectPath() {
 		return projectPath;
 	}
+
 	public void setProjectPath(String workspacePath) {
 		this.projectPath = workspacePath + "/" + getProjectName() + "_Report";
 		File metadataPath = new File(projectPath);
-		//若沒有路徑就建立路徑
-		if(!metadataPath.exists())
+		// 若沒有路徑就建立路徑
+		if (!metadataPath.exists())
 			metadataPath.mkdir();
 		File htmlPath = new File(projectPath + "/" + buildTime.getTime());
 		htmlPath.mkdir();
 	}
+	
 	/**
 	 * 取得File的直實位置(有無加時間區隔)
 	 * @param fileName	(File的名稱)
@@ -132,20 +134,23 @@ public class ReportModel {
 	 */
 	public String getFilePath(String fileName, boolean isAddTime) {
 		if (isAddTime)
-			return (projectPath + "/" + buildTime.getTime() + "/" + buildTime.getTime() + "_" + fileName);
+			return (projectPath + "/" + buildTime.getTime() + "/"
+					+ buildTime.getTime() + "_" + fileName);
 		else
 			return (projectPath + "/" + fileName);
 	}
-	
-	public String getRelativeFilePathWithProjectReportPath(String fileName, boolean isAddTime)
-	{
+
+	public String getRelativeFilePathWithProjectReportPath(String fileName,
+			boolean isAddTime) {
 		String absolutePath = getFilePath(fileName, isAddTime);
 		String relativePath;
 		try {
-			String projectReportPath = projectPath + (isAddTime? "/" + buildTime.getTime(): "");
-			relativePath = (new URI(projectReportPath)).relativize(new URI(absolutePath)).toString();
+			String projectReportPath = projectPath
+					+ (isAddTime ? "/" + buildTime.getTime() : "");
+			relativePath = (new URI(projectReportPath)).relativize(
+					new URI(absolutePath)).toString();
 		} catch (URISyntaxException e) {
-			 throw new RuntimeException(e.getMessage());
+			throw new RuntimeException(e.getMessage());
 		}
 		return relativePath;
 	}
@@ -204,7 +209,7 @@ public class ReportModel {
 		}
 	}
 	
-	///取得全部的行數///
+	// 取得全部的行數 //
 	public int getTotalLine() {
 		int total = 0;
 		for (PackageModel pm : smellList)
@@ -212,7 +217,7 @@ public class ReportModel {
 		return total;
 	}
 	
-	///存取Code的資訊///
+	// 存取Code的資訊 //
 	public int getTryCounter() {
 		return tryCounter;
 	}

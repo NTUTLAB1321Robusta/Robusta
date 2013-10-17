@@ -87,8 +87,6 @@ import org.junit.runners.Suite;
 	VariableDeclarationStatementFinderVisitorTest.class,
 	RobustaSettingsTest.class,
 	ReportDescriptionTest.class,
-	
-	
 })
 public class AllJUnitPluginTests {
 }
