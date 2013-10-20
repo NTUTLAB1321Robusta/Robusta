@@ -1,0 +1,41 @@
+body { padding: 0px 0px 0px 0px; margin: 0px 10px 0px 10px;}
+
+.title {FONT-WEIGHT: bolder; FONT-SIZE: 18px; COLOR: #ff8448; FONT-FAMILY: Arial, Helvetica, sans-serif }
+
+.bigtitle { padding-left: 10;FONT-WEIGHT: bolder; FONT-SIZE: 20px; COLOR: #fff; FONT-FAMILY: Arial, Helvetica, sans-serif ; background-color: #666666}
+
+.bigtitle a{ FONT-WEIGHT: bolder; FONT-SIZE: 20px; COLOR: #fff; FONT-FAMILY: Arial, Helvetica, sans-serif ; background-color: #666666}
+
+.smalltitle {FONT-WEIGHT: bolder; FONT-SIZE: 16px; COLOR: #A0CA78; FONT-FAMILY: Arial, Helvetica, sans-serif}
+
+.supertitle {FONT-WEIGHT: bolder; FONT-SIZE: 24px; COLOR: #666666; FONT-FAMILY: Arial, Helvetica, sans-serif}
+
+.menulink {FONT-SIZE: 12px; color:#0C4EA6; font-weight:bold; LINE-HEIGHT: 20px; FONT-FAMILY: Arial, Helvetica, sans-serif;}
+
+.forumline {background-color: #E5E5E5; text-align:right; }
+
+.bigbluetext { FONT-SIZE: 15px; COLOR: #517dbc; LINE-HEIGHT: 20px; FONT-FAMILY: Arial, Helvetica, sans-serif}
+
+.text { FONT-SIZE: 12px; LINE-HEIGHT: 18px; FONT-FAMILY: Arial, Helvetica, sans-serif}
+
+.orangetext {FONT-SIZE: 11px; COLOR: #000000; LINE-HEIGHT: 20px; FONT-FAMILY: Arial, Helvetica, sans-serif; text-align: center}
+
+.menutext { FONT-SIZE: 12px; COLOR: #003366; LINE-HEIGHT: 20px; FONT-FAMILY: Arial, Helvetica, sans-serif}
+
+.description {FONT-WEIGHT: bolder; FONT-SIZE: 16px; COLOR: #517dbc; FONT-FAMILY: Arial, Helvetica, sans-serif}
+
+.code {font-family: "Courier New", Courier, mono}
+
+.errorMsg {color: #FF0000}
+
+.forumline1 {
+	text-align: left;
+}
+
+.text2 {
+	font-size: large;
+}
+
+a { color:#0C4EA6; font-weight:bold;}
+
+th {font-size:small; color:#000;background-color: #E5E5E5;}
