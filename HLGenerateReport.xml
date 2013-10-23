@@ -42,7 +42,7 @@
          - - - - - - - - - - - - - - - - - -->
 	<target name="main">
 		<echo message="Building Bad Smell Report"/>
-		<exec executable="${ECLIPSE_HOME}/eclipsec">
+		<exec executable="${ECLIPSE_HOME}/eclipsec" failonerror="yes">
 			<arg line="-nosplash"/>
 			<arg line="-application Robusta.standalone"/>
 			<arg line="-data ${WORKSPACE_PATH}"/>
