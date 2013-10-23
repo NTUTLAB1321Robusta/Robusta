@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
-
 import ntut.csie.csdet.preference.ReportDescription;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.dialogs.Dialog;
@@ -26,6 +25,7 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -153,12 +153,14 @@ public class SelectReportDialog extends Dialog {
 					return;
 
 				reportDescriptionEditor = new Text(reportTable, SWT.NONE);
+				reportDescriptionEditor.setTextLimit(255);
 				reportDescriptionEditor.setText(item.getText(EDITABLECOLUMN));
 				reportDescriptionEditor.addModifyListener(new ModifyListener() {
 					public void modifyText(ModifyEvent me) {
 						Text text = (Text) editor.getEditor();
 						editor.getItem()
 								.setText(EDITABLECOLUMN, text.getText());
+						getButton(APPLY_SELECTION).setEnabled(true);
 					}
 				});
 				reportDescriptionEditor.selectAll();
@@ -232,6 +234,14 @@ public class SelectReportDialog extends Dialog {
 		return path;
 	}
 
+	private void updateAllReportDescriptionOfProjectToXml() {
+		for (int i = 0; i < reportTable.getItemCount(); i++) {
+			String reportName = fileList.get(i).getName();
+			String newDetail = reportTable.getItem(i).getText(1);
+			updateReportDescriptionToXml(reportName, newDetail);
+		}
+	}
+
 	/**
 	 * 取得Project內的Report資訊
 	 * 
@@ -274,13 +284,30 @@ public class SelectReportDialog extends Dialog {
 	 * 定義按鍵
 	 */
 	protected void createButtonsForButtonBar(Composite parent) {
-		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL,
-				true);
+		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL,true);
 		createButton(parent, APPLY_SELECTION, resource.getString("apply"), true);
-		createButton(parent, DELETE_SELECTION, resource.getString("delete"),
-				true);
-		createButton(parent, IDialogConstants.CANCEL_ID,
-				IDialogConstants.CANCEL_LABEL, true);
+		getButton(APPLY_SELECTION).setEnabled(false);
+		createButton(parent, DELETE_SELECTION, resource.getString("delete"),true);
+		createButton(parent, IDialogConstants.CANCEL_ID,IDialogConstants.CANCEL_LABEL, true);
+	}
+
+	@Override
+	public boolean close() {
+		if (getButton(APPLY_SELECTION).getEnabled()) {
+			MessageBox dialog = new MessageBox(getShell(), SWT.ICON_QUESTION
+					| SWT.YES | SWT.NO | SWT.CANCEL);
+			dialog.setText("Warning");
+			dialog.setMessage("Do you really want to save change of description?");
+			int buttonId = dialog.open();
+			if (buttonId == SWT.YES) {
+				updateAllReportDescriptionOfProjectToXml();
+			}
+			if (buttonId == SWT.NO || buttonId == SWT.YES) {
+				return super.close();
+			} else
+				return false;
+		}
+		return super.close();
 	}
 
 	/**
@@ -310,6 +337,12 @@ public class SelectReportDialog extends Dialog {
 				}
 				updateTable();
 			}
+		}
+
+		// apply modified histoty of each report for each project
+		if (buttonId == APPLY_SELECTION) {
+			updateAllReportDescriptionOfProjectToXml();
+			getButton(APPLY_SELECTION).setEnabled(false);
 		}
 
 		// apply modified histoty of each report for each project
