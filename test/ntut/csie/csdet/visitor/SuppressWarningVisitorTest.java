@@ -133,7 +133,7 @@ public class SuppressWarningVisitorTest {
 		List<SSMessage> ssList = visitor.getSuppressWarningList();
 		assertEquals(2, ssList.size());
 		assertEquals(2, ssList.get(0).getSmellList().size());
-		assertEquals("Nested_Try_Block", ssList.get(0).getSmellList().get(0));
+		assertEquals("Nested_Try_Statement", ssList.get(0).getSmellList().get(0));
 		assertEquals("Dummy_Handler", ssList.get(0).getSmellList().get(1));
 		assertEquals("Dummy_Handler", ssList.get(1).getSmellList().get(0));
 	}
@@ -146,13 +146,13 @@ public class SuppressWarningVisitorTest {
 		assertEquals(4, ssList.size());
 		assertEquals(2, ssList.get(0).getSmellList().size());
 		assertFalse(ssList.get(0).isInCatch());
-		assertEquals("Careless_CleanUp", ssList.get(0).getSmellList().get(0));
-		assertEquals("Nested_Try_Block", ssList.get(0).getSmellList().get(1));
+		assertEquals("Careless_Cleanup", ssList.get(0).getSmellList().get(0));
+		assertEquals("Nested_Try_Statement", ssList.get(0).getSmellList().get(1));
 		assertEquals(2, ssList.get(1).getSmellList().size());
-		assertEquals("Nested_Try_Block", ssList.get(1).getSmellList().get(0));
+		assertEquals("Nested_Try_Statement", ssList.get(1).getSmellList().get(0));
 		assertEquals("Over_Logging", ssList.get(1).getSmellList().get(1));
 		assertEquals(3, ssList.get(2).getSmellList().size());
-		assertEquals("Nested_Try_Block", ssList.get(2).getSmellList().get(0));
+		assertEquals("Nested_Try_Statement", ssList.get(2).getSmellList().get(0));
 		assertEquals("Over_Logging", ssList.get(2).getSmellList().get(1));
 		assertEquals("Empty_Catch_Block", ssList.get(2).getSmellList().get(2));
 		assertEquals(1, ssList.get(3).getSmellList().size());

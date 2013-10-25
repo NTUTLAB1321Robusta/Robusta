@@ -70,7 +70,7 @@ public class SuppressWarningExampleForAnalyzer {
 	/**
 	 * 在 catch 上有  suppress warning 的 nested try block
 	 */
-	@SuppressSmell({ "Nested_Try_Block", "Dummy_Handler" })
+	@SuppressSmell({ "Nested_Try_Statement", "Dummy_Handler" })
 	public void withSuppressWaringNestedTryBlockOnCatch() {
 		try {
 			throwSocketTimeoutException();
@@ -87,7 +87,7 @@ public class SuppressWarningExampleForAnalyzer {
 	/**
 	 * 在 method 上有 suppress warning 的 nested try block
 	 */
-	@SuppressSmell({ "Nested_Try_Block", "Dummy_Handler" })
+	@SuppressSmell({ "Nested_Try_Statement", "Dummy_Handler" })
 	public void withSuppressWaringNestedTryBlockOnMethod() {
 		try {
 			throwSocketTimeoutException();
@@ -133,7 +133,7 @@ public class SuppressWarningExampleForAnalyzer {
 	/**
 	 * 有 suppress waring 的 careless cleanup
 	 */
-	@SuppressSmell("Careless_CleanUp")
+	@SuppressSmell("Careless_Cleanup")
 	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
 	public void withSuppressWaringCarelessCleanup(byte[] context, File outputFile) {
 		FileOutputStream fileOutputStream  = null;
@@ -154,7 +154,7 @@ public class SuppressWarningExampleForAnalyzer {
 	 * @param context
 	 * @param outputFile
 	 */
-	@SuppressSmell("Careless_CleanUp")
+	@SuppressSmell("Careless_Cleanup")
 	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
 	public void withSuppressWaringCarelessCleanupCloseInTry(byte[] context, File outputFile) {
 		FileOutputStream fileOutputStream  = null;
@@ -172,7 +172,7 @@ public class SuppressWarningExampleForAnalyzer {
 	/**
 	 * 有 suppress waring 的 careless cleanup 加上 finally block
 	 */
-	@SuppressSmell("Careless_CleanUp")
+	@SuppressSmell("Careless_Cleanup")
 	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
 	public void withSuppressWaringCarelessCleanupCloseInTryAddFinlly(byte[] context, File outputFile) {
 		FileOutputStream fileOutputStream  = null;
@@ -232,7 +232,7 @@ public class SuppressWarningExampleForAnalyzer {
 	 * 在巢狀 try-catch 要在 catch 上 suppress bad smell 時
 	 * 反觀在 method 上 suppress bad smell 時可以正確的被 suppress
 	 */
-	@SuppressSmell({ "Careless_CleanUp", "Nested_Try_Block" })
+	@SuppressSmell({ "Careless_Cleanup", "Nested_Try_Statement" })
 	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void theFourthOrderInTheSameClass() throws IOException {
 		FileOutputStream fileOutputStream = null;
@@ -243,10 +243,10 @@ public class SuppressWarningExampleForAnalyzer {
 			fileOutputStream = new FileOutputStream("");
 			fileOutputStream.close();
 			throw new IOException("IOException throws in callee");
-		} catch(@SuppressSmell({ "Nested_Try_Block" , "Over_Logging" }) FileNotFoundException e) {
+		} catch(@SuppressSmell({ "Nested_Try_Statement" , "Over_Logging" }) FileNotFoundException e) {
 			logger.log(Level.WARNING, e.getMessage());
 			throw e;
-		} catch(@SuppressSmell({ "Nested_Try_Block" , "Over_Logging" , "Empty_Catch_Block"}) FileLockInterruptionException e) {
+		} catch(@SuppressSmell({ "Nested_Try_Statement" , "Over_Logging" , "Empty_Catch_Block"}) FileLockInterruptionException e) {
 			
 		} catch(@SuppressSmell("Dummy_Handler") IOException e) {
 			logger.log(Level.WARNING, e.getMessage());

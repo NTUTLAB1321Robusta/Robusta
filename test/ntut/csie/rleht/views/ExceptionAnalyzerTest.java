@@ -124,7 +124,7 @@ public class ExceptionAnalyzerTest {
 //		
 //		assertEquals(8, totalNTList.size());
 //		for (int i = 0; i < totalNTList.size(); i++) {
-//			assertTrue(totalNTList.get(i).getCodeSmellType().toString().equals("Nested_Try_Block"));
+//			assertTrue(totalNTList.get(i).getCodeSmellType().toString().equals("Nested_Try_Statement"));
 //		}
 //		assertEquals(78, totalNTList.get(0).getLineNumber());
 //		assertEquals(98, totalNTList.get(1).getLineNumber());
@@ -427,12 +427,12 @@ public class ExceptionAnalyzerTest {
 //		
 //		assertEquals("[Unprotected_Main_Program]", totalList.get(0).getSmellList().toString());
 //		assertEquals("[Dummy_Handler]", totalList.get(1).getSmellList().toString());
-//		assertEquals("[Nested_Try_Block, Dummy_Handler]", totalList.get(2).getSmellList().toString());
-//		assertEquals("[Nested_Try_Block, Dummy_Handler]", totalList.get(3).getSmellList().toString());
+//		assertEquals("[Nested_Try_Statement, Dummy_Handler]", totalList.get(2).getSmellList().toString());
+//		assertEquals("[Nested_Try_Statement, Dummy_Handler]", totalList.get(3).getSmellList().toString());
 //		assertEquals("[Empty_Catch_Block]",totalList.get(4).getSmellList().toString());
-//		assertEquals("[Careless_CleanUp]", totalList.get(5).getSmellList().toString());
-//		assertEquals("[Careless_CleanUp]", totalList.get(6).getSmellList().toString());
-//		assertEquals("[Careless_CleanUp]", totalList.get(7).getSmellList().toString());
+//		assertEquals("[Careless_Cleanup]", totalList.get(5).getSmellList().toString());
+//		assertEquals("[Careless_Cleanup]", totalList.get(6).getSmellList().toString());
+//		assertEquals("[Careless_Cleanup]", totalList.get(7).getSmellList().toString());
 //		
 //		assertEquals(34, totalList.get(0).getLineNumber());
 //		assertEquals(43, totalList.get(1).getLineNumber());
