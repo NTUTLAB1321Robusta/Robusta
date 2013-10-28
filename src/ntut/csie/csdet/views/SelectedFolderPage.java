@@ -54,7 +54,7 @@ public class SelectedFolderPage extends APropertyPage {
 		mainPageComposite = composite;
 		this.robustaSettings = robustaSettings;
 
-		initailState(robustaSettings.getProjectName());
+		initailState(robustaSettings.getProject());
 		readSetting();
 		buildPage(composite);
 		setUserSetting();
@@ -106,8 +106,8 @@ public class SelectedFolderPage extends APropertyPage {
 
 	}
 
-	private void initailState(String projectName) {
-		rootFolderList = getJavaProjectSourceDirectories(projectName);
+	private void initailState(IProject project) {
+		rootFolderList = getJavaProjectSourceDirectories(project.getName());
 		folderList = new boolean[rootFolderList.length];
 		for (int i = 0; i < folderList.length; i++)
 			folderList[i] = true;
@@ -210,7 +210,7 @@ public class SelectedFolderPage extends APropertyPage {
 		}
 
 		String projectPath = UserDefinedMethodAnalyzer
-				.getRobustaSettingXMLPath(robustaSettings.getProjectName());
+				.getRobustaSettingXMLPath(robustaSettings.getProject());
 		robustaSettings.writeNewXMLFile(projectPath);
 		return true;
 

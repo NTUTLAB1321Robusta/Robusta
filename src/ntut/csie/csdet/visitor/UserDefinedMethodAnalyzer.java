@@ -11,6 +11,7 @@ import ntut.csie.jdt.util.NodeUtils;
 import ntut.csie.robusta.agile.exception.RTag;
 import ntut.csie.robusta.agile.exception.Robustness;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -29,12 +30,8 @@ public class UserDefinedMethodAnalyzer {
 		isEnable = smellSettings.isDetectingSmell(SmellSettings.SMELL_CARELESSCLEANUP);
 	}
 	
-	public static String getRobustaSettingXMLPath(String projectName) {
-		return ResourcesPlugin.getWorkspace().getRoot().getLocation()
-				.toOSString()
-				+ File.separator
-				+ projectName
-				+ File.separator
+	public static String getRobustaSettingXMLPath(IProject project) {
+		return project.getLocation() + File.separator
 				+ RobustaSettings.SETTING_FILENAME;
 	}
 	

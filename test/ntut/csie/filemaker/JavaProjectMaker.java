@@ -343,14 +343,4 @@ public class JavaProjectMaker {
 	public String getProjectName() {
 		return projectName;
 	}
-
-	
-	/**
-	 * Get the folder of the project.
-	 * @param folderName
-	 * @return the folder that match the folderName
-	 */
-	public IFolder getFolder(String folderName) {
-		return _project.getFolder(folderName);
-	}
 }

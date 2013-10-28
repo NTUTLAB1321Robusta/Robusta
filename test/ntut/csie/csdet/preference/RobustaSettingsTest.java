@@ -10,13 +10,18 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.eclipse.core.resources.ResourcesPlugin;
 
 public class RobustaSettingsTest {
 	private File robustaSettingFile;
 	private RobustaSettings robustaSettings;
+	private IProject project;
 
 	@Before
 	public void setUp() throws Exception {
@@ -24,7 +29,10 @@ public class RobustaSettingsTest {
 		if (robustaSettingFile.exists()) {
 			assertTrue(robustaSettingFile.delete());
 		}
-		robustaSettings = new RobustaSettings(robustaSettingFile, "FirstTest");
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IWorkspaceRoot root = workspace.getRoot();
+		project  = root.getProject("FirstTest");
+		robustaSettings = new RobustaSettings(robustaSettingFile, project);
 	}
 
 	@After
@@ -45,7 +53,7 @@ public class RobustaSettingsTest {
 
 	@Test
 	public void testConstructor_String() throws Exception {
-		robustaSettings = new RobustaSettings(robustaSettingFile, "FirstTest");
+		robustaSettings = new RobustaSettings(robustaSettingFile, project);
 		robustaSettings.writeNewXMLFile(robustaSettingFile.getPath());
 		assertTrue(robustaSettingFile.exists());
 		String fileContent = readFileContents(robustaSettingFile);
@@ -78,7 +86,7 @@ public class RobustaSettingsTest {
 						+ "</RobustaSettings>", fileContent);
 
 		// setting file exist
-		robustaSettings = new RobustaSettings(robustaSettingFile, "FirstTest");
+		robustaSettings = new RobustaSettings(robustaSettingFile, project);
 		fileContent = readFileContents(robustaSettingFile);
 		assertEquals(
 				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
@@ -86,7 +94,7 @@ public class RobustaSettingsTest {
 						+ "</RobustaSettings>", fileContent);
 
 		// setting file exist and add new element
-		robustaSettings = new RobustaSettings(robustaSettingFile, "FirstTest");
+		robustaSettings = new RobustaSettings(robustaSettingFile, project);
 		robustaSettings.getProjectDetect("srcTest");
 		robustaSettings.writeNewXMLFile(robustaSettingFile.getPath());
 		fileContent = readFileContents(robustaSettingFile);

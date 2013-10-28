@@ -176,7 +176,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	 */
 	protected IProject[] build(int kind, @SuppressWarnings("rawtypes") Map args, IProgressMonitor monitor) throws CoreException {
 		getDetectSettings();
-		loadRobustaSettingForProject(getProject().getName());
+		loadRobustaSettingForProject(getProject());
 		
 		logger.debug("[RLBuilder] START !!");
 		long start = System.currentTimeMillis();
@@ -269,20 +269,28 @@ public class RLBuilder extends IncrementalProjectBuilder {
 					this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, markerInfo, ntsIndex, -1);  // methodIdx 先給-1
 				}
 				
-				//Detect dummy handler for initializer
+				//Detect dummy handler and empty catch block for initializer
 				DummyHandlerVisitor dmhVisitor = new DummyHandlerVisitor(root);
+				IgnoreExceptionVisitor ignoreExceptionVisitor = new IgnoreExceptionVisitor(root);
 				ASTInitializerCollector initializerCollector = new ASTInitializerCollector();
 				root.accept(initializerCollector);
-				for(Initializer init : initializerCollector.getInitializerList())
+				for(Initializer init : initializerCollector.getInitializerList()) {
 					init.accept(dmhVisitor);
+					init.accept(ignoreExceptionVisitor);
+				}
 				List<MarkerInfo> dmList = dmhVisitor.getDummyList();
 				for(int dmIndex = 0; dmIndex < dmList.size(); dmIndex++) {
 					MarkerInfo markerInfo = dmList.get(dmIndex);
 					String errmsg = this.resource.getString("ex.smell.type.undealt") + markerInfo.getCodeSmellType() + this.resource.getString("ex.smell.type");
 					this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, markerInfo, dmIndex, -1);  // methodIdx = -1 => not support quickfix right now
 				}
-				
-				
+				List<MarkerInfo> ignoreExceptionList = ignoreExceptionVisitor.getIgnoreList();
+				for(int ieIndex = 0; ieIndex < ignoreExceptionList.size(); ieIndex++) {
+					MarkerInfo markerInfo = ignoreExceptionList.get(ieIndex);
+					String errmsg = this.resource.getString("ex.smell.type.undealt") + markerInfo.getCodeSmellType() + this.resource.getString("ex.smell.type");
+					this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, markerInfo, ieIndex, -1);  // methodIdx = -1 => not support quickfix right now
+				}
+			
 				int methodIdx = -1;
 				for (MethodDeclaration method : methodList) {
 					methodIdx++;
@@ -656,11 +664,11 @@ public class RLBuilder extends IncrementalProjectBuilder {
 		}
 	}
 	
-	private void loadRobustaSettingForProject(String projectName)
+	private void loadRobustaSettingForProject(IProject project)
 	{
 		robustaSettings = new RobustaSettings(
-				UserDefinedMethodAnalyzer.getRobustaSettingXMLPath(projectName),
-				projectName);
+				UserDefinedMethodAnalyzer.getRobustaSettingXMLPath(project),
+				project);
 	}
 
 }

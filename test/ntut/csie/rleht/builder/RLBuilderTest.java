@@ -7,6 +7,7 @@ import ntut.csie.csdet.preference.RobustaSettings;
 import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 import ntut.csie.filemaker.JavaProjectMaker;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -39,7 +40,9 @@ public class RLBuilderTest {
 	
 	@Test
 	public void testIsJavaFileWithNonIFile() throws Exception {
-		IResource resource = jpm.getFolder("src");
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IProject project = workspace.getRoot().getProject(testProjectName);
+		IResource resource = project.getFolder("src");
 		Method isJavaFile = RLBuilder.class.getDeclaredMethod(
 				"isJavaFile", IResource.class);
 		isJavaFile.setAccessible(true);
@@ -87,12 +90,16 @@ public class RLBuilderTest {
 		Method shouldGoInside = RLBuilder.class.getDeclaredMethod(
 				"shouldGoInInside", IResource.class);
 		shouldGoInside.setAccessible(true);
+		
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IProject project = workspace.getRoot().getProject(testProjectName);
+		
 		// Assert test folder is true, because it is source folder
-		IResource resourceTest = jpm.getFolder("test");
+		IResource resourceTest = project.getFolder("test");
 		Assert.assertTrue((Boolean) shouldGoInside.invoke(rlBuilder,
 				resourceTest));
 		// swt is not a source folder
-		IResource resourceSwt = jpm.getFolder("swt");
+		IResource resourceSwt = project.getFolder("swt");
 		Assert.assertFalse((Boolean) shouldGoInside.invoke(rlBuilder,
 				resourceSwt));
 	}
@@ -100,15 +107,18 @@ public class RLBuilderTest {
 	@Test
 	public void testShouldGoInsideWithSetNonVisitSourceFolder()
 			throws Exception {
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IProject project = workspace.getRoot().getProject(testProjectName);
+		
 		// Add the src folder to ignore folder list to be detect bad smells
 		RobustaSettings robustaSettings = new RobustaSettings(
 				UserDefinedMethodAnalyzer
-						.getRobustaSettingXMLPath(testProjectName),
-				testProjectName);
+						.getRobustaSettingXMLPath(project),
+						project);
 		robustaSettings.setProjectDetectAttribute("src",
 				RobustaSettings.ATTRIBUTE_ENABLE, false);
 		robustaSettings.writeNewXMLFile(UserDefinedMethodAnalyzer
-				.getRobustaSettingXMLPath(testProjectName));
+				.getRobustaSettingXMLPath(project));
 
 		// Load the RobustaSetting for the project
 		Method loadRobustaSettingForProject = RLBuilder.class
@@ -120,7 +130,7 @@ public class RLBuilderTest {
 				"shouldGoInInside", IResource.class);
 		shouldGoInside.setAccessible(true);
 		// Assert test folder is true, because it is source folder
-		IResource resourceFolder = jpm.getFolder("src");
+		IResource resourceFolder = project.getFolder("src");
 		Assert.assertFalse((Boolean) shouldGoInside.invoke(rlBuilder,
 				resourceFolder));
 	}

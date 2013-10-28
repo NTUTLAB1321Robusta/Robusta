@@ -17,8 +17,11 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 
 public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage {
@@ -33,10 +36,13 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage {
 	public CSPropertyPage() {
 		super();
 		IProject project = null;
-		IStructuredSelection selection = (IStructuredSelection) PlatformUI
-				.getWorkbench().getActiveWorkbenchWindow()
-				.getSelectionService()
-				.getSelection("org.eclipse.jdt.ui.PackageExplorer");
+		IWorkbenchWindow window = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow();
+		IStructuredSelection selection = null;
+		if (window != null) {
+			selection = (IStructuredSelection) window.getSelectionService()
+					.getSelection();
+		}
 		for (Iterator<?> it = ((IStructuredSelection) selection).iterator(); it
 				.hasNext();) {
 			Object element = it.next();
@@ -48,8 +54,7 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage {
 			}
 		}
 		robustaSettings = new RobustaSettings(
-				UserDefinedMethodAnalyzer.getRobustaSettingXMLPath(project
-						.getName()), project.getName());
+				UserDefinedMethodAnalyzer.getRobustaSettingXMLPath(project), project);
 		smellSettings = new SmellSettings(
 				UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		tabPages = new ArrayList<APropertyPage>();

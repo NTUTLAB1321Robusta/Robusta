@@ -9,6 +9,7 @@ import java.util.List;
 import ntut.csie.robusta.agile.exception.RTag;
 import ntut.csie.robusta.agile.exception.Robustness;
 
+import org.eclipse.core.resources.IProject;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -22,16 +23,16 @@ public class RobustaSettings {
 	public final static String ATTRIBUTE_FOLDERNAME = "FolderName";
 	public final static String ATTRIBUTE_ENABLE = "enable";
 	private Document proDoc;
-	private String projectName;
+	private IProject project;
 
 	public RobustaSettings() {
 		proDoc = new Document(new Element(TAG_ROOT));
 	}
 
 	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
-	public RobustaSettings(File xmlFile, String projectName) {
+	public RobustaSettings(File xmlFile, IProject project) {
 		this();
-		this.projectName = projectName;
+		this.project = project;
 		if (!xmlFile.exists()) {
 			return;
 		}
@@ -46,13 +47,13 @@ public class RobustaSettings {
 		}
 	}
 
-	public String getProjectName() {
-		return projectName;
+	public IProject getProject() {
+		return project;
 	}
 
 	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
-	public RobustaSettings(String xmlFilepath, String projectName) {
-		this(new File(xmlFilepath), projectName);
+	public RobustaSettings(String xmlFilepath, IProject project) {
+		this(new File(xmlFilepath), project);
 	}
 
 	public Element getProjectDetect(String preferenceName) {
