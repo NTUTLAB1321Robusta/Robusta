@@ -186,17 +186,5 @@
             name="Robusta Detecting Settings" >
       </page>
    </extension>
-   <extension
-         id="standalone"
-         point="org.eclipse.core.runtime.applications">
-      <application
-            cardinality="singleton-global"
-            thread="main"
-            visible="true">
-         <run
-               class="ntut.csie.rleht.StandAloneApp">
-         </run>
-      </application>
-   </extension>
-
+   <!-- STAND ALONE (HEADLESS) extension will be injected here AUTOMATICALLY when build by ANT (xmltask) -->
 </plugin>

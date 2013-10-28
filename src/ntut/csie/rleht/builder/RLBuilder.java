@@ -9,7 +9,6 @@ import java.util.TreeMap;
 
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.data.SSMessage;
-import ntut.csie.csdet.preference.DetectFile;
 import ntut.csie.csdet.preference.JDomUtil;
 import ntut.csie.csdet.preference.RobustaSettings;
 import ntut.csie.csdet.preference.SmellSettings;
@@ -38,10 +37,10 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -65,6 +64,8 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	private TreeMap<String, Boolean> detSmellSetting = new TreeMap<String, Boolean>();
 	
 	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
+
+	private RobustaSettings robustaSettings;
 
 	/**
 	 * 將相關例外資訊貼上marker(RLMessage)
@@ -175,7 +176,8 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	 */
 	protected IProject[] build(int kind, @SuppressWarnings("rawtypes") Map args, IProgressMonitor monitor) throws CoreException {
 		getDetectSettings();
-
+		loadRobustaSettingForProject(getProject().getName());
+		
 		logger.debug("[RLBuilder] START !!");
 		long start = System.currentTimeMillis();
 		if (kind == FULL_BUILD) {
@@ -201,7 +203,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	 * @param resource
 	 */
 	private void checkBadSmells(IResource resource) {
-		if (isIResourceNeedToBeDetected(resource)) {
+		if (isJavaFile(resource)) {
 			IFile file = (IFile) resource;
 			deleteMarkers(file);
 			try {
@@ -501,20 +503,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 			}
 		}
 	}
-
-	/**
-	 * 儲存Suppress Smell的設定
-	 * @param suppressSmellList
-	 * @param detMethodSmell
-	 * @param detCatchSmell
-	 */
-	private boolean isIResourceNeedToBeDetected(IResource resource) {
-		if(resource instanceof IFile) {
-			return isJavaFile(resource) && isUserWantToDetect(resource); 
-		}
-		return false;
-	}
-
+	
 	/**
 	 * check if the resource is java file
 	 */
@@ -526,24 +515,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 			return false;
 		}
 	}
-
-	/**
-	 * check if user want to detect this file
-	 * TODO for now, default is not detect source folder name contain "test"
-	 * 		but it will change to decide by user
-	 */
-	private boolean isUserWantToDetect(IResource resource) {
-		IPath path = resource.getFullPath();
-		String projectName = path.segment(0);
-
-		RobustaSettings robustaSettings = new RobustaSettings(
-				UserDefinedMethodAnalyzer.getRobustaSettingXMLPath(projectName),
-				projectName);
-
-		String folderName = path.segment(1);
-
-		return robustaSettings.getProjectDetectAttribute(folderName);	
-	}
+	
 	private void inputSuppressData(List<SSMessage> suppressSmellList,
 		TreeMap<String, Boolean> detMethodSmell, TreeMap<String, List<Integer>> detCatchSmell) {
 		/// 初始化設定 ///
@@ -620,6 +592,8 @@ public class RLBuilder extends IncrementalProjectBuilder {
 			 * otherwise have to call checkBadSmells()
 			 */
 			if(delta.getKind() != IResourceDelta.REMOVED) {
+				if (!shouldGoInInside(resource))
+					return false;
 				checkBadSmells(resource);
 			} 
 			// return true to continue visiting children.
@@ -629,10 +603,32 @@ public class RLBuilder extends IncrementalProjectBuilder {
 
 	class RLResourceVisitor implements IResourceVisitor {
 		public boolean visit(IResource resource) {
+			if (!shouldGoInInside(resource))
+				return false;
 			checkBadSmells(resource);
 			// return true to continue visiting children.
 			return true;
 		}
+	}
+	
+	private boolean shouldGoInInside(IResource resource) {
+		if (resource.getType() == IResource.FOLDER) {
+			//Check if it is in PackageFragmentRoot or not
+			IProject project = resource.getProject();
+			try {
+				if (project.isNatureEnabled(JavaCore.NATURE_ID)) {
+					IJavaProject javaProject = JavaCore.create(project);
+					if (javaProject.findPackageFragmentRoot(resource.getFullPath().uptoSegment(2)) == null)
+						return false;
+				}
+			} catch (Exception ex) {
+				logger.error("[RLBuilder] EXCEPTION ", ex);
+			}
+			//Check if it was set not to be detect in robusta setting
+			String folderName = resource.getFullPath().segment(1);
+			return robustaSettings.getProjectDetectAttribute(folderName);
+		}
+		return true;
 	}
 	
 	private void getDetectSettings(){
@@ -658,6 +654,13 @@ public class RLBuilder extends IncrementalProjectBuilder {
 			for (String smellType : RLMarkerAttribute.CS_TOTAL_TYPE)
 				detSmellSetting.put(smellType, true);			
 		}
+	}
+	
+	private void loadRobustaSettingForProject(String projectName)
+	{
+		robustaSettings = new RobustaSettings(
+				UserDefinedMethodAnalyzer.getRobustaSettingXMLPath(projectName),
+				projectName);
 	}
 
 }

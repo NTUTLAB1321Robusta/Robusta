@@ -191,11 +191,30 @@
 				<include name="org.eclipse.jdt.astview_1.1.3.jar"/>
 			</fileset>
 		</copy>
-		<copy file="${basedir}/plugin.xml" tofile="${bin-folder}/plugin.xml"/>
     	<copy file="${basedir}/plugin.properties" tofile="${bin-folder}/plugin.properties"/>
     	<copy file="${basedir}/build.properties" tofile="${bin-folder}/build.properties"/>
     	<copy file="${basedir}/robusta_en_US.properties" tofile="${bin-folder}/robusta_en_US.properties"/>
     	<copy file="${basedir}/robusta_zh_TW.properties" tofile="${bin-folder}/robusta_zh_TW.properties"/>
+    	<!-- 
+	Do not copy anymore, modified the plugin.xml to add extension for headless by xmltask instead
+	<copy file="${basedir}/plugin.xml" tofile="${bin-folder}/plugin.xml"/>
+	-->
+    	<taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpath="external_lib/ant_lib/xmltask.jar"/>
+    	<xmltask source="${basedir}/plugin.xml" dest="${bin-folder}/plugin.xml" encoding="UTF-8">
+    		<insert path="/plugin">
+    			<![CDATA[ 
+                      <extension id="standalone"
+    			         point="org.eclipse.core.runtime.applications">
+    			      <application
+    			            cardinality="singleton-global"
+    			            thread="main"
+    			            visible="true">
+    			         <run class="ntut.csie.rleht.StandAloneApp" />
+    			      </application>
+    			   </extension>
+    			]]>
+    		</insert>
+    	</xmltask>
     </target>
 	
 	<!-- compile project -->
