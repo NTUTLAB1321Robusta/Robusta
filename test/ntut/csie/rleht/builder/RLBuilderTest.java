@@ -81,18 +81,18 @@ public class RLBuilderTest {
 	@Test
 	public void testShouldGoInsideWithTheFolderNotIsTheSourceFolder()
 			throws Exception {
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IProject project = workspace.getRoot().getProject(testProjectName);
+		
 		// Load the RobustaSetting for the project
 		Method loadRobustaSettingForProject = RLBuilder.class
-				.getDeclaredMethod("loadRobustaSettingForProject", String.class);
+				.getDeclaredMethod("loadRobustaSettingForProject", IProject.class);
 		loadRobustaSettingForProject.setAccessible(true);
-		loadRobustaSettingForProject.invoke(rlBuilder, testProjectName);
+		loadRobustaSettingForProject.invoke(rlBuilder, project);
 
 		Method shouldGoInside = RLBuilder.class.getDeclaredMethod(
 				"shouldGoInInside", IResource.class);
 		shouldGoInside.setAccessible(true);
-		
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IProject project = workspace.getRoot().getProject(testProjectName);
 		
 		// Assert test folder is true, because it is source folder
 		IResource resourceTest = project.getFolder("test");
@@ -122,9 +122,9 @@ public class RLBuilderTest {
 
 		// Load the RobustaSetting for the project
 		Method loadRobustaSettingForProject = RLBuilder.class
-				.getDeclaredMethod("loadRobustaSettingForProject", String.class);
+				.getDeclaredMethod("loadRobustaSettingForProject", IProject.class);
 		loadRobustaSettingForProject.setAccessible(true);
-		loadRobustaSettingForProject.invoke(rlBuilder, testProjectName);
+		loadRobustaSettingForProject.invoke(rlBuilder, project);
 
 		Method shouldGoInside = RLBuilder.class.getDeclaredMethod(
 				"shouldGoInInside", IResource.class);
