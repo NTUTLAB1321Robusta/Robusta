@@ -11,7 +11,7 @@ import ntut.csie.csdet.data.SSMessage;
 import ntut.csie.csdet.preference.JDomUtil;
 import ntut.csie.csdet.visitor.CarelessCleanupVisitor;
 import ntut.csie.csdet.visitor.DummyHandlerVisitor;
-import ntut.csie.csdet.visitor.IgnoreExceptionVisitor;
+import ntut.csie.csdet.visitor.EmptyCatchBlockVisitor;
 import ntut.csie.csdet.visitor.NestedTryStatementVisitor;
 import ntut.csie.csdet.visitor.OverLoggingDetector;
 import ntut.csie.csdet.visitor.OverwrittenLeadExceptionVisitor;
@@ -134,7 +134,7 @@ public class ReportBuilder {
 			PackageModel newPackageModel, String pkPath) {
 		List<SSMessage> suppressSmellList = null;
 
-		IgnoreExceptionVisitor ieVisitor = null;
+		EmptyCatchBlockVisitor ecbVisitor = null;
 		DummyHandlerVisitor dhVisitor = null;
 		NestedTryStatementVisitor ntsVisitor = null;
 		UnprotectedMainProgramVisitor mainVisitor = null;
@@ -194,13 +194,13 @@ public class ReportBuilder {
 		
 		// 目前的Method AST Node
 		for (MethodDeclaration method : methodList) {
-			// 取得專案中的ignore Exception
+			// 取得專案中的 Empty Catch Block
 			if (detMethodSmell.get(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK)) {
-				ieVisitor = new IgnoreExceptionVisitor(root);
-				method.accept(ieVisitor);
-				List<MarkerInfo> ignoreExList = checkCatchSmell(ieVisitor.getIgnoreList(), detCatchSmell.get(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK));
-				newClassModel.setIgnoreExList(ignoreExList, method.getName().toString());
-				model.addIgnoreTotalSize(ignoreExList.size());
+				ecbVisitor = new EmptyCatchBlockVisitor(root);
+				method.accept(ecbVisitor);
+				List<MarkerInfo> emptyCatchList = checkCatchSmell(ecbVisitor.getEmptyCatchList(), detCatchSmell.get(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK));
+				newClassModel.setEmptyCatchList(emptyCatchList, method.getName().toString());
+				model.addEmptyTotalSize(emptyCatchList.size());
 			}
 			// 取得專案中dummy handler
 			if (detMethodSmell.get(RLMarkerAttribute.CS_DUMMY_HANDLER)) {

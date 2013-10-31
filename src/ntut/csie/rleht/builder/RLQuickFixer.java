@@ -89,7 +89,7 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 					if (!isDetect)
 						markerList.add(new CSQuickFix(resource.getString("err.ss.fault.name1") + " " + faultName + " " + resource.getString("err.ss.fault.name2") + " " + type, type, inCatch));
 				}
-				// 碰到Ignore Exception的Quick fix and refactor方法
+				// 碰到Empty Catch Block的Quick fix and refactor方法
 			} else if(problem.equals(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK)) {
 				markerList.add(new RefineRuntimeExceptionQuickFix("Quick Fix==>Rethrow RuntimeException"));
 				markerList.add(new RethrowUncheckExAction("Refactor==>Rethrow Unchecked Excetpion"));

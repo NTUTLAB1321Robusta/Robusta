@@ -6,7 +6,7 @@ import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.visitor.ASTCatchCollect;
 import ntut.csie.csdet.visitor.DummyHandlerVisitor;
-import ntut.csie.csdet.visitor.IgnoreExceptionVisitor;
+import ntut.csie.csdet.visitor.EmptyCatchBlockVisitor;
 import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
@@ -220,11 +220,11 @@ public class RethrowExRefactoring extends Refactoring {
 					currentMethodNode.accept(exVisitor);
 					currentMethodRLList = exVisitor.getMethodRLAnnotationList();
 
-					// 判斷是Ignore Ex or Dummy handler並取得code smell的List
+					// Check if it is Empty Catch Block or Dummy handler, and get code smell list
 					if(problem.equals(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK)) {
-						IgnoreExceptionVisitor visitor = new IgnoreExceptionVisitor(this.actRoot);
+						EmptyCatchBlockVisitor visitor = new EmptyCatchBlockVisitor(this.actRoot);
 						currentMethodNode.accept(visitor);
-						currentExList = visitor.getIgnoreList();
+						currentExList = visitor.getEmptyCatchList();
 					} else {
 						DummyHandlerVisitor visitor = new DummyHandlerVisitor(this.actRoot);
 						currentMethodNode.accept(visitor);

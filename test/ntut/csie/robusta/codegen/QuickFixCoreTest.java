@@ -10,7 +10,7 @@ import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.ASTNodeFinder;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
-import ntut.csie.filemaker.exceptionBadSmells.DummyAndIgnoreExample;
+import ntut.csie.filemaker.exceptionBadSmells.DummyAndEmptyExample;
 import ntut.csie.filemaker.exceptionBadSmells.UserDefineDummyHandlerFish;
 import ntut.csie.robusta.codegen.QuickFixCore;
 import ntut.csie.robusta.util.PathUtils;
@@ -42,8 +42,8 @@ public class QuickFixCoreTest {
 
 	public QuickFixCoreTest() {
 		projectNameString = "QuickFixCoreTest";
-		packageNameString = DummyAndIgnoreExample.class.getPackage().getName();
-		classSimpleNameString = DummyAndIgnoreExample.class.getSimpleName();
+		packageNameString = DummyAndEmptyExample.class.getPackage().getName();
+		classSimpleNameString = DummyAndEmptyExample.class.getSimpleName();
 	}
 	
 	@Before
@@ -61,13 +61,13 @@ public class QuickFixCoreTest {
 				JavaProjectMaker.FOLDERNAME_BIN_CLASS);
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/" + JavaProjectMaker.FOLDERNAME_LIB_JAR + JavaProjectMaker.FOLDERNAME_LIB_JAR);
 
-		// 建立新的檔案DummyAndIgnoreExample
+		// 建立新的檔案DummyAndEmptyExample
 		javaFile2String = new JavaFileToString();
-		javaFile2String.read(DummyAndIgnoreExample.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaFile2String.read(DummyAndEmptyExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
-				DummyAndIgnoreExample.class.getPackage().getName(),
-				DummyAndIgnoreExample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + DummyAndIgnoreExample.class.getPackage().getName() + ";\n"
+				DummyAndEmptyExample.class.getPackage().getName(),
+				DummyAndEmptyExample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
+				"package " + DummyAndEmptyExample.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		
 		// 繼續建立測試用的UserDefineDummyHandlerFish
@@ -79,7 +79,7 @@ public class QuickFixCoreTest {
 				"package " + UserDefineDummyHandlerFish.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		
-		path = new Path(PathUtils.getPathOfClassUnderSrcFolder(DummyAndIgnoreExample.class, projectNameString));
+		path = new Path(PathUtils.getPathOfClassUnderSrcFolder(DummyAndEmptyExample.class, projectNameString));
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);

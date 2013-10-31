@@ -32,7 +32,7 @@ import org.eclipse.jdt.core.dom.WhileStatement;
  * @author crimson
  */
 /*
- * FIXME 計算上有Bug, 針對DummyAndIgnoreExample偵測時，得到136/39/4
+ * FIXME 計算上有Bug, 針對DummyAndEmptyExample偵測時，得到136/39/4
  * 當把finally-catch內的「e.printStackTrace()」註解掉時，的到135/38/3，明顯有誤
  */
 public class CountVisitor extends ASTVisitor {

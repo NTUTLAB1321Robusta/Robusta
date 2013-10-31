@@ -15,7 +15,7 @@ import ntut.csie.csdet.visitor.CarelessCleanupVisitor2Test;
 import ntut.csie.csdet.visitor.CarelessCleanupVisitor3Test;
 import ntut.csie.csdet.visitor.CarelessCleanupVisitorTest;
 import ntut.csie.csdet.visitor.DummyHandlerVisitorTest;
-import ntut.csie.csdet.visitor.IgnoreExceptionVisitorTest;
+import ntut.csie.csdet.visitor.EmptyCatchBlockVisitorTest;
 import ntut.csie.csdet.visitor.NestedTryStatementVisitorTest;
 import ntut.csie.csdet.visitor.OverLoggingVisitorTest;
 import ntut.csie.csdet.visitor.OverwrittenLeadExceptionVisitorTest;
@@ -58,7 +58,7 @@ import org.junit.runners.Suite;
 	CarelessCleanupVisitor3Test.class,
 	CarelessCleanupVisitorTest.class,
 	DummyHandlerVisitorTest.class,
-	IgnoreExceptionVisitorTest.class,
+	EmptyCatchBlockVisitorTest.class,
 	NestedTryStatementVisitorTest.class,
 	OverLoggingVisitorTest.class,
 	OverwrittenLeadExceptionVisitorTest.class,

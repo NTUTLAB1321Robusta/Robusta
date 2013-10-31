@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SuppressSmell {
 	/* annotation裡面不能有過多資訊，否則ant javac會compile不過 
-	//ignore exception的type
+	//Empty Catch Block的type
 	public static final String CS_EMPTY_CATCH_BLOCK = "Empty_Catch_Block";
 	
 	//Dummy Handler的type

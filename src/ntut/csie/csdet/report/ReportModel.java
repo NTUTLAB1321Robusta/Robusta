@@ -27,7 +27,7 @@ public class ReportModel {
 	// 儲存路徑
 	private String projectPath = "";
 	// Smell總數
-	private int ignoreTotalSize = 0;
+	private int emptyTotalSize = 0;
 	private int dummyTotalSize = 0;
 	private int unMainTotalSize = 0;
 	private int nestedTryTotalSize = 0;
@@ -54,8 +54,8 @@ public class ReportModel {
 	}
 	
 	// 增加Smell的總數
-	public void addIgnoreTotalSize(int ignoreSize) {
-		this.ignoreTotalSize += ignoreSize;
+	public void addEmptyTotalSize(int emptySize) {
+		this.emptyTotalSize += emptySize;
 	}
 	public void addDummyTotalSize(int dummySize) {
 		this.dummyTotalSize += dummySize;
@@ -77,8 +77,8 @@ public class ReportModel {
 	}
 	
 	// 取得Smell的總數
-	public int getIgnoreTotalSize() {
-			return ignoreTotalSize;
+	public int getEmptyCatchTotalSize() {
+			return emptyTotalSize;
 	}
 	public int getDummyTotalSize() {
 			return dummyTotalSize;
@@ -99,7 +99,7 @@ public class ReportModel {
 		return overwrittenSize;
 	}
 	public int getTotalSmellCount() {
-		return getIgnoreTotalSize() + getDummyTotalSize() + getUnMainTotalSize() + getNestedTryTotalSize()
+		return getEmptyCatchTotalSize() + getDummyTotalSize() + getUnMainTotalSize() + getNestedTryTotalSize()
 				+ getCarelessCleanUpTotalSize() + getOverLoggingTotalSize() + getOverwrittenTotalSize();
 	}
 

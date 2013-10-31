@@ -53,12 +53,12 @@ public class PackageModel {
 	}
 		
 	///取得此Package的Smell數量///
-	public int getIgnoreSize() {
-		int ignoreSize = 0;
+	public int getEmptySize() {
+		int emptySize = 0;
 		for (ClassModel cm : classModel)
-			ignoreSize += cm.getIgnoreSize();
+			emptySize += cm.getEmptySize();
 
-		return ignoreSize;
+		return emptySize;
 	}
 	public int getDummySize() {
 		int dummySize = 0;
@@ -103,7 +103,7 @@ public class PackageModel {
 		return overwrittenSize;
 	}
 	public int getTotalSmellSize() {
-		return getIgnoreSize() + getDummySize() + getNestedTrySize() + getUnMainSize() +
+		return getEmptySize() + getDummySize() + getNestedTrySize() + getUnMainSize() +
 			   getCarelessCleanUpSize() + getOverLoggingSize() + getOverwrittenSize();
 	}
 	

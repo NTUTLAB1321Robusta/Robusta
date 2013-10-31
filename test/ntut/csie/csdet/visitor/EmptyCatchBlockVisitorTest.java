@@ -8,7 +8,7 @@ import java.io.File;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
-import ntut.csie.filemaker.exceptionBadSmells.IgnoredCheckedExceptionExample;
+import ntut.csie.filemaker.exceptionBadSmells.EmptyCatchBlockExample;
 import ntut.csie.filemaker.exceptionBadSmells.UserDefineDummyHandlerFish;
 import ntut.csie.robusta.util.PathUtils;
 
@@ -22,18 +22,18 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class IgnoreExceptionVisitorTest {
+public class EmptyCatchBlockVisitorTest {
 	JavaFileToString javaFile2String;
 	JavaProjectMaker javaProjectMaker;
 	CompilationUnit compilationUnit;
-	IgnoreExceptionVisitor ignoreExceptionVisitor;
+	EmptyCatchBlockVisitor emptyCatchBlockVisitor;
 	
-	public IgnoreExceptionVisitorTest() {
+	public EmptyCatchBlockVisitorTest() {
 	}
 	
 	@Before
 	public void setUp() throws Exception {
-		String testProjectName = "IgnoredExceptionTest";
+		String testProjectName = "EmptyCatchBlockTest";
 		javaProjectMaker = new JavaProjectMaker(testProjectName);
 		javaProjectMaker.setJREDefaultContainer();
 		
@@ -42,11 +42,11 @@ public class IgnoreExceptionVisitorTest {
 
 		// 根據測試檔案樣本內容建立新的檔案
 		javaFile2String = new JavaFileToString();
-		javaFile2String.read(IgnoredCheckedExceptionExample.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaFile2String.read(EmptyCatchBlockExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
-				IgnoredCheckedExceptionExample.class.getPackage().getName(),
-				IgnoredCheckedExceptionExample.class.getSimpleName() +  JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + IgnoredCheckedExceptionExample.class.getPackage().getName() + ";\n"
+				EmptyCatchBlockExample.class.getPackage().getName(),
+				EmptyCatchBlockExample.class.getSimpleName() +  JavaProjectMaker.JAVA_FILE_EXTENSION,
+				"package " + EmptyCatchBlockExample.class.getPackage().getName() + ";\n"
 						+ javaFile2String.getFileContent());
 
 		// 繼續建立測試用的UserDefineDummyHandlerFish
@@ -58,7 +58,7 @@ public class IgnoreExceptionVisitorTest {
 				"package " + UserDefineDummyHandlerFish.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		
-		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(IgnoredCheckedExceptionExample.class, testProjectName));
+		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(EmptyCatchBlockExample.class, testProjectName));
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -81,45 +81,45 @@ public class IgnoreExceptionVisitorTest {
 	
 	@Test
 	public void testVisitNode_withSettingFileAndIsDetectingFalse() {
-		int ignoredSmellCount = 0;
+		int emptyCatchSmellCount = 0;
 		SmellSettings smellSetting = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		smellSetting.setSmellTypeAttribute(SmellSettings.SMELL_EMPTYCATCHBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, false);
 		smellSetting.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		assertTrue(new File(UserDefinedMethodAnalyzer.SETTINGFILEPATH).exists());
-		ignoreExceptionVisitor = new IgnoreExceptionVisitor(compilationUnit);
-		compilationUnit.accept(ignoreExceptionVisitor);
-		if(ignoreExceptionVisitor.getIgnoreList() != null)
-			ignoredSmellCount = ignoreExceptionVisitor.getIgnoreList().size();
+		emptyCatchBlockVisitor = new EmptyCatchBlockVisitor(compilationUnit);
+		compilationUnit.accept(emptyCatchBlockVisitor);
+		if(emptyCatchBlockVisitor.getEmptyCatchList() != null)
+			emptyCatchSmellCount = emptyCatchBlockVisitor.getEmptyCatchList().size();
 		
 		// 驗證總共抓到幾個bad smell
-		assertEquals(0, ignoredSmellCount);
+		assertEquals(0, emptyCatchSmellCount);
 	}
 	
 	@Test
 	public void testVisitNode_withSettingFileAndIsDetectingTrue() {
-		int ignoredSmellCount = 0;
+		int emptySmellCount = 0;
 		SmellSettings smellSetting = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		smellSetting.setSmellTypeAttribute(SmellSettings.SMELL_EMPTYCATCHBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, true);
 		smellSetting.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		assertTrue(new File(UserDefinedMethodAnalyzer.SETTINGFILEPATH).exists());
-		ignoreExceptionVisitor = new IgnoreExceptionVisitor(compilationUnit);
-		compilationUnit.accept(ignoreExceptionVisitor);
-		if(ignoreExceptionVisitor.getIgnoreList() != null)
-			ignoredSmellCount = ignoreExceptionVisitor.getIgnoreList().size();
+		emptyCatchBlockVisitor = new EmptyCatchBlockVisitor(compilationUnit);
+		compilationUnit.accept(emptyCatchBlockVisitor);
+		if(emptyCatchBlockVisitor.getEmptyCatchList() != null)
+			emptySmellCount = emptyCatchBlockVisitor.getEmptyCatchList().size();
 		
 		// 驗證總共抓到幾個bad smell
-		assertEquals(7, ignoredSmellCount);
+		assertEquals(7, emptySmellCount);
 	}
 
 	@Test
 	public void testVisitNode_withoutSettingFile() {
-		int ignoredSmellCount = 0;
-		ignoreExceptionVisitor = new IgnoreExceptionVisitor(compilationUnit);
-		compilationUnit.accept(ignoreExceptionVisitor);
-		if(ignoreExceptionVisitor.getIgnoreList() != null)
-			ignoredSmellCount = ignoreExceptionVisitor.getIgnoreList().size();
+		int emptyCatchSmellCount = 0;
+		emptyCatchBlockVisitor = new EmptyCatchBlockVisitor(compilationUnit);
+		compilationUnit.accept(emptyCatchBlockVisitor);
+		if(emptyCatchBlockVisitor.getEmptyCatchList() != null)
+			emptyCatchSmellCount = emptyCatchBlockVisitor.getEmptyCatchList().size();
 		
 		// 驗證總共抓到幾個bad smell
-		assertEquals(0, ignoredSmellCount);
+		assertEquals(0, emptyCatchSmellCount);
 	}
 }

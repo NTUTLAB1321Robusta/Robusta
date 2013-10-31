@@ -33,7 +33,7 @@ public class RefineToUncheckedExceptionMarkerResolution implements IMarkerResolu
 
 	@Override
 	public void run(IMarker marker) {
-		//使用者點選ignore ex 或者dummy handler的marker時,會去找尋對應的Refactor方法
+		//使用者點選Empty Catch Block 或者dummy handler的marker時,會去找尋對應的Refactor方法
 		String problem;
 		try {
 			problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);

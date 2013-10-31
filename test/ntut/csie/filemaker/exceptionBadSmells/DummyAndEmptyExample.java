@@ -8,11 +8,11 @@ import java.util.logging.Level;
 import org.apache.log4j.Logger;
 
 
-public class DummyAndIgnoreExample {
+public class DummyAndEmptyExample {
 	Logger log4j = null;
 	java.util.logging.Logger javaLog = null;
 	
-	public DummyAndIgnoreExample() {
+	public DummyAndEmptyExample() {
 		log4j = Logger.getLogger(this.getClass());
 		javaLog = java.util.logging.Logger.getLogger("");
 	}
@@ -193,7 +193,7 @@ public class DummyAndIgnoreExample {
 		try {
 			fis = new FileInputStream("");
 			fis.read();
-		} catch (IOException e) {	// IgnoreException
+		} catch (IOException e) {	// EmptyCatchBlock
 			
 		}
 	}

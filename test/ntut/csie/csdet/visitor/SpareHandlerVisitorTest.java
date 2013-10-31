@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
 
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
-import ntut.csie.filemaker.exceptionBadSmells.DummyAndIgnoreExample;
+import ntut.csie.filemaker.exceptionBadSmells.DummyAndEmptyExample;
 import ntut.csie.robusta.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -35,19 +35,19 @@ public class SpareHandlerVisitorTest {
 		String testProjectName = "SpareHandlerTest";
 		// 讀取測試檔案樣本內容
 		javaaFile2String = new JavaFileToString();
-		javaaFile2String.read(DummyAndIgnoreExample.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaaFile2String.read(DummyAndEmptyExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		
 		javaProjectMaker = new JavaProjectMaker(testProjectName);
 		javaProjectMaker.setJREDefaultContainer();
 		// 新增欲載入的library
 		javaProjectMaker.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR + "/log4j-1.2.15.jar");
 		// 根據測試檔案樣本內容建立新的檔案
-		javaProjectMaker.createJavaFile(DummyAndIgnoreExample.class.getPackage().getName(),
-				DummyAndIgnoreExample.class.getSimpleName(),
-				"package " + DummyAndIgnoreExample.class.getPackage().getName()	+ ";\n"
+		javaProjectMaker.createJavaFile(DummyAndEmptyExample.class.getPackage().getName(),
+				DummyAndEmptyExample.class.getSimpleName(),
+				"package " + DummyAndEmptyExample.class.getPackage().getName()	+ ";\n"
 				+ javaaFile2String.getFileContent());
 		
-		Path dummyAndIgnoreExamplePath = new Path(PathUtils.getPathOfClassUnderSrcFolder(DummyAndIgnoreExample.class, testProjectName));
+		Path dummyAndEmptyExamplePath = new Path(PathUtils.getPathOfClassUnderSrcFolder(DummyAndEmptyExample.class, testProjectName));
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -55,7 +55,7 @@ public class SpareHandlerVisitorTest {
 		parser.setSource(
 				JavaCore.createCompilationUnitFrom(
 						ResourcesPlugin.getWorkspace().
-						getRoot().getFile(dummyAndIgnoreExamplePath)));
+						getRoot().getFile(dummyAndEmptyExamplePath)));
 		parser.setResolveBindings(true);
 		// 取得AST
 		compilationUnit = (CompilationUnit) parser.createAST(null); 

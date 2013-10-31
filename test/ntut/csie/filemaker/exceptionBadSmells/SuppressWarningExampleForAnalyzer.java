@@ -22,7 +22,7 @@ public class SuppressWarningExampleForAnalyzer {
 	 * 1.unprotected main program
 	 * 2.dummy handler
 	 * 3.nested try block
-	 * 4.ignored exception
+	 * 4.empty catch block
 	 * 5.careless cleanup
 	 * 6.over logging
 	 * 7.待補
@@ -104,28 +104,28 @@ public class SuppressWarningExampleForAnalyzer {
 	}
 
 	/**
-	 * 在 method 上有 suppress warning 的 ignored exception
+	 * 在 method 上有 suppress warning 的 EmptyCatchBlock
 	 */
 	@SuppressSmell("Empty_Catch_Block")
-	public void withSuppressWaringIgnoredExceptionOnMethod() {
+	public void withSuppressWaringEmptyCatchBlcokionOnMethod() {
 		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream("");
 			fis.read();
-		} catch (IOException e) {	// IgnoreException
+		} catch (IOException e) {	// EmptyCatchBlock
 			
 		}
 	}
 	
 	/**
-	 * 在 catch 上有 suppress warning 的 ignored exception
+	 * 在 catch 上有 suppress warning 的 EmptyCatchBlock
 	 */
-	public void withSuppressWaringIgnoredExceptionOnCatch() {
+	public void withSuppressWaringEmptyCatchBlockOnCatch() {
 		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream("");
 			fis.read();
-		} catch (@SuppressSmell("Empty_Catch_Block") IOException e) {	// IgnoreException
+		} catch (@SuppressSmell("Empty_Catch_Block") IOException e) {	// EmptyCatchBlock
 			
 		}
 	}
@@ -329,22 +329,22 @@ public class SuppressWarningExampleForAnalyzer {
 		}
 	}
 
-	public void withoutSuppressWaringIgnoredExceptionOnMethod() {
+	public void withoutSuppressWaringEmptyCatchBlockOnMethod() {
 		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream("");
 			fis.read();
-		} catch (IOException e) {	// IgnoreException
+		} catch (IOException e) {	// EmptyCatchBlock
 			
 		}
 	}
 
-	public void withoutSuppressWaringIgnoredExceptionOnCatch() {
+	public void withoutSuppressWaringEmptyCatchBlockOnCatch() {
 		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream("");
 			fis.read();
-		} catch (IOException e) {	// IgnoreException
+		} catch (IOException e) {	// EmptyCatchBlock
 			
 		}
 	}

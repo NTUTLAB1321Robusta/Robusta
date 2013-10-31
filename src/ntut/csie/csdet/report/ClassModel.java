@@ -19,7 +19,7 @@ public class ClassModel {
 	//Smell位於的Method名稱
 	private List<String> methodList = new ArrayList<String>();
 	//Smell數量
-	private int ignoreExSize = 0;
+	private int emptyCatchSize = 0;
 	private int dummySize = 0;
 	private int nestedTrySize = 0;
 	private int unMainSize = 0;
@@ -39,12 +39,12 @@ public class ClassModel {
 	}
 	
 	///設定此Class的Smell List///
-	public void setIgnoreExList(List<MarkerInfo> ignoreExList, String MethodName) {
-		if(ignoreExList != null) {
-			ignoreExSize += ignoreExList.size();
+	public void setEmptyCatchList(List<MarkerInfo> emptyCatchList, String MethodName) {
+		if(emptyCatchList != null) {
+			emptyCatchSize += emptyCatchList.size();
 			//將Smell與其所在的Method名稱存起來
-			smellList.addAll(ignoreExList);
-			for (int i=0; i<ignoreExList.size(); i++)
+			smellList.addAll(emptyCatchList);
+			for (int i=0; i<emptyCatchList.size(); i++)
 				methodList.add(MethodName);
 		}
 	}
@@ -123,8 +123,8 @@ public class ClassModel {
 	}
 
 	///取得此Class的Smell數量///
-	public int getIgnoreSize() {
-		return ignoreExSize;
+	public int getEmptySize() {
+		return emptyCatchSize;
 	}
 	public int getDummySize() {
 		return dummySize;
@@ -145,7 +145,7 @@ public class ClassModel {
 		return overwrittenSize;
 	}
 	public int getTotalSmell() {
-		return getIgnoreSize() + getDummySize() + getUnMainSize() + getNestedTrySize() +
+		return getEmptySize() + getDummySize() + getUnMainSize() + getNestedTrySize() +
 			   getCarelessCleanUpSize() + getOverLoggingSize() + getOverwrittenSize();
 	}
 	

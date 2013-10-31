@@ -48,17 +48,17 @@ public class ClassModelTest {
 	}
 	
 	@Test
-	public void testSetIgnoreExList() {
+	public void testSetEmptyCatchList() {
 		int MAX = 10;
-		List<MarkerInfo> ignoreExList = null;
-		model.setIgnoreExList(ignoreExList, "ignoreMethod");
-		assertEquals(0, model.getIgnoreSize());
-		ignoreExList = new ArrayList<MarkerInfo>();
+		List<MarkerInfo> emptyCatchList = null;
+		model.setEmptyCatchList(emptyCatchList, "ignoreMethod");
+		assertEquals(0, model.getEmptySize());
+		emptyCatchList = new ArrayList<MarkerInfo>();
 		for(int i = 0; i < MAX; i++) {
-			ignoreExList.add(new MarkerInfo("ignore", null, null, i, i*2, null));
+			emptyCatchList.add(new MarkerInfo("ignore", null, null, i, i*2, null));
 		}
-		model.setIgnoreExList(ignoreExList, "ignoreMethod");
-		assertEquals(MAX, model.getIgnoreSize());
+		model.setEmptyCatchList(emptyCatchList, "ignoreMethod");
+		assertEquals(MAX, model.getEmptySize());
 		assertEquals("ignore", model.getSmellType(2));
 		assertEquals(8, model.getSmellLine(4));
 	}
@@ -67,14 +67,14 @@ public class ClassModelTest {
 	public void testSetDummyList() {
 		int MAX = 10;
 		List<MarkerInfo> dummyList = null;
-		model.setIgnoreExList(dummyList, "dummyMethod");
-		assertEquals(0, model.getIgnoreSize());
+		model.setEmptyCatchList(dummyList, "dummyMethod");
+		assertEquals(0, model.getEmptySize());
 		dummyList = new ArrayList<MarkerInfo>();
 		for(int i = 0; i < MAX; i++) {
 			dummyList.add(new MarkerInfo("dummy", null, null, i, i*2, null));
 		}
-		model.setIgnoreExList(dummyList, "dummyMethod");
-		assertEquals(MAX, model.getIgnoreSize());
+		model.setEmptyCatchList(dummyList, "dummyMethod");
+		assertEquals(MAX, model.getEmptySize());
 		assertEquals("dummy", model.getSmellType(2));
 		assertEquals(8, model.getSmellLine(4));
 	}
@@ -83,14 +83,14 @@ public class ClassModelTest {
 	public void testSetNestedTryList() {
 		int MAX = 10;
 		List<MarkerInfo> nestedTryList = null;
-		model.setIgnoreExList(nestedTryList, "nestedMethod");
-		assertEquals(0, model.getIgnoreSize());
+		model.setEmptyCatchList(nestedTryList, "nestedMethod");
+		assertEquals(0, model.getEmptySize());
 		nestedTryList = new ArrayList<MarkerInfo>();
 		for(int i = 0; i < MAX; i++) {
 			nestedTryList.add(new MarkerInfo("nested", null, null, i, i*2, null));
 		}
-		model.setIgnoreExList(nestedTryList, "nestedMethod");
-		assertEquals(MAX, model.getIgnoreSize());
+		model.setEmptyCatchList(nestedTryList, "nestedMethod");
+		assertEquals(MAX, model.getEmptySize());
 		assertEquals("nested", model.getSmellType(2));
 		assertEquals(8, model.getSmellLine(4));
 	}
@@ -99,14 +99,14 @@ public class ClassModelTest {
 	public void testSetUnprotectedMain() {
 		int MAX = 10;
 		List<MarkerInfo> unProtectedMain = null;
-		model.setIgnoreExList(unProtectedMain, "mainMethod");
-		assertEquals(0, model.getIgnoreSize());
+		model.setEmptyCatchList(unProtectedMain, "mainMethod");
+		assertEquals(0, model.getEmptySize());
 		unProtectedMain = new ArrayList<MarkerInfo>();
 		for(int i = 0; i < MAX; i++) {
 			unProtectedMain.add(new MarkerInfo("main", null, null, i, i*2, null));
 		}
-		model.setIgnoreExList(unProtectedMain, "mainMethod");
-		assertEquals(MAX, model.getIgnoreSize());
+		model.setEmptyCatchList(unProtectedMain, "mainMethod");
+		assertEquals(MAX, model.getEmptySize());
 		assertEquals("main", model.getSmellType(2));
 		assertEquals(8, model.getSmellLine(4));
 	}
@@ -115,14 +115,14 @@ public class ClassModelTest {
 	public void testSetOverLogging() {
 		int MAX = 10;
 		List<MarkerInfo> overLoggingList = null;
-		model.setIgnoreExList(overLoggingList, "overMethod");
-		assertEquals(0, model.getIgnoreSize());
+		model.setEmptyCatchList(overLoggingList, "overMethod");
+		assertEquals(0, model.getEmptySize());
 		overLoggingList = new ArrayList<MarkerInfo>();
 		for(int i = 0; i < MAX; i++) {
 			overLoggingList.add(new MarkerInfo("over", null, null, i, i*2, null));
 		}
-		model.setIgnoreExList(overLoggingList, "overMethod");
-		assertEquals(MAX, model.getIgnoreSize());
+		model.setEmptyCatchList(overLoggingList, "overMethod");
+		assertEquals(MAX, model.getEmptySize());
 		assertEquals("over", model.getSmellType(2));
 		assertEquals(8, model.getSmellLine(4));
 	}
@@ -131,14 +131,14 @@ public class ClassModelTest {
 	public void testSetCarelessCleanUp() {
 		int MAX = 10;
 		List<MarkerInfo> carelessList = null;
-		model.setIgnoreExList(carelessList, "cleanMethod");
-		assertEquals(0, model.getIgnoreSize());
+		model.setEmptyCatchList(carelessList, "cleanMethod");
+		assertEquals(0, model.getEmptySize());
 		carelessList = new ArrayList<MarkerInfo>();
 		for(int i = 0; i < MAX; i++) {
 			carelessList.add(new MarkerInfo("clean", null, null, i, i*2, null));
 		}
-		model.setIgnoreExList(carelessList, "cleanMethod");
-		assertEquals(MAX, model.getIgnoreSize());
+		model.setEmptyCatchList(carelessList, "cleanMethod");
+		assertEquals(MAX, model.getEmptySize());
 		assertEquals("clean", model.getSmellType(2));
 		assertEquals(8, model.getSmellLine(4));
 	}

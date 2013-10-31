@@ -34,7 +34,7 @@ public interface RLMarkerAttribute {
 	
 
 
-	/** ignore exception的type */
+	/** Empty Catch Block 's type */
 	public static final String CS_EMPTY_CATCH_BLOCK = "Empty_Catch_Block";
 	
 	/** Dummy Handler的type */

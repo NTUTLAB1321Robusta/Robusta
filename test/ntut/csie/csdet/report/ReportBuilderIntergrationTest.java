@@ -302,7 +302,7 @@ public class ReportBuilderIntergrationTest {
 	}
 	
 	/**
-	 * 全勾設定擋除了 Dummy & Ignore 沒勾
+	 * 全勾設定擋除了 Dummy & Empty 沒勾
 	 * 以及自定義的部分也已經加入了
 	 * 因為在別的 class 已經處理過了
 	 * 很長的檔案路徑字串記得要改
@@ -324,7 +324,7 @@ public class ReportBuilderIntergrationTest {
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 	}
 	
-	private void CreateDummyAndIgnoreSettings() {
+	private void CreateDummyAndEmptySettings() {
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_EMPTYCATCHBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
 		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_ePrintStackTrace);
@@ -422,7 +422,7 @@ public class ReportBuilderIntergrationTest {
 	}
 	
 	/**
-	 * DummyHandler & Ignore Report 在其他 Class 已經有進行測試了
+	 * DummyHandler & Empty Report 在其他 Class 已經有進行測試了
 	 * 在這邊只是確定設定檔不會影響本身的結果
 	 * @throws Exception
 	 */
@@ -431,17 +431,17 @@ public class ReportBuilderIntergrationTest {
 		CreateAllSettings();
 		reportBuilder.run();
 		assertTrue(reportModel.getDummyTotalSize() == 0);
-		assertTrue(reportModel.getIgnoreTotalSize() == 0);
-		CreateDummyAndIgnoreSettings();
+		assertTrue(reportModel.getEmptyCatchTotalSize() == 0);
+		CreateDummyAndEmptySettings();
 		reportBuilder.run();
 		assertTrue(reportModel.getDummyTotalSize() > 0);
-		assertTrue(reportModel.getIgnoreTotalSize() > 0);
+		assertTrue(reportModel.getEmptyCatchTotalSize() > 0);
 	}
 	
 	@Test
 	public void testOnlyNestedTryBadSmellReport() throws Exception {
 		assertTrue(reportModel.getDummyTotalSize() == 0);
-		assertTrue(reportModel.getIgnoreTotalSize() == 0);
+		assertTrue(reportModel.getEmptyCatchTotalSize() == 0);
 		assertTrue(reportModel.getCarelessCleanUpTotalSize() == 0);
 		assertTrue(reportModel.getNestedTryTotalSize() == 0);
 		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
@@ -456,7 +456,7 @@ public class ReportBuilderIntergrationTest {
 		analysisProject.invoke(reportBuilder, project);
 		
 		assertEquals(0, reportModel.getDummyTotalSize());
-		assertEquals(0, reportModel.getIgnoreTotalSize());
+		assertEquals(0, reportModel.getEmptyCatchTotalSize());
 		assertEquals(0, reportModel.getCarelessCleanUpTotalSize());
 		assertEquals(27, reportModel.getNestedTryTotalSize());
 		assertEquals(0, reportModel.getOverLoggingTotalSize());
@@ -467,7 +467,7 @@ public class ReportBuilderIntergrationTest {
 	@Test
 	public void testOnlyUnprotectedMainProgramBadSmellReport() throws Exception {
 		assertTrue(reportModel.getDummyTotalSize() == 0);
-		assertTrue(reportModel.getIgnoreTotalSize() == 0);
+		assertTrue(reportModel.getEmptyCatchTotalSize() == 0);
 		assertTrue(reportModel.getCarelessCleanUpTotalSize() == 0);
 		assertTrue(reportModel.getNestedTryTotalSize() == 0);
 		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
@@ -482,7 +482,7 @@ public class ReportBuilderIntergrationTest {
 		analysisProject.invoke(reportBuilder, project);
 		
 		assertEquals(0, reportModel.getDummyTotalSize());
-		assertEquals(0, reportModel.getIgnoreTotalSize());
+		assertEquals(0, reportModel.getEmptyCatchTotalSize());
 		assertEquals(0, reportModel.getCarelessCleanUpTotalSize());
 		assertEquals(0, reportModel.getNestedTryTotalSize());
 		assertEquals(0, reportModel.getOverLoggingTotalSize());
@@ -493,7 +493,7 @@ public class ReportBuilderIntergrationTest {
 	@Test
 	public void testOnlyCarelessCleanupBadSmellReport() throws Exception {
 		assertTrue(reportModel.getDummyTotalSize() == 0);
-		assertTrue(reportModel.getIgnoreTotalSize() == 0);
+		assertTrue(reportModel.getEmptyCatchTotalSize() == 0);
 		assertTrue(reportModel.getCarelessCleanUpTotalSize() == 0);
 		assertTrue(reportModel.getNestedTryTotalSize() == 0);
 		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
@@ -508,7 +508,7 @@ public class ReportBuilderIntergrationTest {
 		analysisProject.invoke(reportBuilder, project);
 		
 		assertEquals(0, reportModel.getDummyTotalSize());
-		assertEquals(0, reportModel.getIgnoreTotalSize());
+		assertEquals(0, reportModel.getEmptyCatchTotalSize());
 		assertEquals(38, reportModel.getCarelessCleanUpTotalSize());
 		assertEquals(0, reportModel.getNestedTryTotalSize());
 		assertEquals(0, reportModel.getOverLoggingTotalSize());
@@ -519,7 +519,7 @@ public class ReportBuilderIntergrationTest {
 	@Test
 	public void testCreateOverloggingBadSmellReport() throws Exception {
 		assertTrue(reportModel.getDummyTotalSize() == 0);
-		assertTrue(reportModel.getIgnoreTotalSize() == 0);
+		assertTrue(reportModel.getEmptyCatchTotalSize() == 0);
 		assertTrue(reportModel.getCarelessCleanUpTotalSize() == 0);
 		assertTrue(reportModel.getNestedTryTotalSize() == 0);
 		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
@@ -534,7 +534,7 @@ public class ReportBuilderIntergrationTest {
 		analysisProject.invoke(reportBuilder, project);
 		
 		assertEquals(0, reportModel.getDummyTotalSize());
-		assertEquals(0, reportModel.getIgnoreTotalSize());
+		assertEquals(0, reportModel.getEmptyCatchTotalSize());
 		assertEquals(0, reportModel.getCarelessCleanUpTotalSize());
 		assertEquals(0, reportModel.getNestedTryTotalSize());
 		assertEquals(26, reportModel.getOverLoggingTotalSize());
@@ -545,7 +545,7 @@ public class ReportBuilderIntergrationTest {
 	@Test
 	public void testOnlyCarelessCleanupWithoutExtraRuleBadSmellReport() throws Exception {
 		assertTrue(reportModel.getDummyTotalSize() == 0);
-		assertTrue(reportModel.getIgnoreTotalSize() == 0);
+		assertTrue(reportModel.getEmptyCatchTotalSize() == 0);
 		assertTrue(reportModel.getCarelessCleanUpTotalSize() == 0);
 		assertTrue(reportModel.getNestedTryTotalSize() == 0);
 		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
@@ -560,7 +560,7 @@ public class ReportBuilderIntergrationTest {
 		analysisProject.invoke(reportBuilder, project);
 		
 		assertEquals(0, reportModel.getDummyTotalSize());
-		assertEquals(0, reportModel.getIgnoreTotalSize());
+		assertEquals(0, reportModel.getEmptyCatchTotalSize());
 		assertEquals(35, reportModel.getCarelessCleanUpTotalSize());
 		assertEquals(0, reportModel.getNestedTryTotalSize());
 		assertEquals(0, reportModel.getOverLoggingTotalSize());
@@ -571,7 +571,7 @@ public class ReportBuilderIntergrationTest {
 	@Test
 	public void testOnlyCarelessCleanupWithoutUserDefinitionBadSmellReport() throws Exception {
 		assertTrue(reportModel.getDummyTotalSize() == 0);
-		assertTrue(reportModel.getIgnoreTotalSize() == 0);
+		assertTrue(reportModel.getEmptyCatchTotalSize() == 0);
 		assertTrue(reportModel.getCarelessCleanUpTotalSize() == 0);
 		assertTrue(reportModel.getNestedTryTotalSize() == 0);
 		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
@@ -586,7 +586,7 @@ public class ReportBuilderIntergrationTest {
 		analysisProject.invoke(reportBuilder, project);
 		
 		assertEquals(0, reportModel.getDummyTotalSize());
-		assertEquals(0, reportModel.getIgnoreTotalSize());
+		assertEquals(0, reportModel.getEmptyCatchTotalSize());
 		assertEquals(31, reportModel.getCarelessCleanUpTotalSize());
 		assertEquals(0, reportModel.getNestedTryTotalSize());
 		assertEquals(0, reportModel.getOverLoggingTotalSize());
@@ -597,7 +597,7 @@ public class ReportBuilderIntergrationTest {
 	@Test
 	public void testOnlyOverloggingWithoutExtraRuleBadSmellReport() throws Exception {
 		assertTrue(reportModel.getDummyTotalSize() == 0);
-		assertTrue(reportModel.getIgnoreTotalSize() == 0);
+		assertTrue(reportModel.getEmptyCatchTotalSize() == 0);
 		assertTrue(reportModel.getCarelessCleanUpTotalSize() == 0);
 		assertTrue(reportModel.getNestedTryTotalSize() == 0);
 		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
@@ -612,7 +612,7 @@ public class ReportBuilderIntergrationTest {
 		analysisProject.invoke(reportBuilder, project);
 		
 		assertEquals(0, reportModel.getDummyTotalSize());
-		assertEquals(0, reportModel.getIgnoreTotalSize());
+		assertEquals(0, reportModel.getEmptyCatchTotalSize());
 		assertEquals(0, reportModel.getCarelessCleanUpTotalSize());
 		assertEquals(0, reportModel.getNestedTryTotalSize());
 		assertEquals(7, reportModel.getOverLoggingTotalSize());
@@ -623,7 +623,7 @@ public class ReportBuilderIntergrationTest {
 	@Test
 	public void testOnlyOverloggingWithoutUserDefinitioneBadSmellReport() throws Exception {
 		assertTrue(reportModel.getDummyTotalSize() == 0);
-		assertTrue(reportModel.getIgnoreTotalSize() == 0);
+		assertTrue(reportModel.getEmptyCatchTotalSize() == 0);
 		assertTrue(reportModel.getCarelessCleanUpTotalSize() == 0);
 		assertTrue(reportModel.getNestedTryTotalSize() == 0);
 		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
@@ -638,7 +638,7 @@ public class ReportBuilderIntergrationTest {
 		analysisProject.invoke(reportBuilder, project);
 		
 		assertEquals(0, reportModel.getDummyTotalSize());
-		assertEquals(0, reportModel.getIgnoreTotalSize());
+		assertEquals(0, reportModel.getEmptyCatchTotalSize());
 		assertEquals(0, reportModel.getCarelessCleanUpTotalSize());
 		assertEquals(0, reportModel.getNestedTryTotalSize());
 		assertEquals(18, reportModel.getOverLoggingTotalSize());
@@ -649,14 +649,14 @@ public class ReportBuilderIntergrationTest {
 	/**
 	 * 設定檔全勾
 	 * 正常測試情況
-	 * 測試除了 DummyHandler & Ignore 以外的報表
+	 * 測試除了 DummyHandler & EmptyCatchBlock 以外的報表
 	 * 以及相關資訊
 	 * @throws Exception
 	 */
 	@Test
 	public void testRemainBadSmellReport() throws Exception {
 		assertTrue(reportModel.getDummyTotalSize() == 0);
-		assertTrue(reportModel.getIgnoreTotalSize() == 0);
+		assertTrue(reportModel.getEmptyCatchTotalSize() == 0);
 		assertTrue(reportModel.getCarelessCleanUpTotalSize() == 0);
 		assertTrue(reportModel.getNestedTryTotalSize() == 0);
 		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
@@ -671,7 +671,7 @@ public class ReportBuilderIntergrationTest {
 		analysisProject.invoke(reportBuilder, project);
 		
 		assertEquals(0,reportModel.getDummyTotalSize());
-		assertEquals(0,reportModel.getIgnoreTotalSize());
+		assertEquals(0,reportModel.getEmptyCatchTotalSize());
 		assertEquals(38, reportModel.getCarelessCleanUpTotalSize());
 		assertEquals(27, reportModel.getNestedTryTotalSize());
 		assertEquals(26, reportModel.getOverLoggingTotalSize());

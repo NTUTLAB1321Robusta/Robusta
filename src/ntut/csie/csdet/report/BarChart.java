@@ -85,7 +85,7 @@ public class BarChart {
 		if(model.getTotalSmellCount() == 0){
 			return null;
 		}
-		data.addValue(model.getIgnoreTotalSize() , "", "Empty Catch Block");
+		data.addValue(model.getEmptyCatchTotalSize() , "", "Empty Catch Block");
 		data.addValue(model.getDummyTotalSize(), "", "Dummy handler");
 		data.addValue(model.getUnMainTotalSize(), "", "Unprotected main program");
 		data.addValue(model.getNestedTryTotalSize(), "", "Nested try statemet");

@@ -14,7 +14,7 @@ import ntut.csie.csdet.preference.RobustaSettings;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.visitor.CarelessCleanupVisitor;
 import ntut.csie.csdet.visitor.DummyHandlerVisitor;
-import ntut.csie.csdet.visitor.IgnoreExceptionVisitor;
+import ntut.csie.csdet.visitor.EmptyCatchBlockVisitor;
 import ntut.csie.csdet.visitor.NestedTryStatementVisitor;
 import ntut.csie.csdet.visitor.OverLoggingDetector;
 import ntut.csie.csdet.visitor.OverwrittenLeadExceptionVisitor;
@@ -271,12 +271,12 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				
 				//Detect dummy handler and empty catch block for initializer
 				DummyHandlerVisitor dmhVisitor = new DummyHandlerVisitor(root);
-				IgnoreExceptionVisitor ignoreExceptionVisitor = new IgnoreExceptionVisitor(root);
+				EmptyCatchBlockVisitor emptyCatchBlockVisitor = new EmptyCatchBlockVisitor(root);
 				ASTInitializerCollector initializerCollector = new ASTInitializerCollector();
 				root.accept(initializerCollector);
 				for(Initializer init : initializerCollector.getInitializerList()) {
 					init.accept(dmhVisitor);
-					init.accept(ignoreExceptionVisitor);
+					init.accept(emptyCatchBlockVisitor);
 				}
 				List<MarkerInfo> dmList = dmhVisitor.getDummyList();
 				for(int dmIndex = 0; dmIndex < dmList.size(); dmIndex++) {
@@ -284,9 +284,9 @@ public class RLBuilder extends IncrementalProjectBuilder {
 					String errmsg = this.resource.getString("ex.smell.type.undealt") + markerInfo.getCodeSmellType() + this.resource.getString("ex.smell.type");
 					this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, markerInfo, dmIndex, -1);  // methodIdx = -1 => not support quickfix right now
 				}
-				List<MarkerInfo> ignoreExceptionList = ignoreExceptionVisitor.getIgnoreList();
-				for(int ieIndex = 0; ieIndex < ignoreExceptionList.size(); ieIndex++) {
-					MarkerInfo markerInfo = ignoreExceptionList.get(ieIndex);
+				List<MarkerInfo> emptyCatchBlockList = emptyCatchBlockVisitor.getEmptyCatchList();
+				for(int ieIndex = 0; ieIndex < emptyCatchBlockList.size(); ieIndex++) {
+					MarkerInfo markerInfo = emptyCatchBlockList.get(ieIndex);
 					String errmsg = this.resource.getString("ex.smell.type.undealt") + markerInfo.getCodeSmellType() + this.resource.getString("ex.smell.type");
 					this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, markerInfo, ieIndex, -1);  // methodIdx = -1 => not support quickfix right now
 				}
@@ -311,14 +311,14 @@ public class RLBuilder extends IncrementalProjectBuilder {
 					// 儲存SuppressSmell設定
 					inputSuppressData(suppressSmellList, detMethodSmell, detCatchSmell);
 					
-					// 找尋專案中所有的ignore Exception
-					IgnoreExceptionVisitor ieVisitor = new IgnoreExceptionVisitor(root);
-					method.accept(ieVisitor);
-					List<MarkerInfo> ignoreList = ieVisitor.getIgnoreList();
+					// 找尋專案中所有的 Empty Catch Block
+					EmptyCatchBlockVisitor ecbVisitor = new EmptyCatchBlockVisitor(root);
+					method.accept(ecbVisitor);
+					List<MarkerInfo> emptyList = ecbVisitor.getEmptyCatchList();
 					int csIdx = -1;
 					if(detMethodSmell.get(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK)) {
 						List<Integer> posList = detCatchSmell.get(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK);
-						for(MarkerInfo markerInfo : ignoreList) {
+						for(MarkerInfo markerInfo : emptyList) {
 							csIdx++;
 							// 判斷使用者有沒有在Catch內貼Annotation，抑制Smell Marker
 							if (suppressMarker(posList, markerInfo.getPosition()))

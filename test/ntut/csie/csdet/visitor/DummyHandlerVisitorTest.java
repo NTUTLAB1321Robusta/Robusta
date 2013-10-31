@@ -12,7 +12,7 @@ import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.ASTNodeFinder;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
-import ntut.csie.filemaker.exceptionBadSmells.DummyAndIgnoreExample;
+import ntut.csie.filemaker.exceptionBadSmells.DummyAndEmptyExample;
 import ntut.csie.filemaker.exceptionBadSmells.DummyHandlerExampleWithTryStatementInNonTryStatement;
 import ntut.csie.filemaker.exceptionBadSmells.DummyHandlerWithNestedTryStatement;
 import ntut.csie.filemaker.exceptionBadSmells.UserDefineDummyHandlerFish;
@@ -64,13 +64,13 @@ public class DummyHandlerVisitorTest {
 				JavaProjectMaker.FOLDERNAME_BIN_CLASS);
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/" + JavaProjectMaker.RL_LIBRARY_PATH);
 
-		// 建立新的檔案DummyAndIgnoreExample
+		// 建立新的檔案DummyAndEmptyExample
 		javaFile2String = new JavaFileToString();
-		javaFile2String.read(DummyAndIgnoreExample.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaFile2String.read(DummyAndEmptyExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
-				DummyAndIgnoreExample.class.getPackage().getName(),
-				DummyAndIgnoreExample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + DummyAndIgnoreExample.class.getPackage().getName() + ";\n"
+				DummyAndEmptyExample.class.getPackage().getName(),
+				DummyAndEmptyExample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
+				"package " + DummyAndEmptyExample.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		
 		// 繼續建立測試用的UserDefineDummyHandlerFish
@@ -90,7 +90,7 @@ public class DummyHandlerVisitorTest {
 				SmellSettings.EXTRARULE_OrgApacheLog4j};
 		setNewSettingsWithExtraRules(dummyHandlerPatternsInXML);
 
-		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(DummyAndIgnoreExample.class, testProjectName));
+		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(DummyAndEmptyExample.class, testProjectName));
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);

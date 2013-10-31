@@ -38,7 +38,7 @@ public class VariableDeclarationStatementFinderVisitorTest {
 		testProjectName = "VariableDeclarationStatementFinderVisitor";
 		javaProjectMaker = new JavaProjectMaker(testProjectName);
 		javaProjectMaker.setJREDefaultContainer();
-		// 建立新的檔案DummyAndIgnoreExample
+
 		javaFile2String = new JavaFileToString();
 		javaFile2String.read(VariableDeclarationStatementSampleCode.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(

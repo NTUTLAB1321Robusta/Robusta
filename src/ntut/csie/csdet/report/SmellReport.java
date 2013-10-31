@@ -128,7 +128,7 @@ public class SmellReport {
 		// /EH Smell List資料輸出///
 		Element smellList = new Element("EHSmellList");
 		smellList.addContent(new Element("EmptyCatchBlock").addContent(String
-				.valueOf(model.getIgnoreTotalSize())));
+				.valueOf(model.getEmptyCatchTotalSize())));
 		smellList.addContent(new Element("DummyHandler").addContent(String
 				.valueOf(model.getDummyTotalSize())));
 		smellList.addContent(new Element("UnprotectedMainProgram")
@@ -185,7 +185,7 @@ public class SmellReport {
 			packages.addContent(new Element("LOC").addContent(String
 					.valueOf(packageModel.getTotalLine())));
 			packages.addContent(new Element("EmptyCatchBlock")
-					.addContent(String.valueOf(packageModel.getIgnoreSize())));
+					.addContent(String.valueOf(packageModel.getEmptySize())));
 			packages.addContent(new Element("DummyHandler").addContent(String
 					.valueOf(packageModel.getDummySize())));
 			packages.addContent(new Element("UnprotectedMainProgram")
@@ -239,7 +239,7 @@ public class SmellReport {
 		total.addContent(new Element("LOC").addContent(String.valueOf(model
 				.getTotalLine())));
 		total.addContent(new Element("EmptyCatchTotal").addContent(String
-				.valueOf(model.getIgnoreTotalSize())));
+				.valueOf(model.getEmptyCatchTotalSize())));
 		total.addContent(new Element("DummyTotal").addContent(String
 				.valueOf(model.getDummyTotalSize())));
 		total.addContent(new Element("UnMainTotal").addContent(String

@@ -15,7 +15,7 @@ import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.RuntimeEnvironmentProjectReader;
-import ntut.csie.filemaker.exceptionBadSmells.DummyAndIgnoreExample;
+import ntut.csie.filemaker.exceptionBadSmells.DummyAndEmptyExample;
 import ntut.csie.robusta.util.PathUtils;
 
 import org.eclipse.core.resources.IResource;
@@ -42,15 +42,15 @@ public class BaseQuickFixTest {
 	
 	public BaseQuickFixTest() {
 		testProjectNameString = "DummyHandlerTest";
-		testPackageNameString = DummyAndIgnoreExample.class.getPackage().getName();
-		testClassSimpleNameString = DummyAndIgnoreExample.class.getSimpleName();
+		testPackageNameString = DummyAndEmptyExample.class.getPackage().getName();
+		testClassSimpleNameString = DummyAndEmptyExample.class.getSimpleName();
 	}
 	
 	@Before
 	public void setUp() throws Exception {
 		// 讀取測試檔案樣本內容
 		jfs = new JavaFileToString();
-		jfs.read(DummyAndIgnoreExample.class, JavaProjectMaker.FOLDERNAME_TEST);
+		jfs.read(DummyAndEmptyExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		
 		jpm = new JavaProjectMaker(testProjectNameString);
 		jpm.setJREDefaultContainer();
@@ -65,7 +65,7 @@ public class BaseQuickFixTest {
 		// 建立XML
 		CreateSettings();
 		
-		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(DummyAndIgnoreExample.class, testProjectNameString));
+		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(DummyAndEmptyExample.class, testProjectNameString));
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -140,7 +140,7 @@ public class BaseQuickFixTest {
 		getChange.setAccessible(true);
 		Change change = (Change)getChange.invoke(bqFix, unit, null);
 		assertEquals(testClassSimpleNameString + JavaProjectMaker.JAVA_FILE_EXTENSION, change.getName());
-		assertEquals("L/"+PathUtils.getPathOfClassUnderSrcFolder(DummyAndIgnoreExample.class, "DummyHandlerTest"), change.getModifiedElement().toString());
+		assertEquals("L/"+PathUtils.getPathOfClassUnderSrcFolder(DummyAndEmptyExample.class, "DummyHandlerTest"), change.getModifiedElement().toString());
 	}
 	
 //	@Test

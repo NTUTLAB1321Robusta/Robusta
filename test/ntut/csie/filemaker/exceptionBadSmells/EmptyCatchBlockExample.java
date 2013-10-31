@@ -5,13 +5,13 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class IgnoredCheckedExceptionExample {
+public class EmptyCatchBlockExample {
 	public void true_IgnoredCheckedException() {
 		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream("");
 			fis.read();
-		} catch (IOException e) {	// IgnoreCheckedException
+		} catch (IOException e) {	// EmptyCatchBlock
 			
 		}
 	}
@@ -28,7 +28,7 @@ public class IgnoredCheckedExceptionExample {
 				while(fis.available() != 0) {
 					fos.write(fis.read());
 				}
-			} catch (IOException e) {	// IgnoreCheckedException
+			} catch (IOException e) {	// EmptyCatchBlock
 			} finally {
 				fis.close();	//OverwrittenLeadException
 			}
@@ -51,7 +51,7 @@ public class IgnoredCheckedExceptionExample {
 		} catch (IOException e) {
 			try {
 				fis = new FileInputStream("C:\\123.txt");
-			} catch (FileNotFoundException e1) {	// IgnoreCheckedException
+			} catch (FileNotFoundException e1) {	// EmptyCatchBlock
 			}
 		}
 	}
@@ -64,7 +64,7 @@ public class IgnoredCheckedExceptionExample {
 		} catch (IOException e) {
 			try {
 				fis = new FileInputStream("C:\\123.txt");
-			} catch (FileNotFoundException e1) {	// IgnoreCheckedException
+			} catch (FileNotFoundException e1) {	// EmptyCatchBlock
 			}
 			throw e;
 		} finally {
@@ -81,7 +81,7 @@ public class IgnoredCheckedExceptionExample {
 			try {
 				fis = new FileInputStream("C:\\123.txt");
 				fis.read();
-			} catch (FileNotFoundException e1) {	// IgnoreCheckedException
+			} catch (FileNotFoundException e1) {	// EmptyCatchBlock
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
@@ -94,7 +94,7 @@ public class IgnoredCheckedExceptionExample {
 			fis = new FileInputStream("");
 			fis.read();
 			fis.close();
-		} catch (IOException e) {	// IgnoreCheckedException
+		} catch (IOException e) {	// EmptyCatchBlock
 		} finally {
 			System.out.println("done");
 		}
@@ -110,7 +110,7 @@ public class IgnoredCheckedExceptionExample {
 		} finally {
 			try {
 				fis.close();
-			} catch (IOException e) {	// IgnoreCheckedException
+			} catch (IOException e) {	// EmptyCatchBlock
 			}
 		}
 	}
