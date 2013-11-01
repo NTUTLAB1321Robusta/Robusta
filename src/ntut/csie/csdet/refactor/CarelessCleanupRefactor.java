@@ -65,11 +65,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Careless CleanUp Refactoring的具體操作都在這個class中
+ * Careless Cleanup Refactoring的具體操作都在這個class中
  * @author Min, Shiau
  */
-public class CarelessCleanUpRefactor extends Refactoring {
-	private static Logger logger = LoggerFactory.getLogger(CarelessCleanUpRefactor.class);
+public class CarelessCleanupRefactor extends Refactoring {
+	private static Logger logger = LoggerFactory.getLogger(CarelessCleanupRefactor.class);
 	
 	private IJavaProject project;
 		
@@ -86,8 +86,8 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	// 存放目前所要fix的method node
 	private MethodDeclaration currentMethodNode = null;
 	
-	// 收集Method內所有的Careless CleanUp
-	private List<MarkerInfo> CarelessCleanUpList = null;
+	// 收集Method內所有的Careless Cleanup
+	private List<MarkerInfo> carelessCleanupList = null;
 	
 	// Method是否存在，是：新增Caller Method ，否：新增Release Method
 	private boolean isMethodExist = false;
@@ -104,11 +104,11 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	// 使用者若選擇Existing Method，要呼叫的Method資訊
 	private IMethod existingMethod;
 	
-	// Careless CleanUp的Smell Message
+	// Careless Cleanup的Smell Message
 	private MarkerInfo smellMessage = null;
 	
 	// 釋放資源的Statement
-	private ExpressionStatement cleanUpExpressionStatement;
+	private ExpressionStatement cleanupExpressionStatement;
 	
 	// Try Block在Method裡的位置
 	private int tryIndex = -1;
@@ -141,7 +141,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 			CarelessCleanupVisitor visitor = new CarelessCleanupVisitor(actRoot);
 			currentMethodNode.accept(visitor);
 			//取得code smell的List
-			CarelessCleanUpList = visitor.getCarelessCleanupList();
+			carelessCleanupList = visitor.getCarelessCleanupList();
 		}
 		
 		//取得EH Smell的資訊
@@ -207,7 +207,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 		/* 參考Eclipse Code
 		 * org.eclipse.jdt.internal.corext.refactoring.code.ExtractMethodRefactoring
 		 * createChange method的寫法 */
-		String name = "Extract CleanUp Method";
+		String name = "Extract Cleanup Method";
 		ICompilationUnit unit = (ICompilationUnit) this.actOpenable;
 		CompilationUnitChange result = new CompilationUnitChange(name, unit);
 		result.setSaveMode(TextFileChange.KEEP_SAVE_STATE);
@@ -219,7 +219,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 		TextEdit edits = textFileChange.getEdit();
 		result.setEdit(edits);
 		// 將修改結果設成Group，會顯示在Preview上方節點。
-		result.addTextEditGroup(new TextEditGroup("Careless Clean Up Method", 
+		result.addTextEditGroup(new TextEditGroup("Careless Cleanup Method", 
 								new TextEdit[] {edits} ));
 
 		return result;
@@ -227,7 +227,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 
 	@Override
 	public String getName() {		
-		return "Extract CleanUp Method";
+		return "Extract Cleanup Method";
 	}
 	
 	/**
@@ -303,7 +303,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 		Block finallyBlock = addFinallyBlock(ast, tryStatement);
 
 		// 刪除fos.close();
-		deleteCleanUpLine(ast, tryStatement);
+		deleteCleanupLine(ast, tryStatement);
 
 		// 若fos是在Try Block宣告，將它移至Try Block外
 		moveInstance(ast, tryStatement);
@@ -322,7 +322,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	 */
 	private void moveInstance(AST ast, TryStatement tryStatement) {		
 		// e.g. fos.close();
-		MethodInvocation delLineMI = (MethodInvocation) cleanUpExpressionStatement.getExpression();
+		MethodInvocation delLineMI = (MethodInvocation) cleanupExpressionStatement.getExpression();
 		// e.g. fos
 		Expression expression = delLineMI.getExpression();
 
@@ -377,7 +377,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	private void findSmellMessage() {
 		try {
 			String msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
-			smellMessage = CarelessCleanUpList.get(Integer.parseInt(msgIdx));
+			smellMessage = carelessCleanupList.get(Integer.parseInt(msgIdx));
 		} catch (CoreException e) {
 			logger.error("[Find CS Method] EXCEPTION ", e);
 		}
@@ -436,11 +436,11 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	}
 
 	/**
-	 * 刪除Careless CleanUp Smell 該行
+	 * 刪除Careless Cleanup Smell 該行
 	 * @param ast 
 	 * @param tryStatement 
 	 */
-	private void deleteCleanUpLine(AST ast, TryStatement tryStatement) {
+	private void deleteCleanupLine(AST ast, TryStatement tryStatement) {
 		boolean isDeleted = false;
 		//尋找Try Block
 		isDeleted = deleteBlockStatement(tryStatement.getBody(), ast);
@@ -469,10 +469,10 @@ public class CarelessCleanUpRefactor extends Refactoring {
 		for(int i=0; i < statements.size(); i++) {
 			if (statements.get(i) instanceof ExpressionStatement) {
 				ExpressionStatement aStatement = (ExpressionStatement) statements.get(i);
-				// 如果一個Try Catch內有多個Careless CleanUp Smell
+				// 如果一個Try Catch內有多個Careless Cleanup Smell
 				// 用位置判斷才能正確判斷出是哪一個
 				if (aStatement.getStartPosition() == smellMessage.getPosition()) {
-					cleanUpExpressionStatement = (ExpressionStatement) statements.remove(i);
+					cleanupExpressionStatement = (ExpressionStatement) statements.remove(i);
 					return true;
 				}
 			} else if (statements.get(i) instanceof IfStatement) {
@@ -491,7 +491,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 					// 不為Block (if 後直接接Statement)
 					} else {
 						ifStatement.setThenStatement(ast.newBlock());
-						cleanUpExpressionStatement = (ExpressionStatement) thenStatement;
+						cleanupExpressionStatement = (ExpressionStatement) thenStatement;
 						return true;
 					}
 				}
@@ -507,7 +507,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	@SuppressWarnings("unchecked")
 	private void addExtractMethod(AST ast) {
 		//取得資訊
-		MethodInvocation delLineMI = (MethodInvocation) cleanUpExpressionStatement.getExpression();
+		MethodInvocation delLineMI = (MethodInvocation) cleanupExpressionStatement.getExpression();
 		Expression exp = delLineMI.getExpression();
 		SimpleName sn = (SimpleName) exp;
 
@@ -553,13 +553,13 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	 */
 	private void addMethodInFinally(AST ast, Block finallyBlock) {
 		// e.g. fos.close();
-		MethodInvocation delLineMI = (MethodInvocation) cleanUpExpressionStatement.getExpression();
+		MethodInvocation delLineMI = (MethodInvocation) cleanupExpressionStatement.getExpression();
 		// e.g. fos
 		Expression expression = delLineMI.getExpression();
 
 		// 若該行為Method (e.g. closeFile(fos)) 則直直接此行移至Finally Block中
 		if (expression == null) {
-			finallyBlock.statements().add(cleanUpExpressionStatement);
+			finallyBlock.statements().add(cleanupExpressionStatement);
 			return;
 		}
 
@@ -700,7 +700,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 		IfStatement ifStatement = ast.newIfStatement();
 		ifStatement.setExpression(in);
 		//加入Release Source Code
-		ifStatement.setThenStatement(cleanUpExpressionStatement);
+		ifStatement.setThenStatement(cleanupExpressionStatement);
 		//加到Try Block之中
 		tsBody.statements().add(ifStatement);
 
@@ -753,7 +753,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 		//import java.util.logging.Logger;
 		addJavaLoggerLibrary();
 		
-		//private Logger logger = Logger.getLogger(CarelessCleanUpTest.class.getName());
+		//private Logger logger = Logger.getLogger(CarelessCleanupTest.class.getName());
 		addLoggerField(ast);
 		
 		//設定catch的body的Method Invocation
@@ -797,7 +797,7 @@ public class CarelessCleanUpRefactor extends Refactoring {
 	}
 	
 	/**
-	 * 加入private Logger logger = Logger.getLogger(CarelessCleanUpTest.class.getName());
+	 * 加入private Logger logger = Logger.getLogger(CarelessCleanupTest.class.getName());
 	 * @param ast
 	 */
 	private void addLoggerField(AST ast) {

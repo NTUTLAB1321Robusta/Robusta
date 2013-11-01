@@ -36,7 +36,7 @@ public class EHSmellModel {
 	private List<MarkerInfo> dummyHandlerList = null;
 	//紀錄找到的EmptyCatchBlock Smell
 	private List<MarkerInfo> emptyCatchList = null;
-	//紀錄找到的NestedTryBlock Smell
+	//紀錄找到的NestedTryStatement Smell
 	private List<MarkerInfo> nestedTryList = null;
 	//紀錄找到的UnprotectedMain Smell
 	private List<MarkerInfo> unprotectedMainList = null;
@@ -124,7 +124,7 @@ public class EHSmellModel {
 			dummyHandlerList = dhVisitor.getDummyList();
 			emptyCatchList = ecbVisitor.getEmptyCatchList();
 	
-			//取得專案中的Nested Try Block
+			//取得專案中的Nested Try Statement
 			NestedTryStatementVisitor ntVisitor = new NestedTryStatementVisitor(actRoot);
 			methodNode.accept(ntVisitor);
 			nestedTryList = ntVisitor.getNestedTryStatementList();

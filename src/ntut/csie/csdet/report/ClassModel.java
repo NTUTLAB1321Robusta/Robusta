@@ -87,7 +87,7 @@ public class ClassModel {
 				methodList.add(MethodName);
 		}
 	}
-	public void setCarelessCleanUp(List<MarkerInfo> carelessList, String MethodName) {
+	public void setCarelessCleanup(List<MarkerInfo> carelessList, String MethodName) {
 		if (carelessList != null) {
 			carelessSize += carelessList.size();
 			smellList.addAll(carelessList);
@@ -135,7 +135,7 @@ public class ClassModel {
 	public int getNestedTrySize() {
 		return nestedTrySize;
 	}
-	public int getCarelessCleanUpSize() {
+	public int getCarelessCleanupSize() {
 		return carelessSize;
 	}
 	public int getOverLoggingSize() {
@@ -146,7 +146,7 @@ public class ClassModel {
 	}
 	public int getTotalSmell() {
 		return getEmptySize() + getDummySize() + getUnMainSize() + getNestedTrySize() +
-			   getCarelessCleanUpSize() + getOverLoggingSize() + getOverwrittenSize();
+			   getCarelessCleanupSize() + getOverLoggingSize() + getOverwrittenSize();
 	}
 	
 	///存取Class的路徑///

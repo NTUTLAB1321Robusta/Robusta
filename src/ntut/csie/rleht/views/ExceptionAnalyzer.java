@@ -60,7 +60,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 
 //	private List<SSMessage> suppressList;
 	
-	// 紀錄Nested Try Block的位置
+	// 紀錄Nested Try Statement的位置
 //	private List<MarkerInfo> nestedTryList;
 
 	private ASTNode currentRLAnnotationNode;
@@ -299,7 +299,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 	}
 
 	/**
-	 * 1. 偵測Nested Try Block的EH Smell，對其Try、Catch與Finally再使用Visitor偵測。
+	 * 1. 偵測Nested Try Statement的EH Smell，對其Try、Catch與Finally再使用Visitor偵測。
 	 * 2. 記錄Catch Clause所宣告的Exception Type
 	 * 3. 取得Catch內的Suppress Smell的資訊
 	 * 
@@ -323,7 +323,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		
 		// 假如是第一個Try,那就不是Code Smell,不用加進去
 		if(!parentId.equals("")){
-			MarkerInfo csmsg = new MarkerInfo(	RLMarkerAttribute.CS_NESTED_TRY_BLOCK, null,											
+			MarkerInfo csmsg = new MarkerInfo(	RLMarkerAttribute.CS_NESTED_TRY_STATEMENT, null,											
 												trystat.toString(), trystat.getStartPosition(),
 												getLineNumber(trystat.getStartPosition()), trystat.toString());
 //			nestedTryList.add(csmsg);	
@@ -540,7 +540,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 	}
 	
 	/**
-	 * 紀錄Nested Try Block的位置
+	 * 紀錄Nested Try Statement的位置
 	 */
 //	public List<MarkerInfo> getNestedTryList() {
 //		return nestedTryList;

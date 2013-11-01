@@ -23,7 +23,7 @@ import org.jdom.output.XMLOutputter;
  * &nbsp;&nbsp;&nbsp;&nbsp;&lt;pattern name="" isDetecting="" /&gt;<br />
  * &nbsp;&nbsp;&nbsp;&nbsp;&lt;extraRule name="EXTRARULE_ePrintStackTrace" /&gt;<br />
  * &nbsp;&nbsp;&lt;/SmellTypes&gt;<br />
- * &nbsp;&nbsp;&lt;SmellTypes name="NestedTryBlock" isDetecting="false" /&gt;<br />
+ * &nbsp;&nbsp;&lt;SmellTypes name="NestedTryStatement" isDetecting="false" /&gt;<br />
  * &nbsp;&nbsp;&lt;AnnotationTypes name="RobusnessLevel" enable="false" /&gt;<br />
  * &lt;/CodeSmells&gt; <br />
  */
@@ -34,7 +34,7 @@ public class SmellSettings {
 	 * 		<pattern name="" isDetecting="" />
 	 * 		<extraRule name="EXTRARULE_ePrintStackTrace" />
 	 * 	</SmellTypes>
-	 * 	<SmellTypes name="NestedTryBlock" isDetecting="false" />
+	 * 	<SmellTypes name="NestedTryStatement" isDetecting="false" />
 	 *  <AnnotationTypes name="RobusnessLevel" enable="false" />
 	 * </CodeSmells> 
 	 */
@@ -53,11 +53,11 @@ public class SmellSettings {
 		
 	public final static String SMELL_EMPTYCATCHBLOCK = "EmptyCatchBlock";
 	public final static String SMELL_DUMMYHANDLER = "DummyHandler";
-	public final static String SMELL_NESTEDTRYBLOCK = "NestedTryBlock";
+	public final static String SMELL_NESTEDTRYSTATEMENT = "NestedTryStatement";
 	public final static String SMELL_UNPROTECTEDMAINPROGRAM = "UnprotectedMainProgram";
 	public final static String SMELL_OVERLOGGING = "OverLogging";
 	public final static String SMELL_CARELESSCLEANUP = "CarelessCleanup";
-	public final static String SMELL_OVERWRITTENLEADEXCEPTION = "OverwrittenLeadException";
+	public final static String SMELL_THROWSEXCEPTIONINFINALLYBLOCK = "ThrowsExceptionInFinallyBlock";
 	public final static String ANNOTATION_ROBUSTNESSLEVEL = "RobustnessLevel";
 
 	/** 例外轉型後繼續偵測 */
@@ -513,7 +513,7 @@ public class SmellSettings {
 		addExtraRule(SMELL_DUMMYHANDLER, EXTRARULE_JavaUtilLoggingLogger);
 		addExtraRule(SMELL_DUMMYHANDLER, EXTRARULE_OrgApacheLog4j);
 		
-		setSmellTypeAttribute(SMELL_NESTEDTRYBLOCK, ATTRIBUTE_ISDETECTING, true);
+		setSmellTypeAttribute(SMELL_NESTEDTRYSTATEMENT, ATTRIBUTE_ISDETECTING, true);
 		
 		setSmellTypeAttribute(SMELL_UNPROTECTEDMAINPROGRAM, ATTRIBUTE_ISDETECTING, true);
 

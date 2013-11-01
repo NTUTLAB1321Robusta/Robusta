@@ -30,7 +30,7 @@ public class EmptyCatchBlockExample {
 				}
 			} catch (IOException e) {	// EmptyCatchBlock
 			} finally {
-				fis.close();	//OverwrittenLeadException
+				fis.close();	// ThrowsExceptionInFinallyBlock
 			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -56,7 +56,7 @@ public class EmptyCatchBlockExample {
 		}
 	}
 	
-	public void true_IgnoredCheckedExceptionWithOverwrittenLeadException() throws IOException {
+	public void true_IgnoredCheckedExceptionWithThrowsExceptionInFinallyBlock() throws IOException {
 		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream("C:\\456.txt");

@@ -31,7 +31,7 @@ public class ReportModel {
 	private int dummyTotalSize = 0;
 	private int unMainTotalSize = 0;
 	private int nestedTryTotalSize = 0;
-	private int carelessCleanUpSize = 0;
+	private int carelessCleanupSize = 0;
 	private int overLoggingSize = 0;
 	private int overwrittenSize = 0;
 	// 取得code counter
@@ -69,8 +69,8 @@ public class ReportModel {
 	public void addOverLoggingSize(int overLoggingSize) {
 		this.overLoggingSize += overLoggingSize;
 	}
-	public void addCarelessCleanUpSize(int carelessCleanUpSize) {
-		this.carelessCleanUpSize += carelessCleanUpSize;
+	public void addCarelessCleanupSize(int carelessCleanupSize) {
+		this.carelessCleanupSize += carelessCleanupSize;
 	}
 	public void addOverwrittenSize(int overwrittenSize) {
 		this.overwrittenSize += overwrittenSize;
@@ -92,15 +92,15 @@ public class ReportModel {
 	public int getOverLoggingTotalSize() {
 		return overLoggingSize;
 	}
-	public int getCarelessCleanUpTotalSize() {
-		return carelessCleanUpSize;
+	public int getCarelessCleanupTotalSize() {
+		return carelessCleanupSize;
 	}
 	public int getOverwrittenTotalSize() {
 		return overwrittenSize;
 	}
 	public int getTotalSmellCount() {
 		return getEmptyCatchTotalSize() + getDummyTotalSize() + getUnMainTotalSize() + getNestedTryTotalSize()
-				+ getCarelessCleanUpTotalSize() + getOverLoggingTotalSize() + getOverwrittenTotalSize();
+				+ getCarelessCleanupTotalSize() + getOverLoggingTotalSize() + getOverwrittenTotalSize();
 	}
 
 	// 設定或取得Project的名稱

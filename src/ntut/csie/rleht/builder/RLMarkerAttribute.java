@@ -40,13 +40,13 @@ public interface RLMarkerAttribute {
 	/** Dummy Handler的type */
 	public static final String CS_DUMMY_HANDLER = "Dummy_Handler";
 	
-	/** Nested Try Block的type */
-	public static final String CS_NESTED_TRY_BLOCK = "Nested_TryStatement";
+	/** Nested Try Statement的type */
+	public static final String CS_NESTED_TRY_STATEMENT = "Nested_TryStatement";
 	
 	/** Unprotected Main Program */
 	public static final String CS_UNPROTECTED_MAIN = "Unprotected_Main_Program";
 	
-	/** Careless CleanUp */
+	/** Careless Cleanup */
 	public static final String CS_CARELESS_CLEANUP = "Careless_Cleanup";
 	
 	/** Over Logging */
@@ -67,7 +67,7 @@ public interface RLMarkerAttribute {
 	
 	/** Total Code Smell Type */
 	public static final String[] CS_TOTAL_TYPE = new String[]{ CS_EMPTY_CATCH_BLOCK,
-		CS_DUMMY_HANDLER, CS_NESTED_TRY_BLOCK, CS_UNPROTECTED_MAIN, CS_CARELESS_CLEANUP, CS_OVER_LOGGING, CS_OVERWRITTEN_LEAD_EXCEPTION};
+		CS_DUMMY_HANDLER, CS_NESTED_TRY_STATEMENT, CS_UNPROTECTED_MAIN, CS_CARELESS_CLEANUP, CS_OVER_LOGGING, CS_OVERWRITTEN_LEAD_EXCEPTION};
 
 	/** Total Smell Type In Catch */
 	public static final String[] CS_CATCH_TYPE = new String[]{ CS_EMPTY_CATCH_BLOCK,

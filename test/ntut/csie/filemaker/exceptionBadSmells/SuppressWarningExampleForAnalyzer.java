@@ -21,7 +21,7 @@ public class SuppressWarningExampleForAnalyzer {
 	/*
 	 * 1.unprotected main program
 	 * 2.dummy handler
-	 * 3.nested try block
+	 * 3.nested try statement
 	 * 4.empty catch block
 	 * 5.careless cleanup
 	 * 6.over logging
@@ -68,10 +68,10 @@ public class SuppressWarningExampleForAnalyzer {
 	}
 
 	/**
-	 * 在 catch 上有  suppress warning 的 nested try block
+	 * 在 catch 上有  suppress warning 的 nested try statement
 	 */
 	@SuppressSmell({ "Nested_Try_Statement", "Dummy_Handler" })
-	public void withSuppressWaringNestedTryBlockOnCatch() {
+	public void withSuppressWaringNestedTryStatementOnCatch() {
 		try {
 			throwSocketTimeoutException();
 		} catch (@SuppressSmell("Dummy_Handler") SocketTimeoutException e) {
@@ -85,10 +85,10 @@ public class SuppressWarningExampleForAnalyzer {
 	}
 	
 	/**
-	 * 在 method 上有 suppress warning 的 nested try block
+	 * 在 method 上有 suppress warning 的 nested try statement
 	 */
 	@SuppressSmell({ "Nested_Try_Statement", "Dummy_Handler" })
-	public void withSuppressWaringNestedTryBlockOnMethod() {
+	public void withSuppressWaringNestedTryStatementOnMethod() {
 		try {
 			throwSocketTimeoutException();
 		} catch (@SuppressSmell("Dummy_Handler") SocketTimeoutException e) {
@@ -301,7 +301,7 @@ public class SuppressWarningExampleForAnalyzer {
 		}
 	}
 
-	public void withoutSuppressWaringNestedTryBlockOnCatch() {
+	public void withoutSuppressWaringNestedTryStatementOnCatch() {
 		try {
 			throwSocketTimeoutException();
 		} catch (SocketTimeoutException e) {
@@ -314,7 +314,7 @@ public class SuppressWarningExampleForAnalyzer {
 		}
 	}
 
-	public void withoutSuppressWaringNestedTryBlockOnFinally() {
+	public void withoutSuppressWaringNestedTryStatementOnFinally() {
 		try {
 			throwSocketTimeoutException();
 		} catch (SocketTimeoutException e) {

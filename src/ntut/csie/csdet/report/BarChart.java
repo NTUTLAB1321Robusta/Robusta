@@ -89,7 +89,7 @@ public class BarChart {
 		data.addValue(model.getDummyTotalSize(), "", "Dummy handler");
 		data.addValue(model.getUnMainTotalSize(), "", "Unprotected main program");
 		data.addValue(model.getNestedTryTotalSize(), "", "Nested try statemet");
-		data.addValue(model.getCarelessCleanUpTotalSize(), "", "Careless Cleanup");
+		data.addValue(model.getCarelessCleanupTotalSize(), "", "Careless Cleanup");
 		data.addValue(model.getOverLoggingTotalSize(), "", "Over Logging");
 		data.addValue(model.getOverwrittenTotalSize(), "", "Overwritten lead exception");
 		return data;				

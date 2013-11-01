@@ -28,7 +28,7 @@ public class NTQuickFix implements IMarkerResolution{
 		MessageDialog.openInformation(null, "Nested TryStatement QuickFix Notification", "Please use the refactoring function provided by eclipse to eliminate this code smell.");
 		try {
 			String problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
-			if(problem != null && problem.equals(RLMarkerAttribute.CS_NESTED_TRY_BLOCK)){
+			if(problem != null && problem.equals(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT)){
 				// 因為無法直接使用Eclipse refactor - Extract Method,所以沒有任何解法
 				//在這邊只會提示使用者使用Eclipse平台的重構功能
 			}

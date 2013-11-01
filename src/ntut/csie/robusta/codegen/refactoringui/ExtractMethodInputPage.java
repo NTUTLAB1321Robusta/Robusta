@@ -312,7 +312,7 @@ public class ExtractMethodInputPage extends UserInputWizardPage {
 	 * 將Control元件添加動作
 	 */
 	private void addControlListener() {
-		//假如內容被更改的話,將資訊存到CarelessCleanUpRefactoring
+		//假如內容被更改的話,將資訊存到CarelessCleanupRefactoring
 		newMethodText.addModifyListener(new ModifyListener(){
 			public void modifyText(ModifyEvent e) {
 				handleInputChange();				

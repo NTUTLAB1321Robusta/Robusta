@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
-public class CarelessCleanUpPage  extends APropertyPage {
+public class CarelessCleanupPage  extends APropertyPage {
 	// 放code template的區域
 	private StyledText templateArea;
 	//是否要偵測使用者自訂方法的按鈕
@@ -45,14 +45,14 @@ public class CarelessCleanUpPage  extends APropertyPage {
 	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
 	
 	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
-	public CarelessCleanUpPage(Composite composite, CSPropertyPage page, SmellSettings smellSettings){
+	public CarelessCleanupPage(Composite composite, CSPropertyPage page, SmellSettings smellSettings){
 		super(composite,page);
 		//不偵測時,TextBox的內容
 		beforeText ="FileInputStream in = null;\n" +
 					"try {   \n" +
 					"     in = new FileInputStream(path);\n"+
 					"     // do something here\n"+
-	                "     in.close(); //Careless CleanUp\n"+
+	                "     in.close(); //Careless Cleanup\n"+
 					"} catch (IOException e) { \n"+
 					"}";
 		
@@ -62,7 +62,7 @@ public class CarelessCleanUpPage  extends APropertyPage {
 	                "     in = new FileInputStream(path);\n"+
 					"     // do something here\n" +
 					"     //check method content\n" +
-					"     close(in); //Careless CleanUp\n"+
+					"     close(in); //Careless Cleanup\n"+
 					"} catch (IOException e) { \n"+
 					"}\n\n"+
 					"public void close(FileInputStream in){\n"+
@@ -78,15 +78,15 @@ public class CarelessCleanUpPage  extends APropertyPage {
 	/**
 	 * 加入頁面的內容
 	 */
-	private void addFirstSection(final Composite CarelessCleanUpPage){
+	private void addFirstSection(final Composite CarelessCleanupPage){
 		userDefinedCode = smellSettings.getSemllPatterns(SmellSettings.SMELL_CARELESSCLEANUP);
 		// 偵測條件
-		final Label detectSettingsLabel = new Label(CarelessCleanUpPage, SWT.NONE);
+		final Label detectSettingsLabel = new Label(CarelessCleanupPage, SWT.NONE);
 		detectSettingsLabel.setText(resource.getString("detect.rule"));
 		detectSettingsLabel.setLocation(10, 10);
 		detectSettingsLabel.pack();
 		//Release Method Button
-		btnIsDetectReleaseResourceCodeInClass = new Button(CarelessCleanUpPage,SWT.CHECK);
+		btnIsDetectReleaseResourceCodeInClass = new Button(CarelessCleanupPage,SWT.CHECK);
 		btnIsDetectReleaseResourceCodeInClass.setText(resource.getString("detect.release.resource.in.method"));
 		btnIsDetectReleaseResourceCodeInClass.setLocation(
 				detectSettingsLabel.getLocation().x + 10,
@@ -101,12 +101,12 @@ public class CarelessCleanUpPage  extends APropertyPage {
 		});
 
 		/// Customize Rule ///
-		final Label detectSettingsLabel2 = new Label(CarelessCleanUpPage, SWT.NONE);
+		final Label detectSettingsLabel2 = new Label(CarelessCleanupPage, SWT.NONE);
 		detectSettingsLabel2.setText(resource.getString("customize.rule"));
 		detectSettingsLabel2.setLocation(getLowerRightCoordinate(btnIsDetectReleaseResourceCodeInClass).x+25, 10);
 		detectSettingsLabel2.pack();
 		//Open Dialog Button
-		extraRuleBtn = new Button(CarelessCleanUpPage, SWT.NONE);
+		extraRuleBtn = new Button(CarelessCleanupPage, SWT.NONE);
 		extraRuleBtn.setText(resource.getString("extra.rule"));
 		extraRuleBtn.setLocation(detectSettingsLabel2.getLocation().x+5, getLowerRightCoordinate(detectSettingsLabel2).y+5);
 		extraRuleBtn.pack();
@@ -122,21 +122,21 @@ public class CarelessCleanUpPage  extends APropertyPage {
 			smellSettings.isExtraRuleExist(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD));
 
 		/// 分隔線 ///
-		final Label separateLabel1 = new Label(CarelessCleanUpPage, SWT.VERTICAL | SWT.SEPARATOR);
+		final Label separateLabel1 = new Label(CarelessCleanupPage, SWT.VERTICAL | SWT.SEPARATOR);
 		separateLabel1.setLocation(getLowerRightCoordinate(btnIsDetectReleaseResourceCodeInClass).x+10, 5);
 		separateLabel1.setSize(1, getLowerRightCoordinate(btnIsDetectReleaseResourceCodeInClass).y+5);
-		final Label separateLabel2 = new Label(CarelessCleanUpPage,SWT.SEPARATOR | SWT.HORIZONTAL);
+		final Label separateLabel2 = new Label(CarelessCleanupPage,SWT.SEPARATOR | SWT.HORIZONTAL);
 		separateLabel2.setLocation(10, getLowerRightCoordinate(extraRuleBtn).y+10);
 		separateLabel2.setSize(getLowerRightCoordinate(detectSettingsLabel2).x-10, 1);
 		
 		/// Template Label ///
-		final Label detBeforeLbl = new Label(CarelessCleanUpPage, SWT.NONE);
+		final Label detBeforeLbl = new Label(CarelessCleanupPage, SWT.NONE);
 		detBeforeLbl.setText(resource.getString("detect.example"));
 		detBeforeLbl.setLocation(10, getLowerRightCoordinate(separateLabel2).y+10);
 		detBeforeLbl.pack();
 		//TextBox
-		templateArea = new StyledText(CarelessCleanUpPage, SWT.BORDER);
-		Font font = new Font(CarelessCleanUpPage.getDisplay(),"Courier New",14,SWT.NORMAL);		
+		templateArea = new StyledText(CarelessCleanupPage, SWT.BORDER);
+		Font font = new Font(CarelessCleanupPage.getDisplay(),"Courier New",14,SWT.NORMAL);		
 		templateArea.setFont(font);
 		templateArea.setLocation(10, getLowerRightCoordinate(detBeforeLbl).y+5);
 		templateArea.setSize(458, 300);
@@ -150,8 +150,8 @@ public class CarelessCleanUpPage  extends APropertyPage {
 			templateArea.setSize(getLowerRightCoordinate(separateLabel2).x, 300);
 		
 		//載入預定的字型、顏色
-		addBeforeSampleStyle(CarelessCleanUpPage.getDisplay());	
-		addAfterSampleStyle(CarelessCleanUpPage.getDisplay());
+		addBeforeSampleStyle(CarelessCleanupPage.getDisplay());	
+		addAfterSampleStyle(CarelessCleanupPage.getDisplay());
 		
 		//調整TextBox的文字
 		adjustText();

@@ -7,7 +7,7 @@ import java.io.FileOutputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
 
-public class OverwrittenLeadExceptionExample {
+public class ThrowsExceptionInFinallyBlockExample {
 	/**
 	 * 沒有Finally Block，不會被加上mark
 	 * @param context

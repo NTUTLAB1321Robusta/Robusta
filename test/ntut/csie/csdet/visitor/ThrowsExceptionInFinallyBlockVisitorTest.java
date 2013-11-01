@@ -9,7 +9,7 @@ import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
-import ntut.csie.filemaker.exceptionBadSmells.OverwrittenLeadExceptionExample;
+import ntut.csie.filemaker.exceptionBadSmells.ThrowsExceptionInFinallyBlockExample;
 import ntut.csie.robusta.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -22,16 +22,16 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class OverwrittenLeadExceptionVisitorTest {
+public class ThrowsExceptionInFinallyBlockVisitorTest {
 	JavaProjectMaker javaProjectMaker;
 	JavaFileToString javaFile2String;
 	CompilationUnit compilationUnit;
-	OverwrittenLeadExceptionVisitor overwrittenLeadExceptionVisitor;
+	ThrowsExceptionInFinallyBlockVisitor throwsExceptionInFinallyBlockVisitor;
 	SmellSettings smellSettings;
 	
 	@Before
 	public void setUp() throws Exception {
-		String testProjectName = "OverwrittenLeadExceptionTest";
+		String testProjectName = "ThrowsExceptionInFinallyBlockTest";
 		javaProjectMaker = new JavaProjectMaker(testProjectName);
 		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.FOLDERNAME_LIB_JAR, JavaProjectMaker.FOLDERNAME_BIN_CLASS);
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/" + JavaProjectMaker.RL_LIBRARY_PATH);
@@ -39,14 +39,14 @@ public class OverwrittenLeadExceptionVisitorTest {
 		
 		// 根據測試檔案樣本內容建立新的檔案
 		javaFile2String = new JavaFileToString();
-		javaFile2String.read(OverwrittenLeadExceptionExample.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaFile2String.read(ThrowsExceptionInFinallyBlockExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
-				OverwrittenLeadExceptionExample.class.getPackage().getName(),
-				OverwrittenLeadExceptionExample.class.getSimpleName() +  JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + OverwrittenLeadExceptionExample.class.getPackage().getName() + ";\n"
+				ThrowsExceptionInFinallyBlockExample.class.getPackage().getName(),
+				ThrowsExceptionInFinallyBlockExample.class.getSimpleName() +  JavaProjectMaker.JAVA_FILE_EXTENSION,
+				"package " + ThrowsExceptionInFinallyBlockExample.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		
-		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(OverwrittenLeadExceptionExample.class, testProjectName));
+		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(ThrowsExceptionInFinallyBlockExample.class, testProjectName));
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -70,16 +70,16 @@ public class OverwrittenLeadExceptionVisitorTest {
 	@Test
 	public void visitWithoutSettings() throws Exception {
 		CreateSettings(false);
-		overwrittenLeadExceptionVisitor = new OverwrittenLeadExceptionVisitor(compilationUnit);
-		compilationUnit.accept(overwrittenLeadExceptionVisitor);
-		assertEquals(0, overwrittenLeadExceptionVisitor.getOverwrittenList().size());
+		throwsExceptionInFinallyBlockVisitor = new ThrowsExceptionInFinallyBlockVisitor(compilationUnit);
+		compilationUnit.accept(throwsExceptionInFinallyBlockVisitor);
+		assertEquals(0, throwsExceptionInFinallyBlockVisitor.getThrowsInFinallyList().size());
 	}
 	
 	@Test
 	public void visitWithSettings() throws Exception {
-		overwrittenLeadExceptionVisitor = new OverwrittenLeadExceptionVisitor(compilationUnit);
-		compilationUnit.accept(overwrittenLeadExceptionVisitor);
-		assertEquals(colloectBadSmellListContent(overwrittenLeadExceptionVisitor.getOverwrittenList()), 39, overwrittenLeadExceptionVisitor.getOverwrittenList().size());
+		throwsExceptionInFinallyBlockVisitor = new ThrowsExceptionInFinallyBlockVisitor(compilationUnit);
+		compilationUnit.accept(throwsExceptionInFinallyBlockVisitor);
+		assertEquals(colloectBadSmellListContent(throwsExceptionInFinallyBlockVisitor.getThrowsInFinallyList()), 39, throwsExceptionInFinallyBlockVisitor.getThrowsInFinallyList().size());
 	}
 
 	/**
@@ -99,7 +99,7 @@ public class OverwrittenLeadExceptionVisitorTest {
 	
 	private void CreateSettings(boolean isDetecting) {
 		smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_OVERWRITTENLEADEXCEPTION, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
+		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_THROWSEXCEPTIONINFINALLYBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 	}
 }

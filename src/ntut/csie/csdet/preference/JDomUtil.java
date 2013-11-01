@@ -34,8 +34,8 @@ public class JDomUtil {
 	//OverLogging
 	final static public String OverLoggingTag = "OverLogging";
 	final static public String trans_Exception = "detectionTransException";
-	//Careless CleanUp
-	final static public String CarelessCleanUpTag="CarelessCleanUp";
+	//Careless Cleanup
+	final static public String CarelessCleanupTag="CarelessCleanup";
 	final static public String det_user_method="detusermethod";
 	//Filter
 	final static public String EHSmellFilterTaq = "EHSmellFilter";

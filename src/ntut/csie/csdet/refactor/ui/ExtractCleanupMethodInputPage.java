@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import ntut.csie.csdet.refactor.CarelessCleanUpRefactor;
+import ntut.csie.csdet.refactor.CarelessCleanupRefactor;
 
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
@@ -35,9 +35,9 @@ import org.slf4j.LoggerFactory;
  * 提供一個介面給user, 讓user可以選擇要Extract什麼樣的Method
  * @author Min, Shiau
  */
-public class ExtractCleanUpMethodInputPage extends UserInputWizardPage {
+public class ExtractCleanupMethodInputPage extends UserInputWizardPage {
 
-	private static Logger logger = LoggerFactory.getLogger(ExtractCleanUpMethodInputPage.class);
+	private static Logger logger = LoggerFactory.getLogger(ExtractCleanupMethodInputPage.class);
 
 	//Extract Method的變數名稱
 	private Text newMethodText;
@@ -56,7 +56,7 @@ public class ExtractCleanUpMethodInputPage extends UserInputWizardPage {
 	
 	private IMethod existingMethod = null;
 	
-	public ExtractCleanUpMethodInputPage(String name) {
+	public ExtractCleanupMethodInputPage(String name) {
 		super(name);		
 	}
 	
@@ -125,7 +125,7 @@ public class ExtractCleanUpMethodInputPage extends UserInputWizardPage {
 	 */
 	private void handleInputChange(){
 		RefactoringStatus status = new RefactoringStatus();
-		CarelessCleanUpRefactor refactoring = getEMRefactoring();
+		CarelessCleanupRefactor refactoring = getEMRefactoring();
 
 		if (existMethodBtn.getSelection()) {
 			status.merge(refactoring.setIsRefactoringMethodExist(true));
@@ -167,8 +167,8 @@ public class ExtractCleanUpMethodInputPage extends UserInputWizardPage {
 	 * 取得Refactoring的物件型態
 	 * @return
 	 */
-	private CarelessCleanUpRefactor getEMRefactoring(){
-		return (CarelessCleanUpRefactor) getRefactoring();
+	private CarelessCleanupRefactor getEMRefactoring(){
+		return (CarelessCleanupRefactor) getRefactoring();
 	}
 
 	/**
@@ -311,7 +311,7 @@ public class ExtractCleanUpMethodInputPage extends UserInputWizardPage {
 	 * 將Control元件添加動作
 	 */
 	private void addControlListener() {
-		//假如內容被更改的話,將資訊存到CarelessCleanUpRefactoring
+		//假如內容被更改的話,將資訊存到CarelessCleanupRefactoring
 		newMethodText.addModifyListener(new ModifyListener(){
 			public void modifyText(ModifyEvent e) {
 				handleInputChange();				

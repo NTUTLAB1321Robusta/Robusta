@@ -190,11 +190,11 @@ public class SettingPage extends APropertyPage {
 		Element[] smellElements = new Element[RLMarkerAttribute.CS_TOTAL_TYPE.length];
 		smellElements[0] = smellSettings.getSmellType(SmellSettings.SMELL_EMPTYCATCHBLOCK);
 		smellElements[1] = smellSettings.getSmellType(SmellSettings.SMELL_DUMMYHANDLER);
-		smellElements[2] = smellSettings.getSmellType(SmellSettings.SMELL_NESTEDTRYBLOCK);
+		smellElements[2] = smellSettings.getSmellType(SmellSettings.SMELL_NESTEDTRYSTATEMENT);
 		smellElements[3] = smellSettings.getSmellType(SmellSettings.SMELL_UNPROTECTEDMAINPROGRAM);
 		smellElements[4] = smellSettings.getSmellType(SmellSettings.SMELL_CARELESSCLEANUP);
 		smellElements[5] = smellSettings.getSmellType(SmellSettings.SMELL_OVERLOGGING);
-		smellElements[6] = smellSettings.getSmellType(SmellSettings.SMELL_OVERWRITTENLEADEXCEPTION);
+		smellElements[6] = smellSettings.getSmellType(SmellSettings.SMELL_THROWSEXCEPTIONINFINALLYBLOCK);
 		
 		for(int i = 0; i < RLMarkerAttribute.CS_TOTAL_TYPE.length; i++) {
 			detSmellList[i] = Boolean.parseBoolean(smellElements[i].getAttributeValue(SmellSettings.ATTRIBUTE_ISDETECTING));
@@ -392,11 +392,11 @@ public class SettingPage extends APropertyPage {
 		//去traverse整個table看item的Text和是否被勾選到
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_EMPTYCATCHBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, item[0].getChecked());
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.ATTRIBUTE_ISDETECTING, item[1].getChecked());
-		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_NESTEDTRYBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, item[2].getChecked());
+		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_NESTEDTRYSTATEMENT, SmellSettings.ATTRIBUTE_ISDETECTING, item[2].getChecked());
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_UNPROTECTEDMAINPROGRAM, SmellSettings.ATTRIBUTE_ISDETECTING, item[3].getChecked());
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.ATTRIBUTE_ISDETECTING, item[4].getChecked());
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_OVERLOGGING, SmellSettings.ATTRIBUTE_ISDETECTING, item[5].getChecked());
-		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_OVERWRITTENLEADEXCEPTION, SmellSettings.ATTRIBUTE_ISDETECTING, item[6].getChecked());
+		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_THROWSEXCEPTIONINFINALLYBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, item[6].getChecked());
 
 		smellSettings.setPreferenceAttribute(SmellSettings.PRE_SHOWRLANNOTATIONWARNING, SmellSettings.ATTRIBUTE_ENABLE, preferenceList[0]);
 		//將檔案寫回

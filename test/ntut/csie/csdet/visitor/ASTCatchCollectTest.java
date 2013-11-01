@@ -76,7 +76,7 @@ public class ASTCatchCollectTest extends TestCase {
 
 	private void createSettings(boolean isDetecting) {
 		smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_NESTEDTRYBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
+		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_NESTEDTRYSTATEMENT, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 	}
 }

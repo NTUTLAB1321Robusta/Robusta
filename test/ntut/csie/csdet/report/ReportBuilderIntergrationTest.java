@@ -310,7 +310,7 @@ public class ReportBuilderIntergrationTest {
 	private void CreateAllSettings() {
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.ATTRIBUTE_ISDETECTING, unDetcting);
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_EMPTYCATCHBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, unDetcting);
-		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_NESTEDTRYBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
+		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_NESTEDTRYSTATEMENT, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_UNPROTECTEDMAINPROGRAM, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
 		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
@@ -336,7 +336,7 @@ public class ReportBuilderIntergrationTest {
 	}
 	
 	private void CreateNestedTrySettings() {
-		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_NESTEDTRYBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
+		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_NESTEDTRYSTATEMENT, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 	}
 
@@ -442,7 +442,7 @@ public class ReportBuilderIntergrationTest {
 	public void testOnlyNestedTryBadSmellReport() throws Exception {
 		assertTrue(reportModel.getDummyTotalSize() == 0);
 		assertTrue(reportModel.getEmptyCatchTotalSize() == 0);
-		assertTrue(reportModel.getCarelessCleanUpTotalSize() == 0);
+		assertTrue(reportModel.getCarelessCleanupTotalSize() == 0);
 		assertTrue(reportModel.getNestedTryTotalSize() == 0);
 		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
 		assertTrue(reportModel.getUnMainTotalSize() == 0);
@@ -457,7 +457,7 @@ public class ReportBuilderIntergrationTest {
 		
 		assertEquals(0, reportModel.getDummyTotalSize());
 		assertEquals(0, reportModel.getEmptyCatchTotalSize());
-		assertEquals(0, reportModel.getCarelessCleanUpTotalSize());
+		assertEquals(0, reportModel.getCarelessCleanupTotalSize());
 		assertEquals(27, reportModel.getNestedTryTotalSize());
 		assertEquals(0, reportModel.getOverLoggingTotalSize());
 		assertEquals(0, reportModel.getUnMainTotalSize());
@@ -468,7 +468,7 @@ public class ReportBuilderIntergrationTest {
 	public void testOnlyUnprotectedMainProgramBadSmellReport() throws Exception {
 		assertTrue(reportModel.getDummyTotalSize() == 0);
 		assertTrue(reportModel.getEmptyCatchTotalSize() == 0);
-		assertTrue(reportModel.getCarelessCleanUpTotalSize() == 0);
+		assertTrue(reportModel.getCarelessCleanupTotalSize() == 0);
 		assertTrue(reportModel.getNestedTryTotalSize() == 0);
 		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
 		assertTrue(reportModel.getUnMainTotalSize() == 0);
@@ -483,7 +483,7 @@ public class ReportBuilderIntergrationTest {
 		
 		assertEquals(0, reportModel.getDummyTotalSize());
 		assertEquals(0, reportModel.getEmptyCatchTotalSize());
-		assertEquals(0, reportModel.getCarelessCleanUpTotalSize());
+		assertEquals(0, reportModel.getCarelessCleanupTotalSize());
 		assertEquals(0, reportModel.getNestedTryTotalSize());
 		assertEquals(0, reportModel.getOverLoggingTotalSize());
 		assertEquals(6, reportModel.getUnMainTotalSize());
@@ -494,7 +494,7 @@ public class ReportBuilderIntergrationTest {
 	public void testOnlyCarelessCleanupBadSmellReport() throws Exception {
 		assertTrue(reportModel.getDummyTotalSize() == 0);
 		assertTrue(reportModel.getEmptyCatchTotalSize() == 0);
-		assertTrue(reportModel.getCarelessCleanUpTotalSize() == 0);
+		assertTrue(reportModel.getCarelessCleanupTotalSize() == 0);
 		assertTrue(reportModel.getNestedTryTotalSize() == 0);
 		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
 		assertTrue(reportModel.getUnMainTotalSize() == 0);
@@ -509,7 +509,7 @@ public class ReportBuilderIntergrationTest {
 		
 		assertEquals(0, reportModel.getDummyTotalSize());
 		assertEquals(0, reportModel.getEmptyCatchTotalSize());
-		assertEquals(38, reportModel.getCarelessCleanUpTotalSize());
+		assertEquals(38, reportModel.getCarelessCleanupTotalSize());
 		assertEquals(0, reportModel.getNestedTryTotalSize());
 		assertEquals(0, reportModel.getOverLoggingTotalSize());
 		assertEquals(0, reportModel.getUnMainTotalSize());
@@ -520,7 +520,7 @@ public class ReportBuilderIntergrationTest {
 	public void testCreateOverloggingBadSmellReport() throws Exception {
 		assertTrue(reportModel.getDummyTotalSize() == 0);
 		assertTrue(reportModel.getEmptyCatchTotalSize() == 0);
-		assertTrue(reportModel.getCarelessCleanUpTotalSize() == 0);
+		assertTrue(reportModel.getCarelessCleanupTotalSize() == 0);
 		assertTrue(reportModel.getNestedTryTotalSize() == 0);
 		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
 		assertTrue(reportModel.getUnMainTotalSize() == 0);
@@ -535,7 +535,7 @@ public class ReportBuilderIntergrationTest {
 		
 		assertEquals(0, reportModel.getDummyTotalSize());
 		assertEquals(0, reportModel.getEmptyCatchTotalSize());
-		assertEquals(0, reportModel.getCarelessCleanUpTotalSize());
+		assertEquals(0, reportModel.getCarelessCleanupTotalSize());
 		assertEquals(0, reportModel.getNestedTryTotalSize());
 		assertEquals(26, reportModel.getOverLoggingTotalSize());
 		assertEquals(0, reportModel.getUnMainTotalSize());
@@ -546,7 +546,7 @@ public class ReportBuilderIntergrationTest {
 	public void testOnlyCarelessCleanupWithoutExtraRuleBadSmellReport() throws Exception {
 		assertTrue(reportModel.getDummyTotalSize() == 0);
 		assertTrue(reportModel.getEmptyCatchTotalSize() == 0);
-		assertTrue(reportModel.getCarelessCleanUpTotalSize() == 0);
+		assertTrue(reportModel.getCarelessCleanupTotalSize() == 0);
 		assertTrue(reportModel.getNestedTryTotalSize() == 0);
 		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
 		assertTrue(reportModel.getUnMainTotalSize() == 0);
@@ -561,7 +561,7 @@ public class ReportBuilderIntergrationTest {
 		
 		assertEquals(0, reportModel.getDummyTotalSize());
 		assertEquals(0, reportModel.getEmptyCatchTotalSize());
-		assertEquals(35, reportModel.getCarelessCleanUpTotalSize());
+		assertEquals(35, reportModel.getCarelessCleanupTotalSize());
 		assertEquals(0, reportModel.getNestedTryTotalSize());
 		assertEquals(0, reportModel.getOverLoggingTotalSize());
 		assertEquals(0, reportModel.getUnMainTotalSize());
@@ -572,7 +572,7 @@ public class ReportBuilderIntergrationTest {
 	public void testOnlyCarelessCleanupWithoutUserDefinitionBadSmellReport() throws Exception {
 		assertTrue(reportModel.getDummyTotalSize() == 0);
 		assertTrue(reportModel.getEmptyCatchTotalSize() == 0);
-		assertTrue(reportModel.getCarelessCleanUpTotalSize() == 0);
+		assertTrue(reportModel.getCarelessCleanupTotalSize() == 0);
 		assertTrue(reportModel.getNestedTryTotalSize() == 0);
 		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
 		assertTrue(reportModel.getUnMainTotalSize() == 0);
@@ -587,7 +587,7 @@ public class ReportBuilderIntergrationTest {
 		
 		assertEquals(0, reportModel.getDummyTotalSize());
 		assertEquals(0, reportModel.getEmptyCatchTotalSize());
-		assertEquals(31, reportModel.getCarelessCleanUpTotalSize());
+		assertEquals(31, reportModel.getCarelessCleanupTotalSize());
 		assertEquals(0, reportModel.getNestedTryTotalSize());
 		assertEquals(0, reportModel.getOverLoggingTotalSize());
 		assertEquals(0, reportModel.getUnMainTotalSize());
@@ -598,7 +598,7 @@ public class ReportBuilderIntergrationTest {
 	public void testOnlyOverloggingWithoutExtraRuleBadSmellReport() throws Exception {
 		assertTrue(reportModel.getDummyTotalSize() == 0);
 		assertTrue(reportModel.getEmptyCatchTotalSize() == 0);
-		assertTrue(reportModel.getCarelessCleanUpTotalSize() == 0);
+		assertTrue(reportModel.getCarelessCleanupTotalSize() == 0);
 		assertTrue(reportModel.getNestedTryTotalSize() == 0);
 		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
 		assertTrue(reportModel.getUnMainTotalSize() == 0);
@@ -613,7 +613,7 @@ public class ReportBuilderIntergrationTest {
 		
 		assertEquals(0, reportModel.getDummyTotalSize());
 		assertEquals(0, reportModel.getEmptyCatchTotalSize());
-		assertEquals(0, reportModel.getCarelessCleanUpTotalSize());
+		assertEquals(0, reportModel.getCarelessCleanupTotalSize());
 		assertEquals(0, reportModel.getNestedTryTotalSize());
 		assertEquals(7, reportModel.getOverLoggingTotalSize());
 		assertEquals(0, reportModel.getUnMainTotalSize());
@@ -624,7 +624,7 @@ public class ReportBuilderIntergrationTest {
 	public void testOnlyOverloggingWithoutUserDefinitioneBadSmellReport() throws Exception {
 		assertTrue(reportModel.getDummyTotalSize() == 0);
 		assertTrue(reportModel.getEmptyCatchTotalSize() == 0);
-		assertTrue(reportModel.getCarelessCleanUpTotalSize() == 0);
+		assertTrue(reportModel.getCarelessCleanupTotalSize() == 0);
 		assertTrue(reportModel.getNestedTryTotalSize() == 0);
 		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
 		assertTrue(reportModel.getUnMainTotalSize() == 0);
@@ -639,7 +639,7 @@ public class ReportBuilderIntergrationTest {
 		
 		assertEquals(0, reportModel.getDummyTotalSize());
 		assertEquals(0, reportModel.getEmptyCatchTotalSize());
-		assertEquals(0, reportModel.getCarelessCleanUpTotalSize());
+		assertEquals(0, reportModel.getCarelessCleanupTotalSize());
 		assertEquals(0, reportModel.getNestedTryTotalSize());
 		assertEquals(18, reportModel.getOverLoggingTotalSize());
 		assertEquals(0, reportModel.getUnMainTotalSize());
@@ -657,7 +657,7 @@ public class ReportBuilderIntergrationTest {
 	public void testRemainBadSmellReport() throws Exception {
 		assertTrue(reportModel.getDummyTotalSize() == 0);
 		assertTrue(reportModel.getEmptyCatchTotalSize() == 0);
-		assertTrue(reportModel.getCarelessCleanUpTotalSize() == 0);
+		assertTrue(reportModel.getCarelessCleanupTotalSize() == 0);
 		assertTrue(reportModel.getNestedTryTotalSize() == 0);
 		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
 		assertTrue(reportModel.getUnMainTotalSize() == 0);
@@ -672,7 +672,7 @@ public class ReportBuilderIntergrationTest {
 		
 		assertEquals(0,reportModel.getDummyTotalSize());
 		assertEquals(0,reportModel.getEmptyCatchTotalSize());
-		assertEquals(38, reportModel.getCarelessCleanUpTotalSize());
+		assertEquals(38, reportModel.getCarelessCleanupTotalSize());
 		assertEquals(27, reportModel.getNestedTryTotalSize());
 		assertEquals(26, reportModel.getOverLoggingTotalSize());
 		assertEquals(6, reportModel.getUnMainTotalSize());

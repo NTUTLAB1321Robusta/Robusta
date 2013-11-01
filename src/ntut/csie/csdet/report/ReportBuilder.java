@@ -14,7 +14,7 @@ import ntut.csie.csdet.visitor.DummyHandlerVisitor;
 import ntut.csie.csdet.visitor.EmptyCatchBlockVisitor;
 import ntut.csie.csdet.visitor.NestedTryStatementVisitor;
 import ntut.csie.csdet.visitor.OverLoggingDetector;
-import ntut.csie.csdet.visitor.OverwrittenLeadExceptionVisitor;
+import ntut.csie.csdet.visitor.ThrowsExceptionInFinallyBlockVisitor;
 import ntut.csie.csdet.visitor.SuppressWarningVisitor;
 import ntut.csie.csdet.visitor.TryStatementCounterVisitor;
 import ntut.csie.csdet.visitor.UnprotectedMainProgramVisitor;
@@ -141,7 +141,7 @@ public class ReportBuilder {
 		CarelessCleanupVisitor ccVisitor = null;
 		OverLoggingDetector loggingDetector = null;
 		TryStatementCounterVisitor counterVisitor = null;
-		OverwrittenLeadExceptionVisitor overwrittenVisitor = null;
+		ThrowsExceptionInFinallyBlockVisitor throwsInFinallyVisitor = null;
 
 		// 建構AST
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
@@ -172,10 +172,10 @@ public class ReportBuilder {
 			inputSuppressData(suppressSmellList, detMethodSmell, detCatchSmell);
 		}
 		
-		// 取得專案中的Nested Try Block
+		// 取得專案中的Nested Try Statement
 		ntsVisitor = new NestedTryStatementVisitor(root);
 		root.accept(ntsVisitor);
-		List<MarkerInfo> nestedTryList = checkCatchSmell(ntsVisitor.getNestedTryStatementList(), detCatchSmell.get(RLMarkerAttribute.CS_NESTED_TRY_BLOCK));
+		List<MarkerInfo> nestedTryList = checkCatchSmell(ntsVisitor.getNestedTryStatementList(), detCatchSmell.get(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
 		newClassModel.addNestedTryList(nestedTryList);
 		model.addNestedTotalTrySize(nestedTryList.size());
 		
@@ -221,8 +221,8 @@ public class ReportBuilder {
 			ccVisitor = new CarelessCleanupVisitor(root);
 			method.accept(ccVisitor);
 			if (detMethodSmell.get(RLMarkerAttribute.CS_CARELESS_CLEANUP)) {
-				newClassModel.setCarelessCleanUp(ccVisitor.getCarelessCleanupList(), method.getName().toString());
-				model.addCarelessCleanUpSize(ccVisitor.getCarelessCleanupList().size());
+				newClassModel.setCarelessCleanup(ccVisitor.getCarelessCleanupList(), method.getName().toString());
+				model.addCarelessCleanupSize(ccVisitor.getCarelessCleanupList().size());
 			}
 			// 尋找該method內的OverLogging
 			loggingDetector = new OverLoggingDetector(root, method);
@@ -233,10 +233,10 @@ public class ReportBuilder {
 				model.addOverLoggingSize(olList.size());
 			}
 			// 找尋專案中所有的Overwritten Lead Exception
-			overwrittenVisitor = new OverwrittenLeadExceptionVisitor(root);
-			method.accept(overwrittenVisitor);
+			throwsInFinallyVisitor = new ThrowsExceptionInFinallyBlockVisitor(root);
+			method.accept(throwsInFinallyVisitor);
 			if(detMethodSmell.get(RLMarkerAttribute.CS_OVERWRITTEN_LEAD_EXCEPTION)) {
-				List<MarkerInfo> owList = checkCatchSmell(overwrittenVisitor.getOverwrittenList(), detCatchSmell.get(RLMarkerAttribute.CS_OVERWRITTEN_LEAD_EXCEPTION));
+				List<MarkerInfo> owList = checkCatchSmell(throwsInFinallyVisitor.getThrowsInFinallyList(), detCatchSmell.get(RLMarkerAttribute.CS_OVERWRITTEN_LEAD_EXCEPTION));
 				newClassModel.setOverwrittenLead(owList, method.getName().toString());
 				model.addOverwrittenSize(owList.size());
 			}

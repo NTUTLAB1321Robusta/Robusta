@@ -693,7 +693,7 @@ public class SmellSettingsTest {
 				"<extraRule name=\"System.out.println\" /><extraRule name=\"java.util.logging.Logger\" />" +
 				"<extraRule name=\"org.apache.log4j\" />" +
 				"</SmellTypes><SmellTypes name=\"EmptyCatchBlock\" isDetecting=\"true\" />" +
-				"<SmellTypes name=\"NestedTryBlock\" isDetecting=\"true\" />" +
+				"<SmellTypes name=\"NestedTryStatement\" isDetecting=\"true\" />" +
 				"<SmellTypes name=\"UnprotectedMainProgram\" isDetecting=\"true\" />" +
 				"<SmellTypes name=\"CarelessCleanup\" isDetecting=\"true\">" +
 				"<extraRule name=\"DetectIsReleaseIOCodeInDeclaredMethod\" /></SmellTypes>" +

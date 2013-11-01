@@ -6,7 +6,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 import ntut.csie.csdet.quickfix.NTQuickFix;
-import ntut.csie.csdet.refactor.CarelessCleanUpAction;
+import ntut.csie.csdet.refactor.CarelessCleanupAction;
 import ntut.csie.csdet.refactor.OverLoggingAction;
 import ntut.csie.csdet.refactor.RethrowUncheckExAction;
 import ntut.csie.rleht.common.RLUtils;
@@ -102,13 +102,13 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 					markerList.add(new RethrowUncheckExAction("Refactor==>Rethrow Unchecked Excetpion"));
 					markerList.add(new ThrowCheckedExceptionQuickFix("Quick Fix==>Throw Checked Exception"));
 				}
-				// 碰到Nested Try block的refactor
-			} else if(problem.equals(RLMarkerAttribute.CS_NESTED_TRY_BLOCK)) {
+				// 碰到Nested Try Statement的refactor
+			} else if(problem.equals(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT)) {
 				markerList.add(new NTQuickFix("Please use Eclipse refactor==>Extract Method"));
 				// 碰到Unprotected Main program的Quick fix
 			} else if(problem.equals(RLMarkerAttribute.CS_UNPROTECTED_MAIN)) {
 				markerList.add(new MoveCodeIntoBigOuterTryQuickFix("Quick Fix==>Add Big outer try block"));
-				// 碰到Careless CleanUp的Quick fix and refactor方法
+				// 碰到Careless Cleanup的Quick fix and refactor方法
 			} else if(problem.equals(RLMarkerAttribute.CS_CARELESS_CLEANUP)){
 				//只有CCMessage才會有這個，所以只能在這邊get
 				boolean withTryBlock = false;
@@ -127,7 +127,7 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 
 				//MethodInv. will throw exceptions and in try block
 				} else if ((withTryBlock) && (exceptionType != null)) {
-					markerList.add(new CarelessCleanUpAction("Refactor==>Use Extract Method"));
+					markerList.add(new CarelessCleanupAction("Refactor==>Use Extract Method"));
 				} else {
 					// 需要提供Refactoring的功能
 				}

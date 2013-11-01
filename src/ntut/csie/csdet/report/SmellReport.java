@@ -133,13 +133,13 @@ public class SmellReport {
 				.valueOf(model.getDummyTotalSize())));
 		smellList.addContent(new Element("UnprotectedMainProgram")
 				.addContent(String.valueOf(model.getUnMainTotalSize())));
-		smellList.addContent(new Element("NestedTryBlock").addContent(String
+		smellList.addContent(new Element("NestedTryStatement").addContent(String
 				.valueOf(model.getNestedTryTotalSize())));
-		smellList.addContent(new Element("CarelessCleanUp").addContent(String
-				.valueOf(model.getCarelessCleanUpTotalSize())));
+		smellList.addContent(new Element("CarelessCleanup").addContent(String
+				.valueOf(model.getCarelessCleanupTotalSize())));
 		smellList.addContent(new Element("OverLogging").addContent(String
 				.valueOf(model.getOverLoggingTotalSize())));
-		smellList.addContent(new Element("OverwrittenLeadException")
+		smellList.addContent(new Element("ThrowsExceptionInFinallyBlock")
 				.addContent(String.valueOf(model.getOverwrittenTotalSize())));
 		smellList.addContent(new Element("Total").addContent(String
 				.valueOf(model.getTotalSmellCount())));
@@ -190,14 +190,14 @@ public class SmellReport {
 					.valueOf(packageModel.getDummySize())));
 			packages.addContent(new Element("UnprotectedMainProgram")
 					.addContent(String.valueOf(packageModel.getUnMainSize())));
-			packages.addContent(new Element("NestedTryBlock").addContent(String
+			packages.addContent(new Element("NestedTryStatement").addContent(String
 					.valueOf(packageModel.getNestedTrySize())));
-			packages.addContent(new Element("CarelessCleanUp")
+			packages.addContent(new Element("CarelessCleanup")
 					.addContent(String.valueOf(packageModel
-							.getCarelessCleanUpSize())));
+							.getCarelessCleanupSize())));
 			packages.addContent(new Element("OverLogging").addContent(String
 					.valueOf(packageModel.getOverLoggingSize())));
-			packages.addContent(new Element("OverwrittenLeadException")
+			packages.addContent(new Element("ThrowsExceptionInFinallyBlock")
 					.addContent(String.valueOf(packageModel
 							.getOverwrittenSize())));
 			packages.addContent(new Element("PackageTotal").addContent(String
@@ -247,7 +247,7 @@ public class SmellReport {
 		total.addContent(new Element("NestedTrTotal").addContent(String
 				.valueOf(model.getNestedTryTotalSize())));
 		total.addContent(new Element("CCUpTotal").addContent(String
-				.valueOf(model.getCarelessCleanUpTotalSize())));
+				.valueOf(model.getCarelessCleanupTotalSize())));
 		total.addContent(new Element("OLTotal").addContent(String.valueOf(model
 				.getOverLoggingTotalSize())));
 		total.addContent(new Element("OWTotal").addContent(String.valueOf(model

@@ -23,7 +23,7 @@ public class NestedTryStatementVisitor extends ASTVisitor {
 		this.compilationUnit = compilationUnit;
 		nestedTryStatementList = new ArrayList<MarkerInfo>();
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		isDetectingNestedTryStatementSmell = smellSettings.isDetectingSmell(SmellSettings.SMELL_NESTEDTRYBLOCK);
+		isDetectingNestedTryStatementSmell = smellSettings.isDetectingSmell(SmellSettings.SMELL_NESTEDTRYSTATEMENT);
 	}
 	
 	/**
@@ -53,7 +53,7 @@ public class NestedTryStatementVisitor extends ASTVisitor {
 	}
 	
 	private void collectSmell(TryStatement node) {
-		MarkerInfo markerInfo = new MarkerInfo(RLMarkerAttribute.CS_NESTED_TRY_BLOCK,
+		MarkerInfo markerInfo = new MarkerInfo(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT,
 				null, node.toString(), node.getStartPosition(),
 				compilationUnit.getLineNumber(node.getStartPosition()),	null);
 		nestedTryStatementList.add(markerInfo);

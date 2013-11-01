@@ -81,12 +81,12 @@ public class PackageModel {
 
 		return nestedTrySize;
 	}
-	public int getCarelessCleanUpSize() {
-		int carelessCleanUpSize = 0;
+	public int getCarelessCleanupSize() {
+		int carelessCleanupSize = 0;
 		for (ClassModel cm : classModel)
-			carelessCleanUpSize += cm.getCarelessCleanUpSize();
+			carelessCleanupSize += cm.getCarelessCleanupSize();
 
-		return carelessCleanUpSize;
+		return carelessCleanupSize;
 	}
 	public int getOverLoggingSize() {
 		int overLoggingSize = 0;
@@ -104,7 +104,7 @@ public class PackageModel {
 	}
 	public int getTotalSmellSize() {
 		return getEmptySize() + getDummySize() + getNestedTrySize() + getUnMainSize() +
-			   getCarelessCleanUpSize() + getOverLoggingSize() + getOverwrittenSize();
+			   getCarelessCleanupSize() + getOverLoggingSize() + getOverwrittenSize();
 	}
 	
 	//存取程式的LOC

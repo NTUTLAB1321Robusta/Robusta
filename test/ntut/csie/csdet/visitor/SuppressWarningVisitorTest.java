@@ -128,7 +128,7 @@ public class SuppressWarningVisitorTest {
 	
 	@Test
 	public void testAddSuppressWarningOnBoth() {
-		MethodDeclaration method = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "withSuppressWaringNestedTryBlockOnMethod");
+		MethodDeclaration method = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "withSuppressWaringNestedTryStatementOnMethod");
 		method.accept(visitor);
 		List<SSMessage> ssList = visitor.getSuppressWarningList();
 		assertEquals(2, ssList.size());

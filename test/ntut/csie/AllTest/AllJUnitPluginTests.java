@@ -3,13 +3,13 @@ package ntut.csie.AllTest;
 import ntut.csie.csdet.preference.ReportDescriptionTest;
 import ntut.csie.csdet.preference.RobustaSettingsTest;
 import ntut.csie.csdet.quickfix.BaseQuickFixTest;
-import ntut.csie.csdet.refactor.CarelessCleanUpRefactorTest;
+import ntut.csie.csdet.refactor.CarelessCleanupRefactorTest;
 import ntut.csie.csdet.refactor.OverLoggingRefactorTest;
 import ntut.csie.csdet.refactor.RethrowExRefactoringTest;
 import ntut.csie.csdet.refactor.RetryRefactoringTest;
 import ntut.csie.csdet.report.ReportBuilderIntergrationTest;
 import ntut.csie.csdet.report.ReportBuilderTest;
-import ntut.csie.csdet.views.CarelessCleanUpPageTest;
+import ntut.csie.csdet.views.CarelessCleanupPageTest;
 import ntut.csie.csdet.visitor.ASTCatchCollectTest;
 import ntut.csie.csdet.visitor.CarelessCleanupVisitor2Test;
 import ntut.csie.csdet.visitor.CarelessCleanupVisitor3Test;
@@ -18,7 +18,7 @@ import ntut.csie.csdet.visitor.DummyHandlerVisitorTest;
 import ntut.csie.csdet.visitor.EmptyCatchBlockVisitorTest;
 import ntut.csie.csdet.visitor.NestedTryStatementVisitorTest;
 import ntut.csie.csdet.visitor.OverLoggingVisitorTest;
-import ntut.csie.csdet.visitor.OverwrittenLeadExceptionVisitorTest;
+import ntut.csie.csdet.visitor.ThrowsExceptionInFinallyBlockVisitorTest;
 import ntut.csie.csdet.visitor.SpareHandlerVisitorTest;
 import ntut.csie.csdet.visitor.SuppressWarningVisitorTest;
 import ntut.csie.csdet.visitor.TryStatementCounterVisitorTest;
@@ -43,7 +43,7 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
 	BaseQuickFixTest.class,
 	
-	CarelessCleanUpRefactorTest.class,
+	CarelessCleanupRefactorTest.class,
 	OverLoggingRefactorTest.class,
 	RethrowExRefactoringTest.class,
 	RetryRefactoringTest.class,
@@ -51,7 +51,7 @@ import org.junit.runners.Suite;
 	ReportBuilderIntergrationTest.class,
 	ReportBuilderTest.class,
 	
-	CarelessCleanUpPageTest.class,
+	CarelessCleanupPageTest.class,
 	
 	ASTCatchCollectTest.class,
 	CarelessCleanupVisitor2Test.class,
@@ -61,7 +61,7 @@ import org.junit.runners.Suite;
 	EmptyCatchBlockVisitorTest.class,
 	NestedTryStatementVisitorTest.class,
 	OverLoggingVisitorTest.class,
-	OverwrittenLeadExceptionVisitorTest.class,
+	ThrowsExceptionInFinallyBlockVisitorTest.class,
 	SpareHandlerVisitorTest.class,
 	SuppressWarningVisitorTest.class,
 	TryStatementCounterVisitorTest.class,

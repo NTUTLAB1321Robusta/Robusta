@@ -87,7 +87,7 @@ public class RetryRefactoringTest {
 				DummyAndEmptyExample.class.getSimpleName(),
 				"package " + DummyAndEmptyExample.class.getPackage().getName()
 				+ ";\n" + jfs.getFileContent());
-		// 建立Nested try block example file
+		// 建立Nested try statement example file
 		jfs = new JavaFileToString();
 		jfs.read(NestedTryStatementExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		jpm.createJavaFile(NestedTryStatementExample.class.getPackage().getName(),

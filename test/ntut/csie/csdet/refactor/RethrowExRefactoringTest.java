@@ -86,7 +86,7 @@ public class RethrowExRefactoringTest {
 				DummyAndEmptyExample.class.getSimpleName()	+ JavaProjectMaker.JAVA_FILE_EXTENSION,
 				"package " + DummyAndEmptyExample.class.getPackage().getName()
 				+ ";\n" + javaFile2String.getFileContent());
-		// 建立Nested try block example file
+		// 建立Nested try statement example file
 		javaFile2String = new JavaFileToString();
 		javaFile2String.read(NestedTryStatementExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javapProjectMaker.createJavaFile(

@@ -128,7 +128,7 @@ public class ClassModelTest {
 	}
 	
 	@Test
-	public void testSetCarelessCleanUp() {
+	public void testSetCarelessCleanup() {
 		int MAX = 10;
 		List<MarkerInfo> carelessList = null;
 		model.setEmptyCatchList(carelessList, "cleanMethod");

@@ -20,22 +20,22 @@ import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TryStatement;
 
-public class OverwrittenLeadExceptionVisitor extends ASTVisitor {
+public class ThrowsExceptionInFinallyBlockVisitor extends ASTVisitor {
 	private CompilationUnit root;
-	private List<MarkerInfo> overwrittenLeadList;
+	private List<MarkerInfo> throwsInFinallyList;
 	private boolean isTarget; // true:就會被檢查為OW；false:不檢查
 	private boolean inFinally;// true:在目前節點中最上層的finally block裡面；false:在其他任何地方
-	private boolean isDetectingOverwrittenLeadExceptionSmell;
+	private boolean isDetectingThrowsExceptionInFinallyBlockSmell;
 	private Block outterFinally;
 	
-	public OverwrittenLeadExceptionVisitor(CompilationUnit compilationUnit) {
-		overwrittenLeadList = new ArrayList<MarkerInfo>();
+	public ThrowsExceptionInFinallyBlockVisitor(CompilationUnit compilationUnit) {
+		throwsInFinallyList = new ArrayList<MarkerInfo>();
 		root = compilationUnit;
 		isTarget = false;
 		inFinally = false;
 		outterFinally = null;
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		isDetectingOverwrittenLeadExceptionSmell = smellSettings.isDetectingSmell(SmellSettings.SMELL_OVERWRITTENLEADEXCEPTION);
+		isDetectingThrowsExceptionInFinallyBlockSmell = smellSettings.isDetectingSmell(SmellSettings.SMELL_THROWSEXCEPTIONINFINALLYBLOCK);
 	}
 	
 	/**
@@ -45,7 +45,7 @@ public class OverwrittenLeadExceptionVisitor extends ASTVisitor {
 		isTarget = false;
 		inFinally = false;
 		outterFinally = null;
-		return isDetectingOverwrittenLeadExceptionSmell;
+		return isDetectingThrowsExceptionInFinallyBlockSmell;
 	}
 	
 	public boolean visit(TryStatement node) {
@@ -131,7 +131,7 @@ public class OverwrittenLeadExceptionVisitor extends ASTVisitor {
 						node.toString(), node.getStartPosition(),
 				root.getLineNumber(node.getStartPosition()), null);
 		markerInfo.setMethodThrownExceptions(node.resolveMethodBinding().getExceptionTypes());
-		overwrittenLeadList.add(markerInfo);
+		throwsInFinallyList.add(markerInfo);
 	}
 	
 	private void addMarkerInfo(SuperMethodInvocation node) {
@@ -139,7 +139,7 @@ public class OverwrittenLeadExceptionVisitor extends ASTVisitor {
 				null, node.toString(), node.getStartPosition(),
 				root.getLineNumber(node.getStartPosition()), null);
 		markerInfo.setMethodThrownExceptions(node.resolveMethodBinding().getExceptionTypes());
-		overwrittenLeadList.add(markerInfo);
+		throwsInFinallyList.add(markerInfo);
 	}
 	
 	private void addMarkerInfo(ThrowStatement node) {
@@ -147,10 +147,10 @@ public class OverwrittenLeadExceptionVisitor extends ASTVisitor {
 				(node.getExpression() != null)? node.getExpression().resolveTypeBinding() : null,
 						node.toString(), node.getStartPosition(),
 				root.getLineNumber(node.getStartPosition()), null);
-		overwrittenLeadList.add(markerInfo);
+		throwsInFinallyList.add(markerInfo);
 	}
 	
-	public List<MarkerInfo> getOverwrittenList() {
-		return overwrittenLeadList;
+	public List<MarkerInfo> getThrowsInFinallyList() {
+		return throwsInFinallyList;
 	}
 }

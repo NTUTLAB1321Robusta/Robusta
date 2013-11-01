@@ -17,7 +17,7 @@ import ntut.csie.csdet.visitor.DummyHandlerVisitor;
 import ntut.csie.csdet.visitor.EmptyCatchBlockVisitor;
 import ntut.csie.csdet.visitor.NestedTryStatementVisitor;
 import ntut.csie.csdet.visitor.OverLoggingDetector;
-import ntut.csie.csdet.visitor.OverwrittenLeadExceptionVisitor;
+import ntut.csie.csdet.visitor.ThrowsExceptionInFinallyBlockVisitor;
 import ntut.csie.csdet.visitor.SuppressWarningVisitor;
 import ntut.csie.csdet.visitor.UnprotectedMainProgramVisitor;
 import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
@@ -246,11 +246,11 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				// 目前method內的OverLogging資訊
 				List<MarkerInfo> overLoggingList = null;
 				
-				// 找尋專案中所有的Overwritten Lead Exception
+				// 找尋專案中所有的 ThrowsExceptionInFinallyBlock
 				// FIXME 未加入 SuppressSmell 的作用, 或許可參考 ReportBuilder 的作法
-				OverwrittenLeadExceptionVisitor oleVisitor = new OverwrittenLeadExceptionVisitor(root);
-				root.accept(oleVisitor);
-				List<MarkerInfo> overwrittenList = oleVisitor.getOverwrittenList();
+				ThrowsExceptionInFinallyBlockVisitor teifbVisitor = new ThrowsExceptionInFinallyBlockVisitor(root);
+				root.accept(teifbVisitor);
+				List<MarkerInfo> overwrittenList = teifbVisitor.getThrowsInFinallyList();
 				for(int oleIndex = 0; oleIndex < overwrittenList.size(); oleIndex++) {
 					MarkerInfo markerInfo = overwrittenList.get(oleIndex);
 					String errmsg = this.resource.getString("ex.smell.type.undealt") + markerInfo.getCodeSmellType() + this.resource.getString("ex.smell.type");

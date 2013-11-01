@@ -76,10 +76,10 @@
 			<td> <xsl:value-of select="EHSmellList/EmptyCatchBlock"></xsl:value-of> </td>
 			<td><xsl:value-of select="EHSmellList/DummyHandler"></xsl:value-of></td>
 			<td><xsl:value-of select="EHSmellList/UnprotectedMainProgram"></xsl:value-of></td>
-			<td><xsl:value-of select="EHSmellList/NestedTryBlock"></xsl:value-of></td>
-			<td><xsl:value-of select="EHSmellList/CarelessCleanUp"></xsl:value-of></td>
+			<td><xsl:value-of select="EHSmellList/NestedTryStatement"></xsl:value-of></td>
+			<td><xsl:value-of select="EHSmellList/CarelessCleanup"></xsl:value-of></td>
 			<td><xsl:value-of select="EHSmellList/OverLogging"></xsl:value-of></td>
-			<td><xsl:value-of select="EHSmellList/OverwrittenLeadException"></xsl:value-of></td>
+			<td><xsl:value-of select="EHSmellList/ThrowsExceptionInFinallyBlock"></xsl:value-of></td>
 			<td><xsl:value-of select="EHSmellList/Total"></xsl:value-of></td>
 		</tr>
 	</table>
@@ -159,10 +159,10 @@
 				<td><xsl:value-of select="EmptyCatchBlock"></xsl:value-of></td>
 				<td><xsl:value-of select="DummyHandler"></xsl:value-of></td>
 				<td><xsl:value-of select="UnprotectedMainProgram"></xsl:value-of></td>
-				<td><xsl:value-of select="NestedTryBlock"></xsl:value-of></td>
-				<td><xsl:value-of select="CarelessCleanUp"></xsl:value-of></td>
+				<td><xsl:value-of select="NestedTryStatement"></xsl:value-of></td>
+				<td><xsl:value-of select="CarelessCleanup"></xsl:value-of></td>
 				<td><xsl:value-of select="OverLogging"></xsl:value-of></td>
-				<td><xsl:value-of select="OverwrittenLeadException"></xsl:value-of></td>
+				<td><xsl:value-of select="ThrowsExceptionInFinallyBlock"></xsl:value-of></td>
 				<td><xsl:value-of select="PackageTotal"></xsl:value-of></td>
 			</tr>
 		</xsl:for-each>

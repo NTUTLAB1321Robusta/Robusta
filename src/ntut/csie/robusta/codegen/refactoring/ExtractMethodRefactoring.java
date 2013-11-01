@@ -3,7 +3,7 @@ package ntut.csie.robusta.codegen.refactoring;
 import java.util.List;
 
 import ntut.csie.csdet.data.MarkerInfo;
-import ntut.csie.csdet.visitor.OverwrittenLeadExceptionVisitor;
+import ntut.csie.csdet.visitor.ThrowsExceptionInFinallyBlockVisitor;
 import ntut.csie.jdt.util.NodeUtils;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 
@@ -184,9 +184,9 @@ public class ExtractMethodRefactoring extends Refactoring {
 	private void findSmellMessage() {
 		try {
 			String msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
-			OverwrittenLeadExceptionVisitor olVisitor = new OverwrittenLeadExceptionVisitor(actRoot);
+			ThrowsExceptionInFinallyBlockVisitor olVisitor = new ThrowsExceptionInFinallyBlockVisitor(actRoot);
 			actRoot.accept(olVisitor);
-			overwrittenList = olVisitor.getOverwrittenList();
+			overwrittenList = olVisitor.getThrowsInFinallyList();
 			markerInfo = overwrittenList.get(Integer.parseInt(msgIdx));
 		} catch (CoreException e) {
 			logger.error("[Extract Method] EXCEPTION ", e);
@@ -493,7 +493,7 @@ public class ExtractMethodRefactoring extends Refactoring {
 		//import java.util.logging.Logger;
 		addJavaLoggerLibrary();
 		
-		//private Logger logger = Logger.getLogger(CarelessCleanUpTest.class.getName());
+		//private Logger logger = Logger.getLogger(CarelessCleanupTest.class.getName());
 		addLoggerField(ast);
 		
 		//設定catch的body的Method Invocation
@@ -537,7 +537,7 @@ public class ExtractMethodRefactoring extends Refactoring {
 	}
 	
 	/**
-	 * 加入private Logger logger = Logger.getLogger(CarelessCleanUpTest.class.getName());
+	 * 加入private Logger logger = Logger.getLogger(CarelessCleanupTest.class.getName());
 	 * @param ast
 	 */
 	private void addLoggerField(AST ast) {

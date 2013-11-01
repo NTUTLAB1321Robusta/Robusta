@@ -4,7 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class CarelessCleanUpPageTest {
+public class CarelessCleanupPageTest {
 
 	@Before
 	public void setUp() throws Exception {
@@ -20,7 +20,7 @@ public class CarelessCleanUpPageTest {
 	}
 
 	@Test
-	public void testCarelessCleanUpPage() {
+	public void testCarelessCleanupPage() {
 //		fail("Not yet implemented");
 	}
 

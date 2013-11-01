@@ -54,12 +54,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class CarelessCleanUpRefactorTest {
+public class CarelessCleanupRefactorTest {
 	JavaFileToString javaFile2String;
 	JavaProjectMaker javaProjectMaker;
 	CompilationUnit compilationUnit;
 	SmellSettings smellSettings;
-	CarelessCleanUpRefactor refactor;
+	CarelessCleanupRefactor refactor;
 	IJavaElement javaElement;
 	IMarker tempMarker;
 
@@ -142,7 +142,7 @@ public class CarelessCleanUpRefactorTest {
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
 		
-		refactor = new CarelessCleanUpRefactor();
+		refactor = new CarelessCleanupRefactor();
 	}
 
 	@After
@@ -160,13 +160,13 @@ public class CarelessCleanUpRefactorTest {
 		tempMarker.setAttribute(RLMarkerAttribute.RL_METHOD_INDEX, "6");
 		refactor.setMarker(tempMarker);
 		
-		Field actOpenable = CarelessCleanUpRefactor.class.getDeclaredField("actOpenable");
+		Field actOpenable = CarelessCleanupRefactor.class.getDeclaredField("actOpenable");
 		actOpenable.setAccessible(true);
 		
-		Field actRoot = CarelessCleanUpRefactor.class.getDeclaredField("actRoot");
+		Field actRoot = CarelessCleanupRefactor.class.getDeclaredField("actRoot");
 		actRoot.setAccessible(true);
 		
-		Field currentMethodNode = CarelessCleanUpRefactor.class.getDeclaredField("currentMethodNode");
+		Field currentMethodNode = CarelessCleanupRefactor.class.getDeclaredField("currentMethodNode");
 		currentMethodNode.setAccessible(true);
 		
 		// check precondition
@@ -175,7 +175,7 @@ public class CarelessCleanUpRefactorTest {
 		assertNull(currentMethodNode.get(refactor));
 		
 		// test
-		Method findMethod = CarelessCleanUpRefactor.class.getDeclaredMethod("findMethod", IResource.class);
+		Method findMethod = CarelessCleanupRefactor.class.getDeclaredMethod("findMethod", IResource.class);
 		findMethod.setAccessible(true);
 		assertTrue((Boolean)findMethod.invoke(refactor, javaElement.getResource()));
 		
@@ -248,7 +248,7 @@ public class CarelessCleanUpRefactorTest {
 		String specialName1 = "@Name";
 		String specialName2 = "name%";
 		
-		Field methodName = CarelessCleanUpRefactor.class.getDeclaredField("methodName");
+		Field methodName = CarelessCleanupRefactor.class.getDeclaredField("methodName");
 		methodName.setAccessible(true);
 		
 		assertEquals(	"<FATALERROR\n" +
@@ -288,7 +288,7 @@ public class CarelessCleanUpRefactorTest {
 	public void testSetNewType() throws Exception {
 		String someType = "somethingType";
 		
-		Field modifierType = CarelessCleanUpRefactor.class.getDeclaredField("modifierType");
+		Field modifierType = CarelessCleanupRefactor.class.getDeclaredField("modifierType");
 		modifierType.setAccessible(true);
 		
 		assertNull(modifierType.get(refactor));
@@ -304,7 +304,7 @@ public class CarelessCleanUpRefactorTest {
 		
 		String log = "e.printStackTrace()";
 		
-		Field logType = CarelessCleanUpRefactor.class.getDeclaredField("logType");
+		Field logType = CarelessCleanupRefactor.class.getDeclaredField("logType");
 		logType.setAccessible(true);
 		
 		assertNull(logType.get(refactor));
@@ -327,11 +327,11 @@ public class CarelessCleanUpRefactorTest {
 		tempMarker.setAttribute(RLMarkerAttribute.RL_MSG_INDEX, "11");
 		refactor.setMarker(tempMarker);
 		
-		Field CarelessCleanUpList = CarelessCleanUpRefactor.class.getDeclaredField("CarelessCleanUpList");
-		CarelessCleanUpList.setAccessible(true);
-		CarelessCleanUpList.set(refactor, visitor.getCarelessCleanupList());
+		Field carelessCleanupList = CarelessCleanupRefactor.class.getDeclaredField("carelessCleanupList");
+		carelessCleanupList.setAccessible(true);
+		carelessCleanupList.set(refactor, visitor.getCarelessCleanupList());
 		
-		Method findSmellMessage = CarelessCleanUpRefactor.class.getDeclaredMethod("findSmellMessage");
+		Method findSmellMessage = CarelessCleanupRefactor.class.getDeclaredMethod("findSmellMessage");
 		findSmellMessage.setAccessible(true);
 		findSmellMessage.invoke(refactor);
 		
@@ -340,7 +340,7 @@ public class CarelessCleanUpRefactorTest {
 		MethodDeclaration md = (MethodDeclaration)mVisitor.getMethodList().get(11);
 		
 		// delete bad smell in the if statement with size == 1
-		Method detectIfStatementSize = CarelessCleanUpRefactor.class.getDeclaredMethod("detectIfStatementSize", Block.class);
+		Method detectIfStatementSize = CarelessCleanupRefactor.class.getDeclaredMethod("detectIfStatementSize", Block.class);
 		detectIfStatementSize.setAccessible(true);
 		assertTrue((Boolean)detectIfStatementSize.invoke(refactor, ((TryStatement)md.getBody().statements().get(0)).getBody()));
 		
@@ -356,7 +356,7 @@ public class CarelessCleanUpRefactorTest {
 		// delete bad smell in the if statement with size == 1 and non-block
 		
 		MarkerInfo marker = new MarkerInfo(null, null, null, 8364, 280, null);
-		Field smellMessage = CarelessCleanUpRefactor.class.getDeclaredField("smellMessage");
+		Field smellMessage = CarelessCleanupRefactor.class.getDeclaredField("smellMessage");
 		smellMessage.setAccessible(true);
 		smellMessage.set(refactor, marker);
 		
@@ -395,26 +395,26 @@ public class CarelessCleanUpRefactorTest {
 		CarelessCleanupVisitor visitor = new CarelessCleanupVisitor(compilationUnit);
 		compilationUnit.accept(visitor);
 		
-		Field CarelessCleanUpList = CarelessCleanUpRefactor.class.getDeclaredField("CarelessCleanUpList");
-		CarelessCleanUpList.setAccessible(true);
-		CarelessCleanUpList.set(refactor, visitor.getCarelessCleanupList());
+		Field carelessCleanupList = CarelessCleanupRefactor.class.getDeclaredField("carelessCleanupList");
+		carelessCleanupList.setAccessible(true);
+		carelessCleanupList.set(refactor, visitor.getCarelessCleanupList());
 	}
 	
 	@Test
 	public void testFindTryStatement() throws Exception {
 		MethodDeclaration md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "y_closeStreamWithElseBigTry");
 		
-		Field currentMethodNode = CarelessCleanUpRefactor.class.getDeclaredField("currentMethodNode");
+		Field currentMethodNode = CarelessCleanupRefactor.class.getDeclaredField("currentMethodNode");
 		currentMethodNode.setAccessible(true);
 		currentMethodNode.set(refactor, md);
 		
 		MarkerInfo marker = new MarkerInfo(null, null, null, 7349, 238, null);
-		Field smellMessage = CarelessCleanUpRefactor.class.getDeclaredField("smellMessage");
+		Field smellMessage = CarelessCleanupRefactor.class.getDeclaredField("smellMessage");
 		smellMessage.setAccessible(true);
 		smellMessage.set(refactor, marker);
 		
 		// if statement contain bad smell
-		Method findTryStatement = CarelessCleanUpRefactor.class.getDeclaredMethod("findTryStatement");
+		Method findTryStatement = CarelessCleanupRefactor.class.getDeclaredMethod("findTryStatement");
 		findTryStatement.setAccessible(true);
 		assertEquals(	"try {\n" +
 						"  if (fileOutputStream != null) {\n" +
@@ -473,7 +473,7 @@ public class CarelessCleanUpRefactorTest {
 		// check precondition
 		assertNull(tryStatement.getFinally());
 		// test
-		Method addFinallyBlock = CarelessCleanUpRefactor.class.getDeclaredMethod("addFinallyBlock", AST.class, TryStatement.class);
+		Method addFinallyBlock = CarelessCleanupRefactor.class.getDeclaredMethod("addFinallyBlock", AST.class, TryStatement.class);
 		addFinallyBlock.setAccessible(true);
 		addFinallyBlock.invoke(refactor, md.getAST(), tryStatement);
 		// check postcondition
@@ -489,23 +489,23 @@ public class CarelessCleanUpRefactorTest {
 		 * 關閉串流的程式碼startposition是1580
 		 */
 		MarkerInfo marker = new MarkerInfo(null, null, null, 1580, 54, null);
-		Field smellMessage = CarelessCleanUpRefactor.class.getDeclaredField("smellMessage");
+		Field smellMessage = CarelessCleanupRefactor.class.getDeclaredField("smellMessage");
 		smellMessage.setAccessible(true);
 		smellMessage.set(refactor, marker);
 		
-		Method deleteBlockStatement = CarelessCleanUpRefactor.class.getDeclaredMethod("deleteBlockStatement", Block.class, AST.class);
+		Method deleteBlockStatement = CarelessCleanupRefactor.class.getDeclaredMethod("deleteBlockStatement", Block.class, AST.class);
 		deleteBlockStatement.setAccessible(true);
 		assertTrue((Boolean)deleteBlockStatement.invoke(refactor, tryStatement.getBody(), md.getAST()));
 	}
 	
 	@Test
-	public void testDeleteCleanUpLine() throws Exception {
+	public void testDeleteCleanupLine() throws Exception {
 		String nameOfWillBeTestedMethod = "y_closeStreamWithMultiStatementInThenBigTry";
 		MethodDeclaration md = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, nameOfWillBeTestedMethod);
 		TryStatement tryStatement = ASTNodeFinder.getTryStatementNodeListByMethodDeclarationName(compilationUnit, nameOfWillBeTestedMethod).get(0);
 		
 		MarkerInfo marker = new MarkerInfo(null, null, null, 7854-1, 256, null);
-		Field smellMessage = CarelessCleanUpRefactor.class.getDeclaredField("smellMessage");
+		Field smellMessage = CarelessCleanupRefactor.class.getDeclaredField("smellMessage");
 		smellMessage.setAccessible(true);
 		smellMessage.set(refactor, marker);
 		
@@ -521,9 +521,9 @@ public class CarelessCleanUpRefactorTest {
 						"}\n", tryStatement.toString());
 		
 		// delete bad smell in try block
-		Method deleteCleanUpLine = CarelessCleanUpRefactor.class.getDeclaredMethod("deleteCleanUpLine", AST.class, TryStatement.class);
-		deleteCleanUpLine.setAccessible(true);
-		deleteCleanUpLine.invoke(refactor, md.getAST(), tryStatement);
+		Method deleteCleanupLine = CarelessCleanupRefactor.class.getDeclaredMethod("deleteCleanupLine", AST.class, TryStatement.class);
+		deleteCleanupLine.setAccessible(true);
+		deleteCleanupLine.invoke(refactor, md.getAST(), tryStatement);
 		
 		// check postcondition
 		assertEquals(	"try {\n" +
@@ -556,7 +556,7 @@ public class CarelessCleanUpRefactorTest {
 						"}\n", tryStatement.toString());
 		
 		// delete bad smell in catch block
-		deleteCleanUpLine.invoke(refactor, md.getAST(), tryStatement);
+		deleteCleanupLine.invoke(refactor, md.getAST(), tryStatement);
 		
 		// check postcondition
 		assertEquals(	"try {\n" +
@@ -595,7 +595,7 @@ public class CarelessCleanUpRefactorTest {
 						"}\n", tryStatement.toString());
 		
 		// delete bad smell in finally block
-		deleteCleanUpLine.invoke(refactor, md.getAST(), tryStatement);
+		deleteCleanupLine.invoke(refactor, md.getAST(), tryStatement);
 		
 		// check postcondition
 		assertEquals(	"try {\n" +
@@ -618,17 +618,17 @@ public class CarelessCleanUpRefactorTest {
 		MethodDeclaration md = (MethodDeclaration)methodCollector.getMethodList().get(30);
 		TryStatement tryStatement = (TryStatement)md.getBody().statements().get(0);
 		
-		Field currentMethodNode = CarelessCleanUpRefactor.class.getDeclaredField("currentMethodNode");
+		Field currentMethodNode = CarelessCleanupRefactor.class.getDeclaredField("currentMethodNode");
 		currentMethodNode.setAccessible(true);
 		currentMethodNode.set(refactor, md);
 		
-		Field tryIndex = CarelessCleanUpRefactor.class.getDeclaredField("tryIndex");
+		Field tryIndex = CarelessCleanupRefactor.class.getDeclaredField("tryIndex");
 		tryIndex.setAccessible(true);
 		tryIndex.set(refactor, 0);
 		
-		Field cleanUpExpressionStatement = CarelessCleanUpRefactor.class.getDeclaredField("cleanUpExpressionStatement");
-		cleanUpExpressionStatement.setAccessible(true);
-		cleanUpExpressionStatement.set(refactor, tryStatement.getBody().statements().get(2));
+		Field cleanupExpressionStatement = CarelessCleanupRefactor.class.getDeclaredField("cleanupExpressionStatement");
+		cleanupExpressionStatement.setAccessible(true);
+		cleanupExpressionStatement.set(refactor, tryStatement.getBody().statements().get(2));
 		
 		// check precondition
 		assertEquals(	"@Robustness(value={@RTag(level=1,exception=java.io.IOException.class)}) public void moveInstance() throws IOException {\n" +
@@ -643,7 +643,7 @@ public class CarelessCleanUpRefactorTest {
 						"}\n", md.toString());
 		
 		// test
-		Method moveInstance = CarelessCleanUpRefactor.class.getDeclaredMethod("moveInstance", AST.class, TryStatement.class);
+		Method moveInstance = CarelessCleanupRefactor.class.getDeclaredMethod("moveInstance", AST.class, TryStatement.class);
 		moveInstance.setAccessible(true);
 		moveInstance.invoke(refactor, md.getAST(), tryStatement);
 		
@@ -668,7 +668,7 @@ public class CarelessCleanUpRefactorTest {
 	 */
 	@Test
 	public void testAddImportPackage() throws Exception {
-		Field actRoot = CarelessCleanUpRefactor.class.getDeclaredField("actRoot");
+		Field actRoot = CarelessCleanupRefactor.class.getDeclaredField("actRoot");
 		actRoot.setAccessible(true);
 		actRoot.set(refactor, compilationUnit);
 		
@@ -690,7 +690,7 @@ public class CarelessCleanUpRefactorTest {
 		imp.setName(compilationUnit.getAST().newName("java.io.IOError"));
 		compilationUnit.imports().add(imp);
 		// test
-		Method addImportPackage = CarelessCleanUpRefactor.class.getDeclaredMethod("addImportPackage", IType.class);
+		Method addImportPackage = CarelessCleanupRefactor.class.getDeclaredMethod("addImportPackage", IType.class);
 		addImportPackage.setAccessible(true);
 		addImportPackage.invoke(refactor, RuntimeEnvironmentProjectReader.getType(javaProjectMaker.getProjectName(), UserDefinedCarelessCleanupDog.class.getPackage().getName(), UserDefinedCarelessCleanupDog.class.getSimpleName()));
 		// check postcondition
@@ -724,7 +724,7 @@ public class CarelessCleanUpRefactorTest {
 		// check precondition
 		assertEquals("fi.close();\n", mi.toString());
 		// test
-		Method createNewMethod = CarelessCleanUpRefactor.class.getDeclaredMethod("createNewMethod", AST.class, Expression.class, String.class);
+		Method createNewMethod = CarelessCleanupRefactor.class.getDeclaredMethod("createNewMethod", AST.class, Expression.class, String.class);
 		createNewMethod.setAccessible(true);
 		// check postcondition
 		assertEquals("close(fi)", createNewMethod.invoke(refactor, md.getAST(), ((MethodInvocation)mi.getExpression()).getExpression(), "close").toString());
@@ -740,34 +740,34 @@ public class CarelessCleanUpRefactorTest {
 		Block finallyBlock = md.getAST().newBlock();
 		tryStatement.setFinally(finallyBlock);
 		
-		Field actRoot = CarelessCleanUpRefactor.class.getDeclaredField("actRoot");
+		Field actRoot = CarelessCleanupRefactor.class.getDeclaredField("actRoot");
 		actRoot.setAccessible(true);
 		actRoot.set(refactor, compilationUnit);
 		
-		Field currentMethodNode = CarelessCleanUpRefactor.class.getDeclaredField("currentMethodNode");
+		Field currentMethodNode = CarelessCleanupRefactor.class.getDeclaredField("currentMethodNode");
 		currentMethodNode.setAccessible(true);
 		currentMethodNode.set(refactor, md);
 		
-		Field tryIndex = CarelessCleanUpRefactor.class.getDeclaredField("tryIndex");
+		Field tryIndex = CarelessCleanupRefactor.class.getDeclaredField("tryIndex");
 		tryIndex.setAccessible(true);
 		tryIndex.set(refactor, 0);
 		
-		Field methodName = CarelessCleanUpRefactor.class.getDeclaredField("methodName");
+		Field methodName = CarelessCleanupRefactor.class.getDeclaredField("methodName");
 		methodName.setAccessible(true);
 		methodName.set(refactor, "close");
 		
-		Field modifierType = CarelessCleanUpRefactor.class.getDeclaredField("modifierType");
+		Field modifierType = CarelessCleanupRefactor.class.getDeclaredField("modifierType");
 		modifierType.setAccessible(true);
 		modifierType.set(refactor, "private");
 		
-		Field logType = CarelessCleanUpRefactor.class.getDeclaredField("logType");
+		Field logType = CarelessCleanupRefactor.class.getDeclaredField("logType");
 		logType.setAccessible(true);
 		logType.set(refactor, "e.printStackTrace();");
 		
-		Field cleanUpExpressionStatement = CarelessCleanUpRefactor.class.getDeclaredField("cleanUpExpressionStatement");
-		cleanUpExpressionStatement.setAccessible(true);
+		Field cleanupExpressionStatement = CarelessCleanupRefactor.class.getDeclaredField("cleanupExpressionStatement");
+		cleanupExpressionStatement.setAccessible(true);
 		ExpressionStatement es = (ExpressionStatement)tryStatement.getBody().statements().remove(2);
-		cleanUpExpressionStatement.set(refactor, es);
+		cleanupExpressionStatement.set(refactor, es);
 		
 		// check precondition
 		assertEquals(	"/** \n" +
@@ -792,7 +792,7 @@ public class CarelessCleanUpRefactorTest {
 						"}\n", md.toString());
 		assertEquals("fileOutputStream.close();\n", es.toString());
 		// test
-		Method addMethodInFinally = CarelessCleanUpRefactor.class.getDeclaredMethod("addMethodInFinally", AST.class, Block.class);
+		Method addMethodInFinally = CarelessCleanupRefactor.class.getDeclaredMethod("addMethodInFinally", AST.class, Block.class);
 		addMethodInFinally.setAccessible(true);
 		addMethodInFinally.invoke(refactor, md.getAST(), tryStatement.getFinally());
 		// check postcondition
@@ -823,7 +823,7 @@ public class CarelessCleanUpRefactorTest {
 		tryStatement = (TryStatement)md.getBody().statements().get(1);
 		currentMethodNode.set(refactor, md);
 		es = (ExpressionStatement)((CatchClause)tryStatement.catchClauses().get(0)).getBody().statements().remove(0);
-		cleanUpExpressionStatement.set(refactor, es);
+		cleanupExpressionStatement.set(refactor, es);
 		// test
 		addMethodInFinally.invoke(refactor, md.getAST(), tryStatement.getFinally());
 		// check postcondition
@@ -854,18 +854,18 @@ public class CarelessCleanUpRefactorTest {
 		Block finallyBlock = md.getAST().newBlock();
 		tryStatement.setFinally(finallyBlock);
 		
-		Field currentMethodNode = CarelessCleanUpRefactor.class.getDeclaredField("currentMethodNode");
+		Field currentMethodNode = CarelessCleanupRefactor.class.getDeclaredField("currentMethodNode");
 		currentMethodNode.setAccessible(true);
 		currentMethodNode.set(refactor, md);
 
-		Field cleanUpExpressionStatement = CarelessCleanUpRefactor.class.getDeclaredField("cleanUpExpressionStatement");
-		cleanUpExpressionStatement.setAccessible(true);
+		Field cleanupExpressionStatement = CarelessCleanupRefactor.class.getDeclaredField("cleanupExpressionStatement");
+		cleanupExpressionStatement.setAccessible(true);
 		
 		ExpressionStatement es = (ExpressionStatement)tryStatement.getBody().statements().remove(2);
-		cleanUpExpressionStatement.set(refactor, es);
+		cleanupExpressionStatement.set(refactor, es);
 		refactor.setIsRefactoringMethodExist(true);
 		
-		Field existingMethod = CarelessCleanUpRefactor.class.getDeclaredField("existingMethod");
+		Field existingMethod = CarelessCleanupRefactor.class.getDeclaredField("existingMethod");
 		existingMethod.setAccessible(true);
 		IMethod method = RuntimeEnvironmentProjectReader.getType(javaProjectMaker.getProjectName(), CarelessCleanupExample.class.getPackage().getName(), CarelessCleanupExample.class.getSimpleName()).getMethod("closeStreamWithoutThrowingExceptionBigTry", new String[]{"(Ljava.io.FileOutputStream;)V"});
 		existingMethod.set(refactor, method);
@@ -884,7 +884,7 @@ public class CarelessCleanUpRefactorTest {
 						"}\n", md.toString());
 		assertEquals("fi.close();\n", es.toString());
 		// test
-		Method addMethodInFinally = CarelessCleanUpRefactor.class.getDeclaredMethod("addMethodInFinally", AST.class, Block.class);
+		Method addMethodInFinally = CarelessCleanupRefactor.class.getDeclaredMethod("addMethodInFinally", AST.class, Block.class);
 		addMethodInFinally.setAccessible(true);
 		fail("Because this test case use private method \"createCallerMethod\", which is not tested yet, so we don't test it.");
 		addMethodInFinally.invoke(refactor, md.getAST(), tryStatement.getFinally());

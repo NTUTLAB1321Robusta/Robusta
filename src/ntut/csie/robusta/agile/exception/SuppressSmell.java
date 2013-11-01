@@ -22,20 +22,20 @@ public @interface SuppressSmell {
 	//Dummy Handler的type
 	public static final String CS_DUMMY_HANDLER = "Dummy_Handler";
 	
-	//Nested Try Block的type
-	public static final String CS_NESTED_TRY_BLOCK = "Nested_Try_Statement";
+	//Nested Try Statement的type
+	public static final String CS_NESTED_TRY_STATEMENT = "Nested_Try_Statement";
 	
 	//Unprotected Main Program
 	public static final String CS_UNPROTECTED_MAIN = "Unprotected_Main_Program";
 	
-	//Careless CleanUp
+	//Careless Cleanup
 	public static final String CS_CARELESS_CLEANUP = "Careless_Cleanup";
 	
 	//Over Logging
 	public static final String CS_OVER_LOGGING = "Over_Logging";
 	
 	public static final String[] CS_TOTAL_TYPE = new String[]{ CS_INGNORE_EXCEPTION,
-		CS_DUMMY_HANDLER, CS_NESTED_TRY_BLOCK, CS_UNPROTECTED_MAIN, CS_CARELESS_CLEANUP, CS_OVER_LOGGING};
+		CS_DUMMY_HANDLER, CS_NESTED_TRY_STATEMENT, CS_UNPROTECTED_MAIN, CS_CARELESS_CLEANUP, CS_OVER_LOGGING};
 
 	public static final String[] CS_CATCH_TYPE = new String[]{ CS_INGNORE_EXCEPTION,
 		CS_DUMMY_HANDLER, CS_OVER_LOGGING, CS_CARELESS_CLEANUP};*/

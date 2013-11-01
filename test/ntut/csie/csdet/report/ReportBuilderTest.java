@@ -491,7 +491,7 @@ public class ReportBuilderTest {
 		assertEquals(25, reportModel.getTryCounter());
 		assertEquals(25, reportModel.getCatchCounter());
 		assertEquals(2, reportModel.getFinallyCounter());
-		assertEquals(0, reportModel.getCarelessCleanUpTotalSize());
+		assertEquals(0, reportModel.getCarelessCleanupTotalSize());
 		//19 dummy handler in methods and 1 dummy handler in an initializer
 		assertEquals(20, reportModel.getDummyTotalSize());
 		assertEquals(0, reportModel.getEmptyCatchTotalSize());
