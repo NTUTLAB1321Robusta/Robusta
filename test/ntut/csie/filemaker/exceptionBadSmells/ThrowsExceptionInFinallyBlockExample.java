@@ -26,7 +26,7 @@ public class ThrowsExceptionInFinallyBlockExample {
 	}
 	
 	/**
-	 * 會被OverwrittenLeadExceptionVisitor在fileOutputStream.close();加上mark
+	 * fileOutputStream.close(); will be mark
 	 * @param context
 	 * @param outputFile
 	 * @throws IOException
@@ -41,12 +41,12 @@ public class ThrowsExceptionInFinallyBlockExample {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} finally {
-			fileOutputStream.close();	// Overwritten
+			fileOutputStream.close();	// ThrowsInFinally
 		}
 	}
 	
 	/**
-	 * 會被OverwrittenLeadExceptionVisitor在fileOutputStream.close();加上mark
+	 * fileOutputStream.close(); will be mark
 	 * @param context
 	 * @param outputFile
 	 * @throws IOException
@@ -62,12 +62,12 @@ public class ThrowsExceptionInFinallyBlockExample {
 			throw new RuntimeException(e);
 		} finally {
 			if(fileOutputStream != null)
-				fileOutputStream.close();	// Overwritten
+				fileOutputStream.close();	// ThrowsInFinally
 		}
 	}
 	
 	/**
-	 * 會被OverwrittenLeadExceptionVisitor在fileOutputStream.close();加上mark
+	 * fileOutputStream.close(); will be mark
 	 * @param context
 	 * @param outputFile
 	 * @throws IOException
@@ -83,13 +83,13 @@ public class ThrowsExceptionInFinallyBlockExample {
 			throw new RuntimeException(e);
 		} finally {
 			while(fileOutputStream != null) {
-				fileOutputStream.close();	// Overwritten
+				fileOutputStream.close();	// ThrowsInFinally
 			}
 		}
 	}
 	
 	/**
-	 * 會被OverwrittenLeadExceptionVisitor在fileOutputStream.close();加上mark
+	 * fileOutputStream.close(); will be mark
 	 * @param context
 	 * @param outputFile
 	 * @throws IOException
@@ -107,7 +107,7 @@ public class ThrowsExceptionInFinallyBlockExample {
 			try {
 				fileOutputStream.close();
 			} catch(IOException e) {
-				throw new RuntimeException(e);	// Overwritten
+				throw new RuntimeException(e);	// ThrowsInFinally
 			}
 		}
 	}
@@ -131,9 +131,9 @@ public class ThrowsExceptionInFinallyBlockExample {
 			try {
 				fileOutputStream.close();
 			} catch(IOException e) {
-				throw new RuntimeException(e);	// Overwritten
+				throw new RuntimeException(e);	// ThrowsInFinally
 			} finally {
-				fileOutputStream.close();	// Overwritten
+				fileOutputStream.close();	// ThrowsInFinally
 			}
 		}
 	}
@@ -155,9 +155,9 @@ public class ThrowsExceptionInFinallyBlockExample {
 			throw new RuntimeException(e);
 		} finally {
 			try {
-				fileOutputStream.close();	// Overwritten
+				fileOutputStream.close();	// ThrowsInFinally
 			} finally {
-				fileOutputStream.close();	// Overwritten
+				fileOutputStream.close();	// ThrowsInFinally
 			}
 		}
 	}
@@ -184,7 +184,7 @@ public class ThrowsExceptionInFinallyBlockExample {
 			} catch(IOException e1) {
 				throw new RuntimeException(e1);
 			} finally {
-				fileOutputStream2.close();	// Overwritten
+				fileOutputStream2.close();	// ThrowsInFinally
 			}
 			throw e;
 		} finally {
@@ -195,9 +195,9 @@ public class ThrowsExceptionInFinallyBlockExample {
 			} catch(FileNotFoundException e) {
 				e.notify();
 			} catch(IOException e) { 
-				throw new RuntimeException(e);	// Overwritten
+				throw new RuntimeException(e);	// ThrowsInFinally
 			} finally {
-				fileOutputStream.close();	// Overwritten
+				fileOutputStream.close();	// ThrowsInFinally
 			}
 		}
 	}
@@ -232,9 +232,9 @@ public class ThrowsExceptionInFinallyBlockExample {
 			} catch(FileNotFoundException e) {
 				e.notify();
 			} catch(IOException e) { 
-				throw new RuntimeException(e);	// Overwritten
+				throw new RuntimeException(e);	// ThrowsInFinally
 			} finally {
-				fileOutputStream.close();	// Overwritten
+				fileOutputStream.close();	// ThrowsInFinally
 			}
 		}
 	}
@@ -262,18 +262,18 @@ public class ThrowsExceptionInFinallyBlockExample {
 			} catch(FileNotFoundException e) {
 				e.notify();
 			} catch(IOException e) { 
-				throw new RuntimeException(e);	// Overwritten
+				throw new RuntimeException(e);	// ThrowsInFinally
 			} finally {
-				fileOutputStream.close();	// Overwritten
+				fileOutputStream.close();	// ThrowsInFinally
 				try {
 					fileOutputStream3 = new FileOutputStream(outputFile);
 					fileOutputStream3.write(context);
 				} catch(FileNotFoundException e) {
-					throw new RuntimeException(e);	// Overwritten
+					throw new RuntimeException(e);	// ThrowsInFinally
 				} catch(IOException e) {
-					throw new RuntimeException(e);	// Overwritten
+					throw new RuntimeException(e);	// ThrowsInFinally
 				} finally {
-					fileOutputStream3.close();	// Overwritten
+					fileOutputStream3.close();	// ThrowsInFinally
 				}
 			}
 		}
@@ -307,7 +307,7 @@ public class ThrowsExceptionInFinallyBlockExample {
 				} catch (FileNotFoundException e1) {
 					e1.printStackTrace();
 				} catch (IOException e1) {
-					throw new RuntimeException(e1);	// Overwritten
+					throw new RuntimeException(e1);	// ThrowsInFinally
 				} finally {
 					try {
 						fileOutputStream3.close();
@@ -325,7 +325,7 @@ public class ThrowsExceptionInFinallyBlockExample {
 			} catch(FileNotFoundException e) {
 				e.notify();
 			} catch(IOException e) { 
-				throw new RuntimeException(e);	// Overwritten
+				throw new RuntimeException(e);	// ThrowsInFinally
 			} finally {
 				try {
 					fileOutputStream.close();
@@ -337,7 +337,7 @@ public class ThrowsExceptionInFinallyBlockExample {
 	}
 	
 	/**
-	 * 不會被OverwrittenLeadExceptionVisitor加上mark
+	 * There is not any ThrowsInFinally
 	 * @param context
 	 * @param outputFile
 	 * @throws IOException
@@ -433,12 +433,12 @@ public class ThrowsExceptionInFinallyBlockExample {
 					try {
 						fileOutputStream3.close();
 					} catch (IOException e2) {
-						throw e2;					// Overwritten
+						throw e2;					// ThrowsInFinally
 					}
 				}
 				throw e1;
 			} finally {
-				fileOutputStream.close();			// Overwritten
+				fileOutputStream.close();			// ThrowsInFinally
 			}
 			throw e;
 		} finally {
@@ -449,7 +449,7 @@ public class ThrowsExceptionInFinallyBlockExample {
 			} catch(FileNotFoundException e) {
 				e.notify();
 			} catch(IOException e) { 
-				throw new RuntimeException(e);	// Overwritten
+				throw new RuntimeException(e);	// ThrowsInFinally
 			} finally {
 				try {
 					fileOutputStream.close();
@@ -485,26 +485,26 @@ public class ThrowsExceptionInFinallyBlockExample {
 					fileOutputStream3 = new FileOutputStream(outputFile);
 					fileOutputStream3.write(context);
 				} catch(FileNotFoundException e1) {
-					throw new RuntimeException(e1);	// Overwritten
+					throw new RuntimeException(e1);	// ThrowsInFinally
 				} catch(IOException e1) {
-					throw new RuntimeException(e1);	// Overwritten
+					throw new RuntimeException(e1);	// ThrowsInFinally
 				} finally {
-					fileOutputStream3.close();	// Overwritten
+					fileOutputStream3.close();	// ThrowsInFinally
 				}
 			} catch(IOException e) { 
-				throw new RuntimeException(e);	// Overwritten
+				throw new RuntimeException(e);	// ThrowsInFinally
 			} finally {
-				fileOutputStream.close();	// Overwritten
+				fileOutputStream.close();	// ThrowsInFinally
 			}
 		}
 	}
 
 	/**
-	 * 測試包含try內的例外，只要會覆蓋前面的例外，都會被偵測出來
+	 * 測試包含Finally內的例外，只要會覆蓋前面的例外，都會被偵測出來
 	 * 
 	 * @Author pig
 	 */
-	public void overwrittenInTryBlock(String filePath, byte[] context)
+	public void throwsInFinallyInFinallyBlock(String filePath, byte[] context)
 			throws IOException {
 		FileOutputStream fis = null;
 		try {
@@ -512,15 +512,15 @@ public class ThrowsExceptionInFinallyBlockExample {
 			fis.write(context);
 		} finally {
 			try {
-				fis.write(context); // Overwritten
+				fis.write(context); // ThrowsInFinally
 			} finally {
-				fis.close(); // Overwritten
+				fis.close(); // ThrowsInFinally
 			}
 		}
 	}
 
 	/**
-	 * 極端例子，即使完全沒動作的 try block，只要 finally 內有例外拋出，雖然實際上不會發生 overwritten lead exception
+	 * 極端例子，即使完全沒動作的 try block，只要 finally 內有例外拋出，雖然實際上不會發生 ThrowsInFinally
 	 * 但因為偵測上的限制，工具暫時認為是 OW 壞味道
 	 * @Author pig
 	 */
@@ -528,13 +528,13 @@ public class ThrowsExceptionInFinallyBlockExample {
 	public void throwButWithoutExceptionBeforeWithDH() throws IOException {
 		try {
 		} finally {
-			throw new IOException();  // Overwritten
+			throw new IOException();  // ThrowsInFinally
 		}
 	}
 
 	/**
 	 * 雖然 finally 內有例外拋出，但因為 Catch 了 Exception 並只做 Dummy Handle
-	 * 所以實際上不會發生 overwritten lead exception
+	 * 所以實際上不會發生 ThrowsInFinally
 	 * 但因為偵測上的限制，工具暫時認為是 OW 壞味道
 	 * 
 	 * @Author pig
@@ -548,13 +548,13 @@ public class ThrowsExceptionInFinallyBlockExample {
 		} catch (Exception e) {
 			System.out.println("An exception in try block");
 		} finally {
-			fis.close(); // Overwritten
+			fis.close(); // ThrowsInFinally
 		}
 	}
 
 	/**
 	 * 雖然 finally 內有例外拋出，但因為 Catch 了 Exception 並是 Empty Catch Block
-	 * 所以實際上不會發生 overwritten lead exception
+	 * 所以實際上不會發生 ThrowsInFinally
 	 * 但因為偵測上的限制，工具暫時認為是 OW 壞味道
 	 * 
 	 * @Author pig
@@ -567,7 +567,7 @@ public class ThrowsExceptionInFinallyBlockExample {
 			fis.write(context);
 		} catch (Exception e) {
 		} finally {
-			fis.close(); // Overwritten
+			fis.close(); // ThrowsInFinally
 		}
 	}
 
@@ -588,7 +588,7 @@ public class ThrowsExceptionInFinallyBlockExample {
 				throw new IOException();
 			}
 		} catch (Exception e) {
-			throw new IOException();  // Not Overwritten
+			throw new IOException();  // Not ThrowsInFinally
 		}
 	}
 
@@ -612,8 +612,8 @@ public class ThrowsExceptionInFinallyBlockExample {
 			int i = 10;
 			i++;
 			if (i==10)
-				throw new IOException();  // Not Overwritten
-			throw new IOException();  // Not Overwritten
+				throw new IOException();  // Not ThrowsInFinally
+			throw new IOException();  // Not ThrowsInFinally
 		}
 	}
 
@@ -632,7 +632,7 @@ public class ThrowsExceptionInFinallyBlockExample {
 
 		try {
 		} catch (Exception e) {
-			throw new IOException("Not an overwritten");  // Not Overwritten
+			throw new IOException("Not an throwsInFinally");  // Not ThrowsInFinally
 		} finally {
 		}
 	}
@@ -652,12 +652,12 @@ public class ThrowsExceptionInFinallyBlockExample {
 			} catch (Exception e) {
 				try {
 				} finally {
-					throw new IOException("May cause wrong OW");  // Overwritten
+					throw new IOException("May cause wrong OW");  // ThrowsInFinally
 				}
 			}
 		} catch (Exception e) {
-			// Not Overwritten
-			throw new IOException("Second effect wrong overwritten");
+			// Not ThrowsInFinally
+			throw new IOException("Second effect wrong ThrowsInFinally");
 		}
 	}
 	
@@ -673,7 +673,7 @@ public class ThrowsExceptionInFinallyBlockExample {
 	             try {
 	                 close();
 	             } finally {
-	                 super.finalize();	// Overwritten
+	                 super.finalize();	// ThrowsInFinally
 	             }
 	         }
 	     };
@@ -692,7 +692,7 @@ public class ThrowsExceptionInFinallyBlockExample {
 				fileOutputStream2 = new FileOutputStream(outputFile);	
 			} finally {
 				if(fileOutputStream != null)
-					throw new RuntimeException(); // Overwritten
+					throw new RuntimeException(); // ThrowsInFinally
 			}
 		} catch(FileNotFoundException e) {
 			throw new RuntimeException(e);
@@ -706,12 +706,12 @@ public class ThrowsExceptionInFinallyBlockExample {
 				fileOutputStream2 = new FileOutputStream(outputFile);
 				fileOutputStream2.write(context);
 			} catch(IOException e) { 
-				throw new RuntimeException(e);	// Overwritten
+				throw new RuntimeException(e);	// ThrowsInFinally
 			} finally {
-				fileOutputStream3.close();	// Overwritten
+				fileOutputStream3.close();	// ThrowsInFinally
 			}
 			if(fileOutputStream3.hashCode() != 0)
-				throw new IOException();	// Overwritten
+				throw new IOException();	// ThrowsInFinally
 		}
 	}
 }

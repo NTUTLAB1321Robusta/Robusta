@@ -33,7 +33,7 @@ public class ReportModel {
 	private int nestedTryTotalSize = 0;
 	private int carelessCleanupSize = 0;
 	private int overLoggingSize = 0;
-	private int overwrittenSize = 0;
+	private int throwsInFinallySize = 0;
 	// 取得code counter
 	private int tryCounter = 0;
 	private int catchCounter = 0;
@@ -72,8 +72,8 @@ public class ReportModel {
 	public void addCarelessCleanupSize(int carelessCleanupSize) {
 		this.carelessCleanupSize += carelessCleanupSize;
 	}
-	public void addOverwrittenSize(int overwrittenSize) {
-		this.overwrittenSize += overwrittenSize;
+	public void addThrowsInFinallySize(int throwsInFinallySize) {
+		this.throwsInFinallySize += throwsInFinallySize;
 	}
 	
 	// 取得Smell的總數
@@ -95,12 +95,12 @@ public class ReportModel {
 	public int getCarelessCleanupTotalSize() {
 		return carelessCleanupSize;
 	}
-	public int getOverwrittenTotalSize() {
-		return overwrittenSize;
+	public int getThrowsInFinallyTotalSize() {
+		return throwsInFinallySize;
 	}
 	public int getTotalSmellCount() {
 		return getEmptyCatchTotalSize() + getDummyTotalSize() + getUnMainTotalSize() + getNestedTryTotalSize()
-				+ getCarelessCleanupTotalSize() + getOverLoggingTotalSize() + getOverwrittenTotalSize();
+				+ getCarelessCleanupTotalSize() + getOverLoggingTotalSize() + getThrowsInFinallyTotalSize();
 	}
 
 	// 設定或取得Project的名稱

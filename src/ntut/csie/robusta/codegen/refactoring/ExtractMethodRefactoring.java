@@ -77,7 +77,7 @@ public class ExtractMethodRefactoring extends Refactoring {
 	private String methodName;
 	private boolean isMethodExist;
 	private MarkerInfo markerInfo;
-	private List<MarkerInfo> overwrittenList;
+	private List<MarkerInfo> throwsInFinallyList;
 	
 	public ExtractMethodRefactoring(IMarker marker) {
 		this.marker = marker; 
@@ -184,10 +184,10 @@ public class ExtractMethodRefactoring extends Refactoring {
 	private void findSmellMessage() {
 		try {
 			String msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
-			ThrowsExceptionInFinallyBlockVisitor olVisitor = new ThrowsExceptionInFinallyBlockVisitor(actRoot);
-			actRoot.accept(olVisitor);
-			overwrittenList = olVisitor.getThrowsInFinallyList();
-			markerInfo = overwrittenList.get(Integer.parseInt(msgIdx));
+			ThrowsExceptionInFinallyBlockVisitor tefbisitor = new ThrowsExceptionInFinallyBlockVisitor(actRoot);
+			actRoot.accept(tefbisitor);
+			throwsInFinallyList = tefbisitor.getThrowsInFinallyList();
+			markerInfo = throwsInFinallyList.get(Integer.parseInt(msgIdx));
 		} catch (CoreException e) {
 			logger.error("[Extract Method] EXCEPTION ", e);
 		}

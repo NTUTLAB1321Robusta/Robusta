@@ -180,7 +180,7 @@ public class SettingPage extends APropertyPage {
 		descText[3] = resource.getString("unprotected.main.program.description");
 		descText[4] = resource.getString("careless.cleanup.description");
 		descText[5] = resource.getString("over.logging.description");
-		descText[6] = resource.getString("overwritten.lead.description");
+		descText[6] = resource.getString("thrown.exception.in.finally.block.description");
 	}
 
 	/**

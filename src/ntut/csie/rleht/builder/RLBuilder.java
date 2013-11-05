@@ -250,9 +250,9 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				// FIXME 未加入 SuppressSmell 的作用, 或許可參考 ReportBuilder 的作法
 				ThrowsExceptionInFinallyBlockVisitor teifbVisitor = new ThrowsExceptionInFinallyBlockVisitor(root);
 				root.accept(teifbVisitor);
-				List<MarkerInfo> overwrittenList = teifbVisitor.getThrowsInFinallyList();
-				for(int oleIndex = 0; oleIndex < overwrittenList.size(); oleIndex++) {
-					MarkerInfo markerInfo = overwrittenList.get(oleIndex);
+				List<MarkerInfo> throwsInFinallyList = teifbVisitor.getThrowsInFinallyList();
+				for(int oleIndex = 0; oleIndex < throwsInFinallyList.size(); oleIndex++) {
+					MarkerInfo markerInfo = throwsInFinallyList.get(oleIndex);
 					String errmsg = this.resource.getString("ex.smell.type.undealt") + markerInfo.getCodeSmellType() + this.resource.getString("ex.smell.type");
 					this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, markerInfo, oleIndex, -1);  // methodIdx 沒有用，故先給-1
 				}

@@ -25,7 +25,7 @@ public class NTQuickFix implements IMarkerResolution{
 
 	@Override
 	public void run(IMarker marker) {
-		MessageDialog.openInformation(null, "Nested TryStatement QuickFix Notification", "Please use the refactoring function provided by eclipse to eliminate this code smell.");
+		MessageDialog.openInformation(null, "Nested Try Statement QuickFix Notification", "Please use the refactoring function provided by eclipse to eliminate this code smell.");
 		try {
 			String problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
 			if(problem != null && problem.equals(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT)){

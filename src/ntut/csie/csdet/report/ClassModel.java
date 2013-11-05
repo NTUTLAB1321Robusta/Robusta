@@ -25,7 +25,7 @@ public class ClassModel {
 	private int unMainSize = 0;
 	private int overLoggingSize = 0;
 	private int carelessSize = 0;
-	private int overwrittenSize = 0;
+	private int throwsInFinallySize = 0;
 
 	///存取Class的名稱///
 	public String getClassName() { 
@@ -95,11 +95,11 @@ public class ClassModel {
 				methodList.add(MethodName);
 		}
 	}
-	public void setOverwrittenLead(List<MarkerInfo> overwrittenList, String MethodName) {
-		if (overwrittenList != null) {
-			overwrittenSize += overwrittenList.size();
-			smellList.addAll(overwrittenList);
-			for (int i=0; i<overwrittenList.size(); i++)
+	public void setThrowsInFinally(List<MarkerInfo> throwsInFinallyList, String MethodName) {
+		if (throwsInFinallyList != null) {
+			throwsInFinallySize += throwsInFinallyList.size();
+			smellList.addAll(throwsInFinallyList);
+			for (int i=0; i<throwsInFinallyList.size(); i++)
 				methodList.add(MethodName);
 		}
 	}
@@ -141,12 +141,12 @@ public class ClassModel {
 	public int getOverLoggingSize() {
 		return overLoggingSize;
 	}
-	public int getOverwrittenSize() {
-		return overwrittenSize;
+	public int getThrowsInFinallySize() {
+		return throwsInFinallySize;
 	}
 	public int getTotalSmell() {
 		return getEmptySize() + getDummySize() + getUnMainSize() + getNestedTrySize() +
-			   getCarelessCleanupSize() + getOverLoggingSize() + getOverwrittenSize();
+			   getCarelessCleanupSize() + getOverLoggingSize() + getThrowsInFinallySize();
 	}
 	
 	///存取Class的路徑///

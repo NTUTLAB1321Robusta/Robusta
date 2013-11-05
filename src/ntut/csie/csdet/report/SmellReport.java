@@ -140,7 +140,7 @@ public class SmellReport {
 		smellList.addContent(new Element("OverLogging").addContent(String
 				.valueOf(model.getOverLoggingTotalSize())));
 		smellList.addContent(new Element("ThrowsExceptionInFinallyBlock")
-				.addContent(String.valueOf(model.getOverwrittenTotalSize())));
+				.addContent(String.valueOf(model.getThrowsInFinallyTotalSize())));
 		smellList.addContent(new Element("Total").addContent(String
 				.valueOf(model.getTotalSmellCount())));
 		root.addContent(smellList);
@@ -199,7 +199,7 @@ public class SmellReport {
 					.valueOf(packageModel.getOverLoggingSize())));
 			packages.addContent(new Element("ThrowsExceptionInFinallyBlock")
 					.addContent(String.valueOf(packageModel
-							.getOverwrittenSize())));
+							.getThrowsInFinallySize())));
 			packages.addContent(new Element("PackageTotal").addContent(String
 					.valueOf(packageModel.getTotalSmellSize())));
 			packages.addContent(new Element("LOC").addContent(String
@@ -251,7 +251,7 @@ public class SmellReport {
 		total.addContent(new Element("OLTotal").addContent(String.valueOf(model
 				.getOverLoggingTotalSize())));
 		total.addContent(new Element("OWTotal").addContent(String.valueOf(model
-				.getOverwrittenTotalSize())));
+				.getThrowsInFinallyTotalSize())));
 		total.addContent(new Element("AllTotal").addContent(String
 				.valueOf(model.getTotalSmellCount())));
 		allPackageList.addContent(total);

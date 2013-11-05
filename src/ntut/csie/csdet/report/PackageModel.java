@@ -95,16 +95,16 @@ public class PackageModel {
 
 		return overLoggingSize;
 	}
-	public int getOverwrittenSize() {
-		int overwrittenSize = 0;
+	public int getThrowsInFinallySize() {
+		int throwsInFinallySize = 0;
 		for (ClassModel cm : classModel)
-			overwrittenSize += cm.getOverwrittenSize();
+			throwsInFinallySize += cm.getThrowsInFinallySize();
 
-		return overwrittenSize;
+		return throwsInFinallySize;
 	}
 	public int getTotalSmellSize() {
 		return getEmptySize() + getDummySize() + getNestedTrySize() + getUnMainSize() +
-			   getCarelessCleanupSize() + getOverLoggingSize() + getOverwrittenSize();
+			   getCarelessCleanupSize() + getOverLoggingSize() + getThrowsInFinallySize();
 	}
 	
 	//存取程式的LOC

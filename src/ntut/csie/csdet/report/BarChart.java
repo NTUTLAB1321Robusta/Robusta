@@ -91,7 +91,7 @@ public class BarChart {
 		data.addValue(model.getNestedTryTotalSize(), "", "Nested try statemet");
 		data.addValue(model.getCarelessCleanupTotalSize(), "", "Careless Cleanup");
 		data.addValue(model.getOverLoggingTotalSize(), "", "Over Logging");
-		data.addValue(model.getOverwrittenTotalSize(), "", "Overwritten lead exception");
+		data.addValue(model.getThrowsInFinallyTotalSize(), "", "Throws Exception In Finally Block");
 		return data;				
 	}
 	

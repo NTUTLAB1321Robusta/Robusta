@@ -144,7 +144,7 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				if(advice.contains(RTag.class.getSimpleName())){
 					markerList.add(new AchieveRL1QuickFix("RL1 quick gene ==> Rethrow Unckecked Exception"));
 				}
-			} else if(problem.equals(RLMarkerAttribute.CS_OVERWRITTEN_LEAD_EXCEPTION)) {
+			} else if(problem.equals(RLMarkerAttribute.CS_THROWS_EXCEPTION_IN_FINALLY_BLOCK)) {
 				markerList.add(new ExtractMethodMarkerResolution("Refactor==>Use Extract Method"));
 			}
 			//List轉Array

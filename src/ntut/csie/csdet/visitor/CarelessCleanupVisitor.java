@@ -58,7 +58,7 @@ public class CarelessCleanupVisitor extends ASTVisitor {
 	}
 	
 	public boolean visit(TryStatement node) {
-		// 不幫Nested TryStatement的程式碼結構檢查Careless Cleanup
+		// 不幫NestedTryStatement的程式碼結構檢查Careless Cleanup
 		ASTNode outerTryStatement = NodeUtils.getSpecifiedParentNode(node, ASTNode.TRY_STATEMENT);
 		if(outerTryStatement != null) {
 			return false;

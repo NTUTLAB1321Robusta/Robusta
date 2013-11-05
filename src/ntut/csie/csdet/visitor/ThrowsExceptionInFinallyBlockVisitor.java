@@ -23,7 +23,7 @@ import org.eclipse.jdt.core.dom.TryStatement;
 public class ThrowsExceptionInFinallyBlockVisitor extends ASTVisitor {
 	private CompilationUnit root;
 	private List<MarkerInfo> throwsInFinallyList;
-	private boolean isTarget; // true:就會被檢查為OW；false:不檢查
+	private boolean isTarget; // true:就會被檢查為TEFB；false:不檢查
 	private boolean inFinally;// true:在目前節點中最上層的finally block裡面；false:在其他任何地方
 	private boolean isDetectingThrowsExceptionInFinallyBlockSmell;
 	private Block outterFinally;
@@ -126,7 +126,7 @@ public class ThrowsExceptionInFinallyBlockVisitor extends ASTVisitor {
 	}
 	
 	private void addMarkerInfo(MethodInvocation node) {
-		MarkerInfo markerInfo = new MarkerInfo(RLMarkerAttribute.CS_OVERWRITTEN_LEAD_EXCEPTION,
+		MarkerInfo markerInfo = new MarkerInfo(RLMarkerAttribute.CS_THROWS_EXCEPTION_IN_FINALLY_BLOCK,
 				(node.getExpression() != null)? node.getExpression().resolveTypeBinding() : null,
 						node.toString(), node.getStartPosition(),
 				root.getLineNumber(node.getStartPosition()), null);
@@ -135,7 +135,7 @@ public class ThrowsExceptionInFinallyBlockVisitor extends ASTVisitor {
 	}
 	
 	private void addMarkerInfo(SuperMethodInvocation node) {
-		MarkerInfo markerInfo = new MarkerInfo(RLMarkerAttribute.CS_OVERWRITTEN_LEAD_EXCEPTION,
+		MarkerInfo markerInfo = new MarkerInfo(RLMarkerAttribute.CS_THROWS_EXCEPTION_IN_FINALLY_BLOCK,
 				null, node.toString(), node.getStartPosition(),
 				root.getLineNumber(node.getStartPosition()), null);
 		markerInfo.setMethodThrownExceptions(node.resolveMethodBinding().getExceptionTypes());
@@ -143,7 +143,7 @@ public class ThrowsExceptionInFinallyBlockVisitor extends ASTVisitor {
 	}
 	
 	private void addMarkerInfo(ThrowStatement node) {
-		MarkerInfo markerInfo = new MarkerInfo(RLMarkerAttribute.CS_OVERWRITTEN_LEAD_EXCEPTION,
+		MarkerInfo markerInfo = new MarkerInfo(RLMarkerAttribute.CS_THROWS_EXCEPTION_IN_FINALLY_BLOCK,
 				(node.getExpression() != null)? node.getExpression().resolveTypeBinding() : null,
 						node.toString(), node.getStartPosition(),
 				root.getLineNumber(node.getStartPosition()), null);

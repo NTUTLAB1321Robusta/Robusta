@@ -66,9 +66,9 @@
 	  		<tr bgcolor="#EAEADA" class="bigbluetext">
 	  			<th>Empty Catch Block</th>
 	  			<th>Dummy Handler</th><th>Unprotected Main Program</th>
-	  			<th>Nested TryStatement</th><th>Careless Cleanup</th>
+	  			<th>Nested Try Statement</th><th>Careless Cleanup</th>
 	  			<th>Over Logging</th>
-	  			<th>Overwritten Lead Exception</th>
+	  			<th>Throws Exception In Finally Block</th>
 	  			<th>Total Code Smells</th>
 	  		</tr>
 		</thead>
@@ -140,7 +140,7 @@
 				<th>Nested Try Statement</th>
 				<th>Careless Cleanup</th>
 				<th>Over Logging</th>
-				<th>Overwritten Lead Exception</th>
+				<th>Throws Exception In Finally Block</th>
 				<th>Total Code Smells</th>
 			</tr>
 		</thead>

@@ -34,26 +34,26 @@ public interface RLMarkerAttribute {
 	
 
 
-	/** Empty Catch Block 's type */
+	/** Empty Catch Block **/
 	public static final String CS_EMPTY_CATCH_BLOCK = "Empty_Catch_Block";
 	
-	/** Dummy Handler的type */
+	/** Dummy Handler **/
 	public static final String CS_DUMMY_HANDLER = "Dummy_Handler";
 	
-	/** Nested Try Statement的type */
+	/** Nested Try Statement **/
 	public static final String CS_NESTED_TRY_STATEMENT = "Nested_TryStatement";
 	
-	/** Unprotected Main Program */
+	/** Unprotected Main Program **/
 	public static final String CS_UNPROTECTED_MAIN = "Unprotected_Main_Program";
 	
-	/** Careless Cleanup */
+	/** Careless Cleanup **/
 	public static final String CS_CARELESS_CLEANUP = "Careless_Cleanup";
 	
-	/** Over Logging */
+	/** Over Logging **/
 	public static final String CS_OVER_LOGGING = "Over_Logging";
 	
-	/** Overwritten Lead */
-	public static final String CS_OVERWRITTEN_LEAD_EXCEPTION = "Overwritten_Lead_Exception";
+	/** Throws Exception In Finally Block **/
+	public static final String CS_THROWS_EXCEPTION_IN_FINALLY_BLOCK = "Throws_Exception_In_Finally_Block";
 	
 	/** Exception Robustness Level Advice */
 	public static final String CS_EXCEPTION_RLADVICE  = "Exception_RL_Advice";
@@ -67,7 +67,7 @@ public interface RLMarkerAttribute {
 	
 	/** Total Code Smell Type */
 	public static final String[] CS_TOTAL_TYPE = new String[]{ CS_EMPTY_CATCH_BLOCK,
-		CS_DUMMY_HANDLER, CS_NESTED_TRY_STATEMENT, CS_UNPROTECTED_MAIN, CS_CARELESS_CLEANUP, CS_OVER_LOGGING, CS_OVERWRITTEN_LEAD_EXCEPTION};
+		CS_DUMMY_HANDLER, CS_NESTED_TRY_STATEMENT, CS_UNPROTECTED_MAIN, CS_CARELESS_CLEANUP, CS_OVER_LOGGING, CS_THROWS_EXCEPTION_IN_FINALLY_BLOCK};
 
 	/** Total Smell Type In Catch */
 	public static final String[] CS_CATCH_TYPE = new String[]{ CS_EMPTY_CATCH_BLOCK,

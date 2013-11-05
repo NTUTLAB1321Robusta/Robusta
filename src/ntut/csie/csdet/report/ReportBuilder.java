@@ -232,13 +232,14 @@ public class ReportBuilder {
 				newClassModel.setOverLogging(olList, method.getName().toString());
 				model.addOverLoggingSize(olList.size());
 			}
-			// 找尋專案中所有的Overwritten Lead Exception
+			
+			// 找尋專案中所有的 Throws Exception In Finally Block
 			throwsInFinallyVisitor = new ThrowsExceptionInFinallyBlockVisitor(root);
 			method.accept(throwsInFinallyVisitor);
-			if(detMethodSmell.get(RLMarkerAttribute.CS_OVERWRITTEN_LEAD_EXCEPTION)) {
-				List<MarkerInfo> owList = checkCatchSmell(throwsInFinallyVisitor.getThrowsInFinallyList(), detCatchSmell.get(RLMarkerAttribute.CS_OVERWRITTEN_LEAD_EXCEPTION));
-				newClassModel.setOverwrittenLead(owList, method.getName().toString());
-				model.addOverwrittenSize(owList.size());
+			if(detMethodSmell.get(RLMarkerAttribute.CS_THROWS_EXCEPTION_IN_FINALLY_BLOCK)) {
+				List<MarkerInfo> owList = checkCatchSmell(throwsInFinallyVisitor.getThrowsInFinallyList(), detCatchSmell.get(RLMarkerAttribute.CS_THROWS_EXCEPTION_IN_FINALLY_BLOCK));
+				newClassModel.setThrowsInFinally(owList, method.getName().toString());
+				model.addThrowsInFinallySize(owList.size());
 			}
 			// 記錄Code Information
 			counterVisitor = new TryStatementCounterVisitor();
