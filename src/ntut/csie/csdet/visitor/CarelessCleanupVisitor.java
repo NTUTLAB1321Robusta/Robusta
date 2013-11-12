@@ -117,7 +117,7 @@ public class CarelessCleanupVisitor extends ASTVisitor {
 	 */
 	private void collectSmell(MethodInvocation node) {
 		StringBuilder exceptions = new StringBuilder();
-		ITypeBinding[] exceptionTypes = NodeUtils.getMethodInvocationThrownCheckedExceptions(node);
+		ITypeBinding[] exceptionTypes = NodeUtils.getDeclaredExceptions(node);
 		if (exceptionTypes != null) {
 			for (ITypeBinding itb : exceptionTypes) {
 				exceptions.append(itb.toString());
