@@ -24,6 +24,8 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import ntut.csie.rleht.builder.RLMarkerAttribute;
+
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.Format;
@@ -128,21 +130,21 @@ public class SmellReport {
 		// /EH Smell List資料輸出///
 		Element smellList = new Element("EHSmellList");
 		smellList.addContent(new Element("EmptyCatchBlock").addContent(String
-				.valueOf(model.getEmptyCatchTotalSize())));
+				.valueOf(model.getSmellSize(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK))));
 		smellList.addContent(new Element("DummyHandler").addContent(String
-				.valueOf(model.getDummyTotalSize())));
+				.valueOf(model.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER))));
 		smellList.addContent(new Element("UnprotectedMainProgram")
-				.addContent(String.valueOf(model.getUnMainTotalSize())));
+				.addContent(String.valueOf(model.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN))));
 		smellList.addContent(new Element("NestedTryStatement").addContent(String
-				.valueOf(model.getNestedTryTotalSize())));
-		smellList.addContent(new Element("CarelessCleanup").addContent(String
-				.valueOf(model.getCarelessCleanupTotalSize())));
+				.valueOf(model.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT))));
+		smellList.addContent(new Element("CarelessCleanUp").addContent(String
+				.valueOf(model.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP))));
 		smellList.addContent(new Element("OverLogging").addContent(String
-				.valueOf(model.getOverLoggingTotalSize())));
+				.valueOf(model.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING))));
 		smellList.addContent(new Element("ThrowsExceptionInFinallyBlock")
-				.addContent(String.valueOf(model.getThrowsInFinallyTotalSize())));
+				.addContent(String.valueOf(model.getSmellSize(RLMarkerAttribute.CS_THROWS_EXCEPTION_IN_FINALLY_BLOCK))));
 		smellList.addContent(new Element("Total").addContent(String
-				.valueOf(model.getTotalSmellCount())));
+				.valueOf(model.getAllSmellSize())));
 		root.addContent(smellList);
 	}
 
@@ -185,27 +187,27 @@ public class SmellReport {
 			packages.addContent(new Element("LOC").addContent(String
 					.valueOf(packageModel.getTotalLine())));
 			packages.addContent(new Element("EmptyCatchBlock")
-					.addContent(String.valueOf(packageModel.getEmptySize())));
+					.addContent(String.valueOf(packageModel.getSmellSize(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK))));
 			packages.addContent(new Element("DummyHandler").addContent(String
-					.valueOf(packageModel.getDummySize())));
+					.valueOf(packageModel.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER))));
 			packages.addContent(new Element("UnprotectedMainProgram")
-					.addContent(String.valueOf(packageModel.getUnMainSize())));
+					.addContent(String.valueOf(packageModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN))));
 			packages.addContent(new Element("NestedTryStatement").addContent(String
-					.valueOf(packageModel.getNestedTrySize())));
-			packages.addContent(new Element("CarelessCleanup")
+					.valueOf(packageModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT))));
+			packages.addContent(new Element("CarelessCleanUp")
 					.addContent(String.valueOf(packageModel
-							.getCarelessCleanupSize())));
+							.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP))));
 			packages.addContent(new Element("OverLogging").addContent(String
-					.valueOf(packageModel.getOverLoggingSize())));
+					.valueOf(packageModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING))));
 			packages.addContent(new Element("ThrowsExceptionInFinallyBlock")
 					.addContent(String.valueOf(packageModel
-							.getThrowsInFinallySize())));
+							.getSmellSize(RLMarkerAttribute.CS_THROWS_EXCEPTION_IN_FINALLY_BLOCK))));
 			packages.addContent(new Element("PackageTotal").addContent(String
-					.valueOf(packageModel.getTotalSmellSize())));
+					.valueOf(packageModel.getAllSmellSize())));
 			packages.addContent(new Element("LOC").addContent(String
 					.valueOf(packageModel.getTotalLine())));
 			// only add packageModel what total smell size > 0
-			if (packageModel.getTotalSmellSize() > 0) {
+			if (packageModel.getAllSmellSize() > 0) {
 				if (packageModel.getPackageName() == "") {
 					packages.addContent(new Element("HrefPackageName")
 							.addContent("#" + "(default_package)"));
@@ -239,21 +241,21 @@ public class SmellReport {
 		total.addContent(new Element("LOC").addContent(String.valueOf(model
 				.getTotalLine())));
 		total.addContent(new Element("EmptyCatchTotal").addContent(String
-				.valueOf(model.getEmptyCatchTotalSize())));
+				.valueOf(model.getSmellSize(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK))));
 		total.addContent(new Element("DummyTotal").addContent(String
-				.valueOf(model.getDummyTotalSize())));
+				.valueOf(model.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER))));
 		total.addContent(new Element("UnMainTotal").addContent(String
-				.valueOf(model.getUnMainTotalSize())));
+				.valueOf(model.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN))));
 		total.addContent(new Element("NestedTrTotal").addContent(String
-				.valueOf(model.getNestedTryTotalSize())));
+				.valueOf(model.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT))));
 		total.addContent(new Element("CCUpTotal").addContent(String
-				.valueOf(model.getCarelessCleanupTotalSize())));
+				.valueOf(model.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP))));
 		total.addContent(new Element("OLTotal").addContent(String.valueOf(model
-				.getOverLoggingTotalSize())));
+				.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING))));
 		total.addContent(new Element("OWTotal").addContent(String.valueOf(model
-				.getThrowsInFinallyTotalSize())));
+				.getSmellSize(RLMarkerAttribute.CS_THROWS_EXCEPTION_IN_FINALLY_BLOCK))));
 		total.addContent(new Element("AllTotal").addContent(String
-				.valueOf(model.getTotalSmellCount())));
+				.valueOf(model.getAllSmellSize())));
 		allPackageList.addContent(total);
 		root.addContent(allPackageList);
 	}
@@ -282,7 +284,7 @@ public class SmellReport {
 		for (int i = 0; i < model.getPackagesSize(); i++) {
 			Element packages = new Element("Package");
 			PackageModel pkTemp = model.getPackage(i);
-			if (pkTemp.getTotalSmellSize() > 0) {
+			if (pkTemp.getAllSmellSize() > 0) {
 				packages.addContent(new Element("PackageName")
 						.addContent(pkTemp.getPackageName()));
 				packages.addContent(new Element("OpenID").addContent(pkTemp
@@ -326,7 +328,7 @@ public class SmellReport {
 				}
 				packages.addContent(classList);
 				packages.addContent(new Element("Total").addContent(String
-						.valueOf(pkTemp.getTotalSmellSize())));
+						.valueOf(pkTemp.getAllSmellSize())));
 				packageList.addContent(packages);
 			}
 		}

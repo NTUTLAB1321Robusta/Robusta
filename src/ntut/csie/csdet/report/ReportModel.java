@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class ReportModel {
 	// Smell資訊
-	private List<PackageModel> smellList = new ArrayList<PackageModel>();
+	private List<PackageModel> packageModelList = new ArrayList<PackageModel>();
 	// Filter條綿是否為全偵測
 	private boolean derectAllproject;
 
@@ -26,14 +26,6 @@ public class ReportModel {
 	private String projectName = "";
 	// 儲存路徑
 	private String projectPath = "";
-	// Smell總數
-	private int emptyTotalSize = 0;
-	private int dummyTotalSize = 0;
-	private int unMainTotalSize = 0;
-	private int nestedTryTotalSize = 0;
-	private int carelessCleanupSize = 0;
-	private int overLoggingSize = 0;
-	private int throwsInFinallySize = 0;
 	// 取得code counter
 	private int tryCounter = 0;
 	private int catchCounter = 0;
@@ -53,55 +45,6 @@ public class ReportModel {
         return df.format(buildTime);
 	}
 	
-	// 增加Smell的總數
-	public void addEmptyTotalSize(int emptySize) {
-		this.emptyTotalSize += emptySize;
-	}
-	public void addDummyTotalSize(int dummySize) {
-		this.dummyTotalSize += dummySize;
-	}
-	public void addUnMainTotalSize(int unMainSize) {
-		this.unMainTotalSize += unMainSize;
-	}
-	public void addNestedTotalTrySize(int nestedTrySize) {
-		this.nestedTryTotalSize += nestedTrySize;
-	}
-	public void addOverLoggingSize(int overLoggingSize) {
-		this.overLoggingSize += overLoggingSize;
-	}
-	public void addCarelessCleanupSize(int carelessCleanupSize) {
-		this.carelessCleanupSize += carelessCleanupSize;
-	}
-	public void addThrowsInFinallySize(int throwsInFinallySize) {
-		this.throwsInFinallySize += throwsInFinallySize;
-	}
-	
-	// 取得Smell的總數
-	public int getEmptyCatchTotalSize() {
-			return emptyTotalSize;
-	}
-	public int getDummyTotalSize() {
-			return dummyTotalSize;
-	}
-	public int getUnMainTotalSize() {
-			return unMainTotalSize;
-	}
-	public int getNestedTryTotalSize() {
-			return nestedTryTotalSize;
-	}
-	public int getOverLoggingTotalSize() {
-		return overLoggingSize;
-	}
-	public int getCarelessCleanupTotalSize() {
-		return carelessCleanupSize;
-	}
-	public int getThrowsInFinallyTotalSize() {
-		return throwsInFinallySize;
-	}
-	public int getTotalSmellCount() {
-		return getEmptyCatchTotalSize() + getDummyTotalSize() + getUnMainTotalSize() + getNestedTryTotalSize()
-				+ getCarelessCleanupTotalSize() + getOverLoggingTotalSize() + getThrowsInFinallyTotalSize();
-	}
 
 	// 設定或取得Project的名稱
 	public void setProjectName(String projectName) {
@@ -161,33 +104,19 @@ public class ReportModel {
 	 * @return
 	 */
 	public PackageModel getPackage(int i) {
-		if (i >= smellList.size())
+		if (i >= packageModelList.size())
 			return null;
 		else
-			return smellList.get(i);
+			return packageModelList.get(i);
 	}
 	/**
 	 * 取得Package總數
 	 * @return
 	 */
 	public int getPackagesSize() {
-		return smellList.size();
+		return packageModelList.size();
 	}
-
-	/**
-	 * 加入新的Package
-	 * @param packageName
-	 * @return
-	 */
-	public PackageModel addSmellList(String packageName) {
-		PackageModel newPackageModel = new PackageModel();
-		//設置Package名稱
-		newPackageModel.setPackageName(packageName);
-		smellList.add(newPackageModel);
-
-		return newPackageModel;
-	}
-
+	
 	///存取Filter條件是否為全偵測///
 	public boolean isDerectAllproject() {
 		return derectAllproject;
@@ -212,7 +141,7 @@ public class ReportModel {
 	// 取得全部的行數 //
 	public int getTotalLine() {
 		int total = 0;
-		for (PackageModel pm : smellList)
+		for (PackageModel pm : packageModelList)
 			total += pm.getTotalLine();
 		return total;
 	}
@@ -235,5 +164,24 @@ public class ReportModel {
 	}	
 	public void addFinallyCounter(int finallyCounter) {
 		this.finallyCounter += finallyCounter;
+	}
+	public void addPackageModel(PackageModel newPackageModel) {
+		packageModelList.add(newPackageModel);
+	}
+	
+	public int getSmellSize(String type) {
+		int size = 0;
+		for (PackageModel packageModel : packageModelList) {
+			size += packageModel.getSmellSize(type);
+		}
+		return size;
+	}
+	
+	public int getAllSmellSize() {
+		int size = 0;
+		for (PackageModel packageModel : packageModelList) {
+			size += packageModel.getAllSmellSize();
+		}
+		return size;
 	}
 }

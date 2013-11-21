@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.NumberFormat;
 
+import ntut.csie.rleht.builder.RLMarkerAttribute;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
@@ -64,7 +65,7 @@ public class BarChart {
 	        outputJPGFile(chart, "PackageReport", 800, 420);
 
 	        for (int i = 0; i < model.getPackagesSize(); i++) {
-	        	if(model.getPackage(i).getTotalSmellSize() > 0) {
+	        	if(model.getPackage(i).getAllSmellSize() > 0) {
 			        //建立Class Level的Smell資訊
 			        dataset = createClassDataset(model.getPackage(i));
 			        //產生Chart
@@ -82,16 +83,16 @@ public class BarChart {
 	private CategoryDataset createProjectDataset() {
 		DefaultCategoryDataset data = new DefaultCategoryDataset();
 		//新增資料(""是為了設定同一欄位用相同名稱)
-		if(model.getTotalSmellCount() == 0){
+		if(model.getAllSmellSize() == 0){
 			return null;
 		}
-		data.addValue(model.getEmptyCatchTotalSize() , "", "Empty Catch Block");
-		data.addValue(model.getDummyTotalSize(), "", "Dummy handler");
-		data.addValue(model.getUnMainTotalSize(), "", "Unprotected main program");
-		data.addValue(model.getNestedTryTotalSize(), "", "Nested try statemet");
-		data.addValue(model.getCarelessCleanupTotalSize(), "", "Careless Cleanup");
-		data.addValue(model.getOverLoggingTotalSize(), "", "Over Logging");
-		data.addValue(model.getThrowsInFinallyTotalSize(), "", "Throws Exception In Finally Block");
+		data.addValue(model.getSmellSize(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK) , "", "Empty Catch Block");
+		data.addValue(model.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER), "", "Dummy handler");
+		data.addValue(model.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN), "", "Unprotected main program");
+		data.addValue(model.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT), "", "Nested try statemet");
+		data.addValue(model.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP), "", "Careless Cleanup");
+		data.addValue(model.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING), "", "Over Logging");
+		data.addValue(model.getSmellSize(RLMarkerAttribute.CS_THROWS_EXCEPTION_IN_FINALLY_BLOCK), "", "Throw exception in finally block");
 		return data;				
 	}
 	
@@ -100,16 +101,16 @@ public class BarChart {
 	 */
 	private CategoryDataset createPackageDataset() {
 		DefaultCategoryDataset data = new DefaultCategoryDataset();
-		if(model.getTotalSmellCount() == 0){
+		if(model.getAllSmellSize() == 0){
 			return null;
 		}
 		for (int i=0; i < model.getPackagesSize(); i++) {
 			PackageModel packageModel = model.getPackage(i);
-			if(packageModel.getTotalSmellSize() > 0) {
+			if(packageModel.getAllSmellSize() > 0) {
 				//Package 名稱太常所以使用代碼
 				//data.addValue(packageModel.getTotalSmellSize(), "", packageModel.getPackageName());
 				//新增資料(""是為了設定同一欄位用相同名稱)
-				data.addValue(packageModel.getTotalSmellSize(), "", "P" + String.valueOf(i));
+				data.addValue(packageModel.getAllSmellSize(), "", "P" + String.valueOf(i));
 			}
 		}
 		return data;
@@ -120,13 +121,13 @@ public class BarChart {
 	 */
 	private CategoryDataset createClassDataset(PackageModel packageModel) {		
 		DefaultCategoryDataset data = new DefaultCategoryDataset();
-		if (packageModel.getTotalSmellSize() == 0)
+		if (packageModel.getAllSmellSize() == 0)
 			return null;
 		for (int i=0; i < packageModel.getClassSize(); i++) {
 			ClassModel classModel = packageModel.getClass(i);
-			if(classModel.getTotalSmell() > 0) {
+			if(classModel.getSmellSize() > 0) {
 				//新增資料(""是為了設定同一欄位用相同名稱)
-				data.addValue(classModel.getTotalSmell(), "", classModel.getClassName());
+				data.addValue(classModel.getSmellSize(), "", classModel.getClassName());
 			}
 		}
 		return data;

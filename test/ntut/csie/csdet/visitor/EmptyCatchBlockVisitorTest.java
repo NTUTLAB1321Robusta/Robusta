@@ -120,6 +120,6 @@ public class EmptyCatchBlockVisitorTest {
 			emptyCatchSmellCount = emptyCatchBlockVisitor.getEmptyCatchList().size();
 		
 		// 驗證總共抓到幾個bad smell
-		assertEquals(0, emptyCatchSmellCount);
+		assertEquals(7, emptyCatchSmellCount);
 	}
 }

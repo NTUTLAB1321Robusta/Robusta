@@ -152,15 +152,15 @@ public class SmellSettingsTest {
 	public void testIsDetectingSmell() {
 		smellSettings.addDummyHandlerPattern("e.printStackTrace", false);
 		assertTrue(smellSettings.isDetectingSmell(SmellSettings.SMELL_DUMMYHANDLER));
-		assertFalse(smellSettings.isDetectingSmell(SmellSettings.SMELL_CARELESSCLEANUP));
+		assertTrue(smellSettings.isDetectingSmell(SmellSettings.SMELL_CARELESSCLEANUP));
 
 		smellSettings.addDummyHandlerPattern("system.out.printLine", true);
 		assertTrue(smellSettings.isDetectingSmell(SmellSettings.SMELL_DUMMYHANDLER));
-		assertFalse(smellSettings.isDetectingSmell(SmellSettings.SMELL_CARELESSCLEANUP));
+		assertTrue(smellSettings.isDetectingSmell(SmellSettings.SMELL_CARELESSCLEANUP));
 		
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_EMPTYCATCHBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, true);
 		assertTrue(smellSettings.isDetectingSmell(SmellSettings.SMELL_DUMMYHANDLER));
-		assertFalse(smellSettings.isDetectingSmell(SmellSettings.SMELL_CARELESSCLEANUP));
+		assertTrue(smellSettings.isDetectingSmell(SmellSettings.SMELL_CARELESSCLEANUP));
 		assertTrue(smellSettings.isDetectingSmell(SmellSettings.SMELL_EMPTYCATCHBLOCK));
 	}
 	

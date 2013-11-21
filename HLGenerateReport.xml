@@ -7,12 +7,23 @@
 	<property environment="env"/>
     <property name="ECLIPSE_HOME" value="${env.ECLIPSE_HOME}"/>
 	
-	<!-- Need to overwrite by DEFINE when call this build file -->
-	<property name="WORKSPACE_PATH" value="${basedir}/../robusta_badsmell_report_project_workspace"/>
-	<property name="PROJECT_LOCATION" value="${basedir}/../" />
-	<property name="PROJECT_NAME" value="Robusta" />
-	<property name="DESTINATION_REPORT_FOLDER" value="${PROJECT_LOCATION}/${PROJECT_NAME}/${PROJECT_NAME}_Report" />
-	<!-- End of DEFINE -->
+	<!-- =====================================================
+		Need to overwrite by DEFINE when call this build file 
+		=================================================== -->
+	
+		<!-- Temporary work space for robusta tools, this workspace will be created and deleted before and after Robusta run-->
+		<property name="WORKSPACE_PATH" value="${basedir}/../robusta_badsmell_report_project_workspace"/>
+		
+		<!-- Where is the location of the project that we want to generate the bad smell report -->
+		<property name="PROJECT_LOCATION" value="${basedir}/../" />
+		
+		<!-- Project name, this is the project name and also the folder name that contain all the source code of the project -->
+		<property name="PROJECT_NAME" value="Robusta" />
+		
+		<!-- Where to save the generated report -->
+		<property name="DESTINATION_REPORT_FOLDER" value="${PROJECT_LOCATION}/${PROJECT_NAME}/${PROJECT_NAME}_Report" />
+	
+	<!-- ===== End of DEFINE ===== -->
 	
 	<property name="ORIGINAL_PROJECT_PATH" value="${PROJECT_LOCATION}/${PROJECT_NAME}"/>
 	<property name="DESTINATION_PROJECT_PATH" value="${WORKSPACE_PATH}/${PROJECT_NAME}"/>

@@ -8,6 +8,7 @@ import java.util.List;
 
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.filemaker.JavaProjectMaker;
+import ntut.csie.rleht.builder.RLMarkerAttribute;
 
 import org.junit.After;
 import org.junit.Before;
@@ -50,16 +51,16 @@ public class ClassModelTest {
 	@Test
 	public void testSetEmptyCatchList() {
 		int MAX = 10;
-		List<MarkerInfo> emptyCatchList = null;
-		model.setEmptyCatchList(emptyCatchList, "ignoreMethod");
-		assertEquals(0, model.getEmptySize());
-		emptyCatchList = new ArrayList<MarkerInfo>();
+		List<MarkerInfo> ignoreExList = null;
+		model.addSmellList(ignoreExList);
+		assertEquals(0, model.getSmellSize(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK));
+		ignoreExList = new ArrayList<MarkerInfo>();
 		for(int i = 0; i < MAX; i++) {
-			emptyCatchList.add(new MarkerInfo("ignore", null, null, i, i*2, null));
+			ignoreExList.add(new MarkerInfo(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK, null, null, i, i*2, null, "ignoreMethod"));
 		}
-		model.setEmptyCatchList(emptyCatchList, "ignoreMethod");
-		assertEquals(MAX, model.getEmptySize());
-		assertEquals("ignore", model.getSmellType(2));
+		model.addSmellList(ignoreExList);
+		assertEquals(MAX, model.getSmellSize(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK));
+		assertEquals(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK, model.getSmellType(2));
 		assertEquals(8, model.getSmellLine(4));
 	}
 	
@@ -67,15 +68,15 @@ public class ClassModelTest {
 	public void testSetDummyList() {
 		int MAX = 10;
 		List<MarkerInfo> dummyList = null;
-		model.setEmptyCatchList(dummyList, "dummyMethod");
-		assertEquals(0, model.getEmptySize());
+		model.addSmellList(dummyList);
+		assertEquals(0, model.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER));
 		dummyList = new ArrayList<MarkerInfo>();
 		for(int i = 0; i < MAX; i++) {
-			dummyList.add(new MarkerInfo("dummy", null, null, i, i*2, null));
+			dummyList.add(new MarkerInfo(RLMarkerAttribute.CS_DUMMY_HANDLER, null, null, i, i*2, null, "dummyMethod"));
 		}
-		model.setEmptyCatchList(dummyList, "dummyMethod");
-		assertEquals(MAX, model.getEmptySize());
-		assertEquals("dummy", model.getSmellType(2));
+		model.addSmellList(dummyList);
+		assertEquals(MAX, model.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER));
+		assertEquals(RLMarkerAttribute.CS_DUMMY_HANDLER, model.getSmellType(2));
 		assertEquals(8, model.getSmellLine(4));
 	}
 	
@@ -83,15 +84,15 @@ public class ClassModelTest {
 	public void testSetNestedTryList() {
 		int MAX = 10;
 		List<MarkerInfo> nestedTryList = null;
-		model.setEmptyCatchList(nestedTryList, "nestedMethod");
-		assertEquals(0, model.getEmptySize());
+		model.addSmellList(nestedTryList);
+		assertEquals(0, model.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
 		nestedTryList = new ArrayList<MarkerInfo>();
 		for(int i = 0; i < MAX; i++) {
-			nestedTryList.add(new MarkerInfo("nested", null, null, i, i*2, null));
+			nestedTryList.add(new MarkerInfo(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT, null, null, i, i*2, null, "nested"));
 		}
-		model.setEmptyCatchList(nestedTryList, "nestedMethod");
-		assertEquals(MAX, model.getEmptySize());
-		assertEquals("nested", model.getSmellType(2));
+		model.addSmellList(nestedTryList);
+		assertEquals(MAX, model.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
+		assertEquals(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT, model.getSmellType(2));
 		assertEquals(8, model.getSmellLine(4));
 	}
 	
@@ -99,15 +100,15 @@ public class ClassModelTest {
 	public void testSetUnprotectedMain() {
 		int MAX = 10;
 		List<MarkerInfo> unProtectedMain = null;
-		model.setEmptyCatchList(unProtectedMain, "mainMethod");
-		assertEquals(0, model.getEmptySize());
+		model.addSmellList(unProtectedMain);
+		assertEquals(0, model.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN));
 		unProtectedMain = new ArrayList<MarkerInfo>();
 		for(int i = 0; i < MAX; i++) {
-			unProtectedMain.add(new MarkerInfo("main", null, null, i, i*2, null));
+			unProtectedMain.add(new MarkerInfo(RLMarkerAttribute.CS_UNPROTECTED_MAIN, null, null, i, i*2, null, "main"));
 		}
-		model.setEmptyCatchList(unProtectedMain, "mainMethod");
-		assertEquals(MAX, model.getEmptySize());
-		assertEquals("main", model.getSmellType(2));
+		model.addSmellList(unProtectedMain);
+		assertEquals(MAX, model.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN));
+		assertEquals(RLMarkerAttribute.CS_UNPROTECTED_MAIN, model.getSmellType(2));
 		assertEquals(8, model.getSmellLine(4));
 	}
 	
@@ -115,15 +116,15 @@ public class ClassModelTest {
 	public void testSetOverLogging() {
 		int MAX = 10;
 		List<MarkerInfo> overLoggingList = null;
-		model.setEmptyCatchList(overLoggingList, "overMethod");
-		assertEquals(0, model.getEmptySize());
+		model.addSmellList(overLoggingList);
+		assertEquals(0, model.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING));
 		overLoggingList = new ArrayList<MarkerInfo>();
 		for(int i = 0; i < MAX; i++) {
-			overLoggingList.add(new MarkerInfo("over", null, null, i, i*2, null));
+			overLoggingList.add(new MarkerInfo(RLMarkerAttribute.CS_OVER_LOGGING, null, null, i, i*2, null, "over"));
 		}
-		model.setEmptyCatchList(overLoggingList, "overMethod");
-		assertEquals(MAX, model.getEmptySize());
-		assertEquals("over", model.getSmellType(2));
+		model.addSmellList(overLoggingList);
+		assertEquals(MAX, model.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING));
+		assertEquals(RLMarkerAttribute.CS_OVER_LOGGING, model.getSmellType(2));
 		assertEquals(8, model.getSmellLine(4));
 	}
 	
@@ -131,15 +132,15 @@ public class ClassModelTest {
 	public void testSetCarelessCleanup() {
 		int MAX = 10;
 		List<MarkerInfo> carelessList = null;
-		model.setEmptyCatchList(carelessList, "cleanMethod");
-		assertEquals(0, model.getEmptySize());
+		model.addSmellList(carelessList);
+		assertEquals(0, model.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP));
 		carelessList = new ArrayList<MarkerInfo>();
 		for(int i = 0; i < MAX; i++) {
-			carelessList.add(new MarkerInfo("clean", null, null, i, i*2, null));
+			carelessList.add(new MarkerInfo(RLMarkerAttribute.CS_CARELESS_CLEANUP, null, null, i, i*2, null, "clean"));
 		}
-		model.setEmptyCatchList(carelessList, "cleanMethod");
-		assertEquals(MAX, model.getEmptySize());
-		assertEquals("clean", model.getSmellType(2));
+		model.addSmellList(carelessList);
+		assertEquals(MAX, model.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP));
+		assertEquals(RLMarkerAttribute.CS_CARELESS_CLEANUP, model.getSmellType(2));
 		assertEquals(8, model.getSmellLine(4));
 	}
 }

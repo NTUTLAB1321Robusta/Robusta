@@ -1,6 +1,5 @@
 package ntut.csie.rleht.builder;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -12,16 +11,9 @@ import ntut.csie.csdet.data.SSMessage;
 import ntut.csie.csdet.preference.JDomUtil;
 import ntut.csie.csdet.preference.RobustaSettings;
 import ntut.csie.csdet.preference.SmellSettings;
-import ntut.csie.csdet.visitor.CarelessCleanupVisitor;
-import ntut.csie.csdet.visitor.DummyHandlerVisitor;
-import ntut.csie.csdet.visitor.EmptyCatchBlockVisitor;
-import ntut.csie.csdet.visitor.NestedTryStatementVisitor;
-import ntut.csie.csdet.visitor.OverLoggingDetector;
-import ntut.csie.csdet.visitor.ThrowsExceptionInFinallyBlockVisitor;
+import ntut.csie.csdet.visitor.BadSmellCollector;
 import ntut.csie.csdet.visitor.SuppressWarningVisitor;
-import ntut.csie.csdet.visitor.UnprotectedMainProgramVisitor;
 import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
-import ntut.csie.java.util.CastingObject;
 import ntut.csie.rleht.common.ASTHandler;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLChecker;
@@ -40,12 +32,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -225,12 +215,6 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				List<MethodDeclaration> methodList = methodCollector.getMethodList();
 
 				ExceptionAnalyzer visitor = null;
-				
-				UnprotectedMainProgramVisitor mainVisitor = null;
-				
-				// RLAnalyzer eaVisitor = null;
-				
-				OverLoggingDetector loggingDetector = null;
 
 				// 目前method的Exception資訊
 				List<RLMessage> currentMethodExList = null;
@@ -240,57 +224,17 @@ public class RLBuilder extends IncrementalProjectBuilder {
 
 				List<SSMessage> suppressSmellList = null;
 				
-				// 目前method內的Unprotected Main資訊
-				List<MarkerInfo> unprotectedMain = null;
+				BadSmellCollector badSmellCollector = new BadSmellCollector(getProject(), root);
+				badSmellCollector.run();
+				List<MarkerInfo> badSmellList = badSmellCollector.getAllBadSmells();
 				
-				// 目前method內的OverLogging資訊
-				List<MarkerInfo> overLoggingList = null;
-				
-				// 找尋專案中所有的 ThrowsExceptionInFinallyBlock
-				// FIXME 未加入 SuppressSmell 的作用, 或許可參考 ReportBuilder 的作法
-				ThrowsExceptionInFinallyBlockVisitor teifbVisitor = new ThrowsExceptionInFinallyBlockVisitor(root);
-				root.accept(teifbVisitor);
-				List<MarkerInfo> throwsInFinallyList = teifbVisitor.getThrowsInFinallyList();
-				for(int oleIndex = 0; oleIndex < throwsInFinallyList.size(); oleIndex++) {
-					MarkerInfo markerInfo = throwsInFinallyList.get(oleIndex);
+				for(int i = 0; i<badSmellList.size(); i++)
+				{
+					MarkerInfo markerInfo = badSmellList.get(i);
 					String errmsg = this.resource.getString("ex.smell.type.undealt") + markerInfo.getCodeSmellType() + this.resource.getString("ex.smell.type");
-					this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, markerInfo, oleIndex, -1);  // methodIdx 沒有用，故先給-1
-				}
-
-				// 找尋專案中所有的 nested try
-				// FIXME 未加入 SuppressSmell 的作用, 或許可參考 ReportBuilder 的作法
-				NestedTryStatementVisitor nestedTryStatementVisitor = new NestedTryStatementVisitor(root);
-				root.accept(nestedTryStatementVisitor);
-				List<MarkerInfo> nestedTryList = nestedTryStatementVisitor.getNestedTryStatementList();
-				int ntsIndex = -1;
-				for(MarkerInfo markerInfo : nestedTryList) {
-					ntsIndex++;
-					String errmsg = this.resource.getString("ex.smell.type.undealt") + markerInfo.getCodeSmellType() + this.resource.getString("ex.smell.type");
-					this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, markerInfo, ntsIndex, -1);  // methodIdx 先給-1
+					this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, markerInfo, markerInfo.getBadSmellIndex(), markerInfo.getMethodIndex());					
 				}
 				
-				//Detect dummy handler and empty catch block for initializer
-				DummyHandlerVisitor dmhVisitor = new DummyHandlerVisitor(root);
-				EmptyCatchBlockVisitor emptyCatchBlockVisitor = new EmptyCatchBlockVisitor(root);
-				ASTInitializerCollector initializerCollector = new ASTInitializerCollector();
-				root.accept(initializerCollector);
-				for(Initializer init : initializerCollector.getInitializerList()) {
-					init.accept(dmhVisitor);
-					init.accept(emptyCatchBlockVisitor);
-				}
-				List<MarkerInfo> dmList = dmhVisitor.getDummyList();
-				for(int dmIndex = 0; dmIndex < dmList.size(); dmIndex++) {
-					MarkerInfo markerInfo = dmList.get(dmIndex);
-					String errmsg = this.resource.getString("ex.smell.type.undealt") + markerInfo.getCodeSmellType() + this.resource.getString("ex.smell.type");
-					this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, markerInfo, dmIndex, -1);  // methodIdx = -1 => not support quickfix right now
-				}
-				List<MarkerInfo> emptyCatchBlockList = emptyCatchBlockVisitor.getEmptyCatchList();
-				for(int ieIndex = 0; ieIndex < emptyCatchBlockList.size(); ieIndex++) {
-					MarkerInfo markerInfo = emptyCatchBlockList.get(ieIndex);
-					String errmsg = this.resource.getString("ex.smell.type.undealt") + markerInfo.getCodeSmellType() + this.resource.getString("ex.smell.type");
-					this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, markerInfo, ieIndex, -1);  // methodIdx = -1 => not support quickfix right now
-				}
-			
 				int methodIdx = -1;
 				for (MethodDeclaration method : methodList) {
 					methodIdx++;
@@ -302,129 +246,6 @@ public class RLBuilder extends IncrementalProjectBuilder {
 					method.accept(swVisitor);
 					suppressSmellList = swVisitor.getSuppressWarningList();
 
-					// SuppressSmell
-					TreeMap<String,Boolean> detMethodSmell = new TreeMap<String,Boolean>();
-					TreeMap<String, List<Integer>> detCatchSmell = new TreeMap<String, List<Integer>>();
-					// 將使用者設定複製過來
-					detMethodSmell = CastingObject.castTreeMap(detSmellSetting.clone(), String.class, Boolean.class);
-
-					// 儲存SuppressSmell設定
-					inputSuppressData(suppressSmellList, detMethodSmell, detCatchSmell);
-					
-					// 找尋專案中所有的 Empty Catch Block
-					EmptyCatchBlockVisitor ecbVisitor = new EmptyCatchBlockVisitor(root);
-					method.accept(ecbVisitor);
-					List<MarkerInfo> emptyList = ecbVisitor.getEmptyCatchList();
-					int csIdx = -1;
-					if(detMethodSmell.get(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK)) {
-						List<Integer> posList = detCatchSmell.get(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK);
-						for(MarkerInfo markerInfo : emptyList) {
-							csIdx++;
-							// 判斷使用者有沒有在Catch內貼Annotation，抑制Smell Marker
-							if (suppressMarker(posList, markerInfo.getPosition()))
-								continue;
-							String errmsg = this.resource.getString("ex.smell.type.undealt") + markerInfo.getCodeSmellType() + this.resource.getString("ex.smell.type");
-							this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, markerInfo, csIdx, methodIdx);
-						}
-					}
-					
-					// 取得專案中dummy handler
-					DummyHandlerVisitor dhVisitor = new DummyHandlerVisitor(root);
-					method.accept(dhVisitor);
-					List<MarkerInfo> dummyList = dhVisitor.getDummyList();
-					csIdx = -1;
-					// Dummy List不為Null，且使用者沒有抑制Method內所有的Dummy Handler Marker
-					if(detMethodSmell.get(RLMarkerAttribute.CS_DUMMY_HANDLER)) {
-						List<Integer> posList = detCatchSmell.get(RLMarkerAttribute.CS_DUMMY_HANDLER);
-						// 將每個dummy handler都貼上marker
-						for (MarkerInfo markerInfo : dummyList) {
-							csIdx++;
-							// 判斷使用者有沒有在Catch內貼Annotation，抑制Smell Marker
-							if (suppressMarker(posList, markerInfo.getPosition()))
-								continue;
-							String errmsg = this.resource.getString("ex.smell.type.undealt") + markerInfo.getCodeSmellType() + this.resource.getString("ex.smell.type");
-							// 貼marker
-							this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, markerInfo, csIdx, methodIdx);
-						}
-					}
-
-					// 找尋專案中所有的Careless Cleanup
-					CarelessCleanupVisitor carelessCleanupVisitor = new CarelessCleanupVisitor(root);
-					method.accept(carelessCleanupVisitor);
-					List<MarkerInfo> carelessCleanupList = carelessCleanupVisitor.getCarelessCleanupList();
-					csIdx = -1;
-					if(detMethodSmell.get(RLMarkerAttribute.CS_CARELESS_CLEANUP)) {
-						for(MarkerInfo markerInfo : carelessCleanupList) {
-							csIdx++;
-							String errmsg = this.resource.getString("ex.smell.type.undealt") + markerInfo.getCodeSmellType() + this.resource.getString("ex.smell.type");
-							// 貼Marker
-							this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, markerInfo, csIdx, methodIdx);
-						}
-					}
-
-					// 尋找專案中所有可以給予RL建議的statements
-//					eaVisitor = new RLAnalyzer(root);
-//					method.accept(eaVisitor);
-//					csIdx = -1;
-//					eRLAdviceList = eaVisitor.getExceptionRLAdviceList();
-//					for(RLAdviceMessage msg: eRLAdviceList){
-//						csIdx++;
-//						StringBuilder errmsg = new StringBuilder();
-//						if(msg.getRobustnessLevel() != null){
-//							for(int i = 0; i<msg.getRobustnessLevel().length; i++){
-//								if(msg.getRobustnessLevel()[i].getExString().contains(msg.getExceptionType())){
-//									errmsg.append(msg.getStatement());
-//									errmsg.append("對例外").append(msg.getRobustnessLevel()[i].getExString());
-//									errmsg.append("處理等級，");
-//									errmsg.append("達到RL").append(msg.getRobustnessLevel()[i].getLevel());
-//								}
-//							}
-//							this.addMarker(file, errmsg.toString(), IMarker.SEVERITY_INFO,
-//									msg, csIdx, methodIdx);
-//						}
-//					}
-					
-					// 尋找該method內的OverLogging
-					loggingDetector = new OverLoggingDetector(root, method);
-					if(loggingDetector != null) {
-						loggingDetector.detect();
-						// 取得專案中OverLogging
-						overLoggingList = loggingDetector.getOverLoggingList();
-	
-						// 依據所取得的code smell來貼Marker
-						csIdx = -1;
-						// 使用者沒有抑制Method內所有的OverLogging Marker
-						if(detMethodSmell.get(RLMarkerAttribute.CS_OVER_LOGGING)){
-							List<Integer> posList = detCatchSmell.get(RLMarkerAttribute.CS_OVER_LOGGING);
-							for(MarkerInfo msg : overLoggingList) {
-								csIdx++;
-								// 判斷使用者有沒有在Catch內貼Annotation，抑制Smell Marker
-								if (suppressMarker(posList, msg.getPosition()))
-									continue;
-								String errmsg = this.resource.getString("ex.smell.type.undealt") + msg.getCodeSmellType() + this.resource.getString("ex.smell.type");
-								// 貼marker
-								this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, msg, csIdx, methodIdx);	
-							}
-						}
-					}
-					
-					// 尋找該method內的unprotected main program
-					mainVisitor = new UnprotectedMainProgramVisitor(root);
-					method.accept(mainVisitor);
-					unprotectedMain = mainVisitor.getUnprotedMainList();
-
-					// 依據所取得的code smell來貼Marker
-					csIdx = -1;
-					// 使用者沒有抑制Method內的Unprotected Main Marker
-					if(detMethodSmell.get(RLMarkerAttribute.CS_UNPROTECTED_MAIN)) {
-						for (MarkerInfo msg : unprotectedMain) {
-							csIdx++;
-							String errmsg = this.resource.getString("ex.smell.type.undealt") + msg.getCodeSmellType() + this.resource.getString("ex.smell.type");
-							// 貼marker
-							this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, msg, csIdx, methodIdx);	
-						}
-					}
-							
 					RLChecker checker = new RLChecker();
 					currentMethodExList = checker.check(visitor);
 					
@@ -523,50 +344,6 @@ public class RLBuilder extends IncrementalProjectBuilder {
 			return false;
 		}
 	}
-	
-	private void inputSuppressData(List<SSMessage> suppressSmellList,
-		TreeMap<String, Boolean> detMethodSmell, TreeMap<String, List<Integer>> detCatchSmell) {
-		/// 初始化設定 ///
-		// 預設每個Smell都偵測
-//		for (String smellType : RLMarkerAttribute.CS_TOTAL_TYPE)
-//			detMethodSmell.put(smellType, true);
-
-		for (String smellType : RLMarkerAttribute.CS_CATCH_TYPE)
-			detCatchSmell.put(smellType, new ArrayList<Integer>());
-
-		for (SSMessage msg : suppressSmellList) {
-			// 若為Method上的設定
-			if (!msg.isInCatch()) {
-				// 若使用者偵測哪個Smell不偵測，就把該Smell偵測設定為false
-				for (String smellType : msg.getSmellList())
-					detMethodSmell.put(smellType, false);
-			// 若為Catch內的設定
-			} else {
-				// 若使用者設定Catch內Smell不偵測，記錄該Smell所在的Catch位置
-				for (String smellType : msg.getSmellList()) {
-					List<Integer> smellPosList = detCatchSmell.get(smellType);
-					if (smellPosList != null)
-						smellPosList.add(msg.getPosition());
-				}
-			}
-		}
-	}
-
-	/**
-	 * 判斷是否要不貼Marker
-	 * @param smellPosList
-	 * @param pos
-	 * @return
-	 */
-	private boolean suppressMarker(List<Integer> smellPosList, int pos) {
-		if(smellPosList != null) {
-			for (Integer index : smellPosList)
-				// 若Catch位置相同，表示要抑制的Marker為同一個Marker
-				if (pos == index)
-					return true;
-		}
-		return false;
-	}
 
 	private void deleteMarkers(IFile file) {
 		try {
@@ -621,17 +398,14 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	
 	private boolean shouldGoInInside(IResource resource) {
 		if (resource.getType() == IResource.FOLDER) {
-			//Check if it is in PackageFragmentRoot or not
-			IProject project = resource.getProject();
-			try {
-				if (project.isNatureEnabled(JavaCore.NATURE_ID)) {
-					IJavaProject javaProject = JavaCore.create(project);
-					if (javaProject.findPackageFragmentRoot(resource.getFullPath().uptoSegment(2)) == null)
-						return false;
-				}
-			} catch (Exception ex) {
-				logger.error("[RLBuilder] EXCEPTION ", ex);
-			}
+			IJavaElement javaElement = JavaCore.create(resource);
+			/**
+			 * javaElement is null when unable to associate the given resource with a Java element.
+			 * A folder will have to type: PackageFragment or PackageFragmentRoot, if the folder is
+			 * not these folder, so we should not visit it (javaElement == null).
+			 **/
+			if(javaElement == null)
+				return false;
 			//Check if it was set not to be detect in robusta setting
 			String folderName = resource.getFullPath().segment(1);
 			return robustaSettings.getProjectDetectAttribute(folderName);

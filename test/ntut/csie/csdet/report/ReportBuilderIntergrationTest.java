@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -34,6 +35,7 @@ import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.Unprotected
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithoutStatementExample;
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedMainProgramWithoutTryExample;
 import ntut.csie.filemaker.exceptionBadSmells.UnprotectedMainProgram.UnprotectedmainProgramWithTryAtFirstStatement;
+import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.robusta.util.PathUtils;
 
 import org.eclipse.core.resources.IProject;
@@ -80,213 +82,30 @@ public class ReportBuilderIntergrationTest {
 				+ JavaProjectMaker.RL_LIBRARY_PATH);
 		
 		// 根據測試檔案樣本內容建立新的檔案
-		javaFileToString.read(NestedTryStatementExample.class, JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker.createJavaFile(
-				NestedTryStatementExample.class.getPackage().getName(),
-				NestedTryStatementExample.class.getSimpleName()
-				+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
-				+ NestedTryStatementExample.class.getPackage().getName()
-				+ ";\n" + javaFileToString.getFileContent());
-		javaFileToString.clear();
-		
-		javaFileToString.read(CarelessCleanupExample.class, JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker.createJavaFile(
-				CarelessCleanupExample.class.getPackage().getName(),
-				CarelessCleanupExample.class.getSimpleName()
-				+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
-				+ CarelessCleanupExample.class.getPackage().getName()
-				+ ";\n" + javaFileToString.getFileContent());
-		javaFileToString.clear();
-		
-		javaFileToString.read(ClassImplementCloseable.class, JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker.createJavaFile(
-				ClassImplementCloseable.class.getPackage().getName(),
-				ClassImplementCloseable.class.getSimpleName()
-				+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
-				+ ClassImplementCloseable.class.getPackage().getName()
-				+ ";\n" + javaFileToString.getFileContent());
-		javaFileToString.clear();
-		
-		javaFileToString.read(ClassImplementCloseableWithoutThrowException.class, JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker.createJavaFile(
-				ClassImplementCloseableWithoutThrowException.class.getPackage().getName(),
-				ClassImplementCloseableWithoutThrowException.class.getSimpleName()
-				+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
-				+ ClassImplementCloseableWithoutThrowException.class.getPackage().getName()
-				+ ";\n" + javaFileToString.getFileContent());
-		javaFileToString.clear();
-		
-		javaFileToString.read(ClassWithNotThrowingExceptionCloseable.class, JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker.createJavaFile(
-				ClassWithNotThrowingExceptionCloseable.class.getPackage().getName(),
-				ClassWithNotThrowingExceptionCloseable.class.getSimpleName()
-				+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
-				+ ClassWithNotThrowingExceptionCloseable.class.getPackage().getName()
-				+ ";\n" + javaFileToString.getFileContent());
-		javaFileToString.clear();
-		
-		javaFileToString.read(UserDefinedCarelessCleanupDog.class, JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker.createJavaFile(
-				UserDefinedCarelessCleanupDog.class.getPackage().getName(),
-				UserDefinedCarelessCleanupDog.class.getSimpleName()
-				+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
-				+ UserDefinedCarelessCleanupDog.class.getPackage().getName()
-				+ ";\n" + javaFileToString.getFileContent());
-		javaFileToString.clear();
-		
-		javaFileToString.read(UserDefinedCarelessCleanupWeather.class, JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker.createJavaFile(
-				UserDefinedCarelessCleanupWeather.class.getPackage().getName(),
-				UserDefinedCarelessCleanupWeather.class.getSimpleName()
-				+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
-				+ UserDefinedCarelessCleanupWeather.class.getPackage().getName()
-				+ ";\n" + javaFileToString.getFileContent());
-		javaFileToString.clear();
-		
-		javaFileToString.read(OverLoggingIntegrationExample.class, JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker.createJavaFile(
-				OverLoggingIntegrationExample.class.getPackage().getName(),
-				OverLoggingIntegrationExample.class.getSimpleName()
-				+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
-				+ OverLoggingIntegrationExample.class.getPackage().getName()
-				+ ";\n" + javaFileToString.getFileContent());
-		javaFileToString.clear();
-		
-		javaFileToString.read(OverLoggingJavaLogExample.class, JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker.createJavaFile(
-				OverLoggingJavaLogExample.class.getPackage().getName(),
-				OverLoggingJavaLogExample.class.getSimpleName()
-				+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
-				+ OverLoggingJavaLogExample.class.getPackage().getName()
-				+ ";\n" + javaFileToString.getFileContent());
-		javaFileToString.clear();
-		
-		javaFileToString.read(OverLoggingLog4JExample.class, JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker.createJavaFile(
-				OverLoggingLog4JExample.class.getPackage().getName(),
-				OverLoggingLog4JExample.class.getSimpleName()
-				+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
-				+ OverLoggingLog4JExample.class.getPackage().getName()
-				+ ";\n" + javaFileToString.getFileContent());
-		javaFileToString.clear();
-		
-		javaFileToString.read(OverLoggingSelf4JExample.class, JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker.createJavaFile(
-				OverLoggingSelf4JExample.class.getPackage().getName(),
-				OverLoggingSelf4JExample.class.getSimpleName()
-				+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
-				+ OverLoggingSelf4JExample.class.getPackage().getName()
-				+ ";\n" + javaFileToString.getFileContent());
-		javaFileToString.clear();
-		
-		javaFileToString.read(OverLoggingTheFirstOrderClass.class, JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker.createJavaFile(
-				OverLoggingTheFirstOrderClass.class.getPackage().getName(),
-				OverLoggingTheFirstOrderClass.class.getSimpleName()
-				+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
-				+ OverLoggingTheFirstOrderClass.class.getPackage().getName()
-				+ ";\n" + javaFileToString.getFileContent());
-		javaFileToString.clear();
-		
-		javaFileToString.read(OverLoggingTheSecondOrderClass.class, JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker.createJavaFile(
-				OverLoggingTheSecondOrderClass.class.getPackage().getName(),
-				OverLoggingTheSecondOrderClass.class.getSimpleName()
-				+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
-				+ OverLoggingTheSecondOrderClass.class.getPackage().getName()
-				+ ";\n" + javaFileToString.getFileContent());
-		javaFileToString.clear();
-		
-		javaFileToString.read(OverLoggingTheThirdOrderClass.class, JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker.createJavaFile(
-				OverLoggingTheThirdOrderClass.class.getPackage().getName(),
-				OverLoggingTheThirdOrderClass.class.getSimpleName()
-				+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
-				+ OverLoggingTheThirdOrderClass.class.getPackage().getName()
-				+ ";\n" + javaFileToString.getFileContent());
-		javaFileToString.clear();
-		
-		javaFileToString.read(UnprotectedMainProgramExample.class, JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker.createJavaFile(
-				UnprotectedMainProgramExample.class.getPackage().getName(),
-				UnprotectedMainProgramExample.class.getSimpleName()
-				+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
-				+ UnprotectedMainProgramExample.class.getPackage().getName()
-				+ ";\n" + javaFileToString.getFileContent());
-		javaFileToString.clear();
-		
-		javaFileToString.read(UnprotectedMainProgramWithCatchRuntimeExceptionExample.class, JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker.createJavaFile(
-				UnprotectedMainProgramWithCatchRuntimeExceptionExample.class.getPackage().getName(),
-				UnprotectedMainProgramWithCatchRuntimeExceptionExample.class.getSimpleName()
-				+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
-				+ UnprotectedMainProgramWithCatchRuntimeExceptionExample.class.getPackage().getName()
-				+ ";\n" + javaFileToString.getFileContent());
-		javaFileToString.clear();
-		
-		javaFileToString.read(UnprotectedMainProgramWithoutStatementExample.class, JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker.createJavaFile(
-				UnprotectedMainProgramWithoutStatementExample.class.getPackage().getName(),
-				UnprotectedMainProgramWithoutStatementExample.class.getSimpleName()
-				+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
-				+ UnprotectedMainProgramWithoutStatementExample.class.getPackage().getName()
-				+ ";\n" + javaFileToString.getFileContent());
-		javaFileToString.clear();
-		
-		javaFileToString.read(UnprotectedMainProgramWithoutTryExample.class, JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker.createJavaFile(
-				UnprotectedMainProgramWithoutTryExample.class.getPackage().getName(),
-				UnprotectedMainProgramWithoutTryExample.class.getSimpleName()
-				+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
-				+ UnprotectedMainProgramWithoutTryExample.class.getPackage().getName()
-				+ ";\n" + javaFileToString.getFileContent());
-		javaFileToString.clear();
-		
-		javaFileToString.read(UnprotectedMainProgramWithTry.class, JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker.createJavaFile(
-				UnprotectedMainProgramWithTry.class.getPackage().getName(),
-				UnprotectedMainProgramWithTry.class.getSimpleName()
-				+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
-				+ UnprotectedMainProgramWithTry.class.getPackage().getName()
-				+ ";\n" + javaFileToString.getFileContent());
-		javaFileToString.clear();
-		
-		javaFileToString.read(UnprotectedmainProgramWithTryAtFirstStatement.class, JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker.createJavaFile(
-				UnprotectedmainProgramWithTryAtFirstStatement.class.getPackage().getName(),
-				UnprotectedmainProgramWithTryAtFirstStatement.class.getSimpleName()
-				+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
-				+ UnprotectedmainProgramWithTryAtFirstStatement.class.getPackage().getName()
-				+ ";\n" + javaFileToString.getFileContent());
-		javaFileToString.clear();
-		
-		javaFileToString.read(UnprotectedMainProgramWithTryAtLastStatement.class, JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker.createJavaFile(
-				UnprotectedMainProgramWithTryAtLastStatement.class.getPackage().getName(),
-				UnprotectedMainProgramWithTryAtLastStatement.class.getSimpleName()
-				+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
-				+ UnprotectedMainProgramWithTryAtLastStatement.class.getPackage().getName()
-				+ ";\n" + javaFileToString.getFileContent());
-		javaFileToString.clear();
-		
-		javaFileToString.read(UnprotectedMainProgramWithTryAtMiddleStatement.class, JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker.createJavaFile(
-				UnprotectedMainProgramWithTryAtMiddleStatement.class.getPackage().getName(),
-				UnprotectedMainProgramWithTryAtMiddleStatement.class.getSimpleName()
-				+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
-				+ UnprotectedMainProgramWithTryAtMiddleStatement.class.getPackage().getName()
-				+ ";\n" + javaFileToString.getFileContent());
-		javaFileToString.clear();
-		
-		javaFileToString.read(UnprotectedMainProgramWithoutCatchRightExceptionExample.class, JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker.createJavaFile(
-				UnprotectedMainProgramWithoutCatchRightExceptionExample.class.getPackage().getName(),
-				UnprotectedMainProgramWithoutCatchRightExceptionExample.class.getSimpleName()
-				+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
-				+ UnprotectedMainProgramWithoutCatchRightExceptionExample.class.getPackage().getName()
-				+ ";\n" + javaFileToString.getFileContent());
-		javaFileToString.clear();
-		
+		loadClass(NestedTryStatementExample.class);
+		loadClass(CarelessCleanupExample.class);
+		loadClass(ClassImplementCloseable.class);
+		loadClass(ClassImplementCloseableWithoutThrowException.class);
+		loadClass(ClassWithNotThrowingExceptionCloseable.class);
+		loadClass(UserDefinedCarelessCleanupDog.class);
+		loadClass(UserDefinedCarelessCleanupWeather.class);
+		loadClass(OverLoggingIntegrationExample.class);
+		loadClass(OverLoggingJavaLogExample.class);
+		loadClass(OverLoggingLog4JExample.class);
+		loadClass(OverLoggingSelf4JExample.class);
+		loadClass(OverLoggingTheFirstOrderClass.class);
+		loadClass(OverLoggingTheSecondOrderClass.class);
+		loadClass(OverLoggingTheThirdOrderClass.class);
+		loadClass(UnprotectedMainProgramExample.class);
+		loadClass(UnprotectedMainProgramWithCatchRuntimeExceptionExample.class);
+		loadClass(UnprotectedMainProgramWithoutStatementExample.class);
+		loadClass(UnprotectedMainProgramWithoutTryExample.class);
+		loadClass(UnprotectedMainProgramWithTry.class);
+		loadClass(UnprotectedmainProgramWithTryAtFirstStatement.class);
+		loadClass(UnprotectedMainProgramWithTryAtLastStatement.class);
+		loadClass(UnprotectedMainProgramWithTryAtMiddleStatement.class);
+		loadClass(UnprotectedMainProgramWithoutCatchRightExceptionExample.class);
+
 		InitailSetting();
 		
 		project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
@@ -296,8 +115,20 @@ public class ReportBuilderIntergrationTest {
 		reportBuilder = new ReportBuilder(project, reportModel);
 	}
 	
+	private void loadClass(Class clazz) throws Exception {
+		javaFileToString.read(clazz, JavaProjectMaker.FOLDERNAME_TEST);
+		javaProjectMaker.createJavaFile(
+				clazz.getPackage().getName(),
+				clazz.getSimpleName()
+				+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
+				+ clazz.getPackage().getName()
+				+ ";\n" + javaFileToString.getFileContent());
+		javaFileToString.clear();
+	}
+	
 	private void InitailSetting() {
 		smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		DisableAllSmellDetect();
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 	}
 	
@@ -312,19 +143,35 @@ public class ReportBuilderIntergrationTest {
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_EMPTYCATCHBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, unDetcting);
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_NESTEDTRYSTATEMENT, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_UNPROTECTEDMAINPROGRAM, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
+		
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
 		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
 		smellSettings.addCarelessCleanupPattern("ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.UserDefinedCarelessCleanupDog", isDetecting);
 		smellSettings.addCarelessCleanupPattern("ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.UserDefinedCarelessCleanupWeather", isDetecting);
+		
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_OVERLOGGING, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
 		smellSettings.addExtraRule(SmellSettings.SMELL_OVERLOGGING, SmellSettings.EXTRARULE_OVERLOGGING_DETECTWRAPPINGEXCEPTION);
 		smellSettings.addExtraRule(SmellSettings.SMELL_OVERLOGGING, SmellSettings.EXTRARULE_JavaUtilLoggingLogger);
 		smellSettings.addExtraRule(SmellSettings.SMELL_OVERLOGGING, SmellSettings.EXTRARULE_OrgApacheLog4j);
 		smellSettings.addOverLoggingPattern("org.slf4j.Logger", isDetecting);
+		
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 	}
 	
-	private void CreateDummyAndEmptySettings() {
+	
+	private void DisableAllSmellDetect() {
+		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.ATTRIBUTE_ISDETECTING, unDetcting);
+		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_EMPTYCATCHBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, unDetcting);
+		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_NESTEDTRYSTATEMENT, SmellSettings.ATTRIBUTE_ISDETECTING, unDetcting);
+		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_UNPROTECTEDMAINPROGRAM, SmellSettings.ATTRIBUTE_ISDETECTING, unDetcting);
+		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_THROWSEXCEPTIONINFINALLYBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, unDetcting);
+		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.ATTRIBUTE_ISDETECTING, unDetcting);	
+		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_OVERLOGGING, SmellSettings.ATTRIBUTE_ISDETECTING, unDetcting);
+		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+	}
+	
+	
+	private void CreateDummyAndIgnoreSettings() {
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_EMPTYCATCHBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
 		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_ePrintStackTrace);
@@ -421,229 +268,206 @@ public class ReportBuilderIntergrationTest {
 		assertEquals(0, countFileLOC.invoke(reportBuilder, "/ReportBuilderIntergrationTest/src/ntut/csie/filemaker/exceptionBadSmells/NestedTryStatementExample.txt"));
 	}
 	
-	/**
-	 * DummyHandler & Empty Report 在其他 Class 已經有進行測試了
-	 * 在這邊只是確定設定檔不會影響本身的結果
-	 * @throws Exception
-	 */
+	private void invokeAnalysis() throws Exception {
+		Method getFilterSettings = ReportBuilder.class.getDeclaredMethod("getFilterSettings");
+		Method analysisProject = ReportBuilder.class.getDeclaredMethod("analysisProject", IProject.class);
+		getFilterSettings.setAccessible(true);
+		analysisProject.setAccessible(true);
+		getFilterSettings.invoke(reportBuilder);
+		analysisProject.invoke(reportBuilder, project);
+	}
+	
 	@Test
-	public void testDummyHandlerBadSmellReport() throws Exception {
-		CreateAllSettings();
-		reportBuilder.run();
-		assertTrue(reportModel.getDummyTotalSize() == 0);
-		assertTrue(reportModel.getEmptyCatchTotalSize() == 0);
-		CreateDummyAndEmptySettings();
-		reportBuilder.run();
-		assertTrue(reportModel.getDummyTotalSize() > 0);
-		assertTrue(reportModel.getEmptyCatchTotalSize() > 0);
+	public void testDummyHandlerAndEmptyCatchBlockBadSmellReport() throws Exception {
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_THROWS_EXCEPTION_IN_FINALLY_BLOCK) == 0);
+		
+		
+		CreateDummyAndIgnoreSettings();
+		
+		invokeAnalysis();
+		
+		assertEquals(59, reportModel.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER));
+		assertEquals(10, reportModel.getSmellSize(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_THROWS_EXCEPTION_IN_FINALLY_BLOCK));
+		assertEquals(69, reportModel.getAllSmellSize());
 	}
 	
 	@Test
 	public void testOnlyNestedTryBadSmellReport() throws Exception {
-		assertTrue(reportModel.getDummyTotalSize() == 0);
-		assertTrue(reportModel.getEmptyCatchTotalSize() == 0);
-		assertTrue(reportModel.getCarelessCleanupTotalSize() == 0);
-		assertTrue(reportModel.getNestedTryTotalSize() == 0);
-		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
-		assertTrue(reportModel.getUnMainTotalSize() == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN) == 0);
 		CreateNestedTrySettings();
 
-		Method getFilterSettings = ReportBuilder.class.getDeclaredMethod("getFilterSettings");
-		Method analysisProject = ReportBuilder.class.getDeclaredMethod("analysisProject", IProject.class);
-		getFilterSettings.setAccessible(true);
-		analysisProject.setAccessible(true);
-		getFilterSettings.invoke(reportBuilder);
-		analysisProject.invoke(reportBuilder, project);
+		invokeAnalysis();
 		
-		assertEquals(0, reportModel.getDummyTotalSize());
-		assertEquals(0, reportModel.getEmptyCatchTotalSize());
-		assertEquals(0, reportModel.getCarelessCleanupTotalSize());
-		assertEquals(27, reportModel.getNestedTryTotalSize());
-		assertEquals(0, reportModel.getOverLoggingTotalSize());
-		assertEquals(0, reportModel.getUnMainTotalSize());
-		assertEquals(27, reportModel.getTotalSmellCount());
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP));
+		assertEquals(27, reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN));
+		assertEquals(27, reportModel.getAllSmellSize());
 	}
 	
 	@Test
 	public void testOnlyUnprotectedMainProgramBadSmellReport() throws Exception {
-		assertTrue(reportModel.getDummyTotalSize() == 0);
-		assertTrue(reportModel.getEmptyCatchTotalSize() == 0);
-		assertTrue(reportModel.getCarelessCleanupTotalSize() == 0);
-		assertTrue(reportModel.getNestedTryTotalSize() == 0);
-		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
-		assertTrue(reportModel.getUnMainTotalSize() == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN) == 0);
 		CreateUnprotectedMainProgramSettings();
 
-		Method getFilterSettings = ReportBuilder.class.getDeclaredMethod("getFilterSettings");
-		Method analysisProject = ReportBuilder.class.getDeclaredMethod("analysisProject", IProject.class);
-		getFilterSettings.setAccessible(true);
-		analysisProject.setAccessible(true);
-		getFilterSettings.invoke(reportBuilder);
-		analysisProject.invoke(reportBuilder, project);
+		invokeAnalysis();
 		
-		assertEquals(0, reportModel.getDummyTotalSize());
-		assertEquals(0, reportModel.getEmptyCatchTotalSize());
-		assertEquals(0, reportModel.getCarelessCleanupTotalSize());
-		assertEquals(0, reportModel.getNestedTryTotalSize());
-		assertEquals(0, reportModel.getOverLoggingTotalSize());
-		assertEquals(6, reportModel.getUnMainTotalSize());
-		assertEquals(6, reportModel.getTotalSmellCount());
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING));
+		assertEquals(6, reportModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN));
+		assertEquals(6, reportModel.getAllSmellSize());
 	}
 	
 	@Test
 	public void testOnlyCarelessCleanupBadSmellReport() throws Exception {
-		assertTrue(reportModel.getDummyTotalSize() == 0);
-		assertTrue(reportModel.getEmptyCatchTotalSize() == 0);
-		assertTrue(reportModel.getCarelessCleanupTotalSize() == 0);
-		assertTrue(reportModel.getNestedTryTotalSize() == 0);
-		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
-		assertTrue(reportModel.getUnMainTotalSize() == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN) == 0);
 		CreateCarelessCleanupSettings();
 
-		Method getFilterSettings = ReportBuilder.class.getDeclaredMethod("getFilterSettings");
-		Method analysisProject = ReportBuilder.class.getDeclaredMethod("analysisProject", IProject.class);
-		getFilterSettings.setAccessible(true);
-		analysisProject.setAccessible(true);
-		getFilterSettings.invoke(reportBuilder);
-		analysisProject.invoke(reportBuilder, project);
+		invokeAnalysis();
 		
-		assertEquals(0, reportModel.getDummyTotalSize());
-		assertEquals(0, reportModel.getEmptyCatchTotalSize());
-		assertEquals(38, reportModel.getCarelessCleanupTotalSize());
-		assertEquals(0, reportModel.getNestedTryTotalSize());
-		assertEquals(0, reportModel.getOverLoggingTotalSize());
-		assertEquals(0, reportModel.getUnMainTotalSize());
-		assertEquals(38, reportModel.getTotalSmellCount());
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK));
+		assertEquals(38, reportModel.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN));
+		assertEquals(38, reportModel.getAllSmellSize());
 	}
 
 	@Test
 	public void testCreateOverloggingBadSmellReport() throws Exception {
-		assertTrue(reportModel.getDummyTotalSize() == 0);
-		assertTrue(reportModel.getEmptyCatchTotalSize() == 0);
-		assertTrue(reportModel.getCarelessCleanupTotalSize() == 0);
-		assertTrue(reportModel.getNestedTryTotalSize() == 0);
-		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
-		assertTrue(reportModel.getUnMainTotalSize() == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN) == 0);
 		CreateOverloggingSettings();
 
-		Method getFilterSettings = ReportBuilder.class.getDeclaredMethod("getFilterSettings");
-		Method analysisProject = ReportBuilder.class.getDeclaredMethod("analysisProject", IProject.class);
-		getFilterSettings.setAccessible(true);
-		analysisProject.setAccessible(true);
-		getFilterSettings.invoke(reportBuilder);
-		analysisProject.invoke(reportBuilder, project);
+		invokeAnalysis();
 		
-		assertEquals(0, reportModel.getDummyTotalSize());
-		assertEquals(0, reportModel.getEmptyCatchTotalSize());
-		assertEquals(0, reportModel.getCarelessCleanupTotalSize());
-		assertEquals(0, reportModel.getNestedTryTotalSize());
-		assertEquals(26, reportModel.getOverLoggingTotalSize());
-		assertEquals(0, reportModel.getUnMainTotalSize());
-		assertEquals(26, reportModel.getTotalSmellCount());
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
+		assertEquals(26, reportModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN));
+		assertEquals(26, reportModel.getAllSmellSize());
 	}
 	
 	@Test
 	public void testOnlyCarelessCleanupWithoutExtraRuleBadSmellReport() throws Exception {
-		assertTrue(reportModel.getDummyTotalSize() == 0);
-		assertTrue(reportModel.getEmptyCatchTotalSize() == 0);
-		assertTrue(reportModel.getCarelessCleanupTotalSize() == 0);
-		assertTrue(reportModel.getNestedTryTotalSize() == 0);
-		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
-		assertTrue(reportModel.getUnMainTotalSize() == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN) == 0);
 		CreateCarelessCleanupWithoutExtraRuleSettings();
 
-		Method getFilterSettings = ReportBuilder.class.getDeclaredMethod("getFilterSettings");
-		Method analysisProject = ReportBuilder.class.getDeclaredMethod("analysisProject", IProject.class);
-		getFilterSettings.setAccessible(true);
-		analysisProject.setAccessible(true);
-		getFilterSettings.invoke(reportBuilder);
-		analysisProject.invoke(reportBuilder, project);
-		
-		assertEquals(0, reportModel.getDummyTotalSize());
-		assertEquals(0, reportModel.getEmptyCatchTotalSize());
-		assertEquals(35, reportModel.getCarelessCleanupTotalSize());
-		assertEquals(0, reportModel.getNestedTryTotalSize());
-		assertEquals(0, reportModel.getOverLoggingTotalSize());
-		assertEquals(0, reportModel.getUnMainTotalSize());
-		assertEquals(35, reportModel.getTotalSmellCount());
+		invokeAnalysis();
+				
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK));
+		assertEquals(35, reportModel.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN));
+		assertEquals(35, reportModel.getAllSmellSize());
 	}
 	
 	@Test
 	public void testOnlyCarelessCleanupWithoutUserDefinitionBadSmellReport() throws Exception {
-		assertTrue(reportModel.getDummyTotalSize() == 0);
-		assertTrue(reportModel.getEmptyCatchTotalSize() == 0);
-		assertTrue(reportModel.getCarelessCleanupTotalSize() == 0);
-		assertTrue(reportModel.getNestedTryTotalSize() == 0);
-		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
-		assertTrue(reportModel.getUnMainTotalSize() == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN) == 0);
 		CreateCarelessCleanupWithoutUserDefinitionSettings();
 
-		Method getFilterSettings = ReportBuilder.class.getDeclaredMethod("getFilterSettings");
-		Method analysisProject = ReportBuilder.class.getDeclaredMethod("analysisProject", IProject.class);
-		getFilterSettings.setAccessible(true);
-		analysisProject.setAccessible(true);
-		getFilterSettings.invoke(reportBuilder);
-		analysisProject.invoke(reportBuilder, project);
+		invokeAnalysis();
 		
-		assertEquals(0, reportModel.getDummyTotalSize());
-		assertEquals(0, reportModel.getEmptyCatchTotalSize());
-		assertEquals(31, reportModel.getCarelessCleanupTotalSize());
-		assertEquals(0, reportModel.getNestedTryTotalSize());
-		assertEquals(0, reportModel.getOverLoggingTotalSize());
-		assertEquals(0, reportModel.getUnMainTotalSize());
-		assertEquals(31, reportModel.getTotalSmellCount());
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK));
+		assertEquals(31, reportModel.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN));
+		assertEquals(31, reportModel.getAllSmellSize());
 	}
 	
 	@Test
 	public void testOnlyOverloggingWithoutExtraRuleBadSmellReport() throws Exception {
-		assertTrue(reportModel.getDummyTotalSize() == 0);
-		assertTrue(reportModel.getEmptyCatchTotalSize() == 0);
-		assertTrue(reportModel.getCarelessCleanupTotalSize() == 0);
-		assertTrue(reportModel.getNestedTryTotalSize() == 0);
-		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
-		assertTrue(reportModel.getUnMainTotalSize() == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN) == 0);
 		CreateOverloggingWithoutExtraRuleSettings();
 
-		Method getFilterSettings = ReportBuilder.class.getDeclaredMethod("getFilterSettings");
-		Method analysisProject = ReportBuilder.class.getDeclaredMethod("analysisProject", IProject.class);
-		getFilterSettings.setAccessible(true);
-		analysisProject.setAccessible(true);
-		getFilterSettings.invoke(reportBuilder);
-		analysisProject.invoke(reportBuilder, project);
+		invokeAnalysis();
 		
-		assertEquals(0, reportModel.getDummyTotalSize());
-		assertEquals(0, reportModel.getEmptyCatchTotalSize());
-		assertEquals(0, reportModel.getCarelessCleanupTotalSize());
-		assertEquals(0, reportModel.getNestedTryTotalSize());
-		assertEquals(7, reportModel.getOverLoggingTotalSize());
-		assertEquals(0, reportModel.getUnMainTotalSize());
-		assertEquals(7, reportModel.getTotalSmellCount());
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
+		assertEquals(7, reportModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN));
+		assertEquals(7, reportModel.getAllSmellSize());
 	}
 	
 	@Test
 	public void testOnlyOverloggingWithoutUserDefinitioneBadSmellReport() throws Exception {
-		assertTrue(reportModel.getDummyTotalSize() == 0);
-		assertTrue(reportModel.getEmptyCatchTotalSize() == 0);
-		assertTrue(reportModel.getCarelessCleanupTotalSize() == 0);
-		assertTrue(reportModel.getNestedTryTotalSize() == 0);
-		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
-		assertTrue(reportModel.getUnMainTotalSize() == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN) == 0);
 		CreateOverloggingWithoutUserDefinition();
 
-		Method getFilterSettings = ReportBuilder.class.getDeclaredMethod("getFilterSettings");
-		Method analysisProject = ReportBuilder.class.getDeclaredMethod("analysisProject", IProject.class);
-		getFilterSettings.setAccessible(true);
-		analysisProject.setAccessible(true);
-		getFilterSettings.invoke(reportBuilder);
-		analysisProject.invoke(reportBuilder, project);
+		invokeAnalysis();
 		
-		assertEquals(0, reportModel.getDummyTotalSize());
-		assertEquals(0, reportModel.getEmptyCatchTotalSize());
-		assertEquals(0, reportModel.getCarelessCleanupTotalSize());
-		assertEquals(0, reportModel.getNestedTryTotalSize());
-		assertEquals(18, reportModel.getOverLoggingTotalSize());
-		assertEquals(0, reportModel.getUnMainTotalSize());
-		assertEquals(18, reportModel.getTotalSmellCount());
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
+		assertEquals(18, reportModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN));
+		assertEquals(18, reportModel.getAllSmellSize());
 	}
 	
 	/**
@@ -655,33 +479,28 @@ public class ReportBuilderIntergrationTest {
 	 */
 	@Test
 	public void testRemainBadSmellReport() throws Exception {
-		assertTrue(reportModel.getDummyTotalSize() == 0);
-		assertTrue(reportModel.getEmptyCatchTotalSize() == 0);
-		assertTrue(reportModel.getCarelessCleanupTotalSize() == 0);
-		assertTrue(reportModel.getNestedTryTotalSize() == 0);
-		assertTrue(reportModel.getOverLoggingTotalSize() == 0);
-		assertTrue(reportModel.getUnMainTotalSize() == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN) == 0);
 		CreateAllSettings();
 		
-		Method getFilterSettings = ReportBuilder.class.getDeclaredMethod("getFilterSettings");
-		Method analysisProject = ReportBuilder.class.getDeclaredMethod("analysisProject", IProject.class);
-		getFilterSettings.setAccessible(true);
-		analysisProject.setAccessible(true);
-		getFilterSettings.invoke(reportBuilder);
-		analysisProject.invoke(reportBuilder, project);
+		invokeAnalysis();
 		
-		assertEquals(0,reportModel.getDummyTotalSize());
-		assertEquals(0,reportModel.getEmptyCatchTotalSize());
-		assertEquals(38, reportModel.getCarelessCleanupTotalSize());
-		assertEquals(27, reportModel.getNestedTryTotalSize());
-		assertEquals(26, reportModel.getOverLoggingTotalSize());
-		assertEquals(6, reportModel.getUnMainTotalSize());
-		assertEquals(143, reportModel.getTryCounter());
-		assertEquals(154, reportModel.getCatchCounter());
+		assertEquals(0,reportModel.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER));
+		assertEquals(0,reportModel.getSmellSize(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK));
+		assertEquals(38, reportModel.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP));
+		assertEquals(27, reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
+		assertEquals(26, reportModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING));
+		assertEquals(6, reportModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN));
+		assertEquals(145, reportModel.getTryCounter());
+		assertEquals(156, reportModel.getCatchCounter());
 		assertEquals(31, reportModel.getFinallyCounter());
 		assertEquals(4, reportModel.getPackagesSize());
 		assertEquals(projectName, reportModel.getProjectName());
 		assertEquals(2196, reportModel.getTotalLine());
-		assertEquals(97, reportModel.getTotalSmellCount());
+		assertEquals(97, reportModel.getAllSmellSize());
 	}
 }

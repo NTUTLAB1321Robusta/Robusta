@@ -10,6 +10,7 @@ import ntut.csie.rleht.builder.RLMarkerAttribute;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TryStatement;
 
@@ -43,6 +44,18 @@ public class NestedTryStatementVisitor extends ASTVisitor {
 		return isDetectingNestedTryStatementSmell;
 	}
 	
+	
+	
+	@Override
+	public boolean visit(Initializer node) {
+		return isDetectingNestedTryStatementSmell;
+	}
+
+	@Override
+	public boolean visit(MethodDeclaration node) {
+		return isDetectingNestedTryStatementSmell;
+	}
+
 	@Override
 	public boolean visit(TryStatement node) {
 		ASTNode parentTryStatement = NodeUtils.getSpecifiedParentNode(node, ASTNode.TRY_STATEMENT);

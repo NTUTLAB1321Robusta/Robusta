@@ -11,6 +11,7 @@ import ntut.csie.csdet.report.ReportBuilderIntergrationTest;
 import ntut.csie.csdet.report.ReportBuilderTest;
 import ntut.csie.csdet.views.CarelessCleanupPageTest;
 import ntut.csie.csdet.visitor.ASTCatchCollectTest;
+import ntut.csie.csdet.visitor.BadSmellCollectorTest;
 import ntut.csie.csdet.visitor.CarelessCleanupVisitor2Test;
 import ntut.csie.csdet.visitor.CarelessCleanupVisitor3Test;
 import ntut.csie.csdet.visitor.CarelessCleanupVisitorTest;
@@ -87,6 +88,7 @@ import org.junit.runners.Suite;
 	VariableDeclarationStatementFinderVisitorTest.class,
 	RobustaSettingsTest.class,
 	ReportDescriptionTest.class,
+	BadSmellCollectorTest.class
 })
 public class AllJUnitPluginTests {
 }

@@ -4,24 +4,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TreeMap;
 
 import ntut.csie.csdet.data.MarkerInfo;
-import ntut.csie.csdet.data.SSMessage;
 import ntut.csie.csdet.preference.JDomUtil;
-import ntut.csie.csdet.visitor.CarelessCleanupVisitor;
-import ntut.csie.csdet.visitor.DummyHandlerVisitor;
-import ntut.csie.csdet.visitor.EmptyCatchBlockVisitor;
-import ntut.csie.csdet.visitor.NestedTryStatementVisitor;
-import ntut.csie.csdet.visitor.OverLoggingDetector;
-import ntut.csie.csdet.visitor.ThrowsExceptionInFinallyBlockVisitor;
-import ntut.csie.csdet.visitor.SuppressWarningVisitor;
+import ntut.csie.csdet.preference.RobustaSettings;
+import ntut.csie.csdet.visitor.BadSmellCollector;
 import ntut.csie.csdet.visitor.TryStatementCounterVisitor;
-import ntut.csie.csdet.visitor.UnprotectedMainProgramVisitor;
+import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 import ntut.csie.jcis.builder.core.internal.support.LOCCounter;
 import ntut.csie.jcis.builder.core.internal.support.LOCData;
-import ntut.csie.rleht.builder.ASTInitializerCollector;
-import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 
 import org.eclipse.core.resources.IProject;
@@ -36,8 +27,6 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.Initializer;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.jdom.Attribute;
 import org.jdom.Element;
 import org.slf4j.Logger;
@@ -132,195 +121,28 @@ public class ReportBuilder {
 	 */
 	private void setSmellInfo(ICompilationUnit icu, boolean isRecord,
 			PackageModel newPackageModel, String pkPath) {
-		List<SSMessage> suppressSmellList = null;
-
-		EmptyCatchBlockVisitor ecbVisitor = null;
-		DummyHandlerVisitor dhVisitor = null;
-		NestedTryStatementVisitor ntsVisitor = null;
-		UnprotectedMainProgramVisitor mainVisitor = null;
-		CarelessCleanupVisitor ccVisitor = null;
-		OverLoggingDetector loggingDetector = null;
-		TryStatementCounterVisitor counterVisitor = null;
-		ThrowsExceptionInFinallyBlockVisitor throwsInFinallyVisitor = null;
-
-		// 建構AST
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		parser.setSource(icu);
 		parser.setResolveBindings(true);
 		CompilationUnit root = (CompilationUnit) parser.createAST(null);
 
-		ASTMethodCollector methodCollector = new ASTMethodCollector();
-
-		root.accept(methodCollector);
-		// 取得專案中所有的method
-		List<MethodDeclaration> methodList = methodCollector.getMethodList();
-
 		ClassModel newClassModel = new ClassModel();
 		newClassModel.setClassName(icu.getElementName());
 		newClassModel.setClassPath(pkPath);
 
-		// 取得標記於各個 Method 的 SuppressSmell
-		TreeMap<String, Boolean> detMethodSmell = new TreeMap<String, Boolean>();
-		TreeMap<String, List<Integer>> detCatchSmell = new TreeMap<String, List<Integer>>();
-		for (MethodDeclaration method : methodList) {
-			SuppressWarningVisitor swVisitor = new SuppressWarningVisitor(root);
-			method.accept(swVisitor);
-			suppressSmellList = swVisitor.getSuppressWarningList();
-			
-			// SuppressSmell
-			inputSuppressData(suppressSmellList, detMethodSmell, detCatchSmell);
-		}
+		BadSmellCollector badSmellCollector = new BadSmellCollector(this.project, root);
+		badSmellCollector.run();
 		
-		// 取得專案中的Nested Try Statement
-		ntsVisitor = new NestedTryStatementVisitor(root);
-		root.accept(ntsVisitor);
-		List<MarkerInfo> nestedTryList = checkCatchSmell(ntsVisitor.getNestedTryStatementList(), detCatchSmell.get(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
-		newClassModel.addNestedTryList(nestedTryList);
-		model.addNestedTotalTrySize(nestedTryList.size());
-		
-		//Dummy handler in the initializer block
-		ASTInitializerCollector initializerCollector = new ASTInitializerCollector();
-		root.accept(initializerCollector);
-		for(Initializer initializer : initializerCollector.getInitializerList()) {
-			if (detMethodSmell.get(RLMarkerAttribute.CS_DUMMY_HANDLER)) {
-				dhVisitor = new DummyHandlerVisitor(root);
-				initializer.accept(dhVisitor);
-				List<MarkerInfo> dummyList = checkCatchSmell(dhVisitor.getDummyList(), detCatchSmell.get(RLMarkerAttribute.CS_DUMMY_HANDLER));
-				newClassModel.setDummyList(dummyList, initializer.getClass().getSimpleName());
-				model.addDummyTotalSize(dummyList.size());
-			}
-		}
-		
-		// 目前的Method AST Node
-		for (MethodDeclaration method : methodList) {
-			// 取得專案中的 Empty Catch Block
-			if (detMethodSmell.get(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK)) {
-				ecbVisitor = new EmptyCatchBlockVisitor(root);
-				method.accept(ecbVisitor);
-				List<MarkerInfo> emptyCatchList = checkCatchSmell(ecbVisitor.getEmptyCatchList(), detCatchSmell.get(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK));
-				newClassModel.setEmptyCatchList(emptyCatchList, method.getName().toString());
-				model.addEmptyTotalSize(emptyCatchList.size());
-			}
-			// 取得專案中dummy handler
-			if (detMethodSmell.get(RLMarkerAttribute.CS_DUMMY_HANDLER)) {
-				dhVisitor = new DummyHandlerVisitor(root);
-				method.accept(dhVisitor);
-				List<MarkerInfo> dummyList = checkCatchSmell(dhVisitor.getDummyList(), detCatchSmell.get(RLMarkerAttribute.CS_DUMMY_HANDLER));
-				newClassModel.setDummyList(dummyList, method.getName().toString());
-				model.addDummyTotalSize(dummyList.size());
-			}
-			// 尋找該method內的unprotected main program
-			mainVisitor = new UnprotectedMainProgramVisitor(root);
-			method.accept(mainVisitor);
-			if (detMethodSmell.get(RLMarkerAttribute.CS_UNPROTECTED_MAIN)) {
-				newClassModel.setUnprotectedMain(mainVisitor.getUnprotedMainList(), method.getName().toString());
-				model.addUnMainTotalSize(mainVisitor.getUnprotedMainList().size());
-			}
-			// 找尋專案中所有的Careless Cleanup
-			ccVisitor = new CarelessCleanupVisitor(root);
-			method.accept(ccVisitor);
-			if (detMethodSmell.get(RLMarkerAttribute.CS_CARELESS_CLEANUP)) {
-				newClassModel.setCarelessCleanup(ccVisitor.getCarelessCleanupList(), method.getName().toString());
-				model.addCarelessCleanupSize(ccVisitor.getCarelessCleanupList().size());
-			}
-			// 尋找該method內的OverLogging
-			loggingDetector = new OverLoggingDetector(root, method);
-			loggingDetector.detect();
-			if (detMethodSmell.get(RLMarkerAttribute.CS_OVER_LOGGING)) {
-				List<MarkerInfo> olList = checkCatchSmell(loggingDetector.getOverLoggingList(), detCatchSmell.get(RLMarkerAttribute.CS_OVER_LOGGING));
-				newClassModel.setOverLogging(olList, method.getName().toString());
-				model.addOverLoggingSize(olList.size());
-			}
-			
-			// 找尋專案中所有的 Throws Exception In Finally Block
-			throwsInFinallyVisitor = new ThrowsExceptionInFinallyBlockVisitor(root);
-			method.accept(throwsInFinallyVisitor);
-			if(detMethodSmell.get(RLMarkerAttribute.CS_THROWS_EXCEPTION_IN_FINALLY_BLOCK)) {
-				List<MarkerInfo> owList = checkCatchSmell(throwsInFinallyVisitor.getThrowsInFinallyList(), detCatchSmell.get(RLMarkerAttribute.CS_THROWS_EXCEPTION_IN_FINALLY_BLOCK));
-				newClassModel.setThrowsInFinally(owList, method.getName().toString());
-				model.addThrowsInFinallySize(owList.size());
-			}
-			// 記錄Code Information
-			counterVisitor = new TryStatementCounterVisitor();
-			method.accept(counterVisitor);
+		newClassModel.addSmellList(badSmellCollector.getAllBadSmells());
+				
+		TryStatementCounterVisitor counterVisitor = new TryStatementCounterVisitor();
+		root.accept(counterVisitor);
 			model.addTryCounter(counterVisitor.getTryCount());
 			model.addCatchCounter(counterVisitor.getCatchCount());
 			model.addFinallyCounter(counterVisitor.getFinallyCount());
-		}
-		// 記錄到ReportModel中
+		
 		newPackageModel.addClassModel(newClassModel);
-	}
-
-	/**
-	 * @param csVisitor
-	 * @param detCatchSmell
-	 * @param allSmellList
-	 * @return
-	 */
-	private List<MarkerInfo> checkCatchSmell(List<MarkerInfo> allSmellList, List<Integer> posList) {
-		List<MarkerInfo> smellList = new ArrayList<MarkerInfo>();
-		if (posList != null && posList.size() == 0)
-			smellList = allSmellList;
-		else {
-			for (MarkerInfo msg : allSmellList) {
-				if (!suppressMarker(posList, msg.getPosition()))
-					smellList.add(msg);
-			}
-		}
-		return smellList;
-	}
-
-	/**
-	 * 判斷是否要不貼Marker
-	 * 
-	 * @param smellPosList
-	 * @param pos
-	 * @return
-	 */
-	private boolean suppressMarker(List<Integer> smellPosList, int pos) {
-		if(smellPosList != null) {
-			for (Integer index : smellPosList)
-				// 若Catch位置相同，表示要抑制的Marker為同一個Marker
-				if (pos == index)
-					return true;
-		}
-		return false;
-	}
-
-	/**
-	 * 儲存Suppress Smell的設定
-	 * 
-	 * @param suppressSmellList
-	 * @param detMethodSmell
-	 * @param detCatchSmell
-	 */
-	private void inputSuppressData(	List<SSMessage> suppressSmellList,
-									TreeMap<String, Boolean> detMethodSmell,
-									TreeMap<String, List<Integer>> detCatchSmell) {
-		// 初始化設定，預設每個Smell都偵測
-		for (String smellType : RLMarkerAttribute.CS_TOTAL_TYPE)
-			detMethodSmell.put(smellType, true);
-
-		for (String smellType : RLMarkerAttribute.CS_CATCH_TYPE)
-			detCatchSmell.put(smellType, new ArrayList<Integer>());
-
-		for (SSMessage msg : suppressSmellList) {
-			// 若為Method上的設定
-			if (!msg.isInCatch()) {
-				// 若使用者偵測哪個Smell不偵測，就把該Smell偵測設定為false
-				for (String smellType : msg.getSmellList())
-					detMethodSmell.put(smellType, false);
-				// 若為Catch內的設定
-			} else {
-				// 若使用者設定Catch內Smell不偵測，記錄該Smell所在的Catch位置
-				for (String smellType : msg.getSmellList()) {
-					List<Integer> smellPosList = detCatchSmell.get(smellType);
-					if (smellPosList != null)
-						smellPosList.add(msg.getPosition());
-				}
-			}
-		}
 	}
 
 	/**
@@ -330,12 +152,14 @@ public class ReportBuilder {
 	private void analysisProject(IProject project) {
 		// 取得專案的路徑
 		IJavaProject javaPrj = JavaCore.create(project);
-		String workPath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toString();
-		model.setProjectPath(workPath + javaPrj.getPath());
+		model.setProjectPath(project.getLocation().toString());
 
 		try {
 			List<IPackageFragmentRoot> root = getSourcePaths(javaPrj);
 			for (int i = 0; i < root.size(); i++) {
+				//Check if the user dont want to detect some root source folders.
+				if(!shouldDetectPackageFragmentRoot(root.get(i)))
+					continue;
 				// 取得Folder的名稱
 				String folderName = root.get(i).getElementName();
 				// 取得Root底下的所有Package
@@ -356,11 +180,11 @@ public class ReportBuilder {
 						// 若要紀錄則新增Package
 						if (isRecord) {
 							if (compilationUnits.length != 0) {
-								// 建立PackageModel
-								newPackageModel = model.addSmellList(iPackageFgt.getElementName());
+								newPackageModel = new PackageModel();
+								//設置Package名稱
+								newPackageModel.setPackageName(iPackageFgt.getElementName());
 								// 記錄Package的Folder名稱
 								newPackageModel.setFolderName(root.get(i).getElementName());
-							}
 
 							// 取得Package底下的所有class的smell資訊
 							for (int k = 0; k < compilationUnits.length; k++) {
@@ -371,6 +195,8 @@ public class ReportBuilder {
 								// 紀錄到Package中
 								newPackageModel.addTotalLine(codeLines);
 							}
+								model.addPackageModel(newPackageModel);
+							}
 						}
 					}
 				}
@@ -378,6 +204,10 @@ public class ReportBuilder {
 		} catch (JavaModelException e) {
 			logger.error("[Java Model Exception] EXCEPTION ", e);
 		}
+	}
+	private boolean shouldDetectPackageFragmentRoot(IPackageFragmentRoot root) {
+		RobustaSettings robustaSettings = new RobustaSettings(new File(UserDefinedMethodAnalyzer.getRobustaSettingXMLPath(project)), project);
+		return robustaSettings.getProjectDetectAttribute(root.getPath().segment(1).toString());
 	}
 
 	/**

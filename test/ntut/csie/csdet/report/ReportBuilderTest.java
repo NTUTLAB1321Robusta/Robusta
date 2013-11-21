@@ -24,6 +24,7 @@ import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.exceptionBadSmells.DummyAndEmptyExample;
 import ntut.csie.filemaker.exceptionBadSmells.UserDefineDummyHandlerFish;
 import ntut.csie.rleht.builder.ASTMethodCollector;
+import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.robusta.util.PathUtils;
 
 import org.eclipse.core.resources.IProject;
@@ -393,75 +394,6 @@ public class ReportBuilderTest {
 	}
 	
 	@Test
-	public void testInputSuppressData() throws Exception {
-		Method inputSuppressData = ReportBuilder.class.getDeclaredMethod("inputSuppressData", List.class, TreeMap.class, TreeMap.class);
-		inputSuppressData.setAccessible(true);
-		
-		ASTMethodCollector methodCollector = new ASTMethodCollector();
-		compilationUnit.accept(methodCollector);
-		// 取得專案中所有的method
-		List<MethodDeclaration> methodList = methodCollector.getMethodList();
-		
-		for(int i = 0; i < methodList.size(); i++) {
-			SuppressWarningVisitor visitor = new SuppressWarningVisitor(compilationUnit);
-			methodList.get(i).accept(visitor);
-			List<SSMessage> suppressSmellList = visitor.getSuppressWarningList();
-			TreeMap<String, Boolean> detMethodSmell = new TreeMap<String, Boolean>();
-			TreeMap<String, List<Integer>> detCatchSmell = new TreeMap<String, List<Integer>>();
-			inputSuppressData.invoke(reportBuilder, suppressSmellList, detMethodSmell, detCatchSmell);
-			// FIXME - 由於目前測試範本沒有suppress marker範例，故suppressSmellList為0
-			assertEquals(0, suppressSmellList.size());
-			assertEquals(7, detMethodSmell.size());
-			assertEquals(3, detCatchSmell.size());
-		}
-	}
-	
-	@Test
-	public void testSuppressMarker() throws Exception {
-		Method suppressMarker = ReportBuilder.class.getDeclaredMethod("suppressMarker", List.class, int.class);
-		suppressMarker.setAccessible(true);
-		
-		List<Integer> smellPosList = new ArrayList<Integer>();
-		for(int i = 0; i < 10; i+=2) {
-			smellPosList.add(i);
-		}
-		for(int i = 0; i < 10; i++) {
-			if(i%2 == 0)
-				assertTrue((Boolean)suppressMarker.invoke(reportBuilder, smellPosList, i));
-			else
-				assertFalse((Boolean)suppressMarker.invoke(reportBuilder, smellPosList, i));
-		}
-	}
-	
-	@Test
-	public void testCheckCatchSmell() throws Exception {
-		Method checkCatchSmell = ReportBuilder.class.getDeclaredMethod("checkCatchSmell", List.class, List.class);
-		checkCatchSmell.setAccessible(true);
-		
-		DummyHandlerVisitor dhVisitor = new DummyHandlerVisitor(compilationUnit);
-		ASTMethodCollector methodCollector = new ASTMethodCollector();
-		compilationUnit.accept(methodCollector);
-		// 取得專案中所有的method
-		List<MethodDeclaration> methodList = methodCollector.getMethodList();
-		methodList.get(10).accept(dhVisitor);
-		/* FIXME - 暫時轉換用，等全部都換成MarkerInfo就不需要這個LOOP */
-		List<MarkerInfo> dhList = dhVisitor.getDummyList();
-		List<MarkerInfo> tempList = new ArrayList<MarkerInfo>();
-		for(int i = 0; i < dhList.size(); i++) {
-			MarkerInfo message = new MarkerInfo(dhList.get(i).getCodeSmellType(), dhList.get(i).getTypeBinding(), dhList.get(i).getStatement(), dhList.get(i).getPosition(), dhList.get(i).getLineNumber(), dhList.get(i).getExceptionType());
-			tempList.add(message);
-		}
-		
-		List<MarkerInfo> result = null;
-		result = (List<MarkerInfo>)checkCatchSmell.invoke(reportBuilder, tempList, null);
-		assertEquals(2, result.size());
-		
-		List<Integer> posList = new ArrayList<Integer>();
-		result = (List<MarkerInfo>)checkCatchSmell.invoke(reportBuilder, tempList, posList);
-		assertEquals(2, result.size());
-	}
-	
-	@Test
 	public void testSetSmellInfo() throws Exception {
 		Method setSmellInfo = ReportBuilder.class.getDeclaredMethod("setSmellInfo", ICompilationUnit.class, boolean.class, PackageModel.class, String.class);
 		setSmellInfo.setAccessible(true);
@@ -482,22 +414,24 @@ public class ReportBuilderTest {
 					// 取得Package底下的class
 					ICompilationUnit[] compilationUnits = iPackageFgt.getCompilationUnits();
 					for(int j = 0; j < compilationUnits.length; j++) {
-						PackageModel newPackageModel = reportModel.addSmellList(iPackageFgt.getElementName());
+						PackageModel newPackageModel = new PackageModel();
+						newPackageModel.setPackageName(iPackageFgt.getElementName());
 						setSmellInfo.invoke(reportBuilder, compilationUnits[j], true, newPackageModel, iPackageFgt.getPath().toString());
+						reportModel.addPackageModel(newPackageModel);
 					}
 				}
 			}
 		}
-		assertEquals(25, reportModel.getTryCounter());
-		assertEquals(25, reportModel.getCatchCounter());
+		assertEquals(26, reportModel.getTryCounter());
+		assertEquals(26, reportModel.getCatchCounter());
 		assertEquals(2, reportModel.getFinallyCounter());
-		assertEquals(0, reportModel.getCarelessCleanupTotalSize());
+		assertEquals(4, reportModel.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP));
 		//19 dummy handler in methods and 1 dummy handler in an initializer
-		assertEquals(20, reportModel.getDummyTotalSize());
-		assertEquals(0, reportModel.getEmptyCatchTotalSize());
+		assertEquals(20, reportModel.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER));
+		assertEquals(1, reportModel.getSmellSize(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK));
 		// 例子內其實有三個 NT，但因為設定檔並沒有要偵測 NT，故數量為 0
-		assertEquals(0, reportModel.getNestedTryTotalSize());
-		assertEquals(0, reportModel.getOverLoggingTotalSize());
+		assertEquals(3, reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
+		assertEquals(28, reportModel.getAllSmellSize());
 	}
 	
 	@Test

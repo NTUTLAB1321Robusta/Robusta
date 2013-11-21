@@ -114,7 +114,8 @@ public class SmellSettings {
 				return Boolean.parseBoolean(smellTypeElement.getAttributeValue(ATTRIBUTE_ISDETECTING));
 			}
 		}
-		return false;
+		//If the setting was not set in the configuration file, set it to TRUE as default
+		return true;
 	}
 	
 	/**

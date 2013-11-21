@@ -3,6 +3,7 @@ package ntut.csie.csdet.report;
 import java.util.ArrayList;
 import java.util.List;
 
+import ntut.csie.csdet.data.MarkerInfo;
 /**
  * 存取Package內的Report相關資訊
  * @author Shiau
@@ -52,59 +53,20 @@ public class PackageModel {
 			return classModel.get(i);
 	}
 		
-	///取得此Package的Smell數量///
-	public int getEmptySize() {
-		int emptySize = 0;
-		for (ClassModel cm : classModel)
-			emptySize += cm.getEmptySize();
-
-		return emptySize;
+	public int getSmellSize(String type) {
+		int size = 0;
+		for (ClassModel model : classModel) {
+			size += model.getSmellSize(type);
+		}
+		return size;
 	}
-	public int getDummySize() {
-		int dummySize = 0;
-		for (ClassModel cm : classModel)
-			dummySize += cm.getDummySize();
-
-		return dummySize;
-	}
-	public int getUnMainSize() {
-		int unMainSize = 0;
-		for (ClassModel cm : classModel)
-			unMainSize += cm.getUnMainSize();
-
-		return unMainSize;
-	}
-	public int getNestedTrySize() {
-		int nestedTrySize = 0;
-		for (ClassModel cm : classModel)
-			nestedTrySize += cm.getNestedTrySize();
-
-		return nestedTrySize;
-	}
-	public int getCarelessCleanupSize() {
-		int carelessCleanupSize = 0;
-		for (ClassModel cm : classModel)
-			carelessCleanupSize += cm.getCarelessCleanupSize();
-
-		return carelessCleanupSize;
-	}
-	public int getOverLoggingSize() {
-		int overLoggingSize = 0;
-		for (ClassModel cm : classModel)
-			overLoggingSize += cm.getOverLoggingSize();
-
-		return overLoggingSize;
-	}
-	public int getThrowsInFinallySize() {
-		int throwsInFinallySize = 0;
-		for (ClassModel cm : classModel)
-			throwsInFinallySize += cm.getThrowsInFinallySize();
-
-		return throwsInFinallySize;
-	}
-	public int getTotalSmellSize() {
-		return getEmptySize() + getDummySize() + getNestedTrySize() + getUnMainSize() +
-			   getCarelessCleanupSize() + getOverLoggingSize() + getThrowsInFinallySize();
+	
+	public int getAllSmellSize() {
+		int size = 0;
+		for (ClassModel model : classModel) {
+			size += model.getSmellSize();
+		}
+		return size;
 	}
 	
 	//存取程式的LOC

@@ -25,19 +25,23 @@ public class MarkerInfo {
 	private boolean inTry = false;
 	private ITypeBinding[] methodThrownExceptions;
 	private String methodName;
+	private int methodIndex = -1;
+	private int badSmellIndex = 0;
 	
+	public int getBadSmellIndex() {
+		return badSmellIndex;
+	}
+
+	public void setBadSmellIndex(int badSmellIndex) {
+		this.badSmellIndex = badSmellIndex;
+	}
+
 	/*
 	 * 除了NT以外目前都用這個，未來應改為與NT相同
 	 */
 	public MarkerInfo(String type, ITypeBinding typeBinding, String statement, int pos, int lineNumber, String exceptionType) {
-		this.cstype = type;
-		this.typeBinding = typeBinding;
-		this.statement = statement;
-		this.position = pos;
-		this.lineNumber = lineNumber;
-		this.exceptionType = exceptionType;
 		// Method Name 未定義，先給空字串
-		methodName = "";
+		this(type, typeBinding, statement, pos, lineNumber, exceptionType, "");
 	}
 
 	/*
@@ -162,4 +166,17 @@ public class MarkerInfo {
 	public String getMethodName() {
 		return methodName;
 	}
+	
+	public void setMethodName(String methodName) {
+		this.methodName = methodName;
+	}
+
+	public int getMethodIndex() {
+		return methodIndex;
+	}
+
+	public void setMethodIndex(int methodIndex) {
+		this.methodIndex = methodIndex;
+	}
+	
 }
