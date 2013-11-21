@@ -127,7 +127,7 @@ public class BadSmellCollectorTest {
 	public void testGetBadSmells() throws Exception {
 		CompilationUnit root = getCompilationUnit(SuppressWarningExampleForAnalyzer.class);
 		BadSmellCollector collector = new BadSmellCollector(project, root);
-		collector.run();
+		collector.collectBadSmell();
 		assertEquals(12, collector.getBadSmells(RLMarkerAttribute.CS_DUMMY_HANDLER).size());
 		assertEquals(4, collector.getBadSmells(RLMarkerAttribute.CS_CARELESS_CLEANUP).size());
 		assertEquals(7, collector.getBadSmells(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK).size());
@@ -142,7 +142,7 @@ public class BadSmellCollectorTest {
 	public void testGetAllBadSmells() throws Exception {
 		CompilationUnit root = getCompilationUnit(SuppressWarningExampleForAnalyzer.class);
 		BadSmellCollector collector = new BadSmellCollector(project, root);
-		collector.run();
+		collector.collectBadSmell();
 		assertEquals(34, collector.getAllBadSmells().size());
 	}
 

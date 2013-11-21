@@ -132,7 +132,7 @@ public class ReportBuilder {
 		newClassModel.setClassPath(pkPath);
 
 		BadSmellCollector badSmellCollector = new BadSmellCollector(this.project, root);
-		badSmellCollector.run();
+		badSmellCollector.collectBadSmell();
 		
 		newClassModel.addSmellList(badSmellCollector.getAllBadSmells());
 				

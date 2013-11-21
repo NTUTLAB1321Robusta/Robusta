@@ -35,7 +35,7 @@ public class BadSmellCollector {
 		this.robustaSettings = new RobustaSettings(UserDefinedMethodAnalyzer.getRobustaSettingXMLPath(project), project);
 	}
 	
-	public void run() {
+	public void collectBadSmell() {
 		
 		DummyHandlerVisitor dmhVisitor = new DummyHandlerVisitor(root);
 		EmptyCatchBlockVisitor emptyCatchBlockVisitor = new EmptyCatchBlockVisitor(root);

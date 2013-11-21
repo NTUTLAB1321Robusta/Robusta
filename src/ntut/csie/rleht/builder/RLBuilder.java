@@ -225,7 +225,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				List<SSMessage> suppressSmellList = null;
 				
 				BadSmellCollector badSmellCollector = new BadSmellCollector(getProject(), root);
-				badSmellCollector.run();
+				badSmellCollector.collectBadSmell();
 				List<MarkerInfo> badSmellList = badSmellCollector.getAllBadSmells();
 				
 				for(int i = 0; i<badSmellList.size(); i++)
