@@ -349,11 +349,7 @@ public class ReportBuilder {
 	 * @return class的LOC數
 	 */
 	private int countFileLOC(String filePath) {
-		// 取得class路徑
-		String workspace = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
-		String path = workspace + filePath;
-
-		File file = new File(path);
+		File file = new File(project.getLocation().toString() + "/.." + filePath);
 
 		// 若Class存在，計算Class
 		if (file.exists()) {
