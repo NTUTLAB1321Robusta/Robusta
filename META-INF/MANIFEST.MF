@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
-Bundle-SymbolicName: Robusta;singleton:=true
+Bundle-SymbolicName: csie.ntut.robusta;singleton:=true
 Bundle-Version: 1.1.0
 Bundle-Activator: ntut.csie.rleht.RLEHTPlugin
 Bundle-Vendor: %Bundle-Vendor

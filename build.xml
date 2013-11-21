@@ -24,7 +24,7 @@
 	<property name="update-id" value="ntut.csie.robusta_1.1.0"/>
 	<property name="eclipse-public-license" value="epl-v10.html"/>
 	<property name="notice" value="notice.html"/>
-	<property name="plugin-name" value="Robusta" />
+	<property name="plugin-bundle-name" value="csie.ntut.robusta" />
 	<property name="pde-test-data" value="${basedir}/../../junit-workspace" />
 	<property name="pde-test-dev" value="file:${basedir}/../.metadata/.plugins/org.eclipse.pde.core/pde-junit/dev.properties" />
 		
@@ -272,7 +272,7 @@
 			<arg line="-ws win32" />
 			<arg line="-arch x86_64" />
 			<arg line="-port ${pde.test.port}" />
-			<arg line="-testpluginname ${plugin-name}" />
+			<arg line="-testpluginname ${plugin-bundle-name}" />
 			<arg line="-testLoaderClass org.eclipse.jdt.internal.junit4.runner.JUnit4TestLoader" />
 			<arg line="-loaderpluginname org.eclipse.jdt.junit4.runtime" />
 			<arg line="-classNames ntut.csie.AllTest.AllJUnitPluginTests" /> <!-- ntut.csie.AllTest.AllJUnitPluginTests -->
@@ -336,8 +336,8 @@
 			<jar destfile="${plugin-folder}/${jar-file-name}" filesetmanifest="mergewithoutmain" basedir="${bin-folder}" excludes="**/filemaker/, **/*Test.class">
 				<!--<manifest>
 					<attribute name="Bundle-ManifestVersion" value="2"/>
-					<attribute name="Bundle-Name" value="Robusta Plug-in"/>
-					<attribute name="Bundle-SymbolicName" value="Robusta; singleton:=true"/>
+					<attribute name="Bundle-Name" value="Robusta"/>
+					<attribute name="Bundle-SymbolicName" value="csie.ntut.robusta; singleton:=true"/>
 					<attribute name="Bundle-Version" value="1.1.0"/>
 					<attribute name="Bundle-Activator" value="ntut.csie.rleht.RLEHTPlugin"/>
 					<attribute name="Bundle-Vendor" value="NTUT CSIE, Taipei Tech, Software Systems Lab"/>

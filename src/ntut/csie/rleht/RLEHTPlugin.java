@@ -15,7 +15,7 @@ public class RLEHTPlugin extends AbstractUIPlugin {
 	private static Logger logger = LoggerFactory.getLogger(RLEHTPlugin.class);
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "Robusta";
+	public static final String PLUGIN_ID = "csie.ntut.robusta";
 
 	// The shared instance
 	private static RLEHTPlugin plugin;

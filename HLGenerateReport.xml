@@ -55,7 +55,7 @@
 		<echo message="Building Bad Smell Report"/>
 		<exec executable="${ECLIPSE_HOME}/eclipsec" failonerror="yes">
 			<arg line="-nosplash"/>
-			<arg line="-application Robusta.standalone"/>
+			<arg line="-application csie.ntut.robusta.standalone"/>
 			<arg line="-data ${WORKSPACE_PATH}"/>
 			<arg line="${DESTINATION_PROJECT_PATH}"/>
 		</exec>
