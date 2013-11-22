@@ -137,7 +137,7 @@ public class SmellReport {
 				.addContent(String.valueOf(model.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN))));
 		smellList.addContent(new Element("NestedTryStatement").addContent(String
 				.valueOf(model.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT))));
-		smellList.addContent(new Element("CarelessCleanUp").addContent(String
+		smellList.addContent(new Element("CarelessCleanup").addContent(String
 				.valueOf(model.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP))));
 		smellList.addContent(new Element("OverLogging").addContent(String
 				.valueOf(model.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING))));
@@ -194,7 +194,7 @@ public class SmellReport {
 					.addContent(String.valueOf(packageModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN))));
 			packages.addContent(new Element("NestedTryStatement").addContent(String
 					.valueOf(packageModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT))));
-			packages.addContent(new Element("CarelessCleanUp")
+			packages.addContent(new Element("CarelessCleanup")
 					.addContent(String.valueOf(packageModel
 							.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP))));
 			packages.addContent(new Element("OverLogging").addContent(String
