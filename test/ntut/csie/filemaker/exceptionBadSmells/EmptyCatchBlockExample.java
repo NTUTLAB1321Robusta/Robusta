@@ -30,7 +30,7 @@ public class EmptyCatchBlockExample {
 				}
 			} catch (IOException e) {	// EmptyCatchBlock
 			} finally {
-				fis.close();	// ThrowsExceptionInFinallyBlock
+				fis.close();	// ThrownExceptionInFinallyBlock
 			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);

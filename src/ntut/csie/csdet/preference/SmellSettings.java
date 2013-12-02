@@ -57,7 +57,7 @@ public class SmellSettings {
 	public final static String SMELL_UNPROTECTEDMAINPROGRAM = "UnprotectedMainProgram";
 	public final static String SMELL_OVERLOGGING = "OverLogging";
 	public final static String SMELL_CARELESSCLEANUP = "CarelessCleanup";
-	public final static String SMELL_THROWSEXCEPTIONINFINALLYBLOCK = "ThrowsExceptionInFinallyBlock";
+	public final static String SMELL_THROWNEXCEPTIONINFINALLYBLOCK = "ThrownExceptionInFinallyBlock";
 	public final static String ANNOTATION_ROBUSTNESSLEVEL = "RobustnessLevel";
 
 	/** 例外轉型後繼續偵測 */

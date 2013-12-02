@@ -92,7 +92,7 @@ public class BarChart {
 		data.addValue(model.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT), "", "Nested try statemet");
 		data.addValue(model.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP), "", "Careless Cleanup");
 		data.addValue(model.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING), "", "Over Logging");
-		data.addValue(model.getSmellSize(RLMarkerAttribute.CS_THROWS_EXCEPTION_IN_FINALLY_BLOCK), "", "Throw exception in finally block");
+		data.addValue(model.getSmellSize(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK), "", "Throw exception in finally block");
 		return data;				
 	}
 	

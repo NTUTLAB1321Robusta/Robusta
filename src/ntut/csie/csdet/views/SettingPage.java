@@ -194,7 +194,7 @@ public class SettingPage extends APropertyPage {
 		smellElements[3] = smellSettings.getSmellType(SmellSettings.SMELL_UNPROTECTEDMAINPROGRAM);
 		smellElements[4] = smellSettings.getSmellType(SmellSettings.SMELL_CARELESSCLEANUP);
 		smellElements[5] = smellSettings.getSmellType(SmellSettings.SMELL_OVERLOGGING);
-		smellElements[6] = smellSettings.getSmellType(SmellSettings.SMELL_THROWSEXCEPTIONINFINALLYBLOCK);
+		smellElements[6] = smellSettings.getSmellType(SmellSettings.SMELL_THROWNEXCEPTIONINFINALLYBLOCK);
 		
 		for(int i = 0; i < RLMarkerAttribute.CS_TOTAL_TYPE.length; i++) {
 			detSmellList[i] = Boolean.parseBoolean(smellElements[i].getAttributeValue(SmellSettings.ATTRIBUTE_ISDETECTING));
@@ -396,7 +396,7 @@ public class SettingPage extends APropertyPage {
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_UNPROTECTEDMAINPROGRAM, SmellSettings.ATTRIBUTE_ISDETECTING, item[3].getChecked());
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.ATTRIBUTE_ISDETECTING, item[4].getChecked());
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_OVERLOGGING, SmellSettings.ATTRIBUTE_ISDETECTING, item[5].getChecked());
-		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_THROWSEXCEPTIONINFINALLYBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, item[6].getChecked());
+		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_THROWNEXCEPTIONINFINALLYBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, item[6].getChecked());
 
 		smellSettings.setPreferenceAttribute(SmellSettings.PRE_SHOWRLANNOTATIONWARNING, SmellSettings.ATTRIBUTE_ENABLE, preferenceList[0]);
 		//將檔案寫回

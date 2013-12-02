@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.preference.JDomUtil;
 import ntut.csie.csdet.preference.RobustaSettings;
 import ntut.csie.csdet.visitor.BadSmellCollector;
@@ -13,10 +12,8 @@ import ntut.csie.csdet.visitor.TryStatementCounterVisitor;
 import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 import ntut.csie.jcis.builder.core.internal.support.LOCCounter;
 import ntut.csie.jcis.builder.core.internal.support.LOCData;
-import ntut.csie.rleht.builder.RLMarkerAttribute;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;

@@ -19,7 +19,7 @@ import ntut.csie.csdet.visitor.DummyHandlerVisitorTest;
 import ntut.csie.csdet.visitor.EmptyCatchBlockVisitorTest;
 import ntut.csie.csdet.visitor.NestedTryStatementVisitorTest;
 import ntut.csie.csdet.visitor.OverLoggingVisitorTest;
-import ntut.csie.csdet.visitor.ThrowsExceptionInFinallyBlockVisitorTest;
+import ntut.csie.csdet.visitor.ThrownExceptionInFinallyBlockVisitorTest;
 import ntut.csie.csdet.visitor.SpareHandlerVisitorTest;
 import ntut.csie.csdet.visitor.SuppressWarningVisitorTest;
 import ntut.csie.csdet.visitor.TryStatementCounterVisitorTest;
@@ -62,7 +62,7 @@ import org.junit.runners.Suite;
 	EmptyCatchBlockVisitorTest.class,
 	NestedTryStatementVisitorTest.class,
 	OverLoggingVisitorTest.class,
-	ThrowsExceptionInFinallyBlockVisitorTest.class,
+	ThrownExceptionInFinallyBlockVisitorTest.class,
 	SpareHandlerVisitorTest.class,
 	SuppressWarningVisitorTest.class,
 	TryStatementCounterVisitorTest.class,

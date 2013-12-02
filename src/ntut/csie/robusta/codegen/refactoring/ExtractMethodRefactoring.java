@@ -3,7 +3,7 @@ package ntut.csie.robusta.codegen.refactoring;
 import java.util.List;
 
 import ntut.csie.csdet.data.MarkerInfo;
-import ntut.csie.csdet.visitor.ThrowsExceptionInFinallyBlockVisitor;
+import ntut.csie.csdet.visitor.ThrownExceptionInFinallyBlockVisitor;
 import ntut.csie.jdt.util.NodeUtils;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 
@@ -184,9 +184,9 @@ public class ExtractMethodRefactoring extends Refactoring {
 	private void findSmellMessage() {
 		try {
 			String msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
-			ThrowsExceptionInFinallyBlockVisitor tefbisitor = new ThrowsExceptionInFinallyBlockVisitor(actRoot);
+			ThrownExceptionInFinallyBlockVisitor tefbisitor = new ThrownExceptionInFinallyBlockVisitor(actRoot);
 			actRoot.accept(tefbisitor);
-			throwsInFinallyList = tefbisitor.getThrowsInFinallyList();
+			throwsInFinallyList = tefbisitor.getThrownInFinallyList();
 			markerInfo = throwsInFinallyList.get(Integer.parseInt(msgIdx));
 		} catch (CoreException e) {
 			logger.error("[Extract Method] EXCEPTION ", e);

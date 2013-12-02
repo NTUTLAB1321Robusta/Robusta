@@ -64,4 +64,9 @@ public class NodeUtilsTestSample {
 			fos.close();
 		}
 	}
+
+	public void useRuntimeException() {
+		RuntimeException runtimeException = new RuntimeException();
+		runtimeException.notify();
+	}
 }

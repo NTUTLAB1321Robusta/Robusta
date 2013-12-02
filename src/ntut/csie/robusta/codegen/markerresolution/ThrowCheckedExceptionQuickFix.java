@@ -2,6 +2,7 @@ package ntut.csie.robusta.codegen.markerresolution;
 
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
+import ntut.csie.jdt.util.NodeUtils;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.robusta.agile.exception.Robustness;
 import ntut.csie.robusta.agile.exception.RTag;
@@ -74,14 +75,7 @@ public class ThrowCheckedExceptionQuickFix implements IMarkerResolution{
 			return;
 		}
 		
-		SingleVariableDeclaration singleVariableDeclaration = exactlyCatchClause.getException();
-		Class<?> exceptionType = null;
-		try {
-			exceptionType = Class.forName(singleVariableDeclaration.getType().resolveBinding().getQualifiedName());
-		} catch (ClassNotFoundException e) {
-			logger.debug(e.getLocalizedMessage());
-			throw new RuntimeException("Failed to resolve the exception type in catch clause.", e);
-		}
+		Class<?> exceptionType = NodeUtils.getClassFromCatchClause(exactlyCatchClause);
 
 		if(smellSettings.isAddingRobustnessAnnotation()) {
 			// 建立Robustness Annotation

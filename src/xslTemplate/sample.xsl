@@ -79,7 +79,7 @@
 			<td><xsl:value-of select="EHSmellList/NestedTryStatement"></xsl:value-of></td>
 			<td><xsl:value-of select="EHSmellList/CarelessCleanup"></xsl:value-of></td>
 			<td><xsl:value-of select="EHSmellList/OverLogging"></xsl:value-of></td>
-			<td><xsl:value-of select="EHSmellList/ThrowsExceptionInFinallyBlock"></xsl:value-of></td>
+			<td><xsl:value-of select="EHSmellList/ThrownExceptionInFinallyBlock"></xsl:value-of></td>
 			<td><xsl:value-of select="EHSmellList/Total"></xsl:value-of></td>
 		</tr>
 	</table>
@@ -162,7 +162,7 @@
 				<td><xsl:value-of select="NestedTryStatement"></xsl:value-of></td>
 				<td><xsl:value-of select="CarelessCleanup"></xsl:value-of></td>
 				<td><xsl:value-of select="OverLogging"></xsl:value-of></td>
-				<td><xsl:value-of select="ThrowsExceptionInFinallyBlock"></xsl:value-of></td>
+				<td><xsl:value-of select="ThrownExceptionInFinallyBlock"></xsl:value-of></td>
 				<td><xsl:value-of select="PackageTotal"></xsl:value-of></td>
 			</tr>
 		</xsl:for-each>

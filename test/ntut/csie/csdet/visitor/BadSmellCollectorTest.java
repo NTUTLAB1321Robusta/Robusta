@@ -76,7 +76,7 @@ public class BadSmellCollectorTest {
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_EMPTYCATCHBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_NESTEDTRYSTATEMENT, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_UNPROTECTEDMAINPROGRAM, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
-		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_THROWSEXCEPTIONINFINALLYBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
+		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_THROWNEXCEPTIONINFINALLYBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);	
 		
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_OVERLOGGING, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
@@ -133,17 +133,9 @@ public class BadSmellCollectorTest {
 		assertEquals(7, collector.getBadSmells(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK).size());
 		assertEquals(8, collector.getBadSmells(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT).size());
 		assertEquals(3, collector.getBadSmells(RLMarkerAttribute.CS_OVER_LOGGING).size());
-		assertEquals(0, collector.getBadSmells(RLMarkerAttribute.CS_THROWS_EXCEPTION_IN_FINALLY_BLOCK).size());
+		// TODO Example of this bad smell haven't add to SuppressWarningExampleForAnalyzer
+		assertEquals(0, collector.getBadSmells(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK).size());
 		assertEquals(0, collector.getBadSmells(RLMarkerAttribute.CS_UNPROTECTED_MAIN).size());
-	}
-	
-
-	@Test
-	public void testGetAllBadSmells() throws Exception {
-		CompilationUnit root = getCompilationUnit(SuppressWarningExampleForAnalyzer.class);
-		BadSmellCollector collector = new BadSmellCollector(project, root);
-		collector.collectBadSmell();
 		assertEquals(34, collector.getAllBadSmells().size());
 	}
-
 }

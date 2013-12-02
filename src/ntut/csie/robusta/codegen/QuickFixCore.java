@@ -173,9 +173,9 @@ public class QuickFixCore {
 	 * @param methodDeclaration
 	 */
 	public void generateThrowExceptionOnMethodDeclaration(MethodDeclaration methodDeclaration, Class<?> exceptionType) {
-		ListRewrite addingThrowsException = astRewrite.getListRewrite(methodDeclaration, MethodDeclaration.THROWN_EXCEPTIONS_PROPERTY);
+		ListRewrite addingThrownException = astRewrite.getListRewrite(methodDeclaration, MethodDeclaration.THROWN_EXCEPTIONS_PROPERTY);
 		ASTNode simpleName = QuickFixUtils.generateThrowExceptionForDeclaration(methodDeclaration.getAST(), exceptionType);
-		addingThrowsException.insertLast(simpleName, null);
+		addingThrownException.insertLast(simpleName, null);
 	}
 	
 	/**

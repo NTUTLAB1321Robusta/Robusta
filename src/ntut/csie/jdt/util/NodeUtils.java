@@ -7,22 +7,45 @@ import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.CatchClause;
+import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Expression;
+import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.Statement;
+import org.eclipse.jdt.core.dom.SuperMethodInvocation;
+import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TryStatement;
 
 public class NodeUtils {
+
+	/**
+	 * if the bindingClass is extend from looking4Class
+	 */
+	public static boolean isITypeBindingExtended(ITypeBinding bindingClass,
+			Class<?> looking4Class) {
+		if (bindingClass == null) {
+			return false;
+		}
+
+		if (bindingClass.getQualifiedName().equals(
+				looking4Class.getCanonicalName())) {
+			return true;
+		}
+
+		return isITypeBindingExtended(bindingClass.getSuperclass(),
+				looking4Class);
+	}
+
 	/**
 	 * 判斷指定的class是否為特定interface的實作。
 	 * 
-	 * @param ASTNode上的ITypeBinding
-	 *            ，有可能是Class或是Interface
-	 * @param looking4interface
+	 * @param bindingClass
+	 *            ASTNode上的ITypeBinding ，有可能是Class或是Interface
 	 * @return
 	 */
 	public static boolean isITypeBindingImplemented(ITypeBinding bindingClass,
@@ -127,19 +150,65 @@ public class NodeUtils {
 		return (isMethodDeclarationThrowException(node.getParent()));
 	}
 
+	/**
+	 * Return the declared exceptions when it exist. Otherwise it will return
+	 * empty array
+	 */
 	public static ITypeBinding[] getDeclaredExceptions(MethodInvocation node) {
-		// 如果使用者進行了快速修復，則會蒐集到ListRewrite的資訊，node.resolveMethodBinding()會變成null
-		if (node.resolveMethodBinding() == null) {
-			return null;
-		}
+		return getDeclaredExceptions(node.resolveMethodBinding());
+	}
 
-		ITypeBinding iTypeBinding[] = node.resolveMethodBinding()
-				.getExceptionTypes();
-		if (iTypeBinding.length < 1) {
-			return null;
-		} else {
-			return iTypeBinding;
+	/**
+	 * Return the declared exceptions when it exist. Otherwise it will return
+	 * empty array
+	 */
+	public static ITypeBinding[] getDeclaredExceptions(
+			SuperMethodInvocation node) {
+		return getDeclaredExceptions(node.resolveMethodBinding());
+	}
+
+	/**
+	 * Return the declared exceptions when it exist. Otherwise it will return
+	 * empty array
+	 */
+	public static ITypeBinding[] getDeclaredExceptions(
+			ClassInstanceCreation node) {
+		return getDeclaredExceptions(node.resolveConstructorBinding());
+	}
+
+	/**
+	 * Return the declared exceptions when it exist. Otherwise it will return
+	 * empty array
+	 */
+	private static ITypeBinding[] getDeclaredExceptions(
+			IMethodBinding iMethodBinding) {
+		try {
+			/*
+			 * Maybe node.resolveMethodBinding() will be null when user using
+			 * "QuickFix", because it will modify information on ListRewrite
+			 */
+			return iMethodBinding.getExceptionTypes();
+		} catch (NullPointerException e) {
+			return new ITypeBinding[0];
 		}
+	}
+
+	/**
+	 * Return the resolveExpressionType when it exist. Otherwise it will return
+	 * null
+	 */
+	public static ITypeBinding getExpressionBinding(MethodInvocation node) {
+		return (node.getExpression() != null) ? node.getExpression()
+				.resolveTypeBinding() : null;
+	}
+
+	/**
+	 * Return the resolveExpressionType when it exist. Otherwise it will return
+	 * null
+	 */
+	public static ITypeBinding getExpressionBinding(ThrowStatement node) {
+		return (node.getExpression() != null) ? node.getExpression()
+				.resolveTypeBinding() : null;
 	}
 
 	/**
@@ -226,5 +295,29 @@ public class NodeUtils {
 		}
 
 		return null;
+	}
+
+	/**
+	 * @exception NullPointerException
+	 *                Some of these ASTNode are null
+	 */
+	public static boolean isTwoASTNodeAreTheSame(ASTNode firstBlock,
+			ASTNode secondBlock) throws NullPointerException {
+		return firstBlock.getStartPosition() == secondBlock.getStartPosition();
+	}
+
+	/**
+	 * @exception RuntimeException
+	 *                Failed to resolve the exception type.
+	 */
+	public static Class<?> getClassFromCatchClause(CatchClause catchClause)
+			throws RuntimeException {
+		try {
+			return Class.forName(catchClause.getException().getType()
+					.resolveBinding().getQualifiedName());
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(
+					"Failed to resolve the exception type in catch clause.", e);
+		}
 	}
 }

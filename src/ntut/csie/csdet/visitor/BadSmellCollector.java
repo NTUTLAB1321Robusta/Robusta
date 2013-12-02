@@ -25,6 +25,7 @@ public class BadSmellCollector {
 	RobustaSettings robustaSettings;
 	IProject project;
 	CompilationUnit root;
+	TreeMap<String, Boolean> isDetectingBadSmell;
 	
 	public BadSmellCollector(IProject project, CompilationUnit root) {
 		super();
@@ -33,6 +34,8 @@ public class BadSmellCollector {
 		this.badSmells = new TreeMap<String, List<MarkerInfo>>();
 		this.smellSetting = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		this.robustaSettings = new RobustaSettings(UserDefinedMethodAnalyzer.getRobustaSettingXMLPath(project), project);
+		isDetectingBadSmell = new TreeMap<String, Boolean>();
+		initializeIsDetectingBadSmell();
 	}
 	
 	public void collectBadSmell() {
@@ -56,7 +59,6 @@ public class BadSmellCollector {
 		addBadSmell(RLMarkerAttribute.CS_DUMMY_HANDLER, dmhVisitor.getDummyList());
 		addBadSmell(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK, emptyCatchBlockVisitor.getEmptyCatchList());
 		addBadSmell(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT, nestedTryStatementVisitor.getNestedTryStatementList());
-		
 		
 		ASTMethodCollector methodCollector = new ASTMethodCollector();
 		root.accept(methodCollector);
@@ -84,9 +86,7 @@ public class BadSmellCollector {
 				setMethodNameAndIndex(nestedList, method.getName().toString(), methodIdx);
 				addBadSmell(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT, nestedList);
 			}
-			
-			
-			
+
 			//Careless cleanup
 			if(detMethodSmell.get(RLMarkerAttribute.CS_CARELESS_CLEANUP)) {
 				CarelessCleanupVisitor carelessCleanupVisitor = new CarelessCleanupVisitor(root);
@@ -96,15 +96,15 @@ public class BadSmellCollector {
 				addBadSmell(RLMarkerAttribute.CS_CARELESS_CLEANUP, carelessCleanupList);
 			}
 			
-			//Overwritten lead exception
-			if(detMethodSmell.get(RLMarkerAttribute.CS_THROWS_EXCEPTION_IN_FINALLY_BLOCK)) {
-				ThrowsExceptionInFinallyBlockVisitor oleVisitor = new ThrowsExceptionInFinallyBlockVisitor(root);
-				method.accept(oleVisitor);
-				List<MarkerInfo> overwrittenList = oleVisitor.getThrowsInFinallyList();
-				setMethodNameAndIndex(overwrittenList, method.getName().toString(), methodIdx);
-				addBadSmell(RLMarkerAttribute.CS_THROWS_EXCEPTION_IN_FINALLY_BLOCK, overwrittenList);
+			if(isDetectingBadSmell.get(SmellSettings.SMELL_THROWNEXCEPTIONINFINALLYBLOCK)) {
+				if(detMethodSmell.get(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK)) {
+					ThrownExceptionInFinallyBlockVisitor oleVisitor = new ThrownExceptionInFinallyBlockVisitor(root);
+					method.accept(oleVisitor);
+					List<MarkerInfo> overwrittenList = oleVisitor.getThrownInFinallyList();
+					setMethodNameAndIndex(overwrittenList, method.getName().toString(), methodIdx);
+					addBadSmell(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK, overwrittenList);
+				}
 			}
-			
 			
 			//Empty catch block
 			if(detMethodSmell.get(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK)) {
@@ -219,5 +219,19 @@ public class BadSmellCollector {
 			badSmellList.addAll(map.getValue());
 		}
 		return badSmellList;
+	}
+
+	/**
+	 * Load the SmellSettings file, and save if want to detect TEIFB (Should
+	 * save other bad smells in the future)
+	 * @author pig
+	 */
+	private void initializeIsDetectingBadSmell() {
+		SmellSettings smellSettings = new SmellSettings(
+				UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+
+		final String badSmellTEIFB = SmellSettings.SMELL_THROWNEXCEPTIONINFINALLYBLOCK;
+		isDetectingBadSmell.put(badSmellTEIFB,
+				new Boolean(smellSettings.isDetectingSmell(badSmellTEIFB)));
 	}
 }

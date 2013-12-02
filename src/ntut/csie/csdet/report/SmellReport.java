@@ -141,8 +141,8 @@ public class SmellReport {
 				.valueOf(model.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP))));
 		smellList.addContent(new Element("OverLogging").addContent(String
 				.valueOf(model.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING))));
-		smellList.addContent(new Element("ThrowsExceptionInFinallyBlock")
-				.addContent(String.valueOf(model.getSmellSize(RLMarkerAttribute.CS_THROWS_EXCEPTION_IN_FINALLY_BLOCK))));
+		smellList.addContent(new Element("ThrownExceptionInFinallyBlock")
+				.addContent(String.valueOf(model.getSmellSize(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK))));
 		smellList.addContent(new Element("Total").addContent(String
 				.valueOf(model.getAllSmellSize())));
 		root.addContent(smellList);
@@ -199,9 +199,9 @@ public class SmellReport {
 							.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP))));
 			packages.addContent(new Element("OverLogging").addContent(String
 					.valueOf(packageModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING))));
-			packages.addContent(new Element("ThrowsExceptionInFinallyBlock")
+			packages.addContent(new Element("ThrownExceptionInFinallyBlock")
 					.addContent(String.valueOf(packageModel
-							.getSmellSize(RLMarkerAttribute.CS_THROWS_EXCEPTION_IN_FINALLY_BLOCK))));
+							.getSmellSize(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK))));
 			packages.addContent(new Element("PackageTotal").addContent(String
 					.valueOf(packageModel.getAllSmellSize())));
 			packages.addContent(new Element("LOC").addContent(String
@@ -253,7 +253,7 @@ public class SmellReport {
 		total.addContent(new Element("OLTotal").addContent(String.valueOf(model
 				.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING))));
 		total.addContent(new Element("OWTotal").addContent(String.valueOf(model
-				.getSmellSize(RLMarkerAttribute.CS_THROWS_EXCEPTION_IN_FINALLY_BLOCK))));
+				.getSmellSize(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK))));
 		total.addContent(new Element("AllTotal").addContent(String
 				.valueOf(model.getAllSmellSize())));
 		allPackageList.addContent(total);

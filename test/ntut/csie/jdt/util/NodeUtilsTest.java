@@ -74,12 +74,41 @@ public class NodeUtilsTest {
 	}
 
 	@Test
+	public void testIsITypeBindingExtended() {
+		// when ITypeBinding is null
+		assertFalse(NodeUtils.isITypeBindingExtended(null, Object.class));
+
+		compilationUnit.accept(miVisitor);
+		assertEquals(11, miVisitor.countMethodInvocations());
+
+		// when ITypeBinding is Object
+		assertTrue(NodeUtils.isITypeBindingExtended(miVisitor
+				.getMethodInvocation(0).resolveMethodBinding()
+				.getDeclaringClass(), Object.class));
+
+		// when ITypeBinding is an subclass of Object
+		assertTrue(NodeUtils.isITypeBindingExtended(miVisitor
+				.getMethodInvocation(1).resolveMethodBinding()
+				.getDeclaringClass(), Object.class));
+
+		// when ITypeBinding is Object and check Closeable interface
+		assertFalse(NodeUtils.isITypeBindingExtended(miVisitor
+				.getMethodInvocation(0).resolveMethodBinding()
+				.getDeclaringClass(), Closeable.class));
+
+		// when ITypeBinding is RuntimeException and check Exception
+		assertFalse(NodeUtils.isITypeBindingExtended(miVisitor
+				.getMethodInvocation(10).resolveMethodBinding()
+				.getDeclaringClass(), Exception.class));
+	}
+
+	@Test
 	public void testIsITypeBindingImplemented() {
 		// null的情況
 		assertFalse(NodeUtils.isITypeBindingImplemented(null, Closeable.class));
 
 		compilationUnit.accept(miVisitor);
-		assertEquals(10, miVisitor.countMethodInvocations());
+		assertEquals(11, miVisitor.countMethodInvocations());
 
 		// ITypeBinding為Object的情況
 		assertFalse(NodeUtils.isITypeBindingImplemented(miVisitor
@@ -129,6 +158,16 @@ public class NodeUtilsTest {
 				.getDeclaredExceptions(methodInvocation);
 		assertEquals(1, iTypeBindings.length);
 		assertEquals("java.io.IOException", iTypeBindings[0].getQualifiedName());
+	}
+
+	@Test
+	public void testGetDeclaredExceptionsWhenItIsEmpty() {
+		MethodInvocation methodInvocation = ASTNodeFinder
+				.getMethodInvocationByMethodNameAndCode(compilationUnit,
+						"fileMethod", "f.toString()").get(0);
+		ITypeBinding iTypeBindings[] = NodeUtils
+				.getDeclaredExceptions(methodInvocation);
+		assertEquals(0, iTypeBindings.length);
 	}
 
 	@Test
