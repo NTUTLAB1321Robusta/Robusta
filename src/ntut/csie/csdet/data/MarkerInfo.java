@@ -23,7 +23,7 @@ public class MarkerInfo {
 	private String exceptionType;
 	private List<String> specialProperty = null;
 	private boolean inTry = false;
-	private ITypeBinding[] methodThrownExceptions;
+	private ITypeBinding[] exceptionMethodThrown;
 	private String methodName;
 	private int methodIndex = -1;
 	private int badSmellIndex = 0;
@@ -92,7 +92,7 @@ public class MarkerInfo {
 	}
 	
 	public ITypeBinding[] getMethodThrownExceptions() {
-		return methodThrownExceptions;
+		return exceptionMethodThrown;
 	}
 	
 	/**
@@ -116,8 +116,8 @@ public class MarkerInfo {
 		this.lineNumber = lineNumber;
 	}
 	
-	public void setMethodThrownExceptions(ITypeBinding[] exceptions) {
-		this.methodThrownExceptions = exceptions;
+	public void setExceptionsMethodThrown(ITypeBinding[] exceptions) {
+		this.exceptionMethodThrown = exceptions;
 	}
 
 	/**

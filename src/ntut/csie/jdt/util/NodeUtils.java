@@ -6,6 +6,7 @@ import java.util.List;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 
+import org.apache.commons.lang.NullArgumentException;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
@@ -118,7 +119,7 @@ public class NodeUtils {
 	public static ASTNode getSpecifiedParentNode(ASTNode startNode, int nodeType) {
 		ASTNode resultNode = null;
 		if (startNode == null)
-			return startNode;
+			return null;
 		ASTNode parentNode = startNode.getParent();
 		// 如果parentNode是null，表示傳進來的node已經是rootNode(CompilationUnit)
 		if (parentNode != null) {
@@ -298,11 +299,17 @@ public class NodeUtils {
 	}
 
 	/**
-	 * @exception NullPointerException
+	 * @exception NullArgumentException
 	 *                Some of these ASTNode are null
 	 */
 	public static boolean isTwoASTNodeAreTheSame(ASTNode firstBlock,
 			ASTNode secondBlock) throws NullPointerException {
+		if (firstBlock == null) {
+			throw new NullArgumentException("The first block");
+		}
+		if (secondBlock == null) {
+			throw new NullArgumentException("The second block");
+		}
 		return firstBlock.getStartPosition() == secondBlock.getStartPosition();
 	}
 

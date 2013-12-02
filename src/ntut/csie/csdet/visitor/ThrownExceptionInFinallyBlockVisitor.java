@@ -8,6 +8,7 @@ import ntut.csie.csdet.visitor.aidvisitor.ThrownExceptionBeCaughtDetector;
 import ntut.csie.jdt.util.NodeUtils;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 
+import org.apache.commons.lang.NullArgumentException;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Block;
@@ -120,28 +121,29 @@ public class ThrownExceptionInFinallyBlockVisitor extends ASTVisitor {
 
 	/**
 	 * Check if the node input is a finally block
-	 * 
 	 * @author pig
 	 */
 	private boolean isFinallyBlock(Block node) {
-		Block finallyBlockOfParent = null;
-		try {
-			finallyBlockOfParent = getFinallyBlockOfFirstParentOfTryStatement(node);
-			return NodeUtils.isTwoASTNodeAreTheSame(finallyBlockOfParent, node);
-		} catch (NullPointerException e) {
+		Block finallyBlockOfParent = getFinallyBlockOfFirstParentOfTryStatement(node);
+		if (finallyBlockOfParent == null || node == null) {
 			return false;
 		}
+		return NodeUtils.isTwoASTNodeAreTheSame(finallyBlockOfParent, node);
 	}
 
 	/**
-	 * @exception NullPointerException
-	 *                There is no any parent which type is try statement
+	 * @return null - if there is no any parent which type is try statement, or
+	 *         there is no finally block on that try statement
 	 * @author pig
 	 */
 	private Block getFinallyBlockOfFirstParentOfTryStatement(Block node)
 			throws NullPointerException {
 		TryStatement trySatatmentParentNode = (TryStatement) NodeUtils
 				.getSpecifiedParentNode(node, ASTNode.TRY_STATEMENT);
+
+		if (trySatatmentParentNode == null) {
+			return null;
+		}
 		return trySatatmentParentNode.getFinally();
 	}
 
@@ -153,7 +155,7 @@ public class ThrownExceptionInFinallyBlockVisitor extends ASTVisitor {
 		ITypeBinding typeBinding = NodeUtils.getExpressionBinding(node);
 		MarkerInfo markerInfo = createThrownInFinallyMarkerInfo(node,
 				typeBinding);
-		markerInfo.setMethodThrownExceptions(node.resolveMethodBinding()
+		markerInfo.setExceptionsMethodThrown(node.resolveMethodBinding()
 				.getExceptionTypes());
 
 		thrownInFinallyList.add(markerInfo);
@@ -163,7 +165,7 @@ public class ThrownExceptionInFinallyBlockVisitor extends ASTVisitor {
 		ITypeBinding typeBinding = null;
 		MarkerInfo markerInfo = createThrownInFinallyMarkerInfo(node,
 				typeBinding);
-		markerInfo.setMethodThrownExceptions(node.resolveMethodBinding()
+		markerInfo.setExceptionsMethodThrown(node.resolveMethodBinding()
 				.getExceptionTypes());
 
 		thrownInFinallyList.add(markerInfo);
