@@ -8,7 +8,6 @@ import ntut.csie.csdet.visitor.aidvisitor.ThrownExceptionBeCaughtDetector;
 import ntut.csie.jdt.util.NodeUtils;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 
-import org.apache.commons.lang.NullArgumentException;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Block;
@@ -136,8 +135,7 @@ public class ThrownExceptionInFinallyBlockVisitor extends ASTVisitor {
 	 *         there is no finally block on that try statement
 	 * @author pig
 	 */
-	private Block getFinallyBlockOfFirstParentOfTryStatement(Block node)
-			throws NullPointerException {
+	private Block getFinallyBlockOfFirstParentOfTryStatement(Block node) {
 		TryStatement trySatatmentParentNode = (TryStatement) NodeUtils
 				.getSpecifiedParentNode(node, ASTNode.TRY_STATEMENT);
 

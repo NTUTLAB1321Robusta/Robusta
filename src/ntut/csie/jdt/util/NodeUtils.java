@@ -303,7 +303,7 @@ public class NodeUtils {
 	 *                Some of these ASTNode are null
 	 */
 	public static boolean isTwoASTNodeAreTheSame(ASTNode firstBlock,
-			ASTNode secondBlock) throws NullPointerException {
+			ASTNode secondBlock) throws NullArgumentException {
 		if (firstBlock == null) {
 			throw new NullArgumentException("The first block");
 		}
