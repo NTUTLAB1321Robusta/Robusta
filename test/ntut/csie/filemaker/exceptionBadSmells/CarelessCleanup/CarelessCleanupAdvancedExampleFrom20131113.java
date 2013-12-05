@@ -10,12 +10,12 @@ public class CarelessCleanupAdvancedExampleFrom20131113 {
 
 	FileInputStream fileInputStream = null;
 	File file = null;
-	MethodBeforeCloseExample methodBeforeClose = new MethodBeforeCloseExample();
+	MethodInvocationBeforeClose methodBeforeClose = new MethodInvocationBeforeClose();
 	
 	/**
 	 *  This resource is safe, but the close action in try block is still a bad smell .
 	 */
-	public void CloseInBothTryBlockAndFinallyBlock() throws Exception {
+	public void closeInBothTryBlockAndFinallyBlock() throws Exception {
 		FileInputStream fis = new FileInputStream(file);
 		try {
 			methodBeforeClose.declaredCheckedException();
@@ -29,12 +29,38 @@ public class CarelessCleanupAdvancedExampleFrom20131113 {
 	}
 
 	/**
-	 *  The close action will be reach even if any exception be thrown.
+	 * The close action will be reach even if any exception be thrown in that
+	 * try statement. But there is maybe a exception before the try statement.
+	 */
+	public void closeInFinallyButStatementBetweenCreateAndTryStatement()
+			throws Exception {
+		FileInputStream fis = new FileInputStream(file);
+		
+		methodBeforeClose.didNotDeclareAnyExceptionButThrowUnchecked();
+		
+		try {
+			methodBeforeClose.declaredCheckedException();
+		} finally {
+			fis.close(); // Unsafe
+		}
+	}
+
+	/**
+	 *  The close action will be reach even if any exception be thrown in that try statement.
 	 *  But there is maybe a exception before the try statement.
 	 */
-	public void CloseInFinallyBlockButSomeStatementBetweenCreateAndTryStatement() throws Exception {
+	public void closeInFinallyButSomeStatementBetweenCreateAndTryStatement() throws Exception {
 		FileInputStream fis = new FileInputStream(file);
-		methodBeforeClose.didNotDeclareAnyExceptionButThrowUnchecked();
+
+		/*
+		 * Even if this try statement won't throw any exception in truth, we
+		 * still treat it as may throw exception
+		 */
+		try {
+			methodBeforeClose.willNotThrowAnyException();
+		} catch (Exception e) {
+		}
+		
 		try {
 			methodBeforeClose.declaredCheckedException();
 		} finally {
@@ -66,7 +92,7 @@ public class CarelessCleanupAdvancedExampleFrom20131113 {
 	 *  The close action will be reach even if any exception be thrown.
 	 *  But there is maybe a exception before the try statement.
 	 */
-	public void CloseIsTheFirstExecuteSubStatementButStillUnsafe() throws Exception {
+	public void closeIsTheFirstExecuteSubStatementButStillUnsafe() throws Exception {
 		if(1 == fileInputStream.available()) {
 			try {
 				fileInputStream.close(); // Unsafe

@@ -5,7 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 /**
- * fileInputStream Example We change the definition of Careless Cleanup at
+ * Example after We change the definition of Careless Cleanup at
  * 2013/11 So pig write these new example to make it more understandable
  * 
  * @author pig
@@ -14,7 +14,7 @@ public class CarelessCleanupExampleFrom20131113 {
 
 	FileInputStream fileInputStream = null;
 	File file = null;
-	MethodBeforeCloseExample methodBeforeClose = new MethodBeforeCloseExample();
+	MethodInvocationBeforeClose methodBeforeClose = new MethodInvocationBeforeClose();
 
 	public void closeDirectly() throws Exception {
 		fileInputStream.close(); // Safe
@@ -35,18 +35,12 @@ public class CarelessCleanupExampleFrom20131113 {
 		fileInputStream.close(); // Unsafe
 	}
 
+	/**
+	 * It's the same with example above
+	 */
 	public void closeAfterNoDeclaredException2() throws Exception {
 		methodBeforeClose.willNotThrowAnyException();
 		fileInputStream.close(); // Unsafe
-	}
-
-	public void closeAfterCloser() throws Exception {
-		methodBeforeClose.closerWithoutException(fileInputStream);
-		/*
-		 * Unsafe until other new story be finish
-		 * @author pig
-		 */
-		fileInputStream.close();
 	}
 
 	public void createAndCloseDirectlyWithCreatedFile() throws Exception {
@@ -71,24 +65,14 @@ public class CarelessCleanupExampleFrom20131113 {
 		fis.close(); // Unsafe
 	}
 
-	public void createAndCloseAfterCloser() throws Exception {
-		FileInputStream fis = new FileInputStream(file);
-		methodBeforeClose.closerWithoutException(fis);
-		/*
-		 * Unsafe until other new story be finish
-		 * @author pig
-		 */
-		fis.close();
-	}
-
-	public void CloseInTryBlockWhichIsFirstStatement() throws Exception {
+	public void closeInTryBlockWhichIsFirstStatement() throws Exception {
 		try {
 			fileInputStream.close(); // Safe
 		} catch (IOException e) {
 		}
 	}
 
-	public void CloseAfterUncheckedExceptionInTryBlock() throws Exception {
+	public void closeAfterUncheckedExceptionInTryBlock() throws Exception {
 		FileInputStream fis = new FileInputStream(file);
 		try {
 			methodBeforeClose.didNotDeclareAnyExceptionButThrowUnchecked();
@@ -97,7 +81,7 @@ public class CarelessCleanupExampleFrom20131113 {
 		}
 	}
 
-	public void CloseInCatchBlock() throws Exception {
+	public void closeInCatchBlock() throws Exception {
 		FileInputStream fis = new FileInputStream(file);
 		try {
 			methodBeforeClose.declaredCheckedException();
@@ -107,7 +91,7 @@ public class CarelessCleanupExampleFrom20131113 {
 		}
 	}
 
-	public void CloseInFinallyBlock() throws Exception {
+	public void closeInFinallyBlock() throws Exception {
 		FileInputStream fis = new FileInputStream(file);
 		try {
 			methodBeforeClose.declaredCheckedException();
@@ -117,7 +101,7 @@ public class CarelessCleanupExampleFrom20131113 {
 		}
 	}
 
-	public void CloseInFinallyBlockButAfterUncheckedException()
+	public void closeInFinallyBlockButAfterUncheckedException()
 			throws Exception {
 		FileInputStream fis = new FileInputStream(file);
 		try {
@@ -125,21 +109,6 @@ public class CarelessCleanupExampleFrom20131113 {
 			methodBeforeClose.didNotDeclareAnyExceptionButThrowUnchecked();
 		} finally {
 			methodBeforeClose.declaredUncheckedException();
-			fis.close(); // Unsafe
-		}
-	}
-
-	public void CloseInFinallyBlockButAfterCloser() throws Exception {
-		FileInputStream fis = new FileInputStream(file);
-		try {
-			methodBeforeClose.declaredCheckedException();
-			methodBeforeClose.didNotDeclareAnyExceptionButThrowUnchecked();
-		} finally {
-			methodBeforeClose.closerWithoutException(fis);
-			/*
-			 * Unsafe until other new story be finish
-			 * @author pig
-			 */
 			fis.close(); // Unsafe
 		}
 	}

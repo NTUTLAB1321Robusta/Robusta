@@ -1,9 +1,8 @@
 package ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 
-public class MethodBeforeCloseExample {
+public class MethodInvocationBeforeClose {
 
 	public void declaredCheckedException() throws IOException {
 		throw new IOException();
@@ -20,10 +19,4 @@ public class MethodBeforeCloseExample {
 	public void willNotThrowAnyException() {
 	}
 
-	public void closerWithoutException(FileInputStream fileInputStream) {
-		try {
-			fileInputStream.close();
-		} catch (Exception e) {
-		}
-	}
 }

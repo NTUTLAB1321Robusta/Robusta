@@ -13,7 +13,6 @@ import ntut.csie.csdet.views.CarelessCleanupPageTest;
 import ntut.csie.csdet.visitor.ASTCatchCollectTest;
 import ntut.csie.csdet.visitor.BadSmellCollectorTest;
 import ntut.csie.csdet.visitor.CarelessCleanupVisitor2Test;
-import ntut.csie.csdet.visitor.CarelessCleanupVisitor3Test;
 import ntut.csie.csdet.visitor.CarelessCleanupVisitorTest;
 import ntut.csie.csdet.visitor.DummyHandlerVisitorTest;
 import ntut.csie.csdet.visitor.EmptyCatchBlockVisitorTest;
@@ -25,7 +24,6 @@ import ntut.csie.csdet.visitor.SuppressWarningVisitorTest;
 import ntut.csie.csdet.visitor.TryStatementCounterVisitorTest;
 import ntut.csie.csdet.visitor.UnprotectedMainProgramVisitorTest;
 import ntut.csie.csdet.visitor.aidvisitor.CarelessCleanupToleranceVisitorTest;
-import ntut.csie.csdet.visitor.aidvisitor.CarelessClenupRaisedExceptionNotInTryCausedVisitorTest;
 import ntut.csie.csdet.visitor.aidvisitor.ClassInstanceCreationVisitorTest;
 import ntut.csie.csdet.visitor.aidvisitor.TryStatementExceptionsVisitorTest;
 import ntut.csie.filemaker.test.ASTNodeFinderTest;
@@ -56,7 +54,6 @@ import org.junit.runners.Suite;
 	
 	ASTCatchCollectTest.class,
 	CarelessCleanupVisitor2Test.class,
-	CarelessCleanupVisitor3Test.class,
 	CarelessCleanupVisitorTest.class,
 	DummyHandlerVisitorTest.class,
 	EmptyCatchBlockVisitorTest.class,
@@ -69,7 +66,6 @@ import org.junit.runners.Suite;
 	UnprotectedMainProgramVisitorTest.class,
 	
 	CarelessCleanupToleranceVisitorTest.class,
-	CarelessClenupRaisedExceptionNotInTryCausedVisitorTest.class,
 	ClassInstanceCreationVisitorTest.class,
 	TryStatementExceptionsVisitorTest.class,
 	

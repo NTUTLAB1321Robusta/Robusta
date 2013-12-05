@@ -1,6 +1,7 @@
 package ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup;
 
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -17,6 +18,7 @@ import java.security.MessageDigest;
  * 精簡版 偵測條件全勾的情況下，自定義部分加入 close 所發現之例子
  */
 public class CarelessCleanupAntExample {
+	
 	/**
 	 * 是壞味道的例子 CCII 抓得到 CCI 沒抓到的例子
 	 * 
@@ -28,12 +30,12 @@ public class CarelessCleanupAntExample {
 		try {
 			zipFile(is, zOut);
 		} finally {
-			CarelessCleanupExampleForAntDefinition.close(is);// 這個不是!
+			ResourceCloser.closeResourceDirectly(is);// 這個不是!
 		}
 		try {
 			zipFile(is, zOut);
 		} finally {
-			CarelessCleanupExampleForAntDefinition.close(is);// CCII 認為是壞味道
+			ResourceCloser.closeResourceDirectly(is);// CCII 認為是壞味道
 		}
 	}
 
@@ -104,17 +106,6 @@ public class CarelessCleanupAntExample {
 		}
 	}
 
-	private abstract class Handler {
-		private PrintStream ps;
-
-		/**
-		 * 不是壞味道的例子 CCI 抓得到 CCII 沒抓到的例子
-		 */
-		void completeWithUserDefinition() {
-			CarelessCleanupExampleForAntDefinition.close(ps);// CCI 認為是壞味道
-		}
-	}
-
 	/**
 	 * 不是壞味道的例子 CCI 抓得到 CCII 沒抓到的例子
 	 * 
@@ -123,19 +114,6 @@ public class CarelessCleanupAntExample {
 	public void setOutput(OutputStream out) throws IOException {
 		if (out != System.out) {
 			out.close();// CCI 認為是壞味道
-		}
-	}
-
-	private URLConnection conn;
-
-	/**
-	 * 不是壞味道的例子 CCI 抓得到 CCII 沒抓到的例子
-	 */
-	private synchronized void close() {
-		try {
-			CarelessCleanupExampleForAntDefinition.close(conn);// CCI 認為是壞味道
-		} finally {
-			conn = null;
 		}
 	}
 
