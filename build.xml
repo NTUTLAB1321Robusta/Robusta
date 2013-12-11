@@ -6,14 +6,15 @@
 	<property environment="env"/>
     <property name="ECLIPSE_HOME" value="${env.ECLIPSE_HOME}"/>
     <property name="debuglevel" value="source,lines,vars"/>
-    <property name="target" value="1.6"/>
+	<property name="target" value="1.6"/>
     <property name="source" value="1.6"/>
+	<!-- Load properties from manifest file and plugin.properties file-->
+	<property file="${basedir}/META-INF/MANIFEST.MF" prefix="pluginManifest"/>
+	<property file="${basedir}/plugin.properties" prefix="pluginProperties"/>
 	
-	<!-- Load properties from manifest file -->
-	<property file="${basedir}/META-INF/MANIFEST.MF"/>
 	
-    <property name="jar-file-name" value="taipeitech.csie.robusta_${Bundle-Version}.jar"/>
-    <property name="jar-file-test-name" value="taipeitech.csie.robusta_${Bundle-Version}.jar"/>
+	<property name="jar-file-name" value="taipeitech.csie.robusta_${pluginManifest.Bundle-Version}.jar"/>
+    <property name="jar-file-test-name" value="taipeitech.csie.test.robusta_${pluginManifest.Bundle-Version}.jar"/>
 	<property name="rl-jar-file-name" value="taipeitech.csie.robusta.agile.exception_1.0.0.jar"/>
 	<property name="result-folder" value="${basedir}/result"/>
 	<property name="xml-folder" value="${result-folder}/xml"/>
@@ -25,7 +26,7 @@
 	<property name="test-folder" value="${basedir}/test"/>
 	<property name="bin-folder" value="${basedir}/bin"/>
 	<property name="lib-folder" value="${basedir}/lib"/>
-	<property name="update-id" value="taipeitech.csie.robusta_${Bundle-Version}"/>
+	<property name="update-id" value="taipeitech.csie.robusta_${pluginManifest.Bundle-Version}"/>
 	<property name="eclipse-public-license" value="epl-v10.html"/>
 	<property name="notice" value="notice.html"/>
 	<property name="plugin-bundle-name" value="taipeitech.csie.robusta" />
@@ -353,7 +354,7 @@
 	<target name="write-site-xml">
 		<echoxml file="${update-folder}/site.xml">
 			<site>
-				<feature url="features/${jar-file-name}" id="${update-id}" version="${Bundle-Version}"/>
+				<feature url="features/${jar-file-name}" id="${update-id}" version="${pluginManifest.Bundle-Version}"/>
 			</site>
 		</echoxml>
 	</target>
@@ -364,8 +365,8 @@
 			<feature
 				id="${update-id}"
 				label="Robustaclipse"
-				version="${Bundle-Version}"
-				provider-name="Taipei Tech, Software Systems Lab."
+				version="${pluginManifest.Bundle-Version}"
+				provider-name="${pluginProperties.Bundle-Vendor}"
 				plugin="${update-id}">
  
 				<description>
@@ -401,7 +402,7 @@
 					id="${update-id}"
 					download-size="0"
 					install-size="0"
-					version="${Bundle-Version}"/>
+					version="${pluginManifest.Bundle-Version}"/>
 			</feature>
 		</echoxml>
 	</target>

@@ -15,6 +15,7 @@ import ntut.csie.csdet.visitor.BadSmellCollectorTest;
 import ntut.csie.csdet.visitor.CarelessCleanupVisitor2Test;
 import ntut.csie.csdet.visitor.CarelessCleanupVisitor3Test;
 import ntut.csie.csdet.visitor.CarelessCleanupVisitorTest;
+import ntut.csie.csdet.visitor.CloseResourceMethodInvocationVisitorTest;
 import ntut.csie.csdet.visitor.DummyHandlerVisitorTest;
 import ntut.csie.csdet.visitor.EmptyCatchBlockVisitorTest;
 import ntut.csie.csdet.visitor.NestedTryStatementVisitorTest;
@@ -88,7 +89,8 @@ import org.junit.runners.Suite;
 	VariableDeclarationStatementFinderVisitorTest.class,
 	RobustaSettingsTest.class,
 	ReportDescriptionTest.class,
-	BadSmellCollectorTest.class
+	BadSmellCollectorTest.class,
+	CloseResourceMethodInvocationVisitorTest.class
 })
 public class AllJUnitPluginTests {
 }

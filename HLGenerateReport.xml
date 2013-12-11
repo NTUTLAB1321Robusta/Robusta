@@ -15,27 +15,23 @@
 		<property name="WORKSPACE_PATH" value="${basedir}/../robusta_badsmell_report_project_workspace"/>
 		
 		<!-- Where is the location of the project that we want to generate the bad smell report -->
-		<property name="PROJECT_LOCATION" value="${basedir}/../" />
-		
-		<!-- Project name, this is the project name and also the folder name that contain all the source code of the project -->
-		<property name="PROJECT_NAME" value="Robusta" />
-		
+		<property name="PROJECT_LOCATION" value="${basedir}/" />
+				
 		<!-- Where to save the generated report -->
-		<property name="DESTINATION_REPORT_FOLDER" value="${PROJECT_LOCATION}/${PROJECT_NAME}/${PROJECT_NAME}_Report" />
+		<property name="DESTINATION_REPORT_FOLDER" value="${basedir}/Robusta_Report" />
 	
 	<!-- ===== End of DEFINE ===== -->
 	
 	<property name="ORIGINAL_PROJECT_PATH" value="${PROJECT_LOCATION}/${PROJECT_NAME}"/>
-	<property name="DESTINATION_PROJECT_PATH" value="${WORKSPACE_PATH}/${PROJECT_NAME}"/>
+	<property name="DESTINATION_PROJECT_PATH" value="${PROJECT_LOCATION}"/>
 	
 	<!-- - - - - - - - - - - - - - - - - - 
           target: init                      
          - - - - - - - - - - - - - - - - - -->
     <target name="init">
-    	<mkdir dir="${DESTINATION_PROJECT_PATH}"/>
-    	<copy todir="${DESTINATION_PROJECT_PATH}" overwrite="yes" includeemptydirs="yes">
-    		<fileset dir="${ORIGINAL_PROJECT_PATH}"></fileset>
-    	</copy>
+    	<mkdir dir="${WORKSPACE_PATH}"/>
+    	<delete quiet="true" dir="${DESTINATION_REPORT_FOLDER}"/>
+    	<delete quiet="true" dir="${PROJECT_LOCATION}/Robusta_Report"/>
     </target>
 	
 	<!-- - - - - - - - - - - - - - - - - - 
@@ -43,7 +39,7 @@
          - - - - - - - - - - - - - - - - - -->
     <target name="save_and_clear">
     	<copy todir="${DESTINATION_REPORT_FOLDER}" overwrite="yes" includeemptydirs="yes">
-    		<fileset dir="${DESTINATION_PROJECT_PATH}/${PROJECT_NAME}_Report"></fileset>
+    		<fileset dir="${PROJECT_LOCATION}/Robusta_Report"></fileset>
     	</copy>
     	<delete quiet="true" dir="${WORKSPACE_PATH}"/>
     </target>
@@ -57,7 +53,7 @@
 			<arg line="-nosplash"/>
 			<arg line="-application csie.ntut.robusta.standalone"/>
 			<arg line="-data ${WORKSPACE_PATH}"/>
-			<arg line="${DESTINATION_PROJECT_PATH}"/>
+			<arg line="${PROJECT_LOCATION}"/>
 		</exec>
 	</target>
 	

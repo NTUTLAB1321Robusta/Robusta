@@ -12,6 +12,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
+import org.eclipse.jdt.ui.wizards.JavaCapabilityConfigurationPage;
 
 public class StandAloneApp implements IApplication {
 
@@ -22,10 +23,11 @@ public class StandAloneApp implements IApplication {
 		String[] appArgs = (String[]) args.get("application.args");  
 		String projectPath = appArgs[0];
 
-		IProjectDescription description = workspace.loadProjectDescription(new Path(projectPath+"/.project"));
+		IProjectDescription description = workspace.loadProjectDescription(new Path(projectPath + "/.project"));
+		
 		IProject project = workspace.getRoot().getProject(description.getName());
-		if(!project.exists()) project.create(description, null);
-		project.open(null);
+		
+		JavaCapabilityConfigurationPage.createProject(project, description.getLocationURI(), null);
 		
 		ReportModel reportModel = new ReportModel();
 		ReportBuilder reportBuilder = new ReportBuilder(project, reportModel);
@@ -36,6 +38,7 @@ public class StandAloneApp implements IApplication {
 		
 		reportBuilder.run();
 		
+		ResourcesPlugin.getWorkspace().save(true, null);
     	return IApplication.EXIT_OK;
 	}
 
