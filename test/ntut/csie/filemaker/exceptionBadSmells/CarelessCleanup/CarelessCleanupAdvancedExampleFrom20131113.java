@@ -89,11 +89,26 @@ public class CarelessCleanupAdvancedExampleFrom20131113 {
 	}
 
 	/**
-	 *  The close action will be reach even if any exception be thrown.
-	 *  But there is maybe a exception before the try statement.
+	 * The close action will always be reached. But because of the limit of
+	 * detected rule, it will be consider an unsafe code.
 	 */
-	public void closeIsTheFirstExecuteSubStatementButStillUnsafe() throws Exception {
-		if(1 == fileInputStream.available()) {
+	public void closeIsTheFirstExecuteStatementThatAlwaysBeExecute()
+			throws Exception {
+		if (true) {
+			try {
+				fileInputStream.close(); // Unsafe
+			} finally {
+			}
+		}
+	}
+
+	/**
+	 * There is maybe an exception before the try statement on the expression on
+	 * if statement.
+	 */
+	public void closeIsTheFirstExecuteStatementButStillUnsafe()
+			throws Exception {
+		if (1 == fileInputStream.available()) {
 			try {
 				fileInputStream.close(); // Unsafe
 			} finally {
