@@ -14,6 +14,8 @@ import java.net.URLConnection;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.actionmethod.ResourceCloser;
+
 /**
  * 精簡版 偵測條件全勾的情況下，自定義部分加入 close 所發現之例子
  */

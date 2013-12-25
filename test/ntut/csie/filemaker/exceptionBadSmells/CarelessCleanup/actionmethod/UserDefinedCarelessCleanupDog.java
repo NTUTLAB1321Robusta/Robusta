@@ -1,4 +1,4 @@
-package ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup;
+package ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.actionmethod;
 
 import ntut.csie.robusta.agile.exception.RTag;
 import ntut.csie.robusta.agile.exception.Robustness;

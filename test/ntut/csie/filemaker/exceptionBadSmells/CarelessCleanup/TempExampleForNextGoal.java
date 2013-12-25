@@ -3,10 +3,13 @@ package ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.actionmethod.ResourceCloser;
 
 import org.apache.log4j.lf5.util.Resource;
 
@@ -118,4 +121,19 @@ public class TempExampleForNextGoal {
 		}
 	}
 
+	/**
+	 * 如果是專門用來放在Finally關閉串流的method，將不做careless cleanup的檢查
+	 * @param fileOutputStream
+	 */
+	public void closeStreamWithoutThrowingExceptionNestedIfTry(FileOutputStream fileOutputStream) {
+		if (fileOutputStream != null)
+			try {
+				if(fileOutputStream != null) {
+					fileOutputStream.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+	}
+	
 }

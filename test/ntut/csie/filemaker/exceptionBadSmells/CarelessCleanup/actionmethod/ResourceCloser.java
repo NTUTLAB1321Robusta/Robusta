@@ -1,7 +1,6 @@
-package ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup;
+package ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.actionmethod;
 
 import java.io.Closeable;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.logging.Level;
 
@@ -70,7 +69,7 @@ public class ResourceCloser {
 		}
 	}
 
-	public static void closeResourceWithoutExceptionWithDoNothingWithPreventFromNull(
+	public static void closeResourceInTryBlockWithPreventFromNullOutside(
 			Closeable resource) {
 		if (null != resource) {
 			try {
@@ -78,6 +77,17 @@ public class ResourceCloser {
 			} catch (IOException e) {
 				// Do nothing
 			}
+		}
+	}
+
+	public static void closeResourceInTryBlockWithPreventFromNullInside(
+			Closeable resource) {
+		try {
+			if (null != resource) {
+				resource.close();
+			}
+		} catch (IOException e) {
+			// Do nothing
 		}
 	}
 

@@ -21,11 +21,11 @@ import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.RuntimeEnvironmentProjectReader;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.CarelessCleanupExample;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.ClassImplementCloseable;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.ClassImplementCloseableWithoutThrowException;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.ClassWithNotThrowingExceptionCloseable;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.UserDefinedCarelessCleanupDog;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.UserDefinedCarelessCleanupWeather;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.actionmethod.ClassCanCloseButNotImplementCloseable;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.actionmethod.ClassImplementCloseable;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.actionmethod.ClassImplementCloseableWithoutThrowException;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.actionmethod.UserDefinedCarelessCleanupDog;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.actionmethod.UserDefinedCarelessCleanupWeather;
 import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.robusta.util.PathUtils;
@@ -78,11 +78,11 @@ public class CarelessCleanupRefactorTest {
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
-		javaFile2String.read(ClassWithNotThrowingExceptionCloseable.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaFile2String.read(ClassCanCloseButNotImplementCloseable.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
-				ClassWithNotThrowingExceptionCloseable.class.getPackage().getName(),
-				ClassWithNotThrowingExceptionCloseable.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + ClassWithNotThrowingExceptionCloseable.class.getPackage().getName() + ";" + String.format("%n")
+				ClassCanCloseButNotImplementCloseable.class.getPackage().getName(),
+				ClassCanCloseButNotImplementCloseable.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
+				"package " + ClassCanCloseButNotImplementCloseable.class.getPackage().getName() + ";" + String.format("%n")
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		

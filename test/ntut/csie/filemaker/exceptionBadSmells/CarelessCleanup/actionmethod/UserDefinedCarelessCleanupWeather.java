@@ -1,4 +1,4 @@
-package ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup;
+package ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.actionmethod;
 
 import java.io.IOException;
 

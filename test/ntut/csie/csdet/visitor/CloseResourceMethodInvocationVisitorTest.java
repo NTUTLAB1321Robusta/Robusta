@@ -9,11 +9,11 @@ import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.CarelessCleanupExample;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.ClassImplementCloseable;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.ClassImplementCloseableWithoutThrowException;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.ClassWithNotThrowingExceptionCloseable;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.UserDefinedCarelessCleanupDog;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.UserDefinedCarelessCleanupWeather;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.actionmethod.ClassCanCloseButNotImplementCloseable;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.actionmethod.ClassImplementCloseable;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.actionmethod.ClassImplementCloseableWithoutThrowException;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.actionmethod.UserDefinedCarelessCleanupDog;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.actionmethod.UserDefinedCarelessCleanupWeather;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -56,7 +56,7 @@ public class CloseResourceMethodInvocationVisitorTest {
 		javaProject = JavaCore.create(project);
 		
 		loadClass(CarelessCleanupExample.class);
-		loadClass(ClassWithNotThrowingExceptionCloseable.class);
+		loadClass(ClassCanCloseButNotImplementCloseable.class);
 		loadClass(ClassImplementCloseable.class);
 		loadClass(UserDefinedCarelessCleanupWeather.class);
 		loadClass(UserDefinedCarelessCleanupDog.class);

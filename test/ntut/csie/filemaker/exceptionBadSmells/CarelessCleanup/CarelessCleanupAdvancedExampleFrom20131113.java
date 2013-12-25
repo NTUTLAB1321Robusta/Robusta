@@ -5,15 +5,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-
 public class CarelessCleanupAdvancedExampleFrom20131113 {
 
 	FileInputStream fileInputStream = null;
 	File file = null;
 	MethodInvocationBeforeClose methodBeforeClose = new MethodInvocationBeforeClose();
-	
+
 	/**
-	 *  This resource is safe, but the close action in try block is still a bad smell .
+	 * This resource is safe, but the close action in try block is still a bad
+	 * smell .
 	 */
 	public void closeInBothTryBlockAndFinallyBlock() throws Exception {
 		FileInputStream fis = new FileInputStream(file);
@@ -35,9 +35,9 @@ public class CarelessCleanupAdvancedExampleFrom20131113 {
 	public void closeInFinallyButStatementBetweenCreateAndTryStatement()
 			throws Exception {
 		FileInputStream fis = new FileInputStream(file);
-		
+
 		methodBeforeClose.didNotDeclareAnyExceptionButThrowUnchecked();
-		
+
 		try {
 			methodBeforeClose.declaredCheckedException();
 		} finally {
@@ -46,10 +46,11 @@ public class CarelessCleanupAdvancedExampleFrom20131113 {
 	}
 
 	/**
-	 *  The close action will be reach even if any exception be thrown in that try statement.
-	 *  But there is maybe a exception before the try statement.
+	 * The close action will be reach even if any exception be thrown in that
+	 * try statement. But there is maybe a exception before the try statement.
 	 */
-	public void closeInFinallyButSomeStatementBetweenCreateAndTryStatement() throws Exception {
+	public void closeInFinallyButSomeStatementBetweenCreateAndTryStatement()
+			throws Exception {
 		FileInputStream fis = new FileInputStream(file);
 
 		/*
@@ -60,7 +61,7 @@ public class CarelessCleanupAdvancedExampleFrom20131113 {
 			methodBeforeClose.willNotThrowAnyException();
 		} catch (Exception e) {
 		}
-		
+
 		try {
 			methodBeforeClose.declaredCheckedException();
 		} finally {
@@ -70,6 +71,7 @@ public class CarelessCleanupAdvancedExampleFrom20131113 {
 
 	/**
 	 * For the concrete closeable below
+	 * 
 	 * @author pig
 	 */
 	class SuperCloseable implements Closeable {
@@ -79,6 +81,7 @@ public class CarelessCleanupAdvancedExampleFrom20131113 {
 
 	/**
 	 * This close statement should be detected
+	 * 
 	 * @author pig
 	 */
 	class ConcreteCloseable extends SuperCloseable {
@@ -106,7 +109,7 @@ public class CarelessCleanupAdvancedExampleFrom20131113 {
 	 * There is maybe an exception before the try statement on the expression on
 	 * if statement.
 	 */
-	public void closeIsTheFirstExecuteStatementButStillUnsafe()
+	public void closeIsTheFirstExecuteStatementButStillUnsafeWithIfTryStatement()
 			throws Exception {
 		if (1 == fileInputStream.available()) {
 			try {
@@ -114,6 +117,27 @@ public class CarelessCleanupAdvancedExampleFrom20131113 {
 			} finally {
 			}
 		}
+	}
+
+	public void closeIsTheFirstExecuteStatementButStillUnsafeWithIfStatement()
+			throws IOException {
+		if (1 == fileInputStream.available()) {
+			fileInputStream.close(); // Unsafe
+		}
+	}
+
+	public void closeIsTheFirstExecuteStatementButStillUnsafeWithForStatement()
+			throws IOException {
+		for (int i = 0; i < fileInputStream.available(); i++) {
+			fileInputStream.close(); // Unsafe
+		}
+	}
+
+	public void closeIsTheFirstExecuteStatementButStillUnsafeWithDoWhileStatement()
+			throws IOException {
+		do {
+			fileInputStream.close(); // Unsafe
+		} while (1 == fileInputStream.available());
 	}
 
 }
