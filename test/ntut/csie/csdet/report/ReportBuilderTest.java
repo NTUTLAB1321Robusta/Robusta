@@ -449,7 +449,7 @@ public class ReportBuilderTest {
 		reportModel.setBuildTime();
 		analysisProject.invoke(reportBuilder, project);
 		
-		assertTrue(reportModel.getProjectPath().contains("junit-workspace/DummyHandlerTest/_Report"));
+		assertTrue(reportModel.getProjectPath().contains("junit-workspace/DummyHandlerTest/Robusta_Report"));
 		assertEquals(1, reportModel.getPackagesSize());
 	}
 	

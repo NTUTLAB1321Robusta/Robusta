@@ -2,7 +2,6 @@ package ntut.csie.csdet.report;
 
 import java.io.File;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -25,7 +24,7 @@ public class ReportModel {
 	// 專案名稱
 	private String projectName = "";
 	// 儲存路徑
-	private String projectPath = "";
+	private String projectReportFolderPath = "";
 	// 取得code counter
 	private int tryCounter = 0;
 	private int catchCounter = 0;
@@ -56,16 +55,16 @@ public class ReportModel {
 
 	// 設定或取得Project的路徑
 	public String getProjectPath() {
-		return projectPath;
+		return projectReportFolderPath;
 	}
 
 	public void setProjectPath(String workspacePath) {
-		this.projectPath = workspacePath + "/" + getProjectName() + "_Report";
-		File metadataPath = new File(projectPath);
+		this.projectReportFolderPath = workspacePath + "/" + "Robusta_Report";
+		File metadataPath = new File(projectReportFolderPath);
 		// 若沒有路徑就建立路徑
 		if (!metadataPath.exists())
 			metadataPath.mkdir();
-		File htmlPath = new File(projectPath + "/" + buildTime.getTime());
+		File htmlPath = new File(projectReportFolderPath + "/" + buildTime.getTime());
 		htmlPath.mkdir();
 	}
 	
@@ -77,10 +76,10 @@ public class ReportModel {
 	 */
 	public String getFilePath(String fileName, boolean isAddTime) {
 		if (isAddTime)
-			return (projectPath + "/" + buildTime.getTime() + "/"
+			return (projectReportFolderPath + "/" + buildTime.getTime() + "/"
 					+ buildTime.getTime() + "_" + fileName);
 		else
-			return (projectPath + "/" + fileName);
+			return (projectReportFolderPath + "/" + fileName);
 	}
 
 	public String getRelativeFilePathWithProjectReportPath(String fileName,
@@ -88,11 +87,11 @@ public class ReportModel {
 		String absolutePath = getFilePath(fileName, isAddTime);
 		String relativePath;
 		try {
-			String projectReportPath = projectPath
+			String projectReportPath = projectReportFolderPath
 					+ (isAddTime ? "/" + buildTime.getTime() : "");
-			relativePath = (new URI(projectReportPath)).relativize(
-					new URI(absolutePath)).toString();
-		} catch (URISyntaxException e) {
+			relativePath = (new URI(projectReportPath.replace(" ", "%20"))).relativize(
+					new URI(absolutePath.replace(" ", "%20"))).toString();
+		} catch (Exception e) {
 			throw new RuntimeException(e.getMessage());
 		}
 		return relativePath;

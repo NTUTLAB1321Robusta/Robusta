@@ -6,11 +6,16 @@
 	<property environment="env"/>
     <property name="ECLIPSE_HOME" value="${env.ECLIPSE_HOME}"/>
     <property name="debuglevel" value="source,lines,vars"/>
-    <property name="target" value="1.6"/>
+	<property name="target" value="1.6"/>
     <property name="source" value="1.6"/>
-    <property name="jar-file-name" value="ntut.csie.robusta_1.1.0.jar"/>
-    <property name="jar-file-test-name" value="ntut.csie.test.robusta_1.1.0.jar"/>
-	<property name="rl-jar-file-name" value="ntut.csie.robusta.agile.exception_1.0.0.jar"/>
+	<!-- Load properties from manifest file and plugin.properties file-->
+	<property file="${basedir}/META-INF/MANIFEST.MF" prefix="pluginManifest"/>
+	<property file="${basedir}/plugin.properties" prefix="pluginProperties"/>
+	
+	
+	<property name="jar-file-name" value="taipeitech.csie.robusta_${pluginManifest.Bundle-Version}.jar"/>
+    <property name="jar-file-test-name" value="taipeitech.csie.test.robusta_${pluginManifest.Bundle-Version}.jar"/>
+	<property name="rl-jar-file-name" value="taipeitech.csie.robusta.agile.exception_1.0.0.jar"/>
 	<property name="result-folder" value="${basedir}/result"/>
 	<property name="xml-folder" value="${result-folder}/xml"/>
     <property name="update-folder" value="${result-folder}/update"/>
@@ -21,10 +26,10 @@
 	<property name="test-folder" value="${basedir}/test"/>
 	<property name="bin-folder" value="${basedir}/bin"/>
 	<property name="lib-folder" value="${basedir}/lib"/>
-	<property name="update-id" value="ntut.csie.robusta_1.1.0"/>
+	<property name="update-id" value="taipeitech.csie.robusta_${pluginManifest.Bundle-Version}"/>
 	<property name="eclipse-public-license" value="epl-v10.html"/>
 	<property name="notice" value="notice.html"/>
-	<property name="plugin-bundle-name" value="csie.ntut.robusta" />
+	<property name="plugin-bundle-name" value="taipeitech.csie.robusta" />
 	<property name="pde-test-data" value="${basedir}/../../junit-workspace" />
 	<property name="pde-test-dev" value="file:${basedir}/../.metadata/.plugins/org.eclipse.pde.core/pde-junit/dev.properties" />
 		
@@ -334,18 +339,6 @@
 	<!-- wrap bin folder to jar file -->
 		<target name="product-jar">
 			<jar destfile="${plugin-folder}/${jar-file-name}" filesetmanifest="mergewithoutmain" basedir="${bin-folder}" excludes="**/filemaker/, **/*Test.class">
-				<!--<manifest>
-					<attribute name="Bundle-ManifestVersion" value="2"/>
-					<attribute name="Bundle-Name" value="Robusta"/>
-					<attribute name="Bundle-SymbolicName" value="csie.ntut.robusta; singleton:=true"/>
-					<attribute name="Bundle-Version" value="1.1.0"/>
-					<attribute name="Bundle-Activator" value="ntut.csie.rleht.RLEHTPlugin"/>
-					<attribute name="Bundle-Vendor" value="NTUT CSIE, Taipei Tech, Software Systems Lab"/>
-					<attribute name="Bundle-Localization" value="plugin"/>
-					<attribute name="Bundle-ClassPath" value=".,./bin,lib/commons-lang-2.3.jar,lib/slf4j-log4j12-1.5.0.jar,lib/slf4j-api-1.5.0.jar,lib/log4j-1.2.15.jar,lib/jdom.jar,lib/jfreechart-1.0.8a.jar,lib/jcommon-1.0.12.jar,lib/loc_counter.jar,lib/"/>
-					<attribute name="Require-Bundle" value="org.eclipse.ui,org.eclipse.core.runtime,org.eclipse.jdt,org.eclipse.jdt.core,org.eclipse.core.resources,org.eclipse.ltk.core.refactoring,org.eclipse.ltk.ui.refactoring,org.eclipse.jface.text,org.eclipse.ui.editors,org.eclipse.jdt.ui,org.eclipse.ui.workbench.texteditor,org.eclipse.ui.console,org.eclipse.ui.ide,org.eclipse.compare,org.eclipse.jdt.junit,net.java.amateras.umleditor,net.java.amateras.umleditor.java,net.java.amateras.xstream,org.eclipse.draw2d,org.eclipse.gef,org.eclipse.jdt.launching,org.junit,org.eclipse.jdt.astview,org.eclipse.jdt.core.manipulation"/>
-					<attribute name="Eclipse-LazyStart" value="true"/>
-			    </manifest>-->
 			</jar>
 	    </target>
 	
@@ -361,7 +354,7 @@
 	<target name="write-site-xml">
 		<echoxml file="${update-folder}/site.xml">
 			<site>
-				<feature url="features/${jar-file-name}" id="${update-id}" version="1.1.0"/>
+				<feature url="features/${jar-file-name}" id="${update-id}" version="${pluginManifest.Bundle-Version}"/>
 			</site>
 		</echoxml>
 	</target>
@@ -372,8 +365,8 @@
 			<feature
 				id="${update-id}"
 				label="Robustaclipse"
-				version="1.1.0"
-				provider-name="NTUT CSIE, Taipei Tech, Software Systems Lab."
+				version="${pluginManifest.Bundle-Version}"
+				provider-name="${pluginProperties.Bundle-Vendor}"
 				plugin="${update-id}">
  
 				<description>
@@ -409,7 +402,7 @@
 					id="${update-id}"
 					download-size="0"
 					install-size="0"
-					version="1.1.0"/>
+					version="${pluginManifest.Bundle-Version}"/>
 			</feature>
 		</echoxml>
 	</target>

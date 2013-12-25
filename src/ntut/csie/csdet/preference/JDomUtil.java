@@ -79,7 +79,6 @@ public class JDomUtil {
 			FileOutputStream fout = new FileOutputStream(path);
 			xmlOut.setFormat(Format.getPrettyFormat());
 			xmlOut.output(docXML, fout);
-			xmlOut.output(docXML,System.out);
 			fout.close();
 		}catch(IOException e){
 			System.out.println("XML輸出失敗！！！！");

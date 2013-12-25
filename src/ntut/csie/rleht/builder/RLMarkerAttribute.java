@@ -41,7 +41,7 @@ public interface RLMarkerAttribute {
 	public static final String CS_DUMMY_HANDLER = "Dummy_Handler";
 	
 	/** Nested Try Statement **/
-	public static final String CS_NESTED_TRY_STATEMENT = "Nested_TryStatement";
+	public static final String CS_NESTED_TRY_STATEMENT = "Nested_Try_Statement";
 	
 	/** Unprotected Main Program **/
 	public static final String CS_UNPROTECTED_MAIN = "Unprotected_Main_Program";
