@@ -87,14 +87,22 @@ public class BadSmellCollector {
 				addBadSmell(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT, nestedList);
 			}
 
-			//Careless cleanup
+//			//Careless cleanup
+//			if(detMethodSmell.get(RLMarkerAttribute.CS_CARELESS_CLEANUP)) {
+//				CarelessCleanupVisitor carelessCleanupVisitor = new CarelessCleanupVisitor(root);
+//				method.accept(carelessCleanupVisitor);
+//				List<MarkerInfo> carelessCleanupList = carelessCleanupVisitor.getCarelessCleanupList();
+//				setMethodNameAndIndex(carelessCleanupList, method.getName().toString(), methodIdx);
+//				addBadSmell(RLMarkerAttribute.CS_CARELESS_CLEANUP, carelessCleanupList);
+//			}
 			if(detMethodSmell.get(RLMarkerAttribute.CS_CARELESS_CLEANUP)) {
-				CarelessCleanupVisitor carelessCleanupVisitor = new CarelessCleanupVisitor(root);
-				method.accept(carelessCleanupVisitor);
-				List<MarkerInfo> carelessCleanupList = carelessCleanupVisitor.getCarelessCleanupList();
+				NewCarelessCleanupVisitor ccVisitor = new NewCarelessCleanupVisitor(root);
+				method.accept(ccVisitor);
+				List<MarkerInfo> carelessCleanupList = ccVisitor.getCarelessCleanupList();
 				setMethodNameAndIndex(carelessCleanupList, method.getName().toString(), methodIdx);
 				addBadSmell(RLMarkerAttribute.CS_CARELESS_CLEANUP, carelessCleanupList);
 			}
+			
 			
 			if(isDetectingBadSmell.get(SmellSettings.SMELL_THROWNEXCEPTIONINFINALLYBLOCK)) {
 				if(detMethodSmell.get(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK)) {
