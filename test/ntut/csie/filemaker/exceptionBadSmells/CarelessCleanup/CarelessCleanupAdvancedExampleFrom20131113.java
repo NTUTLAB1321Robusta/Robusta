@@ -3,7 +3,10 @@ package ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public class CarelessCleanupAdvancedExampleFrom20131113 {
 
@@ -92,6 +95,22 @@ public class CarelessCleanupAdvancedExampleFrom20131113 {
 	}
 
 	/**
+	 * Method "reset()" will throw exception before the created action, so
+	 * close() action will always not careless cleanup
+	 */
+	public void throwExceptionBeforeCreation(FileOutputStream fos)
+			throws IOException {
+		fileInputStream.reset();
+		int a = 10;
+		try {
+			fileInputStream = new FileInputStream("path");
+			fileInputStream.read();
+		} finally {
+			fileInputStream.close();
+		}
+	}
+
+	/**
 	 * The close action will always be reached. But because of the limit of
 	 * detected rule, it will be consider an unsafe code.
 	 */
@@ -138,6 +157,52 @@ public class CarelessCleanupAdvancedExampleFrom20131113 {
 		do {
 			fileInputStream.close(); // Unsafe
 		} while (1 == fileInputStream.available());
+	}
+
+	public void doTryFinallyTwice(OutputStream zOut) throws IOException {
+		InputStream is = null;
+		try {
+			zOut.write(is.read());
+		} finally {
+			is.close(); // Safe
+		}
+		try {
+			zOut.write(is.read());
+		} finally {
+			is.close(); // Unsafe
+		}
+	}
+
+	/**
+	 * To make sure that the fis won't get the wrong declaration.
+	 */
+	public void twoVariablesWithSameName(int opcode) throws IOException {
+		if (opcode == 1) {
+			FileInputStream fis = null;
+			fis.read();
+		}
+		if (opcode == 2) {
+			FileInputStream fis = null;
+			fis.close(); // Safe
+		}
+	}
+
+	/**
+	 * We shouldn't treat "fileInputStream = new FileInputStream(file);" as the
+	 * nearest assignment, because it may not be executed.
+	 */
+	public void getSuitableAssignment(int opcode) throws IOException {
+		if (opcode == 1) {
+			fileInputStream = new FileInputStream(file);
+			fileInputStream.read();
+		}
+		try {
+			fileInputStream.read();
+		} catch (IOException e) {
+			System.out.println(e.toString());
+		} finally {
+			fileInputStream.close(); // Safe
+		}
 	}
 
 }

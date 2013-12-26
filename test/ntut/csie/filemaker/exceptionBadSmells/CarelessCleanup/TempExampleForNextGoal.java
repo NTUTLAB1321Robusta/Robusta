@@ -9,7 +9,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.actionmethod.ResourceCloser;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.ResourceCloser;
 
 import org.apache.log4j.lf5.util.Resource;
 

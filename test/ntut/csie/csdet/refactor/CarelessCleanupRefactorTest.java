@@ -21,11 +21,11 @@ import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.RuntimeEnvironmentProjectReader;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.CarelessCleanupExample;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.actionmethod.ClassCanCloseButNotImplementCloseable;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.actionmethod.ClassImplementCloseable;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.actionmethod.ClassImplementCloseableWithoutThrowException;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.actionmethod.UserDefinedCarelessCleanupDog;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.actionmethod.UserDefinedCarelessCleanupWeather;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.ClassCanCloseButNotImplementCloseable;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.ClassImplementCloseable;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.ClassImplementCloseableWithoutThrowException;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.UserDefinedCarelessCleanupClass;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.UserDefinedCarelessCleanupMethod;
 import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.robusta.util.PathUtils;
@@ -95,19 +95,19 @@ public class CarelessCleanupRefactorTest {
 		javaFile2String.clear();
 		
 		/* 測試使用者設定Pattern時候使用 */
-		javaFile2String.read(UserDefinedCarelessCleanupWeather.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaFile2String.read(UserDefinedCarelessCleanupMethod.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
-				UserDefinedCarelessCleanupWeather.class.getPackage().getName(),
-				UserDefinedCarelessCleanupWeather.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + UserDefinedCarelessCleanupWeather.class.getPackage().getName() + ";" + String.format("%n")
+				UserDefinedCarelessCleanupMethod.class.getPackage().getName(),
+				UserDefinedCarelessCleanupMethod.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
+				"package " + UserDefinedCarelessCleanupMethod.class.getPackage().getName() + ";" + String.format("%n")
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
-		javaFile2String.read(UserDefinedCarelessCleanupDog.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaFile2String.read(UserDefinedCarelessCleanupClass.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
-				UserDefinedCarelessCleanupDog.class.getPackage().getName(),
-				UserDefinedCarelessCleanupDog.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + UserDefinedCarelessCleanupDog.class.getPackage().getName() + ";" + String.format("%n")
+				UserDefinedCarelessCleanupClass.class.getPackage().getName(),
+				UserDefinedCarelessCleanupClass.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
+				"package " + UserDefinedCarelessCleanupClass.class.getPackage().getName() + ";" + String.format("%n")
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
@@ -692,7 +692,7 @@ public class CarelessCleanupRefactorTest {
 		// test
 		Method addImportPackage = CarelessCleanupRefactor.class.getDeclaredMethod("addImportPackage", IType.class);
 		addImportPackage.setAccessible(true);
-		addImportPackage.invoke(refactor, RuntimeEnvironmentProjectReader.getType(javaProjectMaker.getProjectName(), UserDefinedCarelessCleanupDog.class.getPackage().getName(), UserDefinedCarelessCleanupDog.class.getSimpleName()));
+		addImportPackage.invoke(refactor, RuntimeEnvironmentProjectReader.getType(javaProjectMaker.getProjectName(), UserDefinedCarelessCleanupClass.class.getPackage().getName(), UserDefinedCarelessCleanupClass.class.getSimpleName()));
 		// check postcondition
 		assertEquals(10, imports.size());
 		assertEquals("import java.io.Closeable;\n", imports.get(0).toString());

@@ -12,11 +12,11 @@ import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.CarelessCleanupExample;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.actionmethod.ClassCanCloseButNotImplementCloseable;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.actionmethod.ClassImplementCloseable;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.actionmethod.ClassImplementCloseableWithoutThrowException;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.actionmethod.UserDefinedCarelessCleanupDog;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.actionmethod.UserDefinedCarelessCleanupWeather;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.ClassCanCloseButNotImplementCloseable;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.ClassImplementCloseable;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.ClassImplementCloseableWithoutThrowException;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.UserDefinedCarelessCleanupClass;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.UserDefinedCarelessCleanupMethod;
 import ntut.csie.robusta.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -70,19 +70,19 @@ public class CarelessCleanupVisitor2Test {
 		javaFile2String.clear();
 		
 		/* 測試使用者設定Pattern時候使用 */
-		javaFile2String.read(UserDefinedCarelessCleanupWeather.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaFile2String.read(UserDefinedCarelessCleanupMethod.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
-				UserDefinedCarelessCleanupWeather.class.getPackage().getName(),
-				UserDefinedCarelessCleanupWeather.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + UserDefinedCarelessCleanupWeather.class.getPackage().getName() + ";" + System.getProperty("line.separator")
+				UserDefinedCarelessCleanupMethod.class.getPackage().getName(),
+				UserDefinedCarelessCleanupMethod.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
+				"package " + UserDefinedCarelessCleanupMethod.class.getPackage().getName() + ";" + System.getProperty("line.separator")
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
-		javaFile2String.read(UserDefinedCarelessCleanupDog.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaFile2String.read(UserDefinedCarelessCleanupClass.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
-				UserDefinedCarelessCleanupDog.class.getPackage().getName(),
-				UserDefinedCarelessCleanupDog.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + UserDefinedCarelessCleanupDog.class.getPackage().getName() + ";" + System.getProperty("line.separator")
+				UserDefinedCarelessCleanupClass.class.getPackage().getName(),
+				UserDefinedCarelessCleanupClass.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
+				"package " + UserDefinedCarelessCleanupClass.class.getPackage().getName() + ";" + System.getProperty("line.separator")
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
@@ -167,7 +167,7 @@ public class CarelessCleanupVisitor2Test {
 	public void testGetCarelessCleanupListWithUserDefiendLibs() throws Exception {	
 		// 產生設定檔
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		smellSettings.addCarelessCleanupPattern(UserDefinedCarelessCleanupWeather.class.getName() + ".*", true);
+		smellSettings.addCarelessCleanupPattern(UserDefinedCarelessCleanupMethod.class.getName() + ".*", true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 
 		// 重新產生Visitor，使得設定值有存入CarelessCleaupVisitor
@@ -190,7 +190,7 @@ public class CarelessCleanupVisitor2Test {
 	public void testGetCarelessCleanupListWithUserDefiendFullQualifiedMethods() throws Exception {	
 		// 產生設定檔
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		smellSettings.addCarelessCleanupPattern(UserDefinedCarelessCleanupWeather.class.getName() + ".bark", true);
+		smellSettings.addCarelessCleanupPattern(UserDefinedCarelessCleanupMethod.class.getName() + ".bark", true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		
 		// 重新產生Visitor，使得設定值有存入CarelessCleaupVisitor

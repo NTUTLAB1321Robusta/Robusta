@@ -1,4 +1,4 @@
-package ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.actionmethod;
+package ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod;
 
 import java.io.Closeable;
 

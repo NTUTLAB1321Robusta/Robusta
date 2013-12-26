@@ -4,11 +4,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.RandomAccessFile;
+import java.security.DigestInputStream;
 
-import ntut.csie.robusta.agile.exception.RTag;
-import ntut.csie.robusta.agile.exception.Robustness;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.ResourceCloser;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.UserDefinedCarelessCleanupClass;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.UserDefinedCarelessCleanupMethod;
 
 public class CarelessCleanupIntegratedExampleFrom20131113 {
 
@@ -61,10 +65,78 @@ public class CarelessCleanupIntegratedExampleFrom20131113 {
 		for (int a = 0; a < 10; a++) {
 			try {
 				if (a == 5) {
-					fileOutputStream.close();
+					fileOutputStream.close(); // Unsafe
 				}
 			} catch (IOException e) {
 				throw e;
+			}
+		}
+	}
+
+	/**
+	 * Should define UserDefinedCarelessCleanupClass and method "bark"
+	 */
+	public void thrownExceptionInFinallyWith2KindsUserDefinedInstance()
+			throws Exception {
+		UserDefinedCarelessCleanupMethod udMethod = new UserDefinedCarelessCleanupMethod();
+		UserDefinedCarelessCleanupClass udClass = new UserDefinedCarelessCleanupClass();
+		try {
+			udMethod.bark(); // Safe
+			udClass.bark(); // Unsafe
+		} finally {
+			udMethod.bark(); // Safe
+			udClass.bite(); // Unsafe
+		}
+	}
+
+	public void doTryFinallyTwiceWithUserDefinition(OutputStream zOut)
+			throws IOException {
+		InputStream is = null;
+		try {
+			zOut.write(is.read());
+		} finally {
+			ResourceCloser.closeResourceDirectly(is); // Safe
+		}
+		try {
+			zOut.write(is.read());
+		} finally {
+			ResourceCloser.closeResourceDirectly(is); // Unsafe
+		}
+	}
+
+	/**
+	 * It is an example of a bug on CC rule version 2.
+	 */
+	public String closeInNestedTryBlock(File file) {
+		String checksum = null;
+		try {
+			FileInputStream fis = null;
+			try {
+				fis = new FileInputStream(file);
+				DigestInputStream dis = new DigestInputStream(fis, null);
+				dis.close(); // Safe
+				fis.close(); // Unsafe
+			} catch (Exception e) {
+				return null;
+			}
+		} catch (Exception e) {
+			return null;
+		}
+		return checksum;
+	}
+
+	/**
+	 * It is an example of a bug on CC rule version 1.
+	 */
+	public void closeResourceInTryBlockInCatchBlock(File file)
+			throws IOException {
+		RandomAccessFile raf = null;
+		try {
+			raf = new RandomAccessFile(file, "rw");
+		} catch (IOException e) {
+			try {
+				raf.close(); // Safe
+			} catch (IOException inner) {
 			}
 		}
 	}
