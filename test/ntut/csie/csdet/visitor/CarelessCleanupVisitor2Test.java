@@ -11,7 +11,7 @@ import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.CarelessCleanupExample;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.CarelessCleanupExampleFrom20131113;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.ClassCanCloseButNotImplementCloseable;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.ClassImplementCloseable;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.ClassImplementCloseableWithoutThrowException;
@@ -45,11 +45,11 @@ public class CarelessCleanupVisitor2Test {
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/" + JavaProjectMaker.RL_LIBRARY_PATH);
 		javaProjectMaker.setJREDefaultContainer();
 		// 根據測試檔案樣本內容建立新的檔案
-		javaFile2String.read(CarelessCleanupExample.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaFile2String.read(CarelessCleanupExampleFrom20131113.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
-				CarelessCleanupExample.class.getPackage().getName(),
-				CarelessCleanupExample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + CarelessCleanupExample.class.getPackage().getName() + ";" + String.format("%n")
+				CarelessCleanupExampleFrom20131113.class.getPackage().getName(),
+				CarelessCleanupExampleFrom20131113.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
+				"package " + CarelessCleanupExampleFrom20131113.class.getPackage().getName() + ";" + String.format("%n")
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
@@ -94,7 +94,7 @@ public class CarelessCleanupVisitor2Test {
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
-		Path ccExamplePath = new Path(PathUtils.getPathOfClassUnderSrcFolder(CarelessCleanupExample.class, testProjectName));
+		Path ccExamplePath = new Path(PathUtils.getPathOfClassUnderSrcFolder(CarelessCleanupExampleFrom20131113.class, testProjectName));
 		// Create AST to parse
 		
 		ASTParser parser = ASTParser.newParser(AST.JLS3);

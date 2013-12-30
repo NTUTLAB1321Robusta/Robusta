@@ -13,7 +13,7 @@ import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.exceptionBadSmells.NestedTryStatementExample;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.CarelessCleanupExample;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.CarelessCleanupExampleFrom20131113;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.ClassCanCloseButNotImplementCloseable;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.ClassImplementCloseable;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.ClassImplementCloseableWithoutThrowException;
@@ -83,7 +83,7 @@ public class ReportBuilderIntergrationTest {
 		
 		// 根據測試檔案樣本內容建立新的檔案
 		loadClass(NestedTryStatementExample.class);
-		loadClass(CarelessCleanupExample.class);
+		loadClass(CarelessCleanupExampleFrom20131113.class);
 		loadClass(ClassImplementCloseable.class);
 		loadClass(ClassImplementCloseableWithoutThrowException.class);
 		loadClass(ClassCanCloseButNotImplementCloseable.class);
@@ -255,7 +255,7 @@ public class ReportBuilderIntergrationTest {
 		countFileLOC.setAccessible(true);
 		// 檢查測試專案檔案的行數
 		assertEquals(537, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(NestedTryStatementExample.class, projectName)));
-		assertEquals(737, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(CarelessCleanupExample.class, projectName)));
+		assertEquals(737, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(CarelessCleanupExampleFrom20131113.class, projectName)));
 		assertEquals(199, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(OverLoggingJavaLogExample.class, projectName)));
 		assertEquals(174, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(OverLoggingLog4JExample.class, projectName)));
 		assertEquals(159, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(OverLoggingSelf4JExample.class, projectName)));

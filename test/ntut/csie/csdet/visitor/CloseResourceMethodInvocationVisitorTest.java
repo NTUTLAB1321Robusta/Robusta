@@ -8,7 +8,7 @@ import java.io.File;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.CarelessCleanupExample;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.CarelessCleanupExampleFrom20131113;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.ClassCanCloseButNotImplementCloseable;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.ClassImplementCloseable;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.ClassImplementCloseableWithoutThrowException;
@@ -55,7 +55,6 @@ public class CloseResourceMethodInvocationVisitorTest {
 		project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 		javaProject = JavaCore.create(project);
 		
-		loadClass(CarelessCleanupExample.class);
 		loadClass(ClassCanCloseButNotImplementCloseable.class);
 		loadClass(ClassImplementCloseable.class);
 		loadClass(UserDefinedCarelessCleanupMethod.class);
@@ -158,7 +157,7 @@ public class CloseResourceMethodInvocationVisitorTest {
 	
 	private void collectCloseMethodInvocation() throws Exception
 	{
-		CompilationUnit unit = getCompilationUnit(CarelessCleanupExample.class);
+		CompilationUnit unit = getCompilationUnit(CarelessCleanupExampleFrom20131113.class);
 		visitor = new CloseResourceMethodInvocationVisitor(unit);
 		unit.accept(visitor);
 	}

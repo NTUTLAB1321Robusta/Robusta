@@ -73,9 +73,24 @@ public class CarelessCleanupAdvancedExampleFrom20131113 {
 	}
 
 	/**
+	 * The close action will be reach if and only if the resource been created.
+	 * Because if "declaredCheckedException" throws an exception, the creation
+	 * won't be reached.
+	 */
+	public void closeInFinallyWithStatementOnlyBeforeCreated() throws Exception {
+		methodBeforeClose.declaredCheckedException();
+
+		FileInputStream fis = new FileInputStream(file);
+
+		try {
+			methodBeforeClose.declaredCheckedException();
+		} finally {
+			fis.close(); // Safe
+		}
+	}
+
+	/**
 	 * For the concrete closeable below
-	 * 
-	 * @author pig
 	 */
 	class SuperCloseable implements Closeable {
 		public void close() {
@@ -84,7 +99,6 @@ public class CarelessCleanupAdvancedExampleFrom20131113 {
 
 	/**
 	 * This close statement should be detected
-	 * 
 	 * @author pig
 	 */
 	class ConcreteCloseable extends SuperCloseable {
@@ -185,6 +199,46 @@ public class CarelessCleanupAdvancedExampleFrom20131113 {
 			FileInputStream fis = null;
 			fis.close(); // Safe
 		}
+	}
+
+	/**
+	 * About the resource fis. If we treat it's declaration point as beginning, then
+	 * it is unsafe. But if we treat it's last assignment as beginning, then it
+	 * is safe.
+	 * Now we treat it as unsafe when 2013/12/30. 
+	 */
+	public void variableBeenAssignedTwice(int opcode) throws IOException {
+		FileInputStream fis = null;
+		if (fis.available() != 1) {
+			fis = new FileInputStream(file);
+			fis.close(); // Unsafe
+		}
+	}
+
+	/**
+	 * About the resource fis. If we treat it's declaration point as beginning,
+	 * then it is unsafe. But if we treat it's first assignment as beginning,
+	 * then it is safe.
+	 * Now we treat it as unsafe when 2013/12/30.
+	 */
+	public void variableBeenAssignedAfterDeclared() throws IOException {
+		FileInputStream fis;
+		file = null;
+		fis = new FileInputStream(file);
+		fis.close(); // Unsafe
+	}
+
+	/**
+	 * The instance "new FileInputStream(file)" is safe, but the instance "null"
+	 * is unsafe. We should treat it as careless cleanup when it has any unsafe
+	 * close.
+	 */
+	public void variableBeenAssignedTwiceAtDifferentPath(int opcode) throws IOException {
+		FileInputStream fis = null;
+		if (opcode == 2) {
+			fis = new FileInputStream(file);
+		}
+		fis.close(); // Unsafe
 	}
 
 	/**

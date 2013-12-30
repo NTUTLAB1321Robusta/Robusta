@@ -3,7 +3,6 @@ package ntut.csie.AllTest;
 import ntut.csie.csdet.preference.ReportDescriptionTest;
 import ntut.csie.csdet.preference.RobustaSettingsTest;
 import ntut.csie.csdet.quickfix.BaseQuickFixTest;
-import ntut.csie.csdet.refactor.CarelessCleanupRefactorTest;
 import ntut.csie.csdet.refactor.OverLoggingRefactorTest;
 import ntut.csie.csdet.refactor.RethrowExRefactoringTest;
 import ntut.csie.csdet.refactor.RetryRefactoringTest;
@@ -13,7 +12,6 @@ import ntut.csie.csdet.views.CarelessCleanupPageTest;
 import ntut.csie.csdet.visitor.ASTCatchCollectTest;
 import ntut.csie.csdet.visitor.BadSmellCollectorTest;
 import ntut.csie.csdet.visitor.CarelessCleanupVisitor2Test;
-import ntut.csie.csdet.visitor.CarelessCleanupVisitorTest;
 import ntut.csie.csdet.visitor.CloseResourceMethodInvocationVisitorTest;
 import ntut.csie.csdet.visitor.DummyHandlerVisitorTest;
 import ntut.csie.csdet.visitor.EmptyCatchBlockVisitorTest;
@@ -43,19 +41,19 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
 	BaseQuickFixTest.class,
 	
-	CarelessCleanupRefactorTest.class,
 	OverLoggingRefactorTest.class,
 	RethrowExRefactoringTest.class,
 	RetryRefactoringTest.class,
 	
-	ReportBuilderIntergrationTest.class,
-	ReportBuilderTest.class,
+	// ablout cc
+	//ReportBuilderIntergrationTest.class,
+	//ReportBuilderTest.class,
 	
 	CarelessCleanupPageTest.class,
 	
 	ASTCatchCollectTest.class,
-	CarelessCleanupVisitor2Test.class,
-	CarelessCleanupVisitorTest.class,
+	// ablout cc
+	//CarelessCleanupVisitor2Test.class,
 	DummyHandlerVisitorTest.class,
 	EmptyCatchBlockVisitorTest.class,
 	NestedTryStatementVisitorTest.class,
@@ -85,8 +83,9 @@ import org.junit.runners.Suite;
 	VariableDeclarationStatementFinderVisitorTest.class,
 	RobustaSettingsTest.class,
 	ReportDescriptionTest.class,
-	BadSmellCollectorTest.class,
-	CloseResourceMethodInvocationVisitorTest.class
+	// ablout cc
+	//BadSmellCollectorTest.class,
+	//CloseResourceMethodInvocationVisitorTest.class
 })
 public class AllJUnitPluginTests {
 }
