@@ -78,7 +78,7 @@ public class BadSmellCollector {
 			
 			inputSuppressData(suppressSmellList, detMethodSmell, detCatchSmell);
 			
-			//NESTED AGAIN(The second time is collect in Method)
+			// Nested again(The second time is collect in Method)
 			if(detMethodSmell.get(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT)) {
 				NestedTryStatementVisitor nestedTryVisitor = new NestedTryStatementVisitor(root);
 				method.accept(nestedTryVisitor);
@@ -88,22 +88,17 @@ public class BadSmellCollector {
 			}
 
 //			//Careless cleanup
-//			if(detMethodSmell.get(RLMarkerAttribute.CS_CARELESS_CLEANUP)) {
-//				CarelessCleanupVisitor carelessCleanupVisitor = new CarelessCleanupVisitor(root);
-//				method.accept(carelessCleanupVisitor);
-//				List<MarkerInfo> carelessCleanupList = carelessCleanupVisitor.getCarelessCleanupList();
-//				setMethodNameAndIndex(carelessCleanupList, method.getName().toString(), methodIdx);
-//				addBadSmell(RLMarkerAttribute.CS_CARELESS_CLEANUP, carelessCleanupList);
-//			}
-			if(detMethodSmell.get(RLMarkerAttribute.CS_CARELESS_CLEANUP)) {
-				NewCarelessCleanupVisitor ccVisitor = new NewCarelessCleanupVisitor(root);
-				method.accept(ccVisitor);
-				List<MarkerInfo> carelessCleanupList = ccVisitor.getCarelessCleanupList();
-				setMethodNameAndIndex(carelessCleanupList, method.getName().toString(), methodIdx);
-				addBadSmell(RLMarkerAttribute.CS_CARELESS_CLEANUP, carelessCleanupList);
+			if(isDetectingBadSmell.get(SmellSettings.SMELL_CARELESSCLEANUP)) {
+				if(detMethodSmell.get(RLMarkerAttribute.CS_CARELESS_CLEANUP)) {
+					NewCarelessCleanupVisitor ccVisitor = new NewCarelessCleanupVisitor(root);
+					method.accept(ccVisitor);
+					List<MarkerInfo> carelessCleanupList = ccVisitor.getCarelessCleanupList();
+					setMethodNameAndIndex(carelessCleanupList, method.getName().toString(), methodIdx);
+					addBadSmell(RLMarkerAttribute.CS_CARELESS_CLEANUP, carelessCleanupList);
+				}
 			}
 			
-			
+			// Thrown exception in finally block
 			if(isDetectingBadSmell.get(SmellSettings.SMELL_THROWNEXCEPTIONINFINALLYBLOCK)) {
 				if(detMethodSmell.get(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK)) {
 					ThrownExceptionInFinallyBlockVisitor oleVisitor = new ThrownExceptionInFinallyBlockVisitor(root);

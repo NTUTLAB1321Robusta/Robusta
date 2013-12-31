@@ -16,22 +16,15 @@ public class NewCarelessCleanupVisitor extends ASTVisitor {
 	CompilationUnit root;
 	MethodDeclaration methodDeclaration;
 	private List<MarkerInfo> carelessCleanupList;
-	private boolean isDetectingCarelessCleanupSmell;
 	
 	public NewCarelessCleanupVisitor(CompilationUnit root) {
 		super();
 		this.root = root;
 		carelessCleanupList = new ArrayList<MarkerInfo>();
-		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		isDetectingCarelessCleanupSmell = smellSettings.isDetectingSmell(SmellSettings.SMELL_CARELESSCLEANUP);
 	}
 	
 	@Override
 	public boolean visit(MethodDeclaration node) {
-		if(!isDetectingCarelessCleanupSmell) {
-			return false;
-		}
-		
 		List<MethodInvocation> suspectedNode = collectSuspectedNode(node);
 		
 		for (MethodInvocation methodInvocation : suspectedNode) {

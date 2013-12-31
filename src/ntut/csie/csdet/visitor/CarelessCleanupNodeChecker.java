@@ -3,11 +3,9 @@ package ntut.csie.csdet.visitor;
 import java.util.Iterator;
 import java.util.List;
 
-import ntut.csie.csdet.visitor.aidvisitor.ClassInstanceCreationVisitor;
 import ntut.csie.jdt.util.NodeUtils;
 
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 
 public class CarelessCleanupNodeChecker {
