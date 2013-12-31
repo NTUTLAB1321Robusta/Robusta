@@ -14,7 +14,7 @@ import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.Re
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.UserDefinedCarelessCleanupClass;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.UserDefinedCarelessCleanupMethod;
 
-public class CarelessCleanupIntegratedExampleFrom20131113 {
+public class CarelessCleanupIntegratedExample {
 
 	public void thrownExceptionInFinallyWith2KindsInstance(File file1,
 			File file2) throws IOException {

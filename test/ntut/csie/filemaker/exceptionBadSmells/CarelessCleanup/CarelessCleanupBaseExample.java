@@ -10,7 +10,7 @@ import java.io.IOException;
  * 
  * @author pig
  */
-public class CarelessCleanupExampleFrom20131113 {
+public class CarelessCleanupBaseExample {
 
 	FileInputStream fileInputStream = null;
 	File file = null;

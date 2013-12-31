@@ -8,7 +8,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class CarelessCleanupAdvancedExampleFrom20131113 {
+import org.apache.log4j.lf5.util.Resource;
+
+public class CarelessCleanupAdvancedExample {
 
 	FileInputStream fileInputStream = null;
 	File file = null;
@@ -259,4 +261,17 @@ public class CarelessCleanupAdvancedExampleFrom20131113 {
 		}
 	}
 
+	/**
+	 * It is an example of a bug on CC rule version 2.
+	 * When we detect it, will rise NullPointerException
+	 */
+	public void arbintest4(Resource resource, OutputStream zOut)
+			throws IOException {
+		InputStream rIn = resource.getInputStream();
+		try {
+			rIn.read();
+		} finally {
+			rIn.close(); // it isn't CC
+		}
+	}
 }

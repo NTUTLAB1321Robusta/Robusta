@@ -8,7 +8,7 @@ import java.io.File;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.CarelessCleanupExampleFrom20131113;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.CarelessCleanupBaseExample;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.ClassCanCloseButNotImplementCloseable;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.ClassImplementCloseable;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.ClassImplementCloseableWithoutThrowException;
@@ -157,7 +157,7 @@ public class CloseResourceMethodInvocationVisitorTest {
 	
 	private void collectCloseMethodInvocation() throws Exception
 	{
-		CompilationUnit unit = getCompilationUnit(CarelessCleanupExampleFrom20131113.class);
+		CompilationUnit unit = getCompilationUnit(CarelessCleanupBaseExample.class);
 		visitor = new CloseResourceMethodInvocationVisitor(unit);
 		unit.accept(visitor);
 	}
