@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import ntut.csie.csdet.preference.SmellSettings;
+import ntut.csie.csdet.visitor.aidvisitor.ASTMethodCollector;
 import ntut.csie.filemaker.ASTNodeFinder;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
@@ -16,7 +17,6 @@ import ntut.csie.filemaker.exceptionBadSmells.DummyAndEmptyExample;
 import ntut.csie.filemaker.exceptionBadSmells.DummyHandlerExampleWithTryStatementInNonTryStatement;
 import ntut.csie.filemaker.exceptionBadSmells.DummyHandlerWithNestedTryStatement;
 import ntut.csie.filemaker.exceptionBadSmells.UserDefineDummyHandlerFish;
-import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.robusta.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;

@@ -14,6 +14,7 @@ import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.visitor.BadSmellCollector;
 import ntut.csie.csdet.visitor.SuppressWarningVisitor;
 import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
+import ntut.csie.csdet.visitor.aidvisitor.ASTMethodCollector;
 import ntut.csie.rleht.common.ASTHandler;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLChecker;

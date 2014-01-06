@@ -5,10 +5,10 @@ import static org.junit.Assert.*;
 import java.util.List;
 
 import ntut.csie.csdet.preference.SmellSettings;
+import ntut.csie.csdet.visitor.aidvisitor.ASTMethodCollector;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.sampleCode4VisitorTest.StatementBeFoundSampleCode;
-import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.robusta.codegen.CatchClauseFinderVisitor;
 import ntut.csie.robusta.codegen.StatementFinderVisitor;
 import ntut.csie.robusta.util.PathUtils;

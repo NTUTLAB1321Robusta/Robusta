@@ -19,11 +19,11 @@ import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.visitor.DummyHandlerVisitor;
 import ntut.csie.csdet.visitor.SuppressWarningVisitor;
 import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
+import ntut.csie.csdet.visitor.aidvisitor.ASTMethodCollector;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.exceptionBadSmells.DummyAndEmptyExample;
 import ntut.csie.filemaker.exceptionBadSmells.UserDefineDummyHandlerFish;
-import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.robusta.util.PathUtils;
 

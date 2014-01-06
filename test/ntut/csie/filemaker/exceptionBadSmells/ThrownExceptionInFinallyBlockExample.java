@@ -482,4 +482,27 @@ public class ThrownExceptionInFinallyBlockExample {
 			}
 		}
 	}
+
+	/**
+	 * Thrown in constructor
+	 */
+	public ThrownExceptionInFinallyBlockExample(File outputFile)
+			throws IOException {
+		FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
+		try {
+		} finally {
+			fileOutputStream.close(); // ThrownInFinally
+		}
+	}
+
+	/**
+	 * Thrown in initializer
+	 */
+	{
+		FileOutputStream fileOutputStream = null;
+		try {
+		} finally {
+			fileOutputStream.close(); // ThrownInFinally
+		}
+	}
 }

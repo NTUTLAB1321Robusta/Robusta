@@ -26,7 +26,6 @@ public class ThrownExceptionInFinallyBlockVisitor extends ASTVisitor {
 	private Block outermostFinallyBlock = null;
 
 	public ThrownExceptionInFinallyBlockVisitor(CompilationUnit compilationUnit) {
-		super();
 		thrownInFinallyList = new ArrayList<MarkerInfo>();
 		root = compilationUnit;
 	}

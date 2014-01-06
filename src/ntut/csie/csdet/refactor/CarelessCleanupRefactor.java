@@ -4,7 +4,7 @@ import java.util.List;
 
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.visitor.CarelessCleanupVisitor;
-import ntut.csie.rleht.builder.ASTMethodCollector;
+import ntut.csie.csdet.visitor.aidvisitor.ASTMethodCollector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 
 import org.eclipse.core.resources.IFile;

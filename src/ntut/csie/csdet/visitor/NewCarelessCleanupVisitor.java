@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ntut.csie.csdet.data.MarkerInfo;
-import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 
 import org.eclipse.jdt.core.dom.ASTVisitor;
@@ -18,7 +17,6 @@ public class NewCarelessCleanupVisitor extends ASTVisitor {
 	private List<MarkerInfo> carelessCleanupList;
 	
 	public NewCarelessCleanupVisitor(CompilationUnit root) {
-		super();
 		this.root = root;
 		carelessCleanupList = new ArrayList<MarkerInfo>();
 	}

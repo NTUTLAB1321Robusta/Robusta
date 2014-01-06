@@ -2,7 +2,7 @@ package ntut.csie.csdet.quickfix;
 
 import java.util.List;
 
-import ntut.csie.rleht.builder.ASTMethodCollector;
+import ntut.csie.csdet.visitor.aidvisitor.ASTMethodCollector;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;

@@ -6,7 +6,7 @@ import java.util.List;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.visitor.SpareHandlerVisitor;
 import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
-import ntut.csie.rleht.builder.ASTMethodCollector;
+import ntut.csie.csdet.visitor.aidvisitor.ASTMethodCollector;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLData;
 import ntut.csie.rleht.views.RLMessage;
