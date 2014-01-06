@@ -18,8 +18,8 @@ public class CloseResourceMethodInvocationVisitor extends ASTVisitor {
 	private CompilationUnit root;
 	
 	public CloseResourceMethodInvocationVisitor(CompilationUnit node) {
-		super();
-		this.root = node;
+		root = node;
+		// TODO We don't have to use Map to save MethodDeclaration info
 		closeMethodInvocationMap = new HashMap<MethodDeclaration, List<MethodInvocation>>();
 	}
 
@@ -42,10 +42,6 @@ public class CloseResourceMethodInvocationVisitor extends ASTVisitor {
 		if(closeMethodInvocationInMethodDeclaration.size() > 0) {
 			closeMethodInvocationMap.put(node, closeMethodInvocationInMethodDeclaration);
 		}
-	}
-	
-	public Map<MethodDeclaration, List<MethodInvocation>> getCloseMethodInvocationMap() {
-		return closeMethodInvocationMap;
 	}
 	
 	public List<MethodInvocation> getCloseMethodInvocationList() {

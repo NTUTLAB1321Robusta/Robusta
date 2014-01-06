@@ -111,14 +111,12 @@ public class CloseResourceMethodInvocationVisitorTest {
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		
 		collectCloseMethodInvocation();
-		assertEquals(35, visitor.getCloseMethodInvocationMap().size());
 		assertEquals(39, visitor.getCloseMethodInvocationList().size());
 	}
 	
 	@Test
 	public void testGetCloseMethodInvocationListWithOutExtraRule() throws Exception {
 		collectCloseMethodInvocation();
-		assertEquals(32, visitor.getCloseMethodInvocationMap().size());
 		assertEquals(35, visitor.getCloseMethodInvocationList().size());
 	}
 	
@@ -129,7 +127,6 @@ public class CloseResourceMethodInvocationVisitorTest {
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		
 		collectCloseMethodInvocation();
-		assertEquals(34, visitor.getCloseMethodInvocationMap().size());
 		assertEquals(42, visitor.getCloseMethodInvocationList().size());
 	}
 	
@@ -140,7 +137,6 @@ public class CloseResourceMethodInvocationVisitorTest {
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		
 		collectCloseMethodInvocation();
-		assertEquals(34, visitor.getCloseMethodInvocationMap().size());
 		assertEquals(38, visitor.getCloseMethodInvocationList().size());
 	}
 	
@@ -151,7 +147,6 @@ public class CloseResourceMethodInvocationVisitorTest {
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		
 		collectCloseMethodInvocation();
-		assertEquals(34, visitor.getCloseMethodInvocationMap().size());
 		assertEquals(37, visitor.getCloseMethodInvocationList().size());
 	}
 	

@@ -23,12 +23,12 @@ public class NewCarelessCleanupVisitor extends ASTVisitor {
 	
 	@Override
 	public boolean visit(MethodDeclaration node) {
-		List<MethodInvocation> suspectedNode = collectSuspectedNode(node);
+		List<MethodInvocation> suspectedNodes = collectSuspectedNode(node);
 		
-		for (MethodInvocation methodInvocation : suspectedNode) {
-			CarelessCleanupNodeChecker ccChecker = new CarelessCleanupNodeChecker(methodInvocation);
+		for (MethodInvocation eachSuspect : suspectedNodes) {
+			CarelessCleanupNodeChecker ccChecker = new CarelessCleanupNodeChecker(eachSuspect);
 			if(ccChecker.isCarelessCleanup()) {
-				collectSmell(methodInvocation);
+				collectSmell(eachSuspect);
 			}
 		}
 		return false;

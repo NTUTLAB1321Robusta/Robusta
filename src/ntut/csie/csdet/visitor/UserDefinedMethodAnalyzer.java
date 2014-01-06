@@ -108,27 +108,20 @@ public class UserDefinedMethodAnalyzer {
 	}
 	
 	/**
-	 * 判斷careless cleanup的extra rule
-	 * @param node
-	 * @param root
-	 * @return
+	 * Analyze extra rule of careless cleanup
 	 */
 	public boolean analyzeExtraRule(MethodInvocation node, CompilationUnit root) {
-		// 沒有勾選careless cleanup，則不處理
+		// If use didn't select careless cleanup, do nothing
 		if(methodTreeMap.isEmpty()) {
 			return false;
 		}
 		
-		// 沒把extra rule勾選，則不處理
+		// If use didn't select this extra rule, do nothing
 		if(methodTreeMap.get(SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD) == null) {
 			return false;
 		}
-		
-//		// 檢查MethodInvocation是否在finally裡面
-//		if(NodeUtils.isMethodInvocationInFinally(node))
-//			return false;
-		
-		//  檢查傳入的參數是否有實作closeable的
+
+		// Check if parameters implemented closeable
 		boolean isCloseable = NodeUtils.isParameterImplemented(node, Closeable.class);
 		
 		ASTNode mdNode = (node.resolveMethodBinding() != null) ? root.findDeclaringNode(node.resolveMethodBinding().getMethodDeclaration()): null;
