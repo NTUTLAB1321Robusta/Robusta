@@ -9,9 +9,11 @@ import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.CarelessCleanupBaseExample;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.CarelessCleanupSuspectExample;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.ClassCanCloseButNotImplementCloseable;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.ClassImplementCloseable;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.ClassImplementCloseableWithoutThrowException;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.ResourceCloser;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.UserDefinedCarelessCleanupClass;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.UserDefinedCarelessCleanupMethod;
 
@@ -21,11 +23,13 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class CloseResourceMethodInvocationVisitorTest {
@@ -41,7 +45,7 @@ public class CloseResourceMethodInvocationVisitorTest {
 	public void setUp() throws Exception {
 		// 讀取測試檔案樣本內容
 		javaFileToString = new JavaFileToString();
-		javaProjectMaker = new JavaProjectMaker(projectName );
+		javaProjectMaker = new JavaProjectMaker(projectName);
 		javaProjectMaker.setJREDefaultContainer();
 		
 		// 新增欲載入的library
@@ -55,11 +59,13 @@ public class CloseResourceMethodInvocationVisitorTest {
 		project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 		javaProject = JavaCore.create(project);
 		
+		loadClass(CarelessCleanupSuspectExample.class);
 		loadClass(ClassCanCloseButNotImplementCloseable.class);
 		loadClass(ClassImplementCloseable.class);
 		loadClass(UserDefinedCarelessCleanupMethod.class);
 		loadClass(UserDefinedCarelessCleanupClass.class);
 		loadClass(ClassImplementCloseableWithoutThrowException.class);
+		loadClass(ResourceCloser.class);
 		
 		InitailSetting();
 	}
@@ -77,20 +83,17 @@ public class CloseResourceMethodInvocationVisitorTest {
         parser.setResolveBindings(true);
         return (CompilationUnit) parser.createAST(null); // parse
 	}
-	
-	private void loadClass(Class clazz) throws Exception
-	{
+
+	private void loadClass(Class clazz) throws Exception {
 		javaFileToString.read(clazz, JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker.createJavaFile(
-				clazz.getPackage().getName(),
-				clazz.getSimpleName()
-				+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
-				+ clazz.getPackage().getName()
-				+ ";\n" + javaFileToString.getFileContent());
-		javaFileToString.clear();		
+		javaProjectMaker.createJavaFile(clazz.getPackage().getName(),
+				clazz.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
+				"package " + clazz.getPackage().getName() + ";\n"
+						+ javaFileToString.getFileContent());
+		javaFileToString.clear();
 	}
-	
-	private CompilationUnit getCompilationUnit(Class clazz) throws Exception {
+
+	private CompilationUnit getCompilationUnit(Class clazz) throws JavaModelException {
 		IType type = javaProject.findType(clazz.getName());
 		CompilationUnit unit = parse(type.getCompilationUnit());
 		return unit;
@@ -105,54 +108,53 @@ public class CloseResourceMethodInvocationVisitorTest {
 		javaProjectMaker.deleteProject();
 	}
 
-	@Test
-	public void testGetCloseMethodInvocationList_WithExtraRule_Return35Item() throws Exception {
+	@Ignore
+	public void testGetCloseMethodInvocationListWithExtraRule() throws Exception {
 		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		
-		collectCloseMethodInvocation();
-		assertEquals(39, visitor.getCloseMethodInvocationList().size());
+		collectCloseMethodInvocation(CarelessCleanupSuspectExample.class);
+		assertEquals(39, visitor.getCloseMethodInvocations().size());
 	}
 	
 	@Test
-	public void testGetCloseMethodInvocationListWithOutExtraRule() throws Exception {
-		collectCloseMethodInvocation();
-		assertEquals(35, visitor.getCloseMethodInvocationList().size());
+	public void testGetCloseMethodInvocationListWithOutAnyExtraRule() throws Exception {
+		collectCloseMethodInvocation(CarelessCleanupSuspectExample.class);
+		assertEquals(4, visitor.getCloseMethodInvocations().size());
 	}
 	
-	@Test
+	@Ignore
 	public void testGetCloseMethodInvocationListWithUserDefiendLibs() throws Exception {
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		smellSettings.addCarelessCleanupPattern(UserDefinedCarelessCleanupMethod.class.getName() + ".*", true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		
-		collectCloseMethodInvocation();
-		assertEquals(42, visitor.getCloseMethodInvocationList().size());
+		collectCloseMethodInvocation(null);
+		assertEquals(42, visitor.getCloseMethodInvocations().size());
 	}
 	
-	@Test
+	@Ignore
 	public void testGetCloseMethodInvocationListWithUserDefinedMethods() throws Exception {
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		smellSettings.addCarelessCleanupPattern("*.bark", true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		
-		collectCloseMethodInvocation();
-		assertEquals(38, visitor.getCloseMethodInvocationList().size());
+		collectCloseMethodInvocation(null);
+		assertEquals(38, visitor.getCloseMethodInvocations().size());
 	}
 	
-	@Test
+	@Ignore
 	public void testGetCloseMethodInvocationListWithUserDefinedFullQualifiedMethods() throws Exception {
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		smellSettings.addCarelessCleanupPattern(UserDefinedCarelessCleanupMethod.class.getName() + ".bark", true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		
-		collectCloseMethodInvocation();
-		assertEquals(37, visitor.getCloseMethodInvocationList().size());
+		collectCloseMethodInvocation(null);
+		assertEquals(37, visitor.getCloseMethodInvocations().size());
 	}
-	
-	private void collectCloseMethodInvocation() throws Exception
-	{
-		CompilationUnit unit = getCompilationUnit(CarelessCleanupBaseExample.class);
+
+	private void collectCloseMethodInvocation(Class clazz) throws JavaModelException {
+		CompilationUnit unit = getCompilationUnit(clazz);
 		visitor = new CloseResourceMethodInvocationVisitor(unit);
 		unit.accept(visitor);
 	}

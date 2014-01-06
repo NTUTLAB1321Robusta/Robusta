@@ -2,6 +2,7 @@ package ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -11,6 +12,26 @@ import java.io.IOException;
  * defined rules.
  */
 public class CarelessCleanupSuspectExample {
+
+	public void sameResourceCloseManyTimes(byte[] context, File outputFile)
+			throws IOException {
+		FileOutputStream fileOutputStream = null;
+		try {
+			fileOutputStream = new FileOutputStream(outputFile);
+			fileOutputStream.write(context);
+			fileOutputStream.close(); // Unsafe
+		} catch (FileNotFoundException e) {
+			System.out.println("FileNotFoundException.");
+			fileOutputStream.close(); // Unsafe
+			throw e;
+		} catch (IOException e) {
+			fileOutputStream.close(); // Safe
+			throw e;
+		} finally {
+			System.out.println("Close nothing at all.");
+			fileOutputStream.close(); // Unsafe
+		}
+	}
 
 	public void userDefinedClass() throws Exception {
 		UserDefinedCarelessCleanupClass clazz = new UserDefinedCarelessCleanupClass();

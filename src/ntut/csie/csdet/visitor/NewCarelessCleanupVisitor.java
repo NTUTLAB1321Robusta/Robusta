@@ -37,7 +37,7 @@ public class NewCarelessCleanupVisitor extends ASTVisitor {
 	private List<MethodInvocation> collectSuspectedNode(MethodDeclaration methodDeclaration) {
 		CloseResourceMethodInvocationVisitor crmiVisitor = new CloseResourceMethodInvocationVisitor(root);
 		methodDeclaration.accept(crmiVisitor);
-		return crmiVisitor.getCloseMethodInvocationList();
+		return crmiVisitor.getCloseMethodInvocations();
 	}
 	
 	private void collectSmell(MethodInvocation node) {
