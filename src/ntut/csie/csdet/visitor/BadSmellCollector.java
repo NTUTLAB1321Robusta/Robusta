@@ -87,7 +87,7 @@ public class BadSmellCollector {
 				addBadSmell(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT, nestedList);
 			}
 
-//			//Careless cleanup
+			// Careless cleanup
 			if(isDetectingBadSmell.get(SmellSettings.SMELL_CARELESSCLEANUP)) {
 				if(detMethodSmell.get(RLMarkerAttribute.CS_CARELESS_CLEANUP)) {
 					NewCarelessCleanupVisitor ccVisitor = new NewCarelessCleanupVisitor(root);
