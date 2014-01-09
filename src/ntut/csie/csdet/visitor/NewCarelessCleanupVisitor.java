@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ntut.csie.csdet.data.MarkerInfo;
+import ntut.csie.csdet.visitor.aidvisitor.MethodInvocationMayInterruptByExceptionChecker;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 
 import org.eclipse.jdt.core.dom.ASTVisitor;
@@ -24,10 +25,11 @@ public class NewCarelessCleanupVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(MethodDeclaration node) {
 		List<MethodInvocation> suspectedNodes = collectSuspectedNode(node);
-		
+
 		for (MethodInvocation eachSuspect : suspectedNodes) {
-			CarelessCleanupNodeChecker ccChecker = new CarelessCleanupNodeChecker(eachSuspect);
-			if(ccChecker.isCarelessCleanup()) {
+			MethodInvocationMayInterruptByExceptionChecker ccChecker = 
+					new MethodInvocationMayInterruptByExceptionChecker(root);
+			if (ccChecker.isMayInterruptByException(eachSuspect)) {
 				collectSmell(eachSuspect);
 			}
 		}
