@@ -113,15 +113,15 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 		List<Statement> allStatements = firstLevelChildCollector.getChildrens();
 
 		/*
-		 * If any statement satisfy both "unsafe" and "between", return true.
+		 * If any statement satisfy both "between" and "unsafe", return true.
 		 * Otherwise, return false.
 		 */
 		Iterator<Statement> iter = allStatements.iterator();
 		int endingPosition = executedNode.getStartPosition();
 		while (iter.hasNext()) {
 			Statement statement = iter.next();
-			if (isUnsafeBrotherStatement(statement)
-					&& isNodeBetweenBeginningAndEnding(statement, endingPosition)) {
+			if (isNodeBetweenBeginningAndEnding(statement, endingPosition)
+					&& isUnsafeBrotherStatement(statement)) {
 				return true;
 			}
 		}
