@@ -7,7 +7,7 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Statement;
 
-public class FirstLevelChildStatementCollectVisitor extends ASTVisitor {
+public class FirstLevelChildStatementCollectingVisitor extends ASTVisitor {
 
 	private List<Statement> childrens;
 	private boolean isVisitedParentNode;
@@ -16,7 +16,7 @@ public class FirstLevelChildStatementCollectVisitor extends ASTVisitor {
 		return childrens;
 	}
 
-	public FirstLevelChildStatementCollectVisitor(ASTNode parentNode) {
+	public FirstLevelChildStatementCollectingVisitor() {
 		childrens = new ArrayList<Statement>();
 		isVisitedParentNode = false;
 	}

@@ -23,7 +23,7 @@ import ntut.csie.csdet.visitor.TryStatementCounterVisitorTest;
 import ntut.csie.csdet.visitor.UnprotectedMainProgramVisitorTest;
 import ntut.csie.csdet.visitor.aidvisitor.CarelessCleanupToleranceVisitorTest;
 import ntut.csie.csdet.visitor.aidvisitor.ClassInstanceCreationVisitorTest;
-import ntut.csie.csdet.visitor.aidvisitor.FirstLevelChildStatementCollectVisitorTest;
+import ntut.csie.csdet.visitor.aidvisitor.FirstLevelChildStatementCollectingVisitorTest;
 import ntut.csie.csdet.visitor.aidvisitor.MethodInvocationMayInterruptByExceptionCheckerTest;
 import ntut.csie.csdet.visitor.aidvisitor.TryStatementExceptionsVisitorTest;
 import ntut.csie.filemaker.test.ASTNodeFinderTest;
@@ -86,7 +86,7 @@ import org.junit.runners.Suite;
 	CarelessCleanupVisitorTest.class,
 	CloseResourceMethodInvocationVisitorTest.class,
 	MethodInvocationMayInterruptByExceptionCheckerTest.class,
-	FirstLevelChildStatementCollectVisitorTest.class
+	FirstLevelChildStatementCollectingVisitorTest.class
 })
 public class AllJUnitPluginTests {
 }
