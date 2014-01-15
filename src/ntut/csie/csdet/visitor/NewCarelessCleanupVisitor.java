@@ -15,21 +15,22 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 public class NewCarelessCleanupVisitor extends ASTVisitor {
 	CompilationUnit root;
 	MethodDeclaration methodDeclaration;
+	MethodInvocationMayInterruptByExceptionChecker invocationChecker;
 	private List<MarkerInfo> carelessCleanupList;
-	
+
 	public NewCarelessCleanupVisitor(CompilationUnit root) {
 		this.root = root;
 		carelessCleanupList = new ArrayList<MarkerInfo>();
+		invocationChecker = new MethodInvocationMayInterruptByExceptionChecker(
+				root);
 	}
-	
+
 	@Override
 	public boolean visit(MethodDeclaration node) {
 		List<MethodInvocation> suspectedNodes = collectSuspectedNode(node);
 
 		for (MethodInvocation eachSuspect : suspectedNodes) {
-			MethodInvocationMayInterruptByExceptionChecker ccChecker = 
-					new MethodInvocationMayInterruptByExceptionChecker(root);
-			if (ccChecker.isMayInterruptByException(eachSuspect)) {
+			if (invocationChecker.isMayInterruptByException(eachSuspect)) {
 				collectSmell(eachSuspect);
 			}
 		}

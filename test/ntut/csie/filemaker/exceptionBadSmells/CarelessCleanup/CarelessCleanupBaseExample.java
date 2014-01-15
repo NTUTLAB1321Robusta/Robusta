@@ -87,7 +87,7 @@ public class CarelessCleanupBaseExample {
 			methodBeforeClose.declaredCheckedException();
 			methodBeforeClose.didNotDeclareAnyExceptionButThrowUnchecked();
 		} catch (IOException e) {
-			fis.close(); // Unsafe
+			fis.close(); // Safe
 		}
 	}
 

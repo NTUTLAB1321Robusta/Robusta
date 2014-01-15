@@ -59,7 +59,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		ASTNode variableDeclaration = (ASTNode) getVariableDeclaration.invoke(
 				checker, methodInvocation.get(0));
 		assertEquals("fis=null", variableDeclaration.toString());
-		assertEquals(334, variableDeclaration.getStartPosition());
+		assertEquals(300, variableDeclaration.getStartPosition());
 	}
 
 	/**
@@ -79,8 +79,8 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		assertEquals(methodInvocation.size(), 1);
 		ASTNode variableDeclaration = (ASTNode) getVariableDeclaration.invoke(
 				checker, methodInvocation.get(0));
-		assertEquals("File file", variableDeclaration.toString());
-		assertEquals(462, variableDeclaration.getStartPosition());
+		assertEquals("File file2", variableDeclaration.toString());
+		assertEquals(428, variableDeclaration.getStartPosition());
 	}
 
 	/**
@@ -101,7 +101,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		ASTNode variableDeclaration = (ASTNode) getVariableDeclaration.invoke(
 				checker, methodInvocation.get(0));
 		assertEquals("file3=null", variableDeclaration.toString());
-		assertEquals(596, variableDeclaration.getStartPosition());
+		assertEquals(562, variableDeclaration.getStartPosition());
 	}
 
 }

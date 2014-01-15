@@ -3,7 +3,6 @@ package ntut.csie.csdet.visitor.aidvisitor;
 import java.util.Iterator;
 import java.util.List;
 
-import ntut.csie.csdet.visitor.FirstLevelChildStatementCollectVisitor;
 import ntut.csie.jdt.util.NodeUtils;
 
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -34,7 +33,7 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 		}
 		
 		ASTNode parentNode = methodInvocation.getParent();
-		while(parentNode.getStartPosition() <= beginningPosition) {
+		while(beginningPosition <= parentNode.getStartPosition()) {
 			if(isParentUnsafeOnParent(parentNode)) {
 				return true;
 			}
@@ -90,11 +89,12 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 	}
 
 	/**
-	 * Tell if it is unsafe from it's parent's view only
-	 * (Won't check if it's parent is safe or not)
+	 * Tell if it is unsafe from it's parent's view only (Won't check if it's
+	 * parent is safe or not)
 	 */
 	private boolean isParentUnsafeOnParent(ASTNode node) {
-		if (node instanceof Statement && isUnsafeStatement((Statement) node)) {
+		if (node instanceof Statement
+				&& isUnsafeParentStatement((Statement) node)) {
 			return true;
 		}
 		return isAnyUnsafeStatementBefore(node);
@@ -120,7 +120,7 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 		int endingPosition = executedNode.getStartPosition();
 		while (iter.hasNext()) {
 			Statement statement = iter.next();
-			if (isUnsafeStatement(statement)
+			if (isUnsafeBrotherStatement(statement)
 					&& isNodeBetweenBeginningAndEnding(statement, endingPosition)) {
 				return true;
 			}
@@ -129,12 +129,24 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 	}
 
 	/**
-	 * For the statements that won't make the statements behind unexecute.
+	 * For the parent statement that will make the statements inside unexecute.
 	 */
-	private boolean isUnsafeStatement(Statement Statement) {
+	private boolean isUnsafeParentStatement(Statement Statement) {
 		int nodeType = Statement.getNodeType();
-		if (nodeType == ASTNode.EMPTY_STATEMENT || nodeType == ASTNode.BLOCK
-				|| isTryBlock(Statement)) {
+		if (nodeType == ASTNode.BLOCK
+				|| nodeType == ASTNode.EXPRESSION_STATEMENT
+				|| nodeType == ASTNode.TRY_STATEMENT) {
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * For the statements that will make the statements behind unexecute.
+	 */
+	private boolean isUnsafeBrotherStatement(Statement Statement) {
+		int nodeType = Statement.getNodeType();
+		if (nodeType == ASTNode.EMPTY_STATEMENT || isTryBlock(Statement)) {
 			return false;
 		}
 		return true;
@@ -151,8 +163,8 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 	private boolean isNodeBetweenBeginningAndEnding(ASTNode node,
 			int endingPosition) {
 		int nodePosition = node.getStartPosition();
-		return (nodePosition < beginningPosition)
-				&& (nodePosition > endingPosition);
+		return (beginningPosition <= nodePosition)
+				&& (endingPosition > nodePosition);
 	}
 
 }

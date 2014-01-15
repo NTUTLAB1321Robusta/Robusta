@@ -9,7 +9,7 @@ import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.CarelessCleanupBaseExample;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.CarelessCleanupSuspectExample;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.CloseResourceMethodInvocationExample;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.ClassCanCloseButNotImplementCloseable;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.ClassImplementCloseable;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.ClassImplementCloseableWithoutThrowException;
@@ -59,7 +59,7 @@ public class CloseResourceMethodInvocationVisitorTest {
 		project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 		javaProject = JavaCore.create(project);
 		
-		loadClass(CarelessCleanupSuspectExample.class);
+		loadClass(CloseResourceMethodInvocationExample.class);
 		loadClass(ClassCanCloseButNotImplementCloseable.class);
 		loadClass(ClassImplementCloseable.class);
 		loadClass(UserDefinedCarelessCleanupMethod.class);
@@ -113,13 +113,13 @@ public class CloseResourceMethodInvocationVisitorTest {
 		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		
-		collectCloseMethodInvocation(CarelessCleanupSuspectExample.class);
+		collectCloseMethodInvocation(CloseResourceMethodInvocationExample.class);
 		assertEquals(39, visitor.getCloseMethodInvocations().size());
 	}
 	
 	@Test
 	public void testGetCloseMethodInvocationListWithOutAnyExtraRule() throws Exception {
-		collectCloseMethodInvocation(CarelessCleanupSuspectExample.class);
+		collectCloseMethodInvocation(CloseResourceMethodInvocationExample.class);
 		assertEquals(4, visitor.getCloseMethodInvocations().size());
 	}
 	

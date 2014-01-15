@@ -8,10 +8,9 @@ import ntut.csie.csdet.refactor.RethrowExRefactoringTest;
 import ntut.csie.csdet.refactor.RetryRefactoringTest;
 import ntut.csie.csdet.report.ReportBuilderIntergrationTest;
 import ntut.csie.csdet.report.ReportBuilderTest;
-import ntut.csie.csdet.views.CarelessCleanupPageTest;
 import ntut.csie.csdet.visitor.ASTCatchCollectTest;
 import ntut.csie.csdet.visitor.BadSmellCollectorTest;
-import ntut.csie.csdet.visitor.CarelessCleanupVisitor2Test;
+import ntut.csie.csdet.visitor.CarelessCleanupVisitorTest;
 import ntut.csie.csdet.visitor.CloseResourceMethodInvocationVisitorTest;
 import ntut.csie.csdet.visitor.DummyHandlerVisitorTest;
 import ntut.csie.csdet.visitor.EmptyCatchBlockVisitorTest;
@@ -24,6 +23,8 @@ import ntut.csie.csdet.visitor.TryStatementCounterVisitorTest;
 import ntut.csie.csdet.visitor.UnprotectedMainProgramVisitorTest;
 import ntut.csie.csdet.visitor.aidvisitor.CarelessCleanupToleranceVisitorTest;
 import ntut.csie.csdet.visitor.aidvisitor.ClassInstanceCreationVisitorTest;
+import ntut.csie.csdet.visitor.aidvisitor.FirstLevelChildStatementCollectVisitorTest;
+import ntut.csie.csdet.visitor.aidvisitor.MethodInvocationMayInterruptByExceptionCheckerTest;
 import ntut.csie.csdet.visitor.aidvisitor.TryStatementExceptionsVisitorTest;
 import ntut.csie.filemaker.test.ASTNodeFinderTest;
 import ntut.csie.jdt.util.NodeUtilsTest;
@@ -49,11 +50,7 @@ import org.junit.runners.Suite;
 	//ReportBuilderIntergrationTest.class,
 	//ReportBuilderTest.class,
 	
-	CarelessCleanupPageTest.class,
-	
 	ASTCatchCollectTest.class,
-	// ablout cc
-	//CarelessCleanupVisitor2Test.class,
 	DummyHandlerVisitorTest.class,
 	EmptyCatchBlockVisitorTest.class,
 	NestedTryStatementVisitorTest.class,
@@ -78,14 +75,18 @@ import org.junit.runners.Suite;
 	
 	CatchClauseFinderVisitorTest.class,
 	ExpressionStatementStringFinderVisitorTest.class,
-	//QuickFixCoreTest.class,
 	StatementFinderVisitorTest.class,
 	VariableDeclarationStatementFinderVisitorTest.class,
 	RobustaSettingsTest.class,
 	ReportDescriptionTest.class,
 	// ablout cc
 	//BadSmellCollectorTest.class,
-	//CloseResourceMethodInvocationVisitorTest.class
+	
+	// TODO unfinished
+	CarelessCleanupVisitorTest.class,
+	CloseResourceMethodInvocationVisitorTest.class,
+	MethodInvocationMayInterruptByExceptionCheckerTest.class,
+	FirstLevelChildStatementCollectVisitorTest.class
 })
 public class AllJUnitPluginTests {
 }
