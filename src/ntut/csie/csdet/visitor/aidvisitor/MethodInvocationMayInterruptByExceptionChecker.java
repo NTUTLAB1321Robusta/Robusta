@@ -109,7 +109,7 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 		ASTNode parentNode = executedNode.getParent();
 		FirstLevelChildStatementCollectingVisitor firstLevelChildCollector = new FirstLevelChildStatementCollectingVisitor();
 		parentNode.accept(firstLevelChildCollector);
-		List<Statement> allStatements = firstLevelChildCollector.getChildrens();
+		List<Statement> allStatements = firstLevelChildCollector.getChildren();
 
 		/*
 		 * If any statement satisfy both "unsafe" and "between", return true.

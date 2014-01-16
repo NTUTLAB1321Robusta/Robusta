@@ -9,15 +9,15 @@ import org.eclipse.jdt.core.dom.Statement;
 
 public class FirstLevelChildStatementCollectingVisitor extends ASTVisitor {
 
-	private List<Statement> childrens;
+	private List<Statement> children;
 	private boolean isVisitedParentNode;
 
-	public List<Statement> getChildrens() {
-		return childrens;
+	public List<Statement> getChildren() {
+		return children;
 	}
 
 	public FirstLevelChildStatementCollectingVisitor() {
-		childrens = new ArrayList<Statement>();
+		children = new ArrayList<Statement>();
 		isVisitedParentNode = false;
 	}
 
@@ -28,7 +28,7 @@ public class FirstLevelChildStatementCollectingVisitor extends ASTVisitor {
 			return true;
 		} else {
 			if (node instanceof Statement) {
-				childrens.add((Statement) node);
+				children.add((Statement) node);
 			}
 			return false;
 		}
