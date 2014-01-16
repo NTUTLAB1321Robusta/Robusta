@@ -15,6 +15,7 @@ import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.MethodInvocationBe
 import ntut.csie.jdt.util.NodeUtils;
 
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
@@ -26,9 +27,9 @@ import org.junit.Test;
 
 public class FirstLevelChildStatementCollectingVisitorTest {
 
-	TestEnvironmentBuilder environmentBuilder;
-	FirstLevelChildStatementCollectingVisitor flcscVisitor;
-	
+	private TestEnvironmentBuilder environmentBuilder;
+	private FirstLevelChildStatementCollectingVisitor flcscVisitor;
+	private CompilationUnit compilationUnit;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -36,6 +37,9 @@ public class FirstLevelChildStatementCollectingVisitorTest {
 		environmentBuilder.createTestEnvironment();
 
 		environmentBuilder.loadClass(FirstLevelChildStatementExample.class);
+
+		compilationUnit = environmentBuilder
+				.getCompilationUnit(FirstLevelChildStatementExample.class);
 	}
 
 	@After
@@ -45,13 +49,7 @@ public class FirstLevelChildStatementCollectingVisitorTest {
 
 	@Test
 	public void testParentWithTwoStatements() throws JavaModelException {
-		CompilationUnit compilationUnit = environmentBuilder
-				.getCompilationUnit(FirstLevelChildStatementExample.class);
-
-		ASTMethodCollector methodCollector = new ASTMethodCollector();
-		compilationUnit.accept(methodCollector);
-		List<MethodDeclaration> methodList = methodCollector.getMethodList();
-		//assertEquals(3, methodList.size());
+		List<MethodDeclaration> methodList = getMethodListFromCompilationUnit();
 		
 		Block blockOfMethod = methodList.get(0).getBody();
 		flcscVisitor = new FirstLevelChildStatementCollectingVisitor();
@@ -59,16 +57,10 @@ public class FirstLevelChildStatementCollectingVisitorTest {
 
 		assertEquals(3, flcscVisitor.getChildren().size());
 	}
-	
+
 	@Test
 	public void testParentWithEmptyBlock() throws JavaModelException {
-		CompilationUnit compilationUnit = environmentBuilder
-				.getCompilationUnit(FirstLevelChildStatementExample.class);
-
-		ASTMethodCollector methodCollector = new ASTMethodCollector();
-		compilationUnit.accept(methodCollector);
-		List<MethodDeclaration> methodList = methodCollector.getMethodList();
-		//assertEquals(1, methodList.size());
+		List<MethodDeclaration> methodList = getMethodListFromCompilationUnit();
 		
 		Block blockOfMethod = methodList.get(1).getBody();
 		flcscVisitor = new FirstLevelChildStatementCollectingVisitor();
@@ -79,13 +71,7 @@ public class FirstLevelChildStatementCollectingVisitorTest {
 	
 	@Test
 	public void testParentWithACommentUsingSemiColon() throws JavaModelException {
-		CompilationUnit compilationUnit = environmentBuilder
-				.getCompilationUnit(FirstLevelChildStatementExample.class);
-
-		ASTMethodCollector methodCollector = new ASTMethodCollector();
-		compilationUnit.accept(methodCollector);
-		List<MethodDeclaration> methodList = methodCollector.getMethodList();
-		//assertEquals(1, methodList.size());
+		List<MethodDeclaration> methodList = getMethodListFromCompilationUnit();
 		
 		Block blockOfMethod = methodList.get(2).getBody();
 		flcscVisitor = new FirstLevelChildStatementCollectingVisitor();
@@ -95,14 +81,8 @@ public class FirstLevelChildStatementCollectingVisitorTest {
 	}
 	
 	@Test
-	public void testParentWithBlockComment() throws JavaModelException {
-		CompilationUnit compilationUnit = environmentBuilder
-				.getCompilationUnit(FirstLevelChildStatementExample.class);
-
-		ASTMethodCollector methodCollector = new ASTMethodCollector();
-		compilationUnit.accept(methodCollector);
-		List<MethodDeclaration> methodList = methodCollector.getMethodList();
-		//assertEquals(7, methodList.size());
+	public void testParentWithBlockCommentUsingSemiColon() throws JavaModelException {
+		List<MethodDeclaration> methodList = getMethodListFromCompilationUnit();
 		
 		Block blockOfMethod = methodList.get(3).getBody();
 		flcscVisitor = new FirstLevelChildStatementCollectingVisitor();
@@ -113,13 +93,7 @@ public class FirstLevelChildStatementCollectingVisitorTest {
 	
 	@Test
 	public void testParentWithTwoStatementsInATry() throws JavaModelException {
-		CompilationUnit compilationUnit = environmentBuilder
-				.getCompilationUnit(FirstLevelChildStatementExample.class);
-
-		ASTMethodCollector methodCollector = new ASTMethodCollector();
-		compilationUnit.accept(methodCollector);
-		List<MethodDeclaration> methodList = methodCollector.getMethodList();
-		//assertEquals(1, methodList.size());
+		List<MethodDeclaration> methodList = getMethodListFromCompilationUnit();
 		
 		Block blockOfMethod = methodList.get(4).getBody();
 		flcscVisitor = new FirstLevelChildStatementCollectingVisitor();
@@ -130,13 +104,7 @@ public class FirstLevelChildStatementCollectingVisitorTest {
 	
 	@Test
 	public void testWithTwoStatementsInATryAndFinally() throws JavaModelException {
-		CompilationUnit compilationUnit = environmentBuilder
-				.getCompilationUnit(FirstLevelChildStatementExample.class);
-
-		ASTMethodCollector methodCollector = new ASTMethodCollector();
-		compilationUnit.accept(methodCollector);
-		List<MethodDeclaration> methodList = methodCollector.getMethodList();
-		//assertEquals(1, methodList.size());
+		List<MethodDeclaration> methodList = getMethodListFromCompilationUnit();
 		
 		Block blockOfMethod = methodList.get(5).getBody();
 		flcscVisitor = new FirstLevelChildStatementCollectingVisitor();
@@ -147,13 +115,7 @@ public class FirstLevelChildStatementCollectingVisitorTest {
 
 	@Test
 	public void testWithTwoStatementsInAndOutATry() throws JavaModelException {
-		CompilationUnit compilationUnit = environmentBuilder
-				.getCompilationUnit(FirstLevelChildStatementExample.class);
-
-		ASTMethodCollector methodCollector = new ASTMethodCollector();
-		compilationUnit.accept(methodCollector);
-		List<MethodDeclaration> methodList = methodCollector.getMethodList();
-		//assertEquals(1, methodList.size());
+		List<MethodDeclaration> methodList = getMethodListFromCompilationUnit();
 		
 		Block blockOfMethod = methodList.get(6).getBody();
 		flcscVisitor = new FirstLevelChildStatementCollectingVisitor();
@@ -164,13 +126,7 @@ public class FirstLevelChildStatementCollectingVisitorTest {
 	
 	@Test
 	public void testWithThreeNestedTry() throws JavaModelException {
-		CompilationUnit compilationUnit = environmentBuilder
-				.getCompilationUnit(FirstLevelChildStatementExample.class);
-
-		ASTMethodCollector methodCollector = new ASTMethodCollector();
-		compilationUnit.accept(methodCollector);
-		List<MethodDeclaration> methodList = methodCollector.getMethodList();
-		//assertEquals(1, methodList.size());
+		List<MethodDeclaration> methodList = getMethodListFromCompilationUnit();
 		
 		Block blockOfMethod = methodList.get(7).getBody();
 		flcscVisitor = new FirstLevelChildStatementCollectingVisitor();
@@ -181,56 +137,36 @@ public class FirstLevelChildStatementCollectingVisitorTest {
 	
 	@Test
 	public void testWithTwoTry() throws JavaModelException {
-		CompilationUnit compilationUnit = environmentBuilder
-				.getCompilationUnit(FirstLevelChildStatementExample.class);
-
-		ASTMethodCollector methodCollector = new ASTMethodCollector();
-		compilationUnit.accept(methodCollector);
-		List<MethodDeclaration> methodList = methodCollector.getMethodList();
-		//assertEquals(1, methodList.size());
+		List<MethodDeclaration> methodList = getMethodListFromCompilationUnit();
 		
 		Block blockOfMethod = methodList.get(8).getBody();
 		flcscVisitor = new FirstLevelChildStatementCollectingVisitor();
 		blockOfMethod.accept(flcscVisitor);
 
-		assertEquals(6, flcscVisitor.getChildren().size());
-	}
-	
-	@Test
-	public void testToString() throws JavaModelException {
-		CompilationUnit compilationUnit = environmentBuilder
-				.getCompilationUnit(FirstLevelChildStatementExample.class);
-
-		ASTMethodCollector methodCollector = new ASTMethodCollector();
-		compilationUnit.accept(methodCollector);
-		List<MethodDeclaration> methodList = methodCollector.getMethodList();
-		//assertEquals(1, methodList.size());
-		
-		Block blockOfMethod = methodList.get(2).getBody();
-		flcscVisitor = new FirstLevelChildStatementCollectingVisitor();
-		blockOfMethod.accept(flcscVisitor);
-
-		assertEquals("[]", flcscVisitor.getChildren().toString());
+		assertEquals(3, flcscVisitor.getChildren().size());
 	}
 
 	@Test
 	public void testWithNestedBlocks() throws JavaModelException {
-		CompilationUnit compilationUnit = environmentBuilder
-				.getCompilationUnit(FirstLevelChildStatementExample.class);
-
-		ASTMethodCollector methodCollector = new ASTMethodCollector();
-		compilationUnit.accept(methodCollector);
-		List<MethodDeclaration> methodList = methodCollector.getMethodList();
-		
 		String tempCode = "System.out.println(\"inner try\")";
 		List<MethodInvocation> miList;
 		miList = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(compilationUnit, "methodWithNestedBlocks", tempCode);
-		assertEquals("[try]", miList.get(0).getParent().getParent().toString());
 		
-		Block blockOfMethod = methodList.get(9).getBody();
+		Block parentBlock = (Block) NodeUtils.getSpecifiedParentNode(miList.get(0), ASTNode.BLOCK);
+		assertTrue(parentBlock.getParent().getNodeType() == ASTNode.TRY_STATEMENT);
+		
 		flcscVisitor = new FirstLevelChildStatementCollectingVisitor();
-		blockOfMethod.accept(flcscVisitor);
+		parentBlock.accept(flcscVisitor);
 
-		//assertEquals("[]", flcscVisitor.getChildren().toString());
+		assertEquals(2, flcscVisitor.getChildren().size());
 	}
+
+	private List<MethodDeclaration> getMethodListFromCompilationUnit()
+			throws JavaModelException {
+		ASTMethodCollector methodCollector = new ASTMethodCollector();
+		compilationUnit.accept(methodCollector);
+		List<MethodDeclaration> methodList = methodCollector.getMethodList();
+		return methodList;
+	}
+	
 }

@@ -72,22 +72,6 @@ public class FirstLevelChildStatementExample {
 	}
 	
 	public void methodWithTwoTry() {
-		int k = 1;
-		int j = k+1;
-		
-		if(j == 1){
-			;
-		}
-		else if(k == 2){
-			;
-		}
-		else if(j == k){
-			;
-		}
-		else{
-			
-		}
-		
 		try{
 			System.out.println("in");
 		}
@@ -123,11 +107,5 @@ public class FirstLevelChildStatementExample {
 			}
 		}
 	}
-	
-	/*
- 	public void methodWithBlockCommentUsingSemiColon() {
-		; 
-	}
-	 */
 	
 }
