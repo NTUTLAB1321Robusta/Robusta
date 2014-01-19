@@ -11,11 +11,13 @@ import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.visitor.aidvisitor.MethodInvocationMayInterruptByExceptionChecker;
 import ntut.csie.csdet.visitor.aidvisitor.MethodInvocationMayInterruptByExceptionCheckerExample;
+import ntut.csie.filemaker.ASTNodeFinder;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.TestEnvironmentBuilder;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.CarelessCleanupAdvancedExample;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.CarelessCleanupBaseExample;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.CarelessCleanupIntegratedExample;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.MethodInvocationBeforeClose;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.ClassCanCloseButNotImplementCloseable;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.ClassImplementCloseable;
@@ -31,14 +33,15 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 public class CarelessCleanupVisitorTest {
 	
-	TestEnvironmentBuilder environmentBuilder;
-	NewCarelessCleanupVisitor ccVisitor;
+	private TestEnvironmentBuilder environmentBuilder;
+	private NewCarelessCleanupVisitor ccVisitor;
 
 	@Before
 	public void setUp() throws Exception {
@@ -47,12 +50,13 @@ public class CarelessCleanupVisitorTest {
 
 		environmentBuilder.loadClass(CarelessCleanupBaseExample.class);
 		environmentBuilder.loadClass(CarelessCleanupAdvancedExample.class);
+		environmentBuilder.loadClass(MethodInvocationBeforeClose.class);
+		environmentBuilder.loadClass(CarelessCleanupIntegratedExample.class);
 		//ClassCanCloseButNotImplementCloseable
 		//ClassImplementCloseable
 		//UserDefinedCarelessCleanupMethod
 		//UserDefinedCarelessCleanupClass
 		//ClassImplementCloseableWithoutThrowException
-		environmentBuilder.loadClass(MethodInvocationBeforeClose.class);
 	}
 
 	@After
@@ -72,15 +76,30 @@ public class CarelessCleanupVisitorTest {
 	}
 
 	@Test
-	public void testAdvancedExampleWithDefaultSetting() throws JavaModelException {
+	public void testAdvancedExampleWithDefaultSetting()
+			throws JavaModelException {
 		// Create setting file
 		CreateSettings();
 
 		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupAdvancedExample.class);
 
-		assertEquals(
-				colloectBadSmellListContent(smellList),
-				7, smellList.size()); // 7(now6)
+		// FIXME Now the actual will be less 1 then expected, because
+		// "super.close() haven been treat as closeInvocation
+		assertEquals(colloectBadSmellListContent(smellList), 17,
+				smellList.size());
+	}
+
+	// TODO
+	@Test
+	public void testIntegratedExampleWithDefaultSetting()
+			throws JavaModelException {
+		// Create setting file
+		CreateSettings();
+
+		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupIntegratedExample.class);
+
+		assertEquals(colloectBadSmellListContent(smellList), 17,
+				smellList.size());
 	}
 
 	private List<MarkerInfo> visitCompilationAndGetSmellList(Class clazz)
