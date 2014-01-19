@@ -7,17 +7,17 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Statement;
 
-public class FirstLevelChildStatementCollectVisitor extends ASTVisitor {
+public class FirstLevelChildStatementCollectingVisitor extends ASTVisitor {
 
-	private List<Statement> childrens;
+	private List<Statement> children;
 	private boolean isVisitedParentNode;
 
-	public List<Statement> getChildrens() {
-		return childrens;
+	public List<Statement> getChildren() {
+		return children;
 	}
 
-	public FirstLevelChildStatementCollectVisitor(ASTNode parentNode) {
-		childrens = new ArrayList<Statement>();
+	public FirstLevelChildStatementCollectingVisitor() {
+		children = new ArrayList<Statement>();
 		isVisitedParentNode = false;
 	}
 
@@ -28,7 +28,7 @@ public class FirstLevelChildStatementCollectVisitor extends ASTVisitor {
 			return true;
 		} else {
 			if (node instanceof Statement) {
-				childrens.add((Statement) node);
+				children.add((Statement) node);
 			}
 			return false;
 		}
