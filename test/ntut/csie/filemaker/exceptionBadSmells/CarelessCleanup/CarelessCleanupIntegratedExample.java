@@ -81,10 +81,10 @@ public class CarelessCleanupIntegratedExample {
 		UserDefinedCarelessCleanupMethod udMethod = new UserDefinedCarelessCleanupMethod();
 		UserDefinedCarelessCleanupClass udClass = new UserDefinedCarelessCleanupClass();
 		try {
-			udMethod.bark(); // Safe
+			udMethod.bark(); // Unsafe
 			udClass.bark(); // Unsafe
 		} finally {
-			udMethod.bark(); // Safe
+			udMethod.bark(); // Unsafe
 			udClass.bite(); // Unsafe
 		}
 	}
@@ -100,7 +100,7 @@ public class CarelessCleanupIntegratedExample {
 		try {
 			zOut.write(is.read());
 		} finally {
-			ResourceCloser.closeResourceDirectly(is); // Unsafe
+			ResourceCloser.closeResourceDirectly(is); // Unsafe but not detected
 		}
 	}
 

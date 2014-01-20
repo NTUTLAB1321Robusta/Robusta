@@ -43,11 +43,8 @@ public class NodeUtils {
 	}
 
 	/**
-	 * 判斷指定的class是否為特定interface的實作。
-	 * 
-	 * @param bindingClass
-	 *            ASTNode上的ITypeBinding ，有可能是Class或是Interface
-	 * @return
+	 * Tell if the ITypeBinding from a Class/Interface implemented the specific
+	 * interface
 	 */
 	public static boolean isITypeBindingImplemented(ITypeBinding bindingClass,
 			Class<?> looking4Interface) {
@@ -243,7 +240,7 @@ public class NodeUtils {
 		}
 
 		if (userDefinedMethodAnalyzer.getEnable()) {
-			defaultResult = isNodeACloseCodeAndImplementatedCloseable(node);
+			defaultResult = isNodeACloseCodeAndImplementedCloseable(node);
 		}
 
 		return (userDefinedLibResult || userDefinedResult
@@ -251,27 +248,35 @@ public class NodeUtils {
 	}
 
 	/**
-	 * 檢查是否實作Closeable#close的程式碼
-	 * 
-	 * @param node
-	 * @return 如果這個node實作Closeable而且是close的動作，才會回傳True，其餘一律回傳False。
+	 * If this node implemented Closeable and named "close", return true.
+	 * Otherwise, retuen false.
 	 */
-	public static boolean isNodeACloseCodeAndImplementatedCloseable(
+	private static boolean isNodeACloseCodeAndImplementedCloseable(
 			MethodInvocation node) {
-		// 尋找method name為close
-		if (!node.getName().toString().equals("close")) {
-			return false;
-		}
+		return isSimpleNameClose(node.getName())
+				&& isIMethodBindingImplementedCloseable(node
+						.resolveMethodBinding());
+	}
 
-		/*
-		 * 尋找這個close是不是實作Closeable
-		 */
-		if (NodeUtils.isITypeBindingImplemented(node.resolveMethodBinding()
-				.getDeclaringClass(), Closeable.class)) {
-			return true;
-		}
+	/**
+	 * If this node implemented Closeable and named "close", return true.
+	 * Otherwise, retuen false.
+	 */
+	public static boolean isNodeACloseCodeAndImplementedCloseable(
+			SuperMethodInvocation node) {
+		return isSimpleNameClose(node.getName())
+				&& isIMethodBindingImplementedCloseable(node
+						.resolveMethodBinding());
+	}
 
-		return false;
+	private static boolean isSimpleNameClose(SimpleName name) {
+		return name.toString().equals("close");
+	}
+
+	private static boolean isIMethodBindingImplementedCloseable(
+			IMethodBinding methodBinding) {
+		return NodeUtils.isITypeBindingImplemented(
+				methodBinding.getDeclaringClass(), Closeable.class);
 	}
 
 	/**

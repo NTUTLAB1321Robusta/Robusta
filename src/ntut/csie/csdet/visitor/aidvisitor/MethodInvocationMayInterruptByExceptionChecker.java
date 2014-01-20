@@ -26,20 +26,28 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 	}
 
 	public boolean isMayInterruptByException(MethodInvocation methodInvocation) {
-		initialize(methodInvocation);
-		
-		if (isThisMethodInvocationUnsafeOnParent(methodInvocation)) {
-			return true;
-		}
-		
-		ASTNode parentNode = methodInvocation.getParent();
-		while(beginningPosition <= parentNode.getStartPosition()) {
-			if(isParentUnsafeOnParent(parentNode)) {
+		try {
+			initialize(methodInvocation);
+			
+			if (isThisMethodInvocationUnsafeOnParent(methodInvocation)) {
 				return true;
 			}
-			parentNode = parentNode.getParent();
+			
+			ASTNode parentNode = methodInvocation.getParent();
+			while(beginningPosition <= parentNode.getStartPosition()) {
+				if(isParentUnsafeOnParent(parentNode)) {
+					return true;
+				}
+				parentNode = parentNode.getParent();
+			}
+			return false;
+		} catch(Exception e) {
+			/*
+			 * Any exception means it is not a ASTNode we can handle now, that
+			 * means it is not a bad smell
+			 */
+			return false;
 		}
-		return false;
 	}
 
 	/**
