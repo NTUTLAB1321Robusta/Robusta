@@ -97,19 +97,19 @@ public class FirstLevelChildStatementExample {
 			}
 		}
 	}
-	
-	public void methodWithMethodInvocation() {
-		String i = "I use bitbucket";
-		i.substring(0, i.length()-7);
-		System.out.println(i);
-		printInt(get5());
+
+	/**
+	 * The outerMethodInvocation contains an methodInvocation as an argument
+	 */
+	public void methodWithMethodInvocationAsArgument() {
+		outerMethodInvocation(methodInvocationAsArgument());
 	}
 
-	public void printInt(int i) {
+	public void outerMethodInvocation(int i) {
 		System.out.println(i);
 	}
 
-	private int get5() {
+	private int methodInvocationAsArgument() {
 		return 5;
 	}
 }

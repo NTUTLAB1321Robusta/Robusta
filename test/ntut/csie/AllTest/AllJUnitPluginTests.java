@@ -82,7 +82,6 @@ import org.junit.runners.Suite;
 	// about cc
 	//BadSmellCollectorTest.class,
 	FirstLevelChildStatementCollectingVisitorTest.class,
-	
 	CarelessCleanupVisitorTest.class,
 	// TODO unfinished
 	CloseResourceMethodInvocationVisitorTest.class,
