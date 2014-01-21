@@ -7,10 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-/**
- * These examples will be detected as suspects only if user add such user
- * defined rules.
- */
 public class CloseResourceMethodInvocationExample {
 
 	public void sameResourceCloseManyTimes(byte[] context, File outputFile)
@@ -33,6 +29,9 @@ public class CloseResourceMethodInvocationExample {
 		}
 	}
 
+	/**
+	 * These examples will be marked only if user add such user defined rules.
+	 */
 	public void userDefinedClass() throws Exception {
 		UserDefinedCarelessCleanupClass clazz = new UserDefinedCarelessCleanupClass();
 		clazz.bark();
@@ -45,6 +44,9 @@ public class CloseResourceMethodInvocationExample {
 		methods.bark();
 	}
 	
+	/**
+	 * These examples will be marked only if user add such user defined rules.
+	 */
 	public void userDefinedMethod() throws Exception {
 		UserDefinedCarelessCleanupClass clazz = new UserDefinedCarelessCleanupClass();
 		clazz.bark();
@@ -88,13 +90,13 @@ public class CloseResourceMethodInvocationExample {
 	}
 
 	/**
-	 * This close statement should be detected
-	 * @author pig
+	 * This close statement will not be detected.
+	 * (SuperMethodInvocation is not a MethodInvocation)
 	 */
 	class ConcreteCloseable extends SuperCloseable {
 		public void close() throws IOException {
 			doSomething();
-			super.close(); // Unsafe
+			super.close(); // Unsafe but not included
 		}
 	}
 

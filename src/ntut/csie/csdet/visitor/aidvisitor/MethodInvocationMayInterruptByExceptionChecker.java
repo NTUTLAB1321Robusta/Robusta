@@ -26,20 +26,28 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 	}
 
 	public boolean isMayInterruptByException(MethodInvocation methodInvocation) {
-		initialize(methodInvocation);
-		
-		if (isThisMethodInvocationUnsafeOnParent(methodInvocation)) {
-			return true;
-		}
-		
-		ASTNode parentNode = methodInvocation.getParent();
-		while(beginningPosition <= parentNode.getStartPosition()) {
-			if(isParentUnsafeOnParent(parentNode)) {
+		try {
+			initialize(methodInvocation);
+			
+			if (isThisMethodInvocationUnsafeOnParent(methodInvocation)) {
 				return true;
 			}
-			parentNode = parentNode.getParent();
+			
+			ASTNode parentNode = methodInvocation.getParent();
+			while(beginningPosition <= parentNode.getStartPosition()) {
+				if(isParentUnsafeOnParent(parentNode)) {
+					return true;
+				}
+				parentNode = parentNode.getParent();
+			}
+			return false;
+		} catch(Exception e) {
+			/*
+			 * Any exception means it is not a ASTNode we can handle now, that
+			 * means it is not a bad smell
+			 */
+			return false;
 		}
-		return false;
 	}
 
 	/**
@@ -112,15 +120,15 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 		List<Statement> allStatements = firstLevelChildCollector.getChildren();
 
 		/*
-		 * If any statement satisfy both "unsafe" and "between", return true.
+		 * If any statement satisfy both "between" and "unsafe", return true.
 		 * Otherwise, return false.
 		 */
 		Iterator<Statement> iter = allStatements.iterator();
 		int endingPosition = executedNode.getStartPosition();
 		while (iter.hasNext()) {
 			Statement statement = iter.next();
-			if (isUnsafeBrotherStatement(statement)
-					&& isNodeBetweenBeginningAndEnding(statement, endingPosition)) {
+			if (isNodeBetweenBeginningAndEnding(statement, endingPosition)
+					&& isUnsafeBrotherStatement(statement)) {
 				return true;
 			}
 		}

@@ -1,15 +1,12 @@
 package ntut.csie.csdet.visitor;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import ntut.csie.jdt.util.NodeUtils;
 
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 
 public class CloseResourceMethodInvocationVisitor extends ASTVisitor {

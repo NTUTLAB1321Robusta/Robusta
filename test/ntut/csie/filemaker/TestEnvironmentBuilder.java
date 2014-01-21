@@ -96,8 +96,11 @@ public class TestEnvironmentBuilder {
 
 	public void accept(Class clazz, ASTVisitor visitor) throws JavaModelException {
 		CompilationUnit unit = getCompilationUnit(clazz);
-		visitor = new CloseResourceMethodInvocationVisitor(unit);
 		unit.accept(visitor);
+	}
+
+	public SmellSettings getSmellSettings() {
+		return smellSettings;
 	}
 
 }

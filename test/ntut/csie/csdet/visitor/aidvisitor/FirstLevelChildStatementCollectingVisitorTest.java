@@ -1,17 +1,13 @@
 package ntut.csie.csdet.visitor.aidvisitor;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import ntut.csie.csdet.data.MarkerInfo;
-import ntut.csie.csdet.visitor.NewCarelessCleanupVisitor;
 import ntut.csie.filemaker.ASTNodeFinder;
 import ntut.csie.filemaker.TestEnvironmentBuilder;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.CarelessCleanupAdvancedExample;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.CarelessCleanupBaseExample;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.FirstLevelChildStatementExample;
-import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.MethodInvocationBeforeClose;
 import ntut.csie.jdt.util.NodeUtils;
 
 import org.eclipse.jdt.core.JavaModelException;
@@ -20,7 +16,6 @@ import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
-import org.eclipse.jdt.core.dom.Statement;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
