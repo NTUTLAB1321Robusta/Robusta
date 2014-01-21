@@ -125,13 +125,26 @@ public class ThrownExceptionBeCaughtDetector {
 		for (CatchClause eachCatchClause : catchClauses) {
 			for (Iterator<ITypeBinding> iter = thrownExceptions.iterator(); iter
 					.hasNext();) {
-				ITypeBinding thrownException = iter.next();
-				if (NodeUtils.isITypeBindingExtended(thrownException,
-						NodeUtils.getClassFromCatchClause(eachCatchClause))) {
+				if (isExceptionBeenCaught(iter.next(), eachCatchClause)) {
 					iter.remove();
 				}
 			}
 		}
+	}
+
+	private boolean isExceptionBeenCaught(ITypeBinding thrownException,
+			CatchClause catchClause) {
+		Class exceptionType;
+		try {
+			exceptionType = NodeUtils.getClassFromCatchClause(catchClause);
+		} catch (RuntimeException e) {
+			/*
+			 * It means the exception can't be recognized. So treat it as never
+			 * been caught.
+			 */
+			return false;
+		}
+		return NodeUtils.isITypeBindingExtended(thrownException, exceptionType);
 	}
 
 	/**

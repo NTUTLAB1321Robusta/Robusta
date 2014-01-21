@@ -315,7 +315,8 @@ public class NodeUtils {
 
 	/**
 	 * @exception RuntimeException
-	 *                Failed to resolve the exception type.
+	 *                Failed to resolve the exception type. May cause by user
+	 *                defined new exception type.
 	 */
 	public static Class<?> getClassFromCatchClause(CatchClause catchClause)
 			throws RuntimeException {
