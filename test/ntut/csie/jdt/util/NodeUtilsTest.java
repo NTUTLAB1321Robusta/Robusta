@@ -5,7 +5,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.Closeable;
+import java.io.IOException;
+import java.util.List;
 
+import ntut.csie.csdet.visitor.ASTCatchCollect;
 import ntut.csie.filemaker.ASTNodeFinder;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
@@ -18,6 +21,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodInvocation;
@@ -25,6 +29,7 @@ import org.eclipse.jdt.core.dom.NodeFinder;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class NodeUtilsTest {
@@ -79,7 +84,7 @@ public class NodeUtilsTest {
 		assertFalse(NodeUtils.isITypeBindingExtended(null, Object.class));
 
 		compilationUnit.accept(miVisitor);
-		assertEquals(11, miVisitor.countMethodInvocations());
+		assertEquals(15, miVisitor.countMethodInvocations());
 
 		// when ITypeBinding is Object
 		assertTrue(NodeUtils.isITypeBindingExtended(miVisitor
@@ -108,7 +113,7 @@ public class NodeUtilsTest {
 		assertFalse(NodeUtils.isITypeBindingImplemented(null, Closeable.class));
 
 		compilationUnit.accept(miVisitor);
-		assertEquals(11, miVisitor.countMethodInvocations());
+		assertEquals(15, miVisitor.countMethodInvocations());
 
 		// ITypeBinding為Object的情況
 		assertFalse(NodeUtils.isITypeBindingImplemented(miVisitor
@@ -179,5 +184,35 @@ public class NodeUtilsTest {
 				.getMethodInvocationBindingVariableSimpleName(methodInvocation
 						.getExpression());
 		assertTrue("os".equals(simpleName.toString()));
+	}
+
+	@Test
+	public void testGetClassFromCatchClauseWithJavaDefinedException() {
+		ASTCatchCollect catchCollecter = new ASTCatchCollect();
+		compilationUnit.accept(catchCollecter);
+		List<CatchClause> catchClauses = catchCollecter.getMethodList();
+
+		assertEquals(2, catchClauses.size());
+
+		Class clazz = NodeUtils.getClassFromCatchClause(catchClauses.get(0));
+		assertEquals(IOException.class, clazz);
+	}
+
+	/**
+	 * This user defined exception we can not recognize
+	 */
+	@Ignore
+	public void testGetClassFromCatchClauseWithUserSelfDefinedException() {
+		ASTCatchCollect catchCollecter = new ASTCatchCollect();
+		compilationUnit.accept(catchCollecter);
+		List<CatchClause> catchClauses = catchCollecter.getMethodList();
+
+		assertEquals(2, catchClauses.size());
+
+		try {
+			Class clazz = NodeUtils.getClassFromCatchClause(catchClauses.get(1));
+		} catch (RuntimeException e) {
+			assertTrue("We can not recognize the exception what defined by user", false);
+		}
 	}
 }

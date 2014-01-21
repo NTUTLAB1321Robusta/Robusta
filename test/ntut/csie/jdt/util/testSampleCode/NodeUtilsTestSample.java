@@ -69,4 +69,27 @@ public class NodeUtilsTestSample {
 		RuntimeException runtimeException = new RuntimeException();
 		runtimeException.notify();
 	}
+
+	public void catchJavaDefinedException() {
+		FileInputStream fis = null;
+		try {
+			fis.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void catchUserSelfDefinedException() {
+		try {
+			System.out.println("May throw RuntimeException");
+		} catch (UserSelfDefinedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * For method {@link #catchUserSelfDefinedException()}
+	 */
+	private class UserSelfDefinedException extends RuntimeException {
+	}
 }

@@ -83,7 +83,6 @@ import org.junit.runners.Suite;
 	//BadSmellCollectorTest.class,
 	FirstLevelChildStatementCollectingVisitorTest.class,
 	
-	FirstLevelChildStatementCollectingVisitorTest.class,
 	CarelessCleanupVisitorTest.class,
 	// TODO unfinished
 	CloseResourceMethodInvocationVisitorTest.class,
