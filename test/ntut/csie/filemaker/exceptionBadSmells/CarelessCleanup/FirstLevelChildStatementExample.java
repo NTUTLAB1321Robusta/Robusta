@@ -3,109 +3,113 @@ package ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup;
 public class FirstLevelChildStatementExample {
 
 	public void methodWithTwoStatements() {
-		System.out.println("Hi");;
+		System.out.println("Hi");
 		;
 	}
-	
+
 	public void methodWithEmptyBlock() {
-		
+
 	}
-	
+
 	public void methodWithACommentUsingSemiColon() {
-		// ; 
+		// ;
 	}
-	
+
 	public void methodWithBlockCommentUsingSemiColon() {
-		/* ; 
-		 * 
+		/*
+		 * ;
 		 */
 	}
-	
+
 	public void methodWithTwoStatementsInATry() {
-		try{
+		try {
 			System.out.println("");
 			int i = 1;
-		}
-		finally{
-			
+		} finally {
+
 		}
 	}
-	
+
 	public void methodWithTwoStatementsInATryAndFinally() {
-		try{
+		try {
 			System.out.println("");
-		}
-		finally{
+		} finally {
 			System.out.println("Finally");
 		}
 	}
-	
+
 	public void methodWithTwoStatementsInAndOutATry() {
-		try{
+		try {
 			System.out.println("in");
-		}
-		finally{
-			
+		} finally {
+
 		}
 		System.out.println("out");
 	}
-	
+
 	public void methodWithNestedTry() {
-		try{
+		try {
 			System.out.println("most outter try");
-			try{
-				System.out.println("inner try");	
-				try{
+			try {
+				System.out.println("inner try");
+				try {
 					System.out.println("most inner try");
-				}
-				finally{
+				} finally {
 					;
 				}
-			}
-			finally{
+			} finally {
 				;
 			}
-		}
-		finally{
+		} finally {
 			;
 		}
 	}
-	
+
 	public void methodWithTwoTry() {
-		try{
+		try {
 			System.out.println("in");
+		} finally {
+
 		}
-		finally{
-			
-		}
-				
-		try{
+
+		try {
 			System.out.println("in");
-		}
-		finally{
-			
+		} finally {
+
 		}
 		System.out.println("out");
 	}
-	
+
 	public void methodWithNestedBlocks() {
 		boolean i = false;
-		
-		if(i){
+
+		if (i) {
 			System.out.println("most outter try");
-			try{
-				System.out.println("inner try");	
-				try{
+			try {
+				System.out.println("inner try");
+				try {
 					System.out.println("most inner try");
-				}
-				finally{
+				} finally {
 					;
 				}
-			}
-			finally{
+			} finally {
 				;
 			}
 		}
 	}
 	
+	public void methodWithMethodInvocation() {
+		String i = "I use bitbucket";
+		i.substring(0, i.length()-7);
+		System.out.println(i);
+		printInt(get5());
+	}
+
+	public void printInt(int i) {
+		System.out.println(i);
+	}
+
+	private int get5() {
+		return 5;
+	}
 }

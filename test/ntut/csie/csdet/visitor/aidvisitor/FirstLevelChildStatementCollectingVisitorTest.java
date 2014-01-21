@@ -147,10 +147,12 @@ public class FirstLevelChildStatementCollectingVisitorTest {
 	}
 
 	@Test
-	public void testWithNestedBlocks() throws JavaModelException {
+	public void testWithNestedBlocks() {
 		String tempCode = "System.out.println(\"inner try\")";
 		List<MethodInvocation> miList;
 		miList = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(compilationUnit, "methodWithNestedBlocks", tempCode);
+		
+		//assertEquals(1, miList.size());
 		
 		Block parentBlock = (Block) NodeUtils.getSpecifiedParentNode(miList.get(0), ASTNode.BLOCK);
 		assertTrue(parentBlock.getParent().getNodeType() == ASTNode.TRY_STATEMENT);
@@ -160,7 +162,38 @@ public class FirstLevelChildStatementCollectingVisitorTest {
 
 		assertEquals(2, flcscVisitor.getChildren().size());
 	}
+	
+	@Test
+	public void testWithMethodInvocation() {
+		String tempCode = "substring(0, i.length()-7)";
+		List<MethodInvocation> miList;
+		miList = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(compilationUnit, "methodWithMethodInvocation", tempCode);
+		
+		assertEquals(1, miList.size());
+		
+		MethodInvocation testMI = miList.get(0);
+		
+		flcscVisitor = new FirstLevelChildStatementCollectingVisitor();
+		testMI.accept(flcscVisitor);
 
+		//assertEquals(2, flcscVisitor.getChildren().size());
+	}
+
+	@Test
+	public void testPigtest() {
+		String tempCode = "printInt(get5())";
+		List<MethodInvocation> miList;
+		miList = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(compilationUnit, "methodWithMethodInvocation", tempCode);
+		
+		assertEquals(1, miList.size());
+		
+		MethodInvocation testMI = miList.get(0);
+		
+		flcscVisitor = new FirstLevelChildStatementCollectingVisitor();
+		testMI.accept(flcscVisitor);
+
+		//assertEquals(2, flcscVisitor.getChildren().size());
+	}
 	private List<MethodDeclaration> getMethodListFromCompilationUnit()
 			throws JavaModelException {
 		ASTMethodCollector methodCollector = new ASTMethodCollector();

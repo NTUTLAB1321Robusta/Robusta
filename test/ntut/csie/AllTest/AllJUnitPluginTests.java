@@ -46,7 +46,7 @@ import org.junit.runners.Suite;
 	RethrowExRefactoringTest.class,
 	RetryRefactoringTest.class,
 	
-	// ablout cc
+	// about cc
 	//ReportBuilderIntergrationTest.class,
 	//ReportBuilderTest.class,
 	
@@ -79,14 +79,14 @@ import org.junit.runners.Suite;
 	VariableDeclarationStatementFinderVisitorTest.class,
 	RobustaSettingsTest.class,
 	ReportDescriptionTest.class,
-	// ablout cc
+	// about cc
 	//BadSmellCollectorTest.class,
+	FirstLevelChildStatementCollectingVisitorTest.class,
 	
 	// TODO unfinished
 	CarelessCleanupVisitorTest.class,
 	CloseResourceMethodInvocationVisitorTest.class,
-	MethodInvocationMayInterruptByExceptionCheckerTest.class,
-	FirstLevelChildStatementCollectingVisitorTest.class
+	MethodInvocationMayInterruptByExceptionCheckerTest.class
 })
 public class AllJUnitPluginTests {
 }
