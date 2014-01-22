@@ -21,6 +21,9 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Test;
+
+import com.sun.net.httpserver.Authenticator.Success;
 
 public class QuickFixCoreTest {
 	String projectNameString;
@@ -89,6 +92,10 @@ public class QuickFixCoreTest {
 		javaProjectMaker.deleteProject();
 	}
 
+	@Test
+	public void testForGreenLight() {
+	}
+	
 	@Ignore
 	public void testPerformChange() throws Exception {
 		fail("目前不知道如何在Unit Test中抓到EditorPart，所以未實作");
