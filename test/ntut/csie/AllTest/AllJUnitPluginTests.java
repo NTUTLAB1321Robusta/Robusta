@@ -1,5 +1,6 @@
 package ntut.csie.AllTest;
 
+import ntut.csie.csdet.preference.DetectedFileTest;
 import ntut.csie.csdet.preference.ReportDescriptionTest;
 import ntut.csie.csdet.preference.RobustaSettingsTest;
 import ntut.csie.csdet.quickfix.BaseQuickFixTest;
@@ -32,6 +33,7 @@ import ntut.csie.rleht.builder.RLBuilderTest;
 import ntut.csie.rleht.views.ExceptionAnalyzerTest;
 import ntut.csie.robusta.codegen.CatchClauseFinderVisitorTest;
 import ntut.csie.robusta.codegen.ExpressionStatementStringFinderVisitorTest;
+import ntut.csie.robusta.codegen.QuickFixCoreTest;
 import ntut.csie.robusta.codegen.StatementFinderVisitorTest;
 import ntut.csie.robusta.codegen.VariableDeclarationStatementFinderVisitorTest;
 
@@ -79,6 +81,8 @@ import org.junit.runners.Suite;
 	VariableDeclarationStatementFinderVisitorTest.class,
 	RobustaSettingsTest.class,
 	ReportDescriptionTest.class,
+	DetectedFileTest.class,
+	QuickFixCoreTest.class, //no method implemented 
 	// about cc
 	//BadSmellCollectorTest.class,
 	FirstLevelChildStatementCollectingVisitorTest.class,
