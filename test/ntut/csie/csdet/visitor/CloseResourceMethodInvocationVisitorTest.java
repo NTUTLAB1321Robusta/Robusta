@@ -1,6 +1,9 @@
 package ntut.csie.csdet.visitor;
 
 import static org.junit.Assert.assertEquals;
+
+import java.util.List;
+
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.TestEnvironmentBuilder;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.ClassCanCloseButNotImplementCloseable;
@@ -11,7 +14,9 @@ import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.Re
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.UserDefinedCarelessCleanupClass;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.UserDefinedCarelessCleanupMethod;
 
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -25,7 +30,7 @@ public class CloseResourceMethodInvocationVisitorTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		environmentBuilder = new TestEnvironmentBuilder("testProject");
+		environmentBuilder = new TestEnvironmentBuilder("testCloseResourceProject");
 		environmentBuilder.createTestEnvironment();
 
 		environmentBuilder.loadClass(CloseResourceMethodInvocationExample.class);
@@ -46,23 +51,24 @@ public class CloseResourceMethodInvocationVisitorTest {
 	}
 	
 	@Test
-	public void testGetCloseMethodInvocationListWithOutAnyExtraRule() throws Exception {
-		// create visitor and visit the class
-		CompilationUnit compilationUnit = environmentBuilder
-				.getCompilationUnit(CloseResourceMethodInvocationExample.class);
-		visitor = new CloseResourceMethodInvocationVisitor(compilationUnit);
-		compilationUnit.accept(visitor);
-		
-		assertEquals(4, visitor.getCloseMethodInvocations().size());
+	public void testExampleWithOutAnyExtraRule() throws Exception {
+		List<MethodInvocation> miList = 
+				visitCompilationAndGetSmellList(CloseResourceMethodInvocationExample.class);
+		assertEquals(4, miList.size());
 	}
-	
-	@Ignore
-	public void testGetCloseMethodInvocationListWithExtraRule() throws Exception {
+
+	@Test
+	public void testExampleWithWithUserDefinedMethodShine() throws Exception {
+		// Create setting file with user defined
+		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
+		smellSettings.addCarelessCleanupPattern("*.Shine", true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+
+		List<MethodInvocation> miList = 
+				visitCompilationAndGetSmellList(CloseResourceMethodInvocationExample.class);
 		
-		environmentBuilder.accept(CloseResourceMethodInvocationExample.class, visitor);
-		assertEquals(39, visitor.getCloseMethodInvocations().size());
+		assertEquals(9, miList.size());
 	}
 	
 	@Ignore
@@ -71,7 +77,7 @@ public class CloseResourceMethodInvocationVisitorTest {
 		smellSettings.addCarelessCleanupPattern(UserDefinedCarelessCleanupMethod.class.getName() + ".*", true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 
-		environmentBuilder.accept(null, visitor);
+		environmentBuilder.accept(Object.class, visitor);
 		assertEquals(42, visitor.getCloseMethodInvocations().size());
 	}
 	
@@ -81,7 +87,7 @@ public class CloseResourceMethodInvocationVisitorTest {
 		smellSettings.addCarelessCleanupPattern("*.bark", true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 
-		environmentBuilder.accept(null, visitor);
+		environmentBuilder.accept(Object.class, visitor);
 		assertEquals(38, visitor.getCloseMethodInvocations().size());
 	}
 	
@@ -91,8 +97,18 @@ public class CloseResourceMethodInvocationVisitorTest {
 		smellSettings.addCarelessCleanupPattern(UserDefinedCarelessCleanupMethod.class.getName() + ".bark", true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 
-		environmentBuilder.accept(null, visitor);
+		environmentBuilder.accept(Object.class, visitor);
 		assertEquals(37, visitor.getCloseMethodInvocations().size());
 	}
 
+	private List<MethodInvocation> visitCompilationAndGetSmellList(Class clazz)
+			throws JavaModelException {
+		CompilationUnit compilationUnit = environmentBuilder
+				.getCompilationUnit(clazz);
+		visitor = new CloseResourceMethodInvocationVisitor(compilationUnit);
+		compilationUnit.accept(visitor);
+		List<MethodInvocation> miList = visitor.getCloseMethodInvocations();
+		return miList;
+	}
+	
 }

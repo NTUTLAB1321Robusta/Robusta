@@ -59,6 +59,13 @@ public class CloseResourceMethodInvocationExample {
 		methods.bark();
 	}
 
+	public void userDefinedMethodWithArguments() throws Exception {
+		UserDefinedCarelessCleanupMethod methods = new UserDefinedCarelessCleanupMethod();
+		methods.Shine(5);
+		methods.Shine();
+		methods.Shine(10);
+	}
+
 	/**
 	 * Never try to close fis, so it is ignored cleanup but not careless cleanup
 	 */

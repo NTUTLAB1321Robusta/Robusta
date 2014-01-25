@@ -66,6 +66,13 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 	 */
 	private int getVariableStartPositionForMethodDeclaration(
 			MethodInvocation methodInvocation) {
+		/*
+		 * If it has some arguments, then it should start from MethodDeclaration
+		 */
+		if (!methodInvocation.arguments().isEmpty()) {
+			return methodDeclaration.getStartPosition();
+		}
+		
 		ASTNode variableDeclaration = getVariableDeclaration(methodInvocation);
 		int declarationPosition = variableDeclaration.getStartPosition();
 		
