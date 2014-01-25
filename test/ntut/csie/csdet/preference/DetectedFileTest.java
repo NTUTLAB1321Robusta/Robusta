@@ -1,4 +1,5 @@
 package ntut.csie.csdet.preference;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.eclipse.core.resources.IResource;
@@ -42,10 +43,4 @@ public class DetectedFileTest {
 		 DetectFile detectFile = new DetectFile();
 		 Assert.assertFalse(detectFile.detectedFile(resouce));
 	 }
-	 
-	 
-	 
-	 
-	 
-	 
 }
