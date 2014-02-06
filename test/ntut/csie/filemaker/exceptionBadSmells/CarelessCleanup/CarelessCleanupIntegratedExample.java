@@ -10,6 +10,9 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.security.DigestInputStream;
 
+import javax.imageio.ImageIO;
+import javax.imageio.stream.ImageOutputStream;
+
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.ResourceCloser;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.UserDefinedCarelessCleanupClass;
 import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.UserDefinedCarelessCleanupMethod;
@@ -95,12 +98,12 @@ public class CarelessCleanupIntegratedExample {
 		try {
 			zOut.write(is.read());
 		} finally {
-			ResourceCloser.closeResourceDirectly(is); // Safe
+			ResourceCloser.closeResourceDirectly(is); // Safe but detected
 		}
 		try {
 			zOut.write(is.read());
 		} finally {
-			ResourceCloser.closeResourceDirectly(is); // Unsafe but not detected
+			ResourceCloser.closeResourceDirectly(is); // Unsafe
 		}
 	}
 
@@ -141,4 +144,13 @@ public class CarelessCleanupIntegratedExample {
 		}
 	}
 
+	/**
+	 * This example will be detected only if user define "*.close"
+	 */
+	public void instanceDoNotImpCloseable(OutputStream outputStream)
+			throws IOException {
+		ImageOutputStream ios = ImageIO.createImageOutputStream(outputStream);
+		ios.flush();
+		ios.close();
+	}
 }
