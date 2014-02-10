@@ -25,7 +25,6 @@ import org.junit.Test;
 public class CloseResourceMethodInvocationVisitorTest {
 	
 	private TestEnvironmentBuilder environmentBuilder;
-	private SmellSettings smellSettings;
 	private CloseResourceMethodInvocationVisitor visitor;
 	
 	@Before
@@ -40,9 +39,6 @@ public class CloseResourceMethodInvocationVisitorTest {
 		environmentBuilder.loadClass(UserDefinedCarelessCleanupClass.class);
 		environmentBuilder.loadClass(ClassImplementCloseableWithoutThrowException.class);
 		environmentBuilder.loadClass(ResourceCloser.class);
-		
-		smellSettings = environmentBuilder.getSmellSettings();
-
 	}
 
 	@After
@@ -51,12 +47,26 @@ public class CloseResourceMethodInvocationVisitorTest {
 	}
 	
 	@Test
-	public void testExampleWithOutAnyExtraRule() throws Exception {
+	public void testExampleWithoutAnyExtraRule() throws Exception {
 		List<MethodInvocation> miList = 
 				visitCompilationAndGetSmellList(CloseResourceMethodInvocationExample.class);
-		assertEquals(4, miList.size());
+		assertEquals(6, miList.size());
 	}
 
+	@Test
+	public void testExampleWithWithUserDefinedMethodClose() throws Exception {
+		// Create setting file with user defined
+		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
+		smellSettings.addCarelessCleanupPattern("*.close", true);
+		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+
+		List<MethodInvocation> miList = 
+				visitCompilationAndGetSmellList(CloseResourceMethodInvocationExample.class);
+		
+		assertEquals(9, miList.size());
+	}
+	
 	@Test
 	public void testExampleWithWithUserDefinedMethodShine() throws Exception {
 		// Create setting file with user defined
@@ -68,7 +78,7 @@ public class CloseResourceMethodInvocationVisitorTest {
 		List<MethodInvocation> miList = 
 				visitCompilationAndGetSmellList(CloseResourceMethodInvocationExample.class);
 		
-		assertEquals(9, miList.size());
+		assertEquals(11, miList.size());
 	}
 	
 	@Ignore

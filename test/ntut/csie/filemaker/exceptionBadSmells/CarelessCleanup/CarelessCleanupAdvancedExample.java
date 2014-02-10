@@ -106,7 +106,7 @@ public class CarelessCleanupAdvancedExample {
 	class ConcreteCloseable extends SuperCloseable {
 		public void close() {
 			methodBeforeClose.didNotDeclareAnyExceptionButThrowUnchecked();
-			super.close(); // Unsafe
+			super.close(); // TODO Unsafe, but will not mark it yet 
 		}
 	}
 
@@ -293,4 +293,31 @@ public class CarelessCleanupAdvancedExample {
 			rIn.close(); // Safe
 		}
 	}
+
+	class ClassWithGetResource implements Closeable {
+		public java.nio.channels.Channel getResourceWithInterface() {
+			return null;
+		}
+		public FileOutputStream getResourceWithImp() {
+			return null;
+		}
+		public void close() {
+		}
+		
+		public void closeResourceByInvokeMyClose() throws Exception {
+			methodBeforeClose.declaredCheckedException();
+			close(); // Unsafe
+		}
+	}
+
+	public void closeResourceFromGetResourceWithImp() throws Exception {
+		ClassWithGetResource resourceManager = new ClassWithGetResource();
+		resourceManager.getResourceWithImp().close(); // Unsafe
+	}
+	
+	public void closeResourceFromGetResourceWithInterface() throws Exception {
+		ClassWithGetResource resourceManager = new ClassWithGetResource();
+		resourceManager.getResourceWithInterface().close(); // Unsafe
+	}
+	
 }

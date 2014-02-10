@@ -15,17 +15,17 @@ public class CloseResourceMethodInvocationExample {
 		try {
 			fileOutputStream = new FileOutputStream(outputFile);
 			fileOutputStream.write(context);
-			fileOutputStream.close(); // Unsafe
+			fileOutputStream.close();  // Is
 		} catch (FileNotFoundException e) {
 			System.out.println("FileNotFoundException.");
-			fileOutputStream.close(); // Unsafe
+			fileOutputStream.close();  // Is
 			throw e;
 		} catch (IOException e) {
-			fileOutputStream.close(); // Safe
+			fileOutputStream.close();  // Is
 			throw e;
 		} finally {
 			System.out.println("Close nothing at all.");
-			fileOutputStream.close(); // Unsafe
+			fileOutputStream.close();  // Is
 		}
 	}
 
@@ -103,8 +103,41 @@ public class CloseResourceMethodInvocationExample {
 	class ConcreteCloseable extends SuperCloseable {
 		public void close() throws IOException {
 			doSomething();
-			super.close(); // Unsafe but not included
+			super.close(); // TODO Is, but not included yet
 		}
 	}
 
+	class ClassWithGetResource {
+		public java.nio.channels.Channel getResourceWithInterface() {
+			return null;
+		}
+		public FileOutputStream getResourceWithImp() {
+			return null;
+		}
+		public ClassWithGetResource getResourceNotImpCloseable() {
+			return this;
+		}
+		public void close() {
+		}
+		
+		public void closeResourceByInvokeMyClose() throws Exception {
+			close(); // Is when user defined
+			close(); // Is when user defined
+		}
+	}
+
+	public void invokeGetResourceAndCloseItWithImp() throws Exception {
+		ClassWithGetResource resourceManager = new ClassWithGetResource();
+		resourceManager.getResourceWithImp().close();  // Is
+	}
+	
+	public void invokeGetResourceAndCloseItWithInterface() throws Exception {
+		ClassWithGetResource resourceManager = new ClassWithGetResource();
+		resourceManager.getResourceWithInterface().close();  // Is
+	}
+	
+	public void invokeGetResourceAndCloseItNotImpCloseable() throws Exception {
+		ClassWithGetResource resourceManager = new ClassWithGetResource();
+		resourceManager.getResourceNotImpCloseable().close(); // Is when user defined
+	}
 }

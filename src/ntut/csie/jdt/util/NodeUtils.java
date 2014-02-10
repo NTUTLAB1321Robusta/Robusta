@@ -1,16 +1,11 @@
 package ntut.csie.jdt.util;
 
-import java.io.Closeable;
 import java.util.List;
-
-import ntut.csie.csdet.preference.SmellSettings;
-import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
-import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
@@ -48,6 +43,7 @@ public class NodeUtils {
 	 */
 	public static boolean isITypeBindingImplemented(ITypeBinding bindingClass,
 			Class<?> looking4Interface) {
+		// specific case : bindingClass is Object
 		if (bindingClass == null
 				|| bindingClass.getQualifiedName().equals(
 						Object.class.getName())) {
@@ -207,76 +203,6 @@ public class NodeUtils {
 	public static ITypeBinding getExpressionBinding(ThrowStatement node) {
 		return (node.getExpression() != null) ? node.getExpression()
 				.resolveTypeBinding() : null;
-	}
-
-	/**
-	 * 檢查method invocation的程式碼是不是關閉資源的動作
-	 * 
-	 * @param root
-	 *            method invocation所在的java檔案
-	 * @param node
-	 *            要被檢查的程式碼
-	 * @return
-	 */
-	public static boolean isCloseResourceMethodInvocation(CompilationUnit root,
-			MethodInvocation node) {
-		boolean userDefinedLibResult = false;
-		boolean userDefinedResult = false;
-		boolean userDefinedExtraRule = false;
-		boolean defaultResult = false;
-
-		UserDefinedMethodAnalyzer userDefinedMethodAnalyzer = new UserDefinedMethodAnalyzer(
-				SmellSettings.SMELL_CARELESSCLEANUP);
-		if (userDefinedMethodAnalyzer.analyzeLibrary(node)) {
-			userDefinedLibResult = true;
-		}
-
-		if (userDefinedMethodAnalyzer.analyzeMethods(node)) {
-			userDefinedResult = true;
-		}
-
-		if (userDefinedMethodAnalyzer.analyzeExtraRule(node, root)) {
-			userDefinedExtraRule = true;
-		}
-
-		if (userDefinedMethodAnalyzer.getEnable()) {
-			defaultResult = isNodeACloseCodeAndImplementedCloseable(node);
-		}
-
-		return (userDefinedLibResult || userDefinedResult
-				|| userDefinedExtraRule || defaultResult);
-	}
-
-	/**
-	 * If this node implemented Closeable and named "close", return true.
-	 * Otherwise, retuen false.
-	 */
-	private static boolean isNodeACloseCodeAndImplementedCloseable(
-			MethodInvocation node) {
-		return isSimpleNameClose(node.getName())
-				&& isIMethodBindingImplementedCloseable(node
-						.resolveMethodBinding());
-	}
-
-	/**
-	 * If this node implemented Closeable and named "close", return true.
-	 * Otherwise, retuen false.
-	 */
-	public static boolean isNodeACloseCodeAndImplementedCloseable(
-			SuperMethodInvocation node) {
-		return isSimpleNameClose(node.getName())
-				&& isIMethodBindingImplementedCloseable(node
-						.resolveMethodBinding());
-	}
-
-	private static boolean isSimpleNameClose(SimpleName name) {
-		return name.toString().equals("close");
-	}
-
-	private static boolean isIMethodBindingImplementedCloseable(
-			IMethodBinding methodBinding) {
-		return NodeUtils.isITypeBindingImplemented(
-				methodBinding.getDeclaringClass(), Closeable.class);
 	}
 
 	/**

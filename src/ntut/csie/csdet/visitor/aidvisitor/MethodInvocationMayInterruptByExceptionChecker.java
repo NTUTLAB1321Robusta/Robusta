@@ -7,10 +7,12 @@ import ntut.csie.jdt.util.NodeUtils;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.Statement;
+import org.hamcrest.core.IsInstanceOf;
 
 public class MethodInvocationMayInterruptByExceptionChecker {
 
@@ -26,9 +28,9 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 	}
 
 	public boolean isMayInterruptByException(MethodInvocation methodInvocation) {
+		initialize(methodInvocation);
+		
 		try {
-			initialize(methodInvocation);
-			
 			if (isThisMethodInvocationUnsafeOnParent(methodInvocation)) {
 				return true;
 			}
@@ -43,8 +45,8 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 			return false;
 		} catch(Exception e) {
 			/*
-			 * Any exception means it is not a ASTNode we can handle now, that
-			 * means it is not a bad smell
+			 * Any exception means it is not a ASTNode we can handle now, so we
+			 * can't say that it is a bad smell
 			 */
 			return false;
 		}
@@ -57,41 +59,60 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 		methodDeclaration = (MethodDeclaration) NodeUtils
 				.getSpecifiedParentNode(methodInvocation,ASTNode.METHOD_DECLARATION);
 		
-		beginningPosition = getVariableStartPositionForMethodDeclaration(methodInvocation);
+		setResourceStartPositionForMethodDeclaration(methodInvocation);
 	}
 
 	/**
-	 * If the variable is not start on this MethodDeclaration, then will
-	 * return the start position of this MethodDeclaration
+	 * If the resource is not start on this MethodDeclaration, then will set the
+	 * start position at the start position of this MethodDeclaration
 	 */
-	private int getVariableStartPositionForMethodDeclaration(
+	private void setResourceStartPositionForMethodDeclaration(
 			MethodInvocation methodInvocation) {
-		/*
-		 * If it has some arguments, then it should start from MethodDeclaration
-		 */
-		if (!methodInvocation.arguments().isEmpty()) {
-			return methodDeclaration.getStartPosition();
-		}
-		
-		ASTNode variableDeclaration = getVariableDeclaration(methodInvocation);
-		int declarationPosition = variableDeclaration.getStartPosition();
-		
-		/*
-		 * If the variable is not start on this MethodDeclaration, return the
-		 * position of methodDeclaration instead.
-		 */
-		if (declarationPosition < methodDeclaration.getStartPosition()
-				|| declarationPosition > methodInvocation.getStartPosition()) {
-			return methodDeclaration.getStartPosition();
-		} else {
-			return variableDeclaration.getStartPosition();
+		try {
+			if (!methodInvocation.arguments().isEmpty()) {
+				/*
+				 * TODO Maintain later
+				 * If it has any arguments, then it should start from MethodDeclaration
+				 */
+				throw new RuntimeException();
+			} else {
+				setExpressionStartPosition(methodInvocation);
+			}
+
+			/*
+			 * If the beginningPosition is Not in this MethodDeclaration, change
+			 * it to the beginning of this methodDeclaration instead.
+			 */
+			if (beginningPosition < methodDeclaration.getStartPosition()
+					|| beginningPosition > methodInvocation.getStartPosition()) {
+				beginningPosition = methodDeclaration.getStartPosition();
+			}
+		} catch (Exception e) {
+			/*
+			 * Any exception means we can't find the proper position, so we have
+			 * to beware any interrupted from the beginning
+			 */
+			beginningPosition = methodDeclaration.getStartPosition();
 		}
 	}
 	
-	private ASTNode getVariableDeclaration(MethodInvocation methodInvocation) {
+	/**
+	 *  Set beginningPosition if the methodInvocation forms "instance.method()"
+	 *  @exception RuntimeException if it doesn't
+	 */
+	private void setExpressionStartPosition(MethodInvocation methodInvocation) {
+		Expression expression = methodInvocation.getExpression();
+		if (expression instanceof SimpleName) {
+			ASTNode variableDeclaration = getVariableDeclaration(expression);
+			beginningPosition = variableDeclaration.getStartPosition();
+		} else {
+			throw new RuntimeException();
+		}
+	}
+	
+	private ASTNode getVariableDeclaration(Expression expression) {
 		SimpleName variableName = NodeUtils
-				.getMethodInvocationBindingVariableSimpleName(methodInvocation
-						.getExpression());
+				.getMethodInvocationBindingVariableSimpleName(expression);
 		return root.findDeclaringNode(variableName.resolveBinding());
 	}
 	

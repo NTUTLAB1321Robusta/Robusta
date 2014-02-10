@@ -87,8 +87,8 @@ import org.junit.runners.Suite;
 	//BadSmellCollectorTest.class,
 	FirstLevelChildStatementCollectingVisitorTest.class,
 	CarelessCleanupVisitorTest.class,
-	// TODO unfinished
 	CloseResourceMethodInvocationVisitorTest.class,
+	// TODO unfinished
 	MethodInvocationMayInterruptByExceptionCheckerTest.class
 })
 public class AllJUnitPluginTests {

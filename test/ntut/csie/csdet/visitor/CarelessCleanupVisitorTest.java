@@ -68,7 +68,7 @@ public class CarelessCleanupVisitorTest {
 
 		// FIXME Now the actual will be less 1 then expected, because
 		// "super.close() haven been treat as closeInvocation
-		assertListSize(smellList, 17);
+		assertListSize(smellList, 20);
 	}
 
 	@Test
@@ -97,7 +97,7 @@ public class CarelessCleanupVisitorTest {
 		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupIntegratedExample.class);
 
 		// FIXME Now the actual will be more 1 then expected, because
-		// "ResourceCloser.closeResourceDirectly(is) haven been treat as CC
+		// "ResourceCloser.closeResourceDirectly(is) haven't been treat as CC
 		assertListSize(smellList, 13);
 	}
 

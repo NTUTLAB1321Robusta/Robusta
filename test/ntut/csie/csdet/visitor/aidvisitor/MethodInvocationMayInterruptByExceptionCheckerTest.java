@@ -1,6 +1,8 @@
 package ntut.csie.csdet.visitor.aidvisitor;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -10,6 +12,7 @@ import ntut.csie.filemaker.TestEnvironmentBuilder;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.junit.After;
 import org.junit.Before;
@@ -46,20 +49,14 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 	 */
 	@Test
 	public void testGetVariableDeclarationWithLocalVariable() throws Exception {
-		Method getVariableDeclaration = MethodInvocationMayInterruptByExceptionChecker.class
-				.getDeclaredMethod("getVariableDeclaration",
-						MethodInvocation.class);
-		getVariableDeclaration.setAccessible(true);
+		Method getVariableDeclaration = getMethodGetVariableDeclaration();
+		Expression expression = getExpressionByMethodNameAndCode(
+				"resourceAssignAndUseMultiTimes", "fis.close()");
 
-		List<MethodInvocation> methodInvocation = ASTNodeFinder
-				.getMethodInvocationByMethodNameAndCode(compilationUnit,
-						"resourceAssignAndUseMultiTimes", "fis.close()");
-
-		assertEquals(methodInvocation.size(), 1);
 		ASTNode variableDeclaration = (ASTNode) getVariableDeclaration.invoke(
-				checker, methodInvocation.get(0));
+				checker, expression);
 		assertEquals("fis=null", variableDeclaration.toString());
-		assertEquals(300, variableDeclaration.getStartPosition());
+		assertEquals(334, variableDeclaration.getStartPosition());
 	}
 
 	/**
@@ -67,20 +64,14 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 	 */
 	@Test
 	public void testGetVariableDeclarationWithParameter() throws Exception {
-		Method getVariableDeclaration = MethodInvocationMayInterruptByExceptionChecker.class
-				.getDeclaredMethod("getVariableDeclaration",
-						MethodInvocation.class);
-		getVariableDeclaration.setAccessible(true);
+		Method getVariableDeclaration = getMethodGetVariableDeclaration();
+		Expression expression = getExpressionByMethodNameAndCode(
+				"resourceFromParameters", "file2.canRead()");
 
-		List<MethodInvocation> methodInvocation = ASTNodeFinder
-				.getMethodInvocationByMethodNameAndCode(compilationUnit,
-						"resourceFromParameters", "file2.canRead()");
-
-		assertEquals(methodInvocation.size(), 1);
 		ASTNode variableDeclaration = (ASTNode) getVariableDeclaration.invoke(
-				checker, methodInvocation.get(0));
+				checker, expression);
 		assertEquals("File file2", variableDeclaration.toString());
-		assertEquals(428, variableDeclaration.getStartPosition());
+		assertEquals(469, variableDeclaration.getStartPosition());
 	}
 
 	/**
@@ -88,20 +79,72 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 	 */
 	@Test
 	public void testGetVariableDeclarationWithField() throws Exception {
-		Method getVariableDeclaration = MethodInvocationMayInterruptByExceptionChecker.class
-				.getDeclaredMethod("getVariableDeclaration",
-						MethodInvocation.class);
-		getVariableDeclaration.setAccessible(true);
-		
-		List<MethodInvocation> methodInvocation = ASTNodeFinder
-				.getMethodInvocationByMethodNameAndCode(compilationUnit,
-						"resourceFromField", "file3.canRead()");
-		
-		assertEquals(methodInvocation.size(), 1);
+		Method getVariableDeclaration = getMethodGetVariableDeclaration();
+		Expression expression = getExpressionByMethodNameAndCode(
+				"resourceFromField", "file3.canRead()");
+
 		ASTNode variableDeclaration = (ASTNode) getVariableDeclaration.invoke(
-				checker, methodInvocation.get(0));
+				checker, expression);
 		assertEquals("file3=null", variableDeclaration.toString());
-		assertEquals(562, variableDeclaration.getStartPosition());
+		assertEquals(610, variableDeclaration.getStartPosition());
 	}
 
+	@Test
+	public void testIsMayInterruptByExceptionWithSafeThisClose() throws Exception {
+	}
+
+	@Test
+	public void testIsMayInterruptByExceptionWithCloseResourceByInvokeMyClose()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"closeResourceByInvokeMyClose", "this.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+
+		methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"closeResourceByInvokeMyClose", "close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+	}
+
+	@Test
+	public void testIsMayInterruptByExceptionWithInvokeGetResourceAndCloseItWithX()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"invokeGetResourceAndCloseItWithImp",
+				"resourceManager.getResourceWithImp().close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+		
+		methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"invokeGetResourceAndCloseItWithInterface",
+				"resourceManager.getResourceWithInterface().close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+		
+		methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"invokeGetResourceAndCloseItNotImpCloseable",
+				"resourceManager.getResourceNotImpCloseable().close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+	}
+
+	private Method getMethodGetVariableDeclaration() throws NoSuchMethodException {
+		Method method = MethodInvocationMayInterruptByExceptionChecker.class
+				.getDeclaredMethod("getVariableDeclaration", Expression.class);
+		method.setAccessible(true);
+		return method;
+	}
+
+	private MethodInvocation getMethodInvocationByMethodNameAndCode(
+			String methodName, String code) {
+		List<MethodInvocation> methodInvocation = ASTNodeFinder
+				.getMethodInvocationByMethodNameAndCode(compilationUnit,
+						methodName, code);
+		assertEquals(methodInvocation.size(), 1);
+
+		return methodInvocation.get(0);
+	}
+
+	private Expression getExpressionByMethodNameAndCode(String methodName,
+			String code) {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				methodName, code);
+		return methodInvocation.getExpression();
+	}
 }
