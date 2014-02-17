@@ -3,6 +3,7 @@ package ntut.csie.csdet.visitor.aidvisitor;
 import java.util.Iterator;
 import java.util.List;
 
+import ntut.csie.jdt.util.BoundaryChecker;
 import ntut.csie.jdt.util.NodeUtils;
 
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -19,6 +20,7 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 	private CompilationUnit root;
 	private MethodDeclaration methodDeclaration;
 	private int beginningPosition;
+	BoundaryChecker boundaryChecker;
 
 	/**
 	 * This instance can be used only for this compilation unit
@@ -57,8 +59,13 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 	 */
 	private void initialize(MethodInvocation methodInvocation) {
 		methodDeclaration = (MethodDeclaration) NodeUtils
-				.getSpecifiedParentNode(methodInvocation,ASTNode.METHOD_DECLARATION);
-		
+				.getSpecifiedParentNode(methodInvocation,
+						ASTNode.METHOD_DECLARATION);
+
+		boundaryChecker = new BoundaryChecker(
+				methodDeclaration.getStartPosition(),
+				methodInvocation.getStartPosition());
+
 		setResourceStartPositionForMethodDeclaration(methodInvocation);
 	}
 
@@ -70,22 +77,9 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 			MethodInvocation methodInvocation) {
 		try {
 			if (!methodInvocation.arguments().isEmpty()) {
-				/*
-				 * TODO Maintain later
-				 * If it has any arguments, then it should start from MethodDeclaration
-				 */
-				throw new RuntimeException();
+				setStartPositionByTheFurthestArgument(methodInvocation);
 			} else {
-				setExpressionStartPosition(methodInvocation);
-			}
-
-			/*
-			 * If the beginningPosition is Not in this MethodDeclaration, change
-			 * it to the beginning of this methodDeclaration instead.
-			 */
-			if (beginningPosition < methodDeclaration.getStartPosition()
-					|| beginningPosition > methodInvocation.getStartPosition()) {
-				beginningPosition = methodDeclaration.getStartPosition();
+				setStartPositionByTheExpressionOfMethodInvocation(methodInvocation);
 			}
 		} catch (Exception e) {
 			/*
@@ -97,22 +91,63 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 	}
 	
 	/**
-	 *  Set beginningPosition if the methodInvocation forms "instance.method()"
-	 *  @exception RuntimeException if it doesn't
+	 *  Find the furthest beginningPosition if the arguments are SimpleName
+	 *  @exception RuntimeException if any of them doesn't
 	 */
-	private void setExpressionStartPosition(MethodInvocation methodInvocation) {
-		Expression expression = methodInvocation.getExpression();
-		if (expression instanceof SimpleName) {
-			ASTNode variableDeclaration = getVariableDeclaration(expression);
-			beginningPosition = variableDeclaration.getStartPosition();
+	private void setStartPositionByTheFurthestArgument(
+			MethodInvocation methodInvocation) {
+		// Start from the nearest position
+		beginningPosition = methodInvocation.getStartPosition();
+
+		List<Expression> arguments = methodInvocation.arguments();
+		for (Expression eachArgument : arguments) {
+			if (eachArgument instanceof SimpleName) {
+				updateArgumentsPosition(getVariableDeclarationPosition(eachArgument));
+			} else {
+				throw new RuntimeException();
+			}
+		}
+	}
+
+	private void updateArgumentsPosition(int newPosition) {
+		if (boundaryChecker.isInInterval(newPosition)) {
+			if (newPosition < beginningPosition) {
+				beginningPosition = newPosition;
+			}
 		} else {
 			throw new RuntimeException();
 		}
 	}
-	
+
+	/**
+	 *  Set beginningPosition if the methodInvocation forms "instance.method()"
+	 *  @exception RuntimeException if it doesn't
+	 */
+	private void setStartPositionByTheExpressionOfMethodInvocation (MethodInvocation methodInvocation) {
+		Expression expression = methodInvocation.getExpression();
+		if (expression instanceof SimpleName) {
+			beginningPosition = getVariableDeclarationPosition(expression);
+
+			/*
+			 * If the beginningPosition is Not in this MethodDeclaration, change
+			 * it to the beginning of this methodDeclaration instead.
+			 */
+			if (!boundaryChecker.isInInterval(beginningPosition)) {
+				beginningPosition = methodDeclaration.getStartPosition();
+			}
+		} else {
+			throw new RuntimeException();
+		}
+	}
+
+	private int getVariableDeclarationPosition(Expression expression) {
+		ASTNode variableDeclaration = getVariableDeclaration(expression);
+		return variableDeclaration.getStartPosition();
+	}
+
 	private ASTNode getVariableDeclaration(Expression expression) {
 		SimpleName variableName = NodeUtils
-				.getMethodInvocationBindingVariableSimpleName(expression);
+				.getSimpleNameFromExpression(expression);
 		return root.findDeclaringNode(variableName.resolveBinding());
 	}
 	

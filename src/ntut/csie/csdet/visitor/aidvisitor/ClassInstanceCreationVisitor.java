@@ -29,7 +29,7 @@ public class ClassInstanceCreationVisitor extends ASTVisitor {
 		/*
 		 * 找出這個MethodInvocation宣告的變數
 		 */
-		declaringVariable = NodeUtils.getMethodInvocationBindingVariableSimpleName(methodInvocation.getExpression());
+		declaringVariable = NodeUtils.getSimpleNameFromExpression(methodInvocation.getExpression());
 		argumentsOfMethodInvocation = methodInvocation.arguments();
 	}
 	

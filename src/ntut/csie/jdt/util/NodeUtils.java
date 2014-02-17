@@ -206,13 +206,9 @@ public class NodeUtils {
 	}
 
 	/**
-	 * 如果是xx.close()的形式，則可以從xx的SimpleName取得Binding的變數名稱
-	 * 
-	 * @param expression
-	 * @return
+	 * If it forms like "xx.close()", then return the SimpleName of "xx"
 	 */
-	public static SimpleName getMethodInvocationBindingVariableSimpleName(
-			Expression expression) {
+	public static SimpleName getSimpleNameFromExpression(Expression expression) {
 		// 如果是close(xxx)的形式，則傳進來的expression為null
 		if (expression == null) {
 			return null;
@@ -220,8 +216,7 @@ public class NodeUtils {
 
 		if (expression.getNodeType() == ASTNode.METHOD_INVOCATION) {
 			MethodInvocation expressionChild = (MethodInvocation) expression;
-			return getMethodInvocationBindingVariableSimpleName(expressionChild
-					.getExpression());
+			return getSimpleNameFromExpression(expressionChild.getExpression());
 		} else if (expression.getNodeType() == ASTNode.SIMPLE_NAME) {
 			return (SimpleName) expression;
 		}

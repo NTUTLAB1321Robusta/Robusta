@@ -4,6 +4,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.ResourceCloser;
 
 public class MethodInvocationMayInterruptByExceptionCheckerExample {
 
@@ -60,5 +64,15 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 	public void invokeGetResourceAndCloseItNotImpCloseable() throws Exception {
 		ClassWithGetResource resourceManager = new ClassWithGetResource();
 		resourceManager.getResourceNotImpCloseable().close(); // Is
+	}
+
+	public void closeByUserDefinedMethod(OutputStream zOut)
+			throws IOException {
+		InputStream is = null;
+		try {
+			zOut.write(is.read());
+		} finally {
+			ResourceCloser.closeResourceDirectly(is); // Safe even user defined
+		}
 	}
 }

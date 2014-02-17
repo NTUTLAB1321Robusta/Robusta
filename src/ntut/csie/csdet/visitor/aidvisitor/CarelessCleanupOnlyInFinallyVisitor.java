@@ -60,14 +60,14 @@ public class CarelessCleanupOnlyInFinallyVisitor extends ASTVisitor {
 		 * 	如果在這行之前可能會發生例外，則這行為careless cleanup。
 		 *  如果在這行之前不會發生例外，則這行就不算careless cleanup
 		 */
-		if(NodeUtils.isCloseResourceMethodInvocation(root, node)) {
-			// 如果前面已經有程式碼會發生例外，則這個關閉串流的程式碼就是careless cleanup
-			if(isExceptionRisable) {
-				carelessCleanupNodes.add(node);
-			} else {
-				fineCleanupNodes.add(node);
-			}
-		}
+//		if(NodeUtils.isCloseResourceMethodInvocation(root, node)) {
+//			// 如果前面已經有程式碼會發生例外，則這個關閉串流的程式碼就是careless cleanup
+//			if(isExceptionRisable) {
+//				carelessCleanupNodes.add(node);
+//			} else {
+//				fineCleanupNodes.add(node);
+//			}
+//		}
 		
 		/* 
 		 * 記錄這行程式碼會不會拋出例外：

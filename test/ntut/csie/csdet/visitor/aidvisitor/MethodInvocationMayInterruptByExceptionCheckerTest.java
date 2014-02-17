@@ -9,6 +9,7 @@ import java.util.List;
 
 import ntut.csie.filemaker.ASTNodeFinder;
 import ntut.csie.filemaker.TestEnvironmentBuilder;
+import ntut.csie.filemaker.exceptionBadSmells.CarelessCleanup.closelikemethod.ResourceCloser;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -44,6 +45,46 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		environmentBuilder.cleanTestEnvironment();
 	}
 
+	@Test
+	public void testIsMayInterruptByExceptionWithCloseResourceByInvokeMyClose()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"closeResourceByInvokeMyClose", "this.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+
+		methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"closeResourceByInvokeMyClose", "close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+	}
+
+	@Test
+	public void testIsMayInterruptByExceptionWithInvokeGetResourceAndCloseItWithX()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"invokeGetResourceAndCloseItWithImp",
+				"resourceManager.getResourceWithImp().close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+		
+		methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"invokeGetResourceAndCloseItWithInterface",
+				"resourceManager.getResourceWithInterface().close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+		
+		methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"invokeGetResourceAndCloseItNotImpCloseable",
+				"resourceManager.getResourceNotImpCloseable().close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+	}
+
+	@Test
+	public void testIsMayInterruptByExceptionWithUserDefinedClosedMethodWithCloseableArgument()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"closeByUserDefinedMethod",
+				"ResourceCloser.closeResourceDirectly(is)");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
 	/**
 	 * Will get VariableDeclaretionFragment
 	 */
@@ -87,41 +128,6 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 				checker, expression);
 		assertEquals("file3=null", variableDeclaration.toString());
 		assertEquals(610, variableDeclaration.getStartPosition());
-	}
-
-	@Test
-	public void testIsMayInterruptByExceptionWithSafeThisClose() throws Exception {
-	}
-
-	@Test
-	public void testIsMayInterruptByExceptionWithCloseResourceByInvokeMyClose()
-			throws Exception {
-		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
-				"closeResourceByInvokeMyClose", "this.close()");
-		assertFalse(checker.isMayInterruptByException(methodInvocation));
-
-		methodInvocation = getMethodInvocationByMethodNameAndCode(
-				"closeResourceByInvokeMyClose", "close()");
-		assertTrue(checker.isMayInterruptByException(methodInvocation));
-	}
-
-	@Test
-	public void testIsMayInterruptByExceptionWithInvokeGetResourceAndCloseItWithX()
-			throws Exception {
-		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
-				"invokeGetResourceAndCloseItWithImp",
-				"resourceManager.getResourceWithImp().close()");
-		assertTrue(checker.isMayInterruptByException(methodInvocation));
-		
-		methodInvocation = getMethodInvocationByMethodNameAndCode(
-				"invokeGetResourceAndCloseItWithInterface",
-				"resourceManager.getResourceWithInterface().close()");
-		assertTrue(checker.isMayInterruptByException(methodInvocation));
-		
-		methodInvocation = getMethodInvocationByMethodNameAndCode(
-				"invokeGetResourceAndCloseItNotImpCloseable",
-				"resourceManager.getResourceNotImpCloseable().close()");
-		assertTrue(checker.isMayInterruptByException(methodInvocation));
 	}
 
 	private Method getMethodGetVariableDeclaration() throws NoSuchMethodException {

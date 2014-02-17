@@ -40,7 +40,7 @@ public class CarelessClenupRaisedExceptionNotInTryCausedVisitor extends	ASTVisit
 		carelessCleanupMethod = new ArrayList<MethodInvocation>();
 		closeResourcesInstanceBinding = new ArrayList<IBinding>();
 		for(MethodInvocation closeResource : closeResources) {
-			SimpleName closeResourceDeclaredInstance = NodeUtils.getMethodInvocationBindingVariableSimpleName(closeResource.getExpression());
+			SimpleName closeResourceDeclaredInstance = NodeUtils.getSimpleNameFromExpression(closeResource.getExpression());
 			if(closeResourceDeclaredInstance != null) {
 				closeResourcesInstanceBinding.add(closeResourceDeclaredInstance.resolveBinding());
 			}
@@ -79,7 +79,7 @@ public class CarelessClenupRaisedExceptionNotInTryCausedVisitor extends	ASTVisit
 	}
 	
 	public boolean visit(MethodInvocation node) {
-		SimpleName nodeVariable = NodeUtils.getMethodInvocationBindingVariableSimpleName(node.getExpression());
+		SimpleName nodeVariable = NodeUtils.getSimpleNameFromExpression(node.getExpression());
 		// System.out.println(fis.toString()); 這種Node可能就會NULL
 		if(nodeVariable == null) {
 			return true;
