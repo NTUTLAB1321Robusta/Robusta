@@ -151,10 +151,10 @@ public class ThrownExceptionInFinallyBlockExample {
 				} catch (Exception e) {
 					int i = 10;
 					if (i == 10) {
-						// Will be caught at second catch, not thrownInFinally
+						// Will be caught at the catch below, not thrownInFinally
 						throw new RuntimeException(e);
 					} else if (i == 15) {
-						// Will be caught at first catch, not thrownInFinally
+						// Will be caught at the catch below, not thrownInFinally
 						throw new IllegalArgumentException(e);
 					} else {
 						// Won't be caught, is thrownInFinally
@@ -235,7 +235,7 @@ public class ThrownExceptionInFinallyBlockExample {
 	}
 
 	/**
-	 * There is not any ThrowsInFinally
+	 * There is no any ThrowsInFinally
 	 */
 	public void complexExampleWithoutTEIFB(byte[] context, File outputFile)
 			throws IOException {
@@ -266,7 +266,7 @@ public class ThrownExceptionInFinallyBlockExample {
 					e1.printStackTrace();
 				} finally {
 					try {
-						// IOException will be catch by catch block
+						// IOException will be caught by catch block
 						fileOutputStream3.close();
 					} catch (IOException e1) {
 						e1.printStackTrace();

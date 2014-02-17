@@ -49,8 +49,8 @@ import org.junit.runners.Suite;
 	RetryRefactoringTest.class,
 	
 	// about cc
-	//ReportBuilderIntergrationTest.class,
-	//ReportBuilderTest.class,
+	ReportBuilderIntergrationTest.class,
+	ReportBuilderTest.class,
 	
 	ASTCatchCollectTest.class,
 	DummyHandlerVisitorTest.class,
@@ -83,8 +83,10 @@ import org.junit.runners.Suite;
 	ReportDescriptionTest.class,
 	DetectedFileTest.class,
 	QuickFixCoreTest.class, //no method implemented 
+	
 	// about cc
-	//BadSmellCollectorTest.class,
+	BadSmellCollectorTest.class,
+	
 	FirstLevelChildStatementCollectingVisitorTest.class,
 	CarelessCleanupVisitorTest.class,
 	CloseResourceMethodInvocationVisitorTest.class,
