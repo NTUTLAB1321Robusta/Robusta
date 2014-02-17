@@ -72,9 +72,9 @@ public class CarelessCleanupVisitor extends ASTVisitor {
 			return false;
 		}
 		
-		if(NodeUtils.isCloseResourceMethodInvocation(root, node)) {
-			collectSmell(node);
-		}
+//		if(NodeUtils.isCloseResourceMethodInvocation(root, node)) {
+//			collectSmell(node);
+//		}
 		
 		return false;
 	}

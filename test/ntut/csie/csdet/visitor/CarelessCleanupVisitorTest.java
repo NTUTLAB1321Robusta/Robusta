@@ -38,9 +38,6 @@ public class CarelessCleanupVisitorTest {
 		environmentBuilder.loadClass(UserDefinedCarelessCleanupClass.class);
 		environmentBuilder.loadClass(UserDefinedCarelessCleanupMethod.class);
 		environmentBuilder.loadClass(ResourceCloser.class);
-		//ClassCanCloseButNotImplementCloseable
-		//ClassImplementCloseable
-		//ClassImplementCloseableWithoutThrowException
 	}
 
 	@After
@@ -96,8 +93,6 @@ public class CarelessCleanupVisitorTest {
 
 		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupIntegratedExample.class);
 
-		// FIXME Now the actual will be more 1 then expected, because
-		// "ResourceCloser.closeResourceDirectly(is) haven't been treat as CC
 		assertListSize(smellList, 13);
 	}
 

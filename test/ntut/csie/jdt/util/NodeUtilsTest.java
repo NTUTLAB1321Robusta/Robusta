@@ -181,7 +181,7 @@ public class NodeUtilsTest {
 				.getMethodInvocationByMethodNameAndCode(compilationUnit,
 						"outputStreamMethod", "os.close()").get(0);
 		SimpleName simpleName = NodeUtils
-				.getMethodInvocationBindingVariableSimpleName(methodInvocation
+				.getSimpleNameFromExpression(methodInvocation
 						.getExpression());
 		assertTrue("os".equals(simpleName.toString()));
 	}
