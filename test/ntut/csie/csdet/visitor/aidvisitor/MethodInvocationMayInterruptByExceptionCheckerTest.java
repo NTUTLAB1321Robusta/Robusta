@@ -97,7 +97,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		ASTNode variableDeclaration = (ASTNode) getVariableDeclaration.invoke(
 				checker, expression);
 		assertEquals("fis=null", variableDeclaration.toString());
-		assertEquals(334, variableDeclaration.getStartPosition());
+		assertEquals(490, variableDeclaration.getStartPosition());
 	}
 
 	/**
@@ -112,7 +112,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		ASTNode variableDeclaration = (ASTNode) getVariableDeclaration.invoke(
 				checker, expression);
 		assertEquals("File file2", variableDeclaration.toString());
-		assertEquals(469, variableDeclaration.getStartPosition());
+		assertEquals(625, variableDeclaration.getStartPosition());
 	}
 
 	/**
@@ -127,7 +127,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		ASTNode variableDeclaration = (ASTNode) getVariableDeclaration.invoke(
 				checker, expression);
 		assertEquals("file3=null", variableDeclaration.toString());
-		assertEquals(610, variableDeclaration.getStartPosition());
+		assertEquals(766, variableDeclaration.getStartPosition());
 	}
 
 	private Method getMethodGetVariableDeclaration() throws NoSuchMethodException {
