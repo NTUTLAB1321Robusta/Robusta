@@ -22,11 +22,8 @@ import ntut.csie.csdet.visitor.SpareHandlerVisitorTest;
 import ntut.csie.csdet.visitor.SuppressWarningVisitorTest;
 import ntut.csie.csdet.visitor.TryStatementCounterVisitorTest;
 import ntut.csie.csdet.visitor.UnprotectedMainProgramVisitorTest;
-import ntut.csie.csdet.visitor.aidvisitor.CarelessCleanupToleranceVisitorTest;
-import ntut.csie.csdet.visitor.aidvisitor.ClassInstanceCreationVisitorTest;
 import ntut.csie.csdet.visitor.aidvisitor.FirstLevelChildStatementCollectingVisitorTest;
 import ntut.csie.csdet.visitor.aidvisitor.MethodInvocationMayInterruptByExceptionCheckerTest;
-import ntut.csie.csdet.visitor.aidvisitor.TryStatementExceptionsVisitorTest;
 import ntut.csie.filemaker.test.ASTNodeFinderTest;
 import ntut.csie.jdt.util.NodeUtilsTest;
 import ntut.csie.rleht.builder.RLBuilderTest;
@@ -48,7 +45,6 @@ import org.junit.runners.Suite;
 	RethrowExRefactoringTest.class,
 	RetryRefactoringTest.class,
 	
-	// about cc
 	ReportBuilderIntergrationTest.class,
 	ReportBuilderTest.class,
 	
@@ -62,10 +58,6 @@ import org.junit.runners.Suite;
 	SuppressWarningVisitorTest.class,
 	TryStatementCounterVisitorTest.class,
 	UnprotectedMainProgramVisitorTest.class,
-	
-	CarelessCleanupToleranceVisitorTest.class,
-	ClassInstanceCreationVisitorTest.class,
-	TryStatementExceptionsVisitorTest.class,
 	
 	ASTNodeFinderTest.class,
 	
@@ -84,7 +76,6 @@ import org.junit.runners.Suite;
 	DetectedFileTest.class,
 	QuickFixCoreTest.class, //no method implemented 
 	
-	// about cc
 	BadSmellCollectorTest.class,
 	
 	FirstLevelChildStatementCollectingVisitorTest.class,
