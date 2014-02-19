@@ -142,19 +142,19 @@ public class ReportBuilderTest {
 		IJavaProject javaPrj = JavaCore.create(project);
 		IPackageFragmentRoot[] roots = javaPrj.getAllPackageFragmentRoots();
 		
-		// 檢查precondition
-		assertEquals(14, roots.length);
+		// precondition
 		for(int i = 0; i < roots.length; i++) {
 			if(i == roots.length - 1)
 				assertEquals(JavaProjectMaker.FOLDERNAME_SOURCE, roots[i].getElementName());
 			else
 				assertTrue(roots[i].getPath().toString().endsWith(".jar"));
 		}
-		// 執行測試對象
+		
+		// begin to test
 		Method getSourcePaths = ReportBuilder.class.getDeclaredMethod("getSourcePaths", IJavaProject.class);
 		getSourcePaths.setAccessible(true);
 		List<IPackageFragmentRoot> srcPaths = (List)getSourcePaths.invoke(reportBuilder, javaPrj);
-		// 驗證結果，排除jar檔路徑，只要src資訊
+		// Assert that there is get only one src folder(others are jars)
 		assertEquals(1, srcPaths.size());
 		assertEquals("F/DummyHandlerTest/src", srcPaths.get(0).getUnderlyingResource().toString());
 	}
