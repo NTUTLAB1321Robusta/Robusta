@@ -24,7 +24,7 @@ import org.junit.Test;
 public class CarelessCleanupVisitorTest {
 	
 	private TestEnvironmentBuilder environmentBuilder;
-	private NewCarelessCleanupVisitor ccVisitor;
+	private CarelessCleanupVisitor ccVisitor;
 
 	@Before
 	public void setUp() throws Exception {
@@ -156,7 +156,7 @@ public class CarelessCleanupVisitorTest {
 			throws JavaModelException {
 		CompilationUnit compilationUnit = environmentBuilder
 				.getCompilationUnit(clazz);
-		ccVisitor = new NewCarelessCleanupVisitor(compilationUnit);
+		ccVisitor = new CarelessCleanupVisitor(compilationUnit);
 		compilationUnit.accept(ccVisitor);
 		List<MarkerInfo> smellList = ccVisitor.getCarelessCleanupList();
 		return smellList;

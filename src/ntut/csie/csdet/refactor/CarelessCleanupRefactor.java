@@ -3,7 +3,7 @@ package ntut.csie.csdet.refactor;
 import java.util.List;
 
 import ntut.csie.csdet.data.MarkerInfo;
-import ntut.csie.csdet.visitor.NewCarelessCleanupVisitor;
+import ntut.csie.csdet.visitor.CarelessCleanupVisitor;
 import ntut.csie.csdet.visitor.aidvisitor.ASTMethodCollector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 
@@ -138,7 +138,7 @@ public class CarelessCleanupRefactor extends Refactoring {
 
 		boolean isOK = findMethod(marker.getResource());
 		if(isOK && currentMethodNode != null){
-			NewCarelessCleanupVisitor visitor = new NewCarelessCleanupVisitor(actRoot);
+			CarelessCleanupVisitor visitor = new CarelessCleanupVisitor(actRoot);
 			currentMethodNode.accept(visitor);
 			//取得code smell的List
 			carelessCleanupList = visitor.getCarelessCleanupList();

@@ -116,7 +116,7 @@ public class BadSmellCollector {
 			// Careless cleanup
 			if(isDetectingBadSmell.get(SmellSettings.SMELL_CARELESSCLEANUP)) {
 				if(detMethodSmell.get(RLMarkerAttribute.CS_CARELESS_CLEANUP)) {
-					NewCarelessCleanupVisitor ccVisitor = new NewCarelessCleanupVisitor(root);
+					CarelessCleanupVisitor ccVisitor = new CarelessCleanupVisitor(root);
 					method.accept(ccVisitor);
 					List<MarkerInfo> carelessCleanupList = ccVisitor.getCarelessCleanupList();
 					setMethodNameAndIndex(carelessCleanupList, method.getName().toString(), methodIdx);

@@ -1,6 +1,6 @@
 package ntut.csie.robusta.codegen.markerresolution;
 
-import ntut.csie.csdet.visitor.NewCarelessCleanupVisitor;
+import ntut.csie.csdet.visitor.CarelessCleanupVisitor;
 import ntut.csie.jdt.util.NodeUtils;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.robusta.codegen.QuickFixCore;
@@ -131,7 +131,7 @@ public class MoveCloseResouceFromTryCatchToFinallyBlockQuickFix implements IMark
 	 * @return
 	 */
 	private int getMovelineLength(String msgIdx, CompilationUnit compilationUnit, MethodDeclaration methodDeclaration) {
-		NewCarelessCleanupVisitor ccVisitor = new NewCarelessCleanupVisitor(compilationUnit);
+		CarelessCleanupVisitor ccVisitor = new CarelessCleanupVisitor(compilationUnit);
 		methodDeclaration.accept(ccVisitor);
 		return ccVisitor.getCarelessCleanupList().get(Integer.parseInt(msgIdx)).getStatement().length();
 	}

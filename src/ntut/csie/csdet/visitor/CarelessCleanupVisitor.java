@@ -12,13 +12,13 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 
-public class NewCarelessCleanupVisitor extends ASTVisitor {
+public class CarelessCleanupVisitor extends ASTVisitor {
 	CompilationUnit root;
 	MethodDeclaration methodDeclaration;
 	MethodInvocationMayInterruptByExceptionChecker invocationChecker;
 	private List<MarkerInfo> carelessCleanupList;
 
-	public NewCarelessCleanupVisitor(CompilationUnit root) {
+	public CarelessCleanupVisitor(CompilationUnit root) {
 		this.root = root;
 		carelessCleanupList = new ArrayList<MarkerInfo>();
 		invocationChecker = new MethodInvocationMayInterruptByExceptionChecker(
