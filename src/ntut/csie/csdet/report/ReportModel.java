@@ -8,6 +8,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import ntut.csie.csdet.preference.RobustaSettings;
+
 /**
  * Report的相關資料
  * @author Shiau
@@ -59,7 +61,7 @@ public class ReportModel {
 	}
 
 	public void setProjectPath(String workspacePath) {
-		this.projectReportFolderPath = workspacePath + "/" + "Robusta_Report";
+		this.projectReportFolderPath = workspacePath + "/" + RobustaSettings.SETTING_REPORTFOLDERNAME;
 		File metadataPath = new File(projectReportFolderPath);
 		// 若沒有路徑就建立路徑
 		if (!metadataPath.exists())

@@ -10,6 +10,7 @@ import ntut.csie.robusta.agile.exception.RTag;
 import ntut.csie.robusta.agile.exception.Robustness;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -18,10 +19,12 @@ import org.jdom.output.XMLOutputter;
 
 public class RobustaSettings {
 	public final static String SETTING_FILENAME = "RobustaSettings.xml";
+	public final static String SETTING_REPORTFOLDERNAME = "Robusta_Report";
 	public final static String TAG_ROOT = "RobustaSettings";
 	public final static String TAG_PROJECTDETECT = "ProjectDetect";
 	public final static String ATTRIBUTE_FOLDERNAME = "FolderName";
 	public final static String ATTRIBUTE_ENABLE = "enable";
+	
 	private Document proDoc;
 	private IProject project;
 
@@ -114,6 +117,18 @@ public class RobustaSettings {
 		} finally {
 			close(fw);
 		}
+	}
+	
+	public static String getRobustaReportFolder(String projectName) {
+		String workPath = ResourcesPlugin.getWorkspace().getRoot()
+				.getLocation().toString();
+		String path = workPath + "/" + projectName + "/" + SETTING_REPORTFOLDERNAME;
+		return path;
+	}
+
+	public static String getPathOfReportDescriptionFile(String projectName) {
+		return getRobustaReportFolder(projectName)
+				+ ReportDescription.SETTING_FILENAME;
 	}
 
 }
