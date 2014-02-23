@@ -2,6 +2,7 @@ package ntut.csie.rleht.builder;
 
 import java.util.List;
 
+import ntut.csie.csdet.visitor.aidvisitor.ASTMethodCollector;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLMessage;
 import ntut.csie.robusta.agile.exception.RTag;

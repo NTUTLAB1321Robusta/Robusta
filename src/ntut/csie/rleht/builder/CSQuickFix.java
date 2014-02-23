@@ -4,6 +4,7 @@ import java.util.List;
 
 import ntut.csie.csdet.quickfix.BaseQuickFix;
 import ntut.csie.csdet.visitor.ASTCatchCollect;
+import ntut.csie.csdet.visitor.aidvisitor.ASTMethodCollector;
 import ntut.csie.rleht.common.EditorUtils;
 import ntut.csie.rleht.common.ErrorLog;
 import ntut.csie.robusta.agile.exception.SuppressSmell;

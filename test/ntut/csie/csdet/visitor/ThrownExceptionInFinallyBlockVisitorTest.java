@@ -7,11 +7,12 @@ import java.util.List;
 
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.preference.SmellSettings;
+import ntut.csie.csdet.visitor.aidvisitor.ASTInitializerCollector;
+import ntut.csie.csdet.visitor.aidvisitor.ASTMethodCollector;
 import ntut.csie.filemaker.ASTNodeFinder;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.exceptionBadSmells.ThrownExceptionInFinallyBlockExample;
-import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.robusta.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -20,6 +21,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.junit.After;
 import org.junit.Before;
@@ -98,7 +100,7 @@ public class ThrownExceptionInFinallyBlockVisitorTest {
 
 		List<MarkerInfo> thrownInFinallyInfos = thrownExceptionInFinallyBlockVisitor
 				.getThrownInFinallyList();
-		assertEquals(colloectBadSmellListContent(thrownInFinallyInfos), 30,
+		assertEquals(colloectBadSmellListContent(thrownInFinallyInfos), 32,
 				thrownInFinallyInfos.size());
 	}
 
@@ -210,6 +212,33 @@ public class ThrownExceptionInFinallyBlockVisitorTest {
 		assertEquals(460, thrownInFinallyInfos.get(0).getLineNumber());
 		assertEquals(472, thrownInFinallyInfos.get(1).getLineNumber());
 		assertEquals(480, thrownInFinallyInfos.get(2).getLineNumber());
+	}
+
+	@Test
+	public void visitWithThrownInConstructor() {
+		MethodDeclaration method = getMethodDeclarationByName("ThrownExceptionInFinallyBlockExample");
+		method.accept(thrownExceptionInFinallyBlockVisitor);
+
+		List<MarkerInfo> thrownInFinallyInfos = thrownExceptionInFinallyBlockVisitor
+				.getThrownInFinallyList();
+		assertEquals(1, thrownInFinallyInfos.size());
+		assertEquals(494, thrownInFinallyInfos.get(0).getLineNumber());
+	}
+
+	@Test
+	public void visitWithThrownInInitializer() {
+		// Detect all initializers
+		ASTInitializerCollector initializerCollector = new ASTInitializerCollector();
+		compilationUnit.accept(initializerCollector);
+		List<Initializer> initializers = initializerCollector.getInitializerList();
+		for (Initializer eachInitializer : initializers) {
+			eachInitializer.accept(thrownExceptionInFinallyBlockVisitor);
+		}
+
+		List<MarkerInfo> thrownInFinallyInfos = thrownExceptionInFinallyBlockVisitor
+				.getThrownInFinallyList();
+		assertEquals(1, thrownInFinallyInfos.size());
+		assertEquals(505, thrownInFinallyInfos.get(0).getLineNumber());
 	}
 
 	/**

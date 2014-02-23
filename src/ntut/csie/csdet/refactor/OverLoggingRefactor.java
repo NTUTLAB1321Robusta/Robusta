@@ -7,7 +7,7 @@ import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.visitor.ASTCatchCollect;
 import ntut.csie.csdet.visitor.OverLoggingDetector;
 import ntut.csie.csdet.visitor.OverLoggingVisitor;
-import ntut.csie.rleht.builder.ASTMethodCollector;
+import ntut.csie.csdet.visitor.aidvisitor.ASTMethodCollector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 
 import org.eclipse.core.resources.IFile;

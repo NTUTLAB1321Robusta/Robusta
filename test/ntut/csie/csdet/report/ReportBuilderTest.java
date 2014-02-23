@@ -19,11 +19,11 @@ import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.visitor.DummyHandlerVisitor;
 import ntut.csie.csdet.visitor.SuppressWarningVisitor;
 import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
+import ntut.csie.csdet.visitor.aidvisitor.ASTMethodCollector;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.exceptionBadSmells.DummyAndEmptyExample;
 import ntut.csie.filemaker.exceptionBadSmells.UserDefineDummyHandlerFish;
-import ntut.csie.rleht.builder.ASTMethodCollector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.robusta.util.PathUtils;
 
@@ -143,7 +143,7 @@ public class ReportBuilderTest {
 		IPackageFragmentRoot[] roots = javaPrj.getAllPackageFragmentRoots();
 		
 		// 檢查precondition
-		assertEquals(11, roots.length);
+		assertEquals(14, roots.length);
 		for(int i = 0; i < roots.length; i++) {
 			if(i == roots.length - 1)
 				assertEquals(JavaProjectMaker.FOLDERNAME_SOURCE, roots[i].getElementName());
@@ -425,13 +425,12 @@ public class ReportBuilderTest {
 		assertEquals(26, reportModel.getTryCounter());
 		assertEquals(26, reportModel.getCatchCounter());
 		assertEquals(2, reportModel.getFinallyCounter());
-		assertEquals(4, reportModel.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP));
+		assertEquals(5, reportModel.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP));
 		//19 dummy handler in methods and 1 dummy handler in an initializer
 		assertEquals(20, reportModel.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER));
 		assertEquals(1, reportModel.getSmellSize(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK));
-		// 例子內其實有三個 NT，但因為設定檔並沒有要偵測 NT，故數量為 0
 		assertEquals(3, reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
-		assertEquals(28, reportModel.getAllSmellSize());
+		assertEquals(29, reportModel.getAllSmellSize());
 	}
 	
 	@Test

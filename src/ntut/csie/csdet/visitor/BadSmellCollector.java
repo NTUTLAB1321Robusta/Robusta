@@ -9,8 +9,8 @@ import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.data.SSMessage;
 import ntut.csie.csdet.preference.RobustaSettings;
 import ntut.csie.csdet.preference.SmellSettings;
-import ntut.csie.rleht.builder.ASTInitializerCollector;
-import ntut.csie.rleht.builder.ASTMethodCollector;
+import ntut.csie.csdet.visitor.aidvisitor.ASTInitializerCollector;
+import ntut.csie.csdet.visitor.aidvisitor.ASTMethodCollector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 
 import org.eclipse.core.resources.IProject;
@@ -28,7 +28,6 @@ public class BadSmellCollector {
 	TreeMap<String, Boolean> isDetectingBadSmell;
 	
 	public BadSmellCollector(IProject project, CompilationUnit root) {
-		super();
 		this.project = project;
 		this.root = root;
 		this.badSmells = new TreeMap<String, List<MarkerInfo>>();
@@ -39,31 +38,58 @@ public class BadSmellCollector {
 	}
 	
 	public void collectBadSmell() {
-		
+		detectInitializers();
+		detectMethods();
+	}
+
+	/**
+	 * Detect the smells in initializers only
+	 */
+	private void detectInitializers() {
 		DummyHandlerVisitor dmhVisitor = new DummyHandlerVisitor(root);
 		EmptyCatchBlockVisitor emptyCatchBlockVisitor = new EmptyCatchBlockVisitor(root);
-		//TWO TIME CALL NESTED (RELATED TO SuppressSmell, in Initializer, we don't have Annotation
-		//First time we collect it in initializer
 		NestedTryStatementVisitor nestedTryStatementVisitor = new NestedTryStatementVisitor(root);
 		ASTInitializerCollector initializerCollector = new ASTInitializerCollector();
+		ThrownExceptionInFinallyBlockVisitor thrownInFinallyVisitor = new ThrownExceptionInFinallyBlockVisitor(root);
 		
 		root.accept(initializerCollector);
 		for(Initializer init : initializerCollector.getInitializerList()) {
 			init.accept(dmhVisitor);
 			init.accept(emptyCatchBlockVisitor);
 			init.accept(nestedTryStatementVisitor);
+
+			// Thrown exception in finally block
+			if (isDetectingBadSmell
+					.get(SmellSettings.SMELL_THROWNEXCEPTIONINFINALLYBLOCK)) {
+				init.accept(thrownInFinallyVisitor);
+				List<MarkerInfo> throwInFinallyList = thrownInFinallyVisitor.getThrownInFinallyList();
+				setMethodNameAndIndexForInitializer(throwInFinallyList);
+				addBadSmell(
+						RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK,throwInFinallyList);
+			}
 		}
-		setMethodNameAndIndex(dmhVisitor.getDummyList(), "Initializer", -1);
-		setMethodNameAndIndex(emptyCatchBlockVisitor.getEmptyCatchList(), "Initializer", -1);
-		setMethodNameAndIndex(nestedTryStatementVisitor.getNestedTryStatementList(), "Initializer", -1);
+		
+		setMethodNameAndIndexForInitializer(dmhVisitor.getDummyList());
+		setMethodNameAndIndexForInitializer(emptyCatchBlockVisitor.getEmptyCatchList());
+		setMethodNameAndIndexForInitializer(nestedTryStatementVisitor.getNestedTryStatementList());
 		addBadSmell(RLMarkerAttribute.CS_DUMMY_HANDLER, dmhVisitor.getDummyList());
 		addBadSmell(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK, emptyCatchBlockVisitor.getEmptyCatchList());
 		addBadSmell(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT, nestedTryStatementVisitor.getNestedTryStatementList());
-		
+	}
+
+	/**
+	 * Detect the smells in methods only
+	 */
+	private void detectMethods() {
 		ASTMethodCollector methodCollector = new ASTMethodCollector();
 		root.accept(methodCollector);
 		List<MethodDeclaration> methodList = methodCollector.getMethodList();
-		
+
+		/*
+		 * We have to initialize each visitor for each method declaration,
+		 * because we want to add specific info on the mark
+		 */
+
 		int methodIdx = -1;
 		for (MethodDeclaration method : methodList) {
 			methodIdx++;
@@ -78,7 +104,7 @@ public class BadSmellCollector {
 			
 			inputSuppressData(suppressSmellList, detMethodSmell, detCatchSmell);
 			
-			//NESTED AGAIN(The second time is collect in Method)
+			// Nested again(The second time is collect in Method)
 			if(detMethodSmell.get(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT)) {
 				NestedTryStatementVisitor nestedTryVisitor = new NestedTryStatementVisitor(root);
 				method.accept(nestedTryVisitor);
@@ -87,26 +113,18 @@ public class BadSmellCollector {
 				addBadSmell(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT, nestedList);
 			}
 
-			//Careless cleanup
-			if(detMethodSmell.get(RLMarkerAttribute.CS_CARELESS_CLEANUP)) {
-				CarelessCleanupVisitor carelessCleanupVisitor = new CarelessCleanupVisitor(root);
-				method.accept(carelessCleanupVisitor);
-				List<MarkerInfo> carelessCleanupList = carelessCleanupVisitor.getCarelessCleanupList();
-				setMethodNameAndIndex(carelessCleanupList, method.getName().toString(), methodIdx);
-				addBadSmell(RLMarkerAttribute.CS_CARELESS_CLEANUP, carelessCleanupList);
-			}
-			
-			if(isDetectingBadSmell.get(SmellSettings.SMELL_THROWNEXCEPTIONINFINALLYBLOCK)) {
-				if(detMethodSmell.get(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK)) {
-					ThrownExceptionInFinallyBlockVisitor oleVisitor = new ThrownExceptionInFinallyBlockVisitor(root);
-					method.accept(oleVisitor);
-					List<MarkerInfo> overwrittenList = oleVisitor.getThrownInFinallyList();
-					setMethodNameAndIndex(overwrittenList, method.getName().toString(), methodIdx);
-					addBadSmell(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK, overwrittenList);
+			// Careless cleanup
+			if(isDetectingBadSmell.get(SmellSettings.SMELL_CARELESSCLEANUP)) {
+				if(detMethodSmell.get(RLMarkerAttribute.CS_CARELESS_CLEANUP)) {
+					CarelessCleanupVisitor ccVisitor = new CarelessCleanupVisitor(root);
+					method.accept(ccVisitor);
+					List<MarkerInfo> carelessCleanupList = ccVisitor.getCarelessCleanupList();
+					setMethodNameAndIndex(carelessCleanupList, method.getName().toString(), methodIdx);
+					addBadSmell(RLMarkerAttribute.CS_CARELESS_CLEANUP, carelessCleanupList);
 				}
 			}
 			
-			//Empty catch block
+			// Empty catch block
 			if(detMethodSmell.get(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK)) {
 				EmptyCatchBlockVisitor ieVisitor = new EmptyCatchBlockVisitor(root);
 				method.accept(ieVisitor);
@@ -117,7 +135,7 @@ public class BadSmellCollector {
 				addBadSmell(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK, ignoreList);
 			}
 			
-			//Dummy handler
+			// Dummy handler
 			if(detMethodSmell.get(RLMarkerAttribute.CS_DUMMY_HANDLER)) {
 				DummyHandlerVisitor dhVisitor = new DummyHandlerVisitor(root);
 				method.accept(dhVisitor);
@@ -128,7 +146,7 @@ public class BadSmellCollector {
 				addBadSmell(RLMarkerAttribute.CS_DUMMY_HANDLER, dummyList);
 			}
 			
-			//Over logging
+			// Over logging
 			if(detMethodSmell.get(RLMarkerAttribute.CS_OVER_LOGGING)){
 				OverLoggingDetector loggingDetector = new OverLoggingDetector(root, method);
 				loggingDetector.detect();
@@ -139,7 +157,7 @@ public class BadSmellCollector {
 				addBadSmell(RLMarkerAttribute.CS_OVER_LOGGING, overLoggingList);
 			}
 			
-			//Unprotected main
+			// Unprotected main
 			if(detMethodSmell.get(RLMarkerAttribute.CS_UNPROTECTED_MAIN)) {
 				UnprotectedMainProgramVisitor mainVisitor = new UnprotectedMainProgramVisitor(root);
 				method.accept(mainVisitor);
@@ -147,9 +165,20 @@ public class BadSmellCollector {
 				setMethodNameAndIndex(unprotectedMain, method.getName().toString(), methodIdx);
 				addBadSmell(RLMarkerAttribute.CS_UNPROTECTED_MAIN, unprotectedMain);
 			}
+
+			// Thrown exception in finally block
+			if(isDetectingBadSmell.get(SmellSettings.SMELL_THROWNEXCEPTIONINFINALLYBLOCK)) {
+				if(detMethodSmell.get(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK)) {
+					ThrownExceptionInFinallyBlockVisitor thrownInFinallyVisitor = new ThrownExceptionInFinallyBlockVisitor(root);
+					method.accept(thrownInFinallyVisitor);
+					List<MarkerInfo> throwInFinallyList = thrownInFinallyVisitor.getThrownInFinallyList();
+					setMethodNameAndIndex(throwInFinallyList, method.getName().toString(), methodIdx);
+					addBadSmell(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK, throwInFinallyList);
+				}
+			}
 		}
 	}
-	
+
 	private void removeFromSuppress(List<MarkerInfo> markerInfos, List<Integer> posList) {
 		List<MarkerInfo> nonSuppressSmell = new ArrayList<MarkerInfo>();
 		for (MarkerInfo markerInfo : markerInfos) {
@@ -167,6 +196,10 @@ public class BadSmellCollector {
 			badSmells.put(type, markerInfos);
 		else
 			currentMarkerInfos.addAll(markerInfos);
+	}
+
+	private void setMethodNameAndIndexForInitializer(List<MarkerInfo> markerInfos) {
+		setMethodNameAndIndex(markerInfos, "Initializer", -1);
 	}
 	
 	private void setMethodNameAndIndex(List<MarkerInfo> markerInfos, String methodName, int methodIndex) {
@@ -222,8 +255,8 @@ public class BadSmellCollector {
 	}
 
 	/**
-	 * Load the SmellSettings file, and save if want to detect TEIFB (Should
-	 * save other bad smells in the future)
+	 * Load the SmellSettings file, and save if want to detect TEIFB and CC
+	 * (Should save other bad smells in the future)
 	 * @author pig
 	 */
 	private void initializeIsDetectingBadSmell() {
@@ -233,5 +266,9 @@ public class BadSmellCollector {
 		final String badSmellTEIFB = SmellSettings.SMELL_THROWNEXCEPTIONINFINALLYBLOCK;
 		isDetectingBadSmell.put(badSmellTEIFB,
 				new Boolean(smellSettings.isDetectingSmell(badSmellTEIFB)));
+
+		final String badSmellCC = SmellSettings.SMELL_CARELESSCLEANUP;
+		isDetectingBadSmell.put(badSmellCC,
+				new Boolean(smellSettings.isDetectingSmell(badSmellCC)));
 	}
 }

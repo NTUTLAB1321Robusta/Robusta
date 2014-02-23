@@ -1,58 +1,103 @@
 package ntut.csie.csdet.visitor;
 
+import java.io.Closeable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.jdt.util.NodeUtils;
+
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.MethodInvocation;
-
+import org.eclipse.jdt.core.dom.SimpleName;
+import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 
 public class CloseResourceMethodInvocationVisitor extends ASTVisitor {
-	private Map<MethodDeclaration, List<MethodInvocation>> closeMethodInvocationMap;
-	private List<MethodInvocation> closeMethodInvocationInMethodDeclaration;
+	private List<MethodInvocation> closeMethodInvocations;
 	private CompilationUnit root;
 	
 	public CloseResourceMethodInvocationVisitor(CompilationUnit node) {
-		super();
-		this.root = node;
-		closeMethodInvocationMap = new HashMap<MethodDeclaration, List<MethodInvocation>>();
-	}
-
-	@Override
-	public boolean visit(MethodDeclaration node) {
-		closeMethodInvocationInMethodDeclaration = new ArrayList<MethodInvocation>();
-		return true;
+		root = node;
+		closeMethodInvocations = new ArrayList<MethodInvocation>();
 	}
 
 	@Override
 	public boolean visit(MethodInvocation node) {
-		if(NodeUtils.isCloseResourceMethodInvocation(root, node)) {
-			closeMethodInvocationInMethodDeclaration.add(node);
+		if(isCloseResourceMethodInvocation(root, node)) {
+			closeMethodInvocations.add(node);
 		}
 		return true;
 	}
 
-	@Override
-	public void endVisit(MethodDeclaration node) {
-		if(closeMethodInvocationInMethodDeclaration.size() > 0) {
-			closeMethodInvocationMap.put(node, closeMethodInvocationInMethodDeclaration);
+	public List<MethodInvocation> getCloseMethodInvocations() {
+		return closeMethodInvocations;
+	}
+
+	/**
+	 * Check whether the method invocation is a close invocation or not
+	 * @param root the java file of the method invocation
+	 */
+	private static boolean isCloseResourceMethodInvocation(CompilationUnit root,
+			MethodInvocation node) {
+		boolean userDefinedLibResult = false;
+		boolean userDefinedResult = false;
+		boolean userDefinedExtraRule = false;
+		boolean defaultResult = false;
+
+		UserDefinedMethodAnalyzer userDefinedMethodAnalyzer = new UserDefinedMethodAnalyzer(
+				SmellSettings.SMELL_CARELESSCLEANUP);
+		if (userDefinedMethodAnalyzer.analyzeLibrary(node)) {
+			userDefinedLibResult = true;
 		}
-	}
-	
-	public Map<MethodDeclaration, List<MethodInvocation>> getCloseMethodInvocationMap() {
-		return closeMethodInvocationMap;
-	}
-	
-	public List<MethodInvocation> getCloseMethodInvocationList() {
-		List<MethodInvocation> closeMethods = new ArrayList<MethodInvocation>();
-		for(Map.Entry<MethodDeclaration, List<MethodInvocation>> item : closeMethodInvocationMap.entrySet()) {
-			closeMethods.addAll(item.getValue());
+
+		if (userDefinedMethodAnalyzer.analyzeMethods(node)) {
+			userDefinedResult = true;
 		}
-		return closeMethods;
+
+		if (userDefinedMethodAnalyzer.analyzeExtraRule(node, root)) {
+			userDefinedExtraRule = true;
+		}
+
+		if (userDefinedMethodAnalyzer.getEnable()) {
+			defaultResult = isNodeACloseCodeAndImplementedCloseable(node);
+		}
+
+		return (userDefinedLibResult || userDefinedResult
+				|| userDefinedExtraRule || defaultResult);
 	}
-	
+
+	/**
+	 * If this node implemented Closeable and named "close", return true.
+	 * Otherwise, return false.
+	 */
+	private static boolean isNodeACloseCodeAndImplementedCloseable(
+			MethodInvocation node) {
+		return isSimpleNameClose(node.getName())
+				&& isIMethodBindingImplementedCloseable(node
+						.resolveMethodBinding());
+	}
+
+	/**
+	 * If this node implemented Closeable and named "close", return true.
+	 * Otherwise, return false.
+	 * // TODO Haven't be implement
+	 */
+	private static boolean isNodeACloseCodeAndImplementedCloseable(
+			SuperMethodInvocation node) {
+		return isSimpleNameClose(node.getName())
+				&& isIMethodBindingImplementedCloseable(node
+						.resolveMethodBinding());
+	}
+
+	private static boolean isSimpleNameClose(SimpleName name) {
+		return name.toString().equals("close");
+	}
+
+	private static boolean isIMethodBindingImplementedCloseable(
+			IMethodBinding methodBinding) {
+		return NodeUtils.isITypeBindingImplemented(
+				methodBinding.getDeclaringClass(), Closeable.class);
+	}
 }
