@@ -3,8 +3,8 @@ package ntut.csie.csdet.views;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
 import ntut.csie.csdet.preference.SmellSettings;
-import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 
 import org.eclipse.swt.SWT;

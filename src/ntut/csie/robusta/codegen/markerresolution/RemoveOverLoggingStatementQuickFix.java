@@ -2,8 +2,8 @@ package ntut.csie.robusta.codegen.markerresolution;
 
 import java.util.List;
 
+import ntut.csie.analyzer.over.OverLoggingDetector;
 import ntut.csie.csdet.data.MarkerInfo;
-import ntut.csie.csdet.visitor.OverLoggingDetector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.robusta.codegen.CatchClauseFinderVisitor;
 import ntut.csie.robusta.codegen.ExpressionStatementLineNumberFinderVisitor;

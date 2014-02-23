@@ -5,15 +5,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import ntut.csie.analyzer.dummy.DummyHandlerVisitor;
+import ntut.csie.analyzer.empty.EmptyCatchBlockVisitor;
+import ntut.csie.analyzer.nested.NestedTryStatementVisitor;
+import ntut.csie.analyzer.unprotected.UnprotectedMainProgramVisitor;
 import ntut.csie.csdet.data.MarkerInfo;
-import ntut.csie.csdet.visitor.DummyHandlerVisitor;
-import ntut.csie.csdet.visitor.EmptyCatchBlockVisitor;
-import ntut.csie.csdet.visitor.NestedTryStatementVisitor;
-import ntut.csie.csdet.visitor.UnprotectedMainProgramVisitor;
-import ntut.csie.jdt.util.NodeUtils;
 import ntut.csie.rleht.RLEHTPlugin;
 import ntut.csie.rleht.common.ASTHandler;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
+import ntut.csie.util.NodeUtils;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;

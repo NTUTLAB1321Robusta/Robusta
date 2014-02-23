@@ -2,8 +2,8 @@ package ntut.csie.rleht.builder;
 
 import java.util.Iterator;
 
+import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
 import ntut.csie.csdet.preference.SmellSettings;
-import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;

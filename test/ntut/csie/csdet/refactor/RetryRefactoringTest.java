@@ -8,14 +8,14 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import ntut.csie.csdet.visitor.aidvisitor.ASTMethodCollector;
+import ntut.csie.analyzer.ASTMethodCollector;
+import ntut.csie.analyzer.DummyAndEmptyExample;
+import ntut.csie.analyzer.nested.NestedTryStatementExample;
 import ntut.csie.filemaker.ASTNodeFinder;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
-import ntut.csie.filemaker.exceptionBadSmells.DummyAndEmptyExample;
-import ntut.csie.filemaker.exceptionBadSmells.NestedTryStatementExample;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
-import ntut.csie.robusta.util.PathUtils;
+import ntut.csie.util.PathUtils;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -530,10 +530,11 @@ public class RetryRefactoringTest {
 				"  e.printStackTrace();\n" +
 				"}\n");
 		// 模擬反白效果
-		TextSelection textSelection = new TextSelection(document, 1242, 231);
+		TextSelection textSelection = new TextSelection(document, 1229, 231);
 		NodeFinder nodeFinder = new NodeFinder(textSelection.getOffset(), textSelection.getLength());
 		nestedTryStatementUnit.accept(nodeFinder);
 		ASTNode selectNode = nodeFinder.getCoveringNode();
+		// get the try statement in nestedCatch_InnerCatchWithParentExceptionTypeOfOuter
 		ListRewrite listRewrite = rw.getListRewrite(selectNode, Block.STATEMENTS_PROPERTY);
 		// 找出選取的部分對於整個unit來說位於哪個位置
 		int replacePos = -1;
@@ -610,7 +611,7 @@ public class RetryRefactoringTest {
 				"  e.printStackTrace();\n" +
 				"}\n");
 		// 模擬反白效果
-		TextSelection textSelection = new TextSelection(document, 1242, 231);
+		TextSelection textSelection = new TextSelection(document, 1229, 231);
 		NodeFinder nodeFinder = new NodeFinder(textSelection.getOffset(), textSelection.getLength());
 		nestedTryStatementUnit.accept(nodeFinder);
 		ASTNode selectNode = nodeFinder.getCoveringNode();
@@ -673,7 +674,7 @@ public class RetryRefactoringTest {
 				"  e.printStackTrace();\n" +
 				"}\n");
 		// 模擬反白效果
-		TextSelection textSelection = new TextSelection(document, 1242, 231);
+		TextSelection textSelection = new TextSelection(document, 1229, 231);
 		NodeFinder nodeFinder = new NodeFinder(textSelection.getOffset(), textSelection.getLength());
 		nestedTryStatementUnit.accept(nodeFinder);
 		ASTNode selectNode = nodeFinder.getCoveringNode();
@@ -752,7 +753,7 @@ public class RetryRefactoringTest {
 				"  e.printStackTrace();\n" +
 				"}\n");
 		// 模擬反白效果
-		TextSelection textSelection = new TextSelection(document, 1242, 231);
+		TextSelection textSelection = new TextSelection(document, 1229, 231);
 		NodeFinder nodeFinder = new NodeFinder(textSelection.getOffset(), textSelection.getLength());
 		nestedTryStatementUnit.accept(nodeFinder);
 		ASTNode selectNode = nodeFinder.getCoveringNode();

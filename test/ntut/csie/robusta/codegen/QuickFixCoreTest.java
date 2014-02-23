@@ -5,13 +5,13 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 
+import ntut.csie.analyzer.DummyAndEmptyExample;
+import ntut.csie.analyzer.UserDefineDummyHandlerFish;
 import ntut.csie.csdet.preference.JDomUtil;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
-import ntut.csie.filemaker.exceptionBadSmells.DummyAndEmptyExample;
-import ntut.csie.filemaker.exceptionBadSmells.UserDefineDummyHandlerFish;
-import ntut.csie.robusta.util.PathUtils;
+import ntut.csie.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;

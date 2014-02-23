@@ -1,10 +1,12 @@
 package ntut.csie.rleht;
 
 import java.util.Map;
+
+import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.report.ReportBuilder;
 import ntut.csie.csdet.report.ReportModel;
-import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IWorkspace;

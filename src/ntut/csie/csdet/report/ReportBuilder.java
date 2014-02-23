@@ -5,11 +5,11 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
+import ntut.csie.analyzer.BadSmellCollector;
+import ntut.csie.analyzer.TryStatementCounterVisitor;
+import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
 import ntut.csie.csdet.preference.JDomUtil;
 import ntut.csie.csdet.preference.RobustaSettings;
-import ntut.csie.csdet.visitor.BadSmellCollector;
-import ntut.csie.csdet.visitor.TryStatementCounterVisitor;
-import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 import ntut.csie.jcis.builder.core.internal.support.LOCCounter;
 import ntut.csie.jcis.builder.core.internal.support.LOCData;
 

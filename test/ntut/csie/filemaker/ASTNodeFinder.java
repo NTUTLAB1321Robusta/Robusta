@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import ntut.csie.jdt.util.NodeUtils;
 import ntut.csie.rleht.common.RLBaseVisitor;
-import ntut.csie.robusta.util.PathUtils;
+import ntut.csie.util.NodeUtils;
+import ntut.csie.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;

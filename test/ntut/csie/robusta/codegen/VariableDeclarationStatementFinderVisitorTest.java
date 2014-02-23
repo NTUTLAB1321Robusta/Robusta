@@ -8,8 +8,7 @@ import java.util.List;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
-import ntut.csie.filemaker.sampleCode4VisitorTest.VariableDeclarationStatementSampleCode;
-import ntut.csie.robusta.util.PathUtils;
+import ntut.csie.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
@@ -70,7 +69,7 @@ public class VariableDeclarationStatementFinderVisitorTest {
 	@Test
 	public void testVariableDeclarationStatementFinder_Field() {
 		// fieldString.toLowerCase()
-		MethodInvocation mi = (MethodInvocation)NodeFinder.perform(compilationUnit, 318 - 1, 25);
+		MethodInvocation mi = (MethodInvocation)NodeFinder.perform(compilationUnit, 301 - 1, 25);
 		VariableDeclarationStatementFinderVisitor vdsfv = new VariableDeclarationStatementFinderVisitor(mi);
 		compilationUnit.accept(vdsfv);
 		assertNull(vdsfv.getFoundVariableDeclarationStatement());
@@ -79,7 +78,7 @@ public class VariableDeclarationStatementFinderVisitorTest {
 	@Test
 	public void testVariableDeclarationStatementFinder_Foundable() {
 		// localString.getBytes();
-		MethodInvocation mi = (MethodInvocation)NodeFinder.perform(compilationUnit, 481 - 1, 22);
+		MethodInvocation mi = (MethodInvocation)NodeFinder.perform(compilationUnit, 464 - 1, 22);
 		VariableDeclarationStatementFinderVisitor vdsfv = new VariableDeclarationStatementFinderVisitor(mi);
 		compilationUnit.accept(vdsfv);
 		assertEquals("String localString=\"千山鳥飛絕\";\n", vdsfv.getFoundVariableDeclarationStatement().toString());
@@ -92,14 +91,14 @@ public class VariableDeclarationStatementFinderVisitorTest {
 	@Test
 	public void testVariableDeclarationStatementFinder_DifferentMethodDeclaraionOwnsSameCode_1st() {
 		// sameName.toCharArray(); in declareSameNameInstanceInDifferentMethodDeclaration_MD1()
-		MethodInvocation mi = (MethodInvocation)NodeFinder.perform(compilationUnit, 656 - 1, 22);
+		MethodInvocation mi = (MethodInvocation)NodeFinder.perform(compilationUnit, 639 - 1, 22);
 		VariableDeclarationStatementFinderVisitor vdsfv = new VariableDeclarationStatementFinderVisitor(mi);
 		compilationUnit.accept(vdsfv);
 		/*
 		 * String sameName = "一粥一飯，當思來處不易"; in declareSameNameInstanceInDifferentMethodDeclaration_MD1()
 		 * Start position is 620, 32
 		 */
-		assertEquals((620 - 1), vdsfv.getFoundVariableDeclarationStatement().getStartPosition());
+		assertEquals((603 - 1), vdsfv.getFoundVariableDeclarationStatement().getStartPosition());
 	}
 	
 	/**
@@ -109,14 +108,14 @@ public class VariableDeclarationStatementFinderVisitorTest {
 	@Test
 	public void testVariableDeclarationStatementFinder_DifferentMethodDeclaraionOwnsSameCode_2rd() {
 		// sameName.toCharArray(); in declareSameNameInstanceInDifferentMethodDeclaration_MD2()
-		MethodInvocation mi = (MethodInvocation)NodeFinder.perform(compilationUnit, 800 - 1, 22);
+		MethodInvocation mi = (MethodInvocation)NodeFinder.perform(compilationUnit, 783 - 1, 22);
 		VariableDeclarationStatementFinderVisitor vdsfv = new VariableDeclarationStatementFinderVisitor(mi);
 		compilationUnit.accept(vdsfv);
 		/*
 		 * String sameName = "一粥一飯，當思來處不易"; in declareSameNameInstanceInDifferentMethodDeclaration_MD2()
 		 * Start position is 764, 32
 		 */
-		assertEquals((764 - 1), vdsfv.getFoundVariableDeclarationStatement().getStartPosition());
+		assertEquals((747 - 1), vdsfv.getFoundVariableDeclarationStatement().getStartPosition());
 	}
 	
 }

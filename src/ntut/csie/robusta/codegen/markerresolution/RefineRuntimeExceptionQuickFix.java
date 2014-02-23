@@ -1,7 +1,7 @@
 package ntut.csie.robusta.codegen.markerresolution;
 
+import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
 import ntut.csie.csdet.preference.SmellSettings;
-import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.robusta.codegen.CatchClauseFinderVisitor;
 import ntut.csie.robusta.codegen.QuickFixCore;

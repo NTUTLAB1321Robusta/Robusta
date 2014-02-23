@@ -3,8 +3,8 @@ package ntut.csie.rleht.builder;
 
 import java.util.List;
 
+import ntut.csie.analyzer.ASTMethodCollector;
 import ntut.csie.csdet.quickfix.BaseQuickFix;
-import ntut.csie.csdet.visitor.aidvisitor.ASTMethodCollector;
 import ntut.csie.rleht.common.ErrorLog;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLChecker;

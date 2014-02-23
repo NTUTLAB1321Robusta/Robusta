@@ -5,14 +5,13 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import ntut.csie.analyzer.ASTMethodCollector;
 import ntut.csie.csdet.preference.SmellSettings;
-import ntut.csie.csdet.visitor.aidvisitor.ASTMethodCollector;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
-import ntut.csie.filemaker.sampleCode4VisitorTest.StatementBeFoundSampleCode;
 import ntut.csie.robusta.codegen.CatchClauseFinderVisitor;
 import ntut.csie.robusta.codegen.ExpressionStatementStringFinderVisitor;
-import ntut.csie.robusta.util.PathUtils;
+import ntut.csie.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
@@ -75,12 +74,12 @@ public class ExpressionStatementStringFinderVisitorTest {
 		String targetStatement = "e.printStackTrace();";
 		ExpressionStatementStringFinderVisitor statementFinderVisitor = new ExpressionStatementStringFinderVisitor(targetStatement);
 		compilationUnit.accept(statementFinderVisitor);
-		assertEquals(574, statementFinderVisitor.getFoundExpressionStatement().getStartPosition());
+		assertEquals(502, statementFinderVisitor.getFoundExpressionStatement().getStartPosition());
 		
 		targetStatement = "System.out.println(e);";
 		statementFinderVisitor = new ExpressionStatementStringFinderVisitor(targetStatement);
 		compilationUnit.accept(statementFinderVisitor);
-		assertEquals(683, statementFinderVisitor.getFoundExpressionStatement().getStartPosition());
+		assertEquals(556, statementFinderVisitor.getFoundExpressionStatement().getStartPosition());
 		
 		// line 22 & line 32的程式碼內容一樣，但是程式先找到符合的就會停下來
 		targetStatement = "e.printStackTrace();";

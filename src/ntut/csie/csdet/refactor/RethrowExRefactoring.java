@@ -2,13 +2,13 @@ package ntut.csie.csdet.refactor;
 
 import java.util.List;
 
+import ntut.csie.analyzer.ASTCatchCollect;
+import ntut.csie.analyzer.ASTMethodCollector;
+import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
+import ntut.csie.analyzer.dummy.DummyHandlerVisitor;
+import ntut.csie.analyzer.empty.EmptyCatchBlockVisitor;
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.preference.SmellSettings;
-import ntut.csie.csdet.visitor.ASTCatchCollect;
-import ntut.csie.csdet.visitor.DummyHandlerVisitor;
-import ntut.csie.csdet.visitor.EmptyCatchBlockVisitor;
-import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
-import ntut.csie.csdet.visitor.aidvisitor.ASTMethodCollector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.rleht.builder.RLOrderFix;
 import ntut.csie.rleht.common.EditorUtils;

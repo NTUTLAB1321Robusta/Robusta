@@ -1,6 +1,6 @@
 package robusta.nodeCounter;
 
-import ntut.csie.jdt.util.NodeUtils;
+import ntut.csie.util.NodeUtils;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;

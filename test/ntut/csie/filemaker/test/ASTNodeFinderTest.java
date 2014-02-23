@@ -5,12 +5,12 @@ import static org.junit.Assert.assertNull;
 
 import java.util.List;
 
-import ntut.csie.csdet.visitor.aidvisitor.ASTMethodCollector;
+import ntut.csie.analyzer.ASTMethodCollector;
 import ntut.csie.filemaker.ASTNodeFinder;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
-import ntut.csie.jdt.util.testSampleCode.NodeUtilsTestSample;
-import ntut.csie.robusta.util.PathUtils;
+import ntut.csie.util.NodeUtilsTestSample;
+import ntut.csie.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;

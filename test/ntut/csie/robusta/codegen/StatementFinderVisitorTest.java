@@ -4,14 +4,13 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import ntut.csie.analyzer.ASTMethodCollector;
 import ntut.csie.csdet.preference.SmellSettings;
-import ntut.csie.csdet.visitor.aidvisitor.ASTMethodCollector;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
-import ntut.csie.filemaker.sampleCode4VisitorTest.StatementBeFoundSampleCode;
 import ntut.csie.robusta.codegen.CatchClauseFinderVisitor;
 import ntut.csie.robusta.codegen.StatementFinderVisitor;
-import ntut.csie.robusta.util.PathUtils;
+import ntut.csie.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
@@ -71,17 +70,17 @@ public class StatementFinderVisitorTest {
 
 	@Test
 	public final void testFindExpressionStatementInCatchClause() {
-		int targetStartPosition = 574 - 1;
+		int targetStartPosition = 502 - 1;
 		StatementFinderVisitor statementFinderVisitor = new StatementFinderVisitor(targetStartPosition);
 		compilationUnit.accept(statementFinderVisitor);
 		assertEquals("e.printStackTrace();\n", statementFinderVisitor.getFoundExpressionStatement().toString());
 		
-		targetStartPosition = 683 - 1;
+		targetStartPosition = 556 - 1;
 		statementFinderVisitor = new StatementFinderVisitor(targetStartPosition);
 		compilationUnit.accept(statementFinderVisitor);
 		assertEquals("System.out.println(e);\n", statementFinderVisitor.getFoundExpressionStatement().toString());
 		
-		targetStartPosition = 867 - 1;
+		targetStartPosition = 686 - 1;
 		statementFinderVisitor = new StatementFinderVisitor(targetStartPosition);
 		compilationUnit.accept(statementFinderVisitor);
 		assertEquals("e.printStackTrace();\n", statementFinderVisitor.getFoundExpressionStatement().toString());

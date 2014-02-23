@@ -2,9 +2,9 @@ package ntut.csie.robusta.codegen;
 
 import java.util.List;
 
-import ntut.csie.jdt.util.NodeUtils;
 import ntut.csie.robusta.agile.exception.RTag;
 import ntut.csie.robusta.agile.exception.Robustness;
+import ntut.csie.util.NodeUtils;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;

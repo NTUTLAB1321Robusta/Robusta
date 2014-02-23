@@ -3,8 +3,8 @@ package ntut.csie.rleht.builder;
 import java.io.File;
 import java.lang.reflect.Method;
 
+import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
 import ntut.csie.csdet.preference.RobustaSettings;
-import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
 import ntut.csie.filemaker.JavaProjectMaker;
 
 import org.eclipse.core.resources.IProject;

@@ -2,7 +2,7 @@ package ntut.csie.csdet.quickfix;
 
 import java.util.List;
 
-import ntut.csie.csdet.visitor.ASTCatchCollect;
+import ntut.csie.analyzer.ASTCatchCollect;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLData;

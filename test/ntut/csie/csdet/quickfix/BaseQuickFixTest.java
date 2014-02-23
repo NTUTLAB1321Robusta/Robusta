@@ -11,12 +11,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import ntut.csie.csdet.preference.SmellSettings;
-import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
+import ntut.csie.analyzer.DummyAndEmptyExample;
+import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.filemaker.RuntimeEnvironmentProjectReader;
-import ntut.csie.filemaker.exceptionBadSmells.DummyAndEmptyExample;
-import ntut.csie.robusta.util.PathUtils;
+import ntut.csie.util.PathUtils;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;

@@ -1,14 +1,14 @@
 package ntut.csie.robusta.codegen.markerresolution;
 
+import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
 import ntut.csie.csdet.preference.SmellSettings;
-import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
-import ntut.csie.jdt.util.NodeUtils;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.robusta.agile.exception.Robustness;
 import ntut.csie.robusta.agile.exception.RTag;
 import ntut.csie.robusta.codegen.CatchClauseFinderVisitor;
 import ntut.csie.robusta.codegen.QuickFixCore;
 import ntut.csie.robusta.codegen.QuickFixUtils;
+import ntut.csie.util.NodeUtils;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;

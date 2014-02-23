@@ -2,7 +2,7 @@ package ntut.csie.robusta.codegen;
 
 import java.util.List;
 
-import ntut.csie.csdet.visitor.aidvisitor.ASTMethodCollector;
+import ntut.csie.analyzer.ASTMethodCollector;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLData;
 import ntut.csie.rleht.views.RLMessage;

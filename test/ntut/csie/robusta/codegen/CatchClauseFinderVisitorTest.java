@@ -4,13 +4,12 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import ntut.csie.analyzer.ASTMethodCollector;
 import ntut.csie.csdet.preference.SmellSettings;
-import ntut.csie.csdet.visitor.aidvisitor.ASTMethodCollector;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
-import ntut.csie.filemaker.sampleCode4VisitorTest.CatchClauseSampleCode;
 import ntut.csie.robusta.codegen.CatchClauseFinderVisitor;
-import ntut.csie.robusta.util.PathUtils;
+import ntut.csie.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
@@ -71,12 +70,12 @@ public class CatchClauseFinderVisitorTest {
 	@Test
 	public void testCatchClauseFinderVisitor_2CatchClause() {
 		// 不知道為什麼，測試時候，ASTView上面看到的數字還要減一，答案才會正確。實際用的時候沒差。
-		int targetCatchClauseStartPosition = 476 - 1;
+		int targetCatchClauseStartPosition = 459 - 1;
 		CatchClauseFinderVisitor catchClauseFinder = new CatchClauseFinderVisitor(targetCatchClauseStartPosition);
 		compilationUnit.accept(catchClauseFinder);
 		assertEquals("catch (FileNotFoundException e) {\n  e.printStackTrace();\n}\n", catchClauseFinder.getFoundCatchClause().toString());
 		
-		targetCatchClauseStartPosition = 577 - 1;
+		targetCatchClauseStartPosition = 523 - 1;
 		catchClauseFinder = new CatchClauseFinderVisitor(targetCatchClauseStartPosition);
 		compilationUnit.accept(catchClauseFinder);
 		assertEquals("catch (IOException e) {\n  e.printStackTrace();\n}\n", catchClauseFinder.getFoundCatchClause().toString());
@@ -84,7 +83,7 @@ public class CatchClauseFinderVisitorTest {
 	
 	@Test
 	public void testCatchClauseFinderVisitor_1CatchClause() {
-		int targetCatchClauseStartPosition = 794 - 1;
+		int targetCatchClauseStartPosition = 703 - 1;
 		CatchClauseFinderVisitor catchClauseFinder = new CatchClauseFinderVisitor(targetCatchClauseStartPosition);
 		compilationUnit.accept(catchClauseFinder);
 		assertEquals("catch (IOException e) {\n  System.out.println(e);\n}\n", catchClauseFinder.getFoundCatchClause().toString());

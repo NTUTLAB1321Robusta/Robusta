@@ -2,7 +2,7 @@ package ntut.csie.rleht.rlAdvice;
 
 import java.util.List;
 
-import ntut.csie.csdet.visitor.ASTCatchCollect;
+import ntut.csie.analyzer.ASTCatchCollect;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLData;
 import ntut.csie.rleht.views.RLMessage;

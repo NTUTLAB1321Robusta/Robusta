@@ -12,20 +12,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
+import ntut.csie.analyzer.DummyAndEmptyExample;
+import ntut.csie.analyzer.UserDefineDummyHandlerFish;
+import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.data.SSMessage;
 import ntut.csie.csdet.preference.JDomUtil;
 import ntut.csie.csdet.preference.SmellSettings;
-import ntut.csie.csdet.visitor.DummyHandlerVisitor;
-import ntut.csie.csdet.visitor.SuppressWarningVisitor;
-import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
-import ntut.csie.csdet.visitor.aidvisitor.ASTMethodCollector;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
-import ntut.csie.filemaker.exceptionBadSmells.DummyAndEmptyExample;
-import ntut.csie.filemaker.exceptionBadSmells.UserDefineDummyHandlerFish;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
-import ntut.csie.robusta.util.PathUtils;
+import ntut.csie.util.PathUtils;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -251,9 +248,10 @@ public class ReportBuilderTest {
 		tempList.add("EH_LEFTsrcEH_RIGHTntut.csie.EH_STAR");
 		ruleList.add(tempList);
 		tempList = new ArrayList<String>();
-		tempList.add("EH_LEFTsrcEH_RIGHTntut.csie.filemaker.EH_STAR");
+		tempList.add("EH_LEFTsrcEH_RIGHTntut.csie.analyzer.EH_STAR");
 		ruleList.add(tempList);
 		tempList = new ArrayList<String>();
+		// EH_LEFTsrcEH_RIGHTntut.csie.analyzer
 		tempList.add("EH_LEFTsrcEH_RIGHT" + DummyAndEmptyExample.class.getPackage().getName());
 		ruleList.add(tempList);
 		tempList = new ArrayList<String>();
@@ -262,7 +260,7 @@ public class ReportBuilderTest {
 		tempList = new ArrayList<String>();
 		tempList.add("ntut.csie.EH_STAR");
 		tempList = new ArrayList<String>();
-		tempList.add("ntut.csie.filemaker.EH_STAR");
+		tempList.add("ntut.csie.analyzer.EH_STAR");
 		ruleList.add(tempList);
 		tempList = new ArrayList<String>();
 		tempList.add(DummyAndEmptyExample.class.getPackage().getName());
@@ -335,7 +333,7 @@ public class ReportBuilderTest {
 							else if(j == 2)
 								assertFalse((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
 							else if(j == 3)
-								assertFalse((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
+								assertTrue((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
 							else if(j == 4)
 								assertTrue((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
 						}
@@ -371,7 +369,7 @@ public class ReportBuilderTest {
 							else if(j == 2)
 								assertFalse((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
 							else if(j == 3)
-								assertFalse((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
+								assertTrue((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
 							else if(j == 4)
 								assertTrue((Boolean)determineRecord.invoke(reportBuilder, folderName, iPackageFgt));
 						}

@@ -2,10 +2,10 @@ package ntut.csie.robusta.codegen.refactoring;
 
 import java.util.List;
 
+import ntut.csie.analyzer.thrown.ThrownExceptionInFinallyBlockVisitor;
 import ntut.csie.csdet.data.MarkerInfo;
-import ntut.csie.csdet.visitor.ThrownExceptionInFinallyBlockVisitor;
-import ntut.csie.jdt.util.NodeUtils;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
+import ntut.csie.util.NodeUtils;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;

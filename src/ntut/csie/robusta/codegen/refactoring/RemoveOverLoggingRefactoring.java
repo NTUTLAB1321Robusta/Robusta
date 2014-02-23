@@ -4,11 +4,11 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import ntut.csie.analyzer.ASTCatchCollect;
+import ntut.csie.analyzer.ASTMethodCollector;
+import ntut.csie.analyzer.over.OverLoggingDetector;
+import ntut.csie.analyzer.over.OverLoggingVisitor;
 import ntut.csie.csdet.data.MarkerInfo;
-import ntut.csie.csdet.visitor.ASTCatchCollect;
-import ntut.csie.csdet.visitor.OverLoggingDetector;
-import ntut.csie.csdet.visitor.OverLoggingVisitor;
-import ntut.csie.csdet.visitor.aidvisitor.ASTMethodCollector;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.robusta.codegen.QuickFixUtils;
 

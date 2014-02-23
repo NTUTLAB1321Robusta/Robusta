@@ -13,18 +13,18 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import ntut.csie.csdet.preference.JDomUtil;
-import ntut.csie.csdet.visitor.ASTCatchCollect;
-import ntut.csie.csdet.visitor.DummyHandlerVisitor;
-import ntut.csie.csdet.visitor.UserDefinedMethodAnalyzer;
-import ntut.csie.csdet.visitor.aidvisitor.ASTMethodCollector;
+import ntut.csie.analyzer.ASTCatchCollect;
+import ntut.csie.analyzer.ASTMethodCollector;
+import ntut.csie.analyzer.DummyAndEmptyExample;
+import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
+import ntut.csie.analyzer.dummy.DummyHandlerVisitor;
+import ntut.csie.analyzer.nested.NestedTryStatementExample;
 import ntut.csie.filemaker.ASTNodeFinder;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
-import ntut.csie.filemaker.exceptionBadSmells.DummyAndEmptyExample;
-import ntut.csie.filemaker.exceptionBadSmells.NestedTryStatementExample;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.rleht.views.ExceptionAnalyzer;
-import ntut.csie.robusta.util.PathUtils;
+import ntut.csie.util.PathUtils;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;

@@ -1,11 +1,11 @@
 package ntut.csie.robusta.codegen.markerresolution;
 
-import ntut.csie.csdet.visitor.CarelessCleanupVisitor;
-import ntut.csie.jdt.util.NodeUtils;
+import ntut.csie.analyzer.careless.CarelessCleanupVisitor;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.robusta.codegen.QuickFixCore;
 import ntut.csie.robusta.codegen.QuickFixUtils;
 import ntut.csie.robusta.codegen.VariableDeclarationStatementFinderVisitor;
+import ntut.csie.util.NodeUtils;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;

@@ -1,10 +1,10 @@
 package ntut.csie.robusta.codegen.refactoring;
 
-import ntut.csie.jdt.util.Clazz;
-import ntut.csie.jdt.util.NodeUtils;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.robusta.codegen.CatchClauseFinderVisitor;
 import ntut.csie.robusta.codegen.QuickFixUtils;
+import ntut.csie.util.Clazz;
+import ntut.csie.util.NodeUtils;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
