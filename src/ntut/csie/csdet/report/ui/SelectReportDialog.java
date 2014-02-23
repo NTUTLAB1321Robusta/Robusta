@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import ntut.csie.csdet.preference.ReportDescription;
+import ntut.csie.csdet.preference.RobustaSettings;
+
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -227,11 +229,7 @@ public class SelectReportDialog extends Dialog {
 
 	private String getReportDescriptionXmlFilePath() {
 		String projectName = projectList.get(projectCombo.getSelectionIndex());
-		String workPath = ResourcesPlugin.getWorkspace().getRoot()
-				.getLocation().toString();
-		String path = workPath + "/" + projectName + "/" + projectName
-				+ "_Report/" + ReportDescription.SETTING_FILENAME;
-		return path;
+		return RobustaSettings.getPathOfReportDescriptionFile(projectName);
 	}
 
 	private void updateAllReportDescriptionOfProjectToXml() {
@@ -250,13 +248,7 @@ public class SelectReportDialog extends Dialog {
 	public void getFileList() {
 		// 取得使用者使選擇的Project Name
 		String projectName = projectList.get(projectCombo.getSelectionIndex());
-		// 取得WorkSpace
-		String workPath = ResourcesPlugin.getWorkspace().getRoot()
-				.getLocation().toString();
-
-		// Report目錄
-		File directory = new File(workPath + "/" + projectName + "/"
-				+ projectName + "_Report/");
+		File directory = new File(RobustaSettings.getRobustaReportFolder(projectName));
 
 		// 取得目錄內每一個資料夾路徑
 		File[] allFolder = directory.listFiles();
