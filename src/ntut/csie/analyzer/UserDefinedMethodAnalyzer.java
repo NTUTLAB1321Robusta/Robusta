@@ -3,7 +3,7 @@ package ntut.csie.analyzer;
 import java.io.Closeable;
 import java.io.File;
 import java.util.Iterator;
-import java.util.TreeMap;
+import java.util.TreeMap; 
 
 import ntut.csie.csdet.preference.RobustaSettings;
 import ntut.csie.csdet.preference.SmellSettings;
