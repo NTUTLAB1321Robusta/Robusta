@@ -39,6 +39,28 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
+	ASTCatchCollectTest.class,
+	BadSmellCollectorTest.class,
+	SpareHandlerVisitorTest.class,
+	SuppressWarningVisitorTest.class,
+	TryStatementCounterVisitorTest.class,
+
+	CarelessCleanupVisitorTest.class,
+	FirstLevelChildStatementCollectingVisitorTest.class,
+	MethodInvocationMayInterruptByExceptionCheckerTest.class, // TODO unfinished
+	CloseResourceMethodInvocationVisitorTest.class,
+	
+	DummyHandlerVisitorTest.class,
+	EmptyCatchBlockVisitorTest.class,
+	NestedTryStatementVisitorTest.class,
+	OverLoggingVisitorTest.class,
+	ThrownExceptionInFinallyBlockVisitorTest.class,
+	UnprotectedMainProgramVisitorTest.class,
+	
+	DetectedFileTest.class,
+	ReportDescriptionTest.class,
+	RobustaSettingsTest.class,
+	
 	BaseQuickFixTest.class,
 	
 	OverLoggingRefactorTest.class,
@@ -48,41 +70,17 @@ import org.junit.runners.Suite;
 	ReportBuilderIntergrationTest.class,
 	ReportBuilderTest.class,
 	
-	ASTCatchCollectTest.class,
-	DummyHandlerVisitorTest.class,
-	EmptyCatchBlockVisitorTest.class,
-	NestedTryStatementVisitorTest.class,
-	OverLoggingVisitorTest.class,
-	ThrownExceptionInFinallyBlockVisitorTest.class,
-	SpareHandlerVisitorTest.class,
-	SuppressWarningVisitorTest.class,
-	TryStatementCounterVisitorTest.class,
-	UnprotectedMainProgramVisitorTest.class,
-	
 	ASTNodeFinderTest.class,
-	
-	NodeUtilsTest.class,
-	
 	RLBuilderTest.class,
-	
 	ExceptionAnalyzerTest.class,
 	
 	CatchClauseFinderVisitorTest.class,
 	ExpressionStatementStringFinderVisitorTest.class,
+	QuickFixCoreTest.class, //no method implemented 
 	StatementFinderVisitorTest.class,
 	VariableDeclarationStatementFinderVisitorTest.class,
-	RobustaSettingsTest.class,
-	ReportDescriptionTest.class,
-	DetectedFileTest.class,
-	QuickFixCoreTest.class, //no method implemented 
 	
-	BadSmellCollectorTest.class,
-	
-	FirstLevelChildStatementCollectingVisitorTest.class,
-	CarelessCleanupVisitorTest.class,
-	CloseResourceMethodInvocationVisitorTest.class,
-	// TODO unfinished
-	MethodInvocationMayInterruptByExceptionCheckerTest.class
+	NodeUtilsTest.class,
 })
 public class AllJUnitPluginTests {
 }

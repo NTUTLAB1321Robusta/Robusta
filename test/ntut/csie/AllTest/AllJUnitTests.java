@@ -20,11 +20,10 @@ import org.junit.runners.Suite;
 
 	ClassModelTest.class,
 	
-	ClazzTest.class,
-	
+	JarFileMakerTest.class,
 	JavaFileToStringTest.class,
 	
-	JarFileMakerTest.class
+	ClazzTest.class,
 })
 public class AllJUnitTests {
 }
