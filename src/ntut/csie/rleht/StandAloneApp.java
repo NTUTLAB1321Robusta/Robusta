@@ -1,7 +1,6 @@
 package ntut.csie.rleht;
 
 import java.util.Map;
-
 import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.report.ReportBuilder;
