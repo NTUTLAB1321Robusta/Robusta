@@ -20,8 +20,7 @@ public class CarelessCleanupVisitor extends ASTVisitor {
 	public CarelessCleanupVisitor(CompilationUnit root) {
 		this.root = root;
 		carelessCleanupList = new ArrayList<MarkerInfo>();
-		invocationChecker = new MethodInvocationMayInterruptByExceptionChecker(
-				root);
+		invocationChecker = new MethodInvocationMayInterruptByExceptionChecker();
 	}
 
 	@Override

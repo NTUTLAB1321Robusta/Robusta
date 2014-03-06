@@ -4,15 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.lang.reflect.Method;
 import java.util.List;
 
 import ntut.csie.filemaker.ASTNodeFinder;
 import ntut.csie.filemaker.TestEnvironmentBuilder;
 
-import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.astview.NodeFinder;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.junit.After;
 import org.junit.Before;
@@ -35,8 +33,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		compilationUnit = environmentBuilder
 				.getCompilationUnit(MethodInvocationMayInterruptByExceptionCheckerExample.class);
 
-		checker = new MethodInvocationMayInterruptByExceptionChecker(
-				compilationUnit);
+		checker = new MethodInvocationMayInterruptByExceptionChecker();
 	}
 
 	@After
@@ -84,56 +81,49 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 	
-	/**
-	 * Will get VariableDeclaretionFragment
-	 */
 	@Test
-	public void testGetVariableDeclarationWithLocalVariable() throws Exception {
-		Method getVariableDeclaration = getMethodGetVariableDeclaration();
-		Expression expression = getExpressionByMethodNameAndCode(
-				"resourceAssignAndUseMultiTimes", "fis.close()");
-
-		ASTNode variableDeclaration = (ASTNode) getVariableDeclaration.invoke(
-				checker, expression);
-		assertEquals("fis=null", variableDeclaration.toString());
-		assertEquals(454, variableDeclaration.getStartPosition());
+	public void testIsMayInterruptByExceptionWithResourceJustBeCreated()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"createAndCloseDirectlyWithNewFile",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 
-	/**
-	 * Will get SingleVariableDeclaration
-	 */
 	@Test
-	public void testGetVariableDeclarationWithParameter() throws Exception {
-		Method getVariableDeclaration = getMethodGetVariableDeclaration();
-		Expression expression = getExpressionByMethodNameAndCode(
-				"resourceFromParameters", "file2.canRead()");
-
-		ASTNode variableDeclaration = (ASTNode) getVariableDeclaration.invoke(
-				checker, expression);
-		assertEquals("File file2", variableDeclaration.toString());
-		assertEquals(589, variableDeclaration.getStartPosition());
+	public void testIsMayInterruptByExceptionWithInTryBlock()
+			throws Exception {
+		// First "fileOutputStream.close()" in method "sameResourceCloseManyTimes"
+		MethodInvocation methodInvocation = (MethodInvocation) NodeFinder
+				.perform(compilationUnit, 2233 - 1, 24);
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
 	}
 
-	/**
-	 * Will get VariableDeclaretionFragment
-	 */
 	@Test
-	public void testGetVariableDeclarationWithField() throws Exception {
-		Method getVariableDeclaration = getMethodGetVariableDeclaration();
-		Expression expression = getExpressionByMethodNameAndCode(
-				"resourceFromField", "file3.canRead()");
-
-		ASTNode variableDeclaration = (ASTNode) getVariableDeclaration.invoke(
-				checker, expression);
-		assertEquals("file3=null", variableDeclaration.toString());
-		assertEquals(730, variableDeclaration.getStartPosition());
+	public void testIsMayInterruptByExceptionWithInCatchBlock()
+			throws Exception {
+		// Second "fileOutputStream.close()" in method "sameResourceCloseManyTimes"
+		MethodInvocation methodInvocation = (MethodInvocation) NodeFinder
+				.perform(compilationUnit, 2358 - 1, 24);
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
 	}
 
-	private Method getMethodGetVariableDeclaration() throws NoSuchMethodException {
-		Method method = MethodInvocationMayInterruptByExceptionChecker.class
-				.getDeclaredMethod("getVariableDeclaration", Expression.class);
-		method.setAccessible(true);
-		return method;
+	@Test
+	public void testIsMayInterruptByExceptionWithFirstStatementInCatchBlock()
+			throws Exception {
+		// Third "fileOutputStream.close()" in method "sameResourceCloseManyTimes"
+		MethodInvocation methodInvocation = (MethodInvocation) NodeFinder
+				.perform(compilationUnit, 2436 - 1, 24);
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+
+	@Test
+	public void testIsMayInterruptByExceptionWithFinallyBlock()
+			throws Exception {
+		// Fourth "fileOutputStream.close()" in method "sameResourceCloseManyTimes"
+		MethodInvocation methodInvocation = (MethodInvocation) NodeFinder
+				.perform(compilationUnit, 2552 - 1, 24);
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
 	}
 
 	private MethodInvocation getMethodInvocationByMethodNameAndCode(
@@ -144,12 +134,5 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		assertEquals(methodInvocation.size(), 1);
 
 		return methodInvocation.get(0);
-	}
-
-	private Expression getExpressionByMethodNameAndCode(String methodName,
-			String code) {
-		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
-				methodName, code);
-		return methodInvocation.getExpression();
 	}
 }

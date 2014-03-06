@@ -4,33 +4,19 @@ import java.util.Iterator;
 import java.util.List;
 
 import ntut.csie.util.BoundaryChecker;
-import ntut.csie.util.NodeUtils;
 
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.Expression;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
-import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.Statement;
 
 public class MethodInvocationMayInterruptByExceptionChecker {
 
-	private CompilationUnit root;
-	private MethodDeclaration methodDeclaration;
 	private int beginningPosition;
-	BoundaryChecker boundaryChecker;
-
-	/**
-	 * This instance can be used only for this compilation unit
-	 */
-	public MethodInvocationMayInterruptByExceptionChecker(CompilationUnit root) {
-		this.root = root;
-	}
 
 	public boolean isMayInterruptByException(MethodInvocation methodInvocation) {
-		initialize(methodInvocation);
-		
+		beginningPosition = new ClosingResourceBeginningPositionFinder()
+				.findPosition(methodInvocation);
+
 		try {
 			if (isThisMethodInvocationUnsafeOnParent(methodInvocation)) {
 				return true;
@@ -53,103 +39,6 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 		}
 	}
 
-	/**
-	 * Set up the information needed when detecting
-	 */
-	private void initialize(MethodInvocation methodInvocation) {
-		methodDeclaration = (MethodDeclaration) NodeUtils
-				.getSpecifiedParentNode(methodInvocation,
-						ASTNode.METHOD_DECLARATION);
-
-		boundaryChecker = new BoundaryChecker(
-				methodDeclaration.getStartPosition(),
-				methodInvocation.getStartPosition());
-
-		setResourceStartPositionForMethodDeclaration(methodInvocation);
-	}
-
-	/**
-	 * If the resource is not start on this MethodDeclaration, then will set the
-	 * start position at the start position of this MethodDeclaration
-	 */
-	private void setResourceStartPositionForMethodDeclaration(
-			MethodInvocation methodInvocation) {
-		try {
-			if (!methodInvocation.arguments().isEmpty()) {
-				setStartPositionByTheFurthestArgument(methodInvocation);
-			} else {
-				setStartPositionByTheExpressionOfMethodInvocation(methodInvocation);
-			}
-		} catch (Exception e) {
-			/*
-			 * Any exception means we can't find the proper position, so we have
-			 * to beware any interrupted from the beginning
-			 */
-			beginningPosition = methodDeclaration.getStartPosition();
-		}
-	}
-	
-	/**
-	 *  Find the furthest beginningPosition if the arguments are SimpleName
-	 *  @exception RuntimeException if any of them doesn't
-	 */
-	private void setStartPositionByTheFurthestArgument(
-			MethodInvocation methodInvocation) {
-		// Start from the nearest position
-		beginningPosition = methodInvocation.getStartPosition();
-
-		List<Expression> arguments = methodInvocation.arguments();
-		for (Expression eachArgument : arguments) {
-			if (eachArgument instanceof SimpleName) {
-				updateArgumentsPosition(getVariableDeclarationPosition(eachArgument));
-			} else {
-				throw new RuntimeException();
-			}
-		}
-	}
-
-	private void updateArgumentsPosition(int newPosition) {
-		if (boundaryChecker.isInInterval(newPosition)) {
-			if (newPosition < beginningPosition) {
-				beginningPosition = newPosition;
-			}
-		} else {
-			throw new RuntimeException();
-		}
-	}
-
-	/**
-	 *  Set beginningPosition if the methodInvocation forms "instance.method()"
-	 *  @exception RuntimeException if it doesn't
-	 */
-	private void setStartPositionByTheExpressionOfMethodInvocation (MethodInvocation methodInvocation) {
-		Expression expression = methodInvocation.getExpression();
-		if (expression instanceof SimpleName) {
-			beginningPosition = getVariableDeclarationPosition(expression);
-
-			/*
-			 * If the beginningPosition is Not in this MethodDeclaration, change
-			 * it to the beginning of this methodDeclaration instead.
-			 */
-			if (!boundaryChecker.isInInterval(beginningPosition)) {
-				beginningPosition = methodDeclaration.getStartPosition();
-			}
-		} else {
-			throw new RuntimeException();
-		}
-	}
-
-	private int getVariableDeclarationPosition(Expression expression) {
-		ASTNode variableDeclaration = getVariableDeclaration(expression);
-		return variableDeclaration.getStartPosition();
-	}
-
-	private ASTNode getVariableDeclaration(Expression expression) {
-		SimpleName variableName = NodeUtils
-				.getSimpleNameFromExpression(expression);
-		return root.findDeclaringNode(variableName.resolveBinding());
-	}
-	
 	/**
 	 * Tell if it is unsafe from it's parent's view only
 	 * (Won't check if it's parent is safe or not)
@@ -181,15 +70,16 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 		parentNode.accept(firstLevelChildCollector);
 		List<Statement> allStatements = firstLevelChildCollector.getChildren();
 
+		BoundaryChecker boundChecker = new BoundaryChecker(beginningPosition,
+				executedNode.getStartPosition());
 		/*
 		 * If any statement satisfy both "between" and "unsafe", return true.
 		 * Otherwise, return false.
 		 */
 		Iterator<Statement> iter = allStatements.iterator();
-		int endingPosition = executedNode.getStartPosition();
 		while (iter.hasNext()) {
 			Statement statement = iter.next();
-			if (isNodeBetweenBeginningAndEnding(statement, endingPosition)
+			if (boundChecker.isInInterval(statement.getStartPosition())
 					&& isUnsafeBrotherStatement(statement)) {
 				return true;
 			}
@@ -224,16 +114,4 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 	private boolean isTryBlock(Statement Statement) {
 		return (Statement.getParent().getNodeType() == ASTNode.TRY_STATEMENT);
 	}
-
-	/**
-	 * Tell if this node is between the beginningPosition and the given
-	 * endingPosition.
-	 */
-	private boolean isNodeBetweenBeginningAndEnding(ASTNode node,
-			int endingPosition) {
-		int nodePosition = node.getStartPosition();
-		return (beginningPosition <= nodePosition)
-				&& (endingPosition > nodePosition);
-	}
-
 }

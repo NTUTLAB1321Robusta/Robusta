@@ -2,6 +2,7 @@ package ntut.csie.analyzer.careless;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,27 +12,9 @@ import ntut.csie.analyzer.careless.closingmethod.ResourceCloser;
 
 public class MethodInvocationMayInterruptByExceptionCheckerExample {
 
-	public void resourceAssignAndUseMultiTimes(File file1) throws IOException {
-		FileInputStream fis = null;
-		fis = new FileInputStream(file1);
-		fis.available();
-		fis.close();  // Is
-	}
-
-	public void resourceFromParameters(File file2) throws IOException {
-		FileInputStream fis = null;
-		fis = new FileInputStream(file2);
-		file2.canRead();  // Is
-	}
-
-	File file3 = null;
+	File file = null;
+	MethodInvocationBeforeClose methodBeforeClose = new MethodInvocationBeforeClose();
 	
-	public void resourceFromField() throws IOException {
-		FileInputStream fis = null;
-		fis = new FileInputStream(file3);
-		file3.canRead();  // Is
-	}
-
 	class ClassWithGetResource {
 		public java.nio.channels.Channel getResourceWithInterface() {
 			return null;
@@ -72,7 +55,32 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		try {
 			zOut.write(is.read());
 		} finally {
-			ResourceCloser.closeResourceDirectly(is); // Safe even user defined
+			ResourceCloser.closeResourceDirectly(is); // Isn't even user defined
+		}
+	}
+
+	public void createAndCloseDirectlyWithNewFile() throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		fis.close(); // Isn't
+	}
+
+	public void sameResourceCloseManyTimes(byte[] context, File outputFile)
+			throws IOException {
+		FileOutputStream fileOutputStream = null;
+		try {
+			fileOutputStream = new FileOutputStream(outputFile);
+			fileOutputStream.write(context);
+			fileOutputStream.close(); // Is
+		} catch (FileNotFoundException e) {
+			System.out.println("FileNotFoundException.");
+			fileOutputStream.close(); // Is
+			throw e;
+		} catch (IOException e) {
+			fileOutputStream.close(); // Isn't
+			throw e;
+		} finally {
+			System.out.println("Close nothing at all.");
+			fileOutputStream.close(); // Is
 		}
 	}
 }
