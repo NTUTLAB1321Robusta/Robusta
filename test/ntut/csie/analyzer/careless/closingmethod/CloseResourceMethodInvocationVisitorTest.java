@@ -7,14 +7,14 @@ import java.util.List;
 import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
 import ntut.csie.analyzer.careless.CloseResourceMethodInvocationVisitor;
 import ntut.csie.csdet.preference.SmellSettings;
-import ntut.csie.filemaker.TestEnvironmentBuilder;
+import ntut.csie.testutility.Assertor;
+import ntut.csie.testutility.TestEnvironmentBuilder;
 
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class CloseResourceMethodInvocationVisitorTest {
@@ -45,11 +45,11 @@ public class CloseResourceMethodInvocationVisitorTest {
 	public void testExampleWithoutAnyExtraRule() throws Exception {
 		List<MethodInvocation> miList = 
 				visitCompilationAndGetSmellList(CloseResourceMethodInvocationExample.class);
-		assertEquals(6, miList.size());
+		Assertor.assertListSize(6, miList);
 	}
 
 	@Test
-	public void testExampleWithWithUserDefinedMethodClose() throws Exception {
+	public void testExampleWithUserDefinedMethodClose() throws Exception {
 		// Create setting file with user defined
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
@@ -58,52 +58,52 @@ public class CloseResourceMethodInvocationVisitorTest {
 
 		List<MethodInvocation> miList = 
 				visitCompilationAndGetSmellList(CloseResourceMethodInvocationExample.class);
-		
-		assertEquals(9, miList.size());
+
+		Assertor.assertListSize(8, miList);
 	}
 	
 	@Test
-	public void testExampleWithWithUserDefinedMethodShine() throws Exception {
+	public void testExampleWithUserDefinedMethodBark() throws Exception {
 		// Create setting file with user defined
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
-		smellSettings.addCarelessCleanupPattern("*.Shine", true);
+		smellSettings.addCarelessCleanupPattern("*.bark", true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 
 		List<MethodInvocation> miList = 
 				visitCompilationAndGetSmellList(CloseResourceMethodInvocationExample.class);
-		
-		assertEquals(11, miList.size());
+
+		Assertor.assertListSize(9, miList);
 	}
-	
-	@Ignore
-	public void testGetCloseMethodInvocationListWithUserDefiendLibs() throws Exception {
+
+	@Test
+	public void testExampleWithUserDefinedClassUserDefinedCarelessCleanupClass() throws Exception {
+		// Create setting file with user defined
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		smellSettings.addCarelessCleanupPattern(UserDefinedCarelessCleanupMethod.class.getName() + ".*", true);
+		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
+		String className = "ntut.csie.analyzer.careless.closingmethod.UserDefinedCarelessCleanupClass"; 
+		smellSettings.addCarelessCleanupPattern(className + ".*", true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 
-		environmentBuilder.accept(Object.class, visitor);
-		assertEquals(42, visitor.getCloseMethodInvocations().size());
+		List<MethodInvocation> miList = 
+				visitCompilationAndGetSmellList(CloseResourceMethodInvocationExample.class);
+
+		Assertor.assertListSize(10, miList);
 	}
 	
-	@Ignore
-	public void testGetCloseMethodInvocationListWithUserDefinedMethods() throws Exception {
+	@Test
+	public void testExampleWithUserDefinedFullQualifiedMethods() throws Exception {
+		// Create setting file with user defined
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		smellSettings.addCarelessCleanupPattern("*.bark", true);
+		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
+		String fullQualifiedName = "ntut.csie.analyzer.careless.closingmethod.UserDefinedCarelessCleanupClass.bark"; 
+		smellSettings.addCarelessCleanupPattern(fullQualifiedName, true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 
-		environmentBuilder.accept(Object.class, visitor);
-		assertEquals(38, visitor.getCloseMethodInvocations().size());
-	}
-	
-	@Ignore
-	public void testGetCloseMethodInvocationListWithUserDefinedFullQualifiedMethods() throws Exception {
-		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		smellSettings.addCarelessCleanupPattern(UserDefinedCarelessCleanupMethod.class.getName() + ".bark", true);
-		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		List<MethodInvocation> miList = 
+				visitCompilationAndGetSmellList(CloseResourceMethodInvocationExample.class);
 
-		environmentBuilder.accept(Object.class, visitor);
-		assertEquals(37, visitor.getCloseMethodInvocations().size());
+		Assertor.assertListSize(8, miList);
 	}
 
 	private List<MethodInvocation> visitCompilationAndGetSmellList(Class clazz)
@@ -115,5 +115,4 @@ public class CloseResourceMethodInvocationVisitorTest {
 		List<MethodInvocation> miList = visitor.getCloseMethodInvocations();
 		return miList;
 	}
-	
 }

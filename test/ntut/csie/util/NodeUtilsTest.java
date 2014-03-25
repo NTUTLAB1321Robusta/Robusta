@@ -199,7 +199,8 @@ public class NodeUtilsTest {
 	}
 
 	/**
-	 * This user defined exception we can not recognize
+	 * We can not recognize user defined exception
+	 * @author pig
 	 */
 	@Ignore
 	public void testGetClassFromCatchClauseWithUserSelfDefinedException() {
@@ -212,7 +213,8 @@ public class NodeUtilsTest {
 		try {
 			Class clazz = NodeUtils.getClassFromCatchClause(catchClauses.get(1));
 		} catch (RuntimeException e) {
-			assertTrue("We can not recognize the exception what defined by user", false);
+			String message = "We can not recognize the exception type what defined by user";
+			assertTrue(message, false);
 		}
 	}
 

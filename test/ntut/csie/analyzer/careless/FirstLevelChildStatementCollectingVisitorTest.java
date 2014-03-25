@@ -8,7 +8,7 @@ import java.util.List;
 import ntut.csie.analyzer.ASTMethodCollector;
 import ntut.csie.analyzer.careless.FirstLevelChildStatementCollectingVisitor;
 import ntut.csie.filemaker.ASTNodeFinder;
-import ntut.csie.filemaker.TestEnvironmentBuilder;
+import ntut.csie.testutility.TestEnvironmentBuilder;
 import ntut.csie.util.NodeUtils;
 
 import org.eclipse.jdt.core.JavaModelException;

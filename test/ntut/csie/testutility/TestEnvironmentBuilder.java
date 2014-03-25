@@ -1,4 +1,4 @@
-package ntut.csie.filemaker;
+package ntut.csie.testutility;
 
 import static org.junit.Assert.assertTrue;
 
@@ -6,6 +6,8 @@ import java.io.File;
 
 import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
 import ntut.csie.csdet.preference.SmellSettings;
+import ntut.csie.filemaker.JavaFileToString;
+import ntut.csie.filemaker.JavaProjectMaker;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;

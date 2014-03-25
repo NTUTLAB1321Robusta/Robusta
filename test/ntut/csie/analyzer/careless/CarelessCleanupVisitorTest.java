@@ -1,7 +1,5 @@
 package ntut.csie.analyzer.careless;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.List;
 
 import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
@@ -10,7 +8,8 @@ import ntut.csie.analyzer.careless.closingmethod.UserDefinedCarelessCleanupClass
 import ntut.csie.analyzer.careless.closingmethod.UserDefinedCarelessCleanupMethod;
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.preference.SmellSettings;
-import ntut.csie.filemaker.TestEnvironmentBuilder;
+import ntut.csie.testutility.Assertor;
+import ntut.csie.testutility.TestEnvironmentBuilder;
 
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -50,20 +49,39 @@ public class CarelessCleanupVisitorTest {
 
 		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupBaseExample.class);
 
-		assertListSize(smellList, 8);
+		Assertor.assertMarkerInfoListSize(8, smellList);
 	}
 
-	@Ignore
-	public void testAdvancedExampleWithDefaultSetting()
+	@Test
+	/**
+	 * We can not detect "SuperMethodInvocation" now, this test case will ignore that case.
+	 */
+	public void testAdvancedExampleWithDefaultSettingWithoutSuperMethodInvocation()
 			throws JavaModelException {
 		// Create setting file
 		CreateSettings();
 
 		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupAdvancedExample.class);
 
-		// FIXME Now the actual will be less 1 then expected, because
-		// "super.close() haven been treat as closeInvocation
-		assertListSize(smellList, 20);
+		Assertor.assertMarkerInfoListSize(19, smellList);
+	}
+
+	@Ignore
+	/**
+	 * If we can detect "SuperMethodInvocation"m then we can run this test case.
+	 */
+	public void testAdvancedExampleWithDefaultSettingWithSuperMethodInvocation()
+			throws JavaModelException {
+		// Create setting file
+		CreateSettings();
+
+		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupAdvancedExample.class);
+
+		/*
+		 * The number will over 1 then the expectedSize of test case
+		 * "testAdvancedExampleWithDefaultSettingWithoutSuperMethodInvocation"
+		 */
+		Assertor.assertMarkerInfoListSize(19 + 1, smellList);
 	}
 
 	@Test
@@ -74,7 +92,7 @@ public class CarelessCleanupVisitorTest {
 
 		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupIntegratedExample.class);
 
-		assertListSize(smellList, 7);
+		Assertor.assertMarkerInfoListSize(7, smellList);
 	}
 
 	@Test
@@ -91,7 +109,7 @@ public class CarelessCleanupVisitorTest {
 
 		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupIntegratedExample.class);
 
-		assertListSize(smellList, 13);
+		Assertor.assertMarkerInfoListSize(13, smellList);
 	}
 
 	@Test
@@ -105,7 +123,7 @@ public class CarelessCleanupVisitorTest {
 
 		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupIntegratedExample.class);
 
-		assertListSize(smellList, 9);
+		Assertor.assertMarkerInfoListSize(9, smellList);
 	}
 
 	@Test
@@ -119,7 +137,7 @@ public class CarelessCleanupVisitorTest {
 
 		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupIntegratedExample.class);
 
-		assertListSize(smellList, 8);
+		Assertor.assertMarkerInfoListSize(8, smellList);
 	}
 
 	@Test
@@ -133,7 +151,7 @@ public class CarelessCleanupVisitorTest {
 
 		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupIntegratedExample.class);
 
-		assertListSize(smellList, 10);
+		Assertor.assertMarkerInfoListSize(10, smellList);
 	}
 
 	@Test
@@ -147,7 +165,7 @@ public class CarelessCleanupVisitorTest {
 
 		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupIntegratedExample.class);
 
-		assertListSize(smellList, 8);
+		Assertor.assertMarkerInfoListSize(8, smellList);
 	}
 
 	private List<MarkerInfo> visitCompilationAndGetSmellList(Class clazz)
@@ -160,24 +178,6 @@ public class CarelessCleanupVisitorTest {
 		return smellList;
 	}
 	
-	private void assertListSize(List<MarkerInfo> smellList, int size) {
-		assertEquals(colloectBadSmellListContent(smellList), size,
-				smellList.size());
-	}
-
-	/**
-	 * append bad smell to a string and return it
-	 */
-	private String colloectBadSmellListContent(List<MarkerInfo> badSmellList) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("\n");
-		for (int i = 0; i < badSmellList.size(); i++) {
-			MarkerInfo m = badSmellList.get(i);
-			sb.append(m.getLineNumber()).append("\t").append(m.getStatement()).append("\n");
-		}
-		return sb.toString();
-	}
-
 	private void CreateSettings() {
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);

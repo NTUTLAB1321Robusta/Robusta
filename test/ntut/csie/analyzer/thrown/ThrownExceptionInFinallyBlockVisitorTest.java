@@ -13,6 +13,7 @@ import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.ASTNodeFinder;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
+import ntut.csie.testutility.Assertor;
 import ntut.csie.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -98,10 +99,8 @@ public class ThrownExceptionInFinallyBlockVisitorTest {
 	public void visitWithWholeCompilationUnit() {
 		compilationUnit.accept(thrownExceptionInFinallyBlockVisitor);
 
-		List<MarkerInfo> thrownInFinallyInfos = thrownExceptionInFinallyBlockVisitor
-				.getThrownInFinallyList();
-		assertEquals(colloectBadSmellListContent(thrownInFinallyInfos), 32,
-				thrownInFinallyInfos.size());
+		Assertor.assertMarkerInfoListSize(32,
+				thrownExceptionInFinallyBlockVisitor.getThrownInFinallyList());
 	}
 
 	@Test
@@ -239,20 +238,6 @@ public class ThrownExceptionInFinallyBlockVisitorTest {
 				.getThrownInFinallyList();
 		assertEquals(1, thrownInFinallyInfos.size());
 		assertEquals(505, thrownInFinallyInfos.get(0).getLineNumber());
-	}
-
-	/**
-	 * Record context of each bad smells and it's line number
-	 */
-	private String colloectBadSmellListContent(List<MarkerInfo> badSmellList) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("\n");
-		for (int i = 0; i < badSmellList.size(); i++) {
-			MarkerInfo m = badSmellList.get(i);
-			sb.append(m.getLineNumber()).append("\t").append(m.getStatement())
-					.append("\n");
-		}
-		return sb.toString();
 	}
 
 	private MethodDeclaration getMethodDeclarationByName(String name) {

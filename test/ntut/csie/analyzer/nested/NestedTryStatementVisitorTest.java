@@ -1,17 +1,15 @@
 package ntut.csie.analyzer.nested;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.util.List;
 
 import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
-import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
+import ntut.csie.testutility.Assertor;
 import ntut.csie.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -30,100 +28,89 @@ public class NestedTryStatementVisitorTest {
 	CompilationUnit compilationUnit;
 	NestedTryStatementVisitor nestedTryStatementVisitor;
 	SmellSettings smellSettings;
-	
+
 	@Before
 	public void setUp() throws Exception {
 		String testProjectName = "NestedTryStatementExampleProject";
 		javaFile2String = new JavaFileToString();
 		javaProjectMaker = new JavaProjectMaker(testProjectName);
-		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.FOLDERNAME_LIB_JAR, JavaProjectMaker.FOLDERNAME_BIN_CLASS);
-		javaProjectMaker.addJarFromTestProjectToBuildPath("/" + JavaProjectMaker.RL_LIBRARY_PATH);
+		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(
+				JavaProjectMaker.FOLDERNAME_LIB_JAR,
+				JavaProjectMaker.FOLDERNAME_BIN_CLASS);
+		javaProjectMaker.addJarFromTestProjectToBuildPath("/"
+				+ JavaProjectMaker.RL_LIBRARY_PATH);
 		javaProjectMaker.setJREDefaultContainer();
 		// 根據測試檔案樣本內容建立新的檔案
-		javaFile2String.read(NestedTryStatementExample.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaFile2String.read(NestedTryStatementExample.class,
+				JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				NestedTryStatementExample.class.getPackage().getName(),
-				NestedTryStatementExample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + NestedTryStatementExample.class.getPackage().getName() + ";\n"
-				+ javaFile2String.getFileContent());
+				NestedTryStatementExample.class.getSimpleName()
+						+ JavaProjectMaker.JAVA_FILE_EXTENSION,
+				"package "
+						+ NestedTryStatementExample.class.getPackage()
+								.getName() + ";\n"
+						+ javaFile2String.getFileContent());
 		javaFile2String.clear();
-		
-		Path nestedTryExamplePath = new Path(PathUtils.getPathOfClassUnderSrcFolder(NestedTryStatementExample.class, testProjectName));
-		//Create AST to parse
+
+		Path nestedTryExamplePath = new Path(
+				PathUtils.getPathOfClassUnderSrcFolder(
+						NestedTryStatementExample.class, testProjectName));
+		// Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		// 設定要被建立AST的檔案
-		parser.setSource(
-				JavaCore.createCompilationUnitFrom(
-						ResourcesPlugin.getWorkspace().
-						getRoot().getFile(nestedTryExamplePath)));
+		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin
+				.getWorkspace().getRoot().getFile(nestedTryExamplePath)));
 		parser.setResolveBindings(true);
 		// 建立XML
 		createSettings(true);
 		// 取得AST
-		compilationUnit = (CompilationUnit) parser.createAST(null); 
+		compilationUnit = (CompilationUnit) parser.createAST(null);
 		compilationUnit.recordModifications();
-		nestedTryStatementVisitor = new NestedTryStatementVisitor(compilationUnit);
+		nestedTryStatementVisitor = new NestedTryStatementVisitor(
+				compilationUnit);
 	}
 
 	@After
 	public void tearDown() throws Exception {
 		javaProjectMaker.deleteProject();
 		File settingFile = new File(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		if(settingFile.exists()) {
+		if (settingFile.exists()) {
 			assertTrue(settingFile.delete());
 		}
 	}
 
 	@Test
 	public void testNestedTryStatementVisitor() {
-		int nestedTryStatementCount = 0;
 		assertNotNull(compilationUnit);
 		assertNotNull(nestedTryStatementVisitor);
 		compilationUnit.accept(nestedTryStatementVisitor);
-		if(nestedTryStatementVisitor.getNestedTryStatementList() != null) {
-			nestedTryStatementCount = nestedTryStatementVisitor.getNestedTryStatementList().size();
-		}
-		assertEquals(
-				colloectBadSmellListContent(nestedTryStatementVisitor.getNestedTryStatementList()),
-						27, nestedTryStatementCount); 
+
+		Assertor.assertMarkerInfoListSize(27,
+				nestedTryStatementVisitor.getNestedTryStatementList());
 	}
-	
+
 	@Test
 	public void testNestedTryStatementVisitor_doNotDetect() {
 		createSettings(false);
-		nestedTryStatementVisitor = new NestedTryStatementVisitor(compilationUnit);
+		nestedTryStatementVisitor = new NestedTryStatementVisitor(
+				compilationUnit);
 
-		int nestedTryStatementCount = 0;
 		assertNotNull(compilationUnit);
 		assertNotNull(nestedTryStatementVisitor);
 		compilationUnit.accept(nestedTryStatementVisitor);
-		if(nestedTryStatementVisitor.getNestedTryStatementList() != null) {
-			nestedTryStatementCount = nestedTryStatementVisitor.getNestedTryStatementList().size();
-		}
-		assertEquals(
-				colloectBadSmellListContent(nestedTryStatementVisitor.getNestedTryStatementList()),
-						0, nestedTryStatementCount); 
-	}
-	
-	/**
-	 * 紀錄所有badSmell內容以及行號
-	 * @param badSmellList
-	 * @return
-	 */
-	private String colloectBadSmellListContent(List<MarkerInfo> badSmellList) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("\n");
-		for (int i = 0; i < badSmellList.size(); i++) {
-			MarkerInfo m = badSmellList.get(i);
-			sb.append(m.getLineNumber()).append("\t").append(m.getStatement()).append("\n");
-		}
-		return sb.toString();
+
+		Assertor.assertMarkerInfoListSize(0,
+				nestedTryStatementVisitor.getNestedTryStatementList());
 	}
 
 	private void createSettings(boolean isDetecting) {
-		smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_NESTEDTRYSTATEMENT, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
+		smellSettings = new SmellSettings(
+				UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		smellSettings.setSmellTypeAttribute(
+				SmellSettings.SMELL_NESTEDTRYSTATEMENT,
+				SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 	}
 }

@@ -7,7 +7,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import ntut.csie.filemaker.ASTNodeFinder;
-import ntut.csie.filemaker.TestEnvironmentBuilder;
+import ntut.csie.testutility.TestEnvironmentBuilder;
 
 import org.eclipse.jdt.astview.NodeFinder;
 import org.eclipse.jdt.core.dom.CompilationUnit;

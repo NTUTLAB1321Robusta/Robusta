@@ -32,38 +32,17 @@ public class CloseResourceMethodInvocationExample {
 	/**
 	 * These examples will be marked only if user add such user defined rules.
 	 */
-	public void userDefinedClass() throws Exception {
+	public void userDefinedClassOrMethodOrFullQualifiedMethod() throws Exception {
 		UserDefinedCarelessCleanupClass clazz = new UserDefinedCarelessCleanupClass();
 		clazz.bark();
 		clazz.bark();
+		clazz.bite();
 		clazz.bite();
 		
 		UserDefinedCarelessCleanupMethod methods = new UserDefinedCarelessCleanupMethod();
 		methods.Shine();
 		methods.rain();
 		methods.bark();
-	}
-	
-	/**
-	 * These examples will be marked only if user add such user defined rules.
-	 */
-	public void userDefinedMethod() throws Exception {
-		UserDefinedCarelessCleanupClass clazz = new UserDefinedCarelessCleanupClass();
-		clazz.bark();
-		clazz.bark();
-		clazz.bite();
-		
-		UserDefinedCarelessCleanupMethod methods = new UserDefinedCarelessCleanupMethod();
-		methods.Shine();
-		methods.rain();
-		methods.bark();
-	}
-
-	public void userDefinedMethodWithArguments() throws Exception {
-		UserDefinedCarelessCleanupMethod methods = new UserDefinedCarelessCleanupMethod();
-		methods.Shine(5);
-		methods.Shine();
-		methods.Shine(10);
 	}
 
 	/**
@@ -121,7 +100,6 @@ public class CloseResourceMethodInvocationExample {
 		}
 		
 		public void closeResourceByInvokeMyClose() throws Exception {
-			close(); // Is when user defined
 			close(); // Is when user defined
 		}
 	}

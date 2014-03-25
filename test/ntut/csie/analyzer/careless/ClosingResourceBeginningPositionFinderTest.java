@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import ntut.csie.filemaker.ASTNodeFinder;
-import ntut.csie.filemaker.TestEnvironmentBuilder;
+import ntut.csie.testutility.TestEnvironmentBuilder;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
