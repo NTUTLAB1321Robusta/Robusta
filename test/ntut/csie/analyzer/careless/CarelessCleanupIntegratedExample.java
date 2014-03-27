@@ -2,7 +2,6 @@ package ntut.csie.analyzer.careless;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,15 +48,12 @@ public class CarelessCleanupIntegratedExample {
 			fileOutputStream = new FileOutputStream(outputFile);
 			fileOutputStream.write(context);
 			fileOutputStream.close(); // Unsafe
-		} catch (FileNotFoundException e) {
-			System.out.println("FileNotFoundException.");
-			fileOutputStream.close(); // Unsafe
-			throw e;
 		} catch (IOException e) {
+			System.out.println("IOException.");
 			fileOutputStream.close(); // Safe
 			throw e;
 		} finally {
-			System.out.println("Close nothing at all.");
+			fileOutputStream.flush();
 			fileOutputStream.close(); // Unsafe
 		}
 	}
@@ -68,7 +64,7 @@ public class CarelessCleanupIntegratedExample {
 		for (int a = 0; a < 10; a++) {
 			try {
 				if (a == 5) {
-					fileOutputStream.close(); // Unsafe
+					fileOutputStream.close(); // Safe
 				}
 			} catch (IOException e) {
 				throw e;
@@ -76,19 +72,20 @@ public class CarelessCleanupIntegratedExample {
 		}
 	}
 
-	/**
-	 * Should define UserDefinedCarelessCleanupClass and method "bark"
-	 */
 	public void thrownExceptionInFinallyWith2KindsUserDefinedInstance()
 			throws Exception {
+		MethodInvocationBeforeClose methodBeforeClose = new MethodInvocationBeforeClose();
+		
 		UserDefinedCarelessCleanupMethod udMethod = new UserDefinedCarelessCleanupMethod();
 		UserDefinedCarelessCleanupClass udClass = new UserDefinedCarelessCleanupClass();
 		try {
-			udMethod.bark(); // Unsafe
-			udClass.bark(); // Unsafe
+			methodBeforeClose.declaredCheckedException();
+			udMethod.bark(); // Unsafe when user defined
+			udClass.bark(); // Unsafe when user defined
 		} finally {
-			udMethod.bark(); // Unsafe
-			udClass.bite(); // Unsafe
+			methodBeforeClose.declaredCheckedException();
+			udMethod.bark(); // Unsafe when user defined
+			udClass.bite(); // Unsafe when user defined
 		}
 	}
 
@@ -98,13 +95,13 @@ public class CarelessCleanupIntegratedExample {
 		try {
 			zOut.write(is.read());
 		} finally {
-			ResourceCloser.closeResourceDirectly(is); // Safe but detected
+			ResourceCloser.closeResourceDirectly(is); // Safe
 		}
 		try {
 			zOut.write(is.read());
 		} finally {
-			ResourceCloser.closeResourceDirectly(is); // Unsafe
-		}
+			ResourceCloser.closeResourceDirectly(is); // Unsafe anyway
+		} 
 	}
 
 	/**
@@ -144,13 +141,10 @@ public class CarelessCleanupIntegratedExample {
 		}
 	}
 
-	/**
-	 * This example will be detected only if user define "*.close"
-	 */
 	public void instanceDoNotImpCloseable(OutputStream outputStream)
 			throws IOException {
 		ImageOutputStream ios = ImageIO.createImageOutputStream(outputStream);
 		ios.flush();
-		ios.close();
+		ios.close(); // Unsafe only if user define "*.close"
 	}
 }

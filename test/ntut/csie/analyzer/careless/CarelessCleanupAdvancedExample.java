@@ -35,13 +35,32 @@ public class CarelessCleanupAdvancedExample {
 
 	/**
 	 * The close action will be reach even if any exception be thrown in that
-	 * try statement. But there is maybe a exception before the try statement.
+	 * try statement. But there is a exception been declared before this try statement.
 	 */
-	public void closeInFinallyButStatementBetweenCreateAndTryStatement()
+	public void safeCloseInTryButSimpleDeclaredBeforeTry()
 			throws Exception {
 		FileInputStream fis = new FileInputStream(file);
 
-		methodBeforeClose.didNotDeclareAnyExceptionButThrowUnchecked();
+		methodBeforeClose.declaredCheckedException();
+
+		try {
+			methodBeforeClose.declaredCheckedException();
+		} finally {
+			fis.close(); // Unsafe
+		}
+	}
+
+	/**
+	 * The close action will be reach even if any exception be thrown in that
+	 * try statement. But there is a exception been declared before this try statement.
+	 */
+	public void safeCloseInTryButDeclaredInOtherStatementBeforeTry()
+			throws Exception {
+		FileInputStream fis = new FileInputStream(file);
+
+		if (true) {
+			methodBeforeClose.declaredCheckedException();
+		}
 
 		try {
 			methodBeforeClose.declaredCheckedException();
@@ -54,23 +73,23 @@ public class CarelessCleanupAdvancedExample {
 	 * The close action will be reach even if any exception be thrown in that
 	 * try statement. But there is maybe a exception before the try statement.
 	 */
-	public void closeInFinallyButSomeStatementBetweenCreateAndTryStatement()
+	public void safeCloseInTryAndDeclaredInOtherStatementBeenCaught()
 			throws Exception {
 		FileInputStream fis = new FileInputStream(file);
 
 		/*
-		 * Even if this try statement won't throw any exception in truth, we
-		 * still treat it as may throw exception
+		 * The thrown exception already been caught, so it will not interrupt
+		 * the close action below.
 		 */
 		try {
-			methodBeforeClose.willNotThrowAnyException();
-		} catch (Exception e) {
+			methodBeforeClose.declaredCheckedException();
+		} catch (IOException e) {
 		}
 
 		try {
 			methodBeforeClose.declaredCheckedException();
 		} finally {
-			fis.close(); // Unsafe
+			fis.close(); // Safe
 		}
 	}
 
@@ -79,11 +98,13 @@ public class CarelessCleanupAdvancedExample {
 	 * Because if "declaredCheckedException" throws an exception, the creation
 	 * won't be reached.
 	 */
-	public void closeInFinallyWithStatementOnlyBeforeCreated() throws Exception {
+	public void safeCloseInTryWithDidDeclaredBetweenCreationAndClosed() throws Exception {
 		methodBeforeClose.declaredCheckedException();
 
 		FileInputStream fis = new FileInputStream(file);
 
+		methodBeforeClose.willNotThrowAnyException();
+		
 		try {
 			methodBeforeClose.declaredCheckedException();
 		} finally {
@@ -105,56 +126,53 @@ public class CarelessCleanupAdvancedExample {
 	 */
 	class ConcreteCloseable extends SuperCloseable {
 		public void close() {
-			methodBeforeClose.didNotDeclareAnyExceptionButThrowUnchecked();
+			methodBeforeClose.declaredUncheckedException();
 			super.close(); // TODO Unsafe, but will not mark it yet 
 		}
 	}
 
 	/**
-	 * "fileInputStream" will be reassign before it close, and method "reset()"
-	 * will throw exception before the assignment. For now, this is a cc example
-	 * because we treat the variableDeclaration as the beginning.
+	 * For Robusta, this is a CC bad smell(Because we start from the
+	 * declaration), but it is not for humans.
 	 */
-	public void throwExceptionBeforeCreation(FileOutputStream fos)
+	public void variableBeenAssignedAfterDeclared() throws IOException {
+		FileInputStream fis;
+		fis = new FileInputStream(file);
+		fis.close(); // Unsafe for Robusta
+	}
+
+	/**
+	 * For Robusta, this is a CC bad smell, but not for humans.
+	 */
+	public void throwExceptionBeforeAssignment(FileOutputStream fos)
 			throws IOException {
-		fileInputStream.reset();
-		int a = 10;
+		methodBeforeClose.declaredCheckedException();
+		
 		try {
 			fileInputStream = new FileInputStream("path");
 			fileInputStream.read();
 		} finally {
-			fileInputStream.close(); // Unsafe
+			fileInputStream.close(); // Unsafe for Robusta
 		}
 	}
 
 	/**
-	 * The close action will always be reached. But because of the limit of
-	 * detected rule, it will be consider an unsafe code.
+	 * There isn't any declared before the close action.
 	 */
-	public void closeIsTheFirstExecuteStatementThatAlwaysBeExecute()
+	public void closeIsTheFirstExecuteStatementWithoutDeclared()
 			throws Exception {
-		if (true) {
+		if (fileInputStream != null) {
 			try {
-				fileInputStream.close(); // Unsafe
+				fileInputStream.close(); // Safe
 			} finally {
 			}
 		}
 	}
 
 	/**
-	 * There is maybe an exception before the try statement on the expression on
-	 * if statement.
+	 * There is a declaration before the close action on the expression of if
+	 * statement.
 	 */
-	public void closeIsTheFirstExecuteStatementButStillUnsafeWithIfTryStatement()
-			throws Exception {
-		if (1 == fileInputStream.available()) {
-			try {
-				fileInputStream.close(); // Unsafe
-			} finally {
-			}
-		}
-	}
-
 	public void closeIsTheFirstExecuteStatementButStillUnsafeWithIfStatement()
 			throws IOException {
 		if (1 == fileInputStream.available()) {
@@ -189,25 +207,7 @@ public class CarelessCleanupAdvancedExample {
 			is.close(); // Unsafe
 		}
 	}
-
-	/**
-	 * Although the try statement before is safe because it catch row type of
-	 * Exception and do nothing., but it still a unsafe structure. So it will be
-	 * make as careless cleanup.
-	 */
-	public void closeAfterSafeTryStatement() throws IOException {
-		try {
-			fileInputStream.available();
-		} catch (Exception e) {
-			// ignore
-		}
-		try {
-			fileInputStream.close(); // Unsafe
-		} finally {
-			fileInputStream.close(); // Unsafe
-		}
-	}
-
+	
 	/**
 	 * To make sure that the fis won't get the wrong declaration.
 	 */
@@ -219,64 +219,6 @@ public class CarelessCleanupAdvancedExample {
 		if (opcode == 2) {
 			FileInputStream fis = null;
 			fis.close(); // Safe
-		}
-	}
-
-	/**
-	 * About the resource fis. If we treat it's declaration point as beginning, then
-	 * it is unsafe. But if we treat it's last assignment as beginning, then it
-	 * is safe.
-	 * Now we treat it as unsafe when 2013/12/30. 
-	 */
-	public void variableBeenAssignedTwice(int opcode) throws IOException {
-		FileInputStream fis = null;
-		if (fis.available() != 1) {
-			fis = new FileInputStream(file);
-			fis.close(); // Unsafe
-		}
-	}
-
-	/**
-	 * About the resource fis. If we treat it's declaration point as beginning,
-	 * then it is unsafe. But if we treat it's first assignment as beginning,
-	 * then it is safe.
-	 * Now we treat it as unsafe when 2013/12/30.
-	 */
-	public void variableBeenAssignedAfterDeclared() throws IOException {
-		FileInputStream fis;
-		file = null;
-		fis = new FileInputStream(file);
-		fis.close(); // Unsafe
-	}
-
-	/**
-	 * The instance "new FileInputStream(file)" is safe, but the instance "null"
-	 * is unsafe. We should treat it as careless cleanup when it has any unsafe
-	 * close.
-	 */
-	public void variableBeenAssignedTwiceAtDifferentPath(int opcode) throws IOException {
-		FileInputStream fis = null;
-		if (opcode == 2) {
-			fis = new FileInputStream(file);
-		}
-		fis.close(); // Unsafe
-	}
-
-	/**
-	 * We shouldn't treat "fileInputStream = new FileInputStream(file);" as the
-	 * nearest assignment, because it may not be executed.
-	 */
-	public void getSuitableAssignment(int opcode) throws IOException {
-		if (opcode == 1) {
-			fileInputStream = new FileInputStream(file);
-			fileInputStream.read();
-		}
-		try {
-			fileInputStream.read();
-		} catch (IOException e) {
-			System.out.println(e.toString());
-		} finally {
-			fileInputStream.close(); // Unsafe
 		}
 	}
 
@@ -312,12 +254,13 @@ public class CarelessCleanupAdvancedExample {
 
 	public void closeResourceFromGetResourceWithImp() throws Exception {
 		ClassWithGetResource resourceManager = new ClassWithGetResource();
+		methodBeforeClose.declaredUncheckedException();
 		resourceManager.getResourceWithImp().close(); // Unsafe
 	}
 	
 	public void closeResourceFromGetResourceWithInterface() throws Exception {
 		ClassWithGetResource resourceManager = new ClassWithGetResource();
+		methodBeforeClose.declaredCheckedException();
 		resourceManager.getResourceWithInterface().close(); // Unsafe
 	}
-	
 }
