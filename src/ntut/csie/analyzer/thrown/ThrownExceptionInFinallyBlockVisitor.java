@@ -153,7 +153,14 @@ public class ThrownExceptionInFinallyBlockVisitor extends ASTVisitor {
 				typeBinding);
 		markerInfo.setExceptionsMethodThrown(node.resolveMethodBinding()
 				.getExceptionTypes());
-
+		
+		ITypeBinding returnType = (ITypeBinding)node.resolveMethodBinding().getReturnType();
+		if(returnType.getQualifiedName().equals("void")) {
+			markerInfo.setSupportRefactoring(true);
+		} else {
+			markerInfo.setSupportRefactoring(false);
+		}
+		
 		thrownInFinallyList.add(markerInfo);
 	}
 
@@ -163,7 +170,14 @@ public class ThrownExceptionInFinallyBlockVisitor extends ASTVisitor {
 				typeBinding);
 		markerInfo.setExceptionsMethodThrown(node.resolveMethodBinding()
 				.getExceptionTypes());
-
+		
+		ITypeBinding returnType = (ITypeBinding)node.resolveMethodBinding().getReturnType();
+		if(returnType.getQualifiedName().equals("void")) {
+			markerInfo.setSupportRefactoring(true);
+		} else {
+			markerInfo.setSupportRefactoring(false);
+		}
+		
 		thrownInFinallyList.add(markerInfo);
 	}
 
@@ -171,7 +185,7 @@ public class ThrownExceptionInFinallyBlockVisitor extends ASTVisitor {
 		ITypeBinding typeBinding = NodeUtils.getExpressionBinding(node);
 		MarkerInfo markerInfo = createThrownInFinallyMarkerInfo(node,
 				typeBinding);
-
+		markerInfo.setSupportRefactoring(false);
 		thrownInFinallyList.add(markerInfo);
 	}
 
@@ -179,7 +193,7 @@ public class ThrownExceptionInFinallyBlockVisitor extends ASTVisitor {
 		ITypeBinding typeBinding = null;
 		MarkerInfo markerInfo = createThrownInFinallyMarkerInfo(node,
 				typeBinding);
-
+		markerInfo.setSupportRefactoring(false);
 		thrownInFinallyList.add(markerInfo);
 	}
 

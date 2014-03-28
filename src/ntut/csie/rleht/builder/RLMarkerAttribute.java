@@ -21,6 +21,8 @@ public interface RLMarkerAttribute {
 
 	public static final String RL_MSG_INDEX = "RL_MSG_INDEX";
 	
+	public static final String RL_INFO_SUPPORT_REFACTORING = "RL_INFO_SUPPORT_REFACTORING";
+	
 	/** Suppress Smell Error */
 	public static final String ERR_SS_NO_SMELL = "ERR_SS_NO_SMELL";
 
