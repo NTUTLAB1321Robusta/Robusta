@@ -9,6 +9,9 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Statement;
 
+/**
+ * It will check if any exception been declared before
+ */
 public class MethodInvocationMayInterruptByExceptionChecker {
 
 	private int beginningPosition;

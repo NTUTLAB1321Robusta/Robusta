@@ -25,7 +25,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		public ClassWithGetResource getResourceNotImpCloseable() {
 			return this;
 		}
-		public void close() {
+		public void close() throws IOException {
 		}
 		
 		public void closeResourceByInvokeMyClose() throws Exception {
@@ -51,11 +51,12 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 
 	public void closeByUserDefinedMethod(OutputStream zOut)
 			throws IOException {
+		(new MethodInvocationBeforeClose()).declaredCheckedException();
 		InputStream is = null;
 		try {
 			zOut.write(is.read());
 		} finally {
-			ResourceCloser.closeResourceDirectly(is); // Isn't even user defined
+			ResourceCloser.closeResourceDirectly(is); // Isn't
 		}
 	}
 
@@ -70,17 +71,14 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		try {
 			fileOutputStream = new FileOutputStream(outputFile);
 			fileOutputStream.write(context);
-			fileOutputStream.close(); // Is
-		} catch (FileNotFoundException e) {
-			System.out.println("FileNotFoundException.");
-			fileOutputStream.close(); // Is
-			throw e;
+			fileOutputStream.close(); // Unsafe
 		} catch (IOException e) {
-			fileOutputStream.close(); // Isn't
+			System.out.println("IOException.");
+			fileOutputStream.close(); // Safe
 			throw e;
 		} finally {
-			System.out.println("Close nothing at all.");
-			fileOutputStream.close(); // Is
+			fileOutputStream.flush();
+			fileOutputStream.close(); // Unsafe
 		}
 	}
 }
