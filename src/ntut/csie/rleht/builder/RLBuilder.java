@@ -115,6 +115,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 			marker.setAttribute(RLMarkerAttribute.RL_MSG_INDEX, String.valueOf(csIdx));
 			marker.setAttribute(RLMarkerAttribute.CCU_WITH_TRY, markerInfo.getIsInTry());
 			marker.setAttribute(RLMarkerAttribute.MI_WITH_Ex, markerInfo.getExceptionType());
+			marker.setAttribute(RLMarkerAttribute.RL_INFO_SUPPORT_REFACTORING, markerInfo.isSupportRefactoring());
 		} catch (CoreException e) {
 			logger.error("[addMarker] Exception ",e);
 		}

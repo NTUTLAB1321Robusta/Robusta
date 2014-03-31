@@ -27,7 +27,16 @@ public class MarkerInfo {
 	private String methodName;
 	private int methodIndex = -1;
 	private int badSmellIndex = 0;
+	private boolean supportRefactoring = false;
 	
+	public boolean isSupportRefactoring() {
+		return supportRefactoring;
+	}
+
+	public void setSupportRefactoring(boolean supportRefactoring) {
+		this.supportRefactoring = supportRefactoring;
+	}
+
 	public int getBadSmellIndex() {
 		return badSmellIndex;
 	}
