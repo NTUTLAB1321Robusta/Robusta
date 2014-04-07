@@ -16,6 +16,7 @@ import org.eclipse.jdt.core.IOpenable;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.eclipse.jdt.core.dom.CatchClause;
@@ -131,8 +132,15 @@ public class ExtractMethodRefactoring extends org.eclipse.jdt.internal.corext.re
 
 	private void addNewMethodDeclaration() {
 		MethodDeclaration md = createNewMethodDeclaration();
-		TypeDeclaration typeNode = (TypeDeclaration)NodeUtils.getSpecifiedParentNode(enclosingNode, ASTNode.TYPE_DECLARATION);
-		ListRewrite list = rewrite.getListRewrite(typeNode, TypeDeclaration.BODY_DECLARATIONS_PROPERTY);
+		ASTNode typeNode = NodeUtils.getSpecifiedParentNode(enclosingNode, ASTNode.ANONYMOUS_CLASS_DECLARATION);
+		ListRewrite list;
+		if(typeNode != null)
+		{
+			list = rewrite.getListRewrite(typeNode, AnonymousClassDeclaration.BODY_DECLARATIONS_PROPERTY);
+		} else {
+			typeNode = NodeUtils.getSpecifiedParentNode(enclosingNode, ASTNode.TYPE_DECLARATION);
+			list = rewrite.getListRewrite(typeNode, TypeDeclaration.BODY_DECLARATIONS_PROPERTY);
+		}
 		list.insertAfter(md, bodyDeclaration, null);
 	}
 	
