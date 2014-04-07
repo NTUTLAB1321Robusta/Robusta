@@ -2,20 +2,15 @@ package ntut.csie.robusta.codegen.refactoring;
 
 import java.util.List;
 
-import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.util.NodeUtils;
 
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.IMethod;
-import org.eclipse.jdt.core.IOpenable;
-import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.eclipse.jdt.core.dom.CatchClause;
@@ -24,7 +19,6 @@ import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Modifier;
@@ -128,12 +122,18 @@ public class ExtractMethodRefactoring extends org.eclipse.jdt.internal.corext.re
 		return result;
 	}
 	
-
 	private void addNewMethodDeclaration() {
-		MethodDeclaration md = createNewMethodDeclaration();
-		TypeDeclaration typeNode = (TypeDeclaration)NodeUtils.getSpecifiedParentNode(enclosingNode, ASTNode.TYPE_DECLARATION);
-		ListRewrite list = rewrite.getListRewrite(typeNode, TypeDeclaration.BODY_DECLARATIONS_PROPERTY);
-		list.insertAfter(md, bodyDeclaration, null);
+		MethodDeclaration methodDeclaration = createNewMethodDeclaration();
+		ASTNode typeNode = NodeUtils.getSpecifiedParentNode(enclosingNode,ASTNode.ANONYMOUS_CLASS_DECLARATION);
+		ListRewrite list;
+		if (typeNode != null) {
+			list = rewrite.getListRewrite(typeNode,
+					AnonymousClassDeclaration.BODY_DECLARATIONS_PROPERTY);
+		} else {
+			typeNode = NodeUtils.getSpecifiedParentNode(enclosingNode,ASTNode.TYPE_DECLARATION);
+			list = rewrite.getListRewrite(typeNode,TypeDeclaration.BODY_DECLARATIONS_PROPERTY);
+		}
+		list.insertAfter(methodDeclaration, bodyDeclaration, null);
 	}
 	
 	private void replaceNodeWithMethodInvocation() {
@@ -146,10 +146,6 @@ public class ExtractMethodRefactoring extends org.eclipse.jdt.internal.corext.re
 		return result;
 	}
 
-
-	/**
-	 * @return
-	 */
 	private MethodDeclaration createNewMethodSignature() {
 		MethodDeclaration result = ast.newMethodDeclaration();
 		if (modifierType == "public")
