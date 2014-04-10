@@ -1,6 +1,6 @@
 package ntut.csie.analyzer.careless;
 
-public class FirstLevelChildStatementExample {
+public class StatementsInBlockExample {
 
 	public void methodWithTwoStatements() {
 		System.out.println("Hi");

@@ -1,5 +1,7 @@
 package ntut.csie.util;
 
+import org.eclipse.jdt.core.dom.ASTNode;
+
 public class BoundaryChecker {
 
 	private int lowerBound;
@@ -14,7 +16,24 @@ public class BoundaryChecker {
 		this.upperBound = upperBound;
 	}
 
-	public boolean isInInterval(int value) {
+	public boolean isInOpenInterval(int value) {
 		return (value > lowerBound) && (value < upperBound);
+	}
+
+	public boolean isInClosedInterval(int value) {
+		return (value >= lowerBound) && (value <= upperBound);
+	}
+
+	/**
+	 * If the start position of this node is in the given interval.
+	 */
+	public boolean isInOpenInterval(ASTNode node) {
+		return isInOpenInterval(node.getStartPosition());
+	}
+	/**
+	 * If the start position of this node is in the given interval.
+	 */
+	public boolean isInClosedInterval(ASTNode node) {
+		return isInClosedInterval(node.getStartPosition());
 	}
 }

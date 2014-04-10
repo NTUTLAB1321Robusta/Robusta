@@ -3,6 +3,7 @@ package ntut.csie.analyzer.thrown;
 import java.util.ArrayList;
 import java.util.List;
 
+import ntut.csie.analyzer.ThrownExceptionBeCaughtDetector;
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.util.NodeUtils;
@@ -116,33 +117,6 @@ public class ThrownExceptionInFinallyBlockVisitor extends ASTVisitor {
 		return true;
 	}
 
-	/**
-	 * Check if the node input is a finally block
-	 * @author pig
-	 */
-	private boolean isFinallyBlock(Block node) {
-		Block finallyBlockOfParent = getFinallyBlockOfFirstParentOfTryStatement(node);
-		if (finallyBlockOfParent == null || node == null) {
-			return false;
-		}
-		return NodeUtils.isTwoASTNodeAreTheSame(finallyBlockOfParent, node);
-	}
-
-	/**
-	 * @return null - if there is no any parent which type is try statement, or
-	 *         there is no finally block on that try statement
-	 * @author pig
-	 */
-	private Block getFinallyBlockOfFirstParentOfTryStatement(Block node) {
-		TryStatement trySatatmentParentNode = (TryStatement) NodeUtils
-				.getSpecifiedParentNode(node, ASTNode.TRY_STATEMENT);
-
-		if (trySatatmentParentNode == null) {
-			return null;
-		}
-		return trySatatmentParentNode.getFinally();
-	}
-
 	private boolean isInAnyFinallyBlock() {
 		return finallyStack > 0;
 	}
@@ -212,5 +186,24 @@ public class ThrownExceptionInFinallyBlockVisitor extends ASTVisitor {
 
 	public List<MarkerInfo> getThrownInFinallyList() {
 		return thrownInFinallyList;
+	}
+
+	/**
+	 * Check if the node input is a finally block
+	 * @author pig
+	 */
+	private boolean isFinallyBlock(ASTNode checkingNode) {
+		if (checkingNode == null || !(checkingNode instanceof Block)) {
+			return false;
+		}
+
+		TryStatement trySatatmentParentNode = (TryStatement) NodeUtils
+				.getSpecifiedParentNode(checkingNode, ASTNode.TRY_STATEMENT);
+		if (trySatatmentParentNode != null) {
+			Block finallyBlock = trySatatmentParentNode.getFinally();
+			return (finallyBlock!=null && NodeUtils.isTwoASTNodeAreTheSame(finallyBlock, checkingNode));
+		}
+
+		return false;
 	}
 }

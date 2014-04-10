@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import ntut.csie.analyzer.ASTMethodCollector;
-import ntut.csie.analyzer.careless.FirstLevelChildStatementCollectingVisitor;
+import ntut.csie.analyzer.careless.StatementsInBlockCollectingVisitor;
 import ntut.csie.filemaker.ASTNodeFinder;
 import ntut.csie.testutility.TestEnvironmentBuilder;
 import ntut.csie.util.NodeUtils;
@@ -21,21 +21,21 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class FirstLevelChildStatementCollectingVisitorTest {
+public class StatementsInBlockCollectingVisitorTest {
 
 	private TestEnvironmentBuilder environmentBuilder;
-	private FirstLevelChildStatementCollectingVisitor flcscVisitor;
+	private StatementsInBlockCollectingVisitor sbcVisitor;
 	private CompilationUnit compilationUnit;
 	
 	@Before
 	public void setUp() throws Exception {
-		environmentBuilder = new TestEnvironmentBuilder("FirstLevelChildStatementCollectingProject");
+		environmentBuilder = new TestEnvironmentBuilder("StatementsInBlockCollectingProject");
 		environmentBuilder.createTestEnvironment();
 
-		environmentBuilder.loadClass(FirstLevelChildStatementExample.class);
+		environmentBuilder.loadClass(StatementsInBlockExample.class);
 
 		compilationUnit = environmentBuilder
-				.getCompilationUnit(FirstLevelChildStatementExample.class);
+				.getCompilationUnit(StatementsInBlockExample.class);
 	}
 
 	@After
@@ -48,10 +48,10 @@ public class FirstLevelChildStatementCollectingVisitorTest {
 		List<MethodDeclaration> methodList = getMethodListFromCompilationUnit();
 		
 		Block blockOfMethod = methodList.get(0).getBody();
-		flcscVisitor = new FirstLevelChildStatementCollectingVisitor();
-		blockOfMethod.accept(flcscVisitor);
+		sbcVisitor = new StatementsInBlockCollectingVisitor();
+		blockOfMethod.accept(sbcVisitor);
 
-		assertEquals(2, flcscVisitor.getChildren().size());
+		assertEquals(2, sbcVisitor.getStatementsInBlock().size());
 	}
 
 	@Test
@@ -59,10 +59,10 @@ public class FirstLevelChildStatementCollectingVisitorTest {
 		List<MethodDeclaration> methodList = getMethodListFromCompilationUnit();
 		
 		Block blockOfMethod = methodList.get(1).getBody();
-		flcscVisitor = new FirstLevelChildStatementCollectingVisitor();
-		blockOfMethod.accept(flcscVisitor);
+		sbcVisitor = new StatementsInBlockCollectingVisitor();
+		blockOfMethod.accept(sbcVisitor);
 
-		assertEquals(0, flcscVisitor.getChildren().size());
+		assertEquals(0, sbcVisitor.getStatementsInBlock().size());
 	}
 	
 	@Test
@@ -70,10 +70,10 @@ public class FirstLevelChildStatementCollectingVisitorTest {
 		List<MethodDeclaration> methodList = getMethodListFromCompilationUnit();
 		
 		Block blockOfMethod = methodList.get(2).getBody();
-		flcscVisitor = new FirstLevelChildStatementCollectingVisitor();
-		blockOfMethod.accept(flcscVisitor);
+		sbcVisitor = new StatementsInBlockCollectingVisitor();
+		blockOfMethod.accept(sbcVisitor);
 
-		assertEquals(0, flcscVisitor.getChildren().size());
+		assertEquals(0, sbcVisitor.getStatementsInBlock().size());
 	}
 	
 	@Test
@@ -81,10 +81,10 @@ public class FirstLevelChildStatementCollectingVisitorTest {
 		List<MethodDeclaration> methodList = getMethodListFromCompilationUnit();
 		
 		Block blockOfMethod = methodList.get(3).getBody();
-		flcscVisitor = new FirstLevelChildStatementCollectingVisitor();
-		blockOfMethod.accept(flcscVisitor);
+		sbcVisitor = new StatementsInBlockCollectingVisitor();
+		blockOfMethod.accept(sbcVisitor);
 
-		assertEquals(0, flcscVisitor.getChildren().size());
+		assertEquals(0, sbcVisitor.getStatementsInBlock().size());
 	}
 	
 	@Test
@@ -92,10 +92,10 @@ public class FirstLevelChildStatementCollectingVisitorTest {
 		List<MethodDeclaration> methodList = getMethodListFromCompilationUnit();
 		
 		Block blockOfMethod = methodList.get(4).getBody();
-		flcscVisitor = new FirstLevelChildStatementCollectingVisitor();
-		blockOfMethod.accept(flcscVisitor);
+		sbcVisitor = new StatementsInBlockCollectingVisitor();
+		blockOfMethod.accept(sbcVisitor);
 
-		assertEquals(1, flcscVisitor.getChildren().size());
+		assertEquals(1, sbcVisitor.getStatementsInBlock().size());
 	}
 	
 	@Test
@@ -103,10 +103,10 @@ public class FirstLevelChildStatementCollectingVisitorTest {
 		List<MethodDeclaration> methodList = getMethodListFromCompilationUnit();
 		
 		Block blockOfMethod = methodList.get(5).getBody();
-		flcscVisitor = new FirstLevelChildStatementCollectingVisitor();
-		blockOfMethod.accept(flcscVisitor);
+		sbcVisitor = new StatementsInBlockCollectingVisitor();
+		blockOfMethod.accept(sbcVisitor);
 
-		assertEquals(1, flcscVisitor.getChildren().size());
+		assertEquals(1, sbcVisitor.getStatementsInBlock().size());
 	}
 
 	@Test
@@ -114,10 +114,10 @@ public class FirstLevelChildStatementCollectingVisitorTest {
 		List<MethodDeclaration> methodList = getMethodListFromCompilationUnit();
 		
 		Block blockOfMethod = methodList.get(6).getBody();
-		flcscVisitor = new FirstLevelChildStatementCollectingVisitor();
-		blockOfMethod.accept(flcscVisitor);
+		sbcVisitor = new StatementsInBlockCollectingVisitor();
+		blockOfMethod.accept(sbcVisitor);
 		
-		assertEquals(2, flcscVisitor.getChildren().size());
+		assertEquals(2, sbcVisitor.getStatementsInBlock().size());
 	}
 	
 	@Test
@@ -125,10 +125,10 @@ public class FirstLevelChildStatementCollectingVisitorTest {
 		List<MethodDeclaration> methodList = getMethodListFromCompilationUnit();
 		
 		Block blockOfMethod = methodList.get(7).getBody();
-		flcscVisitor = new FirstLevelChildStatementCollectingVisitor();
-		blockOfMethod.accept(flcscVisitor);
+		sbcVisitor = new StatementsInBlockCollectingVisitor();
+		blockOfMethod.accept(sbcVisitor);
 
-		assertEquals(1, flcscVisitor.getChildren().size());
+		assertEquals(1, sbcVisitor.getStatementsInBlock().size());
 	}
 	
 	@Test
@@ -136,10 +136,10 @@ public class FirstLevelChildStatementCollectingVisitorTest {
 		List<MethodDeclaration> methodList = getMethodListFromCompilationUnit();
 		
 		Block blockOfMethod = methodList.get(8).getBody();
-		flcscVisitor = new FirstLevelChildStatementCollectingVisitor();
-		blockOfMethod.accept(flcscVisitor);
+		sbcVisitor = new StatementsInBlockCollectingVisitor();
+		blockOfMethod.accept(sbcVisitor);
 
-		assertEquals(3, flcscVisitor.getChildren().size());
+		assertEquals(3, sbcVisitor.getStatementsInBlock().size());
 	}
 
 	@Test
@@ -153,17 +153,14 @@ public class FirstLevelChildStatementCollectingVisitorTest {
 				miList.get(0), ASTNode.BLOCK);
 		assertTrue(parentBlock.getParent().getNodeType() == ASTNode.TRY_STATEMENT);
 
-		flcscVisitor = new FirstLevelChildStatementCollectingVisitor();
-		parentBlock.accept(flcscVisitor);
+		sbcVisitor = new StatementsInBlockCollectingVisitor();
+		parentBlock.accept(sbcVisitor);
 
-		assertEquals(2, flcscVisitor.getChildren().size());
+		assertEquals(2, sbcVisitor.getStatementsInBlock().size());
 	}
 
-	/**
-	 * Even the argument of is a methodInvocation, it won't be collect
-	 */
-	@Test
-	public void testWithMethodInvocation() {
+	@Test(expected=IllegalArgumentException.class)
+	public void testWithNonBlockASTNode() {
 		String tempCode = "outerMethodInvocation(methodInvocationAsArgument())";
 		List<MethodInvocation> miList;
 		miList = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(
@@ -173,10 +170,8 @@ public class FirstLevelChildStatementCollectingVisitorTest {
 
 		MethodInvocation putMethodInvocation = miList.get(0);
 
-		flcscVisitor = new FirstLevelChildStatementCollectingVisitor();
-		putMethodInvocation.accept(flcscVisitor);
-
-		assertEquals(0, flcscVisitor.getChildren().size());
+		sbcVisitor = new StatementsInBlockCollectingVisitor();
+		putMethodInvocation.accept(sbcVisitor);
 	}
 
 	private List<MethodDeclaration> getMethodListFromCompilationUnit()

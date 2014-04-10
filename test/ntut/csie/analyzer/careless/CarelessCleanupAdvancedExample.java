@@ -127,7 +127,7 @@ public class CarelessCleanupAdvancedExample {
 	class ConcreteCloseable extends SuperCloseable {
 		public void close() {
 			methodBeforeClose.declaredUncheckedException();
-			super.close(); // TODO Unsafe, but will not mark it yet 
+			super.close(); // Safe for Robusta (Not for human) 
 		}
 	}
 
@@ -138,7 +138,7 @@ public class CarelessCleanupAdvancedExample {
 	public void variableBeenAssignedAfterDeclared() throws IOException {
 		FileInputStream fis;
 		fis = new FileInputStream(file);
-		fis.close(); // Unsafe for Robusta
+		fis.close(); // Unsafe for Robusta (Not for human) 
 	}
 
 	/**
@@ -152,7 +152,7 @@ public class CarelessCleanupAdvancedExample {
 			fileInputStream = new FileInputStream("path");
 			fileInputStream.read();
 		} finally {
-			fileInputStream.close(); // Unsafe for Robusta
+			fileInputStream.close(); // Unsafe for Robusta (Not for human) 
 		}
 	}
 
@@ -190,7 +190,7 @@ public class CarelessCleanupAdvancedExample {
 	public void closeIsTheFirstExecuteStatementButStillUnsafeWithDoWhileStatement()
 			throws IOException {
 		do {
-			fileInputStream.close(); // Unsafe
+			fileInputStream.close(); // Safe for Robusta (Not for human) 
 		} while (1 == fileInputStream.available());
 	}
 

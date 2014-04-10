@@ -2,7 +2,6 @@ package ntut.csie.analyzer.careless;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,10 +15,10 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 	MethodInvocationBeforeClose methodBeforeClose = new MethodInvocationBeforeClose();
 	
 	class ClassWithGetResource {
-		public java.nio.channels.Channel getResourceWithInterface() {
-			return null;
+		public ClassWithGetResource() throws RuntimeException {
 		}
-		public FileOutputStream getResourceWithImp() {
+		
+		public java.nio.channels.Channel getResourceWithInterface() {
 			return null;
 		}
 		public ClassWithGetResource getResourceNotImpCloseable() {
@@ -34,11 +33,6 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		}
 	}
 
-	public void invokeGetResourceAndCloseItWithImp() throws Exception {
-		ClassWithGetResource resourceManager = new ClassWithGetResource();
-		resourceManager.getResourceWithImp().close();  // Is
-	}
-	
 	public void invokeGetResourceAndCloseItWithInterface() throws Exception {
 		ClassWithGetResource resourceManager = new ClassWithGetResource();
 		resourceManager.getResourceWithInterface().close();  // Is

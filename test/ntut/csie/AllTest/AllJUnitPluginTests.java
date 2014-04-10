@@ -7,8 +7,8 @@ import ntut.csie.analyzer.SuppressWarningVisitorTest;
 import ntut.csie.analyzer.TryStatementCounterVisitorTest;
 import ntut.csie.analyzer.careless.CarelessCleanupVisitorTest;
 import ntut.csie.analyzer.careless.ClosingResourceBeginningPositionFinderTest;
-import ntut.csie.analyzer.careless.FirstLevelChildStatementCollectingVisitorTest;
 import ntut.csie.analyzer.careless.MethodInvocationMayInterruptByExceptionCheckerTest;
+import ntut.csie.analyzer.careless.StatementsInBlockCollectingVisitorTest;
 import ntut.csie.analyzer.careless.closingmethod.CloseResourceMethodInvocationVisitorTest;
 import ntut.csie.analyzer.dummy.DummyHandlerVisitorTest;
 import ntut.csie.analyzer.empty.EmptyCatchBlockVisitorTest;
@@ -48,7 +48,7 @@ import org.junit.runners.Suite;
 
 	CarelessCleanupVisitorTest.class,
 	ClosingResourceBeginningPositionFinderTest.class,
-	FirstLevelChildStatementCollectingVisitorTest.class,
+	StatementsInBlockCollectingVisitorTest.class,
 	MethodInvocationMayInterruptByExceptionCheckerTest.class,
 	CloseResourceMethodInvocationVisitorTest.class,
 	

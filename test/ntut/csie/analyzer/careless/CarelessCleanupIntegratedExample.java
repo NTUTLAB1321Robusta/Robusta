@@ -100,7 +100,7 @@ public class CarelessCleanupIntegratedExample {
 		try {
 			zOut.write(is.read());
 		} finally {
-			ResourceCloser.closeResourceDirectly(is); // Unsafe anyway
+			ResourceCloser.closeResourceDirectly(is); // Unsafe when user defined
 		} 
 	}
 
@@ -146,5 +146,23 @@ public class CarelessCleanupIntegratedExample {
 		ImageOutputStream ios = ImageIO.createImageOutputStream(outputStream);
 		ios.flush();
 		ios.close(); // Unsafe only if user define "*.close"
+	}
+
+	/**
+	 * It is an example of a bug after 2014/04/01. When detecting body of
+	 * catch-clause, the parent block will be body of methodDeclaration instead
+	 * of try block, so we have to handle this as special case.
+	 * @author pig
+	 */
+	public void closeInCatchAndThereIsUncaughtDecalredInTry(OutputStream outputStream)
+			throws IOException {
+		FileOutputStream fileOutputStream = null;
+		try {
+			throw new RuntimeException("Uncaught decalration");
+		} catch (IllegalArgumentException e) {
+			fileOutputStream.close(); // Safe
+		} catch (NullPointerException e) {
+			fileOutputStream.close(); // Safe
+		}
 	}
 }

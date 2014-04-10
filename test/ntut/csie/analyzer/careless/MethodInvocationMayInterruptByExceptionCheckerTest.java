@@ -57,11 +57,6 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 	public void testIsMayInterruptByExceptionWithInvokeGetResourceAndCloseItWithX()
 			throws Exception {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
-				"invokeGetResourceAndCloseItWithImp",
-				"resourceManager.getResourceWithImp().close()");
-		assertTrue(checker.isMayInterruptByException(methodInvocation));
-		
-		methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"invokeGetResourceAndCloseItWithInterface",
 				"resourceManager.getResourceWithInterface().close()");
 		assertTrue(checker.isMayInterruptByException(methodInvocation));
@@ -95,7 +90,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 			throws Exception {
 		// First "fileOutputStream.close()" in method "sameResourceCloseManyTimes"
 		MethodInvocation methodInvocation = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 2233 - 1, 24);
+				.perform(compilationUnit, 2055 - 1, 24);
 		assertTrue(checker.isMayInterruptByException(methodInvocation));
 	}
 
@@ -104,8 +99,8 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 			throws Exception {
 		// Second "fileOutputStream.close()" in method "sameResourceCloseManyTimes"
 		MethodInvocation methodInvocation = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 2358 - 1, 24);
-		assertTrue(checker.isMayInterruptByException(methodInvocation));
+				.perform(compilationUnit, 2164 - 1, 24);
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 
 	@Test
@@ -113,16 +108,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 			throws Exception {
 		// Third "fileOutputStream.close()" in method "sameResourceCloseManyTimes"
 		MethodInvocation methodInvocation = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 2436 - 1, 24);
-		assertFalse(checker.isMayInterruptByException(methodInvocation));
-	}
-
-	@Test
-	public void testIsMayInterruptByExceptionWithFinallyBlock()
-			throws Exception {
-		// Fourth "fileOutputStream.close()" in method "sameResourceCloseManyTimes"
-		MethodInvocation methodInvocation = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 2552 - 1, 24);
+				.perform(compilationUnit, 2260 - 1, 24);
 		assertTrue(checker.isMayInterruptByException(methodInvocation));
 	}
 

@@ -141,18 +141,18 @@ public class ClosingResourceBeginningPositionFinderTest {
 	}
 
 	@Test
-	public void testGetStartPositionOfMethodDeclaration() throws Exception {
+	public void testGetStartPositionOfMethodDeclarationBody() throws Exception {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceAssignAndUseMultiTimes", "fis.available()");
 		
-		Method method = getMethodGetStartPositionOfMethodDeclaration();
+		Method method = getMethodGetStartPositionOfMethodDeclarationBody();
 		int position = (Integer) method.invoke(finder, methodInvocation);
 		assertEquals(9, compilationUnit.getLineNumber(position));
 	}
 
-	private Method getMethodGetStartPositionOfMethodDeclaration() throws NoSuchMethodException {
+	private Method getMethodGetStartPositionOfMethodDeclarationBody() throws NoSuchMethodException {
 		Method method = ClosingResourceBeginningPositionFinder.class
-				.getDeclaredMethod("getStartPositionOfMethodDeclaration", MethodInvocation.class);
+				.getDeclaredMethod("getStartPositionOfMethodDeclarationBody", MethodInvocation.class);
 		method.setAccessible(true);
 		return method;
 	}

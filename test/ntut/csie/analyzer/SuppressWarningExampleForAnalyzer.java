@@ -355,7 +355,7 @@ public class SuppressWarningExampleForAnalyzer {
 			new FileOutputStream("");
 			fileOutputStream = new FileOutputStream(outputFile);
 			fileOutputStream.write(context);
-			fileOutputStream.close();
+			fileOutputStream.close();  // CC #1
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
 		} catch (IOException e) {
@@ -368,7 +368,7 @@ public class SuppressWarningExampleForAnalyzer {
 		try {
 			fileOutputStream = new FileOutputStream(outputFile);
 			fileOutputStream.write(context);
-			fileOutputStream.close();
+			fileOutputStream.close();  // CC #2
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
 		} catch (IOException e) {
@@ -381,7 +381,7 @@ public class SuppressWarningExampleForAnalyzer {
 		try {
 			fileOutputStream = new FileOutputStream(outputFile);
 			fileOutputStream.write(context);
-			fileOutputStream.close();
+			fileOutputStream.close();  // CC #3
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
 		} catch (IOException e) {
@@ -430,7 +430,7 @@ public class SuppressWarningExampleForAnalyzer {
 		try {
 			new FileOutputStream("");
 			fileOutputStream = new FileOutputStream("");
-			fileOutputStream.close();
+			fileOutputStream.close();  // CC #4
 			throw new IOException("IOException throws in callee");
 		} catch(FileNotFoundException e) {
 			logger.log(Level.WARNING, e.getMessage());
