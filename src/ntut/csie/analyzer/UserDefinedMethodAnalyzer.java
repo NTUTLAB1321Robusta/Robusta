@@ -117,7 +117,7 @@ public class UserDefinedMethodAnalyzer {
 		}
 		
 		// If use didn't select this extra rule, do nothing
-		if(methodTreeMap.get(SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD) == null) {
+		if(methodTreeMap.get(SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT) == null) {
 			return false;
 		}
 

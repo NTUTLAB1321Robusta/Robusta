@@ -252,23 +252,23 @@ public class SmellSettingsTest {
 		addPattern.setAccessible(true);
 		
 		// 增加一個還沒存在過的規則
-		addPattern.invoke(smellSettings, SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
+		addPattern.invoke(smellSettings, SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		String fileContent = readFileContents(smellSettingFile);
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
 				"<CodeSmells><SmellTypes name=\"CarelessCleanup\" isDetecting=\"true\">" +
 				"<extraRule name=\"" + 
-				SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD +
+				SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT +
 				"\" /></SmellTypes></CodeSmells>", fileContent);
 		
 		// 增加一個已經存在的規則
-		addPattern.invoke(smellSettings, SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
+		addPattern.invoke(smellSettings, SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		fileContent = readFileContents(smellSettingFile);
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
 				"<CodeSmells><SmellTypes name=\"CarelessCleanup\" isDetecting=\"true\">" +
 				"<extraRule name=\"" + 
-				SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD +
+				SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT +
 				"\" /></SmellTypes></CodeSmells>", fileContent);
 	}
 
@@ -277,7 +277,7 @@ public class SmellSettingsTest {
 		/* extraRule的節點不存在 */
 		assertFalse(smellSettings.removeExtraRule(
 			SmellSettings.SMELL_CARELESSCLEANUP,
-			SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD));
+			SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT));
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		String fileContent = readFileContents(smellSettingFile);
 		assertEquals(	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
@@ -286,10 +286,10 @@ public class SmellSettingsTest {
 						"</CodeSmells>", fileContent);
 		
 		/* extraRule的節點存在 */
-		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
+		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		assertTrue(smellSettings.removeExtraRule(
 				SmellSettings.SMELL_CARELESSCLEANUP,
-				SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD));
+				SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT));
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		fileContent = readFileContents(smellSettingFile);
 		assertEquals(	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
@@ -436,7 +436,7 @@ public class SmellSettingsTest {
 		smellSettings.addDummyHandlerPattern(SmellSettings.EXTRARULE_ePrintStackTrace, false);
 		smellSettings.addDummyHandlerPattern(SmellSettings.EXTRARULE_OrgApacheLog4j, true);
 		smellSettings.addDummyHandlerPattern(SmellSettings.EXTRARULE_SystemOutPrintln, false);
-		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
+		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		String content = readFileContents(smellSettingFile);
 		// 檢查準備資料是否正確
@@ -447,7 +447,7 @@ public class SmellSettingsTest {
 						"<pattern name=\"org.apache.log4j\" isDetecting=\"true\" />" +
 						"<pattern name=\"System.out.println\" isDetecting=\"false\" />" +
 						"</SmellTypes><SmellTypes name=\"CarelessCleanup\" isDetecting=\"true\">" +
-						"<extraRule name=\"DetectIsReleaseIOCodeInDeclaredMethod\" />" +
+						"<extraRule name=\"DetectOutOfTryStatement\" />" +
 						"</SmellTypes></CodeSmells>", content);
 		
 		assertTrue(smellSettings.removePatterns(SmellSettings.SMELL_DUMMYHANDLER));
@@ -458,7 +458,7 @@ public class SmellSettingsTest {
 						"<CodeSmells>" +
 						"<SmellTypes name=\"DummyHandler\" isDetecting=\"true\" />" +
 						"<SmellTypes name=\"CarelessCleanup\" isDetecting=\"true\">" +
-						"<extraRule name=\"DetectIsReleaseIOCodeInDeclaredMethod\" />" +
+						"<extraRule name=\"DetectOutOfTryStatement\" />" +
 						"</SmellTypes></CodeSmells>", content);
 	}
 	
@@ -470,7 +470,7 @@ public class SmellSettingsTest {
 		smellSettings.addDummyHandlerPattern(SmellSettings.EXTRARULE_ePrintStackTrace, false);
 		smellSettings.addDummyHandlerPattern(SmellSettings.EXTRARULE_OrgApacheLog4j, true);
 		smellSettings.addDummyHandlerPattern(SmellSettings.EXTRARULE_SystemOutPrintln, false);
-		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
+		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		String content = readFileContents(smellSettingFile);
 		// 檢查準備資料是否正確
@@ -482,7 +482,7 @@ public class SmellSettingsTest {
 						"<pattern name=\"org.apache.log4j\" isDetecting=\"true\" />" +
 						"<pattern name=\"System.out.println\" isDetecting=\"false\" />" +
 						"</SmellTypes><SmellTypes name=\"CarelessCleanup\" isDetecting=\"true\">" +
-						"<extraRule name=\"DetectIsReleaseIOCodeInDeclaredMethod\" />" +
+						"<extraRule name=\"DetectOutOfTryStatement\" />" +
 						"</SmellTypes></CodeSmells>", content);
 		
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.ATTRIBUTE_ISDETECTING, false);
@@ -498,7 +498,7 @@ public class SmellSettingsTest {
 						"<pattern name=\"org.apache.log4j\" isDetecting=\"true\" />" +
 						"<pattern name=\"System.out.println\" isDetecting=\"false\" />" +
 						"</SmellTypes><SmellTypes name=\"CarelessCleanup\" isDetecting=\"false\">" +
-						"<extraRule name=\"DetectIsReleaseIOCodeInDeclaredMethod\" />" +
+						"<extraRule name=\"DetectOutOfTryStatement\" />" +
 						"</SmellTypes></CodeSmells>", content);
 	}
 	
@@ -553,16 +553,16 @@ public class SmellSettingsTest {
 		smellSettingFile.createNewFile();
 		
 		/** 當bad smell的節點不存在時 */
-		assertFalse(smellSettings.isExtraRuleExist(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD));
+		assertFalse(smellSettings.isExtraRuleExist(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT));
 		
 		/** 當bad smell的節點存在，卻沒有設定值時 */
 		smellSettings.getSmellType(SmellSettings.SMELL_CARELESSCLEANUP);
-		assertFalse(smellSettings.isExtraRuleExist(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD));
+		assertFalse(smellSettings.isExtraRuleExist(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT));
 		
 		/** 當bad smell的節點存在，也有設定值時 */
-		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
+		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
-		assertTrue(smellSettings.isExtraRuleExist(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD));
+		assertTrue(smellSettings.isExtraRuleExist(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT));
 	}
 	
 	@Test
@@ -696,7 +696,7 @@ public class SmellSettingsTest {
 				"<SmellTypes name=\"NestedTryStatement\" isDetecting=\"true\" />" +
 				"<SmellTypes name=\"UnprotectedMainProgram\" isDetecting=\"true\" />" +
 				"<SmellTypes name=\"CarelessCleanup\" isDetecting=\"true\">" +
-				"<extraRule name=\"DetectIsReleaseIOCodeInDeclaredMethod\" /></SmellTypes>" +
+				"<extraRule name=\"DetectOutOfTryStatement\" /></SmellTypes>" +
 				"<SmellTypes name=\"OverLogging\" isDetecting=\"true\"><extraRule name=\"DetectWrappingExcetion\" />" +
 				"<extraRule name=\"java.util.logging.Logger\" /><extraRule name=\"org.apache.log4j\" />" +
 				"</SmellTypes>"	+
