@@ -90,6 +90,10 @@ public class BadSmellCollector {
 		root.accept(methodCollector);
 		List<MethodDeclaration> methodList = methodCollector.getMethodList();
 
+		boolean isCCDetectOutOfTry = smellSetting.isExtraRuleExist(
+				SmellSettings.SMELL_CARELESSCLEANUP,
+				SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
+
 		/*
 		 * We have to initialize each visitor for each method declaration,
 		 * because we want to add specific info on the mark
@@ -121,7 +125,7 @@ public class BadSmellCollector {
 			// Careless cleanup
 			if(isDetectingBadSmell.get(SmellSettings.SMELL_CARELESSCLEANUP)) {
 				if(detMethodSmell.get(RLMarkerAttribute.CS_CARELESS_CLEANUP)) {
-					CarelessCleanupVisitor ccVisitor = new CarelessCleanupVisitor(root);
+					CarelessCleanupVisitor ccVisitor = new CarelessCleanupVisitor(root, isCCDetectOutOfTry);
 					method.accept(ccVisitor);
 					List<MarkerInfo> carelessCleanupList = ccVisitor.getCarelessCleanupList();
 					setMethodNameAndIndex(carelessCleanupList, method.getName().toString(), methodIdx);

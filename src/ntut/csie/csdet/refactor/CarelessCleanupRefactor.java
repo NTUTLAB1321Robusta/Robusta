@@ -3,8 +3,10 @@ package ntut.csie.csdet.refactor;
 import java.util.List;
 
 import ntut.csie.analyzer.ASTMethodCollector;
+import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
 import ntut.csie.analyzer.careless.CarelessCleanupVisitor;
 import ntut.csie.csdet.data.MarkerInfo;
+import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 
 import org.eclipse.core.resources.IFile;
@@ -138,7 +140,8 @@ public class CarelessCleanupRefactor extends Refactoring {
 
 		boolean isOK = findMethod(marker.getResource());
 		if(isOK && currentMethodNode != null){
-			CarelessCleanupVisitor visitor = new CarelessCleanupVisitor(actRoot);
+			CarelessCleanupVisitor visitor = new CarelessCleanupVisitor(
+					actRoot, isDetectOutOfTryInSmellSetting());
 			currentMethodNode.accept(visitor);
 			//取得code smell的List
 			carelessCleanupList = visitor.getCarelessCleanupList();
@@ -966,5 +969,13 @@ public class CarelessCleanupRefactor extends Refactoring {
 			existingMethod = method;
 			return new RefactoringStatus();
 		}
+	}
+
+	private boolean isDetectOutOfTryInSmellSetting() {
+		SmellSettings smellSetting = new SmellSettings(
+				UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		return smellSetting.isExtraRuleExist(
+				SmellSettings.SMELL_CARELESSCLEANUP,
+				SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 	}
 }
