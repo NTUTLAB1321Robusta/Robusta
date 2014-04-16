@@ -58,11 +58,9 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 	 * Tell if there is any declared exception between checkingNode and it's parent.
 	 */
 	private boolean isNodeUnsafeInParent(ASTNode checkingNode) {
-		// Collect all statements in this block
-		StatementsInBlockCollectingVisitor statementCollector = new StatementsInBlockCollectingVisitor();
+		// Collect all statements in parent block
 		Block parentBlock = (Block) NodeUtils.getSpecifiedParentNode(checkingNode, ASTNode.BLOCK);
-		parentBlock.accept(statementCollector);
-		List<Statement> allStatements = statementCollector.getStatementsInBlock();
+		List<Statement> allStatements = parentBlock.statements();
 		
 		// Set the area of detection for class StatementDeclaredChecker
 		ThrownExceptionBeCaughtDetector thrownExceptionDetector = 
