@@ -11,8 +11,12 @@ import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.testutility.Assertor;
 import ntut.csie.testutility.TestEnvironmentBuilder;
 
+import org.eclipse.jdt.astview.NodeFinder;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -22,6 +26,7 @@ public class CarelessCleanupVisitorTest {
 	
 	private TestEnvironmentBuilder environmentBuilder;
 	private CarelessCleanupVisitor ccVisitor;
+	SmellSettings smellSettings;
 
 	@Before
 	public void setUp() throws Exception {
@@ -35,6 +40,10 @@ public class CarelessCleanupVisitorTest {
 		environmentBuilder.loadClass(UserDefinedCarelessCleanupClass.class);
 		environmentBuilder.loadClass(UserDefinedCarelessCleanupMethod.class);
 		environmentBuilder.loadClass(ResourceCloser.class);
+		
+		// Default setting
+		smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 	}
 
 	@After
@@ -44,63 +53,98 @@ public class CarelessCleanupVisitorTest {
 
 	@Test
 	public void testBaseExampleWithDefaultSetting() throws JavaModelException {
-		// Create setting file
-		CreateSettings();
-
 		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupBaseExample.class);
 
-		Assertor.assertMarkerInfoListSize(8, smellList);
+		Assertor.assertMarkerInfoListSize(2, smellList);
+	}
+
+	@Test
+	public void testBaseExampleWithExtraRule() throws JavaModelException {
+		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP,
+				SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
+		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupBaseExample.class);
+
+		Assertor.assertMarkerInfoListSize(6, smellList);
 	}
 
 	@Test
 	/**
-	 * We can not detect "SuperMethodInvocation" now, this test case will ignore that case.
+	 * Note that there are two sample We can not detected.
+	 * 	1. SuperMethodInvocation
+	 * 	2. Throw in expression in Do-while Statement
 	 */
-	public void testAdvancedExampleWithDefaultSettingWithoutSuperMethodInvocation()
+	public void testAdvancedExampleWithDefaultSetting()
 			throws JavaModelException {
-		// Create setting file
-		CreateSettings();
-
 		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupAdvancedExample.class);
 
-		Assertor.assertMarkerInfoListSize(19, smellList);
+		Assertor.assertMarkerInfoListSize(5, smellList);
+	}
+
+	@Test
+	/**
+	 * Note that there are two sample We can not detected.
+	 * 	1. SuperMethodInvocation
+	 * 	2. Throw in expression in Do-while Statement
+	 */
+	public void testAdvancedExampleWithExtraRule()
+			throws JavaModelException {
+		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP,
+				SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
+		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupAdvancedExample.class);
+
+		Assertor.assertMarkerInfoListSize(11, smellList);
 	}
 
 	@Ignore
 	/**
-	 * If we can detect "SuperMethodInvocation"m then we can run this test case.
+	 * If we can detect "SuperMethodInvocation" then we can run this test case.
 	 */
-	public void testAdvancedExampleWithDefaultSettingWithSuperMethodInvocation()
+	public void testSuperMethodInvocation()
 			throws JavaModelException {
-		// Create setting file
-		CreateSettings();
+		// "super.close()" in method "close" in class "ConcreteCloseable"
+		SuperMethodInvocation superMethodInvocation = (SuperMethodInvocation) NodeFinder.perform(
+						environmentBuilder.getCompilationUnit(CarelessCleanupAdvancedExample.class),
+						3474 - 1, 13);
+		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(
+				CarelessCleanupAdvancedExample.class, superMethodInvocation);
 
-		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupAdvancedExample.class);
-
-		/*
-		 * The number will over 1 then the expectedSize of test case
-		 * "testAdvancedExampleWithDefaultSettingWithoutSuperMethodInvocation"
-		 */
-		Assertor.assertMarkerInfoListSize(19 + 1, smellList);
+		// Currently it is 0
+		Assertor.assertMarkerInfoListSize(1, smellList);
 	}
 
+	@Ignore
+	/**
+	 * If we can detect "Do-while Statement" then we can run this test case.
+	 */
+	public void testDoWhileStatement()
+			throws JavaModelException {
+		// "fileInputStream.close()" in method "closeIsTheFirstExecuteStatementButStillUnsafeWithDoWhileStatement"
+		MethodInvocation methodInvocation = (MethodInvocation) NodeFinder.perform(
+						environmentBuilder.getCompilationUnit(CarelessCleanupAdvancedExample.class),
+						5152 - 1, 23);
+		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(
+				CarelessCleanupAdvancedExample.class, methodInvocation);
+
+		// Currently it is 0
+		Assertor.assertMarkerInfoListSize(1, smellList);
+	}
+
+	final int DEFAULT_BAD_SMELLS_OF_INTEGRATED_EXAMPLE = 5;
+	
 	@Test
 	public void testIntegratedExampleWithDefaultSetting()
 			throws JavaModelException {
-		// Create setting file
-		CreateSettings();
-
 		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupIntegratedExample.class);
 
-		Assertor.assertMarkerInfoListSize(7, smellList);
+		Assertor.assertMarkerInfoListSize(DEFAULT_BAD_SMELLS_OF_INTEGRATED_EXAMPLE, smellList);
 	}
 
 	@Test
 	public void testIntegratedExampleWithFullUserDefined()
 			throws JavaModelException {
 		// Create setting file with user defined
-		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
+		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP,
+				SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		smellSettings.addCarelessCleanupPattern(UserDefinedCarelessCleanupClass.class.getName() + ".*", true);
 		smellSettings.addCarelessCleanupPattern("*.bark", true);
 		smellSettings.addCarelessCleanupPattern("*.close", true);
@@ -109,78 +153,84 @@ public class CarelessCleanupVisitorTest {
 
 		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupIntegratedExample.class);
 
-		Assertor.assertMarkerInfoListSize(13, smellList);
+		Assertor.assertMarkerInfoListSize(DEFAULT_BAD_SMELLS_OF_INTEGRATED_EXAMPLE + 6, smellList);
 	}
 
 	@Test
 	public void testIntegratedExampleWithUserDefinedClass()
 			throws JavaModelException {
 		// Create setting file with user defined
-		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
+		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP,
+				SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		smellSettings.addCarelessCleanupPattern(UserDefinedCarelessCleanupClass.class.getName() + ".*", true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 
 		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupIntegratedExample.class);
 
-		Assertor.assertMarkerInfoListSize(9, smellList);
+		Assertor.assertMarkerInfoListSize(DEFAULT_BAD_SMELLS_OF_INTEGRATED_EXAMPLE + 2, smellList);
 	}
 
 	@Test
 	public void testIntegratedExampleWithUserDefinedBothClassAndMethod()
 			throws JavaModelException {
 		// Create setting file with user defined
-		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
+		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP,
+				SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		smellSettings.addCarelessCleanupPattern(UserDefinedCarelessCleanupClass.class.getName() + ".bite", true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 
 		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupIntegratedExample.class);
 
-		Assertor.assertMarkerInfoListSize(8, smellList);
+		Assertor.assertMarkerInfoListSize(DEFAULT_BAD_SMELLS_OF_INTEGRATED_EXAMPLE + 1, smellList);
 	}
 
 	@Test
 	public void testIntegratedExampleWithUserDefinedMethodBark()
 			throws JavaModelException {
 		// Create setting file with user defined
-		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
+		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP,
+				SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		smellSettings.addCarelessCleanupPattern("*.bark", true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 
 		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupIntegratedExample.class);
 
-		Assertor.assertMarkerInfoListSize(10, smellList);
+		Assertor.assertMarkerInfoListSize(DEFAULT_BAD_SMELLS_OF_INTEGRATED_EXAMPLE + 3, smellList);
 	}
 
 	@Test
 	public void testIntegratedExampleWithUserDefinedMethodClose()
 			throws JavaModelException {
 		// Create setting file with user defined
-		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
+		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP,
+				SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		smellSettings.addCarelessCleanupPattern("*.close", true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 
 		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupIntegratedExample.class);
 
-		Assertor.assertMarkerInfoListSize(8, smellList);
+		Assertor.assertMarkerInfoListSize(DEFAULT_BAD_SMELLS_OF_INTEGRATED_EXAMPLE + 1, smellList);
 	}
 
 	private List<MarkerInfo> visitCompilationAndGetSmellList(Class clazz)
 			throws JavaModelException {
+		return visitCompilationAndGetSmellList(clazz,
+				environmentBuilder.getCompilationUnit(clazz));
+	}
+
+	private List<MarkerInfo> visitCompilationAndGetSmellList(Class clazz, ASTNode node)
+			throws JavaModelException {
 		CompilationUnit compilationUnit = environmentBuilder
 				.getCompilationUnit(clazz);
-		ccVisitor = new CarelessCleanupVisitor(compilationUnit);
-		compilationUnit.accept(ccVisitor);
+		ccVisitor = new CarelessCleanupVisitor(compilationUnit, isDetectOutOfTryInSmellSetting());
+		node.accept(ccVisitor);
 		List<MarkerInfo> smellList = ccVisitor.getCarelessCleanupList();
 		return smellList;
 	}
-	
-	private void CreateSettings() {
-		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
-		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+
+	private boolean isDetectOutOfTryInSmellSetting() {
+		return smellSettings.isExtraRuleExist(
+				SmellSettings.SMELL_CARELESSCLEANUP,
+				SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 	}
 }

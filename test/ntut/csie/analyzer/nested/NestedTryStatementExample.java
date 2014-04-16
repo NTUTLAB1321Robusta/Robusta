@@ -362,7 +362,7 @@ public class NestedTryStatementExample {
 		} finally {
 			if(fis != null) {
 				try {
-					fis.close(); // #1 CC
+					fis.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -386,7 +386,7 @@ public class NestedTryStatementExample {
 			}
 			{
 				try {
-					fis.close(); //#2 CC
+					fis.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -407,7 +407,7 @@ public class NestedTryStatementExample {
 		} finally {
 			while(fis != null) {
 				try {
-					fis.close(); //#3 CC
+					fis.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -429,7 +429,7 @@ public class NestedTryStatementExample {
 		} finally {
 			do {	// This situation should never happened
 				try {
-					fis.close(); //#4 CC
+					fis.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -451,7 +451,7 @@ public class NestedTryStatementExample {
 		} finally {
 			for(int i = 0; i<2; i++) {	// This situation should never happened
 				try {
-					fis.close(); //#5 CC
+					fis.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -472,7 +472,7 @@ public class NestedTryStatementExample {
 		} finally {
 			for(int i = 0; i<2; i++) {	// This situation should never happened
 				try {
-					fis.close(); //#6 CC
+					fis.close();
 				} catch (IOException e) {
 					try {
 						fos = new FileOutputStream("");
@@ -485,7 +485,7 @@ public class NestedTryStatementExample {
 						throw new RuntimeException(e1);
 					} finally {
 						try {
-							fos.close(); // #7 TODO: not CC but detected as CC
+							fos.close();
 						} catch (IOException e1) {
 							e1.printStackTrace();
 						}

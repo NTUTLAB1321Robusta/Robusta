@@ -10,13 +10,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TreeMap;
 
 import ntut.csie.analyzer.DummyAndEmptyExample;
 import ntut.csie.analyzer.UserDefineDummyHandlerFish;
 import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
-import ntut.csie.csdet.data.MarkerInfo;
-import ntut.csie.csdet.data.SSMessage;
 import ntut.csie.csdet.preference.JDomUtil;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.JavaFileToString;
@@ -36,7 +33,6 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.jdom.Element;
 import org.junit.After;
 import org.junit.Before;
@@ -423,12 +419,12 @@ public class ReportBuilderTest {
 		assertEquals(26, reportModel.getTryCounter());
 		assertEquals(26, reportModel.getCatchCounter());
 		assertEquals(2, reportModel.getFinallyCounter());
-		assertEquals(5, reportModel.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP));
+		assertEquals(4, reportModel.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP));
 		//19 dummy handler in methods and 1 dummy handler in an initializer
 		assertEquals(20, reportModel.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER));
 		assertEquals(1, reportModel.getSmellSize(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK));
 		assertEquals(3, reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
-		assertEquals(29, reportModel.getAllSmellSize());
+		assertEquals(28, reportModel.getAllSmellSize());
 	}
 	
 	@Test

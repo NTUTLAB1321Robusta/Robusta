@@ -104,10 +104,7 @@ public class NodeUtils {
 
 	/**
 	 * 從輸入的節點開始，尋找特定的父節點。 如果找不到特定父節點，則回傳null
-	 * 
-	 * @param startNode
-	 * @param nodeType
-	 * @return
+	 * @return null if can't find the specified parent node
 	 */
 	public static ASTNode getSpecifiedParentNode(ASTNode startNode, int nodeType) {
 		ASTNode resultNode = null;
@@ -126,6 +123,19 @@ public class NodeUtils {
 			resultNode = parentNode;
 		}
 		return resultNode;
+	}
+
+	/**
+	 * @return closest parent node which is MethodDeclaration
+	 * @exception RuntimeException if no such parent node
+	 */
+	public static MethodDeclaration getParentMethodDeclaration(ASTNode node) {
+		MethodDeclaration methodDeclaration = (MethodDeclaration) NodeUtils
+				.getSpecifiedParentNode(node, ASTNode.METHOD_DECLARATION);
+		if (methodDeclaration == null) {
+			throw new RuntimeException("No such parent node.");
+		}
+		return methodDeclaration;
 	}
 
 	public static boolean isMethodDeclarationThrowException(ASTNode node) {
@@ -254,5 +264,4 @@ public class NodeUtils {
 					"Failed to resolve the exception type in catch clause.", e);
 		}
 	}
-
 }

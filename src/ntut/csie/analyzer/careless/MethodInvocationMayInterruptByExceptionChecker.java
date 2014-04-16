@@ -3,115 +3,145 @@ package ntut.csie.analyzer.careless;
 import java.util.Iterator;
 import java.util.List;
 
+import ntut.csie.analyzer.ThrownExceptionBeCaughtDetector;
 import ntut.csie.util.BoundaryChecker;
+import ntut.csie.util.NodeUtils;
 
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.Block;
+import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Statement;
+import org.eclipse.jdt.core.dom.SuperMethodInvocation;
+import org.eclipse.jdt.core.dom.ThrowStatement;
+import org.eclipse.jdt.core.dom.TryStatement;
 
+/**
+ * It will check if any exception been declared and non-caught before
+ */
 public class MethodInvocationMayInterruptByExceptionChecker {
 
 	private int beginningPosition;
 
 	public boolean isMayInterruptByException(MethodInvocation methodInvocation) {
-		beginningPosition = new ClosingResourceBeginningPositionFinder()
-				.findPosition(methodInvocation);
+		findOutBeginningPosition(methodInvocation);
 
-		try {
-			if (isThisMethodInvocationUnsafeOnParent(methodInvocation)) {
+		ASTNode checkingNode = methodInvocation;
+		// The condition is checking whether any statement didn't be checked.
+		while (beginningPosition < checkingNode.getStartPosition()) {
+			if (!isAlwaysSafeInParent(checkingNode) && isNodeUnsafeInParent(checkingNode)) {
 				return true;
 			}
-			
-			ASTNode parentNode = methodInvocation.getParent();
-			while(beginningPosition <= parentNode.getStartPosition()) {
-				if(isParentUnsafeOnParent(parentNode)) {
-					return true;
-				}
-				parentNode = parentNode.getParent();
-			}
-			return false;
-		} catch(Exception e) {
-			/*
-			 * Any exception means it is not a ASTNode we can handle now, so we
-			 * can't say that it is a bad smell
-			 */
-			return false;
+			checkingNode = checkingNode.getParent();
 		}
+		
+		return false;
 	}
 
-	/**
-	 * Tell if it is unsafe from it's parent's view only
-	 * (Won't check if it's parent is safe or not)
-	 */
-	private boolean isThisMethodInvocationUnsafeOnParent(MethodInvocation methodInvocation) {
-		return isAnyUnsafeStatementBefore(methodInvocation);
+	private void findOutBeginningPosition(MethodInvocation methodInvocation) {
+		beginningPosition = new ClosingResourceBeginningPositionFinder()
+				.findPosition(methodInvocation);
 	}
 
-	/**
-	 * Tell if it is unsafe from it's parent's view only (Won't check if it's
-	 * parent is safe or not)
-	 */
-	private boolean isParentUnsafeOnParent(ASTNode node) {
-		if (node instanceof Statement
-				&& isUnsafeParentStatement((Statement) node)) {
-			return true;
-		}
-		return isAnyUnsafeStatementBefore(node);
-	}
-
-	/**
-	 * Tell if there is any unsafe statement before the executedNode from it's
-	 * parent's view
-	 */
-	private boolean isAnyUnsafeStatementBefore(ASTNode executedNode) {
-		// Collect all first level child node in the parent node
-		ASTNode parentNode = executedNode.getParent();
-		FirstLevelChildStatementCollectingVisitor firstLevelChildCollector = new FirstLevelChildStatementCollectingVisitor();
-		parentNode.accept(firstLevelChildCollector);
-		List<Statement> allStatements = firstLevelChildCollector.getChildren();
-
-		BoundaryChecker boundChecker = new BoundaryChecker(beginningPosition,
-				executedNode.getStartPosition());
+	private boolean isAlwaysSafeInParent(ASTNode node) {
+		int parentType = node.getParent().getNodeType();
 		/*
-		 * If any statement satisfy both "between" and "unsafe", return true.
-		 * Otherwise, return false.
+		 * Case: 
+		 * 1. finally block and catch clause
+		 * 2. catch clause's body
 		 */
+		return (parentType == ASTNode.TRY_STATEMENT || parentType == ASTNode.CATCH_CLAUSE);
+	}
+
+	/**
+	 * Tell if there is any declared exception between checkingNode and it's parent.
+	 */
+	private boolean isNodeUnsafeInParent(ASTNode checkingNode) {
+		// Collect all statements in parent block
+		Block parentBlock = (Block) NodeUtils.getSpecifiedParentNode(checkingNode, ASTNode.BLOCK);
+		List<Statement> allStatements = parentBlock.statements();
+		
+		// Set the area of detection for class StatementDeclaredChecker
+		ThrownExceptionBeCaughtDetector thrownExceptionDetector = 
+				new ThrownExceptionBeCaughtDetector(parentBlock);
+		BoundaryChecker boundChecker = new BoundaryChecker(beginningPosition,
+				checkingNode.getStartPosition());
+		
+		// Return is there any declared exception in any statement
 		Iterator<Statement> iter = allStatements.iterator();
 		while (iter.hasNext()) {
 			Statement statement = iter.next();
-			if (boundChecker.isInInterval(statement.getStartPosition())
-					&& isUnsafeBrotherStatement(statement)) {
+			StatementDeclaredChecker declaredChecher = 
+					new StatementDeclaredChecker(thrownExceptionDetector, boundChecker);
+			statement.accept(declaredChecher);
+			if (declaredChecher.isAnyExceptionOut()) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	/**
-	 * For the parent statement that will make the statements inside unexecute.
-	 */
-	private boolean isUnsafeParentStatement(Statement Statement) {
-		int nodeType = Statement.getNodeType();
-		if (nodeType == ASTNode.BLOCK
-				|| nodeType == ASTNode.EXPRESSION_STATEMENT
-				|| nodeType == ASTNode.TRY_STATEMENT) {
-			return false;
-		}
-		return true;
-	}
+	private class StatementDeclaredChecker extends ASTVisitor {
 
-	/**
-	 * For the statements that will make the statements behind unexecute.
-	 */
-	private boolean isUnsafeBrotherStatement(Statement Statement) {
-		int nodeType = Statement.getNodeType();
-		if (nodeType == ASTNode.EMPTY_STATEMENT || isTryBlock(Statement)) {
-			return false;
-		}
-		return true;
-	}
+		private boolean isAnyExceptionOut = false;
+		ThrownExceptionBeCaughtDetector thrownExceptionDetector;
+		BoundaryChecker boundChecker;
 
-	private boolean isTryBlock(Statement Statement) {
-		return (Statement.getParent().getNodeType() == ASTNode.TRY_STATEMENT);
+		public StatementDeclaredChecker(
+				ThrownExceptionBeCaughtDetector exceptionDetector,
+				BoundaryChecker boundChecker) {
+			thrownExceptionDetector = exceptionDetector;
+			this.boundChecker = boundChecker;
+		}
+
+		public boolean isAnyExceptionOut() {
+			return isAnyExceptionOut;
+		}
+
+		/**
+		 * Stop when already found an exception been thrown or already out of
+		 * the area we care.
+		 */
+		public boolean preVisit2(ASTNode node) {
+			preVisit(node);
+			return (!isAnyExceptionOut && isNodeInBoundary(node));
+		}
+
+		public boolean visit(MethodInvocation node) {
+			if (thrownExceptionDetector
+					.isAnyDeclaredExceptionBeenThrowOut(node)) {
+				isAnyExceptionOut = true;
+			}
+			return true;
+		}
+
+		public boolean visit(SuperMethodInvocation node) {
+			if (thrownExceptionDetector
+					.isAnyDeclaredExceptionBeenThrowOut(node)) {
+				isAnyExceptionOut = true;
+			}
+			return true;
+		}
+		
+		public boolean visit(ThrowStatement node) {
+			if (thrownExceptionDetector
+					.isAnyDeclaredExceptionBeenThrowOut(node)) {
+				isAnyExceptionOut = true;
+			}
+			return true;
+		}
+
+		public boolean visit(ClassInstanceCreation node) {
+			if (thrownExceptionDetector
+					.isAnyDeclaredExceptionBeenThrowOut(node)) {
+				isAnyExceptionOut = true;
+			}
+			return true;
+		}
+
+		private boolean isNodeInBoundary(ASTNode node) {
+			return boundChecker.isInOpenInterval(node);
+		}
 	}
 }

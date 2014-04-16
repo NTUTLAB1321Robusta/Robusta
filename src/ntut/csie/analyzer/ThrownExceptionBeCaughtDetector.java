@@ -1,4 +1,4 @@
-package ntut.csie.analyzer.thrown;
+package ntut.csie.analyzer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,10 +17,18 @@ import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TryStatement;
 
+/**
+ * This class is about how statements behave in the block given in the constructor.
+ * Methods in the class answer whether a statement throws exception(s) to this block.
+ * @author pig
+ */
 public class ThrownExceptionBeCaughtDetector {
 	private ASTNode onlyDetectInThisBlock;
 	private List<ITypeBinding> thrownExceptions;
 
+	/**
+	 * @param block The detection is about exception in this block 
+	 */
 	public ThrownExceptionBeCaughtDetector(Block block) {
 		onlyDetectInThisBlock = block;
 		thrownExceptions = new ArrayList<ITypeBinding>();

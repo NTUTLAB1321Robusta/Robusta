@@ -63,7 +63,7 @@ public class SmellSettings {
 	/** 例外轉型後繼續偵測 */
 	public final static String EXTRARULE_OVERLOGGING_DETECTWRAPPINGEXCEPTION = "DetectWrappingExcetion";
 	/** 偵測釋放資源的程式碼是否在函式中 */
-	public final static String EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD = "DetectIsReleaseIOCodeInDeclaredMethod";
+	public final static String EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT = "DetectOutOfTryStatement";
 	
 	public final static String EXTRARULE_ePrintStackTrace = "printStackTrace";
 	public final static String EXTRARULE_SystemOutPrint = "System.out.print";
@@ -439,7 +439,7 @@ public class SmellSettings {
 				libMap.put(rule, UserDefinedConstraintsType.Method);
 				continue;
 			}
-			if(rule.equals(EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD)) {
+			if(rule.equals(EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT)) {
 				libMap.put(rule, UserDefinedConstraintsType.FullQulifiedMethod);
 				continue;
 			}
@@ -519,7 +519,7 @@ public class SmellSettings {
 		setSmellTypeAttribute(SMELL_UNPROTECTEDMAINPROGRAM, ATTRIBUTE_ISDETECTING, true);
 
 		setSmellTypeAttribute(SMELL_CARELESSCLEANUP, ATTRIBUTE_ISDETECTING, true);
-		addExtraRule(SMELL_CARELESSCLEANUP, EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
+		addExtraRule(SMELL_CARELESSCLEANUP, EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 
 		setSmellTypeAttribute(SMELL_OVERLOGGING, ATTRIBUTE_ISDETECTING, true);
 		addExtraRule(SMELL_OVERLOGGING, EXTRARULE_OVERLOGGING_DETECTWRAPPINGEXCEPTION);

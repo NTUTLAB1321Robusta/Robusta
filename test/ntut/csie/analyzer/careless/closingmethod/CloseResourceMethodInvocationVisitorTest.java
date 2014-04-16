@@ -52,7 +52,7 @@ public class CloseResourceMethodInvocationVisitorTest {
 	public void testExampleWithUserDefinedMethodClose() throws Exception {
 		// Create setting file with user defined
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
+		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		smellSettings.addCarelessCleanupPattern("*.close", true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 
@@ -66,7 +66,7 @@ public class CloseResourceMethodInvocationVisitorTest {
 	public void testExampleWithUserDefinedMethodBark() throws Exception {
 		// Create setting file with user defined
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
+		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		smellSettings.addCarelessCleanupPattern("*.bark", true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 
@@ -80,7 +80,7 @@ public class CloseResourceMethodInvocationVisitorTest {
 	public void testExampleWithUserDefinedClassUserDefinedCarelessCleanupClass() throws Exception {
 		// Create setting file with user defined
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
+		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		String className = "ntut.csie.analyzer.careless.closingmethod.UserDefinedCarelessCleanupClass"; 
 		smellSettings.addCarelessCleanupPattern(className + ".*", true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
@@ -95,7 +95,7 @@ public class CloseResourceMethodInvocationVisitorTest {
 	public void testExampleWithUserDefinedFullQualifiedMethods() throws Exception {
 		// Create setting file with user defined
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_DETECTISRELEASEIOCODEINDECLAREDMETHOD);
+		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		String fullQualifiedName = "ntut.csie.analyzer.careless.closingmethod.UserDefinedCarelessCleanupClass.bark"; 
 		smellSettings.addCarelessCleanupPattern(fullQualifiedName, true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);

@@ -1,6 +1,8 @@
 package ntut.csie.robusta.codegen.markerresolution;
 
+import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
 import ntut.csie.analyzer.careless.CarelessCleanupVisitor;
+import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.robusta.codegen.QuickFixCore;
 import ntut.csie.robusta.codegen.QuickFixUtils;
@@ -131,8 +133,16 @@ public class MoveCloseResouceFromTryCatchToFinallyBlockQuickFix implements IMark
 	 * @return
 	 */
 	private int getMovelineLength(String msgIdx, CompilationUnit compilationUnit, MethodDeclaration methodDeclaration) {
-		CarelessCleanupVisitor ccVisitor = new CarelessCleanupVisitor(compilationUnit);
+		CarelessCleanupVisitor ccVisitor = new CarelessCleanupVisitor(compilationUnit, isDetectOutOfTryInSmellSetting());
 		methodDeclaration.accept(ccVisitor);
 		return ccVisitor.getCarelessCleanupList().get(Integer.parseInt(msgIdx)).getStatement().length();
+	}
+
+	private boolean isDetectOutOfTryInSmellSetting() {
+		SmellSettings smellSetting = new SmellSettings(
+				UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		return smellSetting.isExtraRuleExist(
+				SmellSettings.SMELL_CARELESSCLEANUP,
+				SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 	}
 }

@@ -20,19 +20,18 @@ public class ClosingResourceBeginningPositionFinder {
 	
 	public int findPosition(MethodInvocation methodInvocation) {
 		// initialized
-		lowerBound = getStartPositionOfMethodDeclaration(methodInvocation);
+		lowerBound = getStartPositionOfMethodDeclarationBody(methodInvocation);
 		boundaryChecker = new BoundaryChecker(lowerBound,
 				methodInvocation.getStartPosition());
 
 		return findResourceStartPositionForMethodDeclaration(methodInvocation);
 	}
 
-	private int getStartPositionOfMethodDeclaration(
+	private int getStartPositionOfMethodDeclarationBody(
 			MethodInvocation methodInvocation) {
-		MethodDeclaration methodDeclaration = (MethodDeclaration) NodeUtils
-				.getSpecifiedParentNode(methodInvocation,
-						ASTNode.METHOD_DECLARATION);
-		return methodDeclaration.getStartPosition();
+		MethodDeclaration methodDeclaration = NodeUtils
+				.getParentMethodDeclaration(methodInvocation);
+		return methodDeclaration.getBody().getStartPosition();
 	}
 
 	/**
@@ -77,7 +76,7 @@ public class ClosingResourceBeginningPositionFinder {
 	}
 
 	private void updateArgumentsPosition(int newPosition) {
-		if (boundaryChecker.isInInterval(newPosition)) {
+		if (boundaryChecker.isInClosedInterval(newPosition)) {
 			if (newPosition < beginningPosition) {
 				beginningPosition = newPosition;
 			}
@@ -99,7 +98,7 @@ public class ClosingResourceBeginningPositionFinder {
 			 * If the beginningPosition is Not in this MethodDeclaration, change
 			 * it to the beginning of this methodDeclaration instead.
 			 */
-			if (!boundaryChecker.isInInterval(beginningPosition)) {
+			if (!boundaryChecker.isInClosedInterval(beginningPosition)) {
 				beginningPosition = lowerBound;
 			}
 		} else {
