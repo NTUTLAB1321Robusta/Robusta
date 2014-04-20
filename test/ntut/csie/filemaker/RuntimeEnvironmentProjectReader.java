@@ -17,7 +17,6 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 /**
  * Use this to read runtime project both IType and CompilationUnit
  * @author Charles
- *
  */
 public class RuntimeEnvironmentProjectReader {
 
@@ -27,7 +26,6 @@ public class RuntimeEnvironmentProjectReader {
 	 * @param packageName The full qualified package name that in you runtime eclipse you want to test.
 	 * @param className The class name that in your runtime eclipse you want to test.
 	 * @return IType hint: you can use it to get CompilationUnit
-	 * @throws JavaModelException
 	 */
 	public static IType getType(String projectName, String packageName,
 			String className) throws JavaModelException {
@@ -41,8 +39,6 @@ public class RuntimeEnvironmentProjectReader {
 	/**
 	 * @see org.eclipse.jdt.core.dom.CompilationUnit
 	 * I use AST.JLS3 parser edition, because it's for JDK5 or later.
-	 * @param type
-	 * @return
 	 */
 	public static CompilationUnit getCompilationUnit(IType type){
 		IJavaElement javaElement = JavaCore.create(type.getResource());
@@ -60,8 +56,6 @@ public class RuntimeEnvironmentProjectReader {
 	 * @param projectName The project name that in your runtime eclipse you want to test.
 	 * @param packageName The full qualified package name that in you runtime eclipse you want to test.
 	 * @param className The class name that in your runtime eclipse you want to test.
-	 * @return IResource
-	 * @throws JavaModelException
 	 */
 	public static IResource getIResource(String projectName, String packageName, String className) throws JavaModelException {
 		return RuntimeEnvironmentProjectReader.getType(projectName, packageName, className).getResource();

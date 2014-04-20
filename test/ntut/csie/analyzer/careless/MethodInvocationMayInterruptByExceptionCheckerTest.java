@@ -25,7 +25,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 	@Before
 	public void setUp() throws Exception {
 		environmentBuilder = new TestEnvironmentBuilder();
-		environmentBuilder.createTestEnvironment();
+		environmentBuilder.createEnvironment();
 
 		environmentBuilder
 				.loadClass(MethodInvocationMayInterruptByExceptionCheckerExample.class);
@@ -38,7 +38,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 
 	@After
 	public void tearDown() throws Exception {
-		environmentBuilder.cleanTestEnvironment();
+		environmentBuilder.cleanEnvironment();
 	}
 
 	@Test

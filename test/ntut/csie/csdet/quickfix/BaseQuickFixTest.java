@@ -11,7 +11,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import ntut.csie.csdet.preference.SmellSettings;
-import ntut.csie.analyzer.DummyAndEmptyExample;
+import ntut.csie.analyzer.CommonExample;
 import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
@@ -42,15 +42,15 @@ public class BaseQuickFixTest {
 	
 	public BaseQuickFixTest() {
 		testProjectNameString = "DummyHandlerTest";
-		testPackageNameString = DummyAndEmptyExample.class.getPackage().getName();
-		testClassSimpleNameString = DummyAndEmptyExample.class.getSimpleName();
+		testPackageNameString = CommonExample.class.getPackage().getName();
+		testClassSimpleNameString = CommonExample.class.getSimpleName();
 	}
 	
 	@Before
 	public void setUp() throws Exception {
 		// 讀取測試檔案樣本內容
 		jfs = new JavaFileToString();
-		jfs.read(DummyAndEmptyExample.class, JavaProjectMaker.FOLDERNAME_TEST);
+		jfs.read(CommonExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		
 		jpm = new JavaProjectMaker(testProjectNameString);
 		jpm.setJREDefaultContainer();
@@ -65,7 +65,7 @@ public class BaseQuickFixTest {
 		// 建立XML
 		CreateSettings();
 		
-		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(DummyAndEmptyExample.class, testProjectNameString));
+		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(CommonExample.class, testProjectNameString));
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -140,7 +140,7 @@ public class BaseQuickFixTest {
 		getChange.setAccessible(true);
 		Change change = (Change)getChange.invoke(bqFix, unit, null);
 		assertEquals(testClassSimpleNameString + JavaProjectMaker.JAVA_FILE_EXTENSION, change.getName());
-		assertEquals("L/"+PathUtils.getPathOfClassUnderSrcFolder(DummyAndEmptyExample.class, "DummyHandlerTest"), change.getModifiedElement().toString());
+		assertEquals("L/"+PathUtils.getPathOfClassUnderSrcFolder(CommonExample.class, "DummyHandlerTest"), change.getModifiedElement().toString());
 	}
 	
 //	@Test

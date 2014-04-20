@@ -31,7 +31,7 @@ public class CarelessCleanupVisitorTest {
 	@Before
 	public void setUp() throws Exception {
 		environmentBuilder = new TestEnvironmentBuilder("CarelessCleanupExampleProject");
-		environmentBuilder.createTestEnvironment();
+		environmentBuilder.createEnvironment();
 
 		environmentBuilder.loadClass(CarelessCleanupBaseExample.class);
 		environmentBuilder.loadClass(CarelessCleanupAdvancedExample.class);
@@ -41,14 +41,12 @@ public class CarelessCleanupVisitorTest {
 		environmentBuilder.loadClass(UserDefinedCarelessCleanupMethod.class);
 		environmentBuilder.loadClass(ResourceCloser.class);
 		
-		// Default setting
-		smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		smellSettings = environmentBuilder.getSmellSettings();
 	}
 
 	@After
 	public void tearDown() throws Exception {
-		environmentBuilder.cleanTestEnvironment();
+		environmentBuilder.cleanEnvironment();
 	}
 
 	@Test

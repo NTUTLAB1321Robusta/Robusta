@@ -34,28 +34,34 @@ public class EmptyCatchBlockVisitor extends ASTVisitor {
 	public boolean visit(MethodDeclaration node) {
 		return isDetectingEmptyCatchBlock;
 	}
+	
 	/**
 	 * Shouldn't visit Initializer when the user don't want to detect this kind of bad smells
 	 */
 	public boolean visit(Initializer node) {
 		return isDetectingEmptyCatchBlock;
 	}
-	
+
 	public boolean visit(CatchClause node) {
-		List<?> statements  = node.getBody().statements();
-		if(statements.size() ==  0) {
-			SingleVariableDeclaration svd = node.getException();
-			MarkerInfo markerInfo = new MarkerInfo(	RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK, 
-													svd.resolveBinding().getType(),
-													node.toString(), node.getStartPosition(),
-													root.getLineNumber(node.getStartPosition()),
-													svd.getType().toString());
-			emptyCatchBlockList.add(markerInfo);
+		if (node.getBody().statements().size() == 0) {
+			addSmellInfo(node);
 		}
-		return true;	
+		return true;
 	}
-	
+
+	private void addSmellInfo(CatchClause node) {
+		SingleVariableDeclaration svd = node.getException();
+		MarkerInfo markerInfo = new MarkerInfo(
+				RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK,
+				svd.resolveBinding().getType(), node.toString(),
+				node.getStartPosition(),
+				root.getLineNumber(node.getStartPosition()),
+				svd.getType().toString());
+		emptyCatchBlockList.add(markerInfo);
+	}
+
 	public List<MarkerInfo> getEmptyCatchList() {
 		return emptyCatchBlockList;
 	}
+	
 }

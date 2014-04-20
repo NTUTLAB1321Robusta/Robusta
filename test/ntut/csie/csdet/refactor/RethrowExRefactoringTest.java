@@ -15,7 +15,7 @@ import java.util.List;
 import ntut.csie.csdet.preference.JDomUtil;
 import ntut.csie.analyzer.ASTCatchCollect;
 import ntut.csie.analyzer.ASTMethodCollector;
-import ntut.csie.analyzer.DummyAndEmptyExample;
+import ntut.csie.analyzer.CommonExample;
 import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
 import ntut.csie.analyzer.dummy.DummyHandlerVisitor;
 import ntut.csie.analyzer.nested.NestedTryStatementExample;
@@ -64,7 +64,7 @@ public class RethrowExRefactoringTest {
 		testProjectName = "RethrowExRefactoringTestProject";
 		dummyHandlerExamplePath = new Path(testProjectName + "/"
 				+ JavaProjectMaker.FOLDERNAME_SOURCE + "/"
-				+ PathUtils.dot2slash(DummyAndEmptyExample.class.getName())
+				+ PathUtils.dot2slash(CommonExample.class.getName())
 				+ JavaProjectMaker.JAVA_FILE_EXTENSION);
 	}
 
@@ -72,7 +72,7 @@ public class RethrowExRefactoringTest {
 	public void setUp() throws Exception {
 		// 讀取測試檔案樣本內容
 		javaFile2String = new JavaFileToString();
-		javaFile2String.read(DummyAndEmptyExample.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaFile2String.read(CommonExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		
 		javapProjectMaker = new JavaProjectMaker(testProjectName);
 		javapProjectMaker.setJREDefaultContainer();
@@ -82,9 +82,9 @@ public class RethrowExRefactoringTest {
 						+ "/log4j-1.2.15.jar");
 		// 根據測試檔案樣本內容建立新的檔案
 		javapProjectMaker.createJavaFile(
-				DummyAndEmptyExample.class.getPackage().getName(),
-				DummyAndEmptyExample.class.getSimpleName()	+ JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + DummyAndEmptyExample.class.getPackage().getName()
+				CommonExample.class.getPackage().getName(),
+				CommonExample.class.getSimpleName()	+ JavaProjectMaker.JAVA_FILE_EXTENSION,
+				"package " + CommonExample.class.getPackage().getName()
 				+ ";\n" + javaFile2String.getFileContent());
 		// 建立Nested try statement example file
 		javaFile2String = new JavaFileToString();
@@ -667,17 +667,17 @@ public class RethrowExRefactoringTest {
 		
 		Change result = refactoring.createChange(null);
 		assertEquals("Rethrow Unchecked Exception", result.getName());
-		assertEquals(	"DummyAndEmptyExample.java [in ntut.csie.exceptionBadSmells [in src [in DummyHandlerTest]]]\n" +
+		assertEquals(	"DHExample.java [in ntut.csie.exceptionBadSmells [in src [in DummyHandlerTest]]]\n" +
 						"  package ntut.csie.exceptionBadSmells\n" +
 						"  import java.io.FileInputStream\n" +
 						"  import java.io.FileNotFoundException\n" +
 						"  import java.io.IOException\n" +
 						"  import java.util.logging.Level\n" +
 						"  import org.apache.log4j.Logger\n" +
-						"  class DummyAndEmptyExample\n" +
+						"  class DHExample\n" +
 						"    Logger log4j\n" +
-						"    java.util.logging.Logger javaLog\n" +
-						"    DummyAndEmptyExample()\n" +
+						"    java.util.logging.Logger javaLogger\n" +
+						"    DHExample()\n" +
 						"    void true_printStackTrace_public()\n" +
 						"    void test()\n" +
 						"    void true_printStackTrace_protected()\n" +

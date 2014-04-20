@@ -7,12 +7,11 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import org.apache.log4j.Logger;
 
-
-public class DummyAndEmptyExample {
+public class CommonExample {
 	Logger log4j = null;
 	java.util.logging.Logger javaLog = null;
 	
-	public DummyAndEmptyExample() {
+	public CommonExample() {
 		log4j = Logger.getLogger(this.getClass());
 		javaLog = java.util.logging.Logger.getLogger("");
 	}

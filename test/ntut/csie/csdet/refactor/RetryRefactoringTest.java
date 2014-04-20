@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import ntut.csie.analyzer.ASTMethodCollector;
-import ntut.csie.analyzer.DummyAndEmptyExample;
+import ntut.csie.analyzer.CommonExample;
 import ntut.csie.analyzer.nested.NestedTryStatementExample;
 import ntut.csie.filemaker.ASTNodeFinder;
 import ntut.csie.filemaker.JavaFileToString;
@@ -63,7 +63,7 @@ public class RetryRefactoringTest {
 		testProjectName = "RetryRefactoringTestProject";
 		dummyAndEmptyExamplePath = new Path(testProjectName + "/"
 				+ JavaProjectMaker.FOLDERNAME_SOURCE + "/"
-				+ PathUtils.dot2slash(DummyAndEmptyExample.class.getName())
+				+ PathUtils.dot2slash(CommonExample.class.getName())
 				+ JavaProjectMaker.JAVA_FILE_EXTENSION);
 		nestedTryStatementExamplePath = new Path(testProjectName + "/"
 				+ JavaProjectMaker.FOLDERNAME_SOURCE + "/"
@@ -75,7 +75,7 @@ public class RetryRefactoringTest {
 	public void setUp() throws Exception {
 		// 讀取測試檔案樣本內容
 		jfs = new JavaFileToString();
-		jfs.read(DummyAndEmptyExample.class, JavaProjectMaker.FOLDERNAME_TEST);
+		jfs.read(CommonExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		
 		jpm = new JavaProjectMaker(testProjectName);
 		jpm.setJREDefaultContainer();
@@ -83,9 +83,9 @@ public class RetryRefactoringTest {
 		jpm.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR
 				+ "/log4j-1.2.15.jar");
 		// 根據測試檔案樣本內容建立新的檔案
-		jpm.createJavaFile(DummyAndEmptyExample.class.getPackage().getName(),
-				DummyAndEmptyExample.class.getSimpleName(),
-				"package " + DummyAndEmptyExample.class.getPackage().getName()
+		jpm.createJavaFile(CommonExample.class.getPackage().getName(),
+				CommonExample.class.getSimpleName(),
+				"package " + CommonExample.class.getPackage().getName()
 				+ ";\n" + jfs.getFileContent());
 		// 建立Nested try statement example file
 		jfs = new JavaFileToString();
@@ -247,7 +247,7 @@ public class RetryRefactoringTest {
 				"fis = new FileInputStream(\"\");" + 
 				"fis.read();" + 
 				"} catch (IOException e) {" + 
-				"javaLog.log(Level.INFO, \"Just log it.\");	//	DummyHandler" + 
+				"javaLogger.log(Level.INFO, \"Just log it.\");	//	DummyHandler" + 
 				"}");
 		TextSelection textSelection = new TextSelection(document, 3069, 153);
 		// 取得專案下的java檔
@@ -808,7 +808,7 @@ public class RetryRefactoringTest {
 				"fis = new FileInputStream(\"\");" + 
 				"fis.read();" + 
 				"} catch (IOException e) {" + 
-				"javaLog.log(Level.INFO, \"Just log it.\");	//	DummyHandler" + 
+				"javaLogger.log(Level.INFO, \"Just log it.\");	//	DummyHandler" + 
 				"}");
 		TextSelection textSelection = new TextSelection(document, 3392, 168);
 		// 取得專案下的java檔
@@ -837,7 +837,7 @@ public class RetryRefactoringTest {
 				"fis = new FileInputStream(\"\");" + 
 				"fis.read();" + 
 				"} catch (IOException e) {" + 
-				"javaLog.log(Level.INFO, \"Just log it.\");	//	DummyHandler" + 
+				"javaLogger.log(Level.INFO, \"Just log it.\");	//	DummyHandler" + 
 				"}");
 		textSelection = new TextSelection(document, 3075, 151);
 		refactoring = new RetryRefactoring(javaProject,javaElement,textSelection,retry_type);
@@ -859,7 +859,7 @@ public class RetryRefactoringTest {
 				"fis = new FileInputStream(\"\");" + 
 				"fis.read();" + 
 				"} catch (IOException e) {" + 
-				"javaLog.log(Level.INFO, \"Just log it.\");	//	DummyHandler" + 
+				"javaLogger.log(Level.INFO, \"Just log it.\");	//	DummyHandler" + 
 				"}");
 		textSelection = new TextSelection(document, 3040, 182);
 		refactoring = new RetryRefactoring(javaProject,javaElement,textSelection,retry_type);
@@ -884,7 +884,7 @@ public class RetryRefactoringTest {
 				"fis = new FileInputStream(\"\");" + 
 				"fis.read();" + 
 				"} catch (IOException e) {" + 
-				"javaLog.log(Level.INFO, \"Just log it.\");	//	DummyHandler" + 
+				"javaLogger.log(Level.INFO, \"Just log it.\");	//	DummyHandler" + 
 				"}");
 		textSelection = new TextSelection(document, 3081, 141);
 		refactoring = new RetryRefactoring(javaProject,javaElement,textSelection,retry_type);

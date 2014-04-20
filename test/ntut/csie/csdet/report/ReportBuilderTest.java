@@ -11,7 +11,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import ntut.csie.analyzer.DummyAndEmptyExample;
+import ntut.csie.analyzer.CommonExample;
 import ntut.csie.analyzer.UserDefineDummyHandlerFish;
 import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
 import ntut.csie.csdet.preference.JDomUtil;
@@ -70,12 +70,12 @@ public class ReportBuilderTest {
 				+ JavaProjectMaker.RL_LIBRARY_PATH);
 
 		// 根據測試檔案樣本內容建立新的檔案
-		javaFileToString.read(DummyAndEmptyExample.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaFileToString.read(CommonExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
-				DummyAndEmptyExample.class.getPackage().getName(),
-				DummyAndEmptyExample.class.getSimpleName()
+				CommonExample.class.getPackage().getName(),
+				CommonExample.class.getSimpleName()
 				+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
-				+ DummyAndEmptyExample.class.getPackage().getName()
+				+ CommonExample.class.getPackage().getName()
 				+ ";\n" + javaFileToString.getFileContent());
 		javaFileToString.clear();
 		
@@ -93,7 +93,7 @@ public class ReportBuilderTest {
 		project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 		reportBuilder = new ReportBuilder(project, new ReportModel());
 
-		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(DummyAndEmptyExample.class, projectName));
+		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(CommonExample.class, projectName));
 		
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
@@ -125,7 +125,7 @@ public class ReportBuilderTest {
 		Method countFileLOC = ReportBuilder.class.getDeclaredMethod("countFileLOC", String.class);
 		countFileLOC.setAccessible(true);
 		// 檢查測試專案檔案的行數
-		assertEquals(310, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(DummyAndEmptyExample.class, projectName)));
+		assertEquals(310, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(CommonExample.class, projectName)));
 		/** 路徑不正確或者不存在的class file */
 		assertEquals(0, countFileLOC.invoke(reportBuilder, "not/exist/example.java"));
 	}
@@ -156,25 +156,25 @@ public class ReportBuilderTest {
 	public void testGetTrimFolderName() throws Exception {
 		Method getTrimFolderName = ReportBuilder.class.getDeclaredMethod("getTrimFolderName", String.class);
 		getTrimFolderName.setAccessible(true);
-		assertEquals(DummyAndEmptyExample.class.getPackage().getName(), (String)getTrimFolderName.invoke(reportBuilder, "EH_LEFTsrcEH_RIGHT" + DummyAndEmptyExample.class.getPackage().getName()));
+		assertEquals(CommonExample.class.getPackage().getName(), (String)getTrimFolderName.invoke(reportBuilder, "EH_LEFTsrcEH_RIGHT" + CommonExample.class.getPackage().getName()));
 	}
 	
 	@Test
 	public void testIsConformFolderFormat() throws Exception {
 		Method isConformFolderFormat = ReportBuilder.class.getDeclaredMethod("isConformFolderFormat", String.class);
 		isConformFolderFormat.setAccessible(true);
-		assertTrue((Boolean)isConformFolderFormat.invoke(reportBuilder, "EH_LEFTsrcEH_RIGHT" + DummyAndEmptyExample.class.getPackage().getName()));
-		assertFalse((Boolean)isConformFolderFormat.invoke(reportBuilder, DummyAndEmptyExample.class.getPackage().getName()));
-		assertFalse((Boolean)isConformFolderFormat.invoke(reportBuilder, "srcEH_RIGHT" + DummyAndEmptyExample.class.getPackage().getName()));
-		assertFalse((Boolean)isConformFolderFormat.invoke(reportBuilder, "EH_LEFT" + DummyAndEmptyExample.class.getPackage().getName()));
-		assertFalse((Boolean)isConformFolderFormat.invoke(reportBuilder, "EH_RIGHTsrcEH_LEFTntut.csie.exceptionBadSmells" + DummyAndEmptyExample.class.getPackage().getName()));
+		assertTrue((Boolean)isConformFolderFormat.invoke(reportBuilder, "EH_LEFTsrcEH_RIGHT" + CommonExample.class.getPackage().getName()));
+		assertFalse((Boolean)isConformFolderFormat.invoke(reportBuilder, CommonExample.class.getPackage().getName()));
+		assertFalse((Boolean)isConformFolderFormat.invoke(reportBuilder, "srcEH_RIGHT" + CommonExample.class.getPackage().getName()));
+		assertFalse((Boolean)isConformFolderFormat.invoke(reportBuilder, "EH_LEFT" + CommonExample.class.getPackage().getName()));
+		assertFalse((Boolean)isConformFolderFormat.invoke(reportBuilder, "EH_RIGHTsrcEH_LEFTntut.csie.exceptionBadSmells" + CommonExample.class.getPackage().getName()));
 	}
 	
 	@Test
 	public void testGetFolderName() throws Exception {
 		Method getFolderName = ReportBuilder.class.getDeclaredMethod("getFolderName", String.class);
 		getFolderName.setAccessible(true);
-		assertEquals(JavaProjectMaker.FOLDERNAME_SOURCE, getFolderName.invoke(reportBuilder, "EH_LEFTsrcEH_RIGHT" + DummyAndEmptyExample.class.getPackage().getName()));
+		assertEquals(JavaProjectMaker.FOLDERNAME_SOURCE, getFolderName.invoke(reportBuilder, "EH_LEFTsrcEH_RIGHT" + CommonExample.class.getPackage().getName()));
 		assertEquals(JavaProjectMaker.FOLDERNAME_SOURCE, getFolderName.invoke(reportBuilder, "EH_LEFTsrcEH_RIGHTntut.csie.*"));
 		assertEquals(JavaProjectMaker.FOLDERNAME_SOURCE, getFolderName.invoke(reportBuilder, "EH_LEFTsrcEH_RIGHT"));
 	}
@@ -248,7 +248,7 @@ public class ReportBuilderTest {
 		ruleList.add(tempList);
 		tempList = new ArrayList<String>();
 		// EH_LEFTsrcEH_RIGHTntut.csie.analyzer
-		tempList.add("EH_LEFTsrcEH_RIGHT" + DummyAndEmptyExample.class.getPackage().getName());
+		tempList.add("EH_LEFTsrcEH_RIGHT" + CommonExample.class.getPackage().getName());
 		ruleList.add(tempList);
 		tempList = new ArrayList<String>();
 		tempList.add("ntut.EH_STAR");
@@ -259,7 +259,7 @@ public class ReportBuilderTest {
 		tempList.add("ntut.csie.analyzer.EH_STAR");
 		ruleList.add(tempList);
 		tempList = new ArrayList<String>();
-		tempList.add(DummyAndEmptyExample.class.getPackage().getName());
+		tempList.add(CommonExample.class.getPackage().getName());
 		ruleList.add(tempList);
 		
 		Field filterRuleList = ReportBuilder.class.getDeclaredField("filterRuleList");
@@ -475,7 +475,7 @@ public class ReportBuilderTest {
 		assertEquals(3, ruleList.size());
 		assertEquals(JavaProjectMaker.FOLDERNAME_SOURCE, ruleList.get(0));
 		assertEquals("ntut.csie.EH_STAR", ruleList.get(1));
-		assertEquals(DummyAndEmptyExample.class.getPackage().getName(), ruleList.get(2));
+		assertEquals(CommonExample.class.getPackage().getName(), ruleList.get(2));
 	}
 	
 //	@Test
@@ -497,7 +497,7 @@ public class ReportBuilderTest {
 		filterRules.setAttribute("IsAllPackage", "false");
 		filterRules.setAttribute(JavaProjectMaker.FOLDERNAME_SOURCE, "true");
 		filterRules.setAttribute("ntut.csie.EH_STAR", "true");
-		filterRules.setAttribute(DummyAndEmptyExample.class.getPackage().getName(), "true");
+		filterRules.setAttribute(CommonExample.class.getPackage().getName(), "true");
 		
 		filter.addContent(filterRules);
 

@@ -38,7 +38,7 @@ public class TestEnvironmentBuilder {
 		this.projectName = projectName;
 	}
 	
-	public void createTestEnvironment() throws Exception {
+	public void createEnvironment() throws Exception {
 		// Load the context from the test sample
 		javaFileToString = new JavaFileToString();
 		javaProjectMaker = new JavaProjectMaker(projectName);
@@ -55,15 +55,20 @@ public class TestEnvironmentBuilder {
 		project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 		javaProject = JavaCore.create(project);
 		
-		InitailSetting();
+		createEmptySetting();
 	}
-	
-	private void InitailSetting() {
+
+	private void createEmptySetting() {
+		// remove old setting if it exist
+		File settingFile = new File(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		if (settingFile.exists()) {
+			assertTrue(settingFile.delete());
+		}
+
 		smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.ATTRIBUTE_ISDETECTING, true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 	}
-	
+
 	private CompilationUnit parse(ICompilationUnit unit) {
         ASTParser parser = ASTParser.newParser(AST.JLS3);
         parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -87,7 +92,7 @@ public class TestEnvironmentBuilder {
 		return unit;
 	}
 
-	public void cleanTestEnvironment() throws Exception {
+	public void cleanEnvironment() throws Exception {
 		File settingFile = new File(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		if(settingFile.exists()) {
 			assertTrue(settingFile.delete());

@@ -5,7 +5,7 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 
-import ntut.csie.analyzer.DummyAndEmptyExample;
+import ntut.csie.analyzer.CommonExample;
 import ntut.csie.analyzer.UserDefineDummyHandlerFish;
 import ntut.csie.csdet.preference.JDomUtil;
 import ntut.csie.csdet.preference.SmellSettings;
@@ -36,8 +36,8 @@ public class QuickFixCoreTest {
 
 	public QuickFixCoreTest() {
 		projectNameString = "QuickFixCoreTest";
-		packageNameString = DummyAndEmptyExample.class.getPackage().getName();
-		classSimpleNameString = DummyAndEmptyExample.class.getSimpleName();
+		packageNameString = CommonExample.class.getPackage().getName();
+		classSimpleNameString = CommonExample.class.getSimpleName();
 	}
 	
 	@Before
@@ -57,11 +57,11 @@ public class QuickFixCoreTest {
 
 		// 建立新的檔案DummyAndEmptyExample
 		javaFile2String = new JavaFileToString();
-		javaFile2String.read(DummyAndEmptyExample.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaFile2String.read(CommonExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
-				DummyAndEmptyExample.class.getPackage().getName(),
-				DummyAndEmptyExample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + DummyAndEmptyExample.class.getPackage().getName() + ";\n"
+				CommonExample.class.getPackage().getName(),
+				CommonExample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
+				"package " + CommonExample.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		
 		// 繼續建立測試用的UserDefineDummyHandlerFish
@@ -73,7 +73,7 @@ public class QuickFixCoreTest {
 				"package " + UserDefineDummyHandlerFish.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		
-		path = new Path(PathUtils.getPathOfClassUnderSrcFolder(DummyAndEmptyExample.class, projectNameString));
+		path = new Path(PathUtils.getPathOfClassUnderSrcFolder(CommonExample.class, projectNameString));
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);

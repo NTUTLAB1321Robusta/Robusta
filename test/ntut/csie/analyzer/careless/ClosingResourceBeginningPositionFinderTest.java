@@ -26,7 +26,7 @@ public class ClosingResourceBeginningPositionFinderTest {
 	@Before
 	public void setUp() throws Exception {
 		environmentBuilder = new TestEnvironmentBuilder();
-		environmentBuilder.createTestEnvironment();
+		environmentBuilder.createEnvironment();
 
 		environmentBuilder
 				.loadClass(ClosingResourceBeginningPositionFinderExample.class);
@@ -39,7 +39,7 @@ public class ClosingResourceBeginningPositionFinderTest {
 
 	@After
 	public void tearDown() throws Exception {
-		environmentBuilder.cleanTestEnvironment();
+		environmentBuilder.cleanEnvironment();
 	}
 
 	@Test

@@ -25,7 +25,7 @@ public class CloseResourceMethodInvocationVisitorTest {
 	@Before
 	public void setUp() throws Exception {
 		environmentBuilder = new TestEnvironmentBuilder("testCloseResourceProject");
-		environmentBuilder.createTestEnvironment();
+		environmentBuilder.createEnvironment();
 
 		environmentBuilder.loadClass(CloseResourceMethodInvocationExample.class);
 		environmentBuilder.loadClass(ClassCanCloseButNotImplementCloseable.class);
@@ -38,7 +38,7 @@ public class CloseResourceMethodInvocationVisitorTest {
 
 	@After
 	public void tearDown() throws Exception {
-		environmentBuilder.cleanTestEnvironment();
+		environmentBuilder.cleanEnvironment();
 	}
 	
 	@Test

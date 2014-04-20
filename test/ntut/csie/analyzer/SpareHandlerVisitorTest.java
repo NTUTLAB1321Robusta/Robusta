@@ -34,19 +34,19 @@ public class SpareHandlerVisitorTest {
 		String testProjectName = "SpareHandlerTest";
 		// 讀取測試檔案樣本內容
 		javaaFile2String = new JavaFileToString();
-		javaaFile2String.read(DummyAndEmptyExample.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaaFile2String.read(CommonExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		
 		javaProjectMaker = new JavaProjectMaker(testProjectName);
 		javaProjectMaker.setJREDefaultContainer();
 		// 新增欲載入的library
 		javaProjectMaker.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR + "/log4j-1.2.15.jar");
 		// 根據測試檔案樣本內容建立新的檔案
-		javaProjectMaker.createJavaFile(DummyAndEmptyExample.class.getPackage().getName(),
-				DummyAndEmptyExample.class.getSimpleName(),
-				"package " + DummyAndEmptyExample.class.getPackage().getName()	+ ";\n"
+		javaProjectMaker.createJavaFile(CommonExample.class.getPackage().getName(),
+				CommonExample.class.getSimpleName(),
+				"package " + CommonExample.class.getPackage().getName()	+ ";\n"
 				+ javaaFile2String.getFileContent());
 		
-		Path dummyAndEmptyExamplePath = new Path(PathUtils.getPathOfClassUnderSrcFolder(DummyAndEmptyExample.class, testProjectName));
+		Path dummyAndEmptyExamplePath = new Path(PathUtils.getPathOfClassUnderSrcFolder(CommonExample.class, testProjectName));
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
