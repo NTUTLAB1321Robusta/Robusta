@@ -50,4 +50,29 @@ public class PrintAndSomethingElse {
 			int i;
 		}
 	}
+
+	public void emptyBlockBeSibling() {
+		FileInputStream fis = null;
+		try {
+			fis = new FileInputStream("");
+			fis.read();
+		} catch (IOException e) {
+			System.out.println(e);
+			{
+				
+			};
+		}
+	}
+
+	public void nothingElseOnParentBlock() {
+		FileInputStream fis = null;
+		try {
+			fis = new FileInputStream("");
+			fis.read();
+		} catch (IOException e) {
+			{
+				System.out.println(e);
+			};
+		}
+	}
 }
