@@ -3,8 +3,8 @@ package ntut.csie.analyzer;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.logging.Level;
+
 import org.apache.log4j.Logger;
 
 public class CommonExample {
@@ -21,8 +21,8 @@ public class CommonExample {
 		try {
 			fis = new FileInputStream("");
 			fis.read();
-		} catch (IOException e) {
-			e.printStackTrace();	//	DummyHandler
+		} catch (IOException e) { // DummyHandler
+			e.printStackTrace();
 		}
 	}
 	
@@ -36,8 +36,8 @@ public class CommonExample {
 		try {
 			fis = new FileInputStream("");
 			fis.read();
-		} catch (IOException e) {
-			e.printStackTrace();	//	DummyHandler
+		} catch (IOException e) { // DummyHandler
+			e.printStackTrace();
 		}
 	}
 	
@@ -46,18 +46,18 @@ public class CommonExample {
 		try {
 			fis = new FileInputStream("");
 			fis.read();
-		} catch (IOException e) {
-			e.printStackTrace();	//	DummyHandler
+		} catch (IOException e) { // DummyHandler
+			e.printStackTrace();
 		}
 	}
-	
+
 	public void true_systemTrace() {
 		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream("");
 			fis.read();
-		} catch (IOException e) {
-			System.out.println("DummyHandlerExample.true_systemErrPrint()");	//	DummyHandler
+		} catch (IOException e) { // DummyHandler
+			System.out.println("DummyHandlerExample.true_systemErrPrint()");
 		}
 	}
 	
@@ -66,8 +66,8 @@ public class CommonExample {
 		try {
 			fis = new FileInputStream("");
 			fis.read();
-		} catch (IOException e) {
-			System.err.println(e);	//	DummyHandler
+		} catch (IOException e) { // DummyHandler
+			System.err.println(e);
 		}
 	}
 	
@@ -76,19 +76,19 @@ public class CommonExample {
 		try {
 			fis = new FileInputStream("");
 			fis.read();
-		} catch (IOException e) {
-			System.out.print(e);	//	DummyHandler
+		} catch (IOException e) { // DummyHandler
+			System.out.print(e);
 		}
 	}
 	
-	//Dummy handler in initializer
+	// Dummy handler in initializer
 	{
 		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream("");
 			fis.read();
-		} catch (IOException e) {
-			e.printStackTrace();	//	DummyHandler
+		} catch (IOException e) { // DummyHandler
+			e.printStackTrace();
 		}
 	}
 	
@@ -101,7 +101,7 @@ public class CommonExample {
 			fis = new FileInputStream("");
 			fis.read();
 		} catch (IOException e) {
-			System.out.println(e);	//	DummyHandler
+			System.out.println(e);
 			String stringToChar = "1001";
 			stringToChar.toString().toCharArray();
 		}
@@ -113,39 +113,19 @@ public class CommonExample {
 			fis = new FileInputStream("");
 			fis.read();
 		} catch (IOException e) {
-			System.out.println("I am Dummy.");	//	DummyHandler
+			System.out.println("I am Dummy.");
 			// 使用者自訂type2 - *.toString時 - true
 			e.toString();
-			// 使用者自訂type2 - *.toString時測*.toCharArray - false
-			e.toString().toCharArray();
 		}
 	}
 
-	/**
-	 * 測試使用者自訂type3
-	 * 同時測試addDummyHandlerSmellInfo的去<>功能是否能正常運行
-	 */
-	public void true_systemOutAndPrintStack() {
-		FileInputStream fis = null;
-		try {
-			fis = new FileInputStream("");
-			fis.read();
-		} catch (IOException e) {
-			e.printStackTrace();	//	DummyHandler
-			System.out.println(e);	//	DummyHandler
-			// 使用者自訂type3 - java.util.ArrayList.add時 - true
-			ArrayList<Boolean> booleanList = new ArrayList<Boolean>();
-			booleanList.add(true);
-		}
-	}
-	
 	public void true_Log4J() {
 		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream("");
 			fis.read();
-		} catch (IOException e) {
-			log4j.info("message");	//	DummyHandler
+		} catch (IOException e) { // DummyHandler
+			log4j.info("message");
 		}
 	}
 	
@@ -154,8 +134,8 @@ public class CommonExample {
 		try {
 			fis = new FileInputStream("");
 			fis.read();
-		} catch (IOException e) {
-			javaLog.info("");	//	DummyHandler
+		} catch (IOException e) { // DummyHandler
+			javaLog.info("");
 		}
 	}
 	
@@ -164,8 +144,8 @@ public class CommonExample {
 		try {
 			fis = new FileInputStream("");
 			fis.read();
-		} catch (IOException e) {
-			javaLog.log(Level.INFO, "Just log it.");	//	DummyHandler
+		} catch (IOException e) { // DummyHandler
+			javaLog.log(Level.INFO, "Just log it.");
 		}
 	}
 	
@@ -174,15 +154,15 @@ public class CommonExample {
 		try {
 			fis = new FileInputStream("");
 			fis.read();
-		} catch (IOException e) {
+		} catch (IOException e) { // DummyHandler
 			// TODO Auto-generated catch block
-			e.printStackTrace();	//	DummyHandler
+			e.printStackTrace();
 		} finally {
 			try {
 				fis.close();
-			} catch (IOException e) {
+			} catch (IOException e) { // DummyHandler
 				// TODO Auto-generated catch block
-				e.printStackTrace();	//	DummyHandler
+				e.printStackTrace();
 			}
 		}
 	}
@@ -252,11 +232,11 @@ public class CommonExample {
 			fis.read();
 			try {
 				fis.close();
-			} catch (IOException e) {
-				e.printStackTrace();	//	DummyHandler
+			} catch (IOException e) { // DummyHandler
+				e.printStackTrace();
 			}
-		} catch (IOException e) {
-			e.printStackTrace();	//	DummyHandler
+		} catch (IOException e) { // DummyHandler
+			e.printStackTrace();
 		}
 	}
 	
@@ -266,11 +246,11 @@ public class CommonExample {
 			fis = new FileInputStream("");
 			fis.read();
 		} catch (IOException e) {
-			e.printStackTrace();	//	DummyHandler
+			e.printStackTrace();
 			try {
 				fis.close();
-			} catch (IOException e1) {
-				e1.printStackTrace();	//	DummyHandler
+			} catch (IOException e1) { // DummyHandler
+				e1.printStackTrace();
 			}
 		}
 	}

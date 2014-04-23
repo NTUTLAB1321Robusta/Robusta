@@ -316,13 +316,12 @@ public class RetryRefactoringTest {
 		rewrite.set(retryRefactoring, rw);
 		// 驗證初始狀態
 		List<?> importList = rw.getListRewrite(dummyAndEmptyExampleUnit, CompilationUnit.IMPORTS_PROPERTY).getRewrittenList();
-		assertEquals(6, importList.size());
+		assertEquals(5, importList.size());
 		assertEquals("import java.io.FileInputStream;\n", importList.get(0).toString());
 		assertEquals("import java.io.FileNotFoundException;\n", importList.get(1).toString());
 		assertEquals("import java.io.IOException;\n", importList.get(2).toString());
-		assertEquals("import java.util.ArrayList;\n", importList.get(3).toString());
-		assertEquals("import java.util.logging.Level;\n", importList.get(4).toString());
-		assertEquals("import org.apache.log4j.Logger;\n", importList.get(5).toString());
+		assertEquals("import java.util.logging.Level;\n", importList.get(3).toString());
+		assertEquals("import org.apache.log4j.Logger;\n", importList.get(4).toString());
 		
 		// 執行測試對象
 		Method addImportRLDeclaration = RetryRefactoring.class.getDeclaredMethod("addImportRLDeclaration");
@@ -332,15 +331,14 @@ public class RetryRefactoringTest {
 		// 驗證結果
 		rw = (ASTRewrite)rewrite.get(retryRefactoring);
 		importList = rw.getListRewrite(dummyAndEmptyExampleUnit, CompilationUnit.IMPORTS_PROPERTY).getRewrittenList();
-		assertEquals(8, importList.size());
+		assertEquals(7, importList.size());
 		assertEquals("import java.io.FileInputStream;\n", importList.get(0).toString());
 		assertEquals("import java.io.FileNotFoundException;\n", importList.get(1).toString());
 		assertEquals("import java.io.IOException;\n", importList.get(2).toString());
-		assertEquals("import java.util.ArrayList;\n", importList.get(3).toString());
-		assertEquals("import java.util.logging.Level;\n", importList.get(4).toString());
-		assertEquals("import org.apache.log4j.Logger;\n", importList.get(5).toString());
-		assertEquals("import ntut.csie.robusta.agile.exception.Robustness;\n", importList.get(6).toString());
-		assertEquals("import ntut.csie.robusta.agile.exception.RTag;\n", importList.get(7).toString());
+		assertEquals("import java.util.logging.Level;\n", importList.get(3).toString());
+		assertEquals("import org.apache.log4j.Logger;\n", importList.get(4).toString());
+		assertEquals("import ntut.csie.robusta.agile.exception.Robustness;\n", importList.get(5).toString());
+		assertEquals("import ntut.csie.robusta.agile.exception.RTag;\n", importList.get(6).toString());
 	}
 	
 	@Test
@@ -424,7 +422,7 @@ public class RetryRefactoringTest {
 		
 		/* 檢查目前狀態 */
 		List<?> importList = rw.getListRewrite(dummyAndEmptyExampleUnit, CompilationUnit.IMPORTS_PROPERTY).getRewrittenList();
-		assertEquals(6, importList.size());
+		assertEquals(5, importList.size());
 		
 		/* 執行測試對象 */
 		Method addImportDeclaration = RetryRefactoring.class.getDeclaredMethod("addImportDeclaration");
@@ -434,7 +432,7 @@ public class RetryRefactoringTest {
 		/* 驗證結果 */
 		rw = (ASTRewrite)rewrite.get(retryRefactoring);
 		importList = rw.getListRewrite(dummyAndEmptyExampleUnit, CompilationUnit.IMPORTS_PROPERTY).getRewrittenList();
-		assertEquals(6, importList.size());
+		assertEquals(5, importList.size());
 		
 		/** 給予新的import則必須import */
 		exType = JavaCore.create(project).findType("java.io.IOError");
@@ -444,7 +442,7 @@ public class RetryRefactoringTest {
 		/* 驗證結果 */
 		rw = (ASTRewrite)rewrite.get(retryRefactoring);
 		importList = rw.getListRewrite(dummyAndEmptyExampleUnit, CompilationUnit.IMPORTS_PROPERTY).getRewrittenList();
-		assertEquals(7, importList.size());
+		assertEquals(6, importList.size());
 	}
 	
 	@Test

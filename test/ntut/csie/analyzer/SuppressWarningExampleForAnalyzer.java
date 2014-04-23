@@ -41,7 +41,7 @@ public class SuppressWarningExampleForAnalyzer {
 	}
 	
 	/**
-	 * 在 method 上有  suppress warning 的 dummy handler
+	 * 在 method 上有 suppress warning 的 dummy handler
 	 */
 	@SuppressSmell("Dummy_Handler")
 	public void withSuppressWaringDummyHandlerOnMethod() {
@@ -49,21 +49,21 @@ public class SuppressWarningExampleForAnalyzer {
 		try {
 			fis = new FileInputStream("");
 			fis.read();
-		} catch (IOException e) {
-			e.printStackTrace();	//	DummyHandler
+		} catch (IOException e) { // Suppressed DummyHandler
+			e.printStackTrace();
 		}
 	}
-	
+
 	/**
-	 * 在 catch 上有  suppress warning 的 dummy handler
+	 * 在 catch 上有 suppress warning 的 dummy handler
 	 */
 	public void withSuppressWaringDummyHandlerOnCatch() {
 		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream("");
 			fis.read();
-		} catch (@SuppressSmell("Dummy_Handler") IOException e) {
-			e.printStackTrace();	//	DummyHandler
+		} catch (@SuppressSmell("Dummy_Handler") IOException e) { // Suppressed DummyHandler
+			e.printStackTrace();
 		}
 	}
 
@@ -77,7 +77,7 @@ public class SuppressWarningExampleForAnalyzer {
 		} catch (@SuppressSmell("Dummy_Handler") SocketTimeoutException e) {
 			try {
 				throwInterruptedIOException();
-			} catch (@SuppressSmell("Dummy_Handler") InterruptedIOException e1) {
+			} catch (@SuppressSmell("Dummy_Handler") InterruptedIOException e1) { // Suppressed DummyHandler
 				e1.printStackTrace();
 			}
 			e.printStackTrace();
@@ -91,7 +91,7 @@ public class SuppressWarningExampleForAnalyzer {
 	public void withSuppressWaringNestedTryStatementOnMethod() {
 		try {
 			throwSocketTimeoutException();
-		} catch (@SuppressSmell("Dummy_Handler") SocketTimeoutException e) {
+		} catch (@SuppressSmell("Dummy_Handler") SocketTimeoutException e) { // Suppressed DummyHandler
 			e.printStackTrace();
 		}
 		finally {
@@ -112,11 +112,11 @@ public class SuppressWarningExampleForAnalyzer {
 		try {
 			fis = new FileInputStream("");
 			fis.read();
-		} catch (IOException e) {	// EmptyCatchBlock
-			
+		} catch (IOException e) { // Suppressed EmptyCatchBlock
+
 		}
 	}
-	
+
 	/**
 	 * 在 catch 上有 suppress warning 的 EmptyCatchBlock
 	 */
@@ -196,7 +196,7 @@ public class SuppressWarningExampleForAnalyzer {
 	public void theFirstOrderInTheSameClass() {
 		try {
 			theSecondOrderInTheSameClass();
-		} catch(@SuppressSmell("Dummy_Handler") IOException e) {
+		} catch(@SuppressSmell("Dummy_Handler") IOException e) { // Suppressed DummyHandler
 			logger.log(Level.WARNING, e.getMessage());
 		}
 	}
@@ -248,7 +248,7 @@ public class SuppressWarningExampleForAnalyzer {
 			throw e;
 		} catch(@SuppressSmell({ "Nested_Try_Statement" , "Over_Logging" , "Empty_Catch_Block"}) FileLockInterruptionException e) {
 			
-		} catch(@SuppressSmell("Dummy_Handler") IOException e) {
+		} catch(@SuppressSmell("Dummy_Handler") IOException e) { // Suppressed DummyHandler
 			logger.log(Level.WARNING, e.getMessage());
 		} catch (Exception e) {
 			try {
@@ -261,9 +261,9 @@ public class SuppressWarningExampleForAnalyzer {
 				} catch (IOException e2) {
 					throw e2;
 				}
-			} catch (@SuppressSmell( "Dummy_Handler" ) FileNotFoundException e1) {
+			} catch (@SuppressSmell("Dummy_Handler") FileNotFoundException e1) { // Suppressed DummyHandler
 				e.printStackTrace();
-			} catch (@SuppressSmell({ "Dummy_Handler", "Dummy_Handler" }) IOException e1) {
+			} catch (@SuppressSmell({"Dummy_Handler", "Dummy_Handler"}) IOException e1) { // Suppressed DummyHandler
 				e.printStackTrace();
 			} catch (@SuppressSmell( "Empty_Catch_Block" ) ArithmeticException e1) {
 				// TODO: handle exception
@@ -286,8 +286,8 @@ public class SuppressWarningExampleForAnalyzer {
 		try {
 			fis = new FileInputStream("");
 			fis.read();
-		} catch (IOException e) {
-			e.printStackTrace();	//	DummyHandler
+		} catch (IOException e) { // DummyHandler
+			e.printStackTrace();
 		}
 	}
 
@@ -296,8 +296,8 @@ public class SuppressWarningExampleForAnalyzer {
 		try {
 			fis = new FileInputStream("");
 			fis.read();
-		} catch (IOException e) {
-			e.printStackTrace();	//	DummyHandler
+		} catch (IOException e) { // DummyHandler
+			e.printStackTrace();
 		}
 	}
 
@@ -307,7 +307,7 @@ public class SuppressWarningExampleForAnalyzer {
 		} catch (SocketTimeoutException e) {
 			try {
 				throwInterruptedIOException();
-			} catch (InterruptedIOException e1) {
+			} catch (InterruptedIOException e1) { // DummyHandler
 				e1.printStackTrace();
 			}
 			e.printStackTrace();
@@ -317,13 +317,13 @@ public class SuppressWarningExampleForAnalyzer {
 	public void withoutSuppressWaringNestedTryStatementOnFinally() {
 		try {
 			throwSocketTimeoutException();
-		} catch (SocketTimeoutException e) {
+		} catch (SocketTimeoutException e) { // DummyHandler
 			e.printStackTrace();
 		}
 		finally {
 			try {
 				throwInterruptedIOException();
-			} catch (InterruptedIOException e) {
+			} catch (InterruptedIOException e) { // DummyHandler
 				e.printStackTrace();
 			}
 		}
@@ -396,7 +396,7 @@ public class SuppressWarningExampleForAnalyzer {
 	public void withoutSuppressWaringTheFirstOrderInTheSameClass() {
 		try {
 			withoutSuppressWaringTheSecondOrderInTheSameClass();
-		} catch(IOException e) {
+		} catch(IOException e) { // DummyHandler
 			logger.log(Level.WARNING, e.getMessage());
 		}
 	}
@@ -437,7 +437,7 @@ public class SuppressWarningExampleForAnalyzer {
 			throw e;
 		} catch(FileLockInterruptionException e) {
 			
-		} catch(IOException e) {
+		} catch(IOException e) { // DummyHandler
 			logger.log(Level.WARNING, e.getMessage());
 		} catch (Exception e) {
 			try {
@@ -450,9 +450,9 @@ public class SuppressWarningExampleForAnalyzer {
 				} catch (IOException e2) {
 					throw e2;
 				}
-			} catch (FileNotFoundException e1) {
+			} catch (FileNotFoundException e1) { // DummyHandler
 				e.printStackTrace();
-			} catch (IOException e1) {
+			} catch (IOException e1) { // DummyHandler
 				e.printStackTrace();
 			} catch (ArithmeticException e1) {
 				// TODO: handle exception

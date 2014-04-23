@@ -16,16 +16,20 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.Expression;
+import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.Statement;
+import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 
 public class DummyHandlerVisitor extends ASTVisitor {
 	private List<MarkerInfo> dummyHandlerList;
 	// 儲存偵測"Library的Name"和"是否Library"
 	// store使用者要偵測的library名稱，和"是否要偵測此library"
-	private TreeMap<String, UserDefinedConstraintsType> libMap;// = new TreeMap<String, UserDefinedConstraintsType>();
+	private TreeMap<String, UserDefinedConstraintsType> libMap;
 	private boolean isDetectingDummyHandlerSmell;
 	private CompilationUnit root;
 	
@@ -37,7 +41,11 @@ public class DummyHandlerVisitor extends ASTVisitor {
 		libMap = smellSettings.getSmellSettings(SmellSettings.SMELL_DUMMYHANDLER);
 		isDetectingDummyHandlerSmell = smellSettings.isDetectingSmell(SmellSettings.SMELL_DUMMYHANDLER);
 	}
-	
+
+	public List<MarkerInfo> getDummyList() {
+		return dummyHandlerList;
+	}
+
 	/**
 	 * 根據設定檔的資訊，決定要不要拜訪整棵樹。
 	 */
@@ -48,42 +56,49 @@ public class DummyHandlerVisitor extends ASTVisitor {
 		}
 		return isDetectingDummyHandlerSmell;
 	}
-	
-	public boolean visit(MethodInvocation node) {
-		detectDummyHandler(node);
-		return false;
-	}
-	
-	@Override
+
 	public boolean visit(Initializer node) {
 		return isDetectingDummyHandlerSmell;
 	}
 
-	public void detectDummyHandler(MethodInvocation node) {
-		ASTNode parentCatchClauseNode = NodeUtils.getSpecifiedParentNode(node, ASTNode.CATCH_CLAUSE);
+	public boolean visit(CatchClause catchClause) {
+		List<Statement> statements = catchClause.getBody().statements();
+		if (statements.isEmpty()) {
+			// It's empty catch, do nothing
+			return false;
+		}
+		
+		Iterator<Statement> iterator = statements.iterator();
+		while (iterator.hasNext()) {
+			if (!isPrintingOrLoggingInvocation(iterator.next())) {
+				// Something else in this catch, continue deeper
+				return true;
+			}
+		}
 		/*
-		 * 如果找到的ExpressionStatement不是在CatchClause裡面，
-		 * 則不能當作DummyHandler
+		 * All statements in this catch are printing/logging, this catch is a
+		 * dummy handler.
 		 */
-		if(parentCatchClauseNode == null) {
-			return;
-		}
-		CatchClause cc = (CatchClause) parentCatchClauseNode;
-		/* 
-		 * 如果在這個catch clause裡面，有throw statement存在，
-		 * 則不把這個ExpressionStatement當作DummyHandler。
-		 */
-		if(isThrowStatementInCatchClause(cc)) {
-			return;
-		}
-		addDummyHandlerSmellInfo(node);
+		addSmellInfo(catchClause);
+		return false;
 	}
 	
-	/**
-	 * 根據傳入的ExpressionStatement Node，找出其所屬的CatchClause
-	 * @param node ExpressionStatement Node
-	 */
-	private void addDummyHandlerSmellInfo(MethodInvocation node) {
+	private boolean isPrintingOrLoggingInvocation(Statement statement) {
+		if (statement instanceof ExpressionStatement) {
+			Expression expression = ((ExpressionStatement) statement).getExpression();
+			if (expression instanceof MethodInvocation) {
+				if (isPrintOrLog((MethodInvocation) expression)) {
+					return true;
+				}
+			} else if (expression instanceof SuperMethodInvocation) {
+				// TODO 某些情況是true
+				return false;
+			}
+		}
+		return false;
+	}
+	
+	private boolean isPrintOrLog(MethodInvocation node) {
 		// 取得Method的Library名稱
 		String libName = node.resolveMethodBinding().getDeclaringClass().getQualifiedName();
 		// 取得Method的名稱
@@ -97,14 +112,6 @@ public class DummyHandlerVisitor extends ASTVisitor {
 		// 判斷是否要偵測 且 此句也包含欲偵測Library
 		while(libIt.hasNext()){
 			String temp = libIt.next();
-			CatchClause cc = (CatchClause) NodeUtils.getSpecifiedParentNode(node, ASTNode.CATCH_CLAUSE);
-			SingleVariableDeclaration svd = cc.getException();
-			MarkerInfo markerInfo = new MarkerInfo(
-					RLMarkerAttribute.CS_DUMMY_HANDLER,
-					svd.resolveBinding().getType(),	cc.toString(),
-					cc.getStartPosition(),
-					root.getLineNumber(node.getStartPosition()),
-					svd.getType().toString());
 				
 			// 只偵測Library
 			if (libMap.get(temp) == UserDefinedConstraintsType.Library) {
@@ -112,39 +119,33 @@ public class DummyHandlerVisitor extends ASTVisitor {
 				if (libName.length() >= temp.length()) {
 					//比較前半段長度的名稱是否相同
 					if (libName.substring(0, temp.length()).equals(temp))
-						dummyHandlerList.add(markerInfo);
+						return true;
 				}
 			// 只偵測Method
 			} else if (libMap.get(temp) == UserDefinedConstraintsType.Method) {
 				if (methodName.equals(temp))
-					dummyHandlerList.add(markerInfo);
+					return true;
 			// 偵測Library.Method的形式
 			} else if (libMap.get(temp) == UserDefinedConstraintsType.FullQulifiedMethod) {
 				int pos = temp.lastIndexOf(".");
 				if (libName.equals(temp.substring(0, pos)) &&
 					methodName.equals(temp.substring(pos + 1))) {
-					dummyHandlerList.add(markerInfo);
+					return true;
 				}
-			}
-		}
-	}
-	
-	public List<MarkerInfo> getDummyList() {
-		return dummyHandlerList;
-	}
-
-	/**
-	 * 指定的CatchClause裡面，是不是有ThrowStatement。
-	 * @param catchClause
-	 * @return
-	 */
-	public boolean isThrowStatementInCatchClause(CatchClause catchClause) {
-		List<?> ccStatements = catchClause.getBody().statements();
-		for (Object ccNode : ccStatements) {
-			if (((ASTNode) ccNode).getNodeType() == ASTNode.THROW_STATEMENT) {
-				return true;
 			}
 		}
 		return false;
 	}
+
+	private void addSmellInfo(CatchClause node) {
+		SingleVariableDeclaration svd = node.getException();
+		MarkerInfo markerInfo = new MarkerInfo(
+				RLMarkerAttribute.CS_DUMMY_HANDLER,
+				svd.resolveBinding().getType(), node.toString(),
+				node.getStartPosition(),
+				root.getLineNumber(node.getStartPosition()),
+				svd.getType().toString());
+		dummyHandlerList.add(markerInfo);
+	}
+
 }

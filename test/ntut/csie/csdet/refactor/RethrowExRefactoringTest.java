@@ -133,7 +133,7 @@ public class RethrowExRefactoringTest {
 		
 		Field currentMethodNode = RethrowExRefactoring.class.getDeclaredField("currentMethodNode");
 		currentMethodNode.setAccessible(true);
-		currentMethodNode.set(refactoring, ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "true_systemOutAndPrintStack"));
+		currentMethodNode.set(refactoring, ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "true_systemOutPrint"));
 		
 		Method getThrowStatementSourceLine = RethrowExRefactoring.class.getDeclaredMethod("getThrowStatementSourceLine", int.class);
 		getThrowStatementSourceLine.setAccessible(true);
@@ -143,7 +143,7 @@ public class RethrowExRefactoringTest {
 		assertEquals(-1, getThrowStatementSourceLine.invoke(refactoring, 0));
 		/** 反白到try-catch block且catch中有throw statement */
 		currentMethodNode.set(refactoring, ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "false_throwAndSystemOut"));
-		assertEquals(219-1, getThrowStatementSourceLine.invoke(refactoring, 0));
+		assertEquals(198-1, getThrowStatementSourceLine.invoke(refactoring, 0));
 	}
 	
 	@Test
@@ -226,13 +226,12 @@ public class RethrowExRefactoringTest {
 		actRoot.set(refactoring, compilationUnit);
 		
 		List<?> imports = compilationUnit.imports();
-		assertEquals(6, imports.size());
+		assertEquals(5, imports.size());
 		assertEquals("import java.io.FileInputStream;\n", imports.get(0).toString());
 		assertEquals("import java.io.FileNotFoundException;\n", imports.get(1).toString());
 		assertEquals("import java.io.IOException;\n", imports.get(2).toString());
-		assertEquals("import java.util.ArrayList;\n", imports.get(3).toString());
-		assertEquals("import java.util.logging.Level;\n", imports.get(4).toString());
-		assertEquals("import org.apache.log4j.Logger;\n", imports.get(5).toString());
+		assertEquals("import java.util.logging.Level;\n", imports.get(3).toString());
+		assertEquals("import org.apache.log4j.Logger;\n", imports.get(4).toString());
 		
 		/** 第一次import，故會import RL和Robustness */
 		Method addImportRLDeclaration = RethrowExRefactoring.class.getDeclaredMethod("addImportRLDeclaration");
@@ -240,29 +239,27 @@ public class RethrowExRefactoringTest {
 		addImportRLDeclaration.invoke(refactoring);
 		
 		imports = compilationUnit.imports();
-		assertEquals(8, imports.size());
+		assertEquals(7, imports.size());
 		assertEquals("import java.io.FileInputStream;\n", imports.get(0).toString());
 		assertEquals("import java.io.FileNotFoundException;\n", imports.get(1).toString());
 		assertEquals("import java.io.IOException;\n", imports.get(2).toString());
-		assertEquals("import java.util.ArrayList;\n", imports.get(3).toString());
-		assertEquals("import java.util.logging.Level;\n", imports.get(4).toString());
-		assertEquals("import org.apache.log4j.Logger;\n", imports.get(5).toString());
-		assertEquals("import ntut.csie.robusta.agile.exception.Robustness;\n", imports.get(6).toString());
-		assertEquals("import ntut.csie.robusta.agile.exception.RTag;\n", imports.get(7).toString());
+		assertEquals("import java.util.logging.Level;\n", imports.get(3).toString());
+		assertEquals("import org.apache.log4j.Logger;\n", imports.get(4).toString());
+		assertEquals("import ntut.csie.robusta.agile.exception.Robustness;\n", imports.get(5).toString());
+		assertEquals("import ntut.csie.robusta.agile.exception.RTag;\n", imports.get(6).toString());
 		
 		/** 第二次import，RL和Robustness已經有了，故不會再import一次 */
 		addImportRLDeclaration.invoke(refactoring);
 		
 		imports = compilationUnit.imports();
-		assertEquals(8, imports.size());
+		assertEquals(7, imports.size());
 		assertEquals("import java.io.FileInputStream;\n", imports.get(0).toString());
 		assertEquals("import java.io.FileNotFoundException;\n", imports.get(1).toString());
 		assertEquals("import java.io.IOException;\n", imports.get(2).toString());
-		assertEquals("import java.util.ArrayList;\n", imports.get(3).toString());
-		assertEquals("import java.util.logging.Level;\n", imports.get(4).toString());
-		assertEquals("import org.apache.log4j.Logger;\n", imports.get(5).toString());
-		assertEquals("import ntut.csie.robusta.agile.exception.Robustness;\n", imports.get(6).toString());
-		assertEquals("import ntut.csie.robusta.agile.exception.RTag;\n", imports.get(7).toString());
+		assertEquals("import java.util.logging.Level;\n", imports.get(3).toString());
+		assertEquals("import org.apache.log4j.Logger;\n", imports.get(4).toString());
+		assertEquals("import ntut.csie.robusta.agile.exception.Robustness;\n", imports.get(5).toString());
+		assertEquals("import ntut.csie.robusta.agile.exception.RTag;\n", imports.get(6).toString());
 	}
 	
 	@Test
@@ -285,13 +282,12 @@ public class RethrowExRefactoringTest {
 		
 		/* 驗證結果 */
 		List<?> imports = compilationUnit.imports();
-		assertEquals(6, imports.size());
+		assertEquals(5, imports.size());
 		assertEquals("import java.io.FileInputStream;\n", imports.get(0).toString());
 		assertEquals("import java.io.FileNotFoundException;\n", imports.get(1).toString());
 		assertEquals("import java.io.IOException;\n", imports.get(2).toString());
-		assertEquals("import java.util.ArrayList;\n", imports.get(3).toString());
-		assertEquals("import java.util.logging.Level;\n", imports.get(4).toString());
-		assertEquals("import org.apache.log4j.Logger;\n", imports.get(5).toString());
+		assertEquals("import java.util.logging.Level;\n", imports.get(3).toString());
+		assertEquals("import org.apache.log4j.Logger;\n", imports.get(4).toString());
 		
 		/** 給予新的import則必須import */
 		exType = JavaCore.create(project).findType("java.io.IOError");
@@ -300,14 +296,13 @@ public class RethrowExRefactoringTest {
 		
 		/* 驗證結果 */
 		imports = compilationUnit.imports();
-		assertEquals(7, imports.size());
+		assertEquals(6, imports.size());
 		assertEquals("import java.io.FileInputStream;\n", imports.get(0).toString());
 		assertEquals("import java.io.FileNotFoundException;\n", imports.get(1).toString());
 		assertEquals("import java.io.IOException;\n", imports.get(2).toString());
-		assertEquals("import java.util.ArrayList;\n", imports.get(3).toString());
-		assertEquals("import java.util.logging.Level;\n", imports.get(4).toString());
-		assertEquals("import org.apache.log4j.Logger;\n", imports.get(5).toString());
-		assertEquals("import java.io.IOError;\n", imports.get(6).toString());
+		assertEquals("import java.util.logging.Level;\n", imports.get(3).toString());
+		assertEquals("import org.apache.log4j.Logger;\n", imports.get(4).toString());
+		assertEquals("import java.io.IOError;\n", imports.get(5).toString());
 	}
 	
 	@Test
@@ -341,13 +336,13 @@ public class RethrowExRefactoringTest {
 		actRoot.setAccessible(true);
 		CompilationUnit root = (CompilationUnit)actRoot.get(refactoring);
 		// 檢查precondition
-		assertEquals(6, root.imports().size());
+		assertEquals(5, root.imports().size());
 		/** 第一次import Tag */
 		Method addAnnotationRoot = RethrowExRefactoring.class.getDeclaredMethod("addAnnotationRoot", AST.class);
 		addAnnotationRoot.setAccessible(true);
 		addAnnotationRoot.invoke(refactoring, node.getAST());
 		// 驗證結果
-		assertEquals(8, root.imports().size());
+		assertEquals(7, root.imports().size());
 		
 		/** 第二次import Tag，已經存在則不重複import */
 		ExceptionAnalyzer exVisitor = new ExceptionAnalyzer(root, node.getStartPosition(), 0);
@@ -359,7 +354,7 @@ public class RethrowExRefactoringTest {
 		currentMethodRLList.set(refactoring, rlList);
 		
 		addAnnotationRoot.invoke(refactoring, node.getAST());
-		assertEquals(8, root.imports().size());
+		assertEquals(7, root.imports().size());
 	}
 	
 	@Test

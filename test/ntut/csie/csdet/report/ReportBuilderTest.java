@@ -125,7 +125,7 @@ public class ReportBuilderTest {
 		Method countFileLOC = ReportBuilder.class.getDeclaredMethod("countFileLOC", String.class);
 		countFileLOC.setAccessible(true);
 		// 檢查測試專案檔案的行數
-		assertEquals(310, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(CommonExample.class, projectName)));
+		assertEquals(289, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(CommonExample.class, projectName)));
 		/** 路徑不正確或者不存在的class file */
 		assertEquals(0, countFileLOC.invoke(reportBuilder, "not/exist/example.java"));
 	}
@@ -416,15 +416,15 @@ public class ReportBuilderTest {
 				}
 			}
 		}
-		assertEquals(26, reportModel.getTryCounter());
-		assertEquals(26, reportModel.getCatchCounter());
+		assertEquals(25, reportModel.getTryCounter());
+		assertEquals(25, reportModel.getCatchCounter());
 		assertEquals(2, reportModel.getFinallyCounter());
 		assertEquals(4, reportModel.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP));
-		//19 dummy handler in methods and 1 dummy handler in an initializer
-		assertEquals(20, reportModel.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER));
+		// 14 dummy handler in methods and 1 dummy handler in an initializer
+		assertEquals(15, reportModel.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER));
 		assertEquals(1, reportModel.getSmellSize(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK));
 		assertEquals(3, reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
-		assertEquals(28, reportModel.getAllSmellSize());
+		assertEquals(23, reportModel.getAllSmellSize());
 	}
 	
 	@Test
