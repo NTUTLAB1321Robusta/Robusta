@@ -11,6 +11,7 @@ import ntut.csie.analyzer.dummy.example.MultiBadSmellInOneMethodDeclaration;
 import ntut.csie.analyzer.dummy.example.MultiPrintAndLogInOneCatch;
 import ntut.csie.analyzer.dummy.example.NoCatchBlock;
 import ntut.csie.analyzer.dummy.example.PrintAndSomethingElse;
+import ntut.csie.analyzer.dummy.example.PrintOrLogBySuperMethod;
 import ntut.csie.analyzer.dummy.example.PrintWithCommentOnly;
 import ntut.csie.analyzer.dummy.example.SimplestJavaLogger;
 import ntut.csie.analyzer.dummy.example.SimplestLog4J;
@@ -284,6 +285,16 @@ public class DummyHandlerVisitorTest {
 		Assertor.assertMarkerInfoListSize(1, visitCompilationAndGetSmellList(testedClass));
 		addUserDefinedPattern("java.util.ArrayList.add", false);
 		Assertor.assertMarkerInfoListSize(0, visitCompilationAndGetSmellList(testedClass));
+	}
+
+	@Test
+	public void testPrintOrLogBySuperMethod() throws Exception {
+		// Initialized
+		Class<?> testedClass = PrintOrLogBySuperMethod.class;
+		environmentBuilder.loadClass(testedClass);
+		detectAllExtraRules();
+		
+		Assertor.assertMarkerInfoListSize(3, visitCompilationAndGetSmellList(testedClass));
 	}
 
 	private List<MarkerInfo> visitCompilationAndGetSmellList(Class clazz)

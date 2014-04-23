@@ -10,14 +10,13 @@ import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.preference.SmellSettings.UserDefinedConstraintsType;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
-import ntut.csie.util.NodeUtils;
 
-import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
+import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
@@ -70,7 +69,7 @@ public class DummyHandlerVisitor extends ASTVisitor {
 		
 		Iterator<Statement> iterator = statements.iterator();
 		while (iterator.hasNext()) {
-			if (!isPrintingOrLoggingInvocation(iterator.next())) {
+			if (!isPrintingOrLoggingStatement(iterator.next())) {
 				// Something else in this catch, continue deeper
 				return true;
 			}
@@ -83,26 +82,43 @@ public class DummyHandlerVisitor extends ASTVisitor {
 		return false;
 	}
 	
-	private boolean isPrintingOrLoggingInvocation(Statement statement) {
+	/**
+	 * Is it a statement has a expression invoking printing or logging?
+	 */
+	private boolean isPrintingOrLoggingStatement(Statement statement) {
 		if (statement instanceof ExpressionStatement) {
 			Expression expression = ((ExpressionStatement) statement).getExpression();
-			if (expression instanceof MethodInvocation) {
-				if (isPrintOrLog((MethodInvocation) expression)) {
-					return true;
-				}
-			} else if (expression instanceof SuperMethodInvocation) {
-				// TODO 某些情況是true
-				return false;
-			}
+			return isPrintingOrLoggingExpression(expression);
 		}
 		return false;
 	}
+
+	/**
+	 * Is it an expression invoking printing or logging?
+	 */
+	private boolean isPrintingOrLoggingExpression(Expression expression) {
+		if (expression instanceof MethodInvocation) {
+			return isPrintOrLog((MethodInvocation) expression);
+		} else if (expression instanceof SuperMethodInvocation) {
+			return isPrintOrLog((SuperMethodInvocation) expression);
+		} else {
+			return false;
+		}
+	}
 	
 	private boolean isPrintOrLog(MethodInvocation node) {
+		return isPrintOrLog(node.resolveMethodBinding());
+	}
+
+	private boolean isPrintOrLog(SuperMethodInvocation node) {
+		return isPrintOrLog(node.resolveMethodBinding());
+	}
+
+	private boolean isPrintOrLog(IMethodBinding methodBinding) {
 		// 取得Method的Library名稱
-		String libName = node.resolveMethodBinding().getDeclaringClass().getQualifiedName();
+		String libName = methodBinding.getDeclaringClass().getQualifiedName();
 		// 取得Method的名稱
-		String methodName = node.resolveMethodBinding().getName();
+		String methodName = methodBinding.getName();
 
 		// 如果該行有Array(如java.util.ArrayList<java.lang.Boolean>)，把<>與其內容都拿掉
 		if (libName.indexOf("<") != -1)
