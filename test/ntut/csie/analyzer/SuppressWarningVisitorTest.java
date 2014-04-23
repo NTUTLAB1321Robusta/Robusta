@@ -142,7 +142,7 @@ public class SuppressWarningVisitorTest {
 		MethodDeclaration method = ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "theFourthOrderInTheSameClass");
 		method.accept(visitor);
 		List<SSMessage> ssList = visitor.getSuppressWarningList();
-		assertEquals(4, ssList.size());
+		assertEquals(8, ssList.size());
 		assertEquals(2, ssList.get(0).getSmellList().size());
 		assertFalse(ssList.get(0).isInCatch());
 		assertEquals("Careless_Cleanup", ssList.get(0).getSmellList().get(0));

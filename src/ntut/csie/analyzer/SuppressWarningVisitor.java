@@ -61,7 +61,7 @@ public class SuppressWarningVisitor extends ASTVisitor {
 					addSuppressWarning(node, iab.getAllMemberValuePairs(), index);
 			}
 		}
-		return false;
+		return true;
 	}
 	
 	private void addSuppressWarning(ASTNode node, IMemberValuePairBinding[] mvpb, int index) {

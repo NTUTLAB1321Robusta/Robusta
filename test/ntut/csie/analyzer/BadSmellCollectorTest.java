@@ -10,6 +10,7 @@ import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
+import ntut.csie.testutility.Assertor;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -70,7 +71,8 @@ public class BadSmellCollectorTest {
 		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_JavaUtilLoggingLogger);
 		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_OrgApacheLog4j);
 		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_SystemOutPrint);
-		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_SystemOutPrintln);
+		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_SystemOutPrintln);		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_SystemErrPrint);
+		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_SystemErrPrintln);
 		
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_EMPTYCATCHBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_NESTEDTRYSTATEMENT, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
@@ -94,8 +96,7 @@ public class BadSmellCollectorTest {
         return (CompilationUnit) parser.createAST(null); // parse
 	}
 	
-	private void loadClass(Class clazz) throws Exception
-	{
+	private void loadClass(Class clazz) throws Exception	{
 		javaFileToString.read(clazz, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				clazz.getPackage().getName(),
@@ -126,15 +127,15 @@ public class BadSmellCollectorTest {
 		CompilationUnit root = getCompilationUnit(SuppressWarningExampleForAnalyzer.class);
 		BadSmellCollector collector = new BadSmellCollector(project, root);
 		collector.collectBadSmell();
-						
-		assertEquals(11, collector.getBadSmells(RLMarkerAttribute.CS_DUMMY_HANDLER).size());
-		assertEquals(4, collector.getBadSmells(RLMarkerAttribute.CS_CARELESS_CLEANUP).size());
-		assertEquals(7, collector.getBadSmells(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK).size());
-		assertEquals(4, collector.getBadSmells(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT).size());
-		assertEquals(3, collector.getBadSmells(RLMarkerAttribute.CS_OVER_LOGGING).size());
+
+		Assertor.assertMarkerInfoListSize(9, collector.getBadSmells(RLMarkerAttribute.CS_DUMMY_HANDLER));
+		Assertor.assertMarkerInfoListSize(4, collector.getBadSmells(RLMarkerAttribute.CS_CARELESS_CLEANUP));
+		Assertor.assertMarkerInfoListSize(5, collector.getBadSmells(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK));
+		Assertor.assertMarkerInfoListSize(4, collector.getBadSmells(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
+		Assertor.assertMarkerInfoListSize(3, collector.getBadSmells(RLMarkerAttribute.CS_OVER_LOGGING));
 		// TODO Example of this bad smell haven't add to SuppressWarningExampleForAnalyzer
 		assertEquals(0, collector.getBadSmells(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK).size());
 		assertEquals(0, collector.getBadSmells(RLMarkerAttribute.CS_UNPROTECTED_MAIN).size());
-		assertEquals(29, collector.getAllBadSmells().size());
+		assertEquals(25, collector.getAllBadSmells().size());
 	}
 }
