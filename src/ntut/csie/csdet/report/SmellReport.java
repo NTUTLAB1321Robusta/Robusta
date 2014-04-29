@@ -85,6 +85,9 @@ public class SmellReport {
 		try {
 			// 輸出XML
 			xmlOut.output(myDocument, writer);
+			String path = model.getFilePath("BSData.xml", true);
+			FileWriter w = new FileWriter(path);
+			xmlOut.output(myDocument, w);
 			// 印出XML至C糟 (Debug用)
 			// FileWriter writeXML = new FileWriter("/myFile.xml");
 			// xmlOut.output(myDocument, writeXML);
@@ -96,6 +99,8 @@ public class SmellReport {
 		// 把XML轉成字串
 		return writer.getBuffer().toString();
 	}
+	
+	
 
 	/**
 	 * 把Summary資料加至XML Root
@@ -204,8 +209,8 @@ public class SmellReport {
 							.getSmellSize(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK))));
 			packages.addContent(new Element("PackageTotal").addContent(String
 					.valueOf(packageModel.getAllSmellSize())));
-			packages.addContent(new Element("LOC").addContent(String
-					.valueOf(packageModel.getTotalLine())));
+//			packages.addContent(new Element("LOC").addContent(String
+//					.valueOf(packageModel.getTotalLine())));
 			// only add packageModel what total smell size > 0
 			if (packageModel.getAllSmellSize() > 0) {
 				if (packageModel.getPackageName() == "") {
@@ -335,6 +340,8 @@ public class SmellReport {
 		root.addContent(packageList);
 	}
 
+	
+	
 	/**
 	 * 輸出HTM檔的Styles.css
 	 * 

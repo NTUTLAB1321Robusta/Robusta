@@ -1,18 +1,33 @@
 package ntut.csie.csdet.report.ui;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
+import ntut.csie.csdet.preference.RobustaSettings;
 import ntut.csie.csdet.preference.SmellSettings;
+import ntut.csie.csdet.report.ReportContentCreator;
 import ntut.csie.csdet.report.ReportModel;
 import ntut.csie.rleht.RLEHTPlugin;
 import ntut.csie.rleht.common.ImageManager;
 
+import org.eclipse.core.internal.utils.FileUtil;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
@@ -20,6 +35,8 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.ProgressEvent;
+import org.eclipse.swt.browser.ProgressListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FormAttachment;
@@ -212,7 +229,8 @@ public class EHSmellReportView extends ViewPart {
 				SelectReportDialog selectDialog = new SelectReportDialog(new Shell(), getProjectList());
 				selectDialog.open();
 				if(!selectDialog.getReportPath().equals("")){
-					browser.setUrl(selectDialog.getReportPath());
+					String dataPath = selectDialog.getReportPath().replace("sample.html", "BSData.xml");
+					openReport(dataPath);
 				}
 			}
 		};
@@ -220,7 +238,31 @@ public class EHSmellReportView extends ViewPart {
 		selectAction.setImageDescriptor(ImageManager.getInstance().getDescriptor("note_view"));		
 		toolBarManager.add(selectAction);
 	}
-
+	
+	/**
+	 * @param dataPath
+	 */
+	private void openReport(String dataPath) {
+		ReportContentCreator contentCreator = new ReportContentCreator(dataPath);
+		contentCreator.buildReportContent();
+		browser.setJavascriptEnabled(true);
+		browser.setUrl(contentCreator.getResultPath());
+		
+		/*TODO: We need to refresh the page to load all resources.
+		 * Maybe this is a bug of the SWT browser. Fix it later.
+		*/
+		browser.addProgressListener(new ProgressListener() {
+		    @Override
+		    public void completed(ProgressEvent event) {
+		    	browser.execute("document.location.reload();");
+		    	browser.removeProgressListener(this);
+		    }
+		    @Override
+		    public void changed(ProgressEvent event) {
+		    }
+		});
+	}
+	
 	/**
 	 * 把專案名稱顯示在Combo上
 	 */
@@ -268,7 +310,8 @@ public class EHSmellReportView extends ViewPart {
 					//取得預設路徑
 					String showPath = "file:///" + data.getFilePath("sample.html", true);
 					//開啟網址
-					browser.setUrl(showPath);
+					String dataPath = data.getFilePath("sample.html", true).replace("sample.html", "BSData.xml");
+					openReport(dataPath);
 				}
 			});
 		} catch (Exception e) {
