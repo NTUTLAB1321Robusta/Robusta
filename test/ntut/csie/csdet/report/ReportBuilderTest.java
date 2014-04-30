@@ -447,7 +447,7 @@ public class ReportBuilderTest {
 		ReportModel reportModel = (ReportModel)model.get(reportBuilder);
 		analysisProject.invoke(reportBuilder, project);
 		
-		assertTrue(badSmellDataStorage.getProjectPath().contains("junit-workspace/DummyHandlerTest/Robusta_Report"));
+		assertTrue(badSmellDataStorage.getRobustaReportPath().contains("junit-workspace/DummyHandlerTest/Robusta_Report"));
 		assertEquals(1, reportModel.getPackagesSize());
 	}
 	

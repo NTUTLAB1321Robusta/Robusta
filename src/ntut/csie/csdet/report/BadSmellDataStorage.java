@@ -50,7 +50,7 @@ public class BadSmellDataStorage {
 		htmlPath.mkdir();
 	}
 	
-	public String getProjectPath() {
+	public String getRobustaReportPath() {
 		return this.projectReportFolderPath;
 	}
 	

@@ -37,26 +37,25 @@ public class ReportContentCreator {
 		return resultPath;
 	}
 	
-	
 	public ReportContentCreator(String dataPath) {
 		super();
 		this.dataPath = dataPath;
 		File directory = (new File(dataPath)).getParentFile();
 		destFolder = new File(directory.getAbsolutePath() + "/../report/");
 		destFolder.mkdirs();
+		resultPath = destFolder.getAbsolutePath() + "/index.html";
 	}
 	
 	public void buildReportContent() {
 		try {
 			exportReportResources();
 			createJavaScriptData(dataPath);
-			resultPath = destFolder.getAbsolutePath() + "/index.html";
 		} catch (IOException e) {
 			logger.error("[IOException] ", e);
 		}
 	}
 	
-	void closeStream(Closeable io) {
+	private void closeStream(Closeable io) {
 		try {
 			if (io != null)
 				io.close();
@@ -65,7 +64,7 @@ public class ReportContentCreator {
 		}
 	}
 
-	void createJavaScriptData(String xmlFilePath) throws IOException {
+	private void createJavaScriptData(String xmlFilePath) throws IOException {
 		InputStream inputStream = null;
 		FileOutputStream outputSteam = null;
 		try {
@@ -76,9 +75,10 @@ public class ReportContentCreator {
 			Transformer transformer = null;
 			transformer = tf.newTransformer(xslSource);
 			
-			Source xmlSource = new StreamSource(new File(dataPath));
+			Source xmlSource = new StreamSource(new File(xmlFilePath));
 			File outputFile = new File(destFolder.getAbsolutePath() + JS_DATA_PATH);
 			outputFile.getParentFile().mkdirs();
+			
 			outputSteam = new FileOutputStream(outputFile);
 			Result transfromResult = new StreamResult(outputSteam);
 			transformer.transform(xmlSource, transfromResult);
@@ -99,7 +99,8 @@ public class ReportContentCreator {
 		try {
 			while((line = br.readLine())!= null && line.trim().length() > 0) {
 				InputStream input = getClass().getResourceAsStream(line);
-				//Copy the file to the root folder of destFolder: go up one level => line: /report/file.ext => file.ext
+				// Copy the file to the root folder of destFolder: 
+				// bring them up one level => line: /report/file.ext => file.ext
 				File dest = new File(destFolder.getAbsoluteFile() + "/../" + line);
 				copyFileUsingFileStreams(input, dest);
 			}
