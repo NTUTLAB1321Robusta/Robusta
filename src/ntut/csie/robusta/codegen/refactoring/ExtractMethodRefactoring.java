@@ -102,7 +102,7 @@ public class ExtractMethodRefactoring extends org.eclipse.jdt.internal.corext.re
 		return status;
 	}
 
-	public String getSignature(String methodName) {
+	public String getSignature() {
 		MethodDeclaration methodDecl= createNewMethodSignature();
 		methodDecl.setBody(null);
 		String str= ASTNodes.asString(methodDecl);

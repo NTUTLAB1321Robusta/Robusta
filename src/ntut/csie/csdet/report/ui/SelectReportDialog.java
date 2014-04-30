@@ -264,7 +264,7 @@ public class SelectReportDialog extends Dialog {
 				// 取得副檔名為.html的檔案
 				File[] files = folder.listFiles(new FilenameFilter() {
 					public boolean accept(File dir, String name) {
-						return name.endsWith(".html");
+						return name.endsWith(".xml");
 					}
 				});
 				// 把Report資訊記錄

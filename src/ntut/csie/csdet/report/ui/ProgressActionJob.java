@@ -1,5 +1,6 @@
 package ntut.csie.csdet.report.ui;
 
+import ntut.csie.csdet.report.BadSmellDataStorage;
 import ntut.csie.csdet.report.ReportBuilder;
 import ntut.csie.csdet.report.ReportModel;
 
@@ -16,14 +17,11 @@ import org.eclipse.core.runtime.jobs.Job;
 public class ProgressActionJob extends Job {
 	//Project的資料
 	private IProject project;
-	//Report的資料
-	private ReportModel model;
+	private BadSmellDataStorage dataStorage;
 
-	public ProgressActionJob(String name, IProject project, ReportModel model) {
+	public ProgressActionJob(String name, IProject project, BadSmellDataStorage dataStorage) {
 		super(name);
-		
-		//取得資料
-		this.model = model;
+		this.dataStorage = dataStorage;
 		this.project = project;
 	}
 
@@ -37,7 +35,7 @@ public class ProgressActionJob extends Job {
 		monitor.beginTask("Running....", IProgressMonitor.UNKNOWN);
 
 		//建置Report
-		ReportBuilder buildReport = new ReportBuilder(project,model);
+		ReportBuilder buildReport = new ReportBuilder(project, dataStorage);
 		
 		long start = System.currentTimeMillis();		
 		buildReport.run();

@@ -109,10 +109,9 @@ public class ReportBuilderIntergrationTest {
 		InitailSetting();
 		
 		project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
-		reportModel = new ReportModel();
-		reportModel.setProjectName(project.getName());
-		reportModel.setBuildTime();
-		reportBuilder = new ReportBuilder(project, reportModel);
+		BadSmellDataStorage dataStorage = new BadSmellDataStorage(project.getLocation().toString());
+		reportBuilder = new ReportBuilder(project, dataStorage);
+		reportModel = reportBuilder.getReportModel();
 	}
 	
 	private void loadClass(Class clazz) throws Exception {

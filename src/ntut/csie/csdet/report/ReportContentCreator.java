@@ -28,6 +28,9 @@ public class ReportContentCreator {
 	String dataPath;
 	String resultPath;
 	File destFolder;
+	private final String JS_DATA_PATH = "/js/data.js";
+	private final String REPORT_FILE_LIST = "/report/filelist.txt";
+	private String REPORT_DATA_TRANSFORM = "/report/datatransform.xsl";
 	
 	
 	public String getResultPath() {
@@ -67,14 +70,14 @@ public class ReportContentCreator {
 		FileOutputStream outputSteam = null;
 		try {
 			inputStream = this.getClass().getResourceAsStream(
-					"/report/datatransform.xsl");
+					REPORT_DATA_TRANSFORM);
 			Source xslSource = new StreamSource(inputStream);
 			TransformerFactory tf = TransformerFactory.newInstance();
 			Transformer transformer = null;
 			transformer = tf.newTransformer(xslSource);
 			
 			Source xmlSource = new StreamSource(new File(dataPath));
-			File outputFile = new File(destFolder.getAbsolutePath() + "/js/data.js");
+			File outputFile = new File(destFolder.getAbsolutePath() + JS_DATA_PATH);
 			outputFile.getParentFile().mkdirs();
 			outputSteam = new FileOutputStream(outputFile);
 			Result transfromResult = new StreamResult(outputSteam);
@@ -90,12 +93,13 @@ public class ReportContentCreator {
 	}
 	
 	private void exportReportResources() {
-		InputStream fileListInput = getClass().getResourceAsStream("/report/filelist.txt");
+		InputStream fileListInput = getClass().getResourceAsStream(REPORT_FILE_LIST);
 		BufferedReader br = new BufferedReader(new InputStreamReader(fileListInput));
 		String line;
 		try {
 			while((line = br.readLine())!= null && line.trim().length() > 0) {
 				InputStream input = getClass().getResourceAsStream(line);
+				//Copy the file to the root folder of destFolder: go up one level => line: /report/file.ext => file.ext
 				File dest = new File(destFolder.getAbsoluteFile() + "/../" + line);
 				copyFileUsingFileStreams(input, dest);
 			}

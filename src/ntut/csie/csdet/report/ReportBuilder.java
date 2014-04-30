@@ -35,11 +35,13 @@ public class ReportBuilder {
 	private IProject project;
 	// Report的資料
 	private ReportModel model;
+
 	// 是否偵測全部的Package
 	private Boolean isAllPackage;
 	// 儲存filter條件的List
 	private List<String> filterRuleList = new ArrayList<String>();
 	private LOCCounter noFormatCounter = new LOCCounter();
+	private BadSmellDataStorage dataStorage;
 
 	/**
 	 * 建立Report
@@ -47,16 +49,14 @@ public class ReportBuilder {
 	 * @param project
 	 * @param model
 	 */
-	public ReportBuilder(IProject project, ReportModel model) {
+	public ReportBuilder(IProject project,  BadSmellDataStorage dataStorage) {
 		this.project = project;
-		this.model = model;
+		this.dataStorage = dataStorage;
+		this.model = new ReportModel();
+		model.setProjectName(project.getName());
 	}
 
 	public void run() {
-		// 取得專案名稱
-		model.setProjectName(project.getName());
-		// 取得建造時間
-		model.setBuildTime();
 
 		// 將User對於Filter的設定存下來
 		getFilterSettings();
@@ -64,15 +64,13 @@ public class ReportBuilder {
 		// 解析專案
 		analysisProject(project);
 
-		// 產生HTM
-		SmellReport createHTM = new SmellReport(model);
-		createHTM.build();
-
-		// 產生圖表
-		BarChart smellChart = new BarChart(model);
-		smellChart.build();
+		dataStorage.save(model);
 	}
 
+	public ReportModel getReportModel() {
+		return model;
+	}
+	
 	/**
 	 * 將User對於Filter的設定存下來
 	 * 
@@ -149,8 +147,6 @@ public class ReportBuilder {
 	private void analysisProject(IProject project) {
 		// 取得專案的路徑
 		IJavaProject javaPrj = JavaCore.create(project);
-		model.setProjectPath(project.getLocation().toString());
-
 		try {
 			List<IPackageFragmentRoot> root = getSourcePaths(javaPrj);
 			for (int i = 0; i < root.size(); i++) {
@@ -160,7 +156,12 @@ public class ReportBuilder {
 				// 取得Folder的名稱
 				String folderName = root.get(i).getElementName();
 				// 取得Root底下的所有Package
-				IJavaElement[] packages = root.get(i).getChildren();
+				IPackageFragmentRoot fragmentRoot = root.get(i);
+				//Check the source folders only
+				if(fragmentRoot.getKind() != IPackageFragmentRoot.K_SOURCE)
+					continue;
+				
+				IJavaElement[] packages = fragmentRoot.getChildren();
 
 				for (IJavaElement iJavaElement : packages) {
 
@@ -202,6 +203,7 @@ public class ReportBuilder {
 			logger.error("[Java Model Exception] EXCEPTION ", e);
 		}
 	}
+
 	private boolean shouldDetectPackageFragmentRoot(IPackageFragmentRoot root) {
 		RobustaSettings robustaSettings = new RobustaSettings(new File(UserDefinedMethodAnalyzer.getRobustaSettingXMLPath(project)), project);
 		return robustaSettings.getProjectDetectAttribute(root.getPath().segment(1).toString());
