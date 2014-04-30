@@ -4,6 +4,7 @@
  ****************************************************************************-->
 <project name="Robusta" default="all">
 	<property environment="env"/>
+	<fail unless="env.ECLIPSE_HOME" message="ECLIPSE_HOME not set."/>
     <property name="ECLIPSE_HOME" value="${env.ECLIPSE_HOME}"/>
     <property name="debuglevel" value="source,lines,vars"/>
 	<property name="target" value="1.6"/>
@@ -26,6 +27,8 @@
 	<property name="test-folder" value="${basedir}/test"/>
 	<property name="bin-folder" value="${basedir}/bin"/>
 	<property name="lib-folder" value="${basedir}/lib"/>
+	<!-- Report -->
+	<property name="report-folder" value="${basedir}/report"/>
 	<property name="update-id" value="taipeitech.csie.robusta_${pluginManifest.Bundle-Version}"/>
 	<property name="eclipse-public-license" value="epl-v10.html"/>
 	<property name="notice" value="notice.html"/>
@@ -147,6 +150,7 @@
 	
 	<!-- initialisation -->
     <target name="init">
+		
     	<delete quiet="true" dir="${bin-folder}"/>
     	<delete quiet="true" dir="${result-folder}"/>
     	<delete quiet="true" dir="${basedir}/../../junit-workspace" />
@@ -186,6 +190,11 @@
     	<copy includeemptydirs="false" todir="${bin-folder}/META-INF">
 			<fileset dir="${basedir}/META-INF"/>
 		</copy>
+		<!-- REPORT -->
+		<copy includeemptydirs="false" todir="${bin-folder}/report">
+			<fileset dir="${report-folder}"/>
+		</copy>
+		
 		<copy todir="${plugin-folder}">
 			<fileset dir="${lib-folder}">
 				<include name="net.java.amateras.umleditor.java_1.3.1.jar"/>

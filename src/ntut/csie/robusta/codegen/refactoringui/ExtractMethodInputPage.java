@@ -116,17 +116,14 @@ public class ExtractMethodInputPage extends UserInputWizardPage {
 		signaturePreviewControl.setLayoutData(gdata);
 	}
 	
-	private void updatePreview(String text) {
+	private void updatePreview() {
 		if (fSignaturePreview == null)
 			return;
-
-		if (text.length() == 0)
-			text= "someMethodName";			 //$NON-NLS-1$
 
 		int top= fSignaturePreview.getTextWidget().getTopPixel();
 		String signature;
 		try {
-			signature= getEMRefactoring().getSignature(text);
+			signature= getEMRefactoring().getSignature();
 		} catch (IllegalArgumentException e) {
 			signature= ""; //$NON-NLS-1$
 		}
@@ -179,7 +176,7 @@ public class ExtractMethodInputPage extends UserInputWizardPage {
 			fSignaturePreviewDocument.set("");
 			setMessage(message,RefactoringStatus.ERROR);
 		} else {
-			updatePreview(newMethodText.getText());
+			updatePreview();
 			setMessage("", NONE);
 		}	
 	}

@@ -3,6 +3,7 @@ package ntut.csie.rleht;
 import java.util.Map;
 import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
 import ntut.csie.csdet.preference.SmellSettings;
+import ntut.csie.csdet.report.BadSmellDataStorage;
 import ntut.csie.csdet.report.ReportBuilder;
 import ntut.csie.csdet.report.ReportModel;
 
@@ -30,8 +31,8 @@ public class StandAloneApp implements IApplication {
 		
 		JavaCapabilityConfigurationPage.createProject(project, description.getLocationURI(), null);
 		
-		ReportModel reportModel = new ReportModel();
-		ReportBuilder reportBuilder = new ReportBuilder(project, reportModel);
+		BadSmellDataStorage dataStorage = new BadSmellDataStorage(project.getLocation().toString());
+		ReportBuilder reportBuilder = new ReportBuilder(project, dataStorage);
 		
 		//Active all smell type before run report builder
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);

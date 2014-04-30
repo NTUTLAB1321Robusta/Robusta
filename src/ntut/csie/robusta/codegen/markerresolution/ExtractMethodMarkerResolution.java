@@ -59,7 +59,7 @@ public class ExtractMethodMarkerResolution implements IMarkerResolution {
 			MarkerInfo markerInfo = findSmellMessage(root, marker);
 			ASTNode node = getBadSmellNode(root, markerInfo);
 			ExtractMethodAnalyzer analyzer = new ExtractMethodAnalyzer(node);
-			ASTNode enclosingNode = analyzer.getEnclosingNode();
+			ASTNode enclosingNode = analyzer.getEncloseRefactoringNode();
 			ExtractMethodRefactoring refactoring = new ExtractMethodRefactoring(root, enclosingNode);
 			CodeSmellRefactoringWizard csRefactoringWizard = new CodeSmellRefactoringWizard(refactoring);
 			csRefactoringWizard.setUserInputPage(new ExtractMethodInputPage("It is your way!"));
@@ -104,6 +104,7 @@ public class ExtractMethodMarkerResolution implements IMarkerResolution {
 			actRoot.accept(methodCollector);
 			List<MethodDeclaration> methodList = methodCollector.getMethodList();
 			String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
+			//TODO: Bug here for initializers
 			ASTNode methodDeclaration = methodList.get(Integer.parseInt(methodIdx));
 			
 			String msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);

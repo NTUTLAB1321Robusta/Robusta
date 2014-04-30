@@ -164,7 +164,6 @@ Export-Package: .,
  org.slf4j,
  org.slf4j.helpers,
  org.slf4j.impl,
- org.slf4j.spi,
- xslTemplate
+ org.slf4j.spi
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: org.apache.tools.ant.taskdefs.optional.junit

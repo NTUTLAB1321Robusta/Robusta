@@ -210,7 +210,7 @@ public class SelectReportDialog extends Dialog {
 			tableItem.setText(1, des);
 		}
 	}
-	
+
 	private void updateReportDescriptionToXml(String reportName,
 			String newDescription) {
 		String path = getReportDescriptionXmlFilePath();
@@ -259,10 +259,12 @@ public class SelectReportDialog extends Dialog {
 
 		for (File folder : allFolder) {
 			if (folder.isDirectory()) {
+				if (folder.getName().equals("report"))
+					continue;
 				// 取得副檔名為.html的檔案
 				File[] files = folder.listFiles(new FilenameFilter() {
 					public boolean accept(File dir, String name) {
-						return name.endsWith(".html");
+						return name.endsWith(".xml");
 					}
 				});
 				// 把Report資訊記錄
@@ -314,7 +316,7 @@ public class SelectReportDialog extends Dialog {
 			// 刪除所有選取的Report
 			if (selectIdx.length != 0) {
 				for (int index : selectIdx) {
-					String reportName =fileList.get(index).getName();
+					String reportName = fileList.get(index).getName();
 					deleteReportDescriptionInXml(reportName);
 					// 取得Report資料夾
 					File reportFolder = fileList.get(index).getParentFile();

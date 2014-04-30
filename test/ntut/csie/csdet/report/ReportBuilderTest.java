@@ -43,6 +43,7 @@ public class ReportBuilderTest {
 	JavaProjectMaker javaProjectMaker;
 	CompilationUnit compilationUnit;
 	ReportBuilder reportBuilder;
+	BadSmellDataStorage badSmellDataStorage;
 	IProject project;
 	String projectName;
 	SmellSettings smellSettings;
@@ -91,7 +92,8 @@ public class ReportBuilderTest {
 		CreateSettings();
 		
 		project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
-		reportBuilder = new ReportBuilder(project, new ReportModel());
+		badSmellDataStorage = new BadSmellDataStorage(project.getLocation().toString());
+		reportBuilder = new ReportBuilder(project, badSmellDataStorage);
 
 		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(CommonExample.class, projectName));
 		
@@ -439,10 +441,9 @@ public class ReportBuilderTest {
 		Field model = ReportBuilder.class.getDeclaredField("model");
 		model.setAccessible(true);
 		ReportModel reportModel = (ReportModel)model.get(reportBuilder);
-		reportModel.setBuildTime();
 		analysisProject.invoke(reportBuilder, project);
 		
-		assertTrue(reportModel.getProjectPath().contains("junit-workspace/DummyHandlerTest/Robusta_Report"));
+		assertTrue(badSmellDataStorage.getRobustaReportPath().contains("junit-workspace/DummyHandlerTest/Robusta_Report"));
 		assertEquals(1, reportModel.getPackagesSize());
 	}
 	

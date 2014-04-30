@@ -95,7 +95,7 @@ public class ExtractMethodRefactoring extends org.eclipse.jdt.internal.corext.re
 		return status;
 	}
 
-	public String getSignature(String methodName) {
+	public String getSignature() {
 		MethodDeclaration methodDecl= createNewMethodSignature();
 		methodDecl.setBody(null);
 		String str= ASTNodes.asString(methodDecl);
@@ -122,18 +122,19 @@ public class ExtractMethodRefactoring extends org.eclipse.jdt.internal.corext.re
 		return result;
 	}
 	
+
 	private void addNewMethodDeclaration() {
-		MethodDeclaration methodDeclaration = createNewMethodDeclaration();
-		ASTNode typeNode = NodeUtils.getSpecifiedParentNode(enclosingNode,ASTNode.ANONYMOUS_CLASS_DECLARATION);
+		MethodDeclaration md = createNewMethodDeclaration();
+		ASTNode typeNode = NodeUtils.getSpecifiedParentNode(enclosingNode, ASTNode.ANONYMOUS_CLASS_DECLARATION);
 		ListRewrite list;
-		if (typeNode != null) {
-			list = rewrite.getListRewrite(typeNode,
-					AnonymousClassDeclaration.BODY_DECLARATIONS_PROPERTY);
+		if(typeNode != null)
+		{
+			list = rewrite.getListRewrite(typeNode, AnonymousClassDeclaration.BODY_DECLARATIONS_PROPERTY);
 		} else {
-			typeNode = NodeUtils.getSpecifiedParentNode(enclosingNode,ASTNode.TYPE_DECLARATION);
-			list = rewrite.getListRewrite(typeNode,TypeDeclaration.BODY_DECLARATIONS_PROPERTY);
+			typeNode = NodeUtils.getSpecifiedParentNode(enclosingNode, ASTNode.TYPE_DECLARATION);
+			list = rewrite.getListRewrite(typeNode, TypeDeclaration.BODY_DECLARATIONS_PROPERTY);
 		}
-		list.insertAfter(methodDeclaration, bodyDeclaration, null);
+		list.insertAfter(md, bodyDeclaration, null);
 	}
 	
 	private void replaceNodeWithMethodInvocation() {

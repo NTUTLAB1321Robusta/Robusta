@@ -5,16 +5,9 @@ import java.util.List;
 
 import ntut.csie.csdet.data.MarkerInfo;
 
-/**
- * 儲存Class內Smell資訊
- * @author Shiau
- */
 public class ClassModel {
-	//存取Class的名稱
 	private String className = "";
-	//存取Class的路徑
 	private String classPath = "";
-	//全部Smell資訊
 	private List<MarkerInfo> smellList = new ArrayList<MarkerInfo>();
 
 	public int getSmellSize(String type) {
@@ -31,7 +24,6 @@ public class ClassModel {
 			this.smellList.addAll(smellList);
 	}
 
-	///存取Class的名稱///
 	public String getClassName() { 
 		return className;
 	}
@@ -42,7 +34,6 @@ public class ClassModel {
 		else
 			this.className = "";
 	}
-	///取得Class內的Smell資訊///
 	public int getSmellSize() {
 		return smellList.size();
 	}
@@ -56,9 +47,7 @@ public class ClassModel {
 	public String getMethodName(int i) {
 		return smellList.get(i).getMethodName();
 	}
-
 	
-	///存取Class的路徑///
 	public String getClassPath() {
 		return classPath;
 	}

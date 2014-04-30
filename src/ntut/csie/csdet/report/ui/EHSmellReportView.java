@@ -7,6 +7,8 @@ import java.util.ResourceBundle;
 
 import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
 import ntut.csie.csdet.preference.SmellSettings;
+import ntut.csie.csdet.report.BadSmellDataStorage;
+import ntut.csie.csdet.report.ReportContentCreator;
 import ntut.csie.csdet.report.ReportModel;
 import ntut.csie.rleht.RLEHTPlugin;
 import ntut.csie.rleht.common.ImageManager;
@@ -20,6 +22,8 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.ProgressEvent;
+import org.eclipse.swt.browser.ProgressListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FormAttachment;
@@ -45,14 +49,15 @@ public class EHSmellReportView extends ViewPart {
 	private Combo projectCombo;
 	//Report Browser
 	static Browser browser;
-	//Report的資料
-	private ReportModel data;
 	//Filter的按鍵動作
 	private Action filterAction;
 	//Select Report的按鍵動作
 	private Action selectAction;
 	
+	
 	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
+
+	private BadSmellDataStorage dataStorage;
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -112,12 +117,8 @@ public class EHSmellReportView extends ViewPart {
 				//若有選擇Project就產生報表，並把Browser指向記頁
 				for (IProject project : projectList) {
 					if (project.getName().equals(projectCombo.getItem(projectCombo.getSelectionIndex()))) {
-
-						//重新配置新的Model資料
-						data = new ReportModel();
 						//產生Report
 						buildReport(project);
-
 						break;
 					}
 				}
@@ -159,7 +160,9 @@ public class EHSmellReportView extends ViewPart {
 	private void buildReport(IProject project) {
 		//先出現提示訊息給user,因為算coverage要花一段時間
 		//先讓job去跑builder,計算code coverage
-		final ProgressActionJob job = new ProgressActionJob(resource.getString("SmellReport.generateReportProgressBarTitle"), project, data);
+		
+		dataStorage = new BadSmellDataStorage(project.getLocation().toString());
+		final ProgressActionJob job = new ProgressActionJob(resource.getString("SmellReport.generateReportProgressBarTitle"), project, dataStorage);
 		
 		//設定優先順序
 		job.setPriority(Job.SHORT);
@@ -180,7 +183,7 @@ public class EHSmellReportView extends ViewPart {
 					
 					//Browser開啟預設位置HTML
 					if (browser != null)
-						openHTM();
+						openBrowser();
 				}
 			}
 		});
@@ -212,7 +215,8 @@ public class EHSmellReportView extends ViewPart {
 				SelectReportDialog selectDialog = new SelectReportDialog(new Shell(), getProjectList());
 				selectDialog.open();
 				if(!selectDialog.getReportPath().equals("")){
-					browser.setUrl(selectDialog.getReportPath());
+					String dataPath = selectDialog.getReportPath();
+					openReport(dataPath);
 				}
 			}
 		};
@@ -220,7 +224,31 @@ public class EHSmellReportView extends ViewPart {
 		selectAction.setImageDescriptor(ImageManager.getInstance().getDescriptor("note_view"));		
 		toolBarManager.add(selectAction);
 	}
-
+	
+	/**
+	 * @param dataPath
+	 */
+	private void openReport(String dataPath) {
+		ReportContentCreator contentCreator = new ReportContentCreator(dataPath);
+		contentCreator.buildReportContent();
+		browser.setJavascriptEnabled(true);
+		browser.setUrl("file:///" + contentCreator.getResultPath());
+		
+		/*TODO: We need to refresh the page to load all resources.
+		 * Maybe this is a bug of the SWT browser. Fix it later.
+		*/
+		browser.addProgressListener(new ProgressListener() {
+		    @Override
+		    public void completed(ProgressEvent event) {
+		    	browser.execute("document.location.reload();");
+		    	browser.removeProgressListener(this);
+		    }
+		    @Override
+		    public void changed(ProgressEvent event) {
+		    }
+		});
+	}
+	
 	/**
 	 * 把專案名稱顯示在Combo上
 	 */
@@ -260,15 +288,13 @@ public class EHSmellReportView extends ViewPart {
 	/**
 	 * 從預設路徑上打開HTM
 	 */
-	public void openHTM() {
+	public void openBrowser() {
 		try {
 			//for different SWT Thread
 			PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable(){
 				public void run() {
-					//取得預設路徑
-					String showPath = "file:///" + data.getFilePath("sample.html", true);
-					//開啟網址
-					browser.setUrl(showPath);
+					String dataPath = dataStorage.getResultDataPath();
+					openReport(dataPath);
 				}
 			});
 		} catch (Exception e) {

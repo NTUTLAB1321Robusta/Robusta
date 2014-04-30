@@ -23,7 +23,7 @@ public class ExtractMethodAnalyzer {
 	 * It should be MethodInvocation, SupperMethodInvocation or ClassInstanceCreation
 	 * The throw statement is not included in refactoring
 	 */
-	public ASTNode getEnclosingNode() {
+	public ASTNode getEncloseRefactoringNode() {
 		switch (target.getNodeType()) {
 		/*
 		 * MethodInvocation will begin with a simple name: like "fos".close(); or "close"(xxxx);
@@ -44,7 +44,7 @@ public class ExtractMethodAnalyzer {
 	 * Get the return type to create new method
 	 */
 	public ITypeBinding getReturnType() {
-		ASTNode node = getEnclosingNode();
+		ASTNode node = getEncloseRefactoringNode();
 		switch (node.getNodeType()) {
 		case ASTNode.METHOD_INVOCATION:
 			MethodInvocation mi = (MethodInvocation)node;
@@ -61,7 +61,7 @@ public class ExtractMethodAnalyzer {
 	 * Get Exception list
 	 */
 	public ITypeBinding[] getDeclaredExceptions() {
-		ASTNode node = getEnclosingNode();
+		ASTNode node = getEncloseRefactoringNode();
 		switch (node.getNodeType()) {
 		case ASTNode.METHOD_INVOCATION:
 			MethodInvocation mi = (MethodInvocation)node;

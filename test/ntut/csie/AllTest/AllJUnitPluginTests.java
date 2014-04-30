@@ -22,8 +22,10 @@ import ntut.csie.csdet.quickfix.BaseQuickFixTest;
 import ntut.csie.csdet.refactor.OverLoggingRefactorTest;
 import ntut.csie.csdet.refactor.RethrowExRefactoringTest;
 import ntut.csie.csdet.refactor.RetryRefactoringTest;
+import ntut.csie.csdet.report.BadSmellDataStorageTest;
 import ntut.csie.csdet.report.ReportBuilderIntergrationTest;
 import ntut.csie.csdet.report.ReportBuilderTest;
+import ntut.csie.csdet.report.ReportContentCreatorTest;
 import ntut.csie.filemaker.test.ASTNodeFinderTest;
 import ntut.csie.rleht.builder.RLBuilderTest;
 import ntut.csie.rleht.views.ExceptionAnalyzerTest;
@@ -81,6 +83,8 @@ import org.junit.runners.Suite;
 	VariableDeclarationStatementFinderVisitorTest.class,
 	
 	NodeUtilsTest.class,
+	BadSmellDataStorageTest.class,
+	ReportContentCreatorTest.class
 })
 public class AllJUnitPluginTests {
 }
