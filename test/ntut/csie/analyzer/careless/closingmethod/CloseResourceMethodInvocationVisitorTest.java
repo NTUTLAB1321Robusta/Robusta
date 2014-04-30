@@ -1,7 +1,5 @@
 package ntut.csie.analyzer.careless.closingmethod;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.List;
 
 import ntut.csie.analyzer.UserDefinedMethodAnalyzer;

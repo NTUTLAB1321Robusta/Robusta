@@ -9,9 +9,6 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.security.DigestInputStream;
 
-import javax.imageio.ImageIO;
-import javax.imageio.stream.ImageOutputStream;
-
 import ntut.csie.analyzer.careless.closingmethod.ResourceCloser;
 import ntut.csie.analyzer.careless.closingmethod.UserDefinedCarelessCleanupClass;
 import ntut.csie.analyzer.careless.closingmethod.UserDefinedCarelessCleanupMethod;
@@ -141,11 +138,19 @@ public class CarelessCleanupIntegratedExample {
 		}
 	}
 
-	public void instanceDoNotImpCloseable(OutputStream outputStream)
-			throws IOException {
-		ImageOutputStream ios = ImageIO.createImageOutputStream(outputStream);
-		ios.flush();
-		ios.close(); // Unsafe only if user define "*.close"
+	class Door {
+		public void throwException() throws RuntimeException {
+			throw new RuntimeException();
+		}
+		public void close() {
+			System.out.println("Door already closed.");
+		}
+	}
+
+	public void instanceDoNotImpCloseable(OutputStream outputStream) {
+		Door door = new Door();
+		door.throwException();
+		door.close(); // Unsafe only if user define "*.close"
 	}
 
 	/**

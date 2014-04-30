@@ -60,7 +60,7 @@ public class PrintAndSomethingElse {
 			System.out.println(e);
 			{
 				
-			};
+			}
 		}
 	}
 
@@ -72,7 +72,7 @@ public class PrintAndSomethingElse {
 		} catch (IOException e) {
 			{
 				System.out.println(e);
-			};
+			}
 		}
 	}
 }
