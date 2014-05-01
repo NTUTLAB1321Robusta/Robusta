@@ -66,6 +66,7 @@ public class ExtractMethodMarkerResolution implements IMarkerResolution {
 			csRefactoringWizard.setDefaultPageTitle("Extract Method");
 			RefactoringWizardOpenOperation operation = new RefactoringWizardOpenOperation(csRefactoringWizard);
 			operation.run(new Shell(), "It's my way");
+			
 		} catch(Exception e) {
 			logger.error(e.getMessage());
 			throw new RuntimeException(e);

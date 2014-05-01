@@ -20,7 +20,7 @@ public class ExtractMethodAnalyzer {
 	
 	/*
 	 * This method will return the enclosing node need to move to new method
-	 * It should be MethodInvocation, SupperMethodInvocation or ClassInstanceCreation
+	 * It should be MethodInvocation, SupperMethodInvocation which return type is void
 	 * The throw statement is not included in refactoring
 	 */
 	public ASTNode getEncloseRefactoringNode() {
@@ -35,23 +35,6 @@ public class ExtractMethodAnalyzer {
 		case ASTNode.SUPER_METHOD_INVOCATION:
 		case ASTNode.METHOD_INVOCATION:
 			return target;
-		default:
-			return null;
-		}
-	}
-	
-	/*
-	 * Get the return type to create new method
-	 */
-	public ITypeBinding getReturnType() {
-		ASTNode node = getEncloseRefactoringNode();
-		switch (node.getNodeType()) {
-		case ASTNode.METHOD_INVOCATION:
-			MethodInvocation mi = (MethodInvocation)node;
-			return mi.resolveMethodBinding().getReturnType();
-		case ASTNode.SUPER_METHOD_INVOCATION:
-			SuperMethodInvocation smi = (SuperMethodInvocation)node;
-			return smi.resolveMethodBinding().getReturnType();
 		default:
 			return null;
 		}

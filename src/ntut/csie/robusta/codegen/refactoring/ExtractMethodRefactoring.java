@@ -352,20 +352,9 @@ public class ExtractMethodRefactoring extends org.eclipse.jdt.internal.corext.re
 			return RefactoringStatus.createFatalErrorStatus("Method Name is empty");
 		
 		boolean isError = false;
-		char[] name = methodName.toCharArray();
-		// Method名稱第一個字只能為A~Z & a~z
-		if (!(name[0] >= 'a' && name[0] <= 'z') && !(name[0] >= 'A' && name[0] <= 'Z'))
-			isError = true;
-
-		// Method名稱不能有特殊字元
-		for (char c : name) {
-			if (!(c >= 'a' && c <= 'z') && !(c >= 'A' && c <= 'Z') && !(c >= '0' && c <= '9')) {
-				isError = true;
-				break;
-			}
-		}
+		String methodPattern = "^[_a-zA-Z][_0-9a-zA-Z]*$";
+		isError = !methodName.matches(methodPattern);
 		
-		// 名稱若不對，顯示錯誤訊息
 		if (isError){
 			return RefactoringStatus.createFatalErrorStatus(methodName + " is not a valid Java identifer");
 		}
