@@ -6,8 +6,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import junit.framework.Assert;
-
 import ntut.csie.csdet.data.MarkerInfo;
 
 import org.eclipse.jdt.core.dom.ASTNode;
