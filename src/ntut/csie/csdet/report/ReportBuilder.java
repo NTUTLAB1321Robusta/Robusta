@@ -156,10 +156,7 @@ public class ReportBuilder {
 				// 取得Folder的名稱
 				String folderName = root.get(i).getElementName();
 				// 取得Root底下的所有Package
-				IPackageFragmentRoot fragmentRoot = root.get(i);
-				//Check the source folders only
-				if(fragmentRoot.getKind() != IPackageFragmentRoot.K_SOURCE)
-					continue;
+				IPackageFragmentRoot fragmentRoot = root.get(i);				
 				
 				IJavaElement[] packages = fragmentRoot.getChildren();
 
@@ -334,9 +331,9 @@ public class ReportBuilder {
 		IPackageFragmentRoot[] roots = project.getAllPackageFragmentRoots();
 
 		for (IPackageFragmentRoot r : roots) {
-			if (!r.getPath().toString().endsWith(".jar")) {
+			//Check the source folders only
+			if(r.getKind() == IPackageFragmentRoot.K_SOURCE)
 				sourcePaths.add(r);
-			}
 		}
 		return sourcePaths;
 	}
