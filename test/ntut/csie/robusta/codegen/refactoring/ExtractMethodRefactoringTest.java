@@ -22,7 +22,7 @@ public class ExtractMethodRefactoringTest {
 	private String projectName = "TestProject";
 	private CompilationUnit compilationUnit;
 	private ExtractMethodRefactoringTestHelper helper;
-	private ExtractMethodRefactoring refactoring;
+	private TEFBExtractMethodRefactoring refactoring;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -35,7 +35,7 @@ public class ExtractMethodRefactoringTest {
 		ExtractMethodAnalyzer analyzer = new ExtractMethodAnalyzer(startNode);
 		//enclosing node: fileOutputStream.close()
 		ASTNode enclosingNode =  analyzer.getEncloseRefactoringNode();
-		refactoring = new ExtractMethodRefactoring(compilationUnit, enclosingNode);
+		refactoring = new TEFBExtractMethodRefactoring(compilationUnit, enclosingNode);
 	}
 
 	@After

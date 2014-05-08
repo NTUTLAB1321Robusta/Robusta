@@ -1,6 +1,6 @@
 package ntut.csie.robusta.codegen.refactoringui;
 
-import ntut.csie.robusta.codegen.refactoring.ExtractMethodRefactoring;
+import ntut.csie.robusta.codegen.refactoring.TEFBExtractMethodRefactoring;
 
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
@@ -149,7 +149,7 @@ public class ExtractMethodInputPage extends UserInputWizardPage {
 	 */
 	private void handleInputChange(){
 		RefactoringStatus status = new RefactoringStatus();
-		ExtractMethodRefactoring refactoring = getEMRefactoring();
+		TEFBExtractMethodRefactoring refactoring = getEMRefactoring();
 		
 		status.merge(refactoring.setNewMethodName(newMethodText.getText()));
 
@@ -185,8 +185,8 @@ public class ExtractMethodInputPage extends UserInputWizardPage {
 	 * 取得Refactoring的物件型態
 	 * @return
 	 */
-	private ExtractMethodRefactoring getEMRefactoring(){
-		return (ExtractMethodRefactoring) getRefactoring();
+	private TEFBExtractMethodRefactoring getEMRefactoring(){
+		return (TEFBExtractMethodRefactoring) getRefactoring();
 	}
 	
 	/**

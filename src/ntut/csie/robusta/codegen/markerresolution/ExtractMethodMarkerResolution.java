@@ -7,7 +7,7 @@ import ntut.csie.analyzer.thrown.ThrownExceptionInFinallyBlockVisitor;
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.robusta.codegen.refactoring.ExtractMethodAnalyzer;
-import ntut.csie.robusta.codegen.refactoring.ExtractMethodRefactoring;
+import ntut.csie.robusta.codegen.refactoring.TEFBExtractMethodRefactoring;
 import ntut.csie.robusta.codegen.refactoringui.CodeSmellRefactoringWizard;
 import ntut.csie.robusta.codegen.refactoringui.ExtractMethodInputPage;
 import ntut.csie.util.NodeUtils;
@@ -60,7 +60,7 @@ public class ExtractMethodMarkerResolution implements IMarkerResolution {
 			ASTNode node = getBadSmellNode(root, markerInfo);
 			ExtractMethodAnalyzer analyzer = new ExtractMethodAnalyzer(node);
 			ASTNode enclosingNode = analyzer.getEncloseRefactoringNode();
-			ExtractMethodRefactoring refactoring = new ExtractMethodRefactoring(root, enclosingNode);
+			TEFBExtractMethodRefactoring refactoring = new TEFBExtractMethodRefactoring(root, enclosingNode);
 			CodeSmellRefactoringWizard csRefactoringWizard = new CodeSmellRefactoringWizard(refactoring);
 			csRefactoringWizard.setUserInputPage(new ExtractMethodInputPage("It is your way!"));
 			csRefactoringWizard.setDefaultPageTitle("Extract Method");
