@@ -61,8 +61,8 @@ public class BadSmellDataStorage {
 		else
 			return (projectReportFolderPath + "/" + fileName);
 	}
-	
-	void save(ReportModel model) {
+
+	public void save(ReportModel model) {
 		if (model != null) {
 				Document xmlDoc = createXML(model);
 				saveXML(xmlDoc);
@@ -88,7 +88,7 @@ public class BadSmellDataStorage {
 		try {
 			String path = getFilePath(reportDataFileName, true);
 			fileWriter = new FileWriter(path);
-			xmlOut.output(xmlDocument, fileWriter);;
+			xmlOut.output(xmlDocument, fileWriter);
 		} catch (IOException e) {
 			logger.error("[IOException] EXCEPTION ", e);
 		} finally {
@@ -105,18 +105,6 @@ public class BadSmellDataStorage {
 		summary.addContent(new Element("ProjectName").addContent(model
 				.getProjectName()));
 		summary.addContent(new Element("DateTime").addContent(this.getBuildTime()));
-		
-		if (model.isDerectAllproject()) {
-			summary.addContent(new Element("Filter")
-					.addContent("[All Project]"));
-		} else {
-			if (model.getFilterList().size() != 0)
-				summary.addContent(new Element("Filter").addContent(model
-						.getFilterList().toString()));
-			else
-				summary.addContent(new Element("Filter")
-						.addContent("[No Package Select]"));
-		}
 		root.addContent(summary);
 
 		Element smellList = new Element("EHSmellList");

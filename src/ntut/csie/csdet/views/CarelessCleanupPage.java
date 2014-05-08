@@ -78,7 +78,7 @@ public class CarelessCleanupPage  extends APropertyPage {
 	 * 加入頁面的內容
 	 */
 	private void addFirstSection(final Composite CarelessCleanupPage){
-		userDefinedCode = smellSettings.getSemllPatterns(SmellSettings.SMELL_CARELESSCLEANUP);
+		userDefinedCode = smellSettings.getSmellPatterns(SmellSettings.SMELL_CARELESSCLEANUP);
 		// 偵測條件
 		final Label detectSettingsLabel = new Label(CarelessCleanupPage, SWT.NONE);
 		detectSettingsLabel.setText(resource.getString("detect.rule"));

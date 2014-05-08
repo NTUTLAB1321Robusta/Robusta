@@ -12,13 +12,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import ntut.csie.csdet.preference.JDomUtil;
 import ntut.csie.analyzer.ASTCatchCollect;
 import ntut.csie.analyzer.ASTMethodCollector;
 import ntut.csie.analyzer.CommonExample;
 import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
 import ntut.csie.analyzer.dummy.DummyHandlerVisitor;
 import ntut.csie.analyzer.nested.NestedTryStatementExample;
+import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.ASTNodeFinder;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
@@ -47,7 +47,6 @@ import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.core.refactoring.TextFileChange;
-import org.jdom.Element;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,6 +58,7 @@ public class RethrowExRefactoringTest {
 	RethrowExRefactoring refactoring;
 	String testProjectName;
 	Path dummyHandlerExamplePath;
+	private SmellSettings smellSettings;
 	
 	public RethrowExRefactoringTest() {
 		testProjectName = "RethrowExRefactoringTestProject";
@@ -117,12 +117,6 @@ public class RethrowExRefactoringTest {
 		
 		// 刪除專案
 		javapProjectMaker.deleteProject();
-		
-		File xmlFile = new File(JDomUtil.getWorkspace() + File.separator + "CSPreference.xml");
-		if(xmlFile.exists()) {
-			xmlFile.delete();
-//			fail("舊版設定檔不應該存在");
-		}
 	}
 	
 	@Test
@@ -484,8 +478,7 @@ public class RethrowExRefactoringTest {
 	
 //	@Test
 	public void testRethrowException() throws Exception {
-		CreateDummyHandlerXML();
-		
+		CreateSettings();
 		IJavaElement javaElement = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot().getFile(dummyHandlerExamplePath));
 		IMarker tempMarker = javaElement.getResource().createMarker("test.test");
 		tempMarker.setAttribute(RLMarkerAttribute.RL_MSG_INDEX, "0");
@@ -559,8 +552,7 @@ public class RethrowExRefactoringTest {
 	
 //	@Test
 	public void testCollectChange() throws Exception {
-		CreateDummyHandlerXML();
-		
+		CreateSettings();
 		IJavaElement javaElement = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot().getFile(dummyHandlerExamplePath));
 		IMarker tempMarker = javaElement.getResource().createMarker("test.test");
 		tempMarker.setAttribute(RLMarkerAttribute.RL_MARKER_TYPE, RLMarkerAttribute.CS_DUMMY_HANDLER);
@@ -639,8 +631,7 @@ public class RethrowExRefactoringTest {
 	
 //	@Test
 	public void testCreateChange() throws Exception {
-		CreateDummyHandlerXML();
-		
+		CreateSettings();
 		IJavaElement javaElement = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot().getFile(dummyHandlerExamplePath));
 		IMarker tempMarker = javaElement.getResource().createMarker("test.test");
 		tempMarker.setAttribute(RLMarkerAttribute.RL_MARKER_TYPE, RLMarkerAttribute.CS_DUMMY_HANDLER);
@@ -704,8 +695,7 @@ public class RethrowExRefactoringTest {
 	
 	@Test
 	public void testCheckFinalConditions() throws Exception {
-		CreateDummyHandlerXML();
-		
+		CreateSettings();
 		IJavaElement javaElement = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot().getFile(dummyHandlerExamplePath));
 		IMarker tempMarker = javaElement.getResource().createMarker("test.test");
 		tempMarker.setAttribute(RLMarkerAttribute.RL_MARKER_TYPE, RLMarkerAttribute.CS_DUMMY_HANDLER);
@@ -752,40 +742,14 @@ public class RethrowExRefactoringTest {
 		text = (TextFileChange)textFileChange.get(refactoring);
 		assertNotNull(text);
 	}
-	
-	/**
-	 * 建立CSPreference.xml檔案
-	 */
-	private void CreateDummyHandlerXML() {
-		//取的XML的root
-		Element root = JDomUtil.createXMLContent();
 
-		//建立Dummy Handler的Tag
-		Element dummyHandler = new Element(JDomUtil.DummyHandlerTag);
-		Element rule = new Element("rule");
-		//假如e.printStackTrace有被勾選起來
-		rule.setAttribute(JDomUtil.e_printstacktrace,"Y");
-
-		//假如system.out.println有被勾選起來
-		rule.setAttribute(JDomUtil.systemout_print,"Y");
-		
-		rule.setAttribute(JDomUtil.apache_log4j,"Y");
-		rule.setAttribute(JDomUtil.java_Logger,"Y");
-
-		//把使用者自訂的Rule存入XML
-		Element libRule = new Element("librule");
-		
-		//將新建的tag加進去
-		dummyHandler.addContent(rule);
-		dummyHandler.addContent(libRule);
-
-		if (root.getChild(JDomUtil.DummyHandlerTag) != null)
-			root.removeChild(JDomUtil.DummyHandlerTag);
-
-		root.addContent(dummyHandler);
-
-		//將檔案寫回
-		String path = JDomUtil.getWorkspace() + File.separator + "CSPreference.xml";
-		JDomUtil.OutputXMLFile(root.getDocument(), path);
+	private void CreateSettings() {
+		smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_ePrintStackTrace);
+		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_JavaUtilLoggingLogger);
+		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_OrgApacheLog4j);
+		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_SystemOutPrint);
+		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_SystemOutPrintln);
+		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 	}
 }

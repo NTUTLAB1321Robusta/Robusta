@@ -1,23 +1,10 @@
 package ntut.csie.csdet.report;
 
-import java.io.File;
-import java.net.URI;
-import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-
-import ntut.csie.csdet.preference.RobustaSettings;
 
 public class ReportModel {
 	private List<PackageModel> packageModelList = new ArrayList<PackageModel>();
-	// Filter條綿是否為全偵測
-	private boolean detectAllproject;
-
-	// Filter條件
-	private List<String> filterRuleList = new ArrayList<String>();
-	// 專案名稱
 	private String projectName = "";
 	// 取得code counter
 	private int tryCounter = 0;
@@ -50,30 +37,7 @@ public class ReportModel {
 	public int getPackagesSize() {
 		return packageModelList.size();
 	}
-	
-	///存取Filter條件是否為全偵測///
-	public boolean isDerectAllproject() {
-		return detectAllproject;
-	}
-	public void setDerectAllproject(boolean derectAllproject) {
-		this.detectAllproject = derectAllproject;
-	}
-	
-	///存取Filter條件///
-	public List<String> getFilterList() {
-		return filterRuleList;
-	}
-	
-	public void setFilterList(List<String> ruleList) {
-		for (String temp: ruleList) {
-			temp = temp.replace("EH_STAR", "*");
-			temp = temp.replace("EH_LEFT", "");
-			temp = temp.replace("EH_RIGHT", "");
-			filterRuleList.add(temp);
-		}
-	}
-	
-	// 取得全部的行數 //
+
 	public int getTotalLine() {
 		int total = 0;
 		for (PackageModel pm : packageModelList)

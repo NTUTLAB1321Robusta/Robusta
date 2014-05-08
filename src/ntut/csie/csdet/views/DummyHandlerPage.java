@@ -79,7 +79,7 @@ public class DummyHandlerPage extends APropertyPage{
 	}
 	
 	private void addFirstSection(final Composite dummyHandlerPage) {
-		libMap = smellSettings.getSemllPatterns(SmellSettings.SMELL_DUMMYHANDLER);
+		libMap = smellSettings.getSmellPatterns(SmellSettings.SMELL_DUMMYHANDLER);
 		/// 預設偵測條件  ///
 		final Label detectSettingsLabel = new Label(dummyHandlerPage, SWT.NONE);
 		detectSettingsLabel.setText(resource.getString("detect.rule"));

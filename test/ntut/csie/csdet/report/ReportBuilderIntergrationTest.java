@@ -40,6 +40,7 @@ import ntut.csie.util.PathUtils;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.internal.junit.buildpath.BuildPathSupport;
 import org.junit.After;
 import org.junit.Before;
@@ -111,8 +112,7 @@ public class ReportBuilderIntergrationTest {
 		InitailSetting();
 		
 		project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
-		BadSmellDataStorage dataStorage = new BadSmellDataStorage(project.getLocation().toString());
-		reportBuilder = new ReportBuilder(project, dataStorage);
+		reportBuilder = new ReportBuilder(project, new NullProgressMonitor());
 		reportModel = reportBuilder.getReportModel();
 	}
 	
@@ -269,11 +269,8 @@ public class ReportBuilderIntergrationTest {
 	}
 	
 	private void invokeAnalysis() throws Exception {
-		Method getFilterSettings = ReportBuilder.class.getDeclaredMethod("getFilterSettings");
 		Method analysisProject = ReportBuilder.class.getDeclaredMethod("analysisProject", IProject.class);
-		getFilterSettings.setAccessible(true);
 		analysisProject.setAccessible(true);
-		getFilterSettings.invoke(reportBuilder);
 		analysisProject.invoke(reportBuilder, project);
 	}
 	

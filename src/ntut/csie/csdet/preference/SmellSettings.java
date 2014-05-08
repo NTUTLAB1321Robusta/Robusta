@@ -300,7 +300,7 @@ public class SmellSettings {
 	 * @param smellName
 	 * @return
 	 */
-	public TreeMap<String, Boolean> getSemllPatterns(String smellName) {
+	public TreeMap<String, Boolean> getSmellPatterns(String smellName) {
 		TreeMap<String, Boolean> result = new TreeMap<String, Boolean>();
 		Element root = settingDoc.getRootElement();
 		List<?> childrenElements = root.getChildren(TAG_SMELLTYPE4DETECTING);

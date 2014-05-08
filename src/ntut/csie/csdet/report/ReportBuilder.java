@@ -8,12 +8,14 @@ import java.util.List;
 import ntut.csie.analyzer.BadSmellCollector;
 import ntut.csie.analyzer.TryStatementCounterVisitor;
 import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
-import ntut.csie.csdet.preference.JDomUtil;
 import ntut.csie.csdet.preference.RobustaSettings;
 import ntut.csie.jcis.builder.core.internal.support.LOCCounter;
 import ntut.csie.jcis.builder.core.internal.support.LOCData;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
@@ -24,8 +26,6 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.jdom.Attribute;
-import org.jdom.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,38 +33,21 @@ public class ReportBuilder {
 	private static Logger logger = LoggerFactory.getLogger(ReportBuilder.class);
 
 	private IProject project;
-	// Report的資料
 	private ReportModel model;
 
-	// 是否偵測全部的Package
-	private Boolean isAllPackage;
-	// 儲存filter條件的List
-	private List<String> filterRuleList = new ArrayList<String>();
 	private LOCCounter noFormatCounter = new LOCCounter();
-	private BadSmellDataStorage dataStorage;
+	private IProgressMonitor progressMonitor;
 
-	/**
-	 * 建立Report
-	 * 
-	 * @param project
-	 * @param model
-	 */
-	public ReportBuilder(IProject project,  BadSmellDataStorage dataStorage) {
+	public ReportBuilder(IProject project, IProgressMonitor progressMonitor) {
 		this.project = project;
-		this.dataStorage = dataStorage;
+		this.progressMonitor = progressMonitor;
 		this.model = new ReportModel();
 		model.setProjectName(project.getName());
 	}
 
-	public void run() {
-
-		// 將User對於Filter的設定存下來
-		getFilterSettings();
-
-		// 解析專案
-		analysisProject(project);
-
-		dataStorage.save(model);
+	public IStatus run() {
+		IStatus status = analysisProject(project);
+		return status;
 	}
 
 	public ReportModel getReportModel() {
@@ -72,50 +55,13 @@ public class ReportBuilder {
 	}
 	
 	/**
-	 * 將User對於Filter的設定存下來
-	 * 
-	 * @return
-	 */
-	private void getFilterSettings() {
-		Element root = JDomUtil.createXMLContent();
-
-		// 如果是null表示XML檔是剛建好的,還沒有EHSmellFilterTaq的tag,直接跳出去
-		if (root.getChild(JDomUtil.EHSmellFilterTaq) != null) {
-
-			// 這裡表示之前使用者已經有設定過preference了,去取得相關偵測設定值
-			Element filter = root.getChild(JDomUtil.EHSmellFilterTaq).getChild("filter");
-			isAllPackage = Boolean.valueOf(filter.getAttribute("IsAllPackage").getValue());
-
-			// 若不是偵測全部的Project，則把Rule條件儲存
-			if (!isAllPackage) {
-				List<?> filterList = filter.getAttributes();
-
-				for (int i = 0; i < filterList.size(); i++) {
-					// 略過不屬於Rule的設定
-					if (((Attribute)filterList.get(i)).getQualifiedName() == "IsAllPackage")
-						continue;
-					// 若Rule設成true才儲存
-					if (Boolean.valueOf(((Attribute)filterList.get(i)).getValue()))
-						filterRuleList.add(((Attribute)filterList.get(i)).getQualifiedName());
-				}
-				model.setFilterList(filterRuleList);
-			}
-		} else
-			isAllPackage = true;
-
-		model.setDerectAllproject(isAllPackage);
-	}
-
-	/**
 	 * 儲存單一Class內所有Smell資訊
 	 * 
 	 * @param icu
-	 * @param isRecord
 	 * @param pkPath
 	 * @param newPackageModel
 	 */
-	private void setSmellInfo(ICompilationUnit icu, boolean isRecord,
-			PackageModel newPackageModel, String pkPath) {
+	private void setSmellInfo(ICompilationUnit icu, PackageModel newPackageModel, String pkPath) {
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		parser.setSource(icu);
@@ -141,11 +87,12 @@ public class ReportBuilder {
 	}
 
 	/**
-	 * 分析特定Project內的Smell資訊
+	 * Analysis the project to add bad smell info to ReportModel instance
+	 * 
 	 * @param project
 	 */
-	private void analysisProject(IProject project) {
-		// 取得專案的路徑
+	private IStatus analysisProject(IProject project) {
+		// Create the java project from the project for getting the structures
 		IJavaProject javaPrj = JavaCore.create(project);
 		try {
 			List<IPackageFragmentRoot> root = getSourcePaths(javaPrj);
@@ -165,33 +112,32 @@ public class ReportBuilder {
 					if (iJavaElement.getElementType() == IJavaElement.PACKAGE_FRAGMENT) {
 						IPackageFragment iPackageFgt = (IPackageFragment) iJavaElement;
 
-						// 判斷是否要記錄
-						boolean isRecord = determineRecord(folderName, iPackageFgt);
-
 						// 取得Package底下的class
 						ICompilationUnit[] compilationUnits = iPackageFgt.getCompilationUnits();
 						PackageModel newPackageModel = null;
+						if (compilationUnits.length != 0) {
+							newPackageModel = new PackageModel();
+							//設置Package名稱
+							newPackageModel.setPackageName(iPackageFgt.getElementName());
+							newPackageModel.setFolderName(folderName);
 
-						// 若要紀錄則新增Package
-						if (isRecord) {
-							if (compilationUnits.length != 0) {
-								newPackageModel = new PackageModel();
-								//設置Package名稱
-								newPackageModel.setPackageName(iPackageFgt.getElementName());
-								// 記錄Package的Folder名稱
-								newPackageModel.setFolderName(root.get(i).getElementName());
-
-							// 取得Package底下的所有class的smell資訊
+							/*
+							 * Loop through all compilation unit in the package
+							 * to collect bad smell info and add to package
+							 * model
+							 */
 							for (int k = 0; k < compilationUnits.length; k++) {
-								setSmellInfo(compilationUnits[k], isRecord, newPackageModel, iPackageFgt.getPath().toString());
+								// if user canceled the task, we should return immediatly with cancel status
+								if(progressMonitor.isCanceled()) {
+									return Status.CANCEL_STATUS;
+								}
+								setSmellInfo(compilationUnits[k], newPackageModel, iPackageFgt.getPath().toString());
 
-								// 記錄LOC
 								int codeLines = countFileLOC(compilationUnits[k].getPath().toString());
-								// 紀錄到Package中
 								newPackageModel.addTotalLine(codeLines);
 							}
-								model.addPackageModel(newPackageModel);
-							}
+
+							model.addPackageModel(newPackageModel);
 						}
 					}
 				}
@@ -199,131 +145,28 @@ public class ReportBuilder {
 		} catch (JavaModelException e) {
 			logger.error("[Java Model Exception] EXCEPTION ", e);
 		}
+		// Task finish successful, return OK status
+		return Status.OK_STATUS;
 	}
 
+	/**
+	 * Check the configuration file to see if we should collect bad smell info
+	 * from the package fragment root or not
+	 * 
+	 * @param root
+	 * @return
+	 */
 	private boolean shouldDetectPackageFragmentRoot(IPackageFragmentRoot root) {
 		RobustaSettings robustaSettings = new RobustaSettings(new File(UserDefinedMethodAnalyzer.getRobustaSettingXMLPath(project)), project);
 		return robustaSettings.getProjectDetectAttribute(root.getPath().segment(1).toString());
 	}
 
 	/**
-	 * 判斷是否要記錄這個Package的Smell資訊
+	 * Get all source path in project only. i.e. exclude all jar, zip...
 	 * 
-	 * @param folderName
-	 * @param pk
-	 * @return
-	 */
-	private boolean determineRecord(String folderName, IPackageFragment pk) {
-		// 若偵測全部Package 則全部記錄
-		if (isAllPackage) {
-			return true;
-		} else {
-			for (String filterRule : filterRuleList) {
-				//判斷給定的條件，有沒有包含資料夾
-				if (isConformFolderFormat(filterRule)) {
-					//[Folder]模式。如果最前與最後都是square bracket，代表使用者要看整個資料夾
-					if(filterRule.indexOf(JDomUtil.EH_Left) == 0 && (filterRule.indexOf(JDomUtil.EH_Right)+JDomUtil.EH_Right.length()) == filterRule.length()){
-						if(getFolderName(filterRule).equals(folderName)){
-							return true;
-						}
-					}
-					//[Folder]+Package.*的模式
-					else if(filterRule.contains("."+JDomUtil.EH_Star)){
-						if(getFolderName(filterRule).equals(folderName) &&
-							isConformMultiPackageFormat(pk, filterRule)){
-							return true;
-						}
-					}
-					//[Folder]+Package
-					else{
-						if(getFolderName(filterRule).equals(folderName) && pk.getElementName().equals(getTrimFolderName(filterRule))){
-							return true;
-						}
-					}
-				//此處為沒有給定資料夾的判斷
-				} else {
-					if (filterRule.contains("." + JDomUtil.EH_Star)) {
-						if (isConformMultiPackageFormat(pk, filterRule)) {
-							return true;
-						}
-					} else if (pk.getElementName().equals(filterRule)) {
-						return true;
-					}
-				}
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * .*要在filteRule的最後面
-	 * @param iPkgFgt
-	 * @param filterRule
-	 * @return <i>True</i> if match "Package.*" <br />
-	 * 		Others, return false.
-	 */
-	private boolean isConformMultiPackageFormat(IPackageFragment iPkgFgt, String filterRule) {
-		if ((filterRule.length() - (JDomUtil.EH_Star.length() + 1)) == filterRule.indexOf("." + JDomUtil.EH_Star)) {
-			String pkgHead = filterRule.substring(0, filterRule.length() - (1+JDomUtil.EH_Star.length()));
-			
-			//如果包含Folder，那就要把Folder砍掉
-			if(isConformFolderFormat(pkgHead)){
-				pkgHead = pkgHead.substring(pkgHead.indexOf(JDomUtil.EH_Right)+JDomUtil.EH_Right.length());
-			}
-			
-			//某個抓來的完整package長度，比使用這設定的package.*長
-			if (iPkgFgt.getElementName().length() >= pkgHead.length()) {
-				// 又，Package前半段長度的名稱與filter rule一樣，則加入偵測smell的清單中
-				if (iPkgFgt.getElementName().substring(0, pkgHead.length()).equals(pkgHead))
-					return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * 取回EH_LEFT<i>folder</i>EH_RIGHT之中的folder名稱
-	 * 
-	 * @param filterRule
-	 * @param folderName
-	 * @return String , the name of folder
-	 */
-	private String getFolderName(String filterRule) {
-		int left = filterRule.indexOf(JDomUtil.EH_Left);
-		int right = filterRule.indexOf(JDomUtil.EH_Right);
-		// 使用者會輸入[FolderName]，此處負責扣掉左右[]，取得Folder名字
-		String pkFolder = filterRule.substring(left + JDomUtil.EH_Left.length(), right);
-		return pkFolder;
-	}
-	
-	/**
-	 * 檢查是否符合Folder的原則<br />
-	 * 1. 要有&quot;[&quot; & &quot;]&quot; <br />
-	 * 2. &quot;[&quot;要在&quot;]&quot;前面
-	 * @param filterRule
-	 * @return
-	 */
-	private boolean isConformFolderFormat(String filterRule){
-		int left = filterRule.indexOf(JDomUtil.EH_Left);
-		int right = filterRule.indexOf(JDomUtil.EH_Right);
-		if (left != -1 && right != -1 && left < right) {
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * 將EH_LEFT<i>folder</i>EH_RIGHT的字串過濾掉
-	 * 
-	 * @param filterRule
-	 * @return String, the string without folder and &quot;square barker&quot;
-	 */
-	private String getTrimFolderName(String filterRule) {
-		return filterRule.substring(filterRule.indexOf(JDomUtil.EH_Right) + JDomUtil.EH_Right.length());
-	}
-
-	/**
-	 * 取得PackageFragmentRoot List (過濾jar)
+	 * @param project
+	 * @return List of package fragment root of source only
+	 * @throws JavaModelException
 	 */
 	public List<IPackageFragmentRoot> getSourcePaths(IJavaProject project) throws JavaModelException {
 		List<IPackageFragmentRoot> sourcePaths = new ArrayList<IPackageFragmentRoot>();

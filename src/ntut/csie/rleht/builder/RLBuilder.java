@@ -12,7 +12,6 @@ import ntut.csie.analyzer.SuppressWarningVisitor;
 import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.data.SSMessage;
-import ntut.csie.csdet.preference.JDomUtil;
 import ntut.csie.csdet.preference.RobustaSettings;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.rleht.common.ASTHandler;
@@ -167,9 +166,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	 *      java.util.Map, org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	protected IProject[] build(int kind, @SuppressWarnings("rawtypes") Map args, IProgressMonitor monitor) throws CoreException {
-		getDetectSettings();
 		loadRobustaSettingForProject(getProject());
-		
 		logger.debug("[RLBuilder] START !!");
 		long start = System.currentTimeMillis();
 		if (kind == FULL_BUILD) {
@@ -414,32 +411,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 		}
 		return true;
 	}
-	
-	private void getDetectSettings(){
-		Document docJDom = JDomUtil.readXMLFile();
-
-		if(docJDom != null) {
-			// 從XML裡讀出之前的設定
-			Element root = docJDom.getRootElement();
-			if (root.getChild(JDomUtil.DetectSmellTag) != null) {
-				Element rule = root.getChild(JDomUtil.DetectSmellTag).getChild("rule");
-				boolean isDetAll = rule.getAttribute(JDomUtil.detect_all).getValue().equals("Y");
-				if (isDetAll) {
-					for (String smellType : RLMarkerAttribute.CS_TOTAL_TYPE)
-						detSmellSetting.put(smellType, true);
-				} else {
-					for (String smellType : RLMarkerAttribute.CS_TOTAL_TYPE) {
-						boolean isDet = rule.getAttribute(smellType).getValue().equals("Y");
-						detSmellSetting.put(smellType, isDet);
-					}
-				}
-			}
-		} else {
-			for (String smellType : RLMarkerAttribute.CS_TOTAL_TYPE)
-				detSmellSetting.put(smellType, true);			
-		}
-	}
-	
+		
 	private void loadRobustaSettingForProject(IProject project)
 	{
 		robustaSettings = new RobustaSettings(

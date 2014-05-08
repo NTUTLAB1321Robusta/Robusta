@@ -1,13 +1,11 @@
 package ntut.csie.csdet.report;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 
-import ntut.csie.csdet.preference.RobustaSettings;
 import ntut.csie.filemaker.JavaProjectMaker;
 
 import org.eclipse.core.resources.IProject;

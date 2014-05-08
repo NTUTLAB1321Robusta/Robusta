@@ -11,6 +11,8 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
@@ -32,13 +34,16 @@ public class StandAloneApp implements IApplication {
 		JavaCapabilityConfigurationPage.createProject(project, description.getLocationURI(), null);
 		
 		BadSmellDataStorage dataStorage = new BadSmellDataStorage(project.getLocation().toString());
-		ReportBuilder reportBuilder = new ReportBuilder(project, dataStorage);
+		ReportBuilder reportBuilder = new ReportBuilder(project, new NullProgressMonitor());
 		
 		//Active all smell type before run report builder
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		smellSettings.activateAllConditions(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		
-		reportBuilder.run();
+		IStatus returnStatus = reportBuilder.run();
+		if(returnStatus.isOK()) {
+			dataStorage.save(reportBuilder.getReportModel());
+		}
 		
 		ResourcesPlugin.getWorkspace().save(true, null);
     	return IApplication.EXIT_OK;

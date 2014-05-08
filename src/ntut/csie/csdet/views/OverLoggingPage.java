@@ -107,7 +107,7 @@ public class OverLoggingPage extends APropertyPage {
 	 * @param overLoggingPage
 	 */
 	private void addFirstSection(final Composite overLoggingPage) {
-		libMap = smellSettings.getSemllPatterns(SmellSettings.SMELL_OVERLOGGING);
+		libMap = smellSettings.getSmellPatterns(SmellSettings.SMELL_OVERLOGGING);
 		// 偵測條件Label
 		final Label detectSettingsLabel = new Label(overLoggingPage, SWT.NONE);
 		detectSettingsLabel.setText(resource.getString("detect.rule"));

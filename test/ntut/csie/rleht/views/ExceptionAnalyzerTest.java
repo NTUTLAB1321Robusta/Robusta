@@ -13,7 +13,6 @@ import ntut.csie.analyzer.ASTMethodCollector;
 import ntut.csie.analyzer.SuppressWarningExampleForAnalyzer;
 import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
 import ntut.csie.analyzer.unprotected.UnprotectedMainProgramWithoutTryExample;
-import ntut.csie.csdet.preference.JDomUtil;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
@@ -95,11 +94,6 @@ public class ExceptionAnalyzerTest {
 	
 	@After
 	public void tearDown() throws Exception {
-		File xmlFile = new File(JDomUtil.getWorkspace() + File.separator + "CSPreference.xml");
-		// 如果 XML 檔案存在，則刪除之
-		if(xmlFile.exists())
-			assertTrue(xmlFile.delete());
-		// 刪除專案
 		javaProjectMaker.deleteProject();
 	}
 	

@@ -116,21 +116,25 @@ function ChartDrawer(placeholder, densitydata) {
 		self.flotChart = $.plot(this.placeholder, this.data, this.optionsPie);
 	}
 	
-	this.bindToggle = function(toggle) {
+	this.bindToggle = function(toggle, textstate1, textstate2) {
 		self.toggle = toggle;
 		$(function() {
+			// Add click handler to change the text
 			$(self.toggle).click(function() {
 				$(self.placeholder).unbind();
 				if($(this).attr("value")=="bar") {
 					self.drawPie();
 					$(this).val("pie");
-					$(this).html('<span class="ui-button-text">Show Bar Chart</span>'); //The class is for jquery ui
+					$(this).html(textstate2);
 				} else {
 					self.drawBar();
 					$(this).val("bar");
-					$(this).html('<span class="ui-button-text">Show Pie Chart</span>');
+					$(this).html(textstate1);
 				};
 			});
+			
+			//At the beginning, set the text of the button to state 1
+			$(self.toggle).html(textstate1);
 		});
 	}
 }

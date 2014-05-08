@@ -36,7 +36,7 @@
             name="Exception Code Smell Report"
             icon="icons/reports.ico"
             category="%RobustaMenuName%"
-            class="ntut.csie.csdet.report.ui.EHSmellReportView"
+            class="ntut.csie.csdet.report.ui.EHSmellReportViewer"
             id="ntut.csie.csdet.report.ui.EHSmellReportView">
       </view>
    </extension>

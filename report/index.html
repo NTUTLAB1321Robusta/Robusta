@@ -28,7 +28,7 @@
 <!-- DRAW CHART -->
 function drawChart(robustaData) {
 	var drawer = new ChartDrawer('#placeholder', robustaData.badSmellTypeDensity);
-	drawer.bindToggle('#toggle-chart-type');
+	drawer.bindToggle('#toggle-chart-type', '<span class="ui-button-text">Show Donut Chart</span>', '<span class="ui-button-text">Show Bar Chart</span>');
 	drawer.drawBar();
 }
 
@@ -179,7 +179,7 @@ $(function(){
 		
 		<!--Project info -->
 		<div id="code-info-region">
-			<h3 class="region-title">Code Information</h3>
+			<h3 class="region-title">Source Code Information</h3>
 			<div id="code-info" class="chart">
 				<table class="ui-widget ui-widget-content">
 						<tr class="ui-widget-header ">

@@ -1,17 +1,13 @@
 package ntut.csie.csdet.report;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URL;
 
 import ntut.csie.csdet.preference.RobustaSettings;
-import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 
 import org.eclipse.core.resources.IProject;
@@ -35,7 +31,7 @@ public class ReportContentCreatorTest {
 		project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 		
 		InputStream input = getClass().getResourceAsStream("/ntut/csie/csdet/report/ExampleBadSmellData.xml");
-		reportDataFile = new File(project.getLocation() + RobustaSettings.SETTING_REPORTFOLDERNAME + "/report/ExampleBadSmellData.xml");
+		reportDataFile = new File(project.getLocation() + "/" + RobustaSettings.SETTING_REPORTFOLDERNAME + "/report/ExampleBadSmellData.xml");
 		destFolder = reportDataFile.getParentFile();
 		destFolder.mkdirs();
 		OutputStream output = null;

@@ -509,7 +509,7 @@ public class SmellSettingsTest {
 		String content = readFileContents(smellSettingFile);
 		// 檢查準備資料是否正確
 		assertEquals("", content);
-		TreeMap<String, Boolean> libMap = smellSettings.getSemllPatterns(SmellSettings.SMELL_DUMMYHANDLER);
+		TreeMap<String, Boolean> libMap = smellSettings.getSmellPatterns(SmellSettings.SMELL_DUMMYHANDLER);
 		// 驗證結果是否正確
 		assertEquals(0, libMap.size());
 		
@@ -522,7 +522,7 @@ public class SmellSettingsTest {
 		assertEquals(	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
 						"<CodeSmells><SmellTypes name=\"DummyHandler\" isDetecting=\"true\" />" +
 						"</CodeSmells>", content);
-		libMap = smellSettings.getSemllPatterns(SmellSettings.SMELL_DUMMYHANDLER);
+		libMap = smellSettings.getSmellPatterns(SmellSettings.SMELL_DUMMYHANDLER);
 		// 驗證結果是否正確
 		assertEquals(0, libMap.size());
 		
@@ -540,7 +540,7 @@ public class SmellSettingsTest {
 						"<pattern name=\"org.apache.log4j\" isDetecting=\"true\" />" +
 						"</SmellTypes></CodeSmells>", content);
 		
-		libMap = smellSettings.getSemllPatterns(SmellSettings.SMELL_DUMMYHANDLER);
+		libMap = smellSettings.getSmellPatterns(SmellSettings.SMELL_DUMMYHANDLER);
 		// 驗證結果是否正確
 		assertEquals(3, libMap.size());
 		assertTrue(libMap.get(SmellSettings.EXTRARULE_SystemErrPrint));

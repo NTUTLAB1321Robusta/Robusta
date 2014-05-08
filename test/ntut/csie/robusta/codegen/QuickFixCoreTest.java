@@ -7,7 +7,6 @@ import java.io.File;
 
 import ntut.csie.analyzer.CommonExample;
 import ntut.csie.analyzer.UserDefineDummyHandlerFish;
-import ntut.csie.csdet.preference.JDomUtil;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
@@ -84,11 +83,6 @@ public class QuickFixCoreTest {
 
 	@After
 	public void tearDown() throws Exception {
-		File xmlFile = new File(JDomUtil.getWorkspace() + File.separator + "CSPreference.xml");
-		// 如果xml檔案存在，則刪除之
-		if(xmlFile.exists())
-			assertTrue(xmlFile.delete());
-		// 刪除專案
 		javaProjectMaker.deleteProject();
 	}
 

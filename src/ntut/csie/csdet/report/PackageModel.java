@@ -3,7 +3,6 @@ package ntut.csie.csdet.report;
 import java.util.ArrayList;
 import java.util.List;
 
-import ntut.csie.csdet.data.MarkerInfo;
 /**
  * 存取Package內的Report相關資訊
  * @author Shiau
