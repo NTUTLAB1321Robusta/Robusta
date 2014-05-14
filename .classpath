@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
-	<classpathentry kind="src" path="experiment"/>
 	<classpathentry exported="true" kind="lib" path="lib/"/>
 	<classpathentry kind="lib" path="lib/net.java.amateras.umleditor_1.3.1.jar"/>
 	<classpathentry kind="lib" path="lib/net.java.amateras.umleditor.java_1.3.1.jar"/>
