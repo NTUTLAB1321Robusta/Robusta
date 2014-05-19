@@ -1,6 +1,5 @@
 package ntut.csie.robusta.codegen.refactoring;
 
-import java.io.IOException;
 import java.util.List;
 
 import ntut.csie.util.NodeUtils;
@@ -46,12 +45,9 @@ import org.eclipse.ltk.core.refactoring.TextFileChange;
 import org.eclipse.text.edits.MultiTextEdit;
 import org.eclipse.text.edits.TextEdit;
 import org.eclipse.text.edits.TextEditGroup;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @SuppressWarnings({"restriction", "unchecked"})
 public class TEFBExtractMethodRefactoring extends org.eclipse.jdt.internal.corext.refactoring.code.ExtractMethodRefactoring {
-	private static Logger logger = LoggerFactory.getLogger(TEFBExtractMethodRefactoring.class);
 	private String logType;
 	private String modifierType;
 	private ASTRewrite rewrite;
@@ -250,7 +246,7 @@ public class TEFBExtractMethodRefactoring extends org.eclipse.jdt.internal.corex
 	}
 	
 	private void addCommentLine(AST ast, CatchClause cc) {
-		Statement placeHolder = (Statement) rewrite.createStringPlaceholder("//TODO: Auto-generated catch handler, implement your handler here", ASTNode.EMPTY_STATEMENT);
+		Statement placeHolder = (Statement) rewrite.createStringPlaceholder("// TODO Auto-generated catch block", ASTNode.EMPTY_STATEMENT);
 		cc.getBody().statements().add(placeHolder);
 	}
 
