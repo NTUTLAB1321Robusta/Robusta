@@ -35,7 +35,7 @@ import ntut.csie.robusta.codegen.QuickFixCoreTest;
 import ntut.csie.robusta.codegen.StatementFinderVisitorTest;
 import ntut.csie.robusta.codegen.VariableDeclarationStatementFinderVisitorTest;
 import ntut.csie.robusta.codegen.refactoring.ExtractMethodAnalyzerTest;
-import ntut.csie.robusta.codegen.refactoring.ExtractMethodRefactoringTest;
+import ntut.csie.robusta.codegen.refactoring.TEFBExtractMethodRefactoringTest;
 import ntut.csie.util.NodeUtilsTest;
 
 import org.junit.runner.RunWith;
@@ -88,7 +88,7 @@ import org.junit.runners.Suite;
 	BadSmellDataStorageTest.class,
 	ReportContentCreatorTest.class,
 	ExtractMethodAnalyzerTest.class,
-	ExtractMethodRefactoringTest.class
+	TEFBExtractMethodRefactoringTest.class
 })
 public class AllJUnitPluginTests {
 }

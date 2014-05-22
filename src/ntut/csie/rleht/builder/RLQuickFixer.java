@@ -5,15 +5,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import ntut.csie.csdet.quickfix.NTQuickFix;
 import ntut.csie.csdet.refactor.CarelessCleanupAction;
+import ntut.csie.csdet.refactor.NTMarkerResolution;
 import ntut.csie.csdet.refactor.OverLoggingAction;
 import ntut.csie.csdet.refactor.RethrowUncheckExAction;
 import ntut.csie.rleht.common.RLUtils;
 import ntut.csie.rleht.rlAdvice.AchieveRL1QuickFix;
 import ntut.csie.rleht.views.RLData;
 import ntut.csie.robusta.agile.exception.RTag;
-import ntut.csie.robusta.codegen.markerresolution.ExtractMethodMarkerResolution;
+import ntut.csie.robusta.codegen.markerresolution.TEFBExtractMethodMarkerResolution;
 import ntut.csie.robusta.codegen.markerresolution.MoveCloseResouceFromTryCatchToFinallyBlockQuickFix;
 import ntut.csie.robusta.codegen.markerresolution.MoveCodeIntoBigOuterTryQuickFix;
 import ntut.csie.robusta.codegen.markerresolution.RefineRuntimeExceptionQuickFix;
@@ -104,7 +104,7 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				}
 				// 碰到Nested Try Statement的refactor
 			} else if(problem.equals(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT)) {
-				markerList.add(new NTQuickFix("Please use Eclipse refactor==>Extract Method"));
+				markerList.add(new NTMarkerResolution("Please use Eclipse refactor==>Extract Method"));
 				// 碰到Unprotected Main program的Quick fix
 			} else if(problem.equals(RLMarkerAttribute.CS_UNPROTECTED_MAIN)) {
 				markerList.add(new MoveCodeIntoBigOuterTryQuickFix("Quick Fix==>Add Big outer try block"));
@@ -147,7 +147,7 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 			} else if(problem.equals(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK)) {
 				boolean isSupportRefactoring = (Boolean)marker.getAttribute(RLMarkerAttribute.RL_INFO_SUPPORT_REFACTORING);
 				if(isSupportRefactoring)
-					markerList.add(new ExtractMethodMarkerResolution("Refactor==>Use Extract Method"));
+					markerList.add(new TEFBExtractMethodMarkerResolution("Refactor==>Use Extract Method"));
 			}
 			//List轉Array
 			IMarkerResolution[] markerArray = markerList.toArray(new IMarkerResolution[markerList.size()]);

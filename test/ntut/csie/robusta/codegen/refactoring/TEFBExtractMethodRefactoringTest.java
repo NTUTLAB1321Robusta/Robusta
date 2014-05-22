@@ -17,7 +17,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ExtractMethodRefactoringTest {
+public class TEFBExtractMethodRefactoringTest {
 	
 	private String projectName = "TestProject";
 	private CompilationUnit compilationUnit;
