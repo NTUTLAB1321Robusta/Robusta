@@ -104,7 +104,7 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				}
 				// 碰到Nested Try Statement的refactor
 			} else if(problem.equals(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT)) {
-				markerList.add(new NTMarkerResolution("Please use Eclipse refactor==>Extract Method"));
+				markerList.add(new NTMarkerResolution("Refactor==>Use Extract Method"));
 				// 碰到Unprotected Main program的Quick fix
 			} else if(problem.equals(RLMarkerAttribute.CS_UNPROTECTED_MAIN)) {
 				markerList.add(new MoveCodeIntoBigOuterTryQuickFix("Quick Fix==>Add Big outer try block"));
