@@ -22,7 +22,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.jdt.astview.NodeFinder;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
@@ -36,6 +35,7 @@ import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.DoStatement;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.NodeFinder;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TryStatement;
@@ -529,8 +529,7 @@ public class RetryRefactoringTest {
 				"}\n");
 		// 模擬反白效果
 		TextSelection textSelection = new TextSelection(document, 1229, 231);
-		NodeFinder nodeFinder = new NodeFinder(textSelection.getOffset(), textSelection.getLength());
-		nestedTryStatementUnit.accept(nodeFinder);
+		NodeFinder nodeFinder = new NodeFinder(nestedTryStatementUnit, textSelection.getOffset(), textSelection.getLength());
 		ASTNode selectNode = nodeFinder.getCoveringNode();
 		// get the try statement in nestedCatch_InnerCatchWithParentExceptionTypeOfOuter
 		ListRewrite listRewrite = rw.getListRewrite(selectNode, Block.STATEMENTS_PROPERTY);
@@ -610,8 +609,7 @@ public class RetryRefactoringTest {
 				"}\n");
 		// 模擬反白效果
 		TextSelection textSelection = new TextSelection(document, 1229, 231);
-		NodeFinder nodeFinder = new NodeFinder(textSelection.getOffset(), textSelection.getLength());
-		nestedTryStatementUnit.accept(nodeFinder);
+		NodeFinder nodeFinder = new NodeFinder(nestedTryStatementUnit, textSelection.getOffset(), textSelection.getLength());
 		ASTNode selectNode = nodeFinder.getCoveringNode();
 		ListRewrite listRewrite = rw.getListRewrite(selectNode, Block.STATEMENTS_PROPERTY);
 		// 找出選取的部分對於整個unit來說位於哪個位置
@@ -673,8 +671,7 @@ public class RetryRefactoringTest {
 				"}\n");
 		// 模擬反白效果
 		TextSelection textSelection = new TextSelection(document, 1229, 231);
-		NodeFinder nodeFinder = new NodeFinder(textSelection.getOffset(), textSelection.getLength());
-		nestedTryStatementUnit.accept(nodeFinder);
+		NodeFinder nodeFinder = new NodeFinder(nestedTryStatementUnit, textSelection.getOffset(), textSelection.getLength());
 		ASTNode selectNode = nodeFinder.getCoveringNode();
 		ListRewrite listRewrite = rw.getListRewrite(selectNode, Block.STATEMENTS_PROPERTY);
 		// 找出選取的部分對於整個unit來說位於哪個位置
@@ -752,8 +749,7 @@ public class RetryRefactoringTest {
 				"}\n");
 		// 模擬反白效果
 		TextSelection textSelection = new TextSelection(document, 1229, 231);
-		NodeFinder nodeFinder = new NodeFinder(textSelection.getOffset(), textSelection.getLength());
-		nestedTryStatementUnit.accept(nodeFinder);
+		NodeFinder nodeFinder = new NodeFinder(nestedTryStatementUnit, textSelection.getOffset(), textSelection.getLength());
 		ASTNode selectNode = nodeFinder.getCoveringNode();
 		ListRewrite listRewrite = rw.getListRewrite(selectNode, Block.STATEMENTS_PROPERTY);
 		// 找出選取的部分對於整個unit來說位於哪個位置

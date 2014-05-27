@@ -1,37 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.2"?>
 <plugin>
-
    <extension
          point="org.eclipse.ui.views">
       <category
             name="Robusta"
             id="%RobustaMenuName%">
       </category>
-      <!-- RL Method view and RL Call Hierarchy view-->
-      <!-- (2012 Nov Not Released)
-      <view
-            name="≡ RL Method ≡"
-            icon="icons/showwarn_tsk.gif"
-            category="%RobustaMenuName%"
-            class="ntut.csie.rleht.views.RLMethodView"
-            id="ntut.csie.rleht.views.RLView">
-      </view>
-      <view
-            name="≡ RL Call Hierarchy ≡"
-            icon="icons/showwarn_tsk.gif"
-            category="%RobustaMenuName%"
-            class="ntut.csie.rleht.caller.CallersView"
-            id="ntut.csie.rleht.caller.CallersView"
-            />
-      <view
-            name="≡ EH Smell View ≡"
-            icon="icons/showwarn_tsk.gif"
-            category="%RobustaMenuName%"
-            class="ntut.csie.csdet.smell.ui.EHSmellView"
-            id="ntut.csie.rleht.views.EHSmell">
-      </view>
-      -->
+     
       <view
             name="Exception Code Smell Report"
             icon="icons/reports.ico"
@@ -40,24 +16,7 @@
             id="ntut.csie.csdet.report.ui.EHSmellReportView">
       </view>
    </extension>
-   <!-- (2012 Nov Not Released)
-   <extension
-         id="ntut.csie.rleht.RLPerspective"
-         point="org.eclipse.ui.perspectiveExtensions">
-      <perspectiveExtension
-            targetID="org.eclipse.ui.resourcePerspective">
-         <view
-               closeable="true"
-               id="rleht.views.RLView"
-               moveable="true"
-               ratio="0.5"
-               relationship="right"
-               relative="org.eclipse.ui.views.TaskList"
-               visible="true">
-         </view>
-      </perspectiveExtension>
-   </extension>
-   -->
+   
    <!-- Builder and Nautre-->
    <extension
          id="ntut.csie.rleht.builder.RLBuilder"
@@ -92,32 +51,7 @@
                label="≡ Add/Remove Robusta Smells Detector ≡"
                menubarPath="additions"/>         
       </objectContribution>  
-      
-      <!--  右鍵尋找RL Call Hierarchy-->
-      <!-- (2012 Nov Not Released)
-      <viewerContribution
-            targetID="#CompilationUnitEditorContext"
-            id="ntut.csie.rleht.caller.popup.editor">
-         <action
-               label="≡ RL Call Hierarchy ≡"
-               class="ntut.csie.rleht.caller.CallersEditorAction"
-               menubarPath="additions"
-               id="ntut.csie.rleht.caller.updatepopupaction">
-         </action>
-      </viewerContribution>
 
-      <objectContribution
-            objectClass="org.eclipse.jdt.core.IMethod"
-            id="ntut.csie.rleht.caller.explorers">
-         <action
-               label="≡ RL Call Hierarchy ≡"
-               class="ntut.csie.rleht.caller.CallersEditorAction"
-               menubarPath="additions"
-               enablesFor="1"
-               id="ntut.csie.rleht.caller.explorer">
-         </action>
-      </objectContribution>
-	  -->      
       <!-- Code Smell Refactor 選單 -->
       <objectContribution
            	objectClass="org.eclipse.ui.IFileEditorInput"

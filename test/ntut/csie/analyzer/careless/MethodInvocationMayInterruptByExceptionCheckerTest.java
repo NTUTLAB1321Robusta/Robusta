@@ -9,9 +9,9 @@ import java.util.List;
 import ntut.csie.filemaker.ASTNodeFinder;
 import ntut.csie.testutility.TestEnvironmentBuilder;
 
-import org.eclipse.jdt.astview.NodeFinder;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.NodeFinder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

@@ -11,11 +11,11 @@ import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.testutility.Assertor;
 import ntut.csie.testutility.TestEnvironmentBuilder;
 
-import org.eclipse.jdt.astview.NodeFinder;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.NodeFinder;
 import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.junit.After;
 import org.junit.Before;

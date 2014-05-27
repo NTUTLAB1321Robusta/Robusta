@@ -1,7 +1,6 @@
 package ntut.csie.rleht.common;
 
 import ntut.csie.rleht.RLEHTPlugin;
-import ntut.csie.rleht.caller.CallersLabelProvider;
 
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
@@ -9,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ConsoleLog {
-	private static Logger logger = LoggerFactory.getLogger(CallersLabelProvider.class);
+	private static Logger logger = LoggerFactory.getLogger(ConsoleLog.class);
 	private static final String TITLE = "[" + RLEHTPlugin.PLUGIN_ID + "]";
 
 	public static final int DEBUG = 0;

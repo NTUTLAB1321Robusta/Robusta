@@ -19,7 +19,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.jdt.astview.NodeFinder;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMember;
@@ -34,6 +33,7 @@ import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.NodeFinder;
 import org.eclipse.jdt.core.refactoring.CompilationUnitChange;
 import org.eclipse.jdt.internal.corext.callhierarchy.CallHierarchy;
 import org.eclipse.jdt.internal.corext.callhierarchy.MethodWrapper;
@@ -263,8 +263,7 @@ public class RemoveOverLoggingRefactoring extends Refactoring {
 			ASTNode unit = parserAST.createAST(null);
 
 			// 取得AST的Method部份
-			NodeFinder nodeFinder = new NodeFinder(method.getSourceRange().getOffset(), method.getSourceRange().getLength());
-			unit.accept(nodeFinder);
+			NodeFinder nodeFinder = new NodeFinder(unit, method.getSourceRange().getOffset(), method.getSourceRange().getLength());
 			ASTNode methodNode = nodeFinder.getCoveredNode();
 
 			// 若此ASTNode屬於MethodDeclaration，則轉型

@@ -68,19 +68,10 @@
         <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui.workbench.texteditor_3.6.1.r361_v20100714-0800.jar"/>
         <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui.console_3.5.0.v20100526.jar"/>
         <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui.ide_3.6.2.M20101201-0800.jar"/>
-        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.compare_3.5.101.R36x_v20100929-0800.jar"/>
-        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.compare.core_3.5.101.R36x_v20100929-0800.jar"/>
         <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jdt.junit_3.6.1.r361_v20100825-0800.jar"/>
         <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jdt.junit.core_3.6.1.r361_v20100825-0800.jar"/>
-        <pathelement location="${ECLIPSE_HOME}/plugins/net.java.amateras.umleditor_1.3.4.jar"/>
-        <pathelement location="${ECLIPSE_HOME}/plugins/net.java.amateras.umleditor.java_1.3.4.jar"/>
-        <pathelement location="${ECLIPSE_HOME}/plugins/net.java.amateras.xstream_1.3.4.jar"/>
-        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.draw2d_3.6.2.v20110128-0100.jar"/>
-        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.gef_3.6.2.v20110110-2020.jar"/>
         <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jdt.launching_3.5.200.v20110105_r362.jar"/>
         <pathelement location="${ECLIPSE_HOME}/plugins/org.junit_4.8.1.v4_8_1_v20100427-1100/junit.jar"/>
-        <pathelement location="${ECLIPSE_HOME}/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar"/>
-        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jdt.astview_1.1.7.201103211622.jar"/>
         <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jdt.core.manipulation_1.3.0.v20100520-0800.jar"/>
         <pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant.jar"/>
         <pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-antlr.jar"/>
@@ -120,12 +111,6 @@
 	<path id="Robusta.classpath">
 		<pathelement location="bin"/>
         <pathelement location="lib/"/>
-        <pathelement location="lib/net.java.amateras.umleditor_1.3.1.jar"/>
-        <pathelement location="lib/net.java.amateras.umleditor.java_1.3.1.jar"/>
-        <pathelement location="lib/net.java.amateras.xstream_1.3.1.jar"/>
-        <pathelement location="lib/org.eclipse.draw2d_3.2.100.v20070529.jar"/>
-        <pathelement location="lib/org.eclipse.gef_3.2.101.v20070814.jar"/>
-        <pathelement location="lib/org.eclipse.jdt.astview_1.1.3.jar"/>
 	 	<path refid="Plug-in Dependencies.libraryclasspath"/>
     </path>
 	
@@ -143,8 +128,8 @@
 	</condition>
 	
 	<!-- main target -->
-	<target name="all" depends="init, build-project, product-test-jar, run-pde-junit-test, junit-test, junit-report, remove-other-plugin-lib,
-								product-jar, agile-jar, write-site-xml, write-feature-xml, zip-product">
+	<target name="all" depends="init, build-project, product-test-jar, run-pde-junit-test, junit-test, junit-report, 
+								product-jar, agile-jar, zip-product">
 		<echo message="Ant build complete"/>
 	</target>
 	
@@ -158,7 +143,6 @@
     	<mkdir dir="${result-folder}"/>
     	<mkdir dir="${xml-folder}"/>
 		<mkdir dir="${update-folder}"/>
-		<mkdir dir="${feature-folder}"/>
 		<mkdir dir="${plugin-folder}"/>
 		<mkdir dir="${license-folder}"/>
 		<copy todir="${license-folder}">
@@ -332,19 +316,6 @@
 		</junitreport>
 	</target>
 	 
-	<target name="remove-other-plugin-lib">
-		<delete>
-			<fileset dir="${bin-folder}/lib">
-				<include name="net.java.amateras.umleditor.java_1.3.1.jar"/>
-				<include name="net.java.amateras.umleditor_1.3.1.jar"/>
-				<include name="net.java.amateras.xstream_1.3.1.jar"/>
-				<include name="org.eclipse.draw2d_3.2.100.v20070529.jar"/>
-				<include name="org.eclipse.gef_3.2.101.v20070814.jar"/>
-				<include name="org.eclipse.jdt.astview_1.1.3.jar"/>
-			</fileset>
-		</delete>
-	</target>
-	
 	<!-- wrap bin folder to jar file -->
 		<target name="product-jar">
 			<jar destfile="${plugin-folder}/${jar-file-name}" filesetmanifest="mergewithoutmain" basedir="${bin-folder}" excludes="**/filemaker/, **/*Test.class">
@@ -400,7 +371,6 @@
 					<import plugin="org.eclipse.core.runtime"/>
 					<import plugin="org.eclipse.ui.ide"/>
 					<import plugin="org.eclipse.ui"/>
-					<import plugin="org.eclipse.compare"/>
 					<import plugin="org.eclipse.jdt.ui"/>
 					<import plugin="org.eclipse.jdt.core"/>
 					<import plugin="org.eclipse.ui.console"/>

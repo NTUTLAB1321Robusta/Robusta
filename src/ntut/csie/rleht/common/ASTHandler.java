@@ -1,7 +1,5 @@
 package ntut.csie.rleht.common;
 
-import ntut.csie.rleht.caller.CallersLabelProvider;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.IClassFile;
 import org.eclipse.jdt.core.ICompilationUnit;
@@ -19,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ASTHandler {
-	private static Logger logger = LoggerFactory.getLogger(CallersLabelProvider.class);
+	private static Logger logger = LoggerFactory.getLogger(ASTHandler.class);
 	private boolean statementsRecovery = false;
 
 	@SuppressWarnings("deprecation")

@@ -17,7 +17,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.jdt.astview.NodeFinder;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
@@ -40,6 +39,7 @@ import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.InfixExpression;
 import org.eclipse.jdt.core.dom.MemberValuePair;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.NodeFinder;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.PostfixExpression;
 import org.eclipse.jdt.core.dom.PrimitiveType;
@@ -168,8 +168,7 @@ public class RetryRefactoring extends Refactoring {
 		actRoot.accept(methodCollector);
 		//利用ITextSelection資訊來取得使用者所選擇要變更的AST Node
 		//要使用這個method需在xml檔import org.eclipse.jdt.astview
-		NodeFinder nodeFinder = new NodeFinder(iTSelection.getOffset(), iTSelection.getLength());
-		actRoot.accept(nodeFinder);
+		NodeFinder nodeFinder = new NodeFinder(actRoot, iTSelection.getOffset(), iTSelection.getLength());
 		ASTNode selectNode = nodeFinder.getCoveredNode();
 		if (selectNode == null) {
 			status.addFatalError("Selection Error, please retry again!!!");
