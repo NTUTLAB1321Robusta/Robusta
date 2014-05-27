@@ -19,6 +19,7 @@
 	<property name="rl-jar-file-name" value="taipeitech.csie.robusta.agile.exception_1.0.0.jar"/>
 	<property name="result-folder" value="${basedir}/result"/>
 	<property name="xml-folder" value="${result-folder}/xml"/>
+	<property name="release-folder" value="${basedir}/release"/>
 	<property name="update-folder" value="${result-folder}/update"/>
 	<property name="feature-folder" value="${update-folder}/features"/>
 	<property name="plugin-folder" value="${update-folder}/dropins"/>
@@ -149,7 +150,10 @@
 		<mkdir dir="${update-lib-folder}"/>
 		
 		<copy todir="${license-folder}">
-			<fileset dir="${basedir}" includes="*.html"/>
+			<fileset dir="${release-folder}" includes="*.html"/>
+		</copy>
+		<copy todir="${update-folder}">
+			<fileset dir="${release-folder}" includes="*.txt"/>
 		</copy>
         <copy includeemptydirs="false" todir="${bin-folder}">
             <fileset dir="${src-folder}">
