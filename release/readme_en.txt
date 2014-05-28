@@ -1,25 +1,26 @@
-§ Robusta 工具版權為 Taipei Tech, CSIE, Software Systems Lab 所有 §
+﻿Copyright of Robusta is retained by Software System Lab of 
+Department of Computer Science and Information Engineering at 
+Taipei Tech.
 
 System Requirements：
-	Java SE Development Kit (JDK) 1.6 or newer version.
-	Eclipse Classic 3.6 or newer version.
+	Java SE Development Kit (JDK) 1.6 or newer.
+	Eclipse Classic 3.6 or newer.
 
-Contents：
-	folder「licenses」 with 2 html files
-	folder「dropins」 with 1 jar files
-	folder「lib」 with 1 jar files
-	file「readme_zhTW.txt」and「readme_en.txt」
+Contents Included：
+	Two HTML files under the 「licenses」 folder,
+	One jar file under the 「dropins」 folder,
+	One jar file under the 「lib」 folder, and
+	Two README.txt.
 
-Install Robusta：
-	一、Copy whole「dropins」folder into root folder of eclipse.
-	二、重新啟動 eclipse。
-	三、在 eclipse 介面上選擇「Project」→「Clean...」→「Clean all projects」。
+How to install：
+	1. Save any unsaved work and close eclipse.
+	2. Copy and place the whole 「dropins」 folder into eclipse 「root」 folder.
+	3. Restart eclipse.
+	4. Click on「Project」→「Clean...」→「Clean all projects」on the menu bar.
+	5. Click on 「Help」→「About Eclipse」→「Installation Details」→「Plug-ins」, if 「Robusta」appears under「Plug-in」, the installation succeeded.
 
-確認安裝成功：
-	在 eclipse 介面上選擇「Help」→「About Eclipse Platform」→「Installation Details」→ 分頁「Plug-ins」，若「Plug-in Name」欄有出現「Robusta」，則代表安裝成功。
+Use RL(Robustness Level) annotation：
+	1. Copy and place 「ntut.csie.robusta.agile.exception_1.0.0.jar」 from the 「lib」 folder of this package to the 「lib」 folder of target project. 
+	2. Right click on the target project and choose 「Refresh」.
+	3. Right click on the 「ntut.csie.robusta.agile.exception_1.0.0.jar」 that is already in the project’s 「lib」 folder, then choose「Build Path」→「Add to Build Path」. The project should now be able to recognize RL annotation.
 
-使用 RL(Robustness Level) annotation：
-	一、將資料夾「lib」內的「ntut.csie.robusta.agile.exception_1.0.0.jar」加入到專案的「lib」資料夾下。
-	二、對 eclipse 內的專案點擊右鍵，選擇「Refresh」。
-	三、對該 jar 檔點擊右鍵，選擇「Build Path」→「Add to Build Path」。
-	之後專案應該就可以正確地辨認 RL annotation。
