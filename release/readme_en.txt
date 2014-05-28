@@ -1,26 +1,25 @@
-ï»¿Copyright of Robusta is retained by Software System Lab of 
+¡± Copyright of Robusta is retained by Software System Lab of 
 Department of Computer Science and Information Engineering at 
-Taipei Tech.
+Taipei Tech. ¡±
 
-System Requirementsï¼š
+System Requirements¡G
 	Java SE Development Kit (JDK) 1.6 or newer.
 	Eclipse Classic 3.6 or newer.
 
-Contents Includedï¼š
-	Two HTML files under the ã€Œlicensesã€ folder,
-	One jar file under the ã€Œdropinsã€ folder,
-	One jar file under the ã€Œlibã€ folder, and
+Contents Included¡G
+	Two HTML files under the ¡ulicenses¡v folder,
+	One jar file under the ¡udropins¡v folder,
+	One jar file under the ¡ulib¡v folder, and
 	Two README.txt.
 
-How to installï¼š
+How to install¡G
 	1. Save any unsaved work and close eclipse.
-	2. Copy and place the whole ã€Œdropinsã€ folder into eclipse ã€Œrootã€ folder.
+	2. Copy and place the whole ¡udropins¡v folder into eclipse ¡uroot¡v folder.
 	3. Restart eclipse.
-	4. Click onã€ŒProjectã€â†’ã€ŒClean...ã€â†’ã€ŒClean all projectsã€on the menu bar.
-	5. Click on ã€ŒHelpã€â†’ã€ŒAbout Eclipseã€â†’ã€ŒInstallation Detailsã€â†’ã€ŒPlug-insã€, if ã€ŒRobustaã€appears underã€ŒPlug-inã€, the installation succeeded.
+	4. Click on ¡uProject¡v ¡÷ ¡uClean...¡v ¡÷ ¡uClean all projects¡v on the menu bar.
+	5. To check if the installation succedded, click on ¡uHelp¡v ¡÷ ¡uAbout Eclipse¡v ¡÷ ¡uInstallation Details¡v ¡÷ ¡uPlug-ins¡v ,¡uRobusta¡v should appear under ¡uPlug-in¡v.
 
-Use RL(Robustness Level) annotationï¼š
-	1. Copy and place ã€Œntut.csie.robusta.agile.exception_1.0.0.jarã€ from the ã€Œlibã€ folder of this package to the ã€Œlibã€ folder of target project. 
-	2. Right click on the target project and choose ã€ŒRefreshã€.
-	3. Right click on the ã€Œntut.csie.robusta.agile.exception_1.0.0.jarã€ that is already in the projectâ€™s ã€Œlibã€ folder, then chooseã€ŒBuild Pathã€â†’ã€ŒAdd to Build Pathã€. The project should now be able to recognize RL annotation.
-
+Use RL(Robustness Level) annotation¡G
+	1. Copy and place ¡untut.csie.robusta.agile.exception_1.0.0.jar¡v from the ¡ulib¡v folder of this package to the ¡ulib¡v folder of target project. 
+	2. Right click on the target project and choose ¡uRefresh¡v .
+	3. Right click on the ¡untut.csie.robusta.agile.exception_1.0.0.jar¡v that is already in the project¡¦s ¡ulib¡v folder, then choose ¡uBuild Path¡v ¡÷ ¡uAdd to Build Path¡v . The project should now be able to recognize RL annotation.

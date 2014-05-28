@@ -1,25 +1,24 @@
-Â§ Robusta å·¥å…·ç‰ˆæ¬Šç‚ºå°åŒ—ç§‘æŠ€å¤§å­¸ è³‡è¨Šå·¥ç¨‹ç³» è»Ÿé«”ç³»çµ±å¯¦é©—å®¤ æ‰€æœ‰ Â§
+¡± Robusta ¤u¨ãª©Åv¬°¥x¥_¬ì§Ş¤j¾Ç ¸ê°T¤uµ{¨t ³nÅé¨t²Î¹êÅç«Ç ©Ò¦³ ¡±
 
-ç³»çµ±éœ€æ±‚ï¼š
-	Java SE Development Kit (JDK) 1.6 æˆ–ä»¥ä¸Šç‰ˆæœ¬
-	Eclipse Classic 3.6 æˆ–ä»¥ä¸Šç‰ˆæœ¬
+¨t²Î»İ¨D¡G
+	Java SE Development Kit (JDK) 1.6 ©Î¥H¤Wª©¥»
+	Eclipse Classic 3.6 ©Î¥H¤Wª©¥»
 
-ä¸‹è¼‰åŒ…å…§å®¹ï¼š
-	folderã€Œlicensesã€ with 2 html files
-	folderã€Œdropinsã€ with 1 jar files
-	folderã€Œlibã€ with 1 jar files
-	fileã€Œreadme_zhTW.txtã€andã€Œreadme_en.txtã€
+¤U¸ü¥]¤º®e¡G
+	¡ulicenses¡v ¸ê®Æ§¨¡G2 ­Ó html ÀÉ
+	¡udropins¡v ¸ê®Æ§¨¡G1 ­Ó jar ÀÉ
+	¡ulib¡v ¸ê®Æ§¨¡G1 ­Ó jar ÀÉ
+	2 ­Ó README.txt
 
-å®‰è£ Robustaï¼š
-	ä¸€ã€å°‡ã€Œdropinsã€è³‡æ–™å¤¾å…§æ•´å€‹è¤‡è£½åˆ° eclipse æ ¹ç›®éŒ„ä¸‹ã€‚
-	äºŒã€é‡æ–°å•Ÿå‹• eclipseã€‚
-	ä¸‰ã€åœ¨ eclipse ä»‹é¢ä¸Šé¸æ“‡ã€ŒProjectã€â†’ã€ŒClean...ã€â†’ã€ŒClean all projectsã€ã€‚
+¦w¸Ë Robusta¡G
+	¤@¡BÀx¦s±M®×¨ÃÃö³¬ eclipse¡C
+	¤G¡B±N¡udropins¡v¸ê®Æ§¨¾ã­Ó½Æ»s¨ì eclipse ®Ú¥Ø¿ı¤U¡C
+	¤T¡B­«·s±Ò°Ê eclipse¡C
+	¥|¡B¦b eclipse ¤u¨ã¦C¤W¿ï¾Ü¡uProject¡v¡÷¡uClean...¡v¡÷¡uClean all projects¡v¡C
+	¤­¡B­Y­n½T»{¬O§_¦w¸Ë¦¨¥\¡A¥i¥H¦b eclipse ¤u¨ã¦C¤W¿ï¾Ü¡uHelp¡v¡÷¡uAbout Eclipse Platform¡v¡÷¡uInstallation Details¡v¡÷ ¤À­¶¡uPlug-ins¡v¡A¦b¡uPlug-in Name¡vÄæÀ³¸Ó·|§ä¨ì¡uRobusta¡v¡C
 
-ç¢ºèªå®‰è£æˆåŠŸï¼š
-	åœ¨ eclipse ä»‹é¢ä¸Šé¸æ“‡ã€ŒHelpã€â†’ã€ŒAbout Eclipse Platformã€â†’ã€ŒInstallation Detailsã€â†’ åˆ†é ã€ŒPlug-insã€ï¼Œè‹¥ã€ŒPlug-in Nameã€æ¬„æœ‰å‡ºç¾ã€ŒRobustaã€ï¼Œå‰‡ä»£è¡¨å®‰è£æˆåŠŸã€‚
-
-ä½¿ç”¨ RL(Robustness Level) annotationï¼š
-	ä¸€ã€å°‡è³‡æ–™å¤¾ã€Œlibã€å…§çš„ã€Œntut.csie.robusta.agile.exception_1.0.0.jarã€åŠ å…¥åˆ°å°ˆæ¡ˆçš„ã€Œlibã€è³‡æ–™å¤¾ä¸‹ã€‚
-	äºŒã€å° eclipse å…§çš„å°ˆæ¡ˆé»æ“Šå³éµï¼Œé¸æ“‡ã€ŒRefreshã€ã€‚
-	ä¸‰ã€å°è©² jar æª”é»æ“Šå³éµï¼Œé¸æ“‡ã€ŒBuild Pathã€â†’ã€ŒAdd to Build Pathã€ã€‚
-	ä¹‹å¾Œå°ˆæ¡ˆæ‡‰è©²å°±å¯ä»¥æ­£ç¢ºåœ°è¾¨èª RL annotationã€‚
+¨Ï¥Î RL(Robustness Level) annotation¡G
+	¤@¡B±N¸ê®Æ§¨¡ulib¡v¤ºªº¡untut.csie.robusta.agile.exception_1.0.0.jar¡v¥[¤J¨ì±M®×ªº¡ulib¡v¸ê®Æ§¨¤U¡C
+	¤G¡B¹ï eclipse ¤ºªº±M®×ÂIÀ»¥kÁä¡A¿ï¾Ü¡uRefresh¡v¡C
+	¤T¡B¹ï¸Ó jar ÀÉÂIÀ»¥kÁä¡A¿ï¾Ü¡uBuild Path¡v¡÷¡uAdd to Build Path¡v¡C
+	¤§«á±M®×À³¸Ó´N¥i¥H¥¿½T¦a¿ë»{ RL annotation¡C
