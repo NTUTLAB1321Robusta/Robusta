@@ -11,6 +11,7 @@ import ntut.csie.robusta.agile.exception.Robustness;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -120,10 +121,12 @@ public class RobustaSettings {
 	}
 	
 	public static String getRobustaReportFolder(String projectName) {
-		String workPath = ResourcesPlugin.getWorkspace().getRoot()
-				.getLocation().toString();
-		String path = workPath + "/" + projectName + "/" + SETTING_REPORTFOLDERNAME;
-		return path;
+		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+		IPath path = project.getLocation();
+		String projectPath = null;
+		if(path != null)
+			projectPath = path.toOSString() + "/" +SETTING_REPORTFOLDERNAME;
+		return projectPath;
 	}
 
 	public static String getPathOfReportDescriptionFile(String projectName) {

@@ -2,8 +2,10 @@ package ntut.csie.csdet.report;
 
 import java.io.Closeable;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -83,16 +85,18 @@ public class BadSmellDataStorage {
 	
 	private void saveXML(Document xmlDocument) {
 		Format fmt = Format.getPrettyFormat();
+		fmt.setEncoding("UTF-8"); //Default already, but just make sure again ^^
 		XMLOutputter xmlOut = new XMLOutputter(fmt);
-		FileWriter fileWriter = null;
+		OutputStreamWriter outputWriter = null;
 		try {
 			String path = getFilePath(reportDataFileName, true);
-			fileWriter = new FileWriter(path);
-			xmlOut.output(xmlDocument, fileWriter);
+			outputWriter = new OutputStreamWriter(new FileOutputStream(path), "UTF-8");
+			//fileWriter = new FileWriter(path);
+			xmlOut.output(xmlDocument, outputWriter);
 		} catch (IOException e) {
 			logger.error("[IOException] EXCEPTION ", e);
 		} finally {
-			closeStream(fileWriter);
+			closeStream(outputWriter);
 		}
 	}
 	
