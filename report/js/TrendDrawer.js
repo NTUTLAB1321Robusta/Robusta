@@ -98,3 +98,12 @@ var togglePlot = function(seriesIdx) {
   flotChartObj.setupGrid();
   flotChartObj.draw();
 }
+
+var allPastReport = [];
+$.each(trendReportData.reports, function(reportIndex, report){
+	allPastReport.push([reportIndex, report.date]);
+	for(var i=0; i <report.badSmellCount.length; i++)
+		allPastReport[reportIndex].push(report.badSmellCount[i]);
+	var total = eval( report.badSmellCount.join('+') );
+	allPastReport[reportIndex].push(total);
+});

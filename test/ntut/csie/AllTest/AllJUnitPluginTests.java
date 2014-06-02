@@ -15,6 +15,7 @@ import ntut.csie.analyzer.nested.NestedTryStatementVisitorTest;
 import ntut.csie.analyzer.over.OverLoggingVisitorTest;
 import ntut.csie.analyzer.thrown.ThrownExceptionInFinallyBlockVisitorTest;
 import ntut.csie.analyzer.unprotected.UnprotectedMainProgramVisitorTest;
+import ntut.csie.csdet.preference.BadSmellDataReaderTest;
 import ntut.csie.csdet.preference.DetectedFileTest;
 import ntut.csie.csdet.preference.ReportDescriptionTest;
 import ntut.csie.csdet.preference.RobustaSettingsTest;
@@ -23,9 +24,11 @@ import ntut.csie.csdet.refactor.OverLoggingRefactorTest;
 import ntut.csie.csdet.refactor.RethrowExRefactoringTest;
 import ntut.csie.csdet.refactor.RetryRefactoringTest;
 import ntut.csie.csdet.report.BadSmellDataStorageTest;
+import ntut.csie.csdet.report.PastReportHistoryTest;
 import ntut.csie.csdet.report.ReportBuilderIntergrationTest;
 import ntut.csie.csdet.report.ReportBuilderTest;
 import ntut.csie.csdet.report.ReportContentCreatorTest;
+import ntut.csie.csdet.report.TrendReportDocumentTest;
 import ntut.csie.filemaker.test.ASTNodeFinderTest;
 import ntut.csie.rleht.builder.RLBuilderTest;
 import ntut.csie.rleht.views.ExceptionAnalyzerTest;
@@ -88,7 +91,12 @@ import org.junit.runners.Suite;
 	BadSmellDataStorageTest.class,
 	ReportContentCreatorTest.class,
 	ExtractMethodAnalyzerTest.class,
-	ExtractMethodRefactoringTest.class
+	ExtractMethodRefactoringTest.class,
+	
+	BadSmellDataReaderTest.class,
+	PastReportHistoryTest.class,
+	TrendReportDocumentTest.class
+	
 })
 public class AllJUnitPluginTests {
 }

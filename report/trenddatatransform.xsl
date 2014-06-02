@@ -8,6 +8,7 @@ var trendReportData = {
 }
 </xsl:template>
 <xsl:template match="TrendReports">
+	"projectName": "<xsl:value-of select="ProjectInfo/ProjectName"/>",
 	"badSmellType": ["Empty Catch Block", "Dummy Handler", "Unprotected Main Program", "Nested Try Statement", "Careless Cleanup", "Over Logging", "Thrown Exception In Finally Block"],
 	"reports": [
 	<xsl:for-each select="Report">

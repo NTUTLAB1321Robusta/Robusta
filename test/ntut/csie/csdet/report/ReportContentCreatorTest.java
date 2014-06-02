@@ -76,7 +76,7 @@ public class ReportContentCreatorTest {
 		String TRENDREPORT_DATA_TRANSFORM = "/report/trenddatatransform.xsl";
 		PastReportsHistory pastReportsHistory = new PastReportsHistory();
 		List<File> files = pastReportsHistory.getFileList(projectName);
-		TrendReportDocument trendReportDocument = new TrendReportDocument();
+		TrendReportDocument trendReportDocument = new TrendReportDocument(projectName);
 		inputXmlTrendReportDoc = trendReportDocument.collectTrendReportData(files);
 		trendReportContentCreator = new ReportContentCreator(JS_TRENDREPORTDATA_PATH, TRENDREPORT_DATA_TRANSFORM, inputXmlTrendReportDoc, projectName);
 	}

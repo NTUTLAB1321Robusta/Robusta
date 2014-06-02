@@ -54,7 +54,7 @@ public class TrendReportDocumentTest {
 
 		PastReportsHistory pastReportsHistory = new PastReportsHistory();
 		List<File> files = pastReportsHistory.getFileList(projectName);
-		TrendReportDocument trendReportDocument = new TrendReportDocument();
+		TrendReportDocument trendReportDocument = new TrendReportDocument(projectName);
 		Document document = trendReportDocument.collectTrendReportData(files);
 		Element root = document.getRootElement();
 		assertEquals("TrendReports", root.getName());

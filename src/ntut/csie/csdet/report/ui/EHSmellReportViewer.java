@@ -146,7 +146,7 @@ public class EHSmellReportViewer extends ViewPart {
 						PastReportsHistory pastReportsHistory = new PastReportsHistory();
 						List<File> files = pastReportsHistory.getFileList(project.getName());
 						if (files.size() > 0) {
-							TrendReportDocument trendReportDocument = new TrendReportDocument();
+							TrendReportDocument trendReportDocument = new TrendReportDocument(project.getName());
 							Document doc = trendReportDocument.collectTrendReportData(files);
 							openBrowserForTrendReport(project.getName(), doc);
 							break;
@@ -336,9 +336,6 @@ public class EHSmellReportViewer extends ViewPart {
 	}
 	
 	public void openBrowserForTrendReport(final String projectName, final Document doc) {
-		
-		//TrendReportContentCreator trendReportContentCreator = new TrendReportContentCreator(projectName);
-		//trendReportContentCreator.buildTrendReportContent(doc);
 		String JS_TRENDREPORTDATA_PATH = 	"/js/datatrend.js";
 		String TRENDREPORT_DATA_TRANSFORM = "/report/trenddatatransform.xsl";
 		ReportContentCreator reportContentCreator = new ReportContentCreator(JS_TRENDREPORTDATA_PATH, TRENDREPORT_DATA_TRANSFORM, doc, projectName);
