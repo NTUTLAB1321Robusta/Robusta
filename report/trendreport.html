@@ -1,0 +1,101 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link href="css/jquery-ui-1.10.4.custom.min.css" rel="stylesheet"/>
+<link href="css/jquery.dataTables_themeroller.css" rel="stylesheet"/>
+<link href="css/style.css" rel="stylesheet"/>
+<script language="javascript" type="text/javascript" src="js/jquery-1.10.2.js"></script>
+<script language="javascript" type="text/javascript" src="js/jquery-ui-1.10.4.custom.min.js"></script>
+<script language="javascript" type="text/javascript" src="js/flot/excanvas.min.js"></script>
+<script language="javascript" type="text/javascript" src="js/flot/jquery.flot.min.js"></script>
+<script language="javascript" type="text/javascript" src="js/flot/jquery.flot.pie.min.js"></script>
+<!-- <script language="javascript" type="text/javascript" src="flot/jquery.flot.tickrotor.js"></script> -->
+<script language="javascript" type="text/javascript" src="js/flot/jquery.flot.axislabels.js"></script>
+<script language="javascript" type="text/javascript" src="js/flot/jquery.flot.valuelabels.js"></script>
+<script language="javascript" type="text/javascript" src="js/flot/jquery.flot.tooltip.min.js"></script>
+<script language="javascript" type="text/javascript" src="js/datatrend.js"></script>
+<script language="javascript" type="text/javascript" src="js/TrendDrawer.js"></script>
+
+<script language="javascript" type="text/javascript" src="js/jquery.dataTables.min.js"></script>
+<script language="javascript" type="text/javascript" src="js/jquery.dataTables.columnFilter.js"></script>
+<script language="javascript" type="text/javascript">
+function createAllPastReportTable(){
+	var columns = [
+			{ "sTitle": "#" },
+			{ "sTitle": "Report Date",
+			  "sWidth": "200px"
+			},
+			{ "sTitle": "Empty Catch Block" },
+			{ "sTitle": "Dummy Handler" },
+			{ "sTitle": "Unprotected Main Program" },
+			{ "sTitle": "Nested Try Statement" },
+			{ "sTitle": "Careless Cleanup" },
+			{ "sTitle": "Over Logging" },
+			{ "sTitle": "Throws Exception In Finally Block " },
+			{ "sTitle": "Total"}
+		];
+	$("#reportTable").width("100%");
+	var reportTable = $('#reportTable').dataTable({
+		"aoColumns": columns,
+		 "aaData": allPastReport
+	});
+}
+$(function(){
+	$("#tabs").tabs();
+	var trendDrawer = new TrendDrawer('#placeholder', trendReportData);
+	trendDrawer.drawTrendReport();
+	//createAllPastReportTable();
+});
+</script>
+<title>Robusta Report</title>
+</head>
+<body>
+<div id="outer-wrap">
+
+	<!-- HEADER -->
+	<div id="header">
+	  <div id="logo">
+		<h2 id="report-title">Robusta</h2>
+		<span id="sub-title">Code Smell Report</span> </div>
+	  <div id="project-info"> <div id="prjname"><span class="label">Project name: </span><span class="value" id="project-name">Robusta</span></div>
+		<div id="report-date"><span class="label">Report date: </span><span class="value" id="report-creation-date">4/22/2014</span> </div></div>
+	</div>
+	<!-- END HEADER -->
+	
+	<!-- TABS -->
+	<div id="tabs">
+	
+		<!-- TAB CAPTIONS -->
+	  <ul>
+		<li><a href="#tabs-1">Summary</a></li>
+	  </ul>
+	  <!-- END TAB CAPTIONS -->
+	  
+	  <!-- TAB 1 -->
+	  <div id="tabs-1">
+		
+		<!-- Trend Report Chart -->
+		<div id="badsmelltype-density">
+		  <h3 class="region-title">Trend Report</h3>
+		  <div class="chart">
+			<div id="placeholder"  style="width:800px;height:300px;margin:0 auto;"></div>
+		  </div>
+		</div>
+		<!-- END Trend Report Chart -->
+		<!-- All past Report Information -->
+		<div id="package-region">
+			<h3 class="region-title">Information</h3>
+			<div id="package-list" class="chart">
+				<table cellpadding="0" cellspacing="0" border="0" class="display" id="reportTable" style="text-align:center;"></table>
+			</div>
+		</div>
+		
+	  </div>
+	  <!-- END TAB 1 -->
+	</div>
+	<!-- END TABS -->
+	
+</div>
+</body>
+</html>

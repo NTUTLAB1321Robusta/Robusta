@@ -162,13 +162,7 @@ div.valueLabel {
 	border: none;
 }
 
-div.legend > table {
-  border: 2px #666 solid;
-}
 
-div.legend > table td {
-    padding: 3px;
-}
 
 /* tooltip */
 #flotTip {
@@ -219,3 +213,33 @@ tfoot input, tfoot select {
 /* END TABLE */
 
 /* END SUMMARY */
+
+#ttip span {
+	margin-top: 3px;
+	display: block;
+}
+
+div.legend > table {
+  border: 2px #666 solid;
+}
+
+div.legend > table tr {
+    margin: 5px 5px;
+}
+
+div.legend > table td {
+    padding: 3px;
+	vertical-align: middle;
+}
+
+.legend {
+	position: absolute;
+    right: -250px;
+    top: -7px;
+    width: 300px;
+}
+
+.legend input {
+	vertical-align: middle;
+	margin: 0 3px;
+}

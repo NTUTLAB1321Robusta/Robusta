@@ -3,6 +3,7 @@ package ntut.csie.csdet.report;
 import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,42 +19,67 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import ntut.csie.csdet.preference.RobustaSettings;
+
+import org.jdom.Document;
+import org.jdom.transform.JDOMSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ReportContentCreator {
-
 	private static Logger logger = LoggerFactory.getLogger(ReportContentCreator.class);
-	String dataPath;
-	String resultPath;
-	File destFolder;
-	private final String JS_DATA_PATH = "/js/data.js";
 	private final String REPORT_FILE_LIST = "/report/filelist.txt";
-	private String REPORT_DATA_TRANSFORM = "/report/datatransform.xsl";
-	
-	
-	public String getResultPath() {
-		return resultPath;
-	}
-	
-	public ReportContentCreator(String dataPath) {
+	private String outputDataFilePath;
+	private String inputXslTransformPath;
+	private Document inputXmlDocument;
+	private String projectName;
+	private File destFolder;
+
+	public ReportContentCreator(String outputDataFilePath, String inputXslTransformPath, Document inputXmlDocument, String projectName) {
 		super();
-		this.dataPath = dataPath;
-		File directory = (new File(dataPath)).getParentFile();
-		destFolder = new File(directory.getAbsolutePath() + "/../report/");
+		this.outputDataFilePath = outputDataFilePath;
+		this.inputXslTransformPath = inputXslTransformPath;
+		this.inputXmlDocument = inputXmlDocument;
+		this.projectName = projectName;
+
+		String reportFolder = RobustaSettings.getRobustaReportFolder(projectName);
+		File directory = new File(reportFolder);
+		destFolder = new File(directory.getAbsolutePath() + "/report/");
 		destFolder.mkdirs();
-		resultPath = destFolder.getAbsolutePath() + "/index.html";
 	}
-	
-	public void buildReportContent() {
+
+	public String getDestinationFolderPath() {
+		return destFolder.getAbsolutePath();
+	}
+
+	public void transformDataFile() {
+		InputStream inputStream = null;
+		FileOutputStream outputStream = null;
 		try {
-			exportReportResources();
-			createJavaScriptData(dataPath);
-		} catch (IOException e) {
-			logger.error("[IOException] ", e);
+			inputStream = this.getClass().getResourceAsStream(inputXslTransformPath);
+			Source xslSource = new StreamSource(inputStream);
+			TransformerFactory tf = TransformerFactory.newInstance();
+			Transformer transformer = null;
+			transformer = tf.newTransformer(xslSource);
+
+			File outputFile = new File(destFolder.getAbsolutePath() + outputDataFilePath);
+			outputFile.getParentFile().mkdirs();
+
+			outputStream = new FileOutputStream(outputFile);
+			Result transformResult = new StreamResult(outputStream);
+			transformer.transform((Source) new JDOMSource(inputXmlDocument), transformResult);
+		} catch (TransformerConfigurationException e) {
+			logger.error("[Transformer Configuration Exception] EXCEPTION ", e);
+		} catch (TransformerException e) {
+			logger.error("[Transformer Exception] EXCEPTION ", e);
+		} catch (FileNotFoundException e) {
+			logger.error("[File Not Exception] EXCEPTION ", e);
+		} finally {
+			closeStream(inputStream);
+			closeStream(outputStream);
 		}
 	}
-	
+
 	private void closeStream(Closeable io) {
 		try {
 			if (io != null)
@@ -63,52 +89,23 @@ public class ReportContentCreator {
 		}
 	}
 
-	private void createJavaScriptData(String xmlFilePath) throws IOException {
-		InputStream inputStream = null;
-		FileOutputStream outputSteam = null;
-		try {
-			inputStream = this.getClass().getResourceAsStream(
-					REPORT_DATA_TRANSFORM);
-			Source xslSource = new StreamSource(inputStream);
-			TransformerFactory tf = TransformerFactory.newInstance();
-			Transformer transformer = null;
-			transformer = tf.newTransformer(xslSource);
-			
-			Source xmlSource = new StreamSource(new File(xmlFilePath));
-			File outputFile = new File(destFolder.getAbsolutePath() + JS_DATA_PATH);
-			outputFile.getParentFile().mkdirs();
-			
-			outputSteam = new FileOutputStream(outputFile);
-			Result transfromResult = new StreamResult(outputSteam);
-			transformer.transform(xmlSource, transfromResult);
-		} catch (TransformerConfigurationException e) {
-			logger.error("[Transformer Configuration Exception] EXCEPTION ", e);
-		} catch (TransformerException e) {
-			logger.error("[Transformer Exception] EXCEPTION ", e);
-		} finally {
-			closeStream(inputStream);
-			closeStream(outputSteam);
-		}
-	}
-	
-	private void exportReportResources() {
+	public void exportReportResources() {
 		InputStream fileListInput = getClass().getResourceAsStream(REPORT_FILE_LIST);
 		BufferedReader br = new BufferedReader(new InputStreamReader(fileListInput));
 		String line;
 		try {
-			while((line = br.readLine())!= null && line.trim().length() > 0) {
+			while ((line = br.readLine()) != null && line.trim().length() > 0) {
 				InputStream input = getClass().getResourceAsStream(line);
-				// Copy the file to the root folder of destFolder: 
+				// Copy the file to the root folder of destFolder:
 				// bring them up one level => line: /report/file.ext => file.ext
-				File dest = new File(destFolder.getAbsoluteFile() + "/../" + line);
+				File dest = new File(destFolder.getAbsoluteFile() + ("/../" + line));
 				copyFileUsingFileStreams(input, dest);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
 	}
-	
+
 	private static void copyFileUsingFileStreams(InputStream source, File dest) throws IOException {
 		dest.getParentFile().mkdirs();
 		OutputStream output = null;

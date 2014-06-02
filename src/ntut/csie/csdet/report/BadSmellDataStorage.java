@@ -81,7 +81,7 @@ public class BadSmellDataStorage {
 		return xmlDocument;
 	}
 	
-	private void saveXML(Document xmlDocument) {
+	public void saveXML(Document xmlDocument) {
 		Format fmt = Format.getPrettyFormat();
 		XMLOutputter xmlOut = new XMLOutputter(fmt);
 		FileWriter fileWriter = null;
