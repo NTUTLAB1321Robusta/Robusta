@@ -83,7 +83,7 @@ public class BadSmellDataStorage {
 		return xmlDocument;
 	}
 	
-	private void saveXML(Document xmlDocument) {
+	public void saveXML(Document xmlDocument) {
 		Format fmt = Format.getPrettyFormat();
 		fmt.setEncoding("UTF-8"); //Default already, but just make sure again ^^
 		XMLOutputter xmlOut = new XMLOutputter(fmt);

@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import ntut.csie.csdet.preference.ReportDescription;
 import ntut.csie.csdet.preference.RobustaSettings;
+import ntut.csie.csdet.report.PastReportsHistory;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.dialogs.Dialog;
@@ -56,6 +57,7 @@ public class SelectReportDialog extends Dialog {
 
 	private ResourceBundle resource = ResourceBundle.getBundle("robusta",
 			new Locale("en", "US"));
+	private String projectName;
 
 	public SelectReportDialog(Shell parentShell, List<String> projctList) {
 		super(parentShell);
@@ -188,8 +190,10 @@ public class SelectReportDialog extends Dialog {
 		}
 		String path = getReportDescriptionXmlFilePath();
 		ReportDescription descriptionSettings = new ReportDescription(path);
-		// set Report List
-		getFileList();
+		
+		// get Report List
+		PastReportsHistory pastReportsHistory = new PastReportsHistory();
+		fileList = pastReportsHistory.getFileList(projectCombo.getItem(projectCombo.getSelectionIndex()));
 
 		for (File file : fileList) {
 			String fileName = file.getName();
@@ -237,40 +241,6 @@ public class SelectReportDialog extends Dialog {
 			String reportName = fileList.get(i).getName();
 			String newDetail = reportTable.getItem(i).getText(1);
 			updateReportDescriptionToXml(reportName, newDetail);
-		}
-	}
-
-	/**
-	 * 取得Project內的Report資訊
-	 * 
-	 * @return
-	 */
-	public void getFileList() {
-		// 取得使用者使選擇的Project Name
-		String projectName = projectList.get(projectCombo.getSelectionIndex());
-		File directory = new File(RobustaSettings.getRobustaReportFolder(projectName));
-
-		// 取得目錄內每一個資料夾路徑
-		File[] allFolder = directory.listFiles();
-
-		// 若Project未建立Report路徑
-		if (allFolder == null)
-			return;
-
-		for (File folder : allFolder) {
-			if (folder.isDirectory()) {
-				if (folder.getName().equals("report"))
-					continue;
-				// 取得副檔名為.html的檔案
-				File[] files = folder.listFiles(new FilenameFilter() {
-					public boolean accept(File dir, String name) {
-						return name.endsWith(".xml");
-					}
-				});
-				// 把Report資訊記錄
-				for (File file : files)
-					fileList.add(file);
-			}
 		}
 	}
 
@@ -358,6 +328,7 @@ public class SelectReportDialog extends Dialog {
 		if (index != -1)
 			filePath = fileList.get(index).getAbsolutePath();
 
+		projectName = projectCombo.getItem(projectCombo.getSelectionIndex());
 		super.okPressed();
 	}
 
@@ -368,5 +339,9 @@ public class SelectReportDialog extends Dialog {
 	 */
 	public String getReportPath() {
 		return filePath;
+	}
+	
+	public String getProjectName() {
+		return projectName;
 	}
 }

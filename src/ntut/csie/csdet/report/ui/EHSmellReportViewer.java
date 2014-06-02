@@ -1,5 +1,7 @@
 package ntut.csie.csdet.report.ui;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -8,7 +10,9 @@ import java.util.ResourceBundle;
 import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.report.BadSmellDataStorage;
+import ntut.csie.csdet.report.PastReportsHistory;
 import ntut.csie.csdet.report.ReportContentCreator;
+import ntut.csie.csdet.report.TrendReportDocument;
 import ntut.csie.rleht.RLEHTPlugin;
 import ntut.csie.rleht.common.ImageManager;
 
@@ -36,6 +40,9 @@ import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.IWorkbenchSiteProgressService;
+import org.jdom.Document;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,7 +130,32 @@ public class EHSmellReportViewer extends ViewPart {
 		});
 		itemGenerate.setText(resource.getString("SmellReport.generate"));
 		itemGenerate.setImage(ImageManager.getInstance().get("unchecked"));
+		
+		// Trend Report ToolItem
+		final ToolItem itemTrendReport = new ToolItem(toolbar, SWT.PUSH);
+		itemTrendReport.setText(resource.getString("SmellReport.trendReport"));
+		itemTrendReport.setImage(ImageManager.getInstance().get("trendReport"));
+		itemTrendReport.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(final SelectionEvent e) {
+				IProject[] projectList = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+				SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+				smellSettings.activateAllConditions(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 
+				for (IProject project : projectList) {
+					if (project.getName().equals(projectCombo.getItem(projectCombo.getSelectionIndex()))) {
+						PastReportsHistory pastReportsHistory = new PastReportsHistory();
+						List<File> files = pastReportsHistory.getFileList(project.getName());
+						if (files.size() > 0) {
+							TrendReportDocument trendReportDocument = new TrendReportDocument(project.getName());
+							Document doc = trendReportDocument.collectTrendReportData(files);
+							openBrowserForTrendReport(project.getName(), doc);
+							break;
+						}
+					}
+				}
+			}
+		});
+		
 		///建置Refresh ToolItem///
 		final ToolItem itemRefresh = new ToolItem(toolbar, SWT.PUSH);
 		itemRefresh.addSelectionListener(new SelectionAdapter() {
@@ -204,7 +236,8 @@ public class EHSmellReportViewer extends ViewPart {
 				selectDialog.open();
 				if(!selectDialog.getReportPath().equals("")){
 					String dataPath = selectDialog.getReportPath();
-					openReport(dataPath);
+					String projectName = selectDialog.getProjectName();
+					openReport(dataPath, projectName);
 				}
 			}
 		};
@@ -215,12 +248,28 @@ public class EHSmellReportViewer extends ViewPart {
 	
 	/**
 	 * @param dataPath
+	 * @param projectName 
 	 */
-	private void openReport(String dataPath) {
-		ReportContentCreator contentCreator = new ReportContentCreator(dataPath);
-		contentCreator.buildReportContent();
+	private void openReport(String dataPath, String projectName) {
+		Document inputXmlDoc;
+		SAXBuilder builder = new SAXBuilder();
+		try {
+			inputXmlDoc = builder.build(dataPath);
+		} catch (JDOMException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		
+		String JS_DATA_PATH = "/js/data.js";
+		String REPORT_DATA_TRANSFORM = "/report/datatransform.xsl";
+		
+		ReportContentCreator reportContentCreator = new ReportContentCreator(JS_DATA_PATH, REPORT_DATA_TRANSFORM, inputXmlDoc, projectName);
+		reportContentCreator.exportReportResources();
+		reportContentCreator.transformDataFile();
+		
 		browser.setJavascriptEnabled(true);
-		browser.setUrl("file:///" + contentCreator.getResultPath());
+		browser.setUrl("file:///" + reportContentCreator.getDestinationFolderPath() + "/index.html");
 		
 		/* We need to refresh the page to load all resources.
 		 * Maybe this is a bug of the SWT browser. Fix it later.
@@ -235,7 +284,7 @@ public class EHSmellReportViewer extends ViewPart {
 		    public void changed(ProgressEvent event) {
 		    }
 		});
-	}
+	}	
 	
 	/**
 	 * 把專案名稱顯示在Combo上
@@ -278,11 +327,37 @@ public class EHSmellReportViewer extends ViewPart {
 			public void run() {
 				if (isCompletedSucessful) {
 					String dataPath = dataStorage.getResultDataPath();
-					openReport(dataPath);
+					openReport(dataPath, projectCombo.getItem(projectCombo.getSelectionIndex()));
 				} else {
 					browser.setText(resource.getString("SmellReport.browser.canceled"));
 				}
 			}
 		});
 	}
+	
+	public void openBrowserForTrendReport(final String projectName, final Document doc) {
+		String JS_TRENDREPORTDATA_PATH = 	"/js/datatrend.js";
+		String TRENDREPORT_DATA_TRANSFORM = "/report/trenddatatransform.xsl";
+		ReportContentCreator reportContentCreator = new ReportContentCreator(JS_TRENDREPORTDATA_PATH, TRENDREPORT_DATA_TRANSFORM, doc, projectName);
+		reportContentCreator.exportReportResources();
+		reportContentCreator.transformDataFile();
+		
+		browser.setJavascriptEnabled(true);
+		browser.setUrl("file:///" + reportContentCreator.getDestinationFolderPath()+"/trendreport.html");
+		
+		/* We need to refresh the page to load all resources.
+		 * Maybe this is a bug of the SWT browser. Fix it later.
+		 */
+		browser.addProgressListener(new ProgressListener() {
+			@Override
+			public void completed(ProgressEvent event) {
+				browser.execute("document.location.reload();");
+				browser.removeProgressListener(this);
+			}
+			@Override
+			public void changed(ProgressEvent event) {
+			}
+		});	
+	}
+	
 }
