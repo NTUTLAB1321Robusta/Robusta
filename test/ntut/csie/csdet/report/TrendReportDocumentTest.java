@@ -59,7 +59,7 @@ public class TrendReportDocumentTest {
 		Element root = document.getRootElement();
 		assertEquals("TrendReports", root.getName());
 		List<Element> childs = root.getChildren();
-		assertEquals(0, childs.size());
+		assertEquals(1, childs.size());
 
 		OutputStream output1 = null;
 		OutputStream output2 = null;
@@ -82,6 +82,6 @@ public class TrendReportDocumentTest {
 		document = trendReportDocument.collectTrendReportData(files);
 		root = document.getRootElement();
 		List<Element> reportElements = root.getChildren();
-		assertEquals(2, reportElements.size());
+		assertEquals(3, reportElements.size());
 	}
 }

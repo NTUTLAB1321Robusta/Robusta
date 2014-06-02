@@ -112,7 +112,7 @@ public class ReportContentCreatorTest {
 		trendReportContentCreator.transformDataFile();
 		assertTrue(file.exists());
 		File trendReportFile = new File(destFolder.getAbsolutePath() + "/trendreport.html");
-		assertTrue(indexFile.exists());
+		assertTrue(trendReportFile.exists());
 	}
 
 }
