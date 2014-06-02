@@ -20,19 +20,11 @@
 function createAllPastReportTable(){
 	$('#reportTable').DataTable( {
 		"order": [[0, "asc"]],
-		"paging": false,
 		"bJQueryUI": true,
-		"scrollY": "250px",
-		"scrollCollapse": true,
-		"filter": false,
-		"oLanguage": {
-			"sInfo": "Total: _TOTAL_ Past Report(s)",
-		},
-		"sDom": '<"H"i>t<"F"ip>',
 		"data": allPastReport,
 		"columns": [
 			{ "title": "#", "class": "center"  },
-			{ "title": "Date", "class": "center"  },
+			{ "title": "Date", "class": "center", "sWidth": "200px"  },
 			{ "title": "Careless Clean Up", "class": "center"  },
 			{ "title": "Dummy Handler", "class": "center"  },
 			{ "title": "Empty Catch Block", "class": "center"  },
@@ -43,8 +35,6 @@ function createAllPastReportTable(){
 			{ "title": "Total", "class": "center" }
 		]
 	} );
-	
-	$("#reportTable_info").html('All Bad Smell Past Reports');
 }
 
 function fetchProjectInfo(trendReportData) {

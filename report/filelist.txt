@@ -8,7 +8,7 @@
 /report/js/chartdrawer.js
 /report/js/data.js
 /report/js/datatrend.js
-/report/js/TrendDrawer.js
+/report/js/trenddrawer.js
 /report/js/jquery-1.10.2.js
 /report/js/jquery-ui-1.10.4.custom.min.js
 /report/js/jquery.dataTables.columnFilter.js
