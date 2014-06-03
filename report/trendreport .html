@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=9" />
 
 <link href="css/jquery-ui-1.10.4.custom.min.css" rel="stylesheet"/>
 <link href="css/jquery.dataTables_themeroller.css" rel="stylesheet"/>
@@ -20,7 +21,15 @@
 function createAllPastReportTable(){
 	$('#reportTable').DataTable( {
 		"order": [[0, "asc"]],
+		"paging": false,
 		"bJQueryUI": true,
+		"scrollY": "250px",
+		"scrollCollapse": true,
+		"filter": false,
+		"oLanguage": {
+			"sInfo": "Total: _TOTAL_ Past Report(s)",
+		},
+		"sDom": '<"H"i>t<"F"ip>',
 		"data": allPastReport,
 		"columns": [
 			{ "title": "#", "class": "center"  },
@@ -35,6 +44,8 @@ function createAllPastReportTable(){
 			{ "title": "Total", "class": "center" }
 		]
 	} );
+	
+	$("#reportTable_info").html('All Bad Smell Past Reports');
 }
 
 function fetchProjectInfo(trendReportData) {
