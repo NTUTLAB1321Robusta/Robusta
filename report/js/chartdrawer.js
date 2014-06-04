@@ -38,21 +38,11 @@ function ChartDrawer(placeholder, densitydata) {
 			barWidth: 0.5
 		}, 
 		xaxis: {
-			//axisLabel: "Bad Smell Type",
-			//rotateTicks: 160,
-			//axisLabelUseCanvas: true,
-			//axisLabelFontSizePixels: 12,
-			//axisLabelFontFamily: 'Verdana, Arial',
-			//axisLabelPadding: 10,
 			ticks: self.ticks,
 			autoscaleMargin: 0.02
 		}, 
 		yaxis: {
-			axisLabel: "Number of Bad Smells",
-			axisLabelUseCanvas: false,
-			axisLabelFontSizePixels: 12,
-			axisLabelFontFamily: 'Verdana, Arial',
-			axisLabelPadding: 3
+			tickDecimals: 0
 		},
 		legend: {
 			show: false

@@ -14,7 +14,6 @@
 /report/js/jquery.dataTables.columnFilter.js
 /report/js/jquery.dataTables.min.js
 /report/js/flot/excanvas.min.js
-/report/js/flot/jquery.flot.axislabels.js
 /report/js/flot/jquery.flot.min.js
 /report/js/flot/jquery.flot.pie.min.js
 /report/js/flot/jquery.flot.tooltip.min.js

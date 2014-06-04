@@ -1,7 +1,8 @@
 var flotChartObj = 0;
-function TrendDrawer(placeholder, trenddata) {
+function TrendDrawer(placeholder, legend_placeholder, trenddata) {
 	this.placeholder = placeholder;
 	this.trenddata = trenddata;
+	this.legend_placeholder = legend_placeholder;
 	var self = this;
 	
 	var __construct = function() {
@@ -51,13 +52,17 @@ function TrendDrawer(placeholder, trenddata) {
 				return "#" + (val + 1);
 			}
 		},
+		yaxis: {
+			tickDecimals: 0
+		},
 		legend: {
 			show: true,
 			labelFormatter: function(label, series) {
 				var displayLabel = '<label><input type="checkbox" name="badsmelltype" value="{0}" {1} onclick="togglePlot({0});">{2}</label>';
 				displayLabel = String.format(displayLabel, series.index, series.lines.show ? 'checked="checked"' : "", label);
 				return displayLabel;
-			}
+			},
+			container: self.legend_placeholder
 		},
 		tooltip: true,
 		tooltipOpts: {

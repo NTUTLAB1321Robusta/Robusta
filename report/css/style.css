@@ -233,13 +233,28 @@ div.legend > table td {
 }
 
 .legend {
-	position: absolute;
-    right: -250px;
-    top: -7px;
     width: 300px;
 }
 
 .legend input {
 	vertical-align: middle;
 	margin: 0 3px;
+}
+
+#badsmelltype-density .yAxis{
+	left: 30px !important;
+}
+#badsmelltype-trend .chart {
+	min-width: 1125px;
+}
+#badsmelltype-trend  #placeholder, #badsmelltype-trend .legend {
+	display: inline-block;
+}
+
+#badsmelltype-trend .chart, #badsmelltype-trend  #placeholder, #badsmelltype-trend .legend {
+	vertical-align: top;
+}
+
+#badsmelltype-trend .legend {
+	margin-top: 6px;
 }
