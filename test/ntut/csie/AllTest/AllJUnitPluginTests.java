@@ -15,9 +15,7 @@ import ntut.csie.analyzer.nested.NestedTryStatementVisitorTest;
 import ntut.csie.analyzer.over.OverLoggingVisitorTest;
 import ntut.csie.analyzer.thrown.ThrownExceptionInFinallyBlockVisitorTest;
 import ntut.csie.analyzer.unprotected.UnprotectedMainProgramVisitorTest;
-import ntut.csie.csdet.preference.BadSmellDataReaderTest;
-import ntut.csie.csdet.preference.DetectedFileTest;
-import ntut.csie.csdet.preference.ReportDescriptionTest;
+import ntut.csie.csdet.preference.BadSmellDataManagerTest;
 import ntut.csie.csdet.preference.RobustaSettingsTest;
 import ntut.csie.csdet.quickfix.BaseQuickFixTest;
 import ntut.csie.csdet.refactor.OverLoggingRefactorTest;
@@ -64,8 +62,6 @@ import org.junit.runners.Suite;
 	ThrownExceptionInFinallyBlockVisitorTest.class,
 	UnprotectedMainProgramVisitorTest.class,
 	
-	DetectedFileTest.class,
-	ReportDescriptionTest.class,
 	RobustaSettingsTest.class,
 	
 	BaseQuickFixTest.class,
@@ -93,7 +89,7 @@ import org.junit.runners.Suite;
 	ExtractMethodAnalyzerTest.class,
 	TEFBExtractMethodRefactoringTest.class,
 	
-	BadSmellDataReaderTest.class,
+	BadSmellDataManagerTest.class,
 	PastReportHistoryTest.class,
 	TrendReportDocumentTest.class
 	
