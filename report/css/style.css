@@ -241,7 +241,7 @@ div.legend > table td {
 	margin: 0 3px;
 }
 
-#badsmelltype-density .yAxis{
+#bad-smell-chart .yAxis{
 	left: 30px !important;
 }
 #badsmelltype-trend .chart {
