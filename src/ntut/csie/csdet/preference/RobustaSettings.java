@@ -128,10 +128,4 @@ public class RobustaSettings {
 			projectPath = path.toOSString() + "/" +SETTING_REPORTFOLDERNAME;
 		return projectPath;
 	}
-
-	public static String getPathOfReportDescriptionFile(String projectName) {
-		return getRobustaReportFolder(projectName)
-				+ ReportDescription.SETTING_FILENAME;
-	}
-
 }

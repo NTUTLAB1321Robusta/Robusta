@@ -2,11 +2,14 @@ package ntut.csie.csdet.preference;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 import org.eclipse.core.resources.IProject;
@@ -22,14 +25,14 @@ import org.junit.Test;
 import ntut.csie.csdet.report.BadSmellDataStorage;
 import ntut.csie.filemaker.JavaProjectMaker;
 
-public class BadSmellDataReaderTest {
+public class BadSmellDataManagerTest {
 	private File destFolder = null;
 	private JavaProjectMaker javaProjectMaker;
 	private String projectName = "TestProject";
 	private IProject project;
 	private File reportDataFile;
 
-	BadSmellDataReader badSmellDataReader;
+	BadSmellDataManager badSmellDataManager;
 
 	@Before
 	public void setUp() throws Exception {
@@ -52,8 +55,7 @@ public class BadSmellDataReaderTest {
 			input.close();
 			output.close();
 		}
-
-		badSmellDataReader = new BadSmellDataReader(reportDataFile.getAbsolutePath().toString());
+		badSmellDataManager = new BadSmellDataManager(reportDataFile.getAbsolutePath().toString());
 	}
 
 	@After
@@ -63,14 +65,14 @@ public class BadSmellDataReaderTest {
 
 	@Test
 	public void testGetDateTimeElement() {
-		Element dateTimeElement = badSmellDataReader.getDateTimeElement();
+		Element dateTimeElement = badSmellDataManager.getDateTimeElement();
 		String content = dateTimeElement.getValue().toString();
 		assertEquals("4/29/14 9:40:42 PM CST", content);
 	}
 
 	@Test
 	public void testGetEHSmellListElement() {
-		Element smellListElement = badSmellDataReader.getEHSmellListElement();
+		Element smellListElement = badSmellDataManager.getEHSmellListElement();
 
 		Element emptyBadSmellElement = smellListElement.getChild("EmptyCatchBlock");
 		String content = emptyBadSmellElement.getValue().toString();
@@ -99,5 +101,37 @@ public class BadSmellDataReaderTest {
 		Element thrownExceptionInFinallyBlockElement = smellListElement.getChild("ThrownExceptionInFinallyBlock");
 		content = thrownExceptionInFinallyBlockElement.getValue().toString();
 		assertEquals("68", content);
+	}
+	
+	@Test
+	public void testGetDescriptionElement() {
+		Element descriptionElement = badSmellDataManager.getDescriptionElement();
+		assertEquals("", descriptionElement.getValue().toString());
+	}
+	
+	@Test
+	public void testSetDescriptionElement(){
+		String newDescription = "New Description";
+		badSmellDataManager.setDescriptionElement(newDescription);
+		Element descriptionElement = badSmellDataManager.getDescriptionElement();
+		assertEquals(newDescription, descriptionElement.getValue().toString());
+		
+		Element sumElement = descriptionElement.getParentElement();
+		sumElement.removeChild("Description");
+		descriptionElement = badSmellDataManager.getDescriptionElement();
+		assertEquals(null, descriptionElement);
+		
+		badSmellDataManager.setDescriptionElement(newDescription);
+		descriptionElement = badSmellDataManager.getDescriptionElement();
+		assertEquals(newDescription, descriptionElement.getValue().toString());
+	}
+
+	@Test
+	public void testWriteXMLFile() throws Exception {
+		String newDescription = "New Description";
+		badSmellDataManager.setDescriptionElement(newDescription);
+		badSmellDataManager.writeXMLFile(reportDataFile.getAbsolutePath());
+		String descriptionContent = badSmellDataManager.getDescriptionElement().getValue().toString();
+		assertEquals(descriptionContent, newDescription);
 	}
 }

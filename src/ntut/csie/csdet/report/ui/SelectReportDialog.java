@@ -7,7 +7,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import ntut.csie.csdet.preference.ReportDescription;
+
+import ntut.csie.csdet.preference.BadSmellDataManager;
 import ntut.csie.csdet.preference.RobustaSettings;
 import ntut.csie.csdet.report.PastReportsHistory;
 
@@ -171,7 +172,6 @@ public class SelectReportDialog extends Dialog {
 				reportDescriptionEditor.setFocus();
 				editor.setEditor(reportDescriptionEditor, item, EDITABLECOLUMN);
 			}
-
 		});
 	}
 
@@ -188,8 +188,6 @@ public class SelectReportDialog extends Dialog {
 			reportDescriptionEditor.dispose();
 			reportDescriptionEditor = null;
 		}
-		String path = getReportDescriptionXmlFilePath();
-		ReportDescription descriptionSettings = new ReportDescription(path);
 		
 		// get Report List
 		PastReportsHistory pastReportsHistory = new PastReportsHistory();
@@ -206,41 +204,24 @@ public class SelectReportDialog extends Dialog {
 			Date date = new Date(Long.parseLong(fileName.substring(0, index)));
 
 			tableItem.setText(0, date.toString());
-
-			// / read xml and update for each tableItem(1)
-			Element e = (Element) descriptionSettings.getDescription(fileName);
-			String des = e.getAttributeValue(
-					ReportDescription.ATTRIBUTE_DESCRIPTION).toString();
-			tableItem.setText(1, des);
+			String xmlFilePath = file.getAbsolutePath();
+			BadSmellDataManager badSmellDataManager = new BadSmellDataManager(xmlFilePath);
+			Element descriptionElement = badSmellDataManager.getDescriptionElement();
+			String description ="";
+			if(descriptionElement != null)
+				description = descriptionElement.getValue().toString();
+			tableItem.setText(1, description);
 		}
-	}
-
-	private void updateReportDescriptionToXml(String reportName,
-			String newDescription) {
-		String path = getReportDescriptionXmlFilePath();
-		ReportDescription reportDescription = new ReportDescription(path);
-		reportDescription.setDescriptionAttribute(reportName, "description",
-				newDescription);
-		reportDescription.writeXMLFile(path);
-	}
-
-	private void deleteReportDescriptionInXml(String reportName) {
-		String path = getReportDescriptionXmlFilePath();
-		ReportDescription reportDescription = new ReportDescription(path);
-		reportDescription.deleteElementInXml(reportName);
-		reportDescription.writeXMLFile(path);
-	}
-
-	private String getReportDescriptionXmlFilePath() {
-		String projectName = projectList.get(projectCombo.getSelectionIndex());
-		return RobustaSettings.getPathOfReportDescriptionFile(projectName);
 	}
 
 	private void updateAllReportDescriptionOfProjectToXml() {
 		for (int i = 0; i < reportTable.getItemCount(); i++) {
-			String reportName = fileList.get(i).getName();
-			String newDetail = reportTable.getItem(i).getText(1);
-			updateReportDescriptionToXml(reportName, newDetail);
+			File xmlFile = fileList.get(i);
+			String xmlPath = xmlFile.getAbsolutePath();
+			String newDescription = reportTable.getItem(i).getText(1);
+			BadSmellDataManager badSmellDataManager = new BadSmellDataManager(xmlPath);
+			badSmellDataManager.setDescriptionElement(newDescription);
+			badSmellDataManager.writeXMLFile(xmlPath);
 		}
 	}
 
@@ -286,8 +267,6 @@ public class SelectReportDialog extends Dialog {
 			// 刪除所有選取的Report
 			if (selectIdx.length != 0) {
 				for (int index : selectIdx) {
-					String reportName = fileList.get(index).getName();
-					deleteReportDescriptionInXml(reportName);
 					// 取得Report資料夾
 					File reportFolder = fileList.get(index).getParentFile();
 
@@ -302,20 +281,11 @@ public class SelectReportDialog extends Dialog {
 				updateTable();
 			}
 		}
-
+		
 		// apply modified histoty of each report for each project
 		if (buttonId == APPLY_SELECTION) {
 			updateAllReportDescriptionOfProjectToXml();
 			getButton(APPLY_SELECTION).setEnabled(false);
-		}
-
-		// apply modified histoty of each report for each project
-		if (buttonId == APPLY_SELECTION) {
-			for (int i = 0; i < reportTable.getItemCount(); i++) {
-				String reportName = fileList.get(i).getName();
-				String newDetail = reportTable.getItem(i).getText(1);
-				updateReportDescriptionToXml(reportName, newDetail);
-			}
 		}
 	}
 
