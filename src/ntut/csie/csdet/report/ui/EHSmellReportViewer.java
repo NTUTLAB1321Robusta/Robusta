@@ -10,6 +10,8 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -56,6 +58,14 @@ public class EHSmellReportViewer extends ViewPart implements ISmellReportView {
 		buildBrowser(parent);
 		
 		buildToolBar(parent);
+		
+		viewPresentationModel.subscribeProjectEvents();
+		parent.addDisposeListener(new DisposeListener() {
+  			@Override
+			public void widgetDisposed(DisposeEvent e) {
+				viewPresentationModel.unsubscribeProjectEvents();
+			}
+        });
 	}
 
 	
@@ -122,6 +132,9 @@ public class EHSmellReportViewer extends ViewPart implements ISmellReportView {
 
 		selectAction = new Action() {
 			public void run() {
+				if(viewPresentationModel.getProjectNameList().size() == 0) {
+					return;
+				}
 				SelectReportDialog selectDialog = new SelectReportDialog(new Shell(), viewPresentationModel.getProjectNameList());
 				selectDialog.open();
 				if(!selectDialog.getReportPath().equals("")){
@@ -165,4 +178,6 @@ public class EHSmellReportViewer extends ViewPart implements ISmellReportView {
 			viewPresentationModel.setSelectProjectIndex(0);
 		}
 	}
+	
+	
 }

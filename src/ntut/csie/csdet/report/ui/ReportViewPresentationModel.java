@@ -37,11 +37,12 @@ public class ReportViewPresentationModel {
 	int selectProjectIndex = -1;
 	private BadSmellDataStorage dataStorage;
 	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
+
+	private IResourceChangeListener listener;
 	
 	public ReportViewPresentationModel(ISmellReportView smellReportView) {
 		super();
 		this.smellReportView = smellReportView;
-		registerProjectEvents();
 	}
 	
 	public int getSelectProjectIndex() {
@@ -76,8 +77,8 @@ public class ReportViewPresentationModel {
 	}
 	
 	//To update the current project list
-	private void registerProjectEvents() {
-		IResourceChangeListener listener = new IResourceChangeListener() {
+	public void subscribeProjectEvents() {
+		listener = new IResourceChangeListener() {
 			@Override
 			public void resourceChanged(IResourceChangeEvent event) {
 				IResourceDelta root = event.getDelta();
@@ -100,6 +101,13 @@ public class ReportViewPresentationModel {
 		};
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		workspace.addResourceChangeListener(listener, IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.PRE_DELETE | IResourceChangeEvent.POST_CHANGE);
+	}
+	
+	public void unsubscribeProjectEvents() {
+		if (listener != null) {
+			IWorkspace workspace = ResourcesPlugin.getWorkspace();
+			workspace.removeResourceChangeListener(listener);
+		}
 	}
 	
 	public void generateTrendReport() {
