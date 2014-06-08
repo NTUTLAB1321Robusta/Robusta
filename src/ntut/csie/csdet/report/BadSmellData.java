@@ -1,4 +1,4 @@
-package ntut.csie.csdet.preference;
+package ntut.csie.csdet.report;
 
 import java.io.Closeable;
 import java.io.File;
@@ -14,7 +14,7 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
 
-public class BadSmellDataManager {
+public class BadSmellData {
 	final String TAG_EHSMELLLIST = "EHSmellList";
 	final String TAG_SUMMARY = "Summary";
 	final String TAG_DATETIME = "DateTime";
@@ -22,7 +22,7 @@ public class BadSmellDataManager {
 
 	private Document doc;
 
-	public BadSmellDataManager(File xmlFile) {
+	public BadSmellData(File xmlFile) {
 		SAXBuilder builder = new SAXBuilder();
 		try {
 			doc = builder.build(xmlFile);
@@ -33,7 +33,7 @@ public class BadSmellDataManager {
 		}
 	}
 
-	public BadSmellDataManager(String xmlFilepath) {
+	public BadSmellData(String xmlFilepath) {
 		this(new File(xmlFilepath));
 	}
 

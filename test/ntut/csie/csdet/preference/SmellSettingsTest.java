@@ -674,14 +674,14 @@ public class SmellSettingsTest {
 		assertEquals(expectedResult, firstTimeContent);
 		
 		// 呼叫activateAllConditions，使其勾選所有設定
-		smellSettings.activateAllConditions(smellSettingFile.getPath());
+		smellSettings.activateAllConditionsIfNotConfugured(smellSettingFile.getPath());
 
 		// 因為檔案存在，所以不會寫入任何新的資訊
 		assertEquals(expectedResult, firstTimeContent);
 		
 		// 刪除已經存在的檔案，並且重新勾選所有設定
 		assertTrue(smellSettingFile.delete());
-		smellSettings.activateAllConditions(smellSettingFile.getPath());
+		smellSettings.activateAllConditionsIfNotConfugured(smellSettingFile.getPath());
 		
 		// 重新確認內容
 		String fileContent = readFileContents(smellSettingFile);

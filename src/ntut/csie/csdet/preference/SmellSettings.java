@@ -498,7 +498,7 @@ public class SmellSettings {
 	/**
 	 * 將所有的條件都勾選，並寫到設定檔中
 	 */
-	public void activateAllConditions(String path) {
+	public void activateAllConditionsIfNotConfugured(String path) {
 		File settingFile = new File(path);
 		if(settingFile.exists())
 			return;

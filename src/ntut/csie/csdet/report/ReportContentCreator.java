@@ -42,7 +42,7 @@ public class ReportContentCreator {
 		this.inputXmlDocument = inputXmlDocument;
 		this.projectName = projectName;
 
-		String reportFolder = RobustaSettings.getRobustaReportFolder(projectName);
+		String reportFolder = RobustaSettings.getRobustaReportFolder(this.projectName);
 		File directory = new File(reportFolder);
 		destFolder = new File(directory.getAbsolutePath() + "/report/");
 		destFolder.mkdirs();

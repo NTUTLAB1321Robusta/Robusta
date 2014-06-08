@@ -82,7 +82,7 @@ public class ToggleNatureAction implements IObjectActionDelegate {
 
 			// 沒有設定檔存在時，幫使用者預設為所有的條件都勾選
 			SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-			smellSettings.activateAllConditions(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+			smellSettings.activateAllConditionsIfNotConfugured(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 			
 			for (int i = 0; i < natures.length; ++i) {
 				if (RLNature.NATURE_ID.equals(natures[i])) {

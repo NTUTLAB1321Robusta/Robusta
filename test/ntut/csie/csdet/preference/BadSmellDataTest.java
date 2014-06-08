@@ -22,17 +22,18 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import ntut.csie.csdet.report.BadSmellData;
 import ntut.csie.csdet.report.BadSmellDataStorage;
 import ntut.csie.filemaker.JavaProjectMaker;
 
-public class BadSmellDataManagerTest {
+public class BadSmellDataTest {
 	private File destFolder = null;
 	private JavaProjectMaker javaProjectMaker;
 	private String projectName = "TestProject";
 	private IProject project;
 	private File reportDataFile;
 
-	BadSmellDataManager badSmellDataManager;
+	BadSmellData badSmellDataManager;
 
 	@Before
 	public void setUp() throws Exception {
@@ -55,7 +56,7 @@ public class BadSmellDataManagerTest {
 			input.close();
 			output.close();
 		}
-		badSmellDataManager = new BadSmellDataManager(reportDataFile.getAbsolutePath().toString());
+		badSmellDataManager = new BadSmellData(reportDataFile.getAbsolutePath().toString());
 	}
 
 	@After

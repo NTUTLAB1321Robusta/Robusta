@@ -38,7 +38,7 @@ public class StandAloneApp implements IApplication {
 		
 		//Active all smell type before run report builder
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		smellSettings.activateAllConditions(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		smellSettings.activateAllConditionsIfNotConfugured(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		
 		IStatus returnStatus = reportBuilder.run();
 		if(returnStatus.isOK()) {

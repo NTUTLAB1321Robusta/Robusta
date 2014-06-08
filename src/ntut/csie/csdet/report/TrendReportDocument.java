@@ -3,7 +3,6 @@ package ntut.csie.csdet.report;
 import java.io.File;
 import java.util.List;
 
-import ntut.csie.csdet.preference.BadSmellDataManager;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -40,7 +39,7 @@ public class TrendReportDocument {
 		for (File file : files) {
 			Element reportElement = new Element(TAG_REPORT);
 			root.addContent(reportElement);
-			BadSmellDataManager badSmellDataManager = new BadSmellDataManager(file.getAbsolutePath());
+			BadSmellData badSmellDataManager = new BadSmellData(file.getAbsolutePath());
 			Element dateTimeElement = badSmellDataManager.getDateTimeElement();
 			Element cloneElement = (Element) dateTimeElement.clone();
 			reportElement.addContent(cloneElement);

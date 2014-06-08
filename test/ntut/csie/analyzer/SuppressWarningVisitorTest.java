@@ -69,7 +69,7 @@ public class SuppressWarningVisitorTest {
 		
 		// 建立 XML
 		smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		smellSettings.activateAllConditions(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		smellSettings.activateAllConditionsIfNotConfugured(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(SuppressWarningExampleForAnalyzer.class, javaProjectMaker.getProjectName()));
 		
 		// Create AST to parse

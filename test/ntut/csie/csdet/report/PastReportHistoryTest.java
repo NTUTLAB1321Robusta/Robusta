@@ -11,7 +11,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
-import ntut.csie.csdet.preference.BadSmellDataManager;
 import ntut.csie.csdet.preference.RobustaSettings;
 import ntut.csie.filemaker.JavaProjectMaker;
 

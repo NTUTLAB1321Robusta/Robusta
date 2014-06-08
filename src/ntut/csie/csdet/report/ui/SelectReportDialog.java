@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import ntut.csie.csdet.preference.BadSmellDataManager;
 import ntut.csie.csdet.preference.RobustaSettings;
+import ntut.csie.csdet.report.BadSmellData;
 import ntut.csie.csdet.report.PastReportsHistory;
 
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -205,7 +205,7 @@ public class SelectReportDialog extends Dialog {
 
 			tableItem.setText(0, date.toString());
 			String xmlFilePath = file.getAbsolutePath();
-			BadSmellDataManager badSmellDataManager = new BadSmellDataManager(xmlFilePath);
+			BadSmellData badSmellDataManager = new BadSmellData(xmlFilePath);
 			Element descriptionElement = badSmellDataManager.getDescriptionElement();
 			String description ="";
 			if(descriptionElement != null)
@@ -219,7 +219,7 @@ public class SelectReportDialog extends Dialog {
 			File xmlFile = fileList.get(i);
 			String xmlPath = xmlFile.getAbsolutePath();
 			String newDescription = reportTable.getItem(i).getText(1);
-			BadSmellDataManager badSmellDataManager = new BadSmellDataManager(xmlPath);
+			BadSmellData badSmellDataManager = new BadSmellData(xmlPath);
 			badSmellDataManager.setDescriptionElement(newDescription);
 			badSmellDataManager.writeXMLFile(xmlPath);
 		}
