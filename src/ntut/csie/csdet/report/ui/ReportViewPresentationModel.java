@@ -33,18 +33,22 @@ import org.jdom.input.SAXBuilder;
 
 public class ReportViewPresentationModel {
 	ISmellReportView smellReportView;
-	
+
 	int selectProjectIndex = -1;
 	private BadSmellDataStorage dataStorage;
 	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
-
 	private IResourceChangeListener listener;
 	
+	private final String TRENDREPORT_DATA_TRANSFORM = "/report/trenddatatransform.xsl";
+	private final String JS_TRENDREPORTDATA_PATH = "/js/datatrend.js";
+	private final String JS_DATA_PATH = "/js/data.js";
+	private final String REPORT_DATA_TRANSFORM = "/report/datatransform.xsl";
+
 	public ReportViewPresentationModel(ISmellReportView smellReportView) {
 		super();
 		this.smellReportView = smellReportView;
 	}
-	
+
 	public int getSelectProjectIndex() {
 		return selectProjectIndex;
 	}
@@ -52,9 +56,9 @@ public class ReportViewPresentationModel {
 	public void setSelectProjectIndex(int selectProjectIndex) {
 		this.selectProjectIndex = selectProjectIndex;
 	}
-	
+
 	public String getSelectProjectName() {
-		if(getSelectProjectIndex() == -1) {
+		if (getSelectProjectIndex() == -1) {
 			return null;
 		} else {
 			return getProjectNameList().get(getSelectProjectIndex());
@@ -65,24 +69,24 @@ public class ReportViewPresentationModel {
 		List<String> projectName = new ArrayList<String>();
 
 		IProject[] projectList = getCurrentOpenProjectList();
-		for (int i=0; i < projectList.length; i++)
+		for (int i = 0; i < projectList.length; i++)
 			if (projectList[i].isOpen())
 				projectName.add(projectList[i].getName());
 		return projectName;
 	}
 
 	private IProject[] getCurrentOpenProjectList() {
-		IProject[] projectList  = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+		IProject[] projectList = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 		return projectList;
 	}
-	
-	//To update the current project list
+
+	// To update the current project list
 	public void subscribeProjectEvents() {
 		listener = new IResourceChangeListener() {
 			@Override
 			public void resourceChanged(IResourceChangeEvent event) {
 				IResourceDelta root = event.getDelta();
-				if(root == null) {
+				if (root == null) {
 					return;
 				}
 				IResourceDelta[] projectDeltas = root.getAffectedChildren();
@@ -102,14 +106,14 @@ public class ReportViewPresentationModel {
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		workspace.addResourceChangeListener(listener, IResourceChangeEvent.PRE_CLOSE | IResourceChangeEvent.PRE_DELETE | IResourceChangeEvent.POST_CHANGE);
 	}
-	
+
 	public void unsubscribeProjectEvents() {
 		if (listener != null) {
 			IWorkspace workspace = ResourcesPlugin.getWorkspace();
 			workspace.removeResourceChangeListener(listener);
 		}
 	}
-	
+
 	public void generateTrendReport() {
 		IProject[] projectList = getCurrentOpenProjectList();
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
@@ -128,7 +132,7 @@ public class ReportViewPresentationModel {
 			}
 		}
 	}
-	
+
 	public void generateDensityReport() {
 		IProject[] projectList = getCurrentOpenProjectList();
 
@@ -142,18 +146,16 @@ public class ReportViewPresentationModel {
 			}
 		}
 	}
-	
+
 	public void openDensityReport(String dataPath, String projectName) {
 		Document inputXmlDoc = getInputXmlDocument(dataPath);
-		
-		String JS_DATA_PATH = "/js/data.js";
-		String REPORT_DATA_TRANSFORM = "/report/datatransform.xsl";
-		
+
 		ReportContentCreator reportContentCreator = new ReportContentCreator(JS_DATA_PATH, REPORT_DATA_TRANSFORM, inputXmlDoc, projectName);
 		reportContentCreator.exportReportResources();
 		reportContentCreator.transformDataFile();
 		smellReportView.setBrowserUrl("file:///" + reportContentCreator.getDestinationFolderPath() + "/index.html");
 	}
+
 	private Document getInputXmlDocument(String dataPath) {
 		Document inputXmlDoc;
 		SAXBuilder builder = new SAXBuilder();
@@ -165,15 +167,15 @@ public class ReportViewPresentationModel {
 			throw new RuntimeException(e);
 		}
 		return inputXmlDoc;
-	}	
-	
-	public void buildDensityReport(IProject project) {
-		
+	}
+
+	private void buildDensityReport(IProject project) {
+
 		dataStorage = new BadSmellDataStorage(project.getLocation().toString());
 		final ReportBuildingJob job = new ReportBuildingJob(resource.getString("SmellReport.generateReportProgressBarTitle"), project, dataStorage);
-		
+
 		job.setPriority(Job.SHORT);
-		
+
 		final IWorkbenchSiteProgressService progressService = (IWorkbenchSiteProgressService) RLEHTPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage().getActivePart().getSite().getAdapter(IWorkbenchSiteProgressService.class);
 		progressService.showInDialog(RLEHTPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage().getActivePart().getSite().getShell(), job);
 
@@ -188,7 +190,6 @@ public class ReportViewPresentationModel {
 		});
 		job.schedule();
 	}
-	
 
 	private void openDensityReportBrowser(final boolean isGenerateSucceed) {
 		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
@@ -202,13 +203,11 @@ public class ReportViewPresentationModel {
 			}
 		});
 	}
-	
-	public void openBrowserForTrendReport(final String projectName, final Document doc) {
-		String JS_TRENDREPORTDATA_PATH = 	"/js/datatrend.js";
-		String TRENDREPORT_DATA_TRANSFORM = "/report/trenddatatransform.xsl";
+
+	private void openBrowserForTrendReport(final String projectName, final Document doc) {
 		ReportContentCreator reportContentCreator = new ReportContentCreator(JS_TRENDREPORTDATA_PATH, TRENDREPORT_DATA_TRANSFORM, doc, projectName);
 		reportContentCreator.exportReportResources();
 		reportContentCreator.transformDataFile();
-		smellReportView.setBrowserUrl("file:///" + reportContentCreator.getDestinationFolderPath()+"/trendreport.html");
+		smellReportView.setBrowserUrl("file:///" + reportContentCreator.getDestinationFolderPath() + "/trendreport.html");
 	}
 }

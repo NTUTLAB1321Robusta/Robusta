@@ -3,7 +3,6 @@ package ntut.csie.csdet.report;
 import java.io.File;
 import java.util.List;
 
-
 import org.jdom.Document;
 import org.jdom.Element;
 
@@ -15,7 +14,7 @@ public class TrendReportDocument {
 	private final String PROJECT_INFO = "ProjectInfo";
 	private final String PROJECT_NAME = "ProjectName";
 	private String projectName;
-	
+
 	public TrendReportDocument(String projectName) {
 		super();
 		this.projectName = projectName;
@@ -27,7 +26,7 @@ public class TrendReportDocument {
 
 	public Document collectTrendReportData(List<File> files) {
 		Element root = new Element(TAG_ROOT);
-		
+
 		Element projectInfo = new Element(PROJECT_INFO);
 		Element projectName = new Element(PROJECT_NAME);
 		projectName.setText(getProjectName());
@@ -35,11 +34,11 @@ public class TrendReportDocument {
 		root.addContent(projectInfo);
 
 		trendReportDoc = new Document(root);
-		
+
 		for (File file : files) {
 			Element reportElement = new Element(TAG_REPORT);
 			root.addContent(reportElement);
-			BadSmellData badSmellDataManager = new BadSmellData(file.getAbsolutePath());
+			BadSmellDataEntity badSmellDataManager = new BadSmellDataEntity(file.getAbsolutePath());
 			Element dateTimeElement = badSmellDataManager.getDateTimeElement();
 			Element cloneElement = (Element) dateTimeElement.clone();
 			reportElement.addContent(cloneElement);

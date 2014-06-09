@@ -15,12 +15,12 @@ import ntut.csie.analyzer.nested.NestedTryStatementVisitorTest;
 import ntut.csie.analyzer.over.OverLoggingVisitorTest;
 import ntut.csie.analyzer.thrown.ThrownExceptionInFinallyBlockVisitorTest;
 import ntut.csie.analyzer.unprotected.UnprotectedMainProgramVisitorTest;
-import ntut.csie.csdet.preference.BadSmellDataTest;
 import ntut.csie.csdet.preference.RobustaSettingsTest;
 import ntut.csie.csdet.quickfix.BaseQuickFixTest;
 import ntut.csie.csdet.refactor.OverLoggingRefactorTest;
 import ntut.csie.csdet.refactor.RethrowExRefactoringTest;
 import ntut.csie.csdet.refactor.RetryRefactoringTest;
+import ntut.csie.csdet.report.BadSmellDataEntityTest;
 import ntut.csie.csdet.report.BadSmellDataStorageTest;
 import ntut.csie.csdet.report.PastReportHistoryTest;
 import ntut.csie.csdet.report.ReportBuilderIntergrationTest;
@@ -89,7 +89,7 @@ import org.junit.runners.Suite;
 	ExtractMethodAnalyzerTest.class,
 	TEFBExtractMethodRefactoringTest.class,
 	
-	BadSmellDataTest.class,
+	BadSmellDataEntityTest.class,
 	PastReportHistoryTest.class,
 	TrendReportDocumentTest.class
 	

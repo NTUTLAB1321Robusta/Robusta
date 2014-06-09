@@ -30,13 +30,13 @@ import org.slf4j.LoggerFactory;
 public class EHSmellReportViewer extends ViewPart implements ISmellReportView {
 	private static Logger logger = LoggerFactory.getLogger(EHSmellReportViewer.class);
 
-	//Report ToolBar
+	// Report ToolBar
 	private ToolBar toolbar;
-	//Project list
+	// Project list
 	private Combo projectCombo;
-	//Report browser
+	// Report browser
 	static Browser browser;
-	//Select past report
+	// Select past report
 	private Action selectAction;
 	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
 
@@ -56,22 +56,20 @@ public class EHSmellReportViewer extends ViewPart implements ISmellReportView {
 		buildToolItem(parent);
 
 		buildBrowser(parent);
-		
+
 		buildToolBar(parent);
-		
+
 		viewPresentationModel.subscribeProjectEvents();
 		parent.addDisposeListener(new DisposeListener() {
-  			@Override
+			@Override
 			public void widgetDisposed(DisposeEvent e) {
 				viewPresentationModel.unsubscribeProjectEvents();
 			}
-        });
+		});
 	}
 
-	
-
 	private void buildBrowser(Composite parent) {
-		FormData  browserForm = new FormData();
+		FormData browserForm = new FormData();
 		browserForm.bottom = new FormAttachment(100, -5);
 		browserForm.left = new FormAttachment(0, 0);
 		browserForm.right = new FormAttachment(100, 0);
@@ -87,7 +85,7 @@ public class EHSmellReportViewer extends ViewPart implements ISmellReportView {
 		FormData toolbarForm = new FormData();
 		toolbarForm.top = new FormAttachment(0, 5);
 		toolbar.setLayoutData(toolbarForm);
-		
+
 		final ToolItem itemGenerate = new ToolItem(toolbar, SWT.PUSH);
 		itemGenerate.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
@@ -96,7 +94,7 @@ public class EHSmellReportViewer extends ViewPart implements ISmellReportView {
 		});
 		itemGenerate.setText(resource.getString("SmellReport.generate"));
 		itemGenerate.setImage(ImageManager.getInstance().get("unchecked"));
-		
+
 		// Trend Report ToolItem
 		final ToolItem itemTrendReport = new ToolItem(toolbar, SWT.PUSH);
 		itemTrendReport.setText(resource.getString("SmellReport.trendReport"));
@@ -106,7 +104,7 @@ public class EHSmellReportViewer extends ViewPart implements ISmellReportView {
 				viewPresentationModel.generateTrendReport();
 			}
 		});
-		
+
 		projectCombo = new Combo(parent, SWT.NONE);
 		updateProjectList(viewPresentationModel.getProjectNameList());
 		FormData comboForm = new FormData();
@@ -120,6 +118,7 @@ public class EHSmellReportViewer extends ViewPart implements ISmellReportView {
 			public void widgetSelected(SelectionEvent e) {
 				viewPresentationModel.setSelectProjectIndex(projectCombo.getSelectionIndex());
 			}
+
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {
 				viewPresentationModel.setSelectProjectIndex(projectCombo.getSelectionIndex());
@@ -132,12 +131,12 @@ public class EHSmellReportViewer extends ViewPart implements ISmellReportView {
 
 		selectAction = new Action() {
 			public void run() {
-				if(viewPresentationModel.getProjectNameList().size() == 0) {
+				if (viewPresentationModel.getProjectNameList().size() == 0) {
 					return;
 				}
-				SelectReportDialog selectDialog = new SelectReportDialog(new Shell(), viewPresentationModel.getProjectNameList());
+				PastReportDialog selectDialog = new PastReportDialog(new Shell(), viewPresentationModel.getProjectNameList());
 				selectDialog.open();
-				if(!selectDialog.getReportPath().equals("")){
+				if (!selectDialog.getReportPath().equals("")) {
 					String dataPath = selectDialog.getReportPath();
 					String projectName = selectDialog.getProjectName();
 					viewPresentationModel.openDensityReport(dataPath, projectName);
@@ -145,7 +144,7 @@ public class EHSmellReportViewer extends ViewPart implements ISmellReportView {
 			}
 		};
 		selectAction.setText(resource.getString("SmellReport.open.report"));
-		selectAction.setImageDescriptor(ImageManager.getInstance().getDescriptor("note_view"));		
+		selectAction.setImageDescriptor(ImageManager.getInstance().getDescriptor("note_view"));
 		toolBarManager.add(selectAction);
 	}
 
@@ -153,7 +152,7 @@ public class EHSmellReportViewer extends ViewPart implements ISmellReportView {
 	public void setFocus() {
 
 	}
-	
+
 	@Override
 	public void setBrowserText(String text) {
 		browser.setText(text);
@@ -178,6 +177,4 @@ public class EHSmellReportViewer extends ViewPart implements ISmellReportView {
 			viewPresentationModel.setSelectProjectIndex(0);
 		}
 	}
-	
-	
 }
