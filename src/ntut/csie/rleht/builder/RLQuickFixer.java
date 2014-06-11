@@ -134,10 +134,9 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 					
 				// 碰到OverLogging的Quick fix and refactor方法
 			}else if(problem.equals(RLMarkerAttribute.CS_OVER_LOGGING)){
-				markerList.add(new RemoveOverLoggingStatementQuickFix("Quick Fix==>Remove Logging"));
+/*				markerList.add(new RemoveOverLoggingStatementQuickFix("Quick Fix==>Remove Logging"));
 //				markerList.add(new OLRefactoring("Refactor==>Remove Reference Logging"));
-				markerList.add(new OverLoggingAction("Refactor==>Remove Reference Logging"));
-				//遇到可以建議的方法
+				markerList.add(new OverLoggingAction("Refactor==>Remove Reference Logging"));*/
 			}else if(problem.equals(RLMarkerAttribute.CS_EXCEPTION_RLADVICE)){
 				String advice = (String) marker.getAttribute(IMarker.MESSAGE);
 				//有RL annotation，才是有拋出這個例外(我有偷偷幫throw e的都硬上RL)
