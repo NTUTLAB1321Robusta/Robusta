@@ -17,12 +17,13 @@
 	<property name="jar-file-name" value="taipeitech.csie.robusta_${pluginManifest.Bundle-Version}.jar"/>
 	<property name="jar-file-test-name" value="taipeitech.csie.test.robusta_${pluginManifest.Bundle-Version}.jar"/>
 	<property name="rl-jar-file-name" value="taipeitech.csie.robusta.agile.exception_1.0.0.jar"/>
+	
 	<property name="result-folder" value="${basedir}/result"/>
 	<property name="xml-folder" value="${result-folder}/xml"/>
 	<property name="release-folder" value="${basedir}/release"/>
 	<property name="update-folder" value="${result-folder}/update"/>
 	<property name="feature-folder" value="${update-folder}/features"/>
-	<property name="plugin-folder" value="${update-folder}/dropins"/>
+	<property name="plugin-folder" value="${update-folder}/plugins"/>
 	<property name="license-folder" value="${update-folder}/licenses"/>
 	<property name="update-lib-folder" value="${update-folder}/lib"/>
 	<property name="src-folder" value="${basedir}/src"/>
@@ -131,8 +132,9 @@
 	</condition>
 	
 	<!-- main target -->
+	<!-- run-pde-junit-test, junit-test, junit-report, --> 
 	<target name="all" depends="init, build-project, product-test-jar, run-pde-junit-test, junit-test, junit-report, 
-								product-jar, agile-jar, zip-product">
+								product-jar, agile-jar, write-feature-xml, write-site-xml, generate-p2-repository-metadata, zip-product">
 		<echo message="Ant build complete"/>
 	</target>
 	
@@ -327,61 +329,74 @@
 			</manifest>
 		</jar>
 	</target>
+	
+	<!-- write a feature.xml for eclipse update -->
+	<target name="write-feature-xml">
+		<mkdir dir="${feature-folder}"/>
+		<echoxml file="${feature-folder}/feature.xml">
+			<feature
+			  id="${plugin-bundle-name}"
+			  label="Robusta Exception Handling"
+			  version="${pluginManifest.Bundle-Version}">
 
+			<description>
+			  Release for free.
+			</description>
+
+			<copyright>
+			  Copyright 2013-2014 - Taipei Tech - Software Systems Lab
+			</copyright>
+
+			<license url="http://www.gnu.org/licenses/gpl.txt">
+			  Please check http://www.gnu.org/licenses/gpl.txt
+			</license>
+
+			<plugin
+				 id="${plugin-bundle-name}"
+				 download-size="0"
+				 install-size="0"
+				 version="${pluginManifest.Bundle-Version}"
+				 unpack="false"/>
+
+			</feature>
+		</echoxml>
+		<zip destfile="${feature-folder}/${jar-file-name}" basedir="${feature-folder}"/>
+		<delete quiet="true" file="${feature-folder}/feature.xml"/>
+	</target>
+	
 	<!-- write a site.xml for eclipse update -->
 	<target name="write-site-xml">
 		<echoxml file="${update-folder}/site.xml">
 			<site>
-				<feature url="features/${jar-file-name}" id="${update-id}" version="${pluginManifest.Bundle-Version}"/>
+			   <feature url="features/${jar-file-name}" id="${plugin-bundle-name}" version="${pluginManifest.Bundle-Version}">
+				  <category name="Robusta"/>
+			   </feature>
+			   <category-def name="Robusta" label="Robusta"/>
 			</site>
 		</echoxml>
 	</target>
 	
-	<!-- write a feature.xml for eclipse update -->
-	<target name="write-feature-xml">
-		<echoxml file="${feature-folder}/feature.xml">
-			<feature
-				id="${update-id}"
-				label="Robustaclipse"
-				version="${pluginManifest.Bundle-Version}"
-				provider-name="${pluginProperties.Bundle-Vendor}"
-				plugin="${update-id}">
- 
-				<description>
-					Release for free.
-				</description>
-
-				<copyright>
-				  Copyright 2000-2012, 版權所有
-				</copyright>
- 
-				<license url="http://www.gnu.org/licenses/gpl.txt"/>
- 
-				<url>
-					<update label="updates" url="這裡填你最後發布的update地址"/>
-				</url>
-			 	
-				<requires>
-					<import plugin="org.eclipse.ui.views"/>
-					<import plugin="org.eclipse.jface.text"/>
-					<import plugin="org.eclipse.ui.workbench.texteditor"/>
-					<import plugin="org.eclipse.ui.editors"/>
-					<import plugin="org.eclipse.core.runtime"/>
-					<import plugin="org.eclipse.ui.ide"/>
-					<import plugin="org.eclipse.ui"/>
-					<import plugin="org.eclipse.jdt.ui"/>
-					<import plugin="org.eclipse.jdt.core"/>
-					<import plugin="org.eclipse.ui.console"/>
-					<import plugin="org.eclipse.debug.ui"/>
-				</requires>
- 
-				<plugin 
-					id="${update-id}"
-					download-size="0"
-					install-size="0"
-					version="${pluginManifest.Bundle-Version}"/>
-			</feature>
-		</echoxml>
+	<target name="generate-p2-repository-metadata">
+		<!-- BEGIN - Get the equinox-launcher -->
+		<path id="equinox-launcher-file"> 
+			<fileset dir="${ECLIPSE_HOME}/plugins" casesensitive="no">
+				<include name="org.eclipse.equinox.launcher_*.jar"/>
+			</fileset>
+		</path>
+		<property name="equinox-launcher" refid="equinox-launcher-file"/>
+		<!-- END - Get the equinox-launcher -->
+		
+		<java jar="${equinox-launcher}" fork="true" timeout="10800000" failonerror="true" maxmemory="256m">
+			<arg line=" -application org.eclipse.equinox.p2.publisher.UpdateSitePublisher" />
+			<arg line=" -source ${update-folder}" />
+			<arg line=" -configs ANY" />
+			<arg line=" -metadataRepository file:${update-folder}/ -metadataRepositoryName 'Robusta Update'" />
+			<arg line=" -artifactRepository file:${update-folder}/ -artifactRepositoryName 'Robusta Update'" />
+			<arg line=" -publishArtifacts" />
+			<!-- Dont want to use compress right now -->
+			<!-- <arg line=" -compress" /> -->
+		</java>
+		<delete quiet="true" file="${update-folder}/site.xml"/>
 	</target>
 	
 	<target name="zip-product">
