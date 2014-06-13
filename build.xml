@@ -270,6 +270,7 @@
 	<delete quiet="true" file="${ECLIPSE_HOME}/plugins/${jar-file-name}"/>
 </target>
 
+<!-- Test will fail if your host eclipse already install Robusta, check eclipse/artifacts.xml, remove all robusta info there -->
 <target name="pde-test">
 	<property file="${basedir}/build.properties"/>
 	<java jar="${equinox-launcher}" fork="yes" maxmemory="512m">
