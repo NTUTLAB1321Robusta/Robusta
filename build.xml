@@ -352,7 +352,7 @@
 			  version="${pluginManifest.Bundle-Version}">
 
 			<description>
-			  Release for free.
+			  A tool for bad smells detection and refactoring.
 			</description>
 
 			<copyright>
@@ -388,6 +388,8 @@
 	</echoxml>
 </target>
 
+<!-- Generate metadata for p2 repository for updated site
+	Reference: http://wiki.eclipse.org/Equinox/p2/Publisher -->
 <target name="generate-p2-repository-metadata">
 	<java jar="${equinox-launcher}" fork="true" timeout="10800000" failonerror="true" maxmemory="512m">
 		<arg line=" -application org.eclipse.equinox.p2.publisher.UpdateSitePublisher" />
@@ -396,7 +398,10 @@
 		<arg line=" -metadataRepository file:${update-folder}/ -metadataRepositoryName 'Robusta Update'" />
 		<arg line=" -artifactRepository file:${update-folder}/ -artifactRepositoryName 'Robusta Update'" />
 		<arg line=" -publishArtifacts" />
-		<!-- Dont want to use compress right now -->
+		<!-- Dont want to use compress right now 
+			If compressing is specified, content.xml and artifact.xml will be compressed to content.jar and artifact.jar
+			This will save bandwidth when publish our tool through web page.
+		-->
 		<!-- <arg line=" -compress" /> -->
 	</java>
 	<delete quiet="true" file="${update-folder}/site.xml"/>
