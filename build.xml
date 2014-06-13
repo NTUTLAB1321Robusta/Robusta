@@ -124,6 +124,7 @@
 	<path id="Robusta.classpath">
 		<pathelement location="bin"/>
 		<pathelement location="lib/"/>
+		<pathelement location="language/"/>
 		<path refid="Plug-in Dependencies.libraryclasspath"/>
 	</path>
 
@@ -185,11 +186,11 @@
 		<copy includeemptydirs="false" todir="${bin-folder}/lib">
 			<fileset dir="${lib-folder}"/>
 		</copy>
-		<!-- Temporary remove the language folder
-    	<copy includeemptydirs="false" todir="${bin-folder}">
+		
+    	<copy includeemptydirs="false" todir="${bin-folder}/language">
 			<fileset dir="${basedir}/language"/>
 		</copy>
-		-->
+		
 		<copy includeemptydirs="false" todir="${bin-folder}/META-INF">
 			<fileset dir="${basedir}/META-INF"/>
 		</copy>
@@ -199,13 +200,10 @@
 		</copy>
 
 		<copy file="${basedir}/plugin.properties" tofile="${bin-folder}/plugin.properties"/>
-		<copy file="${basedir}/build.properties" tofile="${bin-folder}/build.properties"/>
-		<copy file="${basedir}/robusta_en_US.properties" tofile="${bin-folder}/robusta_en_US.properties"/>
-		<copy file="${basedir}/robusta_zh_TW.properties" tofile="${bin-folder}/robusta_zh_TW.properties"/>
 		<!-- 
-	Do not copy anymore, modified the plugin.xml to add extension for headless by xmltask instead
-	<copy file="${basedir}/plugin.xml" tofile="${bin-folder}/plugin.xml"/>
-	-->
+		Do not copy anymore, modified the plugin.xml to add extension for headless by xmltask instead
+		<copy file="${basedir}/plugin.xml" tofile="${bin-folder}/plugin.xml"/>
+		-->
 		<taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpath="external_lib/ant_lib/xmltask.jar"/>
 		<xmltask source="${basedir}/plugin.xml" dest="${bin-folder}/plugin.xml" encoding="UTF-8">
 			<insert path="/plugin">
@@ -272,7 +270,6 @@
 
 <!-- Test will fail if your host eclipse already install Robusta, check eclipse/artifacts.xml, remove all robusta info there -->
 <target name="pde-test">
-	<property file="${basedir}/build.properties"/>
 	<java jar="${equinox-launcher}" fork="yes" maxmemory="512m">
 		<jvmarg value="-Dfile.encoding=UTF-8" />
 		<!-- Do not specify these system constants, let the boot loader select them automatically - avoid OS dependency

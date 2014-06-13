@@ -7,6 +7,7 @@ Bundle-Activator: ntut.csie.rleht.RLEHTPlugin
 Bundle-Vendor: %Bundle-Vendor
 Bundle-Localization: plugin
 Bundle-ClassPath: .,
+ language/,
  ./bin,
  lib/commons-lang-2.3.jar,
  lib/slf4j-log4j12-1.5.0.jar,
