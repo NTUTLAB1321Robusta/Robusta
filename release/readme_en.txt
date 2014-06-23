@@ -11,21 +11,33 @@ Contents Included:
 	|   content.xml
 	|   readme_en.txt
 	|   readme_zhTW.txt
-	|
+	|	
 	+---licenses
 	|       epl-v10.html
 	|       notice.html
 	|
 	+---features
-	|       taipeitech.csie.robusta_1.6.8.jar
+	|       taipeitech.csie.robusta_1.6.6.jar
 	|
 	\---plugins
-			taipeitech.csie.robusta_1.6.8.jar
+		taipeitech.csie.robusta_1.6.6.jar
 
 How to install:
+	Option1:
+	1. Click on "Help" on the Menu bar -> "Install New Software..."
+	2. Click on "Add..." on the top right of the install window.
+	3. Enter "Robusta" for Name and "http://pl.csie.ntut.edu.tw/project/Robusta/installation/" for Location. then click on "OK."
+	4. Click on the checkbox right by "Robusta" under Name.
+	5. Click "Next" -> "Next"
+	6. Accept terms of the license agreement.
+	7. Click on "Finish" then "OK"
+	8. Click on "Yes" to restart eclipse if the system asks.
+	9. To check if the installation succeeded, click on "Help" on the Menu bar -> "About Eclipse" ->  "Installation Details" -> "Installed software" tab -> "Robusta Exception Handling" should appear there. 
+
+	Option2:
 	1. Click on "Help" -> "Install New Software..." -> "Add" -> "Local" -> Browse to the extracted folder of this plugin (the folder contain content.xml).
 	2. Continue to finish the installation wizard until finish.
-	3. To check if the installation succedded, click on "Help" -> "About Eclipse" -> "Installation Details" -> "Installed software" tab -> "Robusta Exception Handling" should appear here.
+	3. To check if the installation succeeded, click on "Help" -> "About Eclipse" -> "Installation Details" -> "Installed software" tab -> "Robusta Exception Handling" should appear there.
 
 Use RL(Robustness Level) annotation:
 	1. Copy and place "ntut.csie.robusta.agile.exception_1.0.0.jar" from the "lib" folder of this package to the "lib" folder of target project. 
