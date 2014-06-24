@@ -23,8 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ToggleNatureAction implements IObjectActionDelegate {
-	private static final String REMOVEDETECTOR = "Remove Robusta Smells Detector";
-	private static final String ADDDETECTOR = "Add Robusta Smells Detector";
+	private static final String ADDDETECTOR = "Robusta.addRLNatureAction";
+	private static final String REMOVEDETECTOR = "Robusta.removeRLNatureAction";
 	private static Logger logger = LoggerFactory.getLogger(ToggleNatureAction.class);
 	private ISelection selection;
 
@@ -34,7 +34,6 @@ public class ToggleNatureAction implements IObjectActionDelegate {
 	 * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
 	 */
 	public void run(IAction action) {
-		System.out.println(action.getText());
 		if (selection instanceof IStructuredSelection) {
 			for (Iterator<?> it = ((IStructuredSelection) selection).iterator(); it.hasNext();) {
 				Object element = it.next();
@@ -87,7 +86,7 @@ public class ToggleNatureAction implements IObjectActionDelegate {
 			SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 			smellSettings.activateAllConditionsIfNotConfugured(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 			
-			if (action.getText().equals(REMOVEDETECTOR)) {
+			if (action.getId().equals(REMOVEDETECTOR)) {
 				for (int i = 0; i < natures.length; ++i) {
 					if (RLNature.NATURE_ID.equals(natures[i])) {
 						// Remove the nature
@@ -104,7 +103,7 @@ public class ToggleNatureAction implements IObjectActionDelegate {
 					}
 				}
 
-			} else if (action.getText().equals(ADDDETECTOR)) {
+			} else if (action.getId().equals(ADDDETECTOR)) {
 				// Add the nature
 				String[] newNatures = new String[natures.length + 1];
 				System.arraycopy(natures, 0, newNatures, 0, natures.length);
