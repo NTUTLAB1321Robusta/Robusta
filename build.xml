@@ -9,6 +9,10 @@
 	<property name="debuglevel" value="source,lines,vars"/>
 	<property name="target" value="1.6"/>
 	<property name="source" value="1.6"/>
+	
+	<!-- TASK DEFINING -->
+	<taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpath="external_lib/ant_lib/xmltask.jar"/>
+	
 	<!-- BEGIN - Get the equinox-launcher -->
 	<!-- Be careful if your eclipse has more than one equinox launcher -->
 	<path id="equinox-launcher-file">
@@ -204,7 +208,6 @@
 		Do not copy anymore, modified the plugin.xml to add extension for headless by xmltask instead
 		<copy file="${basedir}/plugin.xml" tofile="${bin-folder}/plugin.xml"/>
 		-->
-		<taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpath="external_lib/ant_lib/xmltask.jar"/>
 		<xmltask source="${basedir}/plugin.xml" dest="${bin-folder}/plugin.xml" encoding="UTF-8">
 			<insert path="/plugin">
 				<![CDATA[ 
@@ -341,6 +344,9 @@
 
 <!-- write a feature.xml for eclipse update -->
 <target name="write-feature-xml">
+	<loadresource property="epl-v10">
+		<file file="${release-folder}/epl-v10.txt"/>
+	</loadresource>
 	<mkdir dir="${feature-folder}"/>
 	<echoxml file="${feature-folder}/feature.xml">
 		<feature
@@ -356,8 +362,8 @@
 			  Copyright 2013-2014 - Taipei Tech - Software Systems Lab
 			</copyright>
 
-			<license url="http://www.gnu.org/licenses/gpl.txt">
-			  Please check http://www.gnu.org/licenses/gpl.txt
+			<license url="http://www.eclipse.org/legal/epl-v10.html">
+				${epl-v10}
 			</license>
 
 			<plugin
