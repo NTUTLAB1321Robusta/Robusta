@@ -23,6 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ToggleNatureAction implements IObjectActionDelegate {
+	private static final String ADDDETECTOR = "Robusta.addRLNatureAction";
+	private static final String REMOVEDETECTOR = "Robusta.removeRLNatureAction";
 	private static Logger logger = LoggerFactory.getLogger(ToggleNatureAction.class);
 	private ISelection selection;
 
@@ -44,7 +46,7 @@ public class ToggleNatureAction implements IObjectActionDelegate {
 				}
 
 				if (project != null) {
-					toggleNature(project);
+					toggleNature(project, action);
 				}
 			}
 		}
@@ -75,7 +77,7 @@ public class ToggleNatureAction implements IObjectActionDelegate {
 	 * @param project
 	 *            to have sample nature added or removed
 	 */
-	private void toggleNature(IProject project) {
+	private void toggleNature(IProject project, IAction action) {
 		try {
 			IProjectDescription description = project.getDescription();
 			String[] natures = description.getNatureIds();
@@ -84,27 +86,31 @@ public class ToggleNatureAction implements IObjectActionDelegate {
 			SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 			smellSettings.activateAllConditionsIfNotConfugured(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 			
-			for (int i = 0; i < natures.length; ++i) {
-				if (RLNature.NATURE_ID.equals(natures[i])) {
-					// Remove the nature
-					String[] newNatures = new String[natures.length - 1];
-					System.arraycopy(natures, 0, newNatures, 0, i);
-					System.arraycopy(natures, i + 1, newNatures, i, natures.length - i - 1);
-					description.setNatureIds(newNatures);
-					project.setDescription(description, null);
-					
-					// 刪除Maker
-					project.accept(new RLResourceVisitor());
-					return;
-				}
-			}
+			if (action.getId().equals(REMOVEDETECTOR)) {
+				for (int i = 0; i < natures.length; ++i) {
+					if (RLNature.NATURE_ID.equals(natures[i])) {
+						// Remove the nature
+						String[] newNatures = new String[natures.length - 1];
+						System.arraycopy(natures, 0, newNatures, 0, i);
+						System.arraycopy(natures, i + 1, newNatures, i,
+								natures.length - i - 1);
+						description.setNatureIds(newNatures);
+						project.setDescription(description, null);
 
-			// Add the nature
-			String[] newNatures = new String[natures.length + 1];
-			System.arraycopy(natures, 0, newNatures, 0, natures.length);
-			newNatures[natures.length] = RLNature.NATURE_ID;
-			description.setNatureIds(newNatures);
-			project.setDescription(description, null);
+						// 刪除Maker
+						project.accept(new RLResourceVisitor());
+						return;
+					}
+				}
+
+			} else if (action.getId().equals(ADDDETECTOR)) {
+				// Add the nature
+				String[] newNatures = new String[natures.length + 1];
+				System.arraycopy(natures, 0, newNatures, 0, natures.length);
+				newNatures[natures.length] = RLNature.NATURE_ID;
+				description.setNatureIds(newNatures);
+				project.setDescription(description, null);
+			}
 		}
 		catch (CoreException ex) {
 			logger.error("[toggleNature] EXCEPTION ",ex);

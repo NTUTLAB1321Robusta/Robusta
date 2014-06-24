@@ -47,9 +47,15 @@
          <action
                class="ntut.csie.rleht.builder.ToggleNatureAction"
                enablesFor="+"
-               id="Robusta.addRemoveNatureAction"
-               label="≡ Add/Remove Robusta Smells Detector ≡"
-               menubarPath="additions"/>         
+               id="Robusta.removeRLNatureAction"
+               label="Remove Robusta Smells Detector"
+               menubarPath="additions"/>
+         <action
+               class="ntut.csie.rleht.builder.ToggleNatureAction"
+               enablesFor="+"
+               id="Robusta.addRLNatureAction"
+               label="Add Robusta Smells Detector"
+               menubarPath="additions"/>
       </objectContribution>  
 
       <!-- Code Smell Refactor 選單 -->
