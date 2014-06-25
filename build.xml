@@ -30,6 +30,7 @@
 	<property name="jar-file-name" value="taipeitech.csie.robusta_${pluginManifest.Bundle-Version}.jar"/>
 	<property name="jar-file-test-name" value="taipeitech.csie.test.robusta_${pluginManifest.Bundle-Version}.jar"/>
 	<property name="rl-jar-file-name" value="taipeitech.csie.robusta.agile.exception_1.0.0.jar"/>
+	<property name="update-site-url" value="http://pl.csie.ntut.edu.tw/project/Robusta/"/>
 
 	<property name="result-folder" value="${basedir}/result"/>
 	<property name="xml-folder" value="${result-folder}/xml"/>
@@ -365,6 +366,10 @@
 			<license url="http://www.eclipse.org/legal/epl-v10.html">
 				${epl-v10}
 			</license>
+			
+			<url>
+				<update label="Robusta Update" url="${update-site-url}"/>
+			</url>
 
 			<plugin
 				 id="${plugin-bundle-name}"
