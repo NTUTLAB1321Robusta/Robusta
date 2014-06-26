@@ -44,6 +44,10 @@
             id="Robusta.contribution1"
             nameFilter="*"
             objectClass="org.eclipse.core.resources.IProject">
+         <filter
+               name="open"
+               value="true">
+         </filter>
          <action
                class="ntut.csie.rleht.builder.ToggleNatureAction"
                enablesFor="+"
