@@ -12,8 +12,13 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceDescription;
+import org.eclipse.core.resources.IncrementalProjectBuilder;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -99,10 +104,9 @@ public class ToggleNatureAction implements IObjectActionDelegate {
 
 						// 刪除Maker
 						project.accept(new RLResourceVisitor());
-						return;
+						break;
 					}
 				}
-
 			} else if (action.getId().equals(ADDDETECTOR)) {
 				// Add the nature
 				String[] newNatures = new String[natures.length + 1];
@@ -111,9 +115,22 @@ public class ToggleNatureAction implements IObjectActionDelegate {
 				description.setNatureIds(newNatures);
 				project.setDescription(description, null);
 			}
+
+			buildProjectIfNeeded(project);
 		}
 		catch (CoreException ex) {
 			logger.error("[toggleNature] EXCEPTION ",ex);
+		}
+	}
+
+	/**
+	 * Build the project if it will not build automatically. 
+	 */
+	private void buildProjectIfNeeded(IProject project) throws CoreException {
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IWorkspaceDescription description = workspace.getDescription();
+		if (!description.isAutoBuilding()) {
+			project.build(IncrementalProjectBuilder.AUTO_BUILD, new NullProgressMonitor());
 		}
 	}
 
