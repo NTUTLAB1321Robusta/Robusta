@@ -49,13 +49,15 @@
                enablesFor="+"
                id="Robusta.removeRLNatureAction"
                label="Remove Robusta Smells Detector"
-               menubarPath="additions"/>
+               menubarPath="additions">
+         </action>
          <action
                class="ntut.csie.rleht.builder.ToggleNatureAction"
                enablesFor="+"
                id="Robusta.addRLNatureAction"
                label="Add Robusta Smells Detector"
-               menubarPath="additions"/>
+               menubarPath="additions">
+         </action>
       </objectContribution>  
 
       <!-- Code Smell Refactor 選單 -->
@@ -123,7 +125,16 @@
       <page
             class="ntut.csie.csdet.views.CSPropertyPage"
             id="CodeSmellDetectingSettings"
-            name="Robusta Detecting Settings" >
+            name="Robusta Detecting Settings">
+         <enabledWhen>
+            <adapt
+                  type="org.eclipse.core.resources.IProject">
+               <test
+                     property="org.eclipse.core.resources.projectNature"
+                     value="org.eclipse.jdt.core.javanature">
+               </test>
+            </adapt>
+         </enabledWhen>
       </page>
    </extension>
    <!-- STAND ALONE (HEADLESS) extension will be injected here AUTOMATICALLY when build by ANT (xmltask) -->
