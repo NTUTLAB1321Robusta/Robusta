@@ -212,7 +212,7 @@
 		<xmltask source="${basedir}/plugin.xml" dest="${bin-folder}/plugin.xml" encoding="UTF-8">
 			<insert path="/plugin">
 				<![CDATA[ 
-                      <extension id="standalone"
+                      <extension id="${plugin-bundle-name}.standalone"
     			         point="org.eclipse.core.runtime.applications">
 				<application
     			            cardinality="singleton-global"

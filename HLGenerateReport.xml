@@ -7,6 +7,16 @@
 	<property environment="env"/>
     <property name="ECLIPSE_HOME" value="${env.ECLIPSE_HOME}"/>
 	
+	<!-- BEGIN - Get the equinox-launcher -->
+		<!-- Be careful if your eclipse has more than one equinox launcher -->
+		<path id="equinox-launcher-file">
+			<fileset dir="${ECLIPSE_HOME}/plugins" casesensitive="no">
+				<include name="org.eclipse.equinox.launcher_*.jar" />
+			</fileset>
+		</path>
+		<property name="equinox-launcher" refid="equinox-launcher-file"/>
+		<!-- END - Get the equinox-launcher -->
+	
 	<!-- =====================================================
 		Need to overwrite by DEFINE when call this build file 
 		=================================================== -->
@@ -49,12 +59,13 @@
          - - - - - - - - - - - - - - - - - -->
 	<target name="main">
 		<echo message="Building Bad Smell Report"/>
-		<exec executable="${ECLIPSE_HOME}/eclipsec" failonerror="yes">
+		<java jar="${equinox-launcher}" fork="true" timeout="10800000" failonerror="true" maxmemory="512m">
 			<arg line="-nosplash"/>
-			<arg line="-application csie.ntut.robusta.standalone"/>
+			<arg line="-console"/>
+			<arg line="-application taipeitech.csie.robusta.standalone"/>
 			<arg line="-data ${WORKSPACE_PATH}"/>
 			<arg line="${PROJECT_LOCATION}"/>
-		</exec>
+		</java>
 	</target>
 	
 	<!-- ================================= 
