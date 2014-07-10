@@ -10,4 +10,5 @@ Our goal is to help Java developer reduce time effort on reviewing source code a
 For reporting bug or providing suggestion, please email us at:
 robusta.mail_AT_gmail.com (substitute _AT_ with an @)
 
-*a user manual will be added soon.
+User guide can be found at:
+http://pl.csie.ntut.edu.tw/project/Robusta/Robusta_User_Instruction.pdf
