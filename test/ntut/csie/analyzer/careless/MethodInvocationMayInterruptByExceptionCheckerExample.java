@@ -67,7 +67,6 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 			fileOutputStream.write(context);
 			fileOutputStream.close(); // Unsafe
 		} catch (IOException e) {
-			System.out.println("IOException.");
 			fileOutputStream.close(); // Safe
 			throw e;
 		} finally {

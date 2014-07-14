@@ -3,22 +3,16 @@ package ntut.csie.analyzer.careless;
 import java.util.Iterator;
 import java.util.List;
 
-import ntut.csie.analyzer.ThrownExceptionBeCaughtDetector;
 import ntut.csie.util.BoundaryChecker;
 import ntut.csie.util.NodeUtils;
 
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Block;
-import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Statement;
-import org.eclipse.jdt.core.dom.SuperMethodInvocation;
-import org.eclipse.jdt.core.dom.ThrowStatement;
-import org.eclipse.jdt.core.dom.TryStatement;
 
 /**
- * It will check if any exception been declared and non-caught before
+ * It will check if any exception may been thrown before
  */
 public class MethodInvocationMayInterruptByExceptionChecker {
 
@@ -55,93 +49,37 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 	}
 
 	/**
-	 * Tell if there is any declared exception between checkingNode and it's parent.
+	 * Tell if there is any may-thrown-exception between checkingNode and it's parent.
 	 */
 	private boolean isNodeUnsafeInParent(ASTNode checkingNode) {
+		// Set the area of detection for checkingNode
+		BoundaryChecker boundChecker = new BoundaryChecker(beginningPosition,
+				checkingNode.getStartPosition());
+		
 		// Collect all statements in parent block
 		Block parentBlock = (Block) NodeUtils.getSpecifiedParentNode(checkingNode, ASTNode.BLOCK);
 		List<Statement> allStatements = parentBlock.statements();
 		
-		// Set the area of detection for class StatementDeclaredChecker
-		ThrownExceptionBeCaughtDetector thrownExceptionDetector = 
-				new ThrownExceptionBeCaughtDetector(parentBlock);
-		BoundaryChecker boundChecker = new BoundaryChecker(beginningPosition,
-				checkingNode.getStartPosition());
-		
-		// Return is there any declared exception in any statement
+		// Return is there any may-thrown-statement between
 		Iterator<Statement> iter = allStatements.iterator();
 		while (iter.hasNext()) {
 			Statement statement = iter.next();
-			StatementDeclaredChecker declaredChecher = 
-					new StatementDeclaredChecker(thrownExceptionDetector, boundChecker);
-			statement.accept(declaredChecher);
-			if (declaredChecher.isAnyExceptionOut()) {
+			if (boundChecker.isInOpenInterval(statement.getStartPosition()) &&
+					isUnsafeBrotherStatement(statement)) {
 				return true;
-			}
+			} 
 		}
 		return false;
 	}
 
-	private class StatementDeclaredChecker extends ASTVisitor {
-
-		private boolean isAnyExceptionOut = false;
-		ThrownExceptionBeCaughtDetector thrownExceptionDetector;
-		BoundaryChecker boundChecker;
-
-		public StatementDeclaredChecker(
-				ThrownExceptionBeCaughtDetector exceptionDetector,
-				BoundaryChecker boundChecker) {
-			thrownExceptionDetector = exceptionDetector;
-			this.boundChecker = boundChecker;
+	/**
+	 * Return false only if the statements will not throw any exception in 100%. 
+	 */
+	private boolean isUnsafeBrotherStatement(Statement statement) {
+		int nodeType = statement.getNodeType();
+		if (nodeType == ASTNode.EMPTY_STATEMENT) {
+			return false;
 		}
-
-		public boolean isAnyExceptionOut() {
-			return isAnyExceptionOut;
-		}
-
-		/**
-		 * Stop when already found an exception been thrown or already out of
-		 * the area we care.
-		 */
-		public boolean preVisit2(ASTNode node) {
-			preVisit(node);
-			return (!isAnyExceptionOut && isNodeInBoundary(node));
-		}
-
-		public boolean visit(MethodInvocation node) {
-			if (thrownExceptionDetector
-					.isAnyDeclaredExceptionBeenThrowOut(node)) {
-				isAnyExceptionOut = true;
-			}
-			return true;
-		}
-
-		public boolean visit(SuperMethodInvocation node) {
-			if (thrownExceptionDetector
-					.isAnyDeclaredExceptionBeenThrowOut(node)) {
-				isAnyExceptionOut = true;
-			}
-			return true;
-		}
-		
-		public boolean visit(ThrowStatement node) {
-			if (thrownExceptionDetector
-					.isAnyDeclaredExceptionBeenThrowOut(node)) {
-				isAnyExceptionOut = true;
-			}
-			return true;
-		}
-
-		public boolean visit(ClassInstanceCreation node) {
-			if (thrownExceptionDetector
-					.isAnyDeclaredExceptionBeenThrowOut(node)) {
-				isAnyExceptionOut = true;
-			}
-			return true;
-		}
-
-		private boolean isNodeInBoundary(ASTNode node) {
-			return boundChecker.isInOpenInterval(node);
-		}
+		return true;
 	}
 }
