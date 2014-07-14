@@ -35,9 +35,9 @@ public class CarelessCleanupAdvancedExample {
 
 	/**
 	 * The close action will be reach even if any exception be thrown in that
-	 * try statement. But there is a exception been declared before this try statement.
+	 * try statement. But there is a exception may-been-thrown before this try statement.
 	 */
-	public void safeCloseInTryButSimpleDeclaredBeforeTry()
+	public void safeCloseInTryButSimpleThrowBeforeTry()
 			throws Exception {
 		FileInputStream fis = new FileInputStream(file);
 
@@ -52,9 +52,9 @@ public class CarelessCleanupAdvancedExample {
 
 	/**
 	 * The close action will be reach even if any exception be thrown in that
-	 * try statement. But there is a exception been declared before this try statement.
+	 * try statement. But there is a exception may-been-thrown before this try statement.
 	 */
-	public void safeCloseInTryButDeclaredInOtherStatementBeforeTry()
+	public void safeCloseInTryButThrowInOtherStatementBeforeTry()
 			throws Exception {
 		FileInputStream fis = new FileInputStream(file);
 
@@ -73,13 +73,13 @@ public class CarelessCleanupAdvancedExample {
 	 * The close action will be reach even if any exception be thrown in that
 	 * try statement. But there is maybe a exception before the try statement.
 	 */
-	public void safeCloseInTryAndDeclaredInOtherStatementBeenCaught()
+	public void safeCloseInTryAndThrowInOtherStatementBeenCaught()
 			throws Exception {
 		FileInputStream fis = new FileInputStream(file);
 
 		/*
-		 * The thrown exception already been caught, so it will not interrupt
-		 * the close action below.
+		 * The thrown exception already been caught,
+		 * but maybe there is other exception to interrupt the close action below.
 		 */
 		try {
 			methodBeforeClose.declaredCheckedException();
@@ -89,7 +89,7 @@ public class CarelessCleanupAdvancedExample {
 		try {
 			methodBeforeClose.declaredCheckedException();
 		} finally {
-			fis.close(); // Safe
+			fis.close(); // Unsafe
 		}
 	}
 
@@ -98,12 +98,10 @@ public class CarelessCleanupAdvancedExample {
 	 * Because if "declaredCheckedException" throws an exception, the creation
 	 * won't be reached.
 	 */
-	public void safeCloseInTryWithDidDeclaredBetweenCreationAndClosed() throws Exception {
+	public void safeCloseInTryWithDidNotThrowBetweenCreationAndClosed() throws Exception {
 		methodBeforeClose.declaredCheckedException();
 
 		FileInputStream fis = new FileInputStream(file);
-
-		methodBeforeClose.willNotThrowAnyException();
 		
 		try {
 			methodBeforeClose.declaredCheckedException();
@@ -157,9 +155,9 @@ public class CarelessCleanupAdvancedExample {
 	}
 
 	/**
-	 * There isn't any declared before the close action.
+	 * There isn't any may-throw-exception before the close action.
 	 */
-	public void closeIsTheFirstExecuteStatementWithoutDeclared()
+	public void closeIsTheFirstExecuteStatement()
 			throws Exception {
 		if (fileInputStream != null) {
 			try {
@@ -175,7 +173,7 @@ public class CarelessCleanupAdvancedExample {
 	 */
 	public void closeIsTheFirstExecuteStatementButStillUnsafeWithIfStatement()
 			throws IOException {
-		if (1 == fileInputStream.available()) {
+		if (0 == fileInputStream.available()) {
 			fileInputStream.close(); // Unsafe
 		}
 	}
@@ -190,8 +188,9 @@ public class CarelessCleanupAdvancedExample {
 	public void closeIsTheFirstExecuteStatementButStillUnsafeWithDoWhileStatement()
 			throws IOException {
 		do {
-			fileInputStream.close(); // Safe for Robusta (Not for human) 
-		} while (1 == fileInputStream.available());
+			fileInputStream.close(); // Unsafe after first loop
+			fileInputStream = new FileInputStream(file);
+		} while (0 == fileInputStream.available());
 	}
 
 	public void doTryFinallyTwice(OutputStream zOut) throws IOException {

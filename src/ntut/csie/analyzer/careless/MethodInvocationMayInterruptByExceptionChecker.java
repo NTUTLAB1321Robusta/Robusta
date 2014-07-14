@@ -8,8 +8,10 @@ import ntut.csie.util.NodeUtils;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Block;
+import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Statement;
+import org.eclipse.jdt.core.dom.InfixExpression;
 
 /**
  * It will check if any exception may been thrown before
@@ -39,15 +41,39 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 	}
 
 	private boolean isAlwaysSafeInParent(ASTNode node) {
-		int parentType = node.getParent().getNodeType();
-		/*
-		 * Case: 
-		 * 1. finally block and catch clause
-		 * 2. catch clause's body
-		 */
-		return (parentType == ASTNode.TRY_STATEMENT || parentType == ASTNode.CATCH_CLAUSE);
+		ASTNode parent = node.getParent();
+		int parentType = parent.getNodeType();
+		
+		boolean isFinallBlockOrCatchClause = (parentType == ASTNode.TRY_STATEMENT);
+		boolean isBodyOfCatchClause = (parentType == ASTNode.CATCH_CLAUSE);
+		
+		// Check if the parent is a simple non-null checking
+		boolean isSimpleNonnullChecking = false;
+		try {
+			InfixExpression infixExpression = ((InfixExpression) ((IfStatement) parent).getExpression());
+			isSimpleNonnullChecking = tellIsSimpleNonnullChecking(infixExpression);
+		} catch (Exception e) {
+			// It is not a simple non-null checking, keeping isSimpleNonnullChecking false
+		}
+		
+		return (isFinallBlockOrCatchClause || isBodyOfCatchClause || isSimpleNonnullChecking);
 	}
 
+	/**
+	 * Tell if it is NULL_LITERAL v.s SIMPLE_NAME
+	 */
+	private boolean tellIsSimpleNonnullChecking(InfixExpression expression) {
+		int rightType = expression.getRightOperand().getNodeType();
+		int leftType = expression.getLeftOperand().getNodeType();
+		
+		if (rightType == ASTNode.NULL_LITERAL || leftType == ASTNode.NULL_LITERAL) {
+			if (rightType == ASTNode.SIMPLE_NAME || leftType == ASTNode.SIMPLE_NAME) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	/**
 	 * Tell if there is any may-thrown-exception between checkingNode and it's parent.
 	 */
@@ -73,11 +99,11 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 	}
 
 	/**
-	 * Return false only if the statements will not throw any exception in 100%. 
+	 * Return false only if the statements will not throw any exception in 100%.
 	 */
 	private boolean isUnsafeBrotherStatement(Statement statement) {
-		int nodeType = statement.getNodeType();
-		if (nodeType == ASTNode.EMPTY_STATEMENT) {
+		boolean isEmptyStatement = (statement.getNodeType() == ASTNode.EMPTY_STATEMENT);
+		if (isEmptyStatement) {
 			return false;
 		}
 		return true;
