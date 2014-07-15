@@ -4,14 +4,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import ntut.csie.util.BoundaryChecker;
-import ntut.csie.util.NodeUtils;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.IfStatement;
+import org.eclipse.jdt.core.dom.InfixExpression;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.Statement;
-import org.eclipse.jdt.core.dom.InfixExpression;
 
 /**
  * It will check if any exception may been thrown before
@@ -26,7 +25,7 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 		ASTNode checkingNode = methodInvocation;
 		// The condition is checking whether any statement didn't be checked.
 		while (beginningPosition < checkingNode.getStartPosition()) {
-			if (!isAlwaysSafeInParent(checkingNode) && isNodeUnsafeInParent(checkingNode)) {
+			if (isParentUnsafe(checkingNode) || isThereUnsafeBrother(checkingNode)) {
 				return true;
 			}
 			checkingNode = checkingNode.getParent();
@@ -40,27 +39,32 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 				.findPosition(methodInvocation);
 	}
 
-	private boolean isAlwaysSafeInParent(ASTNode node) {
-		ASTNode parent = node.getParent();
-		int parentType = parent.getNodeType();
-		
-		boolean isFinallBlockOrCatchClause = (parentType == ASTNode.TRY_STATEMENT);
-		boolean isBodyOfCatchClause = (parentType == ASTNode.CATCH_CLAUSE);
-		
-		// Check if the parent is a simple non-null checking
-		boolean isSimpleNonnullChecking = false;
-		try {
-			InfixExpression infixExpression = ((InfixExpression) ((IfStatement) parent).getExpression());
-			isSimpleNonnullChecking = tellIsSimpleNonnullChecking(infixExpression);
-		} catch (Exception e) {
-			// It is not a simple non-null checking, keeping isSimpleNonnullChecking false
+	private boolean isParentUnsafe(ASTNode node) {
+		if (node instanceof Statement) {
+			ASTNode parent = node.getParent();
+			int parentType = parent.getNodeType();
+			
+			boolean isParentBlock = (parentType == ASTNode.BLOCK);
+			boolean isFinallBlockOrCatchClause = (parentType == ASTNode.TRY_STATEMENT);
+			boolean isBodyOfCatchClause = (parentType == ASTNode.CATCH_CLAUSE);
+			
+			// Check if the parent is a simple non-null checking
+			boolean isParentSimpleNonnullChecking = false;
+			try {
+				InfixExpression infixExpression = ((InfixExpression) ((IfStatement) parent).getExpression());
+				isParentSimpleNonnullChecking = tellIsSimpleNonnullChecking(infixExpression);
+			} catch (Exception e) {
+				// It is not a simple non-null checking, keeping isSimpleNonnullChecking false
+			}
+			
+			return !(isParentBlock || isFinallBlockOrCatchClause || isBodyOfCatchClause || isParentSimpleNonnullChecking);
+		} else {
+			return false;
 		}
-		
-		return (isFinallBlockOrCatchClause || isBodyOfCatchClause || isSimpleNonnullChecking);
 	}
 
 	/**
-	 * Tell if it is NULL_LITERAL v.s SIMPLE_NAME
+	 * Tell if it is one side NULL_LITERAL and other side SIMPLE_NAME
 	 */
 	private boolean tellIsSimpleNonnullChecking(InfixExpression expression) {
 		int rightType = expression.getRightOperand().getNodeType();
@@ -77,23 +81,25 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 	/**
 	 * Tell if there is any may-thrown-exception between checkingNode and it's parent.
 	 */
-	private boolean isNodeUnsafeInParent(ASTNode checkingNode) {
+	private boolean isThereUnsafeBrother(ASTNode checkingNode) {
 		// Set the area of detection for checkingNode
 		BoundaryChecker boundChecker = new BoundaryChecker(beginningPosition,
 				checkingNode.getStartPosition());
 		
-		// Collect all statements in parent block
-		Block parentBlock = (Block) NodeUtils.getSpecifiedParentNode(checkingNode, ASTNode.BLOCK);
-		List<Statement> allStatements = parentBlock.statements();
-		
-		// Return is there any may-thrown-statement between
-		Iterator<Statement> iter = allStatements.iterator();
-		while (iter.hasNext()) {
-			Statement statement = iter.next();
-			if (boundChecker.isInOpenInterval(statement.getStartPosition()) &&
-					isUnsafeBrotherStatement(statement)) {
-				return true;
-			} 
+		// Collect all brother statements, and return if there is any may-thrown-statement between
+		ASTNode parent = checkingNode.getParent();
+		if (parent.getNodeType() == ASTNode.BLOCK) {
+			List<Statement> allStatements = ((Block) parent).statements();
+
+			// Return is there any may-thrown-statement between
+			Iterator<Statement> iter = allStatements.iterator();
+			while (iter.hasNext()) {
+				Statement statement = iter.next();
+				if (boundChecker.isInOpenInterval(statement.getStartPosition()) &&
+						isUnsafeBrotherStatement(statement)) {
+					return true;
+				} 
+			}
 		}
 		return false;
 	}
@@ -103,7 +109,9 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 	 */
 	private boolean isUnsafeBrotherStatement(Statement statement) {
 		boolean isEmptyStatement = (statement.getNodeType() == ASTNode.EMPTY_STATEMENT);
-		if (isEmptyStatement) {
+		boolean isTryBlock = (statement.getParent().getNodeType() == ASTNode.TRY_STATEMENT);
+		
+		if (isEmptyStatement || isTryBlock) {
 			return false;
 		}
 		return true;

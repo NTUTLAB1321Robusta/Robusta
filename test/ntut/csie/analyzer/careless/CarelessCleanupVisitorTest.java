@@ -127,7 +127,7 @@ public class CarelessCleanupVisitorTest {
 		Assertor.assertMarkerInfoListSize(1, smellList);
 	}
 
-	final int DEFAULT_BAD_SMELLS_OF_INTEGRATED_EXAMPLE = 5;
+	final int DEFAULT_BAD_SMELLS_OF_INTEGRATED_EXAMPLE = 6;
 	
 	@Test
 	public void testIntegratedExampleWithDefaultSetting()

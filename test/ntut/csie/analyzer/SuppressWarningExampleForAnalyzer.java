@@ -459,7 +459,7 @@ public class SuppressWarningExampleForAnalyzer {
 			} catch (ArrayStoreException  e1) {
 				// TODO: handle exception
 			} catch (ArrayIndexOutOfBoundsException e1) {
-				fileOutputStream.close();
+				fileOutputStream.close();  // CC #5
 			}
 		}
 	}

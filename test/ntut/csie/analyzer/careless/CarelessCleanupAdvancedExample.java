@@ -157,7 +157,19 @@ public class CarelessCleanupAdvancedExample {
 	/**
 	 * There isn't any may-throw-exception before the close action.
 	 */
-	public void closeIsTheFirstExecuteStatement()
+	public void colseSimpleNonnullCheckingInTry() throws Exception {
+		try {
+			if (fileInputStream != null) {
+				fileInputStream.close(); // Safe
+			}
+		} finally {
+		}
+	}
+
+	/**
+	 * There isn't any may-throw-exception before the close action.
+	 */
+	public void colseSimpleNonnullCheckingOutOfTry()
 			throws Exception {
 		if (fileInputStream != null) {
 			try {
