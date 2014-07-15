@@ -50,18 +50,17 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 			
 			boolean isParentBlock = (parentType == ASTNode.BLOCK);
 			boolean isFinallBlockOrCatchClause = (parentType == ASTNode.TRY_STATEMENT);
-			boolean isBodyOfCatchClause = (parentType == ASTNode.CATCH_CLAUSE);
 			
 			// Check if the parent is a simple non-null checking
-			boolean isParentSimpleNonnullChecking = false;
+			boolean isParentSimpleNonNullChecking = false;
 			try {
 				InfixExpression infixExpression = ((InfixExpression) ((IfStatement) parent).getExpression());
-				isParentSimpleNonnullChecking = tellIsSimpleNonnullChecking(infixExpression);
+				isParentSimpleNonNullChecking = tellIsSimpleNonnullChecking(infixExpression);
 			} catch (Exception e) {
 				// It is not a simple non-null checking, keeping isSimpleNonnullChecking false
 			}
 			
-			return !(isParentBlock || isFinallBlockOrCatchClause || isBodyOfCatchClause || isParentSimpleNonnullChecking);
+			return !(isParentBlock || isFinallBlockOrCatchClause || isParentSimpleNonNullChecking);
 		} else {
 			return false;
 		}
@@ -74,6 +73,7 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 		int rightType = expression.getRightOperand().getNodeType();
 		int leftType = expression.getLeftOperand().getNodeType();
 		
+		// TODO should check one of them is the resource to be closed
 		if (rightType == ASTNode.NULL_LITERAL || leftType == ASTNode.NULL_LITERAL) {
 			if (rightType == ASTNode.SIMPLE_NAME || leftType == ASTNode.SIMPLE_NAME) {
 				return true;
