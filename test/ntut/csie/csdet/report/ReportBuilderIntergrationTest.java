@@ -100,7 +100,7 @@ public class ReportBuilderIntergrationTest {
 		loadClass(OverLoggingTheThirdOrderClass.class);
 		loadClass(UnprotectedMainProgramExample.class);
 		loadClass(UnprotectedMainProgramWithCatchRuntimeExceptionExample.class);
-		loadClass(UnprotectedMainProgramWithoutStatementExample.class);		
+		loadClass(UnprotectedMainProgramWithoutStatementExample.class);	
 		loadClass(UnprotectedMainProgramWithoutTryExample.class);
 		loadClass(UnprotectedMainProgramWithTry.class);
 		loadClass(UnprotectedmainProgramWithTryAtFirstStatement.class);

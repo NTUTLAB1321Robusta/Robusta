@@ -40,6 +40,10 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 	}
 
 	private boolean isParentUnsafe(ASTNode node) {
+		/*
+		 * true: some situation will always safe, check it
+		 * false: this node is a element of statement, it is always safe
+		 */
 		if (node instanceof Statement) {
 			ASTNode parent = node.getParent();
 			int parentType = parent.getNodeType();
