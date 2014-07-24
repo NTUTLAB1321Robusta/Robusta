@@ -50,6 +50,7 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 			
 			boolean isParentBlock = (parentType == ASTNode.BLOCK);
 			boolean isFinallBlockOrCatchClause = (parentType == ASTNode.TRY_STATEMENT);
+			boolean isCatchBlock = (parentType == ASTNode.CATCH_CLAUSE);
 			
 			// Check if the parent is a simple non-null checking
 			boolean isParentSimpleNonNullChecking = false;
@@ -59,8 +60,9 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 			} catch (Exception e) {
 				// It is not a simple non-null checking, keeping isSimpleNonnullChecking false
 			}
-			
-			return !(isParentBlock || isFinallBlockOrCatchClause || isParentSimpleNonNullChecking);
+
+			return !(isParentBlock || isFinallBlockOrCatchClause
+					|| isCatchBlock || isParentSimpleNonNullChecking);
 		} else {
 			return false;
 		}
