@@ -17,7 +17,6 @@ import ntut.csie.analyzer.thrown.ThrownExceptionInFinallyBlockVisitorTest;
 import ntut.csie.analyzer.unprotected.UnprotectedMainProgramVisitorTest;
 import ntut.csie.csdet.preference.RobustaSettingsTest;
 import ntut.csie.csdet.quickfix.BaseQuickFixTest;
-import ntut.csie.csdet.refactor.OverLoggingRefactorTest;
 import ntut.csie.csdet.refactor.RethrowExRefactoringTest;
 import ntut.csie.csdet.refactor.RetryRefactoringTest;
 import ntut.csie.csdet.report.BadSmellDataEntityTest;
@@ -66,7 +65,6 @@ import org.junit.runners.Suite;
 	
 	BaseQuickFixTest.class,
 	
-	OverLoggingRefactorTest.class,
 	RethrowExRefactoringTest.class,
 	RetryRefactoringTest.class,
 	
