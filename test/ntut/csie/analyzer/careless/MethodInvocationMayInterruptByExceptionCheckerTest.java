@@ -99,7 +99,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 			throws Exception {
 		// Second "fileOutputStream.close()" in method "sameResourceCloseManyTimes"
 		MethodInvocation methodInvocation = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 2164 - 1, 24);
+				.perform(compilationUnit, 2124 - 1, 24);
 		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 
@@ -108,7 +108,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 			throws Exception {
 		// Third "fileOutputStream.close()" in method "sameResourceCloseManyTimes"
 		MethodInvocation methodInvocation = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 2260 - 1, 24);
+				.perform(compilationUnit, 2220 - 1, 24);
 		assertTrue(checker.isMayInterruptByException(methodInvocation));
 	}
 

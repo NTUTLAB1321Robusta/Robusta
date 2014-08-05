@@ -32,7 +32,7 @@ public class CarelessCleanupBaseExample {
 
 	public void closeAfterNoDeclaredException() throws Exception {
 		methodBeforeClose.didNotDeclareAnyExceptionButThrowUnchecked();
-		fileInputStream.close(); // Safe
+		fileInputStream.close(); // Unsafe
 	}
 
 	/**
@@ -40,7 +40,7 @@ public class CarelessCleanupBaseExample {
 	 */
 	public void closeAfterNoDeclaredException2() throws Exception {
 		methodBeforeClose.willNotThrowAnyException();
-		fileInputStream.close(); // Safe
+		fileInputStream.close(); // Unsafe
 	}
 
 	public void createAndCloseDirectlyWithCreatedFile() throws Exception {

@@ -72,7 +72,12 @@ public class SettingPage extends APropertyPage {
 		initailState();
 		readSetting();
 		buildPage(composite);
-		setUserSetting();
+		setWithUserSetting();
+		
+		// set preference with user setting
+		for(int i=0; i<PRE_COUNT; i++) {
+			checkbox_ShowWarning.setSelection(preferenceList[i]);
+		}
 		
 		for (int i =0; i < RLMarkerAttribute.CS_TOTAL_TYPE.length; i++)
 			tempText[i].setTemplateStyle(composite.getDisplay(), 0);
@@ -87,12 +92,19 @@ public class SettingPage extends APropertyPage {
 				for (int i=0; i < item.length; i++) {
 					if(!item[i].getChecked()) {
 						isDetectingAllSmells = false;
-						checkbox_DetectAllSmells.setSelection(isDetectingAllSmells);
+						checkbox_DetectAllSmells.setSelection(false);
 						return;
 					}
 				}
 			}
 		});
+	}
+
+	private void setWithUserSetting() {
+		TableItem[] item = smellList.getItems();
+		for (int i=0; i < item.length; i++) {
+			item[i].setChecked(detSmellList[i]);
+		}
 	}
 
 	private void initailState() {
@@ -259,7 +271,6 @@ public class SettingPage extends APropertyPage {
 		checkbox_ShowWarning.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
 				preferenceList[0] = checkbox_ShowWarning.getSelection();
-				//setUserSetting();
 			}
 		});
 		preferenceGroup.pack();
@@ -279,7 +290,7 @@ public class SettingPage extends APropertyPage {
 		checkbox_DetectAllSmells.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
 				isDetectingAllSmells = !isDetectingAllSmells;
-				setUserSetting();
+				checkOrUncheckAllSmellSettings();
 			}
 		});
 		
@@ -347,17 +358,14 @@ public class SettingPage extends APropertyPage {
 		selectComposite.setSize(getLowerRightCoordinate(smellTypeGroup).x + 15, selectComposite.getBounds().height);
 	}
 
-	private void setUserSetting() {
+	private void checkOrUncheckAllSmellSettings() {
 		TableItem[] item = smellList.getItems();
 		//去traverse整個table看item的Text和是否被勾選到
 		for (int i=0; i < item.length; i++) {
-			if(isDetectingAllSmells)
-				detSmellList[i] = isDetectingAllSmells;
-			item[i].setChecked(detSmellList[i]);
+			detSmellList[i] = isDetectingAllSmells;
 		}
-		for(int i=0; i<PRE_COUNT; i++) {
-			checkbox_ShowWarning.setSelection(preferenceList[i]);
-		}
+		
+		setWithUserSetting();
 	}
 	
 	private void changeTemplateText(int index) {

@@ -7,7 +7,6 @@ import java.util.ResourceBundle;
 
 import ntut.csie.csdet.refactor.CarelessCleanupAction;
 import ntut.csie.csdet.refactor.NTMarkerResolution;
-import ntut.csie.csdet.refactor.OverLoggingAction;
 import ntut.csie.csdet.refactor.RethrowUncheckExAction;
 import ntut.csie.rleht.common.RLUtils;
 import ntut.csie.rleht.rlAdvice.AchieveRL1QuickFix;
@@ -17,7 +16,6 @@ import ntut.csie.robusta.codegen.markerresolution.TEFBExtractMethodMarkerResolut
 import ntut.csie.robusta.codegen.markerresolution.MoveCloseResouceFromTryCatchToFinallyBlockQuickFix;
 import ntut.csie.robusta.codegen.markerresolution.MoveCodeIntoBigOuterTryQuickFix;
 import ntut.csie.robusta.codegen.markerresolution.RefineRuntimeExceptionQuickFix;
-import ntut.csie.robusta.codegen.markerresolution.RemoveOverLoggingStatementQuickFix;
 import ntut.csie.robusta.codegen.markerresolution.ThrowCheckedExceptionQuickFix;
 
 import org.eclipse.core.resources.IMarker;
@@ -134,15 +132,16 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 					
 				// 碰到OverLogging的Quick fix and refactor方法
 			}else if(problem.equals(RLMarkerAttribute.CS_OVER_LOGGING)){
-/*				markerList.add(new RemoveOverLoggingStatementQuickFix("Quick Fix==>Remove Logging"));
-//				markerList.add(new OLRefactoring("Refactor==>Remove Reference Logging"));
-				markerList.add(new OverLoggingAction("Refactor==>Remove Reference Logging"));*/
+				// not going to provide any resolution for now.
+				
 			}else if(problem.equals(RLMarkerAttribute.CS_EXCEPTION_RLADVICE)){
 				String advice = (String) marker.getAttribute(IMarker.MESSAGE);
 				//有RL annotation，才是有拋出這個例外(我有偷偷幫throw e的都硬上RL)
 				if(advice.contains(RTag.class.getSimpleName())){
 					markerList.add(new AchieveRL1QuickFix("RL1 quick gene ==> Rethrow Unckecked Exception"));
 				}
+				
+				// 碰到TEFB的refactor方法
 			} else if(problem.equals(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK)) {
 				boolean isSupportRefactoring = (Boolean)marker.getAttribute(RLMarkerAttribute.RL_INFO_SUPPORT_REFACTORING);
 				if(isSupportRefactoring)

@@ -44,18 +44,22 @@
             id="Robusta.contribution1"
             nameFilter="*"
             objectClass="org.eclipse.core.resources.IProject">
+         <filter
+               name="open"
+               value="true">
+         </filter>
          <action
                class="ntut.csie.rleht.builder.ToggleNatureAction"
                enablesFor="+"
                id="Robusta.removeRLNatureAction"
-               label="Remove Robusta Smells Detector"
+               label="Remove Robusta Smell Marker"
                menubarPath="additions">
          </action>
          <action
                class="ntut.csie.rleht.builder.ToggleNatureAction"
                enablesFor="+"
                id="Robusta.addRLNatureAction"
-               label="Add Robusta Smells Detector"
+               label="Add Robusta Smell Marker"
                menubarPath="additions">
          </action>
       </objectContribution>  

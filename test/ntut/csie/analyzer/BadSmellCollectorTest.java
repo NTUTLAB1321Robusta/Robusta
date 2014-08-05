@@ -129,13 +129,13 @@ public class BadSmellCollectorTest {
 		collector.collectBadSmell();
 
 		Assertor.assertMarkerInfoListSize(9, collector.getBadSmells(RLMarkerAttribute.CS_DUMMY_HANDLER));
-		Assertor.assertMarkerInfoListSize(4, collector.getBadSmells(RLMarkerAttribute.CS_CARELESS_CLEANUP));
+		Assertor.assertMarkerInfoListSize(5, collector.getBadSmells(RLMarkerAttribute.CS_CARELESS_CLEANUP));
 		Assertor.assertMarkerInfoListSize(5, collector.getBadSmells(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK));
 		Assertor.assertMarkerInfoListSize(4, collector.getBadSmells(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
 		Assertor.assertMarkerInfoListSize(3, collector.getBadSmells(RLMarkerAttribute.CS_OVER_LOGGING));
 		// TODO Example of this bad smell haven't add to SuppressWarningExampleForAnalyzer
 		assertEquals(0, collector.getBadSmells(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK).size());
 		assertEquals(0, collector.getBadSmells(RLMarkerAttribute.CS_UNPROTECTED_MAIN).size());
-		assertEquals(25, collector.getAllBadSmells().size());
+		assertEquals(26, collector.getAllBadSmells().size());
 	}
 }

@@ -3,7 +3,6 @@ package ntut.csie.analyzer.thrown;
 import java.util.ArrayList;
 import java.util.List;
 
-import ntut.csie.analyzer.ThrownExceptionBeCaughtDetector;
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.util.NodeUtils;

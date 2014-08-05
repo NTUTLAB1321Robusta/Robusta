@@ -85,7 +85,7 @@ public class ReportBuilderIntergrationTest {
 		// 根據測試檔案樣本內容建立新的檔案
 		loadClass(NestedTryStatementExample.class); 
 		loadClass(CarelessCleanupBaseExample.class); 
-		loadClass(MethodInvocationBeforeClose.class); 
+		loadClass(MethodInvocationBeforeClose.class);
 		loadClass(ClassImplementCloseable.class);
 		loadClass(ClassImplementCloseableWithoutThrowException.class);
 		loadClass(ClassCanCloseButNotImplementCloseable.class);
@@ -100,7 +100,7 @@ public class ReportBuilderIntergrationTest {
 		loadClass(OverLoggingTheThirdOrderClass.class);
 		loadClass(UnprotectedMainProgramExample.class);
 		loadClass(UnprotectedMainProgramWithCatchRuntimeExceptionExample.class);
-		loadClass(UnprotectedMainProgramWithoutStatementExample.class);
+		loadClass(UnprotectedMainProgramWithoutStatementExample.class);	
 		loadClass(UnprotectedMainProgramWithoutTryExample.class);
 		loadClass(UnprotectedMainProgramWithTry.class);
 		loadClass(UnprotectedmainProgramWithTryAtFirstStatement.class);
@@ -342,15 +342,16 @@ public class ReportBuilderIntergrationTest {
 		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER));
 		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK));
 		/*
-		 * 6 in CarelessCleanupBaseExample
-		 * 5 in ThrownExceptionInFinallyBlockExample
+		 * 8 in CarelessCleanupBaseExample
+		 * 6 in ThrownExceptionInFinallyBlockExample
+		 * 6 in NestedTryStatementExample
 		 */
-		assertEquals(11, reportModel.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP));
+		assertEquals(20, reportModel.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP));
 		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
 		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING));
 		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN));
 		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK));
-		assertEquals(11, reportModel.getAllSmellSize());
+		assertEquals(20, reportModel.getAllSmellSize());
 	}
 
 	@Test
@@ -378,15 +379,16 @@ public class ReportBuilderIntergrationTest {
 		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER));
 		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK));
 		/*
-		 * 9 in CarelessCleanupBaseExample (with 3 by extra rules)
-		 * 5 in ThrownExceptionInFinallyBlockExample
+		 * 11 in CarelessCleanupBaseExample (with 3 by extra rules)
+		 * 6 in ThrownExceptionInFinallyBlockExample
+		 * 6 in NestedTryStatementExample
 		 */
-		assertEquals(14, reportModel.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP));		
+		assertEquals(23, reportModel.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP));		
 		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
 		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING));
 		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN));
 		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK));
-		assertEquals(14, reportModel.getAllSmellSize());
+		assertEquals(23, reportModel.getAllSmellSize());
 	}
 	
 	@Test
@@ -437,10 +439,11 @@ public class ReportBuilderIntergrationTest {
 		assertEquals(49,reportModel.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER));
 		assertEquals(18,reportModel.getSmellSize(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK));
 		/*
-		 * 6 in CarelessCleanupBaseExample
-		 * 5 in ThrownExceptionInFinallyBlockExample
+		 * 11 in CarelessCleanupBaseExample (with 3 by extra rules)
+		 * 6 in ThrownExceptionInFinallyBlockExample
+		 * 6 in NestedTryStatementExample
 		 */
-		assertEquals(11, reportModel.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP));
+		assertEquals(20, reportModel.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP));
 		assertEquals(51, reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
 		assertEquals(26, reportModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING));
 		assertEquals(6, reportModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN));
@@ -451,6 +454,6 @@ public class ReportBuilderIntergrationTest {
 		assertEquals(6, reportModel.getPackagesSize());
 		assertEquals(projectName, reportModel.getProjectName());
 		assertEquals(2078, reportModel.getTotalLine());
-		assertEquals(199, reportModel.getAllSmellSize());
+		assertEquals(208, reportModel.getAllSmellSize());
 	}
 }

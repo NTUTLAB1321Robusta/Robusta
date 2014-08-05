@@ -46,7 +46,6 @@ public class CarelessCleanupIntegratedExample {
 			fileOutputStream.write(context);
 			fileOutputStream.close(); // Unsafe
 		} catch (IOException e) {
-			System.out.println("IOException.");
 			fileOutputStream.close(); // Safe
 			throw e;
 		} finally {
@@ -61,7 +60,7 @@ public class CarelessCleanupIntegratedExample {
 		for (int a = 0; a < 10; a++) {
 			try {
 				if (a == 5) {
-					fileOutputStream.close(); // Safe
+					fileOutputStream.close(); // Unsafe
 				}
 			} catch (IOException e) {
 				throw e;
@@ -98,7 +97,7 @@ public class CarelessCleanupIntegratedExample {
 			zOut.write(is.read());
 		} finally {
 			ResourceCloser.closeResourceDirectly(is); // Unsafe when user defined
-		} 
+		}
 	}
 
 	/**

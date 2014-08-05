@@ -1,4 +1,4 @@
-package ntut.csie.analyzer;
+package ntut.csie.analyzer.thrown;
 
 import java.util.ArrayList;
 import java.util.Arrays;

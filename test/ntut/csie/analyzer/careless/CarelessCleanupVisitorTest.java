@@ -62,7 +62,7 @@ public class CarelessCleanupVisitorTest {
 				SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupBaseExample.class);
 
-		Assertor.assertMarkerInfoListSize(6, smellList);
+		Assertor.assertMarkerInfoListSize(8, smellList);
 	}
 
 	@Test
@@ -75,7 +75,7 @@ public class CarelessCleanupVisitorTest {
 			throws JavaModelException {
 		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupAdvancedExample.class);
 
-		Assertor.assertMarkerInfoListSize(5, smellList);
+		Assertor.assertMarkerInfoListSize(6, smellList);
 	}
 
 	@Test
@@ -90,7 +90,7 @@ public class CarelessCleanupVisitorTest {
 				SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupAdvancedExample.class);
 
-		Assertor.assertMarkerInfoListSize(11, smellList);
+		Assertor.assertMarkerInfoListSize(13, smellList);
 	}
 
 	@Ignore
@@ -127,7 +127,7 @@ public class CarelessCleanupVisitorTest {
 		Assertor.assertMarkerInfoListSize(1, smellList);
 	}
 
-	final int DEFAULT_BAD_SMELLS_OF_INTEGRATED_EXAMPLE = 5;
+	final int DEFAULT_BAD_SMELLS_OF_INTEGRATED_EXAMPLE = 6;
 	
 	@Test
 	public void testIntegratedExampleWithDefaultSetting()
