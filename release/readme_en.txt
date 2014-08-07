@@ -7,7 +7,7 @@ System Requirements:
 	Eclipse Classic 3.6 or newer.
 	
 How to install:
-	Option1:
+	Option1: (for Eclipse 3.7+)
 		1. Find the "Install" icon right by "Robusta."
 		2. Drag and drop the icon into a running Eclipse.
 		3. Make sure the checkbox right by "Robusta" is checked.

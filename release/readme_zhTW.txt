@@ -5,7 +5,7 @@
 	Eclipse Classic 3.6 或以上版本
 
 安裝 Robusta：
-	方法一:
+	方法一: (適用於 Eclipse 3.7 以上版本)
 		一、在軟體系統實驗室網頁: http://pl.csie.ntut.edu.tw/index.php 中的「專案名稱」欄中找到Robusta。
 		二、在 Robusta 右側欄位找到「Install」小圖像。
 		三、將「Install」小圖像拖曳至執行中的 Eclipse。
