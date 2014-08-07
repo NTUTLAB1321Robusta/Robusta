@@ -116,21 +116,11 @@ public class ToggleNatureAction implements IObjectActionDelegate {
 				project.setDescription(description, null);
 			}
 
-			buildProjectIfNeeded(project);
+			// Build the project, even if marker exist prior to the click action
+			project.build(IncrementalProjectBuilder.FULL_BUILD, new NullProgressMonitor());
 		}
 		catch (CoreException ex) {
 			logger.error("[toggleNature] EXCEPTION ",ex);
-		}
-	}
-
-	/**
-	 * Build the project if it will not build automatically. 
-	 */
-	private void buildProjectIfNeeded(IProject project) throws CoreException {
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IWorkspaceDescription description = workspace.getDescription();
-		if (!description.isAutoBuilding()) {
-			project.build(IncrementalProjectBuilder.AUTO_BUILD, new NullProgressMonitor());
 		}
 	}
 
