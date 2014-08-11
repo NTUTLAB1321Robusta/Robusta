@@ -63,6 +63,8 @@
 		<java jar="${equinox-launcher}" fork="true" timeout="10800000" failonerror="true" maxmemory="512m">
 			<arg line="-nosplash"/>
 			<arg line="-console"/>
+			<arg line="-consoleLog"/>
+			<arg line="-debug"/>
 			<arg line="-application taipeitech.csie.robusta.standalone"/>
 			<arg line="-data ${WORKSPACE_PATH}"/>
 			<arg line="${PROJECT_LOCATION}"/>
