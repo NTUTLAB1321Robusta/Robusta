@@ -1,5 +1,6 @@
 /report/index.html
 /report/trendreport.html
+/report/datatransform.xsl
 /report/css/jquery-ui-1.10.4.custom.min.css
 /report/css/jquery.dataTables_themeroller.css
 /report/css/style.css

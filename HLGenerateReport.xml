@@ -3,56 +3,57 @@
  * Run Robusta from command line to generate bedsmell report
  ****************************************************************************-->
 <project name="RobustaHeadLess" default="all">
-	
+
 	<property environment="env"/>
-    <property name="ECLIPSE_HOME" value="${env.ECLIPSE_HOME}"/>
-	
+	<property name="ECLIPSE_HOME" value="${env.ECLIPSE_HOME}"/>
+
 	<!-- BEGIN - Get the equinox-launcher -->
-		<!-- Be careful if your eclipse has more than one equinox launcher -->
-		<path id="equinox-launcher-file">
-			<fileset dir="${ECLIPSE_HOME}/plugins" casesensitive="no">
-				<include name="org.eclipse.equinox.launcher_*.jar" />
-			</fileset>
-		</path>
-		<property name="equinox-launcher" refid="equinox-launcher-file"/>
-		<!-- END - Get the equinox-launcher -->
-	
+	<!-- Be careful if your eclipse has more than one equinox launcher -->
+	<path id="equinox-launcher-file">
+		<fileset dir="${ECLIPSE_HOME}/plugins" casesensitive="no">
+			<include name="org.eclipse.equinox.launcher_*.jar" />
+		</fileset>
+	</path>
+	<property name="equinox-launcher" refid="equinox-launcher-file"/>
+	<!-- END - Get the equinox-launcher -->
+
 	<!-- =====================================================
 		Need to overwrite by DEFINE when call this build file 
 		=================================================== -->
-	
-		<!-- Temporary work space for robusta tools, this workspace will be created and deleted before and after Robusta run-->
-		<property name="WORKSPACE_PATH" value="${basedir}/../robusta_badsmell_report_project_workspace"/>
-		
-		<!-- Where is the location of the project that we want to generate the bad smell report -->
-		<property name="PROJECT_LOCATION" value="${basedir}/" />
-				
-		<!-- Where to save the generated report -->
-		<property name="DESTINATION_REPORT_FOLDER" value="${basedir}/Robusta_Report" />
-	
+
+	<!-- Temporary work space for robusta tools, this workspace will be created and deleted before and after Robusta run-->
+	<property name="WORKSPACE_PATH" value="${basedir}/../robusta_badsmell_report_project_workspace"/>
+
+	<!-- Where is the location of the project that we want to generate the bad smell report -->
+	<property name="PROJECT_LOCATION" value="${basedir}/" />
+
+	<!-- Where to save the generated report -->
+	<property name="DESTINATION_REPORT_FOLDER" value="${basedir}/Robusta_Report" />
+
 	<!-- ===== End of DEFINE ===== -->
-	
+
 	<property name="ORIGINAL_PROJECT_PATH" value="${PROJECT_LOCATION}/${PROJECT_NAME}"/>
 	<property name="DESTINATION_PROJECT_PATH" value="${PROJECT_LOCATION}"/>
-	
+
 	<!-- - - - - - - - - - - - - - - - - - 
           target: init                      
          - - - - - - - - - - - - - - - - - -->
-    <target name="init">
-    	<mkdir dir="${WORKSPACE_PATH}"/>
-    	<delete quiet="true" dir="${DESTINATION_REPORT_FOLDER}"/>
-    	<delete quiet="true" dir="${PROJECT_LOCATION}/Robusta_Report"/>
-    </target>
-	
+	<target name="init">
+		<mkdir dir="${WORKSPACE_PATH}"/>
+		<!-- <delete quiet="true" dir="${DESTINATION_REPORT_FOLDER}"/> -->
+		<delete quiet="true" dir="${PROJECT_LOCATION}/Robusta_Report"/>
+	</target>
+
 	<!-- - - - - - - - - - - - - - - - - - 
           target: save_and_clear                      
          - - - - - - - - - - - - - - - - - -->
-    <target name="save_and_clear">
-    	<copy todir="${DESTINATION_REPORT_FOLDER}" overwrite="yes" includeemptydirs="yes">
-    		<fileset dir="${PROJECT_LOCATION}/Robusta_Report"></fileset>
-    	</copy>
-    	<delete quiet="true" dir="${WORKSPACE_PATH}"/>
-    </target>
+	<target name="save_and_clear">
+		<copy todir="${DESTINATION_REPORT_FOLDER}" overwrite="yes" includeemptydirs="yes">
+			<fileset dir="${PROJECT_LOCATION}/Robusta_Report">
+			</fileset>
+		</copy>
+		<delete quiet="true" dir="${WORKSPACE_PATH}"/>
+	</target>
 
 	<!-- - - - - - - - - - - - - - - - - - 
           target: main                      
@@ -67,10 +68,27 @@
 			<arg line="${PROJECT_LOCATION}"/>
 		</java>
 	</target>
-	
+
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: transform                    
+          - - - - - - - - - - - - - - - - - -->
+	<target name="transform">
+		<path id="transform-file">
+			<fileset dir="${DESTINATION_REPORT_FOLDER}/" casesensitive="no">
+				<include name="**/*.xml" />
+			</fileset>
+		</path>
+		<property name="BSdata" refid="transform-file"/>
+		
+		<delete quiet="true" file="${DESTINATION_REPORT_FOLDER}/report/js/data.js"/>
+		<xslt in="${BSdata}" out="${DESTINATION_REPORT_FOLDER}/report/js/data.js" 
+			style="${DESTINATION_REPORT_FOLDER}/report/datatransform.xsl">
+		</xslt>
+	</target>
+
 	<!-- ================================= 
           target: all              
          ================================= -->
-    <target name="all" depends="init, main, save_and_clear">
-    </target>
+	<target name="all" depends="init, main, save_and_clear, transform">
+	</target>
 </project>

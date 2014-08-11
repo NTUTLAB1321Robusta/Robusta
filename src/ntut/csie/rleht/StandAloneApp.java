@@ -5,6 +5,7 @@ import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.report.BadSmellDataStorage;
 import ntut.csie.csdet.report.ReportBuilder;
+import ntut.csie.csdet.report.ReportContentCreator;
 import ntut.csie.csdet.report.ReportModel;
 
 import org.eclipse.core.resources.IProject;
@@ -43,6 +44,8 @@ public class StandAloneApp implements IApplication {
 		IStatus returnStatus = reportBuilder.run();
 		if(returnStatus.isOK()) {
 			dataStorage.save(reportBuilder.getReportModel());
+			ReportContentCreator reportContentCreator = new ReportContentCreator(projectPath.toString(), null, null, project.getName().toString());
+			reportContentCreator.exportReportResources();
 		}
 		
 		ResourcesPlugin.getWorkspace().save(true, null);
