@@ -6,6 +6,8 @@
 	<property environment="env"/>
 	<fail unless="env.ECLIPSE_HOME" message="ECLIPSE_HOME not set."/>
 	<property name="ECLIPSE_HOME" value="${env.ECLIPSE_HOME}"/>
+	<fail unless="env.ECLIPSE_TEST_TARGET" message="ECLIPSE_TEST_TARGET not set."/>
+	<property name="ECLIPSE_TEST_TARGET" value="${env.ECLIPSE_TEST_TARGET}"/>
 	<property name="debuglevel" value="source,lines,vars"/>
 	<property name="target" value="1.6"/>
 	<property name="source" value="1.6"/>
@@ -22,6 +24,13 @@
 	</path>
 	<property name="equinox-launcher" refid="equinox-launcher-file"/>
 	<!-- END - Get the equinox-launcher -->
+	
+	<path id="equinox-launcher-test-file">
+        <fileset dir="${ECLIPSE_TEST_TARGET}/plugins">
+            <include name="org.eclipse.equinox.launcher_*.jar"/>
+        </fileset>
+    </path>
+	<property name="equinox-launcher-test" refid="equinox-launcher-file"/>
 
 	<!-- Load properties from manifest file and plugin.properties file-->
 	<property file="${basedir}/META-INF/MANIFEST.MF" prefix="pluginManifest"/>
@@ -55,67 +64,46 @@
 
 	<!-- project lib -->
 	<path id="Plug-in Dependencies.libraryclasspath">
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui_3.6.2.M20110203-1100.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.swt_3.6.2.v3659c.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.swt.win32.win32.x86_64_3.6.2.v3659c.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jface_3.6.2.M20110210-1200.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.commands_3.6.0.I20100512-1500.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui.workbench_3.6.2.M20110210-1200.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.runtime_3.6.0.v20100505.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.osgi_3.6.2.R36x_v20110210.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.equinox.common_3.6.0.v20100503.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.jobs_3.5.1.R36x_v20100824.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.runtime.compatibility.registry_3.3.0.v20100520/runtime_registry_compatibility.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.equinox.registry_3.5.0.v20100503.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.equinox.preferences_3.3.0.v20100503.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.contenttype_3.4.100.v20100505-1235.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.equinox.app_1.3.1.R36x_v20100803.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jdt_3.6.1.v201102101200.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jdt.core_3.6.2.v_A76_R36x.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jdt.compiler.apt_1.0.300.v20100513-0845.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jdt.compiler.tool_1.0.100.v_A76_R36x.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.resources_3.6.1.R36x_v20110131-1630.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ltk.core.refactoring_3.5.101.r362_v20101117-0800.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ltk.ui.refactoring_3.5.0.v20100526-0800.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jface.text_3.6.1.r361_v20100825-0800.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.text_3.5.0.v20100601-1300.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui.editors_3.6.1.r361_v20100825-0800.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.filebuffers_3.5.100.v20100520-0800.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jdt.ui_3.6.2.r362_v20110203.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui.workbench.texteditor_3.6.1.r361_v20100714-0800.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui.console_3.5.0.v20100526.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui.ide_3.6.2.M20101201-0800.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jdt.junit_3.6.1.r361_v20100825-0800.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jdt.junit.core_3.6.1.r361_v20100825-0800.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jdt.launching_3.5.200.v20110105_r362.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.junit_4.8.1.v4_8_1_v20100427-1100/junit.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.hamcrest.core_1.1.0.v20090501071000.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jdt.core.manipulation_1.3.0.v20100520-0800.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-antlr.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-apache-bcel.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-apache-bsf.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-apache-log4j.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-apache-oro.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-apache-regexp.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-apache-resolver.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-commons-logging.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-commons-net.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-jai.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-javamail.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-jdepend.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-jmf.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-jsch.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-junit.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-launcher.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-netrexx.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-nodeps.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-starteam.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-stylebook.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-swing.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-trax.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.apache.ant_1.7.1.v20100518-1145/lib/ant-weblogic.jar"/>
-		<pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui.views_3.5.1.M20110202-0800.jar"/>
+		<fileset dir="${ECLIPSE_HOME}/plugins">
+			<include name="org.eclipse.ui_*.jar"/>
+			<include name="org.eclipse.ui.views_*.jar"/>
+			<include name="org.eclipse.ui.editors_*.jar"/>
+			<include name="org.eclipse.ui.workbench_*.jar"/>
+			<include name="org.eclipse.ui.ide_*.jar"/>
+			<include name="org.eclipse.ui.console_*.jar"/>
+			<include name="org.eclipse.ui.workbench.texteditor_*.jar"/>
+			<include name="org.eclipse.core.commands_*.jar"/>
+			<include name="org.eclipse.core.runtime_*.jar"/>
+			<include name="org.eclipse.core.jobs_*.jar"/>
+			<include name="org.eclipse.core.runtime.compatibility.registry_*/runtime_registry_compatibility.jar"/>
+			<include name="org.eclipse.core.contenttype_*.jar"/>
+			<include name="org.eclipse.core.filebuffers_*.jar"/>
+			<include name="org.eclipse.core.resources_*.jar"/>
+			<include name="org.eclipse.swt_*.jar"/>
+			<include name="org.eclipse.swt.win32.win32.x86_*.jar"/>
+			<include name="org.eclipse.jdt_*.jar"/>
+			<include name="org.eclipse.jdt.core_*.jar"/>
+			<include name="org.eclipse.jdt.compiler.apt_*.jar"/>
+			<include name="org.eclipse.jdt.compiler.tool_*.jar"/>
+			<include name="org.eclipse.jdt.junit_*.jar"/>
+			<include name="org.eclipse.jdt.junit.core_*.jar"/>
+			<include name="org.eclipse.jdt.ui_*.jar"/>
+			<include name="org.eclipse.jdt.launching_*.jar"/>
+			<include name="org.eclipse.jdt.core.manipulation_*.jar"/>
+			<include name="org.eclipse.ltk.core.refactoring_*.jar"/>
+			<include name="org.eclipse.ltk.ui.refactoring_*.jar"/>
+			<include name="org.eclipse.equinox.common_*.jar"/>
+			<include name="org.eclipse.equinox.registry_*.jar"/>
+			<include name="org.eclipse.equinox.preferences_*.jar"/>
+			<include name="org.eclipse.equinox.app_*.jar"/>
+			<include name="org.eclipse.jface.text_*.jar"/>
+			<include name="org.eclipse.osgi_*.jar"/>
+			<include name="org.eclipse.text_*.jar"/>
+			<include name="org.eclipse.jface_*.jar"/>
+			<include name="org.junit_4*/junit.jar"/>
+			<include name="org.hamcrest.core_*.jar"/>
+			<include name="org.apache.ant_*/**/*.jar"/>
+		</fileset>
 		<pathelement location="lib/commons-lang-2.3.jar"/>
 		<pathelement location="lib/slf4j-api-1.5.0.jar"/>
 		<pathelement location="lib/slf4j-log4j12-1.5.0.jar"/>
@@ -236,7 +224,10 @@
 <!-- wrap bin folder to test jar file -->
 <target name="product-test-jar">
 	<jar destfile="${plugin-folder}/${jar-file-name}" filesetmanifest="mergewithoutmain" basedir="${bin-folder}"/>
-	<copy file="${plugin-folder}/${jar-file-name}" todir="${ECLIPSE_HOME}/plugins" overwrite="true" />
+	<delete>
+        <fileset dir="${ECLIPSE_TEST_TARGET}/configuration" includes="**/*" excludes="config.ini"/>
+	</delete>
+	<copy file="${plugin-folder}/${jar-file-name}" todir="${ECLIPSE_TEST_TARGET}/plugins" overwrite="true" />
 </target>
 
 <!-- run pde junit test -->
@@ -269,12 +260,12 @@
 
 	<delete quiet="true" file="pde_test_port.properties"/>
 	<delete quiet="true" file="${plugin-folder}/${jar-file-name}"/>
-	<delete quiet="true" file="${ECLIPSE_HOME}/plugins/${jar-file-name}"/>
+	<delete quiet="true" file="${ECLIPSE_TEST_TARGET}/plugins/${jar-file-name}"/>
 </target>
 
 <!-- Test will fail if your host eclipse already install Robusta, check eclipse/artifacts.xml, remove all robusta info there -->
 <target name="pde-test">
-	<java jar="${equinox-launcher}" fork="yes" maxmemory="512m">
+	<java jar="${equinox-launcher-test}" fork="yes" maxmemory="512m">
 		<jvmarg value="-Dfile.encoding=UTF-8" />
 		<!-- Do not specify these system constants, let the boot loader select them automatically - avoid OS dependency
 		<arg line="-version 3" />
@@ -400,6 +391,9 @@
 	Reference: http://wiki.eclipse.org/Equinox/p2/Publisher -->
 <target name="generate-p2-repository-metadata">
 	<java jar="${equinox-launcher}" fork="true" timeout="10800000" failonerror="true" maxmemory="512m">
+		<arg line=" -debug" />
+		<arg line=" -console" />
+		<arg line=" -consoleLog" />
 		<arg line=" -application org.eclipse.equinox.p2.publisher.UpdateSitePublisher" />
 		<arg line=" -source ${update-folder}" />
 		<arg line=" -configs ANY" />
