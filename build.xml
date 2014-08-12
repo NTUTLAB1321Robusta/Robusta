@@ -30,7 +30,7 @@
             <include name="org.eclipse.equinox.launcher_*.jar"/>
         </fileset>
     </path>
-	<property name="equinox-launcher-test" refid="equinox-launcher-file"/>
+	<property name="equinox-launcher-test" refid="equinox-launcher-test-file"/>
 
 	<!-- Load properties from manifest file and plugin.properties file-->
 	<property file="${basedir}/META-INF/MANIFEST.MF" prefix="pluginManifest"/>
@@ -224,9 +224,6 @@
 <!-- wrap bin folder to test jar file -->
 <target name="product-test-jar">
 	<jar destfile="${plugin-folder}/${jar-file-name}" filesetmanifest="mergewithoutmain" basedir="${bin-folder}"/>
-	<delete>
-        <fileset dir="${ECLIPSE_TEST_TARGET}/configuration" includes="**/*" excludes="config.ini"/>
-	</delete>
 	<copy file="${plugin-folder}/${jar-file-name}" todir="${ECLIPSE_TEST_TARGET}/plugins" overwrite="true" />
 </target>
 
