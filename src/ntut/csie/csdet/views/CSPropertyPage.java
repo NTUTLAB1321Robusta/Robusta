@@ -55,8 +55,12 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage {
 		}
 		robustaSettings = new RobustaSettings(
 				UserDefinedMethodAnalyzer.getRobustaSettingXMLPath(project), project);
+		
+		// 沒有設定檔存在時，幫使用者預設為所有的條件都勾選
 		smellSettings = new SmellSettings(
 				UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		smellSettings.activateAllConditionsIfNotConfugured(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		
 		tabPages = new ArrayList<APropertyPage>();
 		noDefaultAndApplyButton();
 	}
