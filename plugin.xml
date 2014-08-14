@@ -48,19 +48,23 @@
                name="open"
                value="true">
          </filter>
+         <menu label ="Robusta" path="additions" id="Robusta.menu">
+         	<separator name="group">
+         	</separator>
+         </menu>
          <action
                class="ntut.csie.rleht.builder.ToggleNatureAction"
                enablesFor="+"
                id="Robusta.removeRLNatureAction"
-               label="Remove Robusta Smell Marker"
-               menubarPath="additions">
+               label="Remove Marker"
+               menubarPath="Robusta.menu/group">
          </action>
          <action
                class="ntut.csie.rleht.builder.ToggleNatureAction"
                enablesFor="+"
                id="Robusta.addRLNatureAction"
-               label="Add Robusta Smell Marker"
-               menubarPath="additions">
+               label="Detect Smells"
+               menubarPath="Robusta.menu/group">
          </action>
       </objectContribution>  
 
