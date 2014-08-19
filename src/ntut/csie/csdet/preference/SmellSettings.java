@@ -525,8 +525,9 @@ public class SmellSettings {
 		addExtraRule(SMELL_OVERLOGGING, EXTRARULE_OVERLOGGING_DETECTWRAPPINGEXCEPTION);
 		addExtraRule(SMELL_OVERLOGGING, EXTRARULE_JavaUtilLoggingLogger);
 		addExtraRule(SMELL_OVERLOGGING, EXTRARULE_OrgApacheLog4j);
-		writeXMLFile(path);
 		
 		setSmellTypeAttribute(SMELL_EXCEPTIONTHROWNFROMFINALLYBLOCK, ATTRIBUTE_ISDETECTING, true);
+		
+		writeXMLFile(path);
 	}
 }
