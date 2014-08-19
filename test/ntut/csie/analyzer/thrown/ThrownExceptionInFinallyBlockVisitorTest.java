@@ -215,7 +215,7 @@ public class ThrownExceptionInFinallyBlockVisitorTest {
 
 	@Test
 	public void visitWithThrownInConstructor() {
-		MethodDeclaration method = getMethodDeclarationByName("ThrownExceptionInFinallyBlockExample");
+		MethodDeclaration method = getMethodDeclarationByName("ExceptionThrownFromFinallyBlockExample");
 		method.accept(thrownExceptionInFinallyBlockVisitor);
 
 		List<MarkerInfo> thrownInFinallyInfos = thrownExceptionInFinallyBlockVisitor
