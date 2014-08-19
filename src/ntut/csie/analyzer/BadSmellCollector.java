@@ -10,7 +10,7 @@ import ntut.csie.analyzer.dummy.DummyHandlerVisitor;
 import ntut.csie.analyzer.empty.EmptyCatchBlockVisitor;
 import ntut.csie.analyzer.nested.NestedTryStatementVisitor;
 import ntut.csie.analyzer.over.OverLoggingDetector;
-import ntut.csie.analyzer.thrown.ThrownExceptionInFinallyBlockVisitor;
+import ntut.csie.analyzer.thrown.ExceptionThrownFromFinallyBlockVisitor;
 import ntut.csie.analyzer.unprotected.UnprotectedMainProgramVisitor;
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.data.SSMessage;
@@ -55,7 +55,7 @@ public class BadSmellCollector {
 		EmptyCatchBlockVisitor emptyCatchBlockVisitor = new EmptyCatchBlockVisitor(root);
 		NestedTryStatementVisitor nestedTryStatementVisitor = new NestedTryStatementVisitor(root);
 		ASTInitializerCollector initializerCollector = new ASTInitializerCollector();
-		ThrownExceptionInFinallyBlockVisitor thrownInFinallyVisitor = new ThrownExceptionInFinallyBlockVisitor(root);
+		ExceptionThrownFromFinallyBlockVisitor thrownInFinallyVisitor = new ExceptionThrownFromFinallyBlockVisitor(root);
 		
 		root.accept(initializerCollector);
 		for(Initializer init : initializerCollector.getInitializerList()) {
@@ -63,14 +63,14 @@ public class BadSmellCollector {
 			init.accept(emptyCatchBlockVisitor);
 			init.accept(nestedTryStatementVisitor);
 
-			// Thrown exception in finally block
+			// Exception thrown from finally block
 			if (isDetectingBadSmell
-					.get(SmellSettings.SMELL_THROWNEXCEPTIONINFINALLYBLOCK)) {
+					.get(SmellSettings.SMELL_EXCEPTIONTHROWNFROMFINALLYBLOCK)) {
 				init.accept(thrownInFinallyVisitor);
 				List<MarkerInfo> throwInFinallyList = thrownInFinallyVisitor.getThrownInFinallyList();
 				setMethodNameAndIndexForInitializer(throwInFinallyList);
 				addBadSmell(
-						RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK,throwInFinallyList);
+						RLMarkerAttribute.CS_EXCEPTION_THROWN_FROM_FINALLY_BLOCK,throwInFinallyList);
 			}
 		}
 		
@@ -175,14 +175,14 @@ public class BadSmellCollector {
 				addBadSmell(RLMarkerAttribute.CS_UNPROTECTED_MAIN, unprotectedMain);
 			}
 
-			// Thrown exception in finally block
-			if(isDetectingBadSmell.get(SmellSettings.SMELL_THROWNEXCEPTIONINFINALLYBLOCK)) {
-				if(detMethodSmell.get(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK)) {
-					ThrownExceptionInFinallyBlockVisitor thrownInFinallyVisitor = new ThrownExceptionInFinallyBlockVisitor(root);
+			// Exception thrown from finally block
+			if(isDetectingBadSmell.get(SmellSettings.SMELL_EXCEPTIONTHROWNFROMFINALLYBLOCK)) {
+				if(detMethodSmell.get(RLMarkerAttribute.CS_EXCEPTION_THROWN_FROM_FINALLY_BLOCK)) {
+					ExceptionThrownFromFinallyBlockVisitor thrownInFinallyVisitor = new ExceptionThrownFromFinallyBlockVisitor(root);
 					method.accept(thrownInFinallyVisitor);
 					List<MarkerInfo> throwInFinallyList = thrownInFinallyVisitor.getThrownInFinallyList();
 					setMethodNameAndIndex(throwInFinallyList, method.getName().toString(), methodIdx);
-					addBadSmell(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK, throwInFinallyList);
+					addBadSmell(RLMarkerAttribute.CS_EXCEPTION_THROWN_FROM_FINALLY_BLOCK, throwInFinallyList);
 				}
 			}
 		}
@@ -272,7 +272,7 @@ public class BadSmellCollector {
 		SmellSettings smellSettings = new SmellSettings(
 				UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 
-		final String badSmellTEIFB = SmellSettings.SMELL_THROWNEXCEPTIONINFINALLYBLOCK;
+		final String badSmellTEIFB = SmellSettings.SMELL_EXCEPTIONTHROWNFROMFINALLYBLOCK;
 		isDetectingBadSmell.put(badSmellTEIFB,
 				new Boolean(smellSettings.isDetectingSmell(badSmellTEIFB)));
 

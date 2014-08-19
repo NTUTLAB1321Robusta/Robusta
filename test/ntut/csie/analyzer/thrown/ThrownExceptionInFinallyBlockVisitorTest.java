@@ -32,7 +32,7 @@ public class ThrownExceptionInFinallyBlockVisitorTest {
 	JavaProjectMaker javaProjectMaker;
 	JavaFileToString javaFile2String;
 	CompilationUnit compilationUnit;
-	ThrownExceptionInFinallyBlockVisitor thrownExceptionInFinallyBlockVisitor;
+	ExceptionThrownFromFinallyBlockVisitor thrownExceptionInFinallyBlockVisitor;
 	SmellSettings smellSettings;
 	List<MethodDeclaration> methodList;
 
@@ -49,19 +49,19 @@ public class ThrownExceptionInFinallyBlockVisitorTest {
 
 		// 根據測試檔案樣本內容建立新的檔案
 		javaFile2String = new JavaFileToString();
-		javaFile2String.read(ThrownExceptionInFinallyBlockExample.class,
+		javaFile2String.read(ExceptionThrownFromFinallyBlockExample.class,
 				JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
-				ThrownExceptionInFinallyBlockExample.class.getPackage()
+				ExceptionThrownFromFinallyBlockExample.class.getPackage()
 						.getName(),
-				ThrownExceptionInFinallyBlockExample.class.getSimpleName()
+				ExceptionThrownFromFinallyBlockExample.class.getSimpleName()
 						+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
-						+ ThrownExceptionInFinallyBlockExample.class
+						+ ExceptionThrownFromFinallyBlockExample.class
 								.getPackage().getName() + ";\n"
 						+ javaFile2String.getFileContent());
 
 		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(
-				ThrownExceptionInFinallyBlockExample.class, testProjectName));
+				ExceptionThrownFromFinallyBlockExample.class, testProjectName));
 		// Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -74,7 +74,7 @@ public class ThrownExceptionInFinallyBlockVisitorTest {
 		compilationUnit.recordModifications();
 
 		// create the visitor
-		thrownExceptionInFinallyBlockVisitor = new ThrownExceptionInFinallyBlockVisitor(
+		thrownExceptionInFinallyBlockVisitor = new ExceptionThrownFromFinallyBlockVisitor(
 				compilationUnit);
 
 		// get the method list of the compilationUnit

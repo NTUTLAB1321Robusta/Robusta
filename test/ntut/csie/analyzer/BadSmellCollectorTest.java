@@ -77,7 +77,7 @@ public class BadSmellCollectorTest {
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_EMPTYCATCHBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_NESTEDTRYSTATEMENT, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_UNPROTECTEDMAINPROGRAM, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
-		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_THROWNEXCEPTIONINFINALLYBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
+		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_EXCEPTIONTHROWNFROMFINALLYBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_OVERLOGGING, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
 		smellSettings.addExtraRule(SmellSettings.SMELL_OVERLOGGING, SmellSettings.EXTRARULE_OVERLOGGING_DETECTWRAPPINGEXCEPTION);
@@ -134,7 +134,7 @@ public class BadSmellCollectorTest {
 		Assertor.assertMarkerInfoListSize(4, collector.getBadSmells(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
 		Assertor.assertMarkerInfoListSize(3, collector.getBadSmells(RLMarkerAttribute.CS_OVER_LOGGING));
 		// TODO Example of this bad smell haven't add to SuppressWarningExampleForAnalyzer
-		assertEquals(0, collector.getBadSmells(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK).size());
+		assertEquals(0, collector.getBadSmells(RLMarkerAttribute.CS_EXCEPTION_THROWN_FROM_FINALLY_BLOCK).size());
 		assertEquals(0, collector.getBadSmells(RLMarkerAttribute.CS_UNPROTECTED_MAIN).size());
 		assertEquals(26, collector.getAllBadSmells().size());
 	}

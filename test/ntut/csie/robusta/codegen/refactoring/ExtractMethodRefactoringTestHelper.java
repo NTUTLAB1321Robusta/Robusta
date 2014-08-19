@@ -3,7 +3,7 @@ package ntut.csie.robusta.codegen.refactoring;
 import java.util.List;
 
 import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
-import ntut.csie.analyzer.thrown.ThrownExceptionInFinallyBlockVisitor;
+import ntut.csie.analyzer.thrown.ExceptionThrownFromFinallyBlockVisitor;
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.JavaFileToString;
@@ -59,7 +59,7 @@ public class ExtractMethodRefactoringTestHelper {
 	
 	public void InitailSettingForOnlyTEIFB() {
 		smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_THROWNEXCEPTIONINFINALLYBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, true);
+		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_EXCEPTIONTHROWNFROMFINALLYBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 	}
@@ -79,7 +79,7 @@ public class ExtractMethodRefactoringTestHelper {
 	}
 	
 	public List<MarkerInfo> getTEIFBList(CompilationUnit compilationUnit) throws Exception{
-		ThrownExceptionInFinallyBlockVisitor visitor = new ThrownExceptionInFinallyBlockVisitor(compilationUnit);
+		ExceptionThrownFromFinallyBlockVisitor visitor = new ExceptionThrownFromFinallyBlockVisitor(compilationUnit);
 		compilationUnit.accept(visitor);
 		return visitor.getThrownInFinallyList();
 	}

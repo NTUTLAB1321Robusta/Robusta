@@ -61,7 +61,7 @@ function createPackageTable(robustaData) {
 		{ "sTitle": "Nested Try Statement" },
 		{ "sTitle": "Careless Cleanup" },
 		{ "sTitle": "Over Logging" },
-		{ "sTitle": "Throws Exception In Finally Block " },
+		{ "sTitle": "Exception Thrown From Finally Block " },
 		{ "sTitle": "Total"}
 	];
 	var packageTable = $('#package-table').dataTable({
@@ -100,7 +100,7 @@ function createAllBadSmellDataTable(robustaData) {
 					{ "type": "text"}, 
 					{ "type": "select", "values": [	"Empty Catch Block", "Dummy Handler", "Unprotected Main Program", 
 												"Nested Try Statement", "Careless Cleanup", "Over Logging",
-												"Thrown Exception In Finally Block "]},
+												"Exception Thrown From Finally Block "]},
 					{ "type": "text"}, 
 					{ "type": "text"},
 					null

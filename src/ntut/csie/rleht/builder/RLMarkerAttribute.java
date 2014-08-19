@@ -55,7 +55,7 @@ public interface RLMarkerAttribute {
 	public static final String CS_OVER_LOGGING = "Over_Logging";
 	
 	/** Throws Exception In Finally Block **/
-	public static final String CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK = "Thrown_Exception_In_Finally_Block";
+	public static final String CS_EXCEPTION_THROWN_FROM_FINALLY_BLOCK = "Exception_Thrown_From_Finally_Block";
 	
 	/** Exception Robustness Level Advice */
 	public static final String CS_EXCEPTION_RLADVICE  = "Exception_RL_Advice";
@@ -69,7 +69,7 @@ public interface RLMarkerAttribute {
 	
 	/** Total Code Smell Type */
 	public static final String[] CS_TOTAL_TYPE = new String[]{ CS_EMPTY_CATCH_BLOCK,
-		CS_DUMMY_HANDLER, CS_NESTED_TRY_STATEMENT, CS_UNPROTECTED_MAIN, CS_CARELESS_CLEANUP, CS_OVER_LOGGING, CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK};
+		CS_DUMMY_HANDLER, CS_NESTED_TRY_STATEMENT, CS_UNPROTECTED_MAIN, CS_CARELESS_CLEANUP, CS_OVER_LOGGING, CS_EXCEPTION_THROWN_FROM_FINALLY_BLOCK};
 
 	/** Total Smell Type In Catch */
 	public static final String[] CS_CATCH_TYPE = new String[]{ CS_EMPTY_CATCH_BLOCK,

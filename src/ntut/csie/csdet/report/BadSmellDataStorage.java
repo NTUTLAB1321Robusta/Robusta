@@ -124,8 +124,8 @@ public class BadSmellDataStorage {
 				.valueOf(model.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP))));
 		smellList.addContent(new Element("OverLogging").addContent(String
 				.valueOf(model.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING))));
-		smellList.addContent(new Element("ThrownExceptionInFinallyBlock")
-				.addContent(String.valueOf(model.getSmellSize(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK))));
+		smellList.addContent(new Element("ExceptionThrownFromFinallyBlock")
+				.addContent(String.valueOf(model.getSmellSize(RLMarkerAttribute.CS_EXCEPTION_THROWN_FROM_FINALLY_BLOCK))));
 		smellList.addContent(new Element("Total").addContent(String
 				.valueOf(model.getAllSmellSize())));
 		root.addContent(smellList);
@@ -166,9 +166,9 @@ public class BadSmellDataStorage {
 							.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP))));
 			packages.addContent(new Element("OverLogging").addContent(String
 					.valueOf(packageModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING))));
-			packages.addContent(new Element("ThrownExceptionInFinallyBlock")
+			packages.addContent(new Element("ExceptionThrownFromFinallyBlock")
 					.addContent(String.valueOf(packageModel
-							.getSmellSize(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK))));
+							.getSmellSize(RLMarkerAttribute.CS_EXCEPTION_THROWN_FROM_FINALLY_BLOCK))));
 			packages.addContent(new Element("PackageTotal").addContent(String
 					.valueOf(packageModel.getAllSmellSize())));
 			if (packageModel.getAllSmellSize() > 0) {

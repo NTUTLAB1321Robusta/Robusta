@@ -142,7 +142,7 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				}
 				
 				// 碰到TEFB的refactor方法
-			} else if(problem.equals(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK)) {
+			} else if(problem.equals(RLMarkerAttribute.CS_EXCEPTION_THROWN_FROM_FINALLY_BLOCK)) {
 				boolean isSupportRefactoring = (Boolean)marker.getAttribute(RLMarkerAttribute.RL_INFO_SUPPORT_REFACTORING);
 				if(isSupportRefactoring)
 					markerList.add(new TEFBExtractMethodMarkerResolution("Refactor==>Use Extract Method"));

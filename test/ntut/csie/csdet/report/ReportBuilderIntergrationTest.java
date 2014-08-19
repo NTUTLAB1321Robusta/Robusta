@@ -22,7 +22,7 @@ import ntut.csie.analyzer.over.OverLoggingSelf4JExample;
 import ntut.csie.analyzer.over.OverLoggingTheFirstOrderClass;
 import ntut.csie.analyzer.over.OverLoggingTheSecondOrderClass;
 import ntut.csie.analyzer.over.OverLoggingTheThirdOrderClass;
-import ntut.csie.analyzer.thrown.ThrownExceptionInFinallyBlockExample;
+import ntut.csie.analyzer.thrown.ExceptionThrownFromFinallyBlockExample;
 import ntut.csie.analyzer.unprotected.UnprotectedMainProgramExample;
 import ntut.csie.analyzer.unprotected.UnprotectedMainProgramWithCatchRuntimeExceptionExample;
 import ntut.csie.analyzer.unprotected.UnprotectedMainProgramWithTry;
@@ -107,7 +107,7 @@ public class ReportBuilderIntergrationTest {
 		loadClass(UnprotectedMainProgramWithTryAtLastStatement.class);
 		loadClass(UnprotectedMainProgramWithTryAtMiddleStatement.class);
 		loadClass(UnprotectedMainProgramWithoutCatchRightExceptionExample.class);
-		loadClass(ThrownExceptionInFinallyBlockExample.class);
+		loadClass(ExceptionThrownFromFinallyBlockExample.class);
 		
 		InitailSetting();
 		
@@ -150,7 +150,7 @@ public class ReportBuilderIntergrationTest {
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_EMPTYCATCHBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_NESTEDTRYSTATEMENT, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_UNPROTECTEDMAINPROGRAM, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
-		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_THROWNEXCEPTIONINFINALLYBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
+		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_EXCEPTIONTHROWNFROMFINALLYBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
 
 		
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
@@ -171,7 +171,7 @@ public class ReportBuilderIntergrationTest {
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_EMPTYCATCHBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, unDetcting);
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_NESTEDTRYSTATEMENT, SmellSettings.ATTRIBUTE_ISDETECTING, unDetcting);
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_UNPROTECTEDMAINPROGRAM, SmellSettings.ATTRIBUTE_ISDETECTING, unDetcting);
-		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_THROWNEXCEPTIONINFINALLYBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, unDetcting);
+		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_EXCEPTIONTHROWNFROMFINALLYBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, unDetcting);
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.ATTRIBUTE_ISDETECTING, unDetcting);	
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_OVERLOGGING, SmellSettings.ATTRIBUTE_ISDETECTING, unDetcting);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
@@ -282,7 +282,7 @@ public class ReportBuilderIntergrationTest {
 		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT) == 0);
 		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING) == 0);
 		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN) == 0);
-		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK) == 0);
+		assertTrue(reportModel.getSmellSize(RLMarkerAttribute.CS_EXCEPTION_THROWN_FROM_FINALLY_BLOCK) == 0);
 	}
 	
 	@Test
@@ -297,7 +297,7 @@ public class ReportBuilderIntergrationTest {
 		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
 		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING));
 		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN));
-		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_EXCEPTION_THROWN_FROM_FINALLY_BLOCK));
 		assertEquals(67, reportModel.getAllSmellSize());
 	}
 	
@@ -313,7 +313,7 @@ public class ReportBuilderIntergrationTest {
 		assertEquals(51, reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
 		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING));
 		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN));
-		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_EXCEPTION_THROWN_FROM_FINALLY_BLOCK));
 		assertEquals(51, reportModel.getAllSmellSize());
 	}
 	
@@ -329,7 +329,7 @@ public class ReportBuilderIntergrationTest {
 		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
 		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING));
 		assertEquals(6, reportModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN));
-		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_EXCEPTION_THROWN_FROM_FINALLY_BLOCK));
 		assertEquals(6, reportModel.getAllSmellSize());
 	}
 	
@@ -350,7 +350,7 @@ public class ReportBuilderIntergrationTest {
 		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
 		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING));
 		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN));
-		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_EXCEPTION_THROWN_FROM_FINALLY_BLOCK));
 		assertEquals(20, reportModel.getAllSmellSize());
 	}
 
@@ -366,7 +366,7 @@ public class ReportBuilderIntergrationTest {
 		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
 		assertEquals(26, reportModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING));
 		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN));
-		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_EXCEPTION_THROWN_FROM_FINALLY_BLOCK));
 		assertEquals(26, reportModel.getAllSmellSize());
 	}
 	
@@ -387,7 +387,7 @@ public class ReportBuilderIntergrationTest {
 		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
 		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING));
 		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN));
-		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_EXCEPTION_THROWN_FROM_FINALLY_BLOCK));
 		assertEquals(23, reportModel.getAllSmellSize());
 	}
 	
@@ -403,7 +403,7 @@ public class ReportBuilderIntergrationTest {
 		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
 		assertEquals(7, reportModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING));
 		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN));
-		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_EXCEPTION_THROWN_FROM_FINALLY_BLOCK));
 		assertEquals(7, reportModel.getAllSmellSize());
 	}
 	
@@ -419,7 +419,7 @@ public class ReportBuilderIntergrationTest {
 		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
 		assertEquals(18, reportModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING));
 		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN));
-		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK));
+		assertEquals(0, reportModel.getSmellSize(RLMarkerAttribute.CS_EXCEPTION_THROWN_FROM_FINALLY_BLOCK));
 		assertEquals(18, reportModel.getAllSmellSize());
 	}
 	
@@ -447,7 +447,7 @@ public class ReportBuilderIntergrationTest {
 		assertEquals(51, reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
 		assertEquals(26, reportModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING));
 		assertEquals(6, reportModel.getSmellSize(RLMarkerAttribute.CS_UNPROTECTED_MAIN));
-		assertEquals(38, reportModel.getSmellSize(RLMarkerAttribute.CS_THROWN_EXCEPTION_IN_FINALLY_BLOCK));
+		assertEquals(38, reportModel.getSmellSize(RLMarkerAttribute.CS_EXCEPTION_THROWN_FROM_FINALLY_BLOCK));
 		assertEquals(160, reportModel.getTryCounter());
 		assertEquals(183, reportModel.getCatchCounter()); // some 'catch(', other 'catch ('
 		assertEquals(50, reportModel.getFinallyCounter());

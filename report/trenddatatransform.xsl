@@ -9,10 +9,10 @@ var trendReportData = {
 </xsl:template>
 <xsl:template match="TrendReports">
 	"projectName": "<xsl:value-of select="ProjectInfo/ProjectName"/>",
-	"badSmellType": ["Empty Catch Block", "Dummy Handler", "Unprotected Main Program", "Nested Try Statement", "Careless Cleanup", "Over Logging", "Thrown Exception In Finally Block"],
+	"badSmellType": ["Empty Catch Block", "Dummy Handler", "Unprotected Main Program", "Nested Try Statement", "Careless Cleanup", "Over Logging", "Exception Thrown From Finally Block"],
 	"reports": [
 	<xsl:for-each select="Report">
-		{ "date": "<xsl:value-of select="DateTime"/>", "badSmellCount": [ "<xsl:value-of select="EHSmellList/EmptyCatchBlock" />", "<xsl:value-of select="EHSmellList/DummyHandler" />", "<xsl:value-of select="EHSmellList/UnprotectedMainProgram" />", "<xsl:value-of select="EHSmellList/NestedTryStatement" />", "<xsl:value-of select="EHSmellList/CarelessCleanup" />", "<xsl:value-of select="EHSmellList/OverLogging" />", "<xsl:value-of select="EHSmellList/ThrownExceptionInFinallyBlock" />"]}<xsl:if test="position()!=last()">,</xsl:if>
+		{ "date": "<xsl:value-of select="DateTime"/>", "badSmellCount": [ "<xsl:value-of select="EHSmellList/EmptyCatchBlock" />", "<xsl:value-of select="EHSmellList/DummyHandler" />", "<xsl:value-of select="EHSmellList/UnprotectedMainProgram" />", "<xsl:value-of select="EHSmellList/NestedTryStatement" />", "<xsl:value-of select="EHSmellList/CarelessCleanup" />", "<xsl:value-of select="EHSmellList/OverLogging" />", "<xsl:value-of select="EHSmellList/ExceptionThrownFromFinallyBlock" />"]}<xsl:if test="position()!=last()">,</xsl:if>
 	</xsl:for-each>
 	]
 </xsl:template>

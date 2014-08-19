@@ -55,7 +55,7 @@ var robustaData = {
 			"<xsl:value-of select="NestedTryStatement" />",
 			"<xsl:value-of select="CarelessCleanup" />",
 			"<xsl:value-of select="OverLogging" />",
-			"<xsl:value-of select="ThrownExceptionInFinallyBlock" />",
+			"<xsl:value-of select="ExceptionThrownFromFinallyBlock" />",
 			"<xsl:value-of select="PackageTotal" />"	
 		]<xsl:if test="position()!=last()">,</xsl:if>
 		</xsl:for-each>
@@ -70,7 +70,7 @@ var robustaData = {
 		{"type": "Nested Try Statement", "count": "<xsl:value-of select="NestedTryStatement" />"},
 		{"type": "Careless Cleanup", "count": "<xsl:value-of select="CarelessCleanup" />"},
 		{"type": "Over Logging", "count": "<xsl:value-of select="OverLogging" />"},
-		{"type": "Thrown Exception In Finally Block", "count": "<xsl:value-of select="ThrownExceptionInFinallyBlock" />"}
+		{"type": "Exception Thrown From Finally Block", "count": "<xsl:value-of select="ExceptionThrownFromFinallyBlock" />"}
 	]
 </xsl:template>
 
