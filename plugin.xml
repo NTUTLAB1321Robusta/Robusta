@@ -48,7 +48,11 @@
                name="open"
                value="true">
          </filter>
-         <menu label ="Robusta" path="additions" id="Robusta.menu">
+         <menu
+               icon="icons/robusta_logo_square_R.jpg"
+               id="Robusta.menu"
+               label="Robusta"
+               path="additions">
          	<separator name="group">
          	</separator>
          </menu>
