@@ -12,3 +12,6 @@ robusta.mail_AT_gmail.com (substitute _AT_ with an @)
 
 User guide can be found at:
 http://pl.csie.ntut.edu.tw/project/Robusta/Robusta_User_Instruction.pdf
+
+To automatically generate bad smell report on Jenkins for each build:
+http://pl.csie.ntut.edu.tw/project/Robusta/Automatically_Generate_Robusta_BS_Density_Report_On_Jenkins.txt
