@@ -15,3 +15,6 @@ http://pl.csie.ntut.edu.tw/project/Robusta/Robusta_User_Instruction.pdf
 
 To automatically generate bad smell report on Jenkins for each build:
 http://pl.csie.ntut.edu.tw/project/Robusta/Automatically_Generate_Robusta_BS_Density_Report_On_Jenkins.txt
+
+Whole package download:
+http://pl.csie.ntut.edu.tw/project/Robusta/taipeitech.csie.robusta_1.6.7.1.zip
