@@ -137,7 +137,7 @@
 	<!-- main target -->
 	<!-- run-pde-junit-test, junit-test, junit-report, -->
 	<target name="all" depends="init, build-project, product-test-jar, run-pde-junit-test, junit-test, junit-report, 
-								product-jar, agile-jar, write-feature-xml, write-site-xml, generate-p2-repository-metadata, zip-product">
+								agile-jar, product-jar, write-feature-xml, write-site-xml, generate-p2-repository-metadata, zip-product">
 		<echo message="Ant build complete"/>
 	</target>
 
@@ -317,17 +317,18 @@
 	</junitreport>
 </target>
 
-<!-- wrap bin folder to jar file -->
-<target name="product-jar">
-	<jar destfile="${plugin-folder}/${jar-file-name}" filesetmanifest="mergewithoutmain" basedir="${bin-folder}" excludes="**/filemaker/, **/*Test.class">
-	</jar>
-</target>
-
+<!-- wrap Robustness Level files into jar file -->	
 <target name="agile-jar">
-	<jar destfile="${update-lib-folder}/${rl-jar-file-name}" filesetmanifest="mergewithoutmain" basedir="${bin-folder}" includes="**/RTag.class, **/Robustness.class, **/SuppressSmell.class">
+	<jar destfile="${bin-folder}/lib/${rl-jar-file-name}" filesetmanifest="mergewithoutmain" basedir="${bin-folder}" includes="**/RTag.class, **/Robustness.class, **/SuppressSmell.class">
 		<manifest>
 			<attribute name="ClassPath" value="."/>
 		</manifest>
+	</jar>
+</target>
+	
+<!-- wrap bin folder to jar file -->
+<target name="product-jar">
+	<jar destfile="${plugin-folder}/${jar-file-name}" filesetmanifest="mergewithoutmain" basedir="${bin-folder}" excludes="**/filemaker/, **/*Test.class">
 	</jar>
 </target>
 

@@ -57,6 +57,13 @@
          	</separator>
          </menu>
          <action
+               class="ntut.csie.robusta.agile.exception.AddAgileExceptionToProjLib"
+               enablesFor="+"
+               id="Robusta.addAgileExceptionToProjLib"
+               label="Enable RL Annotation"
+               menubarPath="Robusta.menu/group">
+         </action>
+         <action
                class="ntut.csie.rleht.builder.ToggleNatureAction"
                enablesFor="+"
                id="Robusta.removeRLNatureAction"
@@ -75,7 +82,7 @@
       <!-- Code Smell Refactor 選單 -->
       <objectContribution
            	objectClass="org.eclipse.ui.IFileEditorInput"
-           	id="Robusta.contribution1">
+           	id="Robusta.contribution2">
          <menu
                id="Robusta.popmenu1"
                label="Robusta Smell Refactor"
