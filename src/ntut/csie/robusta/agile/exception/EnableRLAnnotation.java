@@ -11,7 +11,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
+import ntut.csie.rleht.RLEHTPlugin;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
@@ -38,8 +38,8 @@ public class EnableRLAnnotation implements IObjectActionDelegate {
 			.getLogger(EnableRLAnnotation.class);
 	private ISelection selection;
 	// TODO globalize the pluginId and agileExceptionJarId
-	private final String pluginId = "taipeitech.csie.robusta_1.6.7.1";
-	private final String agileExceptionJarId = "taipeitech.csie.robusta.agile.exception_1.0.0";
+	private final String pluginId =  RLEHTPlugin.PLUGIN_ID;
+	private final String agileExceptionJarId = "taipeitech.csie.robusta.agile.exception";
 
 	@Override
 	public void run(IAction action) {
@@ -74,24 +74,19 @@ public class EnableRLAnnotation implements IObjectActionDelegate {
 		Path eclipsePath = new Path(installURL.getPath());
 
 		File projLib = new File(projPath + "/lib");
-		File fileDest = new File(projLib.toString() + "/" + agileExceptionJarId
-				+ ".jar");
+		JarFile RobustaJar = getRobustaJar(eclipsePath);
 		
-		// check if AgileException.jar already resides in user's project
-		if (fileDest.exists()) {
-			return;
-			// TODO warn user with a pop-up window?
-		}
-
 		try {
-			JarFile RobustaJar = new JarFile(eclipsePath.toString()
-					+ "/plugins/" + pluginId + ".jar");
 			final Enumeration<JarEntry> entries = RobustaJar.entries();
 			while (entries.hasMoreElements()) {
 				final JarEntry entry = entries.nextElement();
-				if (entry.getName().contains(agileExceptionJarId)) {
+				String jarPath = entry.getName();
+				if (jarPath.contains(agileExceptionJarId)) {
+					String jarId = extractJarId(jarPath);
+					File fileDest = new File(projLib.toString() + "/" + jarId);
 					InputStream is = RobustaJar.getInputStream(entry);
 					copyFileUsingFileStreams(is, fileDest);
+					setBuildPath(project, fileDest);
 				}
 			}
 		} catch (IOException e) {
@@ -99,7 +94,35 @@ public class EnableRLAnnotation implements IObjectActionDelegate {
 			e.printStackTrace();
 		}
 
-		setBuildPath(project, fileDest);
+	}
+
+	private JarFile getRobustaJar(Path eclipsePath) {
+		JarFile RobustaJar = null;
+		File pluginsDir = new File(eclipsePath.toString() + "/plugins");
+		File[] files = pluginsDir.listFiles();
+		
+		for(File file: files){
+			if(file.getName().contains(pluginId)){
+				try {
+					RobustaJar = new JarFile(eclipsePath.toString()
+							+ "/plugins/" + file.getName());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		return RobustaJar;
+	}
+
+	private String extractJarId(String fullJarId) {
+		String[] parts = fullJarId.split("/");
+		for(String s : parts) {
+			if(s.contains(agileExceptionJarId)){
+				return s;
+			}
+		}
+		return fullJarId;
 	}
 
 	private static void copyFileUsingFileStreams(InputStream source, File dest)
@@ -136,7 +159,6 @@ public class EnableRLAnnotation implements IObjectActionDelegate {
 			addClasspathEntryToBuildPath(JavaCore.newLibraryEntry(new Path(
 					fileAlreadyExistChecker.toString()), null, null), null,
 					project);
-			System.out.println("Adding class path");
 		} catch (JavaModelException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
