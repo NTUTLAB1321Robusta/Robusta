@@ -57,7 +57,7 @@
          	</separator>
          </menu>
          <action
-               class="ntut.csie.robusta.agile.exception.AddAgileExceptionToProjLib"
+               class="ntut.csie.robusta.agile.exception.EnableRLAnnotation"
                enablesFor="+"
                id="Robusta.addAgileExceptionToProjLib"
                label="Enable RL Annotation"

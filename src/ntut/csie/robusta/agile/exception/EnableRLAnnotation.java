@@ -1,16 +1,12 @@
 package ntut.csie.robusta.agile.exception;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.jar.JarEntry;
@@ -37,9 +33,9 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AddAgileExceptionToProjLib implements IObjectActionDelegate {
+public class EnableRLAnnotation implements IObjectActionDelegate {
 	private static Logger logger = LoggerFactory
-			.getLogger(AddAgileExceptionToProjLib.class);
+			.getLogger(EnableRLAnnotation.class);
 	private ISelection selection;
 	// TODO globalize the pluginId and agileExceptionJarId
 	private final String pluginId = "taipeitech.csie.robusta_1.6.7.1";
