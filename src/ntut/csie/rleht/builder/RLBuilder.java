@@ -349,6 +349,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 			file.deleteMarkers(MARKER_TYPE, false, IResource.DEPTH_ZERO);
 		}
 		catch (CoreException ce) {
+			throw new RuntimeException("Functional failure", ce);
 		}
 	}
 

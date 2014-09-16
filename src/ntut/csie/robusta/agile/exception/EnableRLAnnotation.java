@@ -1,7 +1,6 @@
 package ntut.csie.robusta.agile.exception;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,6 +10,9 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
+import javax.swing.JOptionPane;
+
 import ntut.csie.rleht.RLEHTPlugin;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
@@ -33,12 +35,16 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author Peter
+ * 
+ */
 public class EnableRLAnnotation implements IObjectActionDelegate {
 	private static Logger logger = LoggerFactory
 			.getLogger(EnableRLAnnotation.class);
 	private ISelection selection;
 	// TODO globalize the pluginId and agileExceptionJarId
-	private final String pluginId =  RLEHTPlugin.PLUGIN_ID;
+	private final String pluginId = RLEHTPlugin.PLUGIN_ID;
 	private final String agileExceptionJarId = "taipeitech.csie.robusta.agile.exception";
 
 	@Override
@@ -56,69 +62,77 @@ public class EnableRLAnnotation implements IObjectActionDelegate {
 				}
 
 				if (project != null) {
-					try {
-						copyJarFile(project);
-					} catch (FileNotFoundException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					enableRLAnnotation(project);
 					refreshProject(project);
 				}
 			}
 		}
 	}
 
-	private void copyJarFile(IProject project) throws FileNotFoundException {
+	private void enableRLAnnotation(IProject project) {
 		IPath projPath = project.getLocation();
 		URL installURL = Platform.getInstallLocation().getURL();
 		Path eclipsePath = new Path(installURL.getPath());
 
 		File projLib = new File(projPath + "/lib");
 		JarFile RobustaJar = getRobustaJar(eclipsePath);
-		
-		try {
-			final Enumeration<JarEntry> entries = RobustaJar.entries();
-			while (entries.hasMoreElements()) {
-				final JarEntry entry = entries.nextElement();
-				String jarPath = entry.getName();
-				if (jarPath.contains(agileExceptionJarId)) {
-					String jarId = extractJarId(jarPath);
-					File fileDest = new File(projLib.toString() + "/" + jarId);
-					InputStream is = RobustaJar.getInputStream(entry);
-					copyFileUsingFileStreams(is, fileDest);
-					setBuildPath(project, fileDest);
-				}
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
+		if (RobustaJar != null) {
+			// copy agile exception jar to user project's library folder,  
+			// then add it to project's build path
+			try {
+				final Enumeration<JarEntry> entries = RobustaJar.entries();
+				while (entries.hasMoreElements()) {
+					final JarEntry entry = entries.nextElement();
+					String jarPath = entry.getName();
+					if (jarPath.contains(agileExceptionJarId)) {
+						String jarId = extractJarId(jarPath);
+						File fileDest = new File(projLib.toString() + "/"
+								+ jarId);
+						InputStream is = RobustaJar.getInputStream(entry);
+						copyFileUsingFileStreams(is, fileDest);
+						setBuildPath(project, fileDest);
+					}
+				}
+			} catch (IOException e) {
+				throw new RuntimeException("Functional failure", e);
+			}
+		} else {
+			showOneButtonPopUpMenu(
+					"Functional failure",
+					"Fail to locate Robusta jar in eclipse plugin folder, please make sure it's installed properly");
+			return;
+		}
 	}
 
 	private JarFile getRobustaJar(Path eclipsePath) {
 		JarFile RobustaJar = null;
 		File pluginsDir = new File(eclipsePath.toString() + "/plugins");
 		File[] files = pluginsDir.listFiles();
-		
-		for(File file: files){
-			if(file.getName().contains(pluginId)){
+
+		for (File file : files) {
+			if (file.getName().contains(pluginId)) {
 				try {
 					RobustaJar = new JarFile(eclipsePath.toString()
 							+ "/plugins/" + file.getName());
+					return RobustaJar;
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					throw new RuntimeException(
+							"Robusta plugin jar found, but fail to get path", e);
 				}
 			}
 		}
-		return RobustaJar;
+		return null;
+	}
+
+	private void showOneButtonPopUpMenu(String title, String msg) {
+		JOptionPane.showMessageDialog(null, msg, title, JOptionPane.OK_OPTION);
 	}
 
 	private String extractJarId(String fullJarId) {
 		String[] parts = fullJarId.split("/");
-		for(String s : parts) {
-			if(s.contains(agileExceptionJarId)){
+		for (String s : parts) {
+			if (s.contains(agileExceptionJarId)) {
 				return s;
 			}
 		}
@@ -148,8 +162,8 @@ public class EnableRLAnnotation implements IObjectActionDelegate {
 			project.build(IncrementalProjectBuilder.FULL_BUILD,
 					new NullProgressMonitor());
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			showOneButtonPopUpMenu("Refresh failed",
+					"Fail to refresh your project, please do it manually");
 		}
 	}
 
@@ -160,8 +174,9 @@ public class EnableRLAnnotation implements IObjectActionDelegate {
 					fileAlreadyExistChecker.toString()), null, null), null,
 					project);
 		} catch (JavaModelException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException(
+					"Fail to add agile exception jar to user's project build path",
+					e);
 		}
 	}
 
@@ -185,7 +200,7 @@ public class EnableRLAnnotation implements IObjectActionDelegate {
 		boolean classPathExist = checkExistInClassPath(javaProject);
 
 		// if class path for AgileException.jar is already set, bypass
-		// setting
+		// setting procedures
 		if (classPathExist) {
 			return;
 		} else {
@@ -203,6 +218,8 @@ public class EnableRLAnnotation implements IObjectActionDelegate {
 		IClasspathEntry[] ICPEntry = javaProject.getRawClasspath();
 		for (IClasspathEntry entry : ICPEntry) {
 			if (entry.toString().contains(agileExceptionJarId)) {
+				showOneButtonPopUpMenu("Oops...",
+						"Robustness Level annotation already enabled :)");
 				return true;
 			}
 		}

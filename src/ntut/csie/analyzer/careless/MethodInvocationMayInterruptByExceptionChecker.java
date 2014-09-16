@@ -52,13 +52,15 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 			boolean isFinallBlockOrCatchClause = (parentType == ASTNode.TRY_STATEMENT);
 			boolean isCatchBlock = (parentType == ASTNode.CATCH_CLAUSE);
 			
-			// Check if the parent is a simple non-null checking
+			// Check if the parent is a simple non-null checking expression
 			boolean isParentSimpleNonNullChecking = false;
 			try {
 				InfixExpression infixExpression = ((InfixExpression) ((IfStatement) parent).getExpression());
-				isParentSimpleNonNullChecking = tellIsSimpleNonnullChecking(infixExpression);
-			} catch (Exception e) {
-				// It is not a simple non-null checking, keeping isSimpleNonnullChecking false
+				isParentSimpleNonNullChecking = isCheckingSimpleNonNull(infixExpression);
+			} catch (ClassCastException e) {
+				// This empty catch block is inevitable,
+				// the castings also act as if statements
+				// It is not a simple non-null checking expression, keep isSimpleNonnullChecking false
 			}
 
 			return !(isParentBlock || isFinallBlockOrCatchClause
@@ -71,7 +73,7 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 	/**
 	 * Tell if it is one side NULL_LITERAL and other side SIMPLE_NAME
 	 */
-	private boolean tellIsSimpleNonnullChecking(InfixExpression expression) {
+	private boolean isCheckingSimpleNonNull(InfixExpression expression) {
 		int rightType = expression.getRightOperand().getNodeType();
 		int leftType = expression.getLeftOperand().getNodeType();
 		

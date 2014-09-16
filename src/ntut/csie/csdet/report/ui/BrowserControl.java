@@ -86,7 +86,7 @@ public class BrowserControl extends LocationAdapter {
 		try {
 			document = new Document(icu.getBuffer().getContents());
 		} catch (JavaModelException e1) {
-			e1.printStackTrace();
+			throw new RuntimeException("Fail to get document", e1);
 		}
 		return document;
 	}
@@ -137,6 +137,8 @@ public class BrowserControl extends LocationAdapter {
 				//反白指定的行數
 				editor.selectAndReveal(lineInfo.getOffset(), lineInfo.getLength());
 			}
+		} catch (NumberFormatException nfe) {
+			RLEHTPlugin.logError("行數錯誤！", nfe);
 		} catch (Exception ex) {
 			RLEHTPlugin.logError("其它錯誤！", ex);
 		}

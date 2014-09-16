@@ -82,13 +82,14 @@ public class SelectedFolderPage extends APropertyPage {
 		if (project.isOpen() && JavaProject.hasJavaNature(project)) {
 
 			IJavaProject javaProject = JavaCore.create(project);
-
 			IClasspathEntry[] classpathEntries = null;
+			
 			try {
 				classpathEntries = javaProject.getResolvedClasspath(true);
-			} catch (Exception e) {
-
+			} catch (JavaModelException e) {
+				throw new RuntimeException("Fail to get class path for project", e);
 			}
+			
 			for (int i = 0; i < classpathEntries.length; i++) {
 				IClasspathEntry entry = classpathEntries[i];
 
@@ -133,7 +134,8 @@ public class SelectedFolderPage extends APropertyPage {
 		selectComposite = new Composite(composite, SWT.NONE);
 		// create group
 		folderGroup = new Group(selectComposite, SWT.NONE);
-		folderGroup.setText(resource.getString("selectedFolderPage.folderList"));
+		folderGroup
+				.setText(resource.getString("selectedFolderPage.folderList"));
 		folderGroup.setLocation(10, 5);
 
 		// create checkbox in group

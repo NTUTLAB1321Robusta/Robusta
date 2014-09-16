@@ -102,7 +102,7 @@ public class ReportContentCreator {
 				copyFileUsingFileStreams(input, dest);
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new RuntimeException("Fail to copy file", e);
 		}
 	}
 
