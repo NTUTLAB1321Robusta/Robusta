@@ -21,7 +21,7 @@ public class ASTHandler {
 	private boolean statementsRecovery = false;
 
 	@SuppressWarnings("deprecation")
-	public CompilationUnit createAST(IOpenable input, int offset) throws JavaModelException, CoreException {
+	public CompilationUnit createAST(IOpenable input, int offset) throws CoreException {
 		long startTime = 0;
 		long endTime = 0;
 		CompilationUnit root = null;
@@ -77,7 +77,7 @@ public class ASTHandler {
 			} catch (Exception ex) {
 				logger.error("[createAST] EXCEPTION ", ex);
 			} finally {
-				wc.discardWorkingCopy();
+				cleanUp(wc);
 			}
 
 		} else {
@@ -101,6 +101,14 @@ public class ASTHandler {
 			ConsoleLog.debug("[ASTHandler][createAST]" + ((IJavaElement) input).getElementName() + "--->花費：" + (endTime - startTime) + " ms");
 		}
 		return root;
+	}
+
+	private void cleanUp(ICompilationUnit wc) {
+		try {
+			wc.discardWorkingCopy();
+		} catch (JavaModelException e){
+			e.printStackTrace();
+		}
 	}
 
 	private IProblemRequestor createDefaultProblemRequestor() {

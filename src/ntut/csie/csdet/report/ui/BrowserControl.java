@@ -127,12 +127,7 @@ public class BrowserControl extends LocationAdapter {
 				
 				//欲反白的行數資料
 				IRegion lineInfo = null;
-				try {
-					//取得行數的資料
-					lineInfo = document.getLineInformation(Integer.valueOf(LineString) - 1);
-				} catch (BadLocationException e) {
-					logger.error("[BadLocation] EXCEPTION ",e);
-				}
+				lineInfo = getLineInfo(LineString, document, lineInfo);
 				
 				//反白指定的行數
 				editor.selectAndReveal(lineInfo.getOffset(), lineInfo.getLength());
@@ -142,6 +137,17 @@ public class BrowserControl extends LocationAdapter {
 		} catch (Exception ex) {
 			RLEHTPlugin.logError("其它錯誤！", ex);
 		}
+	}
+
+	private IRegion getLineInfo(String LineString, Document document,
+			IRegion lineInfo) {
+		try {
+			//取得行數的資料
+			lineInfo = document.getLineInformation(Integer.valueOf(LineString) - 1);
+		} catch (BadLocationException e) {
+			logger.error("[BadLocation] EXCEPTION ",e);
+		}
+		return lineInfo;
 	}
 
 	/**
