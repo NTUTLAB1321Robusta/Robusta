@@ -151,8 +151,21 @@ public class EnableRLAnnotation implements IObjectActionDelegate {
 				output.write(buf, 0, bytesRead);
 			}
 		} finally {
+			closeIO(source, output);
+		}
+	}
+
+	private static void closeIO(InputStream source, OutputStream output) {
+		try {
 			source.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		try {
 			output.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
