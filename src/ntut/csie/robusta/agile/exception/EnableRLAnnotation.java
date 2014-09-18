@@ -11,9 +11,9 @@ import java.util.Iterator;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import javax.swing.JOptionPane;
-
 import ntut.csie.rleht.RLEHTPlugin;
+import ntut.csie.util.PopupDialog;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
@@ -125,8 +125,8 @@ public class EnableRLAnnotation implements IObjectActionDelegate {
 		return null;
 	}
 
-	private void showOneButtonPopUpMenu(String title, String msg) {
-		JOptionPane.showMessageDialog(null, msg, title, JOptionPane.OK_OPTION);
+	private void showOneButtonPopUpMenu(final String title, final String msg) {
+		PopupDialog.showDialog(title, msg);
 	}
 
 	private String extractJarId(String fullJarId) {
