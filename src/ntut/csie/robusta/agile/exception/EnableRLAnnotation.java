@@ -1,5 +1,6 @@
 package ntut.csie.robusta.agile.exception;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -77,6 +78,8 @@ public class EnableRLAnnotation implements IObjectActionDelegate {
 		File projLib = new File(projPath + "/lib");
 		JarFile RobustaJar = getRobustaJar(eclipsePath);
 
+		InputStream is = null;
+		
 		if (RobustaJar != null) {
 			// copy agile exception jar to user project's library folder,  
 			// then add it to project's build path
@@ -89,13 +92,15 @@ public class EnableRLAnnotation implements IObjectActionDelegate {
 						String jarId = extractJarId(jarPath);
 						File fileDest = new File(projLib.toString() + "/"
 								+ jarId);
-						InputStream is = RobustaJar.getInputStream(entry);
+						is = RobustaJar.getInputStream(entry);
 						copyFileUsingFileStreams(is, fileDest);
 						setBuildPath(project, fileDest);
 					}
 				}
 			} catch (IOException e) {
 				throw new RuntimeException("Functional failure", e);
+			} finally {
+				closeStream(is);
 			}
 		} else {
 			showOneButtonPopUpMenu(
@@ -139,7 +144,7 @@ public class EnableRLAnnotation implements IObjectActionDelegate {
 		return fullJarId;
 	}
 
-	private static void copyFileUsingFileStreams(InputStream source, File dest)
+	private void copyFileUsingFileStreams(InputStream source, File dest)
 			throws IOException {
 		dest.getParentFile().mkdirs();
 		OutputStream output = null;
@@ -151,21 +156,7 @@ public class EnableRLAnnotation implements IObjectActionDelegate {
 				output.write(buf, 0, bytesRead);
 			}
 		} finally {
-			closeIO(source, output);
-		}
-	}
-
-	private static void closeIO(InputStream source, OutputStream output) {
-		try {
-			source.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		try {
-			output.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+			closeStream(output);
 		}
 	}
 
@@ -237,6 +228,15 @@ public class EnableRLAnnotation implements IObjectActionDelegate {
 			}
 		}
 		return false;
+	}
+	
+	private void closeStream(Closeable io) {
+		try {
+			if (io != null)
+				io.close();
+		} catch (IOException e) {
+			logger.error("[IOException] EXCEPTION ", e);
+		}
 	}
 
 }
