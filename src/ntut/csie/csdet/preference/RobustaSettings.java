@@ -108,8 +108,8 @@ public class RobustaSettings {
 
 	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
 	public void writeNewXMLFile(String path) {
-		FileWriter fw = null;
 		XMLOutputter out = new XMLOutputter();
+		FileWriter fw = null;
 		try {
 			fw = new FileWriter(path);
 			out.output(proDoc, fw);

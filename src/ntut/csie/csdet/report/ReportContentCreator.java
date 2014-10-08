@@ -53,8 +53,8 @@ public class ReportContentCreator {
 	}
 
 	public void transformDataFile() {
-		InputStream inputStream = null;
 		FileOutputStream outputStream = null;
+		InputStream inputStream = null;
 		try {
 			inputStream = this.getClass().getResourceAsStream(inputXslTransformPath);
 			Source xslSource = new StreamSource(inputStream);

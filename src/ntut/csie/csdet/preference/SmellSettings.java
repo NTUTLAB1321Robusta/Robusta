@@ -467,8 +467,8 @@ public class SmellSettings {
 
 	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
 	public void writeXMLFile(String path) {
-		FileWriter fw = null;
 		XMLOutputter out = new XMLOutputter();
+		FileWriter fw = null;
 		try {
 			fw = new FileWriter(path);
 			out.output(settingDoc, fw);
