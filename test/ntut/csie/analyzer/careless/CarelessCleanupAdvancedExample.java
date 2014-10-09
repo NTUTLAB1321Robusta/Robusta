@@ -237,7 +237,7 @@ public class CarelessCleanupAdvancedExample {
 	 * It is an example of a bug on CC rule version 2.
 	 * When we detect it, will rise NullPointerException
 	 */
-	public void arbintest4(Resource resource, OutputStream zOut)
+	public void arbintest4(Resource resource, OutputStream zOut) // TODO: rename: this function name is really bad
 			throws IOException {
 		InputStream rIn = resource.getInputStream();
 		try {

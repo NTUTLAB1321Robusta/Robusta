@@ -53,8 +53,8 @@ public class ReportContentCreator {
 	}
 
 	public void transformDataFile() {
-		InputStream inputStream = null;
 		FileOutputStream outputStream = null;
+		InputStream inputStream = null;
 		try {
 			inputStream = this.getClass().getResourceAsStream(inputXslTransformPath);
 			Source xslSource = new StreamSource(inputStream);
@@ -93,9 +93,10 @@ public class ReportContentCreator {
 		InputStream fileListInput = getClass().getResourceAsStream(REPORT_FILE_LIST);
 		BufferedReader br = new BufferedReader(new InputStreamReader(fileListInput));
 		String line;
+		InputStream input = null;
 		try {
 			while ((line = br.readLine()) != null && line.trim().length() > 0) {
-				InputStream input = getClass().getResourceAsStream(line);
+				input = getClass().getResourceAsStream(line);
 				// Copy the file to the root folder of destFolder:
 				// bring them up one level => line: /report/file.ext => file.ext
 				File dest = new File(destFolder.getAbsoluteFile() + ("/../" + line));
@@ -103,12 +104,14 @@ public class ReportContentCreator {
 			}
 		} catch (IOException e) {
 			throw new RuntimeException("Fail to copy file", e);
+		} finally {
+			closeStream(input);
 		}
 	}
 
-	private static void copyFileUsingFileStreams(InputStream source, File dest) throws IOException {
+	private void copyFileUsingFileStreams(InputStream source, File dest){
 		dest.getParentFile().mkdirs();
-		OutputStream output = null;
+		FileOutputStream output = null;
 		try {
 			output = new FileOutputStream(dest);
 			byte[] buf = new byte[1024];
@@ -116,22 +119,13 @@ public class ReportContentCreator {
 			while ((bytesRead = source.read(buf)) > 0) {
 				output.write(buf, 0, bytesRead);
 			}
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException("Fail to copy file: invalid destination", e);
+		} catch (IOException e) {
+			throw new RuntimeException("Fail to copy file: write failure", e);
 		} finally {
-			closeIO(source, output);
+			closeStream(output);
 		}
 	}
 
-	private static void closeIO(InputStream source, OutputStream output) {
-		try {
-			source.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		try {
-			output.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
 }
