@@ -1,4 +1,4 @@
-package ntut.csie.robusta.codegen;
+package ntut.csie.robusta.agile.exception;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -8,11 +8,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
-import java.net.URL;
 import java.util.jar.JarFile;
 
 import ntut.csie.filemaker.JavaProjectMaker;
-import ntut.csie.rleht.RLEHTPlugin;
 import ntut.csie.robusta.agile.exception.EnableRLAnnotation;
 
 import org.eclipse.core.resources.IProject;
@@ -21,12 +19,8 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
-import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.core.JavaModelException;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -57,7 +51,7 @@ public class EnableRLAnnotationTest {
 		root = workspace.getRoot();
 		project = root.getProject(projectname1);
 		javaProj = JavaCore.create(project);
-		/*************************** 新增兩個不同空專案 *************************************/
+		// 新增兩個不同空專案 
 		String projectname2 = "MyProject2";
 		javaProjectMaker2 = new JavaProjectMaker(projectname2);
 		javaProjectMaker2.setJREDefaultContainer();

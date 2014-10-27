@@ -8,12 +8,12 @@ import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.ITypeHierarchy;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.search.IJavaSearchScope;
-import org.eclipse.jdt.core.search.SearchEngine;
 import org.eclipse.jdt.ui.IJavaElementSearchConstants;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.window.Window;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 import org.eclipse.ltk.ui.refactoring.UserInputWizardPage;
+import org.eclipse.jdt.core.search.SearchEngine;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -29,6 +29,7 @@ import org.eclipse.ui.dialogs.SelectionStatusDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 /**
  * 提供一個介面給user,讓user可以選擇要Rethrow什麼樣的Exception type
  * @author chewei
@@ -41,7 +42,6 @@ public class RethrowExInputPage extends UserInputWizardPage {
 	private Text exNameField;
 	//使用者所選擇的Exception Type
 	private IType exType;
-	
 	public RethrowExInputPage(String name) {
 		super(name);		
 	}
@@ -97,7 +97,7 @@ public class RethrowExInputPage extends UserInputWizardPage {
 		exNameField.selectAll();
 		
 		//使用者未更改Text內容，而直接按確定，會執行此行。否則Text內容會抓不到。
-		handleInputChange();		
+		handleInputChange();	
 	}
 	
 	/**
@@ -149,10 +149,9 @@ public class RethrowExInputPage extends UserInputWizardPage {
 //		IJavaElement[] elements = new IJavaElement[] {project};
 //		IJavaSearchScope scope = SearchEngine.createJavaSearchScope(elements);
 		//透過Eclipse 所提供的Dialog來找尋專案中所有的class or library......等等
-		try {	
-			//尋找所有可以拋出的例外類型
-			IType type = project.findType("java.lang.Exception");
-			
+		try {
+			//可定義exception範圍
+			IType type = project.findType("java.lang.RuntimeException");
 			//會找到全WorkSpace的java.lang.Exception
 //			IJavaSearchScope scope = SearchEngine.createHierarchyScope(type);
 

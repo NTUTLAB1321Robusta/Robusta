@@ -14,12 +14,14 @@ public class RethrowExWizard extends RefactoringWizard {
 	public RethrowExWizard(Refactoring refactoring, int flags) {
 		super(refactoring, DIALOG_BASED_USER_INTERFACE | PREVIEW_EXPAND_FIRST_NODE);
 		setDefaultPageTitle("Rethrow Unchecked Exception");
+		
 	}
 
 	@Override
 	protected void addUserInputPages() {
 		//加入Rethrow exception的Page
 		addPage(new RethrowExInputPage("Rethrow Unchecked Exception"));
+		
 		
 	}
 
