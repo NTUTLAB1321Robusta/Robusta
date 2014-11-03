@@ -146,19 +146,19 @@ public class RethrowExInputPage extends UserInputWizardPage {
 		//取得存在getRethrowExRefactoring中的project
 		IJavaProject project = getRethrowExRefactoring().getProject();
 		
-//		IJavaElement[] elements = new IJavaElement[] {project};
-//		IJavaSearchScope scope = SearchEngine.createJavaSearchScope(elements);
 		//透過Eclipse 所提供的Dialog來找尋專案中所有的class or library......等等
 		try {
 			//可定義exception範圍
-			IType type = project.findType("java.lang.RuntimeException");
-			//會找到全WorkSpace的java.lang.Exception
-//			IJavaSearchScope scope = SearchEngine.createHierarchyScope(type);
+			IType runtimeExceptionType = project.findType("java.lang.RuntimeException");
 
-			ITypeHierarchy hierarchy = type.newTypeHierarchy(project, new NullProgressMonitor());
-			IType[] types = hierarchy.getAllTypes();
-
-			IJavaSearchScope scope = SearchEngine.createJavaSearchScope(types , false);
+			ITypeHierarchy hierarchy = runtimeExceptionType.newTypeHierarchy(project, new NullProgressMonitor());
+			
+			IType[] types = hierarchy.getAllSubtypes(runtimeExceptionType);
+			IType[] allTypes = new IType[types.length+1];
+			allTypes[0] = runtimeExceptionType;
+			System.arraycopy(types, 0, allTypes, 1, types.length);
+			
+			IJavaSearchScope scope = SearchEngine.createJavaSearchScope(allTypes , false);
 
 			SelectionStatusDialog dialog = (SelectionStatusDialog) 
 					JavaUI.createTypeDialog (getShell(), getContainer(), scope,

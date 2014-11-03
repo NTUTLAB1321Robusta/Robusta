@@ -1,5 +1,6 @@
 package ntut.csie.analyzer.careless;
 
+import java.io.Closeable;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -26,84 +27,172 @@ public class CarelessCleanupDefinitionExample {
 	public void nonclosableResourceClosing() throws IOException{
 		ConcreteNonCloseable resource = new ConcreteNonCloseable();
 		methodBeforeClose.declaredCheckedException();
-		resource.close(); 
+		
+		try{
+			// do something here
+		} finally {
+			resource.close(); 
+		}
 	}
 	
-	/* this defines one of the ranges we detect
-	public void exceptionBetweenCloseAndResourceDeclaration() throws IOException{
-		FileInputStream fis = null;
+	// a class that does implement closeable
+	class ConcreteCloseable implements Closeable {
+		public void close() {
+			// do some clean up
+		}
+	}
+	
+	// resource that does implement closeable should be detected by the CC detector
+	public void closableResourceClosing() throws IOException{
+		ConcreteCloseable resource = new ConcreteCloseable();
 		methodBeforeClose.declaredCheckedException();
-		fileInputStream.close();
+		
+		try{
+			// do something here
+		}finally {
+			resource.close();
+		}
 	}
-	*/
 	
-	/* this defines one of the ranges we detect
-	public void closeRightAfterMethodDeclaration() throws IOException{
-		fileInputStream.close();
-	}
-	*/
-	
-	// this also defines one of the range we detect
-	public void resourceDeclarationDoNotRaiseException() throws IOException{
+	// this defines one of the ranges we detect
+	public void exceptionBetweenCloseAndResourceDeclaration(){
 		FileInputStream fis = null;
-		FileOutputStream fos = null;
-		fis.close(); // should not be CC, bug!
+		
+		try{
+			methodBeforeClose.declaredCheckedException();
+		} catch (IOException e) {
+			// handle the exception
+		} finally {
+			try {
+				fis.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
-	
-	public void resourceDeclarationDoNotRaiseException2() throws IOException{
-		FileInputStream fis = null;
-		String s = "I'm a string";
-		fis.close(); // should not be CC, bug!
+	// this defines one of the ranges we detect
+	public void closeRightAfterMethodDeclaration(){
+		
+		try{
+			methodBeforeClose.declaredCheckedException();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				fileInputStream.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
-	public void resourceDeclarationDoNotRaiseException3() throws IOException{
-		FileInputStream fis = null;
-		FileOutputStream fos;
-		fis.close(); // should not be CC, bug!
-	}
-	
-	// any statement that would always execute are treated as "would raise exception"
+	// this defines one of the ranges we detect
 	public void statementThatIsDoNotAlwaysExecuted(boolean a) throws IOException{
 		FileInputStream fis = null;
 		
-		if(a) // cause
-			fis = null;
+		if(a){
+			fis = new FileInputStream("C:\\FileNotExist.txt");
+		}
 		
-		if(fis != null)
-			fis.close(); // should not be CC for human
+		try{
+			// do something
+		} finally {
+			// Bug: nothing in between line 95 and 102 would raise exception
+			fis.close(); 
+		}
 	}
 	
-	// assignment statement as a statement that would throw an exception bug!
-	public void assignmentStatementTreatedAsWouldRaiseException(boolean a) throws IOException{
+	// this defines one of the ranges we detect
+	public void statementThatIsDoNotAlwaysExecuted2(boolean a) throws IOException{
 		FileInputStream fis = null;
 		
+		//if(a){
+			fis = new FileInputStream("C:\\FileNotExist.txt");
+		//}
+		
+		try{
+			// do something
+		} finally {
+			// Bug: or not? it's not one of the exception of the rule: any statement would raise exception,
+			// but it's the resource itself's assignment.
+			fis.close(); 
+		}
+	}
+	
+	// this defines one of the ranges we detect
+	public void statementThatIsDoNotAlwaysExecuted3(boolean a) throws IOException{
+		FileInputStream fis = null;
+		
+		if(a){
+			//fis = new FileInputStream("C:\\FileNotExist.txt");
+		}
+		
+		try{
+			// do something
+		} finally {
+			// Bug: the if statement is treated as would raise exception
+			fis.close(); 
+		}
+	}
+	
+	// this defines exceptions of the rule: any statement is treated as would throw exception
+	public void resourceDeclarationDoNotRaiseException() throws IOException{
+		FileInputStream fis = null;
+		FileOutputStream fos = null;
+		
+		try{
+			// do something
+		} finally {
+			fis.close(); // should not be CC, bug!
+		}
+	}
+	
+	// this defines exceptions of the rule: any statement is treated as would throw exception
+	public void resourceDeclarationDoNotRaiseException2() throws IOException{
+		FileInputStream fis = null;
+		String s;
+		
+		try{
+			// do something
+		} finally {
+			fis.close(); // should not be CC, bug!
+		}
+	}
+	
+	// this defines exceptions of the rule: any statement is treated as would throw exception
+	public void resourceDeclarationDoNotRaiseException3() throws IOException{
+		FileInputStream fis = null;
+		FileOutputStream fos;
+		
+		try {
+			// do something
+		} finally {
+			fis.close(); // should not be CC, bug!
+		}
+	}
+	
+	// this defines exceptions of the rule: any statement is treated as would throw exception
+	public void nullAssignmentDoNotRaiseException(boolean a) throws IOException{
+		FileInputStream fis = null;
 		fis = null; // cause
 		
-		fis.close(); // should not be CC for human
-	}
-	
-	public void doWhileBetweenCloseAndResourceDeclaration() throws IOException{
-		FileInputStream fis = null;
-		
-		do{
-			fis.close(); // should not be CC, bug!
-		}while(fis != null);
-	}
-	
-	public void usingWhileForNonNullChecking() throws IOException{
-		FileInputStream fis = null;
-		
-		while(fis != null){
-			fis.close(); // should not be CC, bug!
+		try{
+			
+		} finally {
+			// Bug: not only the assignment in between is a null assignment, is it also the resourece itself
+			fis.close(); 
 		}
 	}
 	
 	public void usingIfForNonNullChecking() throws IOException{
 		FileInputStream fis = null;
 		
-		if(fis != null){
-			fis.close();
+		try{
+			// do something 
+		}finally{
+			if(fis != null)
+				fis.close();
 		}
 	}
 	
@@ -115,9 +204,23 @@ public class CarelessCleanupDefinitionExample {
 			methodBeforeClose.declaredUncheckedException();
 		} catch(Exception e){
 			// do some exception handling
-		} finally {
-			fis.close();
 		}
+		
+		// Bug: all exception in try would be caught, but Robusta detects it as a CC
+		fis.close();
+	}
+	
+	public void catchAllCheckedException() throws IOException{
+		FileInputStream fis = null;
+		
+		try{
+			methodBeforeClose.declaredCheckedException();
+		} catch(IOException e) {
+			// do some exception handling
+		}
+		
+		// not a bug for that the statement in the try might somehow raise a runtime exception
+		fis.close(); 
 	}
 	
 	public void notCatchingUncheckedException() throws IOException{
@@ -128,19 +231,9 @@ public class CarelessCleanupDefinitionExample {
 			methodBeforeClose.declaredUncheckedException();
 		} catch(IOException e){
 			// do some exception handling
-		} finally {
-			fis.close(); // not catching unchecked exception, maybe?
-		}
-	}
-	
-	public void notCatchingAllException() throws IOException{
-		FileInputStream fis = null;
+		} 
 		
-		try{
-			methodBeforeClose.declaredCheckedException();
-		} finally {
-			fis.close(); // not catching checked exception but not caught, bug!
-		}
+		fis.close();
 	}
 	
 }
