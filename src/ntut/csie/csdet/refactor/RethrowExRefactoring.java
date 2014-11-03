@@ -270,7 +270,9 @@ public class RethrowExRefactoring extends Refactoring {
 					// 加入未import的Library(遇到RuntimeException就不用加Library)
 					if (!exceptionType.equals("RuntimeException")) {
 						addImportDeclaration();
-						checkMethodThrow(ast);
+						/* no need to declare runtimeexcpetion on method signature 
+						 because user can only select runtime exception on the search dialog */
+						//checkMethodThrow(ast);
 						break;
 					}
 				}
