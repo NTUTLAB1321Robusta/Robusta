@@ -74,4 +74,117 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 			fileOutputStream.close(); // Unsafe
 		}
 	}
+	
+	//測試變數"宣告"或"指定"是否被排除在壞味道偵測之外
+	public void variableIntDeclaration() throws Exception{
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		int intDeclare;
+		fis.close();
+	}
+	
+	public void variableStringDeclaration() throws Exception{
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		String strtingDeclare;
+		fis.close();
+	}
+	
+	public void variableCharDeclaration() throws Exception{
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		char charDeclare;
+		fis.close();
+	}
+	
+	public void variableBooleanDeclaration() throws Exception{
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		boolean booleanDeclare;
+		fis.close();
+	}
+	
+	public void variableIntAssignment() throws Exception{
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		int intAssign = 10;
+		fis.close();
+	}
+	
+	public void variableStringAssignment() throws Exception{
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		String strtingAssign = "string";
+		fis.close();
+	}
+	
+	public void variableCharAssignment() throws Exception{
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		char charAssign = 'a';
+		fis.close();
+	}
+	
+	public void variableBooleanAssignment() throws Exception{
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		boolean booleanAssign = true;
+		fis.close();
+	}
+	
+	//測試疑似變數"宣告"或"指定"是否被排除在壞味道偵測之外
+	public void suspectVariableIntDeclarationOrAssignment() throws Exception{
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		int intDeclare = returnInt();
+		fis.close();
+	}
+	
+	public void suspectVariableStringDeclarationOrAssignment() throws Exception{
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		String strtingDeclare = returnString();
+		fis.close();
+	}
+	
+	public void suspectVariableCharDeclarationOrAssignment() throws Exception{
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		char charDeclare = returnChar();
+		fis.close();
+	}
+	
+	public void suspectVariableBooleanDeclarationOrAssignment() throws Exception{
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		boolean booleanDeclare = returnBoolean();
+		fis.close();
+	}
+	
+	public void specialVariableDeclaration() throws Exception{
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		MethodInvocationBeforeClose sampleMethod;
+		fis.close();
+	}
+	
+	public void specialVariableDeclarationWithNull() throws Exception{
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		MethodInvocationBeforeClose sampleMethod = null;
+		fis.close();
+	}
+	
+	public void specialVariableAssignmentWithNull() throws Exception{
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		MethodInvocationBeforeClose sampleMethod;
+		sampleMethod = null;
+		fis.close();
+	}
+	
+	public boolean returnBoolean(){
+		return true;
+	}
+	
+	public int returnInt(){
+		return 10;
+	}
+	
+	public String returnString(){
+		return "string";
+	}
+	
+	public char returnChar(){
+		return 'a';
+	}
+	
+	
+	
+	
 }
