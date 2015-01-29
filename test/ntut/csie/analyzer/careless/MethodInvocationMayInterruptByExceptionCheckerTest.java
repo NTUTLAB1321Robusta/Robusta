@@ -232,6 +232,102 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 				.perform(compilationUnit, 5174 - 1, 11);
 		assertFalse(checker.isMayInterruptByException(specialObjectNullDeclare));
 	}
+	
+	@Test
+	public void testIfStatementForCheckingBolleanTrue()
+			throws Exception {
+		MethodInvocation ifStatementForCheckingBolleanTrue = (MethodInvocation) NodeFinder
+				.perform(compilationUnit, 5600 - 1, 11);
+		assertFalse(checker.isMayInterruptByException(ifStatementForCheckingBolleanTrue));
+	}
+	
+	@Test
+	public void testIfStatementForCheckingBolleanFalse()
+			throws Exception {
+		MethodInvocation ifStatementForCheckingBolleanFalse = (MethodInvocation) NodeFinder
+				.perform(compilationUnit, 5801 - 1, 11);
+		assertFalse(checker.isMayInterruptByException(ifStatementForCheckingBolleanFalse));
+	}
+	
+	@Test
+	public void testIfStatementWithVariableDeclareAtSiniling()
+			throws Exception {
+		MethodInvocation ifStatementWithVariableDeclareAtSiniling = (MethodInvocation) NodeFinder
+				.perform(compilationUnit, 6060 - 1, 11);
+		assertFalse(checker.isMayInterruptByException(ifStatementWithVariableDeclareAtSiniling));
+	}
+	
+	@Test
+	public void testIfStatementWithMultiVariableDeclareAtSiniling()
+			throws Exception {
+		MethodInvocation ifStatementWithMultiVariableDeclareAtSiniling = (MethodInvocation) NodeFinder
+				.perform(compilationUnit, 6387 - 1, 11);
+		assertFalse(checker.isMayInterruptByException(ifStatementWithMultiVariableDeclareAtSiniling));
+	}
+	
+	@Test
+	public void testIfStatementWithVariableByMethodReturnAtSiniling()
+			throws Exception {
+		MethodInvocation ifStatementWithVariableByMethodReturnAtSiniling = (MethodInvocation) NodeFinder
+				.perform(compilationUnit, 6656 - 1, 11);
+		assertTrue(checker.isMayInterruptByException(ifStatementWithVariableByMethodReturnAtSiniling));
+	}
+	
+	@Test
+	public void testIfStatementWithMultiVariableByMethodReturnAtSiniling()
+			throws Exception {
+		MethodInvocation ifStatementWithMultiVariableByMethodReturnAtSiniling = (MethodInvocation) NodeFinder
+				.perform(compilationUnit, 6981 - 1, 11);
+		assertTrue(checker.isMayInterruptByException(ifStatementWithMultiVariableByMethodReturnAtSiniling));
+	}
+	
+	@Test
+	public void testIfStatementWithNestVariableAssignAndDeclareAtSiniling()
+			throws Exception {
+		MethodInvocation ifStatementWithNestVariableAssignAndDeclareAtSiniling = (MethodInvocation) NodeFinder
+				.perform(compilationUnit, 7375 - 1, 11);
+		assertFalse(checker.isMayInterruptByException(ifStatementWithNestVariableAssignAndDeclareAtSiniling));
+	}
+	
+	@Test
+	public void testIfStatementWithNestVariableByMethodReturnAtSiniling()
+			throws Exception {
+		MethodInvocation ifStatementWithNestVariableByMethodReturnAtSiniling = (MethodInvocation) NodeFinder
+				.perform(compilationUnit, 7754 - 1, 11);
+		assertTrue(checker.isMayInterruptByException(ifStatementWithNestVariableByMethodReturnAtSiniling));
+	}
+	
+	@Test
+	public void testDangerIfStatementWithNestVariableByMethodReturnAtSiniling()
+			throws Exception {
+		MethodInvocation dangerIfStatementWithNestVariableByMethodReturnAtSiniling = (MethodInvocation) NodeFinder
+				.perform(compilationUnit, 8160 - 1, 11);
+		assertTrue(checker.isMayInterruptByException(dangerIfStatementWithNestVariableByMethodReturnAtSiniling));
+	}
+	
+	@Test
+	public void testDangerIfElseStatementWithNestVariableByMethodReturnAtSiniling()
+			throws Exception {
+		MethodInvocation dangerIfElseStatementWithNestVariableByMethodReturnAtSiniling = (MethodInvocation) NodeFinder
+				.perform(compilationUnit, 8717 - 1, 11);
+		assertTrue(checker.isMayInterruptByException(dangerIfElseStatementWithNestVariableByMethodReturnAtSiniling));
+	}
+	
+	@Test
+	public void testSafeIfElseStatementWithNestVariableAssignAndDeclareAtSiniling()
+			throws Exception {
+		MethodInvocation safeIfElseStatementWithNestVariableAssignAndDeclareAtSiniling = (MethodInvocation) NodeFinder
+				.perform(compilationUnit, 9271 - 1, 11);
+		assertFalse(checker.isMayInterruptByException(safeIfElseStatementWithNestVariableAssignAndDeclareAtSiniling));
+	}
+	
+	@Test
+	public void testDangerIfElseStatementWithMultiNestVariableAssignAndDeclareAtSiniling()
+			throws Exception {
+		MethodInvocation safeIfElseStatementWithNestVariableAssignAndDeclareAtSiniling = (MethodInvocation) NodeFinder
+				.perform(compilationUnit, 9845 - 1, 11);
+		assertTrue(checker.isMayInterruptByException(safeIfElseStatementWithNestVariableAssignAndDeclareAtSiniling));
+	}
 
 	private MethodInvocation getMethodInvocationByMethodNameAndCode(
 			String methodName, String code) {

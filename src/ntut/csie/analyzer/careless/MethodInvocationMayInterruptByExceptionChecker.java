@@ -1,5 +1,6 @@
 package ntut.csie.analyzer.careless;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.InfixExpression;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
@@ -71,8 +73,9 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 				// isSimpleNonnullChecking false
 			}
 
+			
 			return !(isParentBlock || isFinallBlockOrCatchClause
-					|| isCatchBlock || isParentSimpleNonNullChecking);
+					|| isCatchBlock || isParentSimpleNonNullChecking || isCheckingBollean(parent));
 		} else {
 			return false;
 		}
@@ -92,6 +95,20 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 					|| leftType == ASTNode.SIMPLE_NAME) {
 				return true;
 			}
+		}
+		return false;
+	}
+	
+	private boolean isCheckingBollean(ASTNode parent) {
+		IfStatement ifStatement = null;
+		//判斷parent node是否為if statement
+		if(parent.getNodeType()==ASTNode.IF_STATEMENT){
+			ifStatement=((IfStatement) parent);
+		}
+		//判斷ifstatement是否為simplename 
+		if( ifStatement!=null && ifStatement.getExpression().getNodeType() == ASTNode.SIMPLE_NAME){
+		   //不須額外判斷simple name，complier會阻止飛simple name進入if statement
+				return true;
 		}
 		return false;
 	}
@@ -171,7 +188,82 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 		}
 		return false;
 	}
-
+	
+	private boolean isLiteralReturnStatement(Statement statement) {
+		if (statement.getNodeType() == ASTNode.RETURN_STATEMENT) {
+			ReturnStatement returnStatememt = (ReturnStatement) statement;
+			if(returnStatememt.getExpression().getClass().getName().endsWith("Literal")){
+				return true;
+			}else{
+				return false;
+			}
+		}
+		return false;
+	}
+	private boolean isSafeInIfBodyStatement(List<Boolean> checkChildStatementSafe){
+		Iterator<Boolean> iter = checkChildStatementSafe.iterator();
+		boolean isDanger = false;
+		while (iter.hasNext()) {
+			boolean statementsituation = iter.next();
+			if(statementsituation){
+				isDanger = statementsituation;
+			}
+		}
+		if(isDanger){
+			return false;
+		}else{
+			return true;
+		}
+	}
+	private List<Boolean> checkChildStatementInBlock(ASTNode ifBodyStatement){
+		List<Boolean> checkChildStatementSafe = new ArrayList<Boolean>(); 
+		if(ifBodyStatement.getNodeType() == ASTNode.BLOCK){
+			List<Statement> allStatements = ((Block) ifBodyStatement).statements();
+			Iterator<Statement> iter = allStatements.iterator();
+			while (iter.hasNext()) {
+				Statement statementInIfBody = iter.next();
+				checkChildStatementSafe.add(isUnsafeBrotherStatement(statementInIfBody));
+			}
+		}
+		return checkChildStatementSafe;
+	}
+	
+	
+	private boolean isSafeInThenStatement(IfStatement statement){
+		ASTNode thenStatement = statement.getThenStatement();
+		List<Boolean> checkChildStatementSafe = checkChildStatementInBlock(thenStatement);
+		if(isSafeInIfBodyStatement(checkChildStatementSafe)){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
+	private boolean isSafeInElseStatement(IfStatement statement){
+		ASTNode elseStatement = statement.getThenStatement();
+		if(elseStatement!=null){
+			List<Boolean> checkChildStatementSafe = checkChildStatementInBlock(elseStatement);
+			if(isSafeInIfBodyStatement(checkChildStatementSafe)){
+				return true;
+			}else{
+				return false;
+			}
+		}
+		return false;
+	}
+	
+	private boolean isSimpleNameIfStatement(Statement statement) {
+		if(isCheckingBollean(statement)){
+			IfStatement ifstatement = (IfStatement)statement;
+			if( isSafeInThenStatement(ifstatement) && isSafeInElseStatement(ifstatement)){
+				return true;
+			}else{
+				return false;
+			}
+		}else{
+			return false;
+		}
+	}
 	/**
 	 * Return false only if the statements will not throw any exception in 100%.
 	 */
@@ -180,6 +272,12 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 			return false;
 		}
 		if(isVariableAssignment(statement)){
+			return false;
+		}
+		if(isLiteralReturnStatement(statement)){
+			return false;
+		}
+		if(isSimpleNameIfStatement(statement)){
 			return false;
 		}
 		boolean isEmptyStatement = (statement.getNodeType() == ASTNode.EMPTY_STATEMENT);

@@ -166,6 +166,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		MethodInvocationBeforeClose sampleMethod;
 		sampleMethod = null;
 		fis.close();
+		String a="123";
 	}
 	
 	public boolean returnBoolean(){
@@ -184,7 +185,245 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		return 'a';
 	}
 	
+	public void ifStatementForCheckingBolleanTrue() throws Exception{
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		boolean pass=true;
+		if(pass){
+			fis.close();
+		}
+	}
 	
+	public void ifStatementForCheckingBolleanFalse() throws Exception{
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		boolean pass=false;
+		if(pass){
+			fis.close();
+		}
+	}
 	
+	public void ifStatementWithVariableDeclareAtSiniling() throws Exception{
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		boolean pass=false;
+		if(pass){
+			if(pass)
+			{
+				int a=10;
+				int b;
+			}
+			fis.close();//safe
+		}
+	}
+	
+	public void ifStatementWithMultiVariableDeclareAtSiniling() throws Exception{
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		boolean pass=false;
+		if(pass){
+			if(pass)
+			{
+				int a=10;
+				int b;
+			}
+			
+			if(pass)
+			{
+				int c=10;
+				int d;
+			}
+			fis.close();//safe
+		}
+	}
+	
+	public void ifStatementWithVariableByMethodReturnAtSiniling() throws Exception{
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		boolean pass=false;
+		if(pass){
+			if(pass)
+			{
+				int a=returnInt();
+			}
+			fis.close();//unsafe
+		}
+	}
+	
+	public void ifStatementWithMultiVariableByMethodReturnAtSiniling() throws Exception{
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		boolean pass=false;
+		if(pass){
+			if(pass)
+			{
+				int a=returnInt();
+			}
+			if(pass)
+			{
+				int b=returnInt();
+			}
+			fis.close();//unsafe
+		}
+	}
+	
+	public void ifStatementWithNestVariableAssignAndDeclareAtSiniling() throws Exception{
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		boolean pass=false;
+		if(pass){
+			if(pass)
+			{
+				int a=10;
+				int b;
+				if(pass)
+				{
+					int c=10;
+					int d;
+				}
+				if(pass)
+				{
+					int e=10;
+					int f;
+				}
+			}
+			fis.close();//safe
+		}
+	}
+	
+	public void ifStatementWithNestVariableByMethodReturnAtSiniling() throws Exception{
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		boolean pass=false;
+		if(pass){
+			if(pass)
+			{
+				int a=returnInt();
+				if(pass)
+				{
+					int b=returnInt();
+				}
+				if(pass)
+				{
+					int b=returnInt();
+				}
+			}
+			fis.close();//unsafe
+		}
+	}
+	
+	public void dangerIfStatementWithNestVariableByMethodReturnAtSiniling() throws Exception{
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		boolean pass=false;
+		if(pass){
+			if(pass == returnBoolean())
+			{
+				int a=returnInt();
+				if(pass)
+				{
+					int b=returnInt();
+				}
+				if(pass)
+				{
+					int c=returnInt();
+				}
+			}
+			fis.close();//unsafe
+		}
+	}
+	
+	public void dangerIfElseStatementWithNestVariableByMethodReturnAtSiniling() throws Exception{
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		boolean pass=false;
+		if(pass){
+			if(pass == returnBoolean())
+			{
+				int a=returnInt();
+				if(pass)
+				{
+					int b=returnInt();
+				}
+				if(pass)
+				{
+					int c=returnInt();
+				}
+			}else{
+				int d=returnInt();
+				if(pass)
+				{
+					int e=returnInt();
+				}
+				if(pass)
+				{
+					int f=returnInt();
+				}
+				
+			}
+			fis.close();//unsafe
+		}
+	}
+	
+	public void safeIfElseStatementWithNestVariableAssignAndDeclareAtSiniling() throws Exception{
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		boolean pass=false;
+		if(pass){
+			if(pass)
+			{
+				int a=10;
+				int b;
+				if(pass)
+				{
+					int c=10;
+					int d;
+				}
+				if(pass)
+				{
+					int e=10;
+					int f;
+				}
+			}else{
+				int a=10;
+				int b;
+				if(pass)
+				{
+					int c=10;
+					int d;
+				}
+				if(pass)
+				{
+					int e=10;
+					int f;
+				}
+			}
+			fis.close();//safe
+		}
+	}
+	
+	public void dangerIfElseStatementWithMultiNestVariableAssignAndDeclareAtSiniling() throws Exception{
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		boolean pass=false;
+		if(pass){
+			if(pass)
+			{
+				if(pass)
+				{
+					int c=10;
+					int d;
+				}
+				if(pass)
+				{
+					int e=10;
+					int f;
+					if(pass)
+					{
+						int g=10;
+						int h;
+						if(pass)
+						{
+							int i=10;
+							int j;
+							if(pass)
+							{
+								int k=returnInt();
+							}
+						}
+					}
+				}
+			}
+			fis.close();//unsafe
+		}
+	}
 	
 }
