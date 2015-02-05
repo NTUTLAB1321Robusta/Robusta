@@ -13,20 +13,22 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 
 	File file = null;
 	MethodInvocationBeforeClose methodBeforeClose = new MethodInvocationBeforeClose();
-	
+
 	class ClassWithGetResource {
 		public ClassWithGetResource() throws RuntimeException {
 		}
-		
+
 		public java.nio.channels.Channel getResourceWithInterface() {
 			return null;
 		}
+
 		public ClassWithGetResource getResourceNotImpCloseable() {
 			return this;
 		}
+
 		public void close() throws IOException {
 		}
-		
+
 		public void closeResourceByInvokeMyClose() throws Exception {
 			this.close(); // Is not
 			close(); // Is
@@ -35,16 +37,15 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 
 	public void invokeGetResourceAndCloseItWithInterface() throws Exception {
 		ClassWithGetResource resourceManager = new ClassWithGetResource();
-		resourceManager.getResourceWithInterface().close();  // Is
+		resourceManager.getResourceWithInterface().close(); // Is
 	}
-	
+
 	public void invokeGetResourceAndCloseItNotImpCloseable() throws Exception {
 		ClassWithGetResource resourceManager = new ClassWithGetResource();
 		resourceManager.getResourceNotImpCloseable().close(); // Is
 	}
 
-	public void closeByUserDefinedMethod(OutputStream zOut)
-			throws IOException {
+	public void closeByUserDefinedMethod(OutputStream zOut) throws IOException {
 		(new MethodInvocationBeforeClose()).declaredCheckedException();
 		InputStream is = null;
 		try {
@@ -74,356 +75,291 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 			fileOutputStream.close(); // Unsafe
 		}
 	}
-	
-	//測試變數"宣告"或"指定"是否被排除在壞味道偵測之外
-	public void variableIntDeclaration() throws Exception{
+
+	// 測試變數"宣告"或"指定"是否被排除在壞味道偵測之外
+	public void variableIntDeclaration() throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		int intDeclare;
 		fis.close();
 	}
-	
-	public void variableStringDeclaration() throws Exception{
+
+	public void variableStringDeclaration() throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		String strtingDeclare;
 		fis.close();
 	}
-	
-	public void variableCharDeclaration() throws Exception{
+
+	public void variableCharDeclaration() throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		char charDeclare;
 		fis.close();
 	}
-	
-	public void variableBooleanDeclaration() throws Exception{
+
+	public void variableBooleanDeclaration() throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		boolean booleanDeclare;
 		fis.close();
 	}
-	
-	public void variableIntAssignment() throws Exception{
+
+	public void variableIntAssignment() throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		int intAssign = 10;
 		fis.close();
 	}
-	
-	public void variableStringAssignment() throws Exception{
+
+	public void variableStringAssignment() throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		String strtingAssign = "string";
 		fis.close();
 	}
-	
-	public void variableCharAssignment() throws Exception{
+
+	public void variableCharAssignment() throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		char charAssign = 'a';
 		fis.close();
 	}
-	
-	public void variableBooleanAssignment() throws Exception{
+
+	public void variableBooleanAssignment() throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		boolean booleanAssign = true;
 		fis.close();
 	}
-	
-	//測試疑似變數"宣告"或"指定"是否被排除在壞味道偵測之外
-	public void suspectVariableIntDeclarationOrAssignment() throws Exception{
+
+	// 測試疑似變數"宣告"或"指定"是否被排除在壞味道偵測之外
+	public void suspectVariableIntDeclarationOrAssignment() throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		int intDeclare = returnInt();
 		fis.close();
 	}
-	
-	public void suspectVariableStringDeclarationOrAssignment() throws Exception{
+
+	public void suspectVariableStringDeclarationOrAssignment() throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		String strtingDeclare = returnString();
 		fis.close();
 	}
-	
-	public void suspectVariableCharDeclarationOrAssignment() throws Exception{
+
+	public void suspectVariableCharDeclarationOrAssignment() throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		char charDeclare = returnChar();
 		fis.close();
 	}
-	
-	public void suspectVariableBooleanDeclarationOrAssignment() throws Exception{
+
+	public void suspectVariableBooleanDeclarationOrAssignment()
+			throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		boolean booleanDeclare = returnBoolean();
 		fis.close();
 	}
-	
-	public void specialVariableDeclaration() throws Exception{
+
+	public void specialVariableDeclaration() throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		MethodInvocationBeforeClose sampleMethod;
 		fis.close();
 	}
-	
-	public void specialVariableDeclarationWithNull() throws Exception{
+
+	public void specialVariableDeclarationWithNull() throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		MethodInvocationBeforeClose sampleMethod = null;
 		fis.close();
 	}
-	
-	public void specialVariableAssignmentWithNull() throws Exception{
+
+	public void specialVariableAssignmentWithNull() throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		MethodInvocationBeforeClose sampleMethod;
 		sampleMethod = null;
 		fis.close();
-		String a="123";
+		String a = "123";
 	}
-	
-	public boolean returnBoolean(){
+
+	public boolean returnBoolean() {
 		return true;
 	}
-	
-	public int returnInt(){
+
+	public int returnInt() {
 		return 10;
 	}
-	
-	public String returnString(){
+
+	public String returnString() {
 		return "string";
 	}
-	
-	public char returnChar(){
+
+	public char returnChar() {
 		return 'a';
 	}
-	
-	public void ifStatementForCheckingBolleanTrue() throws Exception{
+
+	public void resourceCloseInsideCheckingBooleanIfStatement(boolean pass)
+			throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
-		boolean pass=true;
-		if(pass){
-			fis.close();
+		if (pass) {
+			fis.close();// safe
 		}
 	}
-	
-	public void ifStatementForCheckingBolleanFalse() throws Exception{
+
+	public void resourceCloseInsideInsideComparingBooleanStateIfStatement(
+			boolean pass) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
-		boolean pass=false;
-		if(pass){
-			fis.close();
+		if (pass == true) {
+			fis.close();// unsafe
 		}
 	}
-	
-	public void ifStatementWithVariableDeclareAtSiniling() throws Exception{
+
+	public void resourceCloseInsideElseStatementAfterCheckingBooleanIfStatement(
+			boolean pass) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
-		boolean pass=false;
-		if(pass){
-			if(pass)
-			{
-				int a=10;
+		if (pass) {
+		} else {
+			fis.close();// safe
+		}
+	}
+
+	public void resourceCloseInsidElseStatementAfterComparingBooleanStateIfStatement(
+			boolean pass) throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (pass == true) {
+		} else {
+			fis.close();// unsafe
+		}
+	}
+
+	public void resourceCloseAfterCheckingBooleanIfStatementContainVariableDeclaration(
+			boolean pass) throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (pass) {
+			int a = 10;
+			int b;
+		}
+		fis.close();// safe
+	}
+
+	public void resourceCloseAfterCheckingBooleanIfStatementContainMethodInvocation(
+			boolean pass) throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (pass) {
+			int a = returnInt();
+		}
+		fis.close();// unsafe
+	}
+
+	public void resourceCloseAfterBooleanComparingIfStatementContainVariableDeclaration(
+			boolean pass) throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (pass == true) {
+			int a = 10;
+			int b;
+		}
+		fis.close();// unsafe
+	}
+
+	public void resourceCloseAfterCompareBooleanStateIfStatementContainMethodInvocation(
+			boolean pass) throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (pass == true) {
+			int a = returnInt();
+		}
+		fis.close();// unsafe
+	}
+
+	public void resourceCloseAfterBooleanCheckingIfStatementContainBooleanCheckingIfStatementAndVariableDeclaration(
+			boolean pass) throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (pass) {
+			if (pass) {
+				int a = 10;
 				int b;
 			}
-			fis.close();//safe
 		}
+		fis.close();// safe
 	}
-	
-	public void ifStatementWithMultiVariableDeclareAtSiniling() throws Exception{
+
+	public void resourceCloseAfterBooleanCheckingIfStatementContainBooleanCheckingIfStatementAndMethodInvocation(
+			boolean pass) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
-		boolean pass=false;
-		if(pass){
-			if(pass)
-			{
-				int a=10;
+		if (pass) {
+			if (pass) {
+				int a = returnInt();
+			}
+		}
+		fis.close();// unsafe
+	}
+
+	public void resourceCloseAfterBooleanCheckingIfStatementContainNestedBooleanComparingIfStatementAndVariableDeclaration(
+			boolean pass) throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (pass) {
+			if (pass == true) {
+				int a = 10;
 				int b;
 			}
-			
-			if(pass)
-			{
-				int c=10;
-				int d;
-			}
-			fis.close();//safe
 		}
+		fis.close();// unsafe
 	}
-	
-	public void ifStatementWithVariableByMethodReturnAtSiniling() throws Exception{
+
+	public void resourceCloseAfterBooleanCheckingIfStatementContainNestedBooleanComparingIfStatementAndMethodInvocation(
+			boolean pass) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
-		boolean pass=false;
-		if(pass){
-			if(pass)
-			{
-				int a=returnInt();
+		if (pass) {
+			if (pass == true) {
+				int a = returnInt();
 			}
-			fis.close();//unsafe
 		}
+		fis.close();// unsafe
 	}
-	
-	public void ifStatementWithMultiVariableByMethodReturnAtSiniling() throws Exception{
+
+	public void resourceCloseAfterBooleanCheckingIfElseStatementContainVariableDeclaration(
+			boolean pass) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
-		boolean pass=false;
-		if(pass){
-			if(pass)
-			{
-				int a=returnInt();
-			}
-			if(pass)
-			{
-				int b=returnInt();
-			}
-			fis.close();//unsafe
+		if (pass) {
+		} else {
+			int a = 10;
+			int b;
 		}
+		fis.close();// safe
 	}
-	
-	public void ifStatementWithNestVariableAssignAndDeclareAtSiniling() throws Exception{
+
+	public void resourceCloseAfterBooleanCheckingIfElseStatementContainBooleanCheckingIfStatementAndVariableDeclare(
+			boolean pass) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
-		boolean pass=false;
-		if(pass){
-			if(pass)
-			{
-				int a=10;
+		if (pass) {
+		} else {
+			if (pass) {
+				int a = 10;
 				int b;
-				if(pass)
-				{
-					int c=10;
-					int d;
-				}
-				if(pass)
-				{
-					int e=10;
-					int f;
-				}
 			}
-			fis.close();//safe
 		}
+		fis.close();// safe
 	}
-	
-	public void ifStatementWithNestVariableByMethodReturnAtSiniling() throws Exception{
+
+	public void resourceCloseAfterBooleanCheckingIfElseStatementContainBooleanCheckingIfStatementAndMethodInvocation(
+			boolean pass) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
-		boolean pass=false;
-		if(pass){
-			if(pass)
-			{
-				int a=returnInt();
-				if(pass)
-				{
-					int b=returnInt();
-				}
-				if(pass)
-				{
-					int b=returnInt();
-				}
+		if (pass) {
+		} else {
+			if (pass) {
+				int a = returnInt();
 			}
-			fis.close();//unsafe
 		}
+		fis.close();// unsafe
 	}
-	
-	public void dangerIfStatementWithNestVariableByMethodReturnAtSiniling() throws Exception{
+
+	public void resourceCloseAfterBooleanCheckingIfElseStatementContainBooleanComparingIfStatementAndVariableDeclaration(
+			boolean pass) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
-		boolean pass=false;
-		if(pass){
-			if(pass == returnBoolean())
-			{
-				int a=returnInt();
-				if(pass)
-				{
-					int b=returnInt();
-				}
-				if(pass)
-				{
-					int c=returnInt();
-				}
-			}
-			fis.close();//unsafe
-		}
-	}
-	
-	public void dangerIfElseStatementWithNestVariableByMethodReturnAtSiniling() throws Exception{
-		FileInputStream fis = new FileInputStream(new File("C:\\123"));
-		boolean pass=false;
-		if(pass){
-			if(pass == returnBoolean())
-			{
-				int a=returnInt();
-				if(pass)
-				{
-					int b=returnInt();
-				}
-				if(pass)
-				{
-					int c=returnInt();
-				}
-			}else{
-				int d=returnInt();
-				if(pass)
-				{
-					int e=returnInt();
-				}
-				if(pass)
-				{
-					int f=returnInt();
-				}
-				
-			}
-			fis.close();//unsafe
-		}
-	}
-	
-	public void safeIfElseStatementWithNestVariableAssignAndDeclareAtSiniling() throws Exception{
-		FileInputStream fis = new FileInputStream(new File("C:\\123"));
-		boolean pass=false;
-		if(pass){
-			if(pass)
-			{
-				int a=10;
+		if (pass) {
+		} else {
+			if (pass == true) {
+				int a = 10;
 				int b;
-				if(pass)
-				{
-					int c=10;
-					int d;
-				}
-				if(pass)
-				{
-					int e=10;
-					int f;
-				}
-			}else{
-				int a=10;
-				int b;
-				if(pass)
-				{
-					int c=10;
-					int d;
-				}
-				if(pass)
-				{
-					int e=10;
-					int f;
-				}
 			}
-			fis.close();//safe
 		}
+		fis.close();// unsafe
 	}
-	
-	public void dangerIfElseStatementWithMultiNestVariableAssignAndDeclareAtSiniling() throws Exception{
+
+	public void resourceCloseAfterBooleanComparingIfElseStatement(
+			boolean pass) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
-		boolean pass=false;
-		if(pass){
-			if(pass)
-			{
-				if(pass)
-				{
-					int c=10;
-					int d;
-				}
-				if(pass)
-				{
-					int e=10;
-					int f;
-					if(pass)
-					{
-						int g=10;
-						int h;
-						if(pass)
-						{
-							int i=10;
-							int j;
-							if(pass)
-							{
-								int k=returnInt();
-							}
-						}
-					}
-				}
-			}
-			fis.close();//unsafe
+		if (pass == true) {
+		} else {
 		}
+		fis.close();// unsafe
 	}
-	
 }

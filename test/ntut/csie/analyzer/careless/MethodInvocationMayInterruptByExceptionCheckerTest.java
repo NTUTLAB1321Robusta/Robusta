@@ -89,7 +89,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		// First "fileOutputStream.close()" in method
 		// "sameResourceCloseManyTimes"
 		MethodInvocation methodInvocation = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 2055 - 1, 24);
+				.perform(compilationUnit, 2048 - 1, 24);
 		assertTrue(checker.isMayInterruptByException(methodInvocation));
 	}
 
@@ -99,7 +99,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		// Second "fileOutputStream.close()" in method
 		// "sameResourceCloseManyTimes"
 		MethodInvocation methodInvocation = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 2124 - 1, 24);
+				.perform(compilationUnit, 2117 - 1, 24);
 		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 
@@ -109,7 +109,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		// Third "fileOutputStream.close()" in method
 		// "sameResourceCloseManyTimes"
 		MethodInvocation methodInvocation = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 2220 - 1, 21);
+				.perform(compilationUnit, 2213 - 1, 24);
 		assertTrue(checker.isMayInterruptByException(methodInvocation));
 	}
 
@@ -117,62 +117,70 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 	public void testIsMayInterruptByExceptionWithIntDeclare() throws Exception {
 		// Third "fileOutputStream.close()" in method
 		// "sameResourceCloseManyTimes"
-		MethodInvocation intDeclare = (MethodInvocation) NodeFinder.perform(
-				compilationUnit, 2445 - 1, 11);
-		assertFalse(checker.isMayInterruptByException(intDeclare));
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"variableIntDeclaration",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 
 	@Test
 	public void testIsMayInterruptByExceptionWithStrtingDeclare()
 			throws Exception {
-		MethodInvocation strtingDeclare = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 2621 - 1, 11);
-		assertFalse(checker.isMayInterruptByException(strtingDeclare));
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"variableStringDeclaration",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 
 	@Test
 	public void testIsMayInterruptByExceptionWithCharDeclare() throws Exception {
-		MethodInvocation charDeclare = (MethodInvocation) NodeFinder.perform(
-				compilationUnit, 2790 - 1, 11);
-		assertFalse(checker.isMayInterruptByException(charDeclare));
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"variableCharDeclaration",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 
 	@Test
 	public void testIsMayInterruptByExceptionWithbooleanDeclare()
 			throws Exception {
-		MethodInvocation booleanDeclare = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 2968 - 1, 11);
-		assertFalse(checker.isMayInterruptByException(booleanDeclare));
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"variableBooleanDeclaration",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 
 	@Test
 	public void testIsMayInterruptByExceptionWithIntAssignt() throws Exception {
-		MethodInvocation intAssign = (MethodInvocation) NodeFinder.perform(
-				compilationUnit, 3137 - 1, 11);
-		assertFalse(checker.isMayInterruptByException(intAssign));
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"variableIntAssignment",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 
 	@Test
 	public void testIsMayInterruptByExceptionWithStrtingAssign()
 			throws Exception {
-		MethodInvocation strtingAssign = (MethodInvocation) NodeFinder.perform(
-				compilationUnit, 3322 - 1, 11);
-		assertFalse(checker.isMayInterruptByException(strtingAssign));
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"variableStringAssignment",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 
 	@Test
 	public void testIsMayInterruptByExceptionWithCharAssign() throws Exception {
-		MethodInvocation charAssign = (MethodInvocation) NodeFinder.perform(
-				compilationUnit, 3495 - 1, 11);
-		assertFalse(checker.isMayInterruptByException(charAssign));
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"variableCharAssignment",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 
 	@Test
 	public void testIsMayInterruptByExceptionWithBooleanAssign()
 			throws Exception {
-		MethodInvocation booleanAssign = (MethodInvocation) NodeFinder.perform(
-				compilationUnit, 3678 - 1, 11);
-		assertFalse(checker.isMayInterruptByException(booleanAssign));
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"variableBooleanAssignment",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 
 	@Test
@@ -180,155 +188,219 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 			throws Exception {
 		// Third "fileOutputStream.close()" in method
 		// "sameResourceCloseManyTimes"
-		MethodInvocation intDeclare = (MethodInvocation) NodeFinder.perform(
-				compilationUnit, 3910 - 1, 11);
-		assertTrue(checker.isMayInterruptByException(intDeclare));
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"suspectVariableIntDeclarationOrAssignment",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
 	}
 
 	@Test
 	public void testIsMayInterruptByExceptionWithSpectStrtingDeclare()
 			throws Exception {
-		MethodInvocation strtingDeclare = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 4122 - 1, 11);
-		assertTrue(checker.isMayInterruptByException(strtingDeclare));
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"suspectVariableStringDeclarationOrAssignment",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
 	}
 
 	@Test
 	public void testIsMayInterruptByExceptionWithSpectCharDeclare()
 			throws Exception {
-		MethodInvocation charDeclare = (MethodInvocation) NodeFinder.perform(
-				compilationUnit, 4325 - 1, 11);
-		assertTrue(checker.isMayInterruptByException(charDeclare));
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"suspectVariableCharDeclarationOrAssignment",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
 	}
 
 	@Test
 	public void testIsMayInterruptByExceptionWithsuSpectVariableDeclarationOrAssignment()
 			throws Exception {
-		MethodInvocation booleandeclare = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 4524 - 1, 11);
-		assertTrue(checker.isMayInterruptByException(booleandeclare));
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"suspectVariableBooleanDeclarationOrAssignment",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
 	}
 
 	@Test
 	public void testIsMayInterruptByExceptionWithObjectDeclare()
 			throws Exception {
-		MethodInvocation objectDeclare = (MethodInvocation) NodeFinder.perform(
-				compilationUnit, 4736 - 1, 11);
-		assertFalse(checker.isMayInterruptByException(objectDeclare));
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"specialVariableDeclaration",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 
 	@Test
 	public void testIsMayInterruptByExceptionWithObjectNullDeclare()
 			throws Exception {
-		MethodInvocation objectNullDeclare = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 4947 - 1, 11);
-		assertFalse(checker.isMayInterruptByException(objectNullDeclare));
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"specialVariableDeclarationWithNull",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 
 	@Test
 	public void testIsMayInterruptByExceptionWithSpecialObjectNullDeclare()
 			throws Exception {
-		MethodInvocation specialObjectNullDeclare = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 5174 - 1, 11);
-		assertFalse(checker.isMayInterruptByException(specialObjectNullDeclare));
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"specialVariableAssignmentWithNull",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 	
 	@Test
-	public void testIfStatementForCheckingBolleanTrue()
+	public void testIsBooleanCheckingIfstatementExemptedWhenResourceCloseInsideCheckingBooleanIfStatement()
 			throws Exception {
-		MethodInvocation ifStatementForCheckingBolleanTrue = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 5600 - 1, 11);
-		assertFalse(checker.isMayInterruptByException(ifStatementForCheckingBolleanTrue));
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInsideInsideComparingBooleanStateIfStatement",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
 	}
 	
 	@Test
-	public void testIfStatementForCheckingBolleanFalse()
+	public void testIsBooleanComparingIfStatementCaughtWhenResourceCloseInsideInsideComparingBooleanStateIfStatement()
 			throws Exception {
-		MethodInvocation ifStatementForCheckingBolleanFalse = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 5801 - 1, 11);
-		assertFalse(checker.isMayInterruptByException(ifStatementForCheckingBolleanFalse));
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInsideElseStatementAfterCheckingBooleanIfStatement",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 	
 	@Test
-	public void testIfStatementWithVariableDeclareAtSiniling()
+	public void testIsBooleanCheckingIfstatementExemptedWhenResourceCloseInsideElseStatementAfterCheckingBooleanIfStatement()
 			throws Exception {
-		MethodInvocation ifStatementWithVariableDeclareAtSiniling = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 6060 - 1, 11);
-		assertFalse(checker.isMayInterruptByException(ifStatementWithVariableDeclareAtSiniling));
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInsideElseStatementAfterCheckingBooleanIfStatement",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 	
 	@Test
-	public void testIfStatementWithMultiVariableDeclareAtSiniling()
+	public void testIsBooleanComparingIfStatementCaughtWhenResourceCloseInsidElseStatementAfterComparingBooleanStateIfStatement()
 			throws Exception {
-		MethodInvocation ifStatementWithMultiVariableDeclareAtSiniling = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 6387 - 1, 11);
-		assertFalse(checker.isMayInterruptByException(ifStatementWithMultiVariableDeclareAtSiniling));
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInsidElseStatementAfterComparingBooleanStateIfStatement",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
 	}
 	
 	@Test
-	public void testIfStatementWithVariableByMethodReturnAtSiniling()
+	public void testIsBooleanCheckingIfstatementExemptedWhenResourceCloseAfterCheckingBooleanIfStatementContainVariableDeclaration()
 			throws Exception {
-		MethodInvocation ifStatementWithVariableByMethodReturnAtSiniling = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 6656 - 1, 11);
-		assertTrue(checker.isMayInterruptByException(ifStatementWithVariableByMethodReturnAtSiniling));
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterCheckingBooleanIfStatementContainVariableDeclaration",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 	
 	@Test
-	public void testIfStatementWithMultiVariableByMethodReturnAtSiniling()
+	public void testIsMethodInvocationWhenResourceCloseAfterCheckingBooleanIfStatementContainMethodInvocation()
 			throws Exception {
-		MethodInvocation ifStatementWithMultiVariableByMethodReturnAtSiniling = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 6981 - 1, 11);
-		assertTrue(checker.isMayInterruptByException(ifStatementWithMultiVariableByMethodReturnAtSiniling));
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterCheckingBooleanIfStatementContainMethodInvocation",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
 	}
 	
 	@Test
-	public void testIfStatementWithNestVariableAssignAndDeclareAtSiniling()
+	public void testIsBooleanComparingIfStatementCaughtWhenResourceCloseAfterBooleanComparingIfStatementContainVariableDeclaration()
 			throws Exception {
-		MethodInvocation ifStatementWithNestVariableAssignAndDeclareAtSiniling = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 7375 - 1, 11);
-		assertFalse(checker.isMayInterruptByException(ifStatementWithNestVariableAssignAndDeclareAtSiniling));
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterBooleanComparingIfStatementContainVariableDeclaration",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
 	}
 	
 	@Test
-	public void testIfStatementWithNestVariableByMethodReturnAtSiniling()
+	public void testIsBooleanComparingIfStatementCaughtWhenResourceCloseAfterCompareBooleanStateIfStatementContainMethodInvocation()
 			throws Exception {
-		MethodInvocation ifStatementWithNestVariableByMethodReturnAtSiniling = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 7754 - 1, 11);
-		assertTrue(checker.isMayInterruptByException(ifStatementWithNestVariableByMethodReturnAtSiniling));
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterCompareBooleanStateIfStatementContainMethodInvocation",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
 	}
 	
 	@Test
-	public void testDangerIfStatementWithNestVariableByMethodReturnAtSiniling()
+	public void testIsBooleanCheckingIfstatementExemptedWhenResourceCloseAfterBooleanCheckingIfStatementContainBooleanCheckingIfStatementAndVariableDeclaration()
 			throws Exception {
-		MethodInvocation dangerIfStatementWithNestVariableByMethodReturnAtSiniling = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 8160 - 1, 11);
-		assertTrue(checker.isMayInterruptByException(dangerIfStatementWithNestVariableByMethodReturnAtSiniling));
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterBooleanCheckingIfStatementContainBooleanCheckingIfStatementAndVariableDeclaration",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 	
 	@Test
-	public void testDangerIfElseStatementWithNestVariableByMethodReturnAtSiniling()
+	public void testIsMethodInvocationCaughtWhenresourceCloseAfterBooleanCheckingIfStatementContainBooleanCheckingIfStatementAndMethodInvocation()
 			throws Exception {
-		MethodInvocation dangerIfElseStatementWithNestVariableByMethodReturnAtSiniling = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 8717 - 1, 11);
-		assertTrue(checker.isMayInterruptByException(dangerIfElseStatementWithNestVariableByMethodReturnAtSiniling));
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterBooleanCheckingIfStatementContainBooleanCheckingIfStatementAndMethodInvocation",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
 	}
 	
 	@Test
-	public void testSafeIfElseStatementWithNestVariableAssignAndDeclareAtSiniling()
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterBooleanCheckingIfStatementContainNestedBooleanComparingIfStatementAndVariableDeclaration()
 			throws Exception {
-		MethodInvocation safeIfElseStatementWithNestVariableAssignAndDeclareAtSiniling = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 9271 - 1, 11);
-		assertFalse(checker.isMayInterruptByException(safeIfElseStatementWithNestVariableAssignAndDeclareAtSiniling));
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterBooleanCheckingIfStatementContainNestedBooleanComparingIfStatementAndVariableDeclaration",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
 	}
 	
 	@Test
-	public void testDangerIfElseStatementWithMultiNestVariableAssignAndDeclareAtSiniling()
+	public void testIsBooleanComparingIfStatementCaughtWhenresourceCloseAfterBooleanCheckingIfStatementContainNestedBooleanComparingIfStatementAndMethodInvocation()
 			throws Exception {
-		MethodInvocation safeIfElseStatementWithNestVariableAssignAndDeclareAtSiniling = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 9845 - 1, 11);
-		assertTrue(checker.isMayInterruptByException(safeIfElseStatementWithNestVariableAssignAndDeclareAtSiniling));
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterBooleanCheckingIfStatementContainNestedBooleanComparingIfStatementAndMethodInvocation",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsBooleanCheckingIfstatementExemptedWhenResourceCloseAfterBooleanCheckingIfElseStatementContainVariableDeclaration()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterBooleanCheckingIfElseStatementContainVariableDeclaration",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 
+	@Test
+	public void testIsBooleanCheckingIfstatementExemptedWhenResourceCloseAfterBooleanCheckingIfElseStatementContainBooleanCheckingIfStatementAndVariableDeclare()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterBooleanCheckingIfElseStatementContainBooleanCheckingIfStatementAndVariableDeclare",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsBooleanComparingIfStatementCaughtWhenResourceCloseAfterBooleanCheckingIfElseStatementContainBooleanCheckingIfStatementAndMethodInvocation()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterBooleanCheckingIfElseStatementContainBooleanCheckingIfStatementAndMethodInvocation",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsBooleanComparingIfStatementCaughtWhenresourceCloseAfterBooleanCheckingIfElseStatementContainBooleanComparingIfStatementAndVariableDeclaration()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterBooleanCheckingIfElseStatementContainBooleanComparingIfStatementAndVariableDeclaration",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsBooleanComparingIfStatementCaughtWhenResourceCloseAfterBooleanComparingIfElseStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterBooleanComparingIfElseStatement",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+	}
+	
 	private MethodInvocation getMethodInvocationByMethodNameAndCode(
 			String methodName, String code) {
 		List<MethodInvocation> methodInvocation = ASTNodeFinder

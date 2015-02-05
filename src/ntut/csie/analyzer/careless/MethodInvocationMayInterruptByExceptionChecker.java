@@ -56,15 +56,14 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 			int parentType = parent.getNodeType();
 
 			boolean isParentBlock = (parentType == ASTNode.BLOCK);
-			boolean isFinallBlockOrCatchClause = (parentType == ASTNode.TRY_STATEMENT);
-			boolean isCatchBlock = (parentType == ASTNode.CATCH_CLAUSE);
-
+			boolean isParentFinallBlockOrCatchClause = (parentType == ASTNode.TRY_STATEMENT);
+			boolean isParentCatchBlock = (parentType == ASTNode.CATCH_CLAUSE);
+			boolean isParentSafeIfstatement = isCheckingBoolean(parent);
 			// Check if the parent is a simple non-null checking expression
 			boolean isParentSimpleNonNullChecking = false;
 			try {
 				InfixExpression infixExpression = ((InfixExpression) ((IfStatement) parent)
 						.getExpression());
-
 				isParentSimpleNonNullChecking = isCheckingSimpleNonNull(infixExpression);
 			} catch (ClassCastException e) {
 				// This empty catch block is inevitable,
@@ -73,9 +72,8 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 				// isSimpleNonnullChecking false
 			}
 
-			
-			return !(isParentBlock || isFinallBlockOrCatchClause
-					|| isCatchBlock || isParentSimpleNonNullChecking || isCheckingBollean(parent));
+			return !(isParentBlock || isParentFinallBlockOrCatchClause
+					|| isParentCatchBlock || isParentSimpleNonNullChecking || isParentSafeIfstatement);
 		} else {
 			return false;
 		}
@@ -98,17 +96,18 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 		}
 		return false;
 	}
-	
-	private boolean isCheckingBollean(ASTNode parent) {
+
+	private boolean isCheckingBoolean(ASTNode parent) {// 命名修正!
 		IfStatement ifStatement = null;
-		//判斷parent node是否為if statement
-		if(parent.getNodeType()==ASTNode.IF_STATEMENT){
-			ifStatement=((IfStatement) parent);
+		// 判斷parent node是否為if statement
+		if (parent.getNodeType() == ASTNode.IF_STATEMENT) {
+			ifStatement = ((IfStatement) parent);
 		}
-		//判斷ifstatement是否為simplename 
-		if( ifStatement!=null && ifStatement.getExpression().getNodeType() == ASTNode.SIMPLE_NAME){
-		   //不須額外判斷simple name，complier會阻止飛simple name進入if statement
-				return true;
+		// 判斷ifstatement是否為simplename
+		if (ifStatement != null
+				&& ifStatement.getExpression().getNodeType() == ASTNode.SIMPLE_NAME) {
+			// 不須額外判斷simple name，complier會阻止飛simple name進入if statement
+			return true;
 		}
 		return false;
 	}
@@ -153,17 +152,18 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 				// 變數宣告等號的右邊不為null才比對
 				if (fragment.getInitializer() == null) {
 					// 變數宣告等號的右邊為null，此為一般變數宣告ex int a;
-					return true;//node是VariableDelarcation，安全
-				}else{// 變數宣告等號的右邊為不null，此為一般變數宣告ex int a=1;
-					if ((fragment.getInitializer().getClass() != null) && 
-							(fragment.getInitializer().getClass().getName().endsWith("Literal"))) {
-						return true;//node是VariableDelarcation，安全
+					return true;// node是VariableDelarcation，安全
+				} else {// 變數宣告等號的右邊為不null，此為一般變數宣告ex int a=1;
+					if ((fragment.getInitializer().getClass() != null)
+							&& (fragment.getInitializer().getClass().getName()
+									.endsWith("Literal"))) {
+						return true;// node是VariableDelarcation，安全
 					}
 				}
 			}
-			return false;//node是VariableDelarcationstatement，但不是單純VariableDelare，危險
+			return false;// node是VariableDelarcationstatement，但不是單純VariableDelare，危險
 		}
-		//node不是VariableDelarcationstatement
+		// node不是VariableDelarcationstatement
 		return false;
 	}
 
@@ -188,96 +188,98 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 		}
 		return false;
 	}
-	
+
 	private boolean isLiteralReturnStatement(Statement statement) {
 		if (statement.getNodeType() == ASTNode.RETURN_STATEMENT) {
 			ReturnStatement returnStatememt = (ReturnStatement) statement;
-			if(returnStatememt.getExpression().getClass().getName().endsWith("Literal")){
+			if (returnStatememt.getExpression().getClass().getName()
+					.endsWith("Literal")) {
 				return true;
-			}else{
+			} else {
 				return false;
 			}
 		}
 		return false;
 	}
-	private boolean isSafeInIfBodyStatement(List<Boolean> checkChildStatementSafe){
+
+	private boolean isSafeInIfBodyStatement(
+			List<Boolean> checkChildStatementSafe) {
 		Iterator<Boolean> iter = checkChildStatementSafe.iterator();
-		boolean isDanger = false;
 		while (iter.hasNext()) {
 			boolean statementsituation = iter.next();
-			if(statementsituation){
-				isDanger = statementsituation;
+			if (statementsituation) {
+				return false;
 			}
 		}
-		if(isDanger){
-			return false;
-		}else{
-			return true;
-		}
+		return true;
 	}
-	private List<Boolean> checkChildStatementInBlock(ASTNode ifBodyStatement){
-		List<Boolean> checkChildStatementSafe = new ArrayList<Boolean>(); 
-		if(ifBodyStatement.getNodeType() == ASTNode.BLOCK){
-			List<Statement> allStatements = ((Block) ifBodyStatement).statements();
+
+	private List<Boolean> checkChildStatementInBlock(ASTNode ifBodyStatement) {
+		List<Boolean> checkChildStatementSafe = new ArrayList<Boolean>();
+		if (ifBodyStatement.getNodeType() == ASTNode.BLOCK) {
+			List<Statement> allStatements = ((Block) ifBodyStatement)
+					.statements();
 			Iterator<Statement> iter = allStatements.iterator();
 			while (iter.hasNext()) {
 				Statement statementInIfBody = iter.next();
-				checkChildStatementSafe.add(isUnsafeBrotherStatement(statementInIfBody));
+				checkChildStatementSafe
+						.add(isUnsafeBrotherStatement(statementInIfBody));
 			}
 		}
 		return checkChildStatementSafe;
 	}
-	
-	
-	private boolean isSafeInThenStatement(IfStatement statement){
+
+	private boolean isSafeInThenStatement(IfStatement statement) {
 		ASTNode thenStatement = statement.getThenStatement();
 		List<Boolean> checkChildStatementSafe = checkChildStatementInBlock(thenStatement);
-		if(isSafeInIfBodyStatement(checkChildStatementSafe)){
+		if (isSafeInIfBodyStatement(checkChildStatementSafe)) {
 			return true;
-		}else{
+		} else {
 			return false;
 		}
 	}
-	
-	private boolean isSafeInElseStatement(IfStatement statement){
-		ASTNode elseStatement = statement.getThenStatement();
-		if(elseStatement!=null){
+
+	private boolean isSafeInElseStatement(IfStatement statement) {
+		ASTNode elseStatement = statement.getElseStatement();
+		if (elseStatement != null) {
 			List<Boolean> checkChildStatementSafe = checkChildStatementInBlock(elseStatement);
-			if(isSafeInIfBodyStatement(checkChildStatementSafe)){
+			if (isSafeInIfBodyStatement(checkChildStatementSafe)) {
 				return true;
-			}else{
+			} else {
 				return false;
 			}
 		}
-		return false;
+		return true;// if statement 不一定都有 else
 	}
-	
+
 	private boolean isSimpleNameIfStatement(Statement statement) {
-		if(isCheckingBollean(statement)){
-			IfStatement ifstatement = (IfStatement)statement;
-			if( isSafeInThenStatement(ifstatement) && isSafeInElseStatement(ifstatement)){
+		if (isCheckingBoolean(statement)) {
+			IfStatement ifstatement = (IfStatement) statement;
+			if (isSafeInThenStatement(ifstatement)
+					&& isSafeInElseStatement(ifstatement)) {
 				return true;
-			}else{
+			} else {
 				return false;
 			}
-		}else{
+		} else {
 			return false;
 		}
 	}
+
 	/**
 	 * Return false only if the statements will not throw any exception in 100%.
 	 */
 	private boolean isUnsafeBrotherStatement(Statement statement) {
-		if(isVariableDelarcation(statement)){
+		if (isVariableDelarcation(statement)) {
 			return false;
 		}
-		if(isVariableAssignment(statement)){
+		if (isVariableAssignment(statement)) {
 			return false;
 		}
-		if(isLiteralReturnStatement(statement)){
+		if (isLiteralReturnStatement(statement)) {
 			return false;
 		}
-		if(isSimpleNameIfStatement(statement)){
+		if (isSimpleNameIfStatement(statement)) {
 			return false;
 		}
 		boolean isEmptyStatement = (statement.getNodeType() == ASTNode.EMPTY_STATEMENT);
