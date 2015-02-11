@@ -413,24 +413,27 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 	@Test
 	public void testIsBooleanCheckingIfstatementExemptedWhenResourceCloseInsideCheckingthreeBooleanIfStatement()
 			throws Exception {
-		MethodInvocation methodInvocation = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 10996 - 1, 11);
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInsideCheckingThreeBooleanIfStatement",
+				"fis.close()");
 		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 	
 	@Test
 	public void testIsBooleanCheckingIfstatementExemptedWhenResourceCloseInsideCheckingtwoBooleanIfElseStatement()
 			throws Exception {
-		MethodInvocation methodInvocation = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 11238 - 1, 11);
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInsideCheckingtwoBooleanIfElseStatement",
+				"fis.close()");
 		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 	
 	@Test
 	public void testIsBooleanCheckingIfstatementExemptedWhenResourceCloseInsideCheckingThreeAndOperandBooleanIfElseStatement()
 			throws Exception {
-		MethodInvocation methodInvocation = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 11513 - 1, 11);
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInsideCheckingThreeBooleanIfElseStatement",
+				"fis.close()");
 		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 	
