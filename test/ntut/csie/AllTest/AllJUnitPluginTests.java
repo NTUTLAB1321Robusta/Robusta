@@ -5,6 +5,7 @@ import ntut.csie.analyzer.BadSmellCollectorTest;
 import ntut.csie.analyzer.SpareHandlerVisitorTest;
 import ntut.csie.analyzer.SuppressWarningVisitorTest;
 import ntut.csie.analyzer.TryStatementCounterVisitorTest;
+import ntut.csie.analyzer.careless.CarelessCleanupDefinitionTest;
 import ntut.csie.analyzer.careless.CarelessCleanupVisitorTest;
 import ntut.csie.analyzer.careless.ClosingResourceBeginningPositionFinderTest;
 import ntut.csie.analyzer.careless.MethodInvocationMayInterruptByExceptionCheckerTest;
@@ -92,8 +93,8 @@ import org.junit.runners.Suite;
 	PastReportHistoryTest.class,
 	TrendReportDocumentTest.class,
 	
-	EnableRLAnnotationTest.class
-	
+	EnableRLAnnotationTest.class,
+	CarelessCleanupDefinitionTest.class
 })
 public class AllJUnitPluginTests {
 }
