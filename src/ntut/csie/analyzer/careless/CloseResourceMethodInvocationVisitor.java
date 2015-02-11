@@ -18,10 +18,13 @@ import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 public class CloseResourceMethodInvocationVisitor extends ASTVisitor {
 	private List<MethodInvocation> closeMethodInvocations;
 	private CompilationUnit root;
+	protected static UserDefinedMethodAnalyzer userDefinedMethodAnalyzer;
 	
 	public CloseResourceMethodInvocationVisitor(CompilationUnit node) {
 		root = node;
 		closeMethodInvocations = new ArrayList<MethodInvocation>();
+		userDefinedMethodAnalyzer = new UserDefinedMethodAnalyzer(
+				SmellSettings.SMELL_CARELESSCLEANUP);
 	}
 
 	@Override
@@ -47,8 +50,6 @@ public class CloseResourceMethodInvocationVisitor extends ASTVisitor {
 		boolean userDefinedExtraRule = false;
 		boolean defaultResult = false;
 
-		UserDefinedMethodAnalyzer userDefinedMethodAnalyzer = new UserDefinedMethodAnalyzer(
-				SmellSettings.SMELL_CARELESSCLEANUP);
 		if (userDefinedMethodAnalyzer.analyzeLibrary(node)) {
 			userDefinedLibResult = true;
 		}

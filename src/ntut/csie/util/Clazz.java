@@ -18,6 +18,8 @@ public class Clazz {
 			for(int i = 0; i<interfaces.length; i++) {
 				if(interfaces[i].equals(looking4interface)) {
 					return true;
+					
+					
 				}
 			}
 		}
