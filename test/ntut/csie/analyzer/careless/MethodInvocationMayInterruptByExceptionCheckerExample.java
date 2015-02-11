@@ -316,6 +316,15 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		fis.close();// safe
 	}
 
+	public void resourceCloseAfterBooleanComparingIfElseStatement(boolean pass)
+			throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (pass == true) {
+		} else {
+		}
+		fis.close();// unsafe
+	}
+
 	public void resourceCloseAfterBooleanCheckingIfElseStatementContainBooleanCheckingIfStatementAndVariableDeclare(
 			boolean pass) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
@@ -354,12 +363,234 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		fis.close();// unsafe
 	}
 
-	public void resourceCloseAfterBooleanComparingIfElseStatement(
-			boolean pass) throws Exception {
+	public void resourceCloseInsideCheckingtwoBooleanIfStatement(boolean a,
+			boolean b) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
-		if (pass == true) {
-		} else {
+		if (a && b) {
+			fis.close();// safe
+		}
+	}
+	
+	public void resourceCloseInsideCheckingThreeAndOperandBooleanIfStatement(boolean a,
+			boolean b, boolean c) throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (a && b && c && a) {
+			fis.close();// safe
+		}
+	}
+	 
+	public void resourceCloseInsideCheckingThreeBooleanIfStatement(boolean a,
+			boolean b, boolean c) throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (a && b || c) {
+			fis.close();// safe
+		}
+	}
+	
+	public void resourceCloseInsideCheckingtwoBooleanIfElseStatement(boolean a,
+			boolean b) throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (a && b) {
+		}else{
+			fis.close();// safe
+		}
+	}
+	
+	public void resourceCloseInsideCheckingThreeAndOperandBooleanIfElseStatement(boolean a,
+			boolean b, boolean c) throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (a && b && c && a) {
+		}else{
+			fis.close();// safe
+		}
+	}
+	
+	public void resourceCloseInsideCheckingThreeBooleanIfElseStatement(boolean a,
+			boolean b, boolean c) throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (a && b || c) {
+		}else{
+			fis.close();// safe
+		}
+	}
+	 //新增a && b || !c == c 案例
+	public void resourceCloseInsideBooleanComparingIfElseStatement(boolean a,
+			boolean b, boolean c) throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (a && b || !c == c) {
+		}else{
+			fis.close();// unsafe
+		}
+	}
+	
+	public void resourceCloseInsideCheckingBooleanIfElseStatement(boolean a, boolean b, boolean c) throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (a && b || returnBoolean()) {
+		}else{
+			fis.close();// unsafe
+		}
+	}
+	//sibling multi boolean case
+	public void resourceCloseAfterCheckingtwoBooleanIfStatement(boolean a,
+			boolean b) throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (a && b) {
+		}
+		fis.close();// safe
+	}
+	
+	public void resourceCloseAfterCheckingThreeAndOperandBooleanIfStatement(boolean a,
+			boolean b, boolean c) throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (a && b && c && a) {
+		}
+		fis.close();// safe
+	}
+	 
+	public void resourceCloseAfterCheckingThreeBooleanIfStatement(boolean a,
+			boolean b, boolean c) throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (a && b || c) {
+		}
+		fis.close();// safe
+	}
+	
+	public void resourceCloseAfterCheckingtwoBooleanIfElseStatement(boolean a,
+			boolean b) throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (a && b) {
+		}else{
+		}
+		fis.close();// safe
+	}
+	
+	public void resourceCloseAfterCheckingThreeAndOperandBooleanIfElseStatement(boolean a,
+			boolean b, boolean c) throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (a && b && c && a) {
+		}else{
+		}
+		fis.close();// safe
+	}
+	 
+	public void resourceCloseAfterCheckingThreeBooleanIfElseStatement(boolean a,
+			boolean b, boolean c) throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (a && b || c) {
+		}else{
+		}
+		fis.close();// safe
+	}
+	// 整合測試
+
+	public void resourceCloseAfterCheckingTwoBooleanIfStatementContainMethodInvocation(
+			boolean a, boolean b) throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (a && b) {
+			int c = returnInt();
 		}
 		fis.close();// unsafe
+	}
+
+	public void resourceCloseAfterCheckingMultiBooleanBooleanIfStatementContainMethodInvocation(
+			boolean a, boolean b, boolean c, boolean d) throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (a && b || c && !d) {
+			int cc = returnInt();
+		}
+		fis.close();// unsafe
+	}
+	//新增safe 案例
+	public void resourceCloseAfterCheckingMultiBooleanBooleanIfStatementContainVariableDeclaration(
+			boolean a, boolean b, boolean c, boolean d) throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (a && b || c && !d) {
+			int cc = 1;
+		}
+		fis.close();// safe
+	}
+	
+	public void resourceCloseInsideCheckingTwoBooleanIfStatementAfterMethodInvocation(
+			boolean a, boolean b) throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (a && b) {
+			int c = returnInt();
+			fis.close();// unsafe
+		}
+	}
+	//新增safe 案例
+	public void resourceCloseInsideCheckingTwoBooleanIfStatementBeforeMethodInvocation(
+			boolean a, boolean b) throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (a && b) {
+			fis.close();// safe
+			int c = returnInt();
+		}
+	}
+
+	public void resourceCloseInsideCheckingMultiBooleanBooleanIfStatementContainMethodInvocation(
+			boolean a, boolean b, boolean c, boolean d) throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (a && b || c && !d) {
+			int cc = returnInt();
+			fis.close();// unsafe
+		}
+	}
+	
+	public void resourceCloseInsideCheckingMultiBooleanBooleanElseStatementContainMethodInvocation(
+			boolean a, boolean b, boolean c, boolean d) throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (a && b || c && !d) {	
+		}else{
+			int cc = returnInt();
+			fis.close();// unsafe
+		}
+	}
+
+	public void resourceCloseAfterMultiBooleanOperandCheckingIfStatementContainMultiBooleanOperandCheckingIfStatementAndMethodInvocation(
+			boolean a, boolean b, boolean c, boolean d) throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (a && b || c && !d) {
+			if (a && b || c && !d) {
+				int aa = returnInt();
+			}
+		}
+		fis.close();// unsafe
+	}
+
+	public void resourceCloseInsideMultiBooleanCheckingIfElseStatementContainMultiBooleanCheckingIfStatementAndMethodInvocation(
+			boolean a, boolean b, boolean c, boolean d) throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (a && b || c && !d) {
+		} else {
+			if (a && b || c && !d) {
+				int as = returnInt();
+			}
+			fis.close();// unsafe
+		}
+	}
+	
+	public void resourceCloseAfterMultiBooleanCheckingIfElseStatementContainMultiBooleanCheckingIfStatementAndMethodInvocation(
+			boolean a, boolean b, boolean c, boolean d) throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (a && b || c && !d) {
+		} else {
+			if (a && b || c && !d) {
+				int as = returnInt();
+			}
+		}
+		fis.close();// unsafe
+	}
+	//新增safe 案例
+	public void resourceCloseAfterMultiBooleanCheckingIfElseStatementContainMultiBooleanCheckingIfStatementAndVariableDeclaration(
+			boolean a, boolean b, boolean c, boolean d) throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (a && b || c && !d) {
+		} else {
+			if (a && b || c && !d) {
+				int as = 1;
+			}
+		}
+		fis.close();// safe
 	}
 }
