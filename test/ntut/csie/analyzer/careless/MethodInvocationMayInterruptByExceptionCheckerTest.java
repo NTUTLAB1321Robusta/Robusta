@@ -393,13 +393,220 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 	}
 	
 	@Test
-	public void testIsBooleanComparingIfStatementCaughtWhenResourceCloseAfterBooleanComparingIfElseStatement()
+	public void testIsBooleanCheckingIfstatementExemptedWhenResourceCloseInsideCheckingtwoBooleanIfStatement()
 			throws Exception {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
-				"resourceCloseAfterBooleanComparingIfElseStatement",
+				"resourceCloseInsideCheckingtwoBooleanIfStatement",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsBooleanCheckingIfstatementExemptedWhenResourceCloseAfterBooleanComparingIfElseStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInsideCheckingThreeAndOperandBooleanIfStatement",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsBooleanCheckingIfstatementExemptedWhenResourceCloseInsideCheckingthreeBooleanIfStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = (MethodInvocation) NodeFinder
+				.perform(compilationUnit, 10996 - 1, 11);
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsBooleanCheckingIfstatementExemptedWhenResourceCloseInsideCheckingtwoBooleanIfElseStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = (MethodInvocation) NodeFinder
+				.perform(compilationUnit, 11238 - 1, 11);
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsBooleanCheckingIfstatementExemptedWhenResourceCloseInsideCheckingThreeAndOperandBooleanIfElseStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = (MethodInvocation) NodeFinder
+				.perform(compilationUnit, 11513 - 1, 11);
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsBooleanCheckingIfstatementExemptedWhenResourceCloseInsideCheckingThreeBooleanIfElseStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInsideCheckingThreeBooleanIfElseStatement",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsBooleanCheckingIfstatementExemptedWhenResourceCloseInsideBooleanComparingIfElseStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInsideBooleanComparingIfElseStatement",
 				"fis.close()");
 		assertTrue(checker.isMayInterruptByException(methodInvocation));
 	}
+	
+	//sibiling test
+	
+	@Test
+	public void testIsBooleanCheckingIfstatementExemptedWhenResourceCloseAfterCheckingtwoBooleanIfStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterCheckingtwoBooleanIfStatement",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsBooleanCheckingIfstatementExemptedWhenResourceCloseAfterCheckingThreeAndOperandBooleanIfStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterCheckingThreeAndOperandBooleanIfStatement",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsBooleanCheckingIfstatementExemptedWhenResourceCloseAfterCheckingThreeBooleanIfStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterCheckingThreeBooleanIfStatement",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsBooleanCheckingIfstatementExemptedWhenResourceCloseAfterCheckingtwoBooleanIfElseStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterCheckingtwoBooleanIfElseStatement",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsBooleanCheckingIfstatementExemptedWhenResourceCloseAfterCheckingThreeAndOperandBooleanIfElseStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterCheckingThreeAndOperandBooleanIfElseStatement",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsBooleanCheckingIfstatementExemptedWhenResourceCloseAfterCheckingThreeBooleanIfElseStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterCheckingThreeBooleanIfElseStatement",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterCheckingTwoBooleanIfStatementContainMethodInvocation()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterCheckingTwoBooleanIfStatementContainMethodInvocation",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResouRceCloseAfterCheckingMultiBooleanBooleanIfStatementContainMethodInvocation()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterCheckingMultiBooleanBooleanIfStatementContainMethodInvocation",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterCheckingMultiBooleanBooleanIfStatementContainVariableDeclaration()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterCheckingMultiBooleanBooleanIfStatementContainVariableDeclaration",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseInsideCheckingTwoBooleanIfStatementAfterMethodInvocation()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInsideCheckingTwoBooleanIfStatementAfterMethodInvocation",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseInsideCheckingTwoBooleanIfStatementBeforeMethodInvocation()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInsideCheckingTwoBooleanIfStatementBeforeMethodInvocation",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseInsideCheckingMultiBooleanBooleanIfStatementContainMethodInvocation()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInsideCheckingMultiBooleanBooleanIfStatementContainMethodInvocation",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseInsideCheckingMultiBooleanBooleanElseStatementContainMethodInvocation()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInsideCheckingMultiBooleanBooleanElseStatementContainMethodInvocation",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterMultiBooleanOperandCheckingIfStatementContainMultiBooleanOperandCheckingIfStatementAndMethodInvocation()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterMultiBooleanOperandCheckingIfStatementContainMultiBooleanOperandCheckingIfStatementAndMethodInvocation",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterMultiBooleanCheckingIfElseStatementContainMultiBooleanCheckingIfStatementAndMethodInvocation()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterMultiBooleanCheckingIfElseStatementContainMultiBooleanCheckingIfStatementAndMethodInvocation",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseInsideMultiBooleanCheckingIfElseStatementContainMultiBooleanCheckingIfStatementAndMethodInvocation()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInsideMultiBooleanCheckingIfElseStatementContainMultiBooleanCheckingIfStatementAndMethodInvocation",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterMultiBooleanCheckingIfElseStatementContainMultiBooleanCheckingIfStatementAndVariableDeclaration()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterMultiBooleanCheckingIfElseStatementContainMultiBooleanCheckingIfStatementAndVariableDeclaration",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+	}
+	
 	
 	private MethodInvocation getMethodInvocationByMethodNameAndCode(
 			String methodName, String code) {

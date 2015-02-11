@@ -32,8 +32,7 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 		ASTNode checkingNode = methodInvocation;
 		// The condition is checking whether any statement didn't be checked.
 		while (beginningPosition < checkingNode.getStartPosition()) {
-			if (isParentUnsafe(checkingNode)
-					|| isThereUnsafeBrother(checkingNode)) {
+			if (isParentUnsafe(checkingNode) || isThereUnsafeBrother(checkingNode)) {
 				return true;
 			}
 			checkingNode = checkingNode.getParent();
@@ -59,6 +58,7 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 			boolean isParentFinallBlockOrCatchClause = (parentType == ASTNode.TRY_STATEMENT);
 			boolean isParentCatchBlock = (parentType == ASTNode.CATCH_CLAUSE);
 			boolean isParentSafeIfstatement = isCheckingBoolean(parent);
+			boolean isParentSafeMultiBooleanCheckingIfSatement = isCheckingMultiBoolean(parent);
 			// Check if the parent is a simple non-null checking expression
 			boolean isParentSimpleNonNullChecking = false;
 			try {
@@ -73,7 +73,8 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 			}
 
 			return !(isParentBlock || isParentFinallBlockOrCatchClause
-					|| isParentCatchBlock || isParentSimpleNonNullChecking || isParentSafeIfstatement);
+					|| isParentCatchBlock || isParentSimpleNonNullChecking
+					|| isParentSafeIfstatement || isParentSafeMultiBooleanCheckingIfSatement);
 		} else {
 			return false;
 		}
@@ -97,7 +98,7 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 		return false;
 	}
 
-	private boolean isCheckingBoolean(ASTNode parent) {// 命名修正!
+	private boolean isCheckingBoolean(ASTNode parent) {
 		IfStatement ifStatement = null;
 		// 判斷parent node是否為if statement
 		if (parent.getNodeType() == ASTNode.IF_STATEMENT) {
@@ -110,6 +111,67 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 			return true;
 		}
 		return false;
+	}
+
+	private boolean isExtendOperandElementSafe(List<Boolean> checkExtendOperandSafe) {
+		Iterator<Boolean> iter = checkExtendOperandSafe.iterator();
+		while (iter.hasNext()) {
+			boolean statementsituation = iter.next();
+			if (!statementsituation) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private boolean isCheckingMultiBoolean(ASTNode parent) {
+		// 判斷ifstatement是否為simplename
+		IfStatement ifStatement = null;
+		Expression expression = null;
+		if (parent.getNodeType() == ASTNode.IF_STATEMENT) {
+			ifStatement = ((IfStatement) parent);
+			expression = ifStatement.getExpression();
+		}
+		if (expression != null && expression.getNodeType() == ASTNode.INFIX_EXPRESSION) {
+			return isSafeInfixExpressionInIfstatement(expression);
+		}
+		return false;
+	}
+	
+	private boolean isCheckingOperandSafe(ASTNode parent) {
+		if (parent.getNodeType() == ASTNode.INFIX_EXPRESSION) {
+			return isSafeInfixExpressionInOperand(parent);
+		}
+		if (parent.getNodeType() == ASTNode.SIMPLE_NAME) {
+			return true;
+		}
+		return false;
+	}
+
+	private boolean isSafeInfixExpressionInOperand(ASTNode parent) {
+		InfixExpression infix = (InfixExpression) parent;
+		ASTNode rightOperand = infix.getRightOperand();
+		ASTNode leftOperand = infix.getLeftOperand();
+		return (isCheckingOperandSafe(rightOperand) && isCheckingOperandSafe(leftOperand));
+	}
+
+	private boolean isSafeInfixExpressionInIfstatement(Expression expression) {
+		InfixExpression infix = (InfixExpression) expression;
+		ASTNode rightOperand = infix.getRightOperand();
+		ASTNode leftOperand = infix.getLeftOperand();
+		List<ASTNode> extendOperand = infix.extendedOperands();
+		List<Boolean> checkExtendOperandSafe = checkExtendOperandInInFixStatement(extendOperand);
+		return (isCheckingOperandSafe(rightOperand) && isCheckingOperandSafe(leftOperand) && isExtendOperandElementSafe(checkExtendOperandSafe));
+	}
+
+	private List<Boolean> checkExtendOperandInInFixStatement(List<ASTNode> extendOperand) {
+		List<Boolean> checkExtendOperandSafe = new ArrayList<Boolean>();
+		Iterator<ASTNode> iter = extendOperand.iterator();
+		while (iter.hasNext()) {
+			ASTNode ExtendOperandElement = iter.next();
+			checkExtendOperandSafe.add(isCheckingOperandSafe(ExtendOperandElement));
+		}
+		return checkExtendOperandSafe;
 	}
 
 	/**
@@ -192,8 +254,7 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 	private boolean isLiteralReturnStatement(Statement statement) {
 		if (statement.getNodeType() == ASTNode.RETURN_STATEMENT) {
 			ReturnStatement returnStatememt = (ReturnStatement) statement;
-			if (returnStatememt.getExpression().getClass().getName()
-					.endsWith("Literal")) {
+			if (returnStatememt.getExpression().getClass().getName().endsWith("Literal")) {
 				return true;
 			} else {
 				return false;
@@ -202,8 +263,7 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 		return false;
 	}
 
-	private boolean isSafeInIfBodyStatement(
-			List<Boolean> checkChildStatementSafe) {
+	private boolean isSafeInStatement(List<Boolean> checkChildStatementSafe) {
 		Iterator<Boolean> iter = checkChildStatementSafe.iterator();
 		while (iter.hasNext()) {
 			boolean statementsituation = iter.next();
@@ -214,16 +274,14 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 		return true;
 	}
 
-	private List<Boolean> checkChildStatementInBlock(ASTNode ifBodyStatement) {
+	private List<Boolean> checkStatementSafe(ASTNode ifBodyStatement) {
 		List<Boolean> checkChildStatementSafe = new ArrayList<Boolean>();
 		if (ifBodyStatement.getNodeType() == ASTNode.BLOCK) {
-			List<Statement> allStatements = ((Block) ifBodyStatement)
-					.statements();
+			List<Statement> allStatements = ((Block) ifBodyStatement).statements();
 			Iterator<Statement> iter = allStatements.iterator();
 			while (iter.hasNext()) {
 				Statement statementInIfBody = iter.next();
-				checkChildStatementSafe
-						.add(isUnsafeBrotherStatement(statementInIfBody));
+				checkChildStatementSafe.add(isUnsafeBrotherStatement(statementInIfBody));
 			}
 		}
 		return checkChildStatementSafe;
@@ -231,8 +289,8 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 
 	private boolean isSafeInThenStatement(IfStatement statement) {
 		ASTNode thenStatement = statement.getThenStatement();
-		List<Boolean> checkChildStatementSafe = checkChildStatementInBlock(thenStatement);
-		if (isSafeInIfBodyStatement(checkChildStatementSafe)) {
+		List<Boolean> checkStatementSafe = checkStatementSafe(thenStatement);
+		if (isSafeInStatement(checkStatementSafe)) {
 			return true;
 		} else {
 			return false;
@@ -242,8 +300,8 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 	private boolean isSafeInElseStatement(IfStatement statement) {
 		ASTNode elseStatement = statement.getElseStatement();
 		if (elseStatement != null) {
-			List<Boolean> checkChildStatementSafe = checkChildStatementInBlock(elseStatement);
-			if (isSafeInIfBodyStatement(checkChildStatementSafe)) {
+			List<Boolean> checkStatementSafe = checkStatementSafe(elseStatement);
+			if (isSafeInStatement(checkStatementSafe)) {
 				return true;
 			} else {
 				return false;
@@ -255,8 +313,7 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 	private boolean isSimpleNameIfStatement(Statement statement) {
 		if (isCheckingBoolean(statement)) {
 			IfStatement ifstatement = (IfStatement) statement;
-			if (isSafeInThenStatement(ifstatement)
-					&& isSafeInElseStatement(ifstatement)) {
+			if (isSafeInThenStatement(ifstatement) && isSafeInElseStatement(ifstatement)) {
 				return true;
 			} else {
 				return false;
@@ -264,6 +321,21 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 		} else {
 			return false;
 		}
+	}
+
+	private boolean isMultiBolleanCheckingIfStatement(Statement statement) {
+		ASTNode sibilingStatement = (ASTNode) statement;
+		if (isCheckingMultiBoolean(sibilingStatement)) {
+			IfStatement ifstatement = (IfStatement) sibilingStatement;
+			if (isSafeInThenStatement(ifstatement) && isSafeInElseStatement(ifstatement)) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+
 	}
 
 	/**
@@ -280,6 +352,9 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 			return false;
 		}
 		if (isSimpleNameIfStatement(statement)) {
+			return false;
+		}
+		if (isMultiBolleanCheckingIfStatement(statement)) {
 			return false;
 		}
 		boolean isEmptyStatement = (statement.getNodeType() == ASTNode.EMPTY_STATEMENT);
