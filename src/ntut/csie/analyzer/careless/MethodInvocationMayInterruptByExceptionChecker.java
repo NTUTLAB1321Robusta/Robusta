@@ -138,17 +138,17 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 		return false;
 	}
 	
-	private boolean isCheckingOperandSafe(ASTNode parent) {
-		if (parent.getNodeType() == ASTNode.INFIX_EXPRESSION) {
-			return isSafeInfixExpressionInOperand(parent);
+	private boolean isCheckingOperandSafe(ASTNode operand) {
+		if (operand.getNodeType() == ASTNode.INFIX_EXPRESSION) {
+			return isSafeInInFixExpressionInOperand(operand);
 		}
-		if (parent.getNodeType() == ASTNode.SIMPLE_NAME) {
+		if (operand.getNodeType() == ASTNode.SIMPLE_NAME) {
 			return true;
 		}
 		return false;
 	}
 
-	private boolean isSafeInfixExpressionInOperand(ASTNode parent) {
+	private boolean isSafeInInFixExpressionInOperand(ASTNode parent) {
 		InfixExpression infix = (InfixExpression) parent;
 		ASTNode rightOperand = infix.getRightOperand();
 		ASTNode leftOperand = infix.getLeftOperand();

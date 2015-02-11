@@ -404,7 +404,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 			fis.close();// safe
 		}
 	}
-	 //新增a && b || !c == c 案例
+	
 	public void resourceCloseInsideCheckingThreeBooleanIfElseStatement(boolean a,
 			boolean b, boolean c) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
@@ -413,11 +413,19 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 			fis.close();// safe
 		}
 	}
-	
+	 //新增a && b || !c == c 案例
 	public void resourceCloseInsideBooleanComparingIfElseStatement(boolean a,
 			boolean b, boolean c) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		if (a && b || !c == c) {
+		}else{
+			fis.close();// unsafe
+		}
+	}
+	
+	public void resourceCloseInsideCheckingBooleanIfElseStatement(boolean a, boolean b, boolean c) throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (a && b || returnBoolean()) {
 		}else{
 			fis.close();// unsafe
 		}
@@ -492,7 +500,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		}
 		fis.close();// unsafe
 	}
-	
+	//新增safe 案例
 	public void resourceCloseAfterCheckingMultiBooleanBooleanIfStatementContainVariableDeclaration(
 			boolean a, boolean b, boolean c, boolean d) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
@@ -510,7 +518,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 			fis.close();// unsafe
 		}
 	}
-	
+	//新增safe 案例
 	public void resourceCloseInsideCheckingTwoBooleanIfStatementBeforeMethodInvocation(
 			boolean a, boolean b) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
@@ -573,7 +581,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		}
 		fis.close();// unsafe
 	}
-	
+	//新增safe 案例
 	public void resourceCloseAfterMultiBooleanCheckingIfElseStatementContainMultiBooleanCheckingIfStatementAndVariableDeclaration(
 			boolean a, boolean b, boolean c, boolean d) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));

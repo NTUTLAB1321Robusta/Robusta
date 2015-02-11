@@ -452,6 +452,15 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		assertTrue(checker.isMayInterruptByException(methodInvocation));
 	}
 	
+	@Test
+	public void testIsBooleanCheckingIfstatementExemptedWhenResourceCloseInsideCheckingBooleanIfElseStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInsideCheckingBooleanIfElseStatement",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+	}
+	
 	//sibiling test
 	
 	@Test
