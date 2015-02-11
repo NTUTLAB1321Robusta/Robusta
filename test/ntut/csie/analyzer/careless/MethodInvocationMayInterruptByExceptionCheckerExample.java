@@ -76,7 +76,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		}
 	}
 
-	// 測試變數"宣告"或"指定"是否被排除在壞味道偵測之外
+	
 	public void variableIntDeclaration() throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		int intDeclare;
