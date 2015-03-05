@@ -1,5 +1,6 @@
 package ntut.csie.analyzer.careless;
 
+import static org.junit.Assert.fail;
 import static org.junit.Assert.assertEquals;
 
 import java.lang.reflect.InvocationTargetException;
@@ -47,8 +48,8 @@ public class ClosingResourceBeginningPositionFinderTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceAssignAndUseMultiTimes", "fis.close()");
 
-		int position = finder.findPosition(methodInvocation);
-		assertEquals(10, compilationUnit.getLineNumber(position));
+		int detectionStartPosition = finder.findPosition(methodInvocation);
+		assertEquals(12, compilationUnit.getLineNumber(detectionStartPosition));
 	}
 
 	@Test
@@ -56,8 +57,8 @@ public class ClosingResourceBeginningPositionFinderTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceFromParameters", "file2.canRead()");
 
-		int position = finder.findPosition(methodInvocation);
-		assertEquals(16, compilationUnit.getLineNumber(position));
+		int detectionStartPosition = finder.findPosition(methodInvocation);
+		assertEquals(17, compilationUnit.getLineNumber(detectionStartPosition));
 	}
 
 	@Test
@@ -65,8 +66,8 @@ public class ClosingResourceBeginningPositionFinderTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceFromField", "file3.canRead()");
 
-		int position = finder.findPosition(methodInvocation);
-		assertEquals(24, compilationUnit.getLineNumber(position));
+		int detectionStartPosition = finder.findPosition(methodInvocation);
+		assertEquals(25, compilationUnit.getLineNumber(detectionStartPosition));
 	}
 	
 	@Test
@@ -74,8 +75,8 @@ public class ClosingResourceBeginningPositionFinderTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"invokeGetResourceAndCloseIt", "resourceManager.getResource().close()");
 		
-		int position = finder.findPosition(methodInvocation);
-		assertEquals(43, compilationUnit.getLineNumber(position));
+		int detectionStartPosition = finder.findPosition(methodInvocation);
+		assertEquals(44, compilationUnit.getLineNumber(detectionStartPosition));
 	}
 
 	/**
@@ -90,7 +91,7 @@ public class ClosingResourceBeginningPositionFinderTest {
 		ASTNode variableDeclaration = (ASTNode) getVariableDeclaration.invoke(
 				finder, expression);
 		assertEquals("fis=null", variableDeclaration.toString());
-		assertEquals(10, getLineNumber(variableDeclaration));
+		assertEquals(11, getLineNumber(variableDeclaration));
 	}
 
 	/**
@@ -105,7 +106,7 @@ public class ClosingResourceBeginningPositionFinderTest {
 		ASTNode variableDeclaration = (ASTNode) getVariableDeclaration.invoke(
 				finder, expression);
 		assertEquals("File file2", variableDeclaration.toString());
-		assertEquals(16, getLineNumber(variableDeclaration));
+		assertEquals(17, getLineNumber(variableDeclaration));
 	}
 
 	/**
@@ -120,7 +121,7 @@ public class ClosingResourceBeginningPositionFinderTest {
 		ASTNode variableDeclaration = (ASTNode) getVariableDeclaration.invoke(
 				finder, expression);
 		assertEquals("file3=null", variableDeclaration.toString());
-		assertEquals(22, getLineNumber(variableDeclaration));
+		assertEquals(23, getLineNumber(variableDeclaration));
 	}
 
 	/**
@@ -147,9 +148,73 @@ public class ClosingResourceBeginningPositionFinderTest {
 		
 		Method method = getMethodGetStartPositionOfMethodDeclarationBody();
 		int position = (Integer) method.invoke(finder, methodInvocation);
-		assertEquals(9, compilationUnit.getLineNumber(position));
+		assertEquals(10, compilationUnit.getLineNumber(position));
+	}
+	
+	@Test
+	public void testResourceWithMultipleAssignmentAndClose() throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceWithMultipleAssignmentAndClose", "fis.close()");
+		int detectionStartPosition = finder.findPosition(methodInvocation);
+		assertEquals(53, compilationUnit.getLineNumber(detectionStartPosition));
 	}
 
+	@Test
+	public void testResourceAssignmentInIfElseBlock() throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceAssignmentInIfElseBlock", "fis.close()");
+		int detectionStartPosition = finder.findPosition(methodInvocation);
+		assertEquals(62, compilationUnit.getLineNumber(detectionStartPosition));
+	}
+	
+	@Test
+	public void testResourceAssignmentInSwitchBlock() throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceAssignmentInSwitchBlock", "fis.close()");
+		int detectionStartPosition = finder.findPosition(methodInvocation);
+		assertEquals(73, compilationUnit.getLineNumber(detectionStartPosition));
+	}
+	
+	@Test
+	public void testInitializedResourceAssignAgainInIfElseBlock() throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"initializedResourceAssignAgainInIfElseBlock", "fis.close()");
+		int detectionStartPosition = finder.findPosition(methodInvocation);
+		assertEquals(89, compilationUnit.getLineNumber(detectionStartPosition));
+	}
+	
+	@Test
+	public void testResourceAssignmentByQuestionColonOperator() throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceAssignmentByQuestionColonOperator", "fis.close()");
+		int detectionStartPosition = finder.findPosition(methodInvocation);
+		assertEquals(100, compilationUnit.getLineNumber(detectionStartPosition));
+	}
+	
+	@Test
+	public void testAssignmentAndCloseInTheSameIfBlockAndAreSibling() throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"assignmentAndCloseInTheSameIfBlockAndAreSibling", "fis.close()");
+		int detectionStartPosition = finder.findPosition(methodInvocation);
+		assertEquals(108, compilationUnit.getLineNumber(detectionStartPosition));
+	}
+	
+	@Test
+	public void testAssignmentAndCloseInTheSameIfBlockButAreNotSibling() throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"assignmentAndCloseInTheSameIfBlockButAreNotSibling", "fis.close()");
+		int detectionStartPosition = finder.findPosition(methodInvocation);
+		assertEquals(117, compilationUnit.getLineNumber(detectionStartPosition));
+	}
+	
+	@Test
+	public void testAssignmentAndCloseInDifferentIfBlockButAreAtSameDepth() throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"assignmentAndCloseInDifferentIfBlockButAreAtSameDepth", "fis.close()");
+		int detectionStartPosition = finder.findPosition(methodInvocation);
+		assertEquals(127, compilationUnit.getLineNumber(detectionStartPosition));
+	}
+	
 	private Method getMethodGetStartPositionOfMethodDeclarationBody() throws NoSuchMethodException {
 		Method method = ClosingResourceBeginningPositionFinder.class
 				.getDeclaredMethod("getStartPositionOfMethodDeclarationBody", MethodInvocation.class);
@@ -193,7 +258,7 @@ public class ClosingResourceBeginningPositionFinderTest {
 
 	/**
 	 * @exception IllegalArgumentException
-	 *                If node is not a subnode of this compilationUnit
+	 *                If node is not a sub-node of this compilationUnit
 	 */
 	private int getLineNumber(ASTNode node) {
 		if (!node.getRoot().equals(compilationUnit)) {

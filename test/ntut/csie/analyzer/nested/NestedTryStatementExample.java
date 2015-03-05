@@ -362,7 +362,7 @@ public class NestedTryStatementExample {
 		} finally {
 			if(fis != null) {
 				try {
-					fis.close();
+					fis.close(); // Safe
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -382,14 +382,12 @@ public class NestedTryStatementExample {
 			throw new RuntimeException(e);
 		} finally {
 			if(fis == null) {
-				return;
+				//return;
 			}
-			{
-				try {
-					fis.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+			try {
+				fis.close(); // Unsafe
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 	}
@@ -407,7 +405,7 @@ public class NestedTryStatementExample {
 		} finally {
 			while(fis != null) {
 				try {
-					fis.close();
+					fis.close(); // Unsafe
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -429,7 +427,7 @@ public class NestedTryStatementExample {
 		} finally {
 			do {	// This situation should never happened
 				try {
-					fis.close();
+					fis.close(); // Unsafe
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -451,7 +449,7 @@ public class NestedTryStatementExample {
 		} finally {
 			for(int i = 0; i<2; i++) {	// This situation should never happened
 				try {
-					fis.close();
+					fis.close(); // Unsafe
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -472,7 +470,7 @@ public class NestedTryStatementExample {
 		} finally {
 			for(int i = 0; i<2; i++) {	// This situation should never happened
 				try {
-					fis.close();
+					fis.close(); // Unsafe
 				} catch (IOException e) {
 					try {
 						fos = new FileOutputStream("");
@@ -485,7 +483,7 @@ public class NestedTryStatementExample {
 						throw new RuntimeException(e1);
 					} finally {
 						try {
-							fos.close();
+							fos.close(); // Safe
 						} catch (IOException e1) {
 							e1.printStackTrace();
 						}

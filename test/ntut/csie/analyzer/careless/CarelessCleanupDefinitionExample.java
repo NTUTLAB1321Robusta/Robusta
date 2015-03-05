@@ -122,11 +122,10 @@ public class CarelessCleanupDefinitionExample {
 	 */
 	
 	/* 
-	 * not yet implemented; cc detector does not stop at resource's last assignment but its declaration
 	 * Story#7631
 	 */
 	// this defines one of the ranges we detect: from close statement back to its resource's last assignment
-	public void exceptionBeforeLastResourceAssignment(boolean a) throws IOException{ //left here
+	public void exceptionBeforeLastResourceAssignment(boolean a) throws IOException{
 		FileInputStream fis = null;
 		methodBeforeClose.declaredCheckedException();
 		
@@ -135,12 +134,11 @@ public class CarelessCleanupDefinitionExample {
 		try{
 			// do something
 		} finally {
-			fis.close(); //safe, if bug is fixed.
+			fis.close(); //safe
 		}
 	}
 	
 	/* 
-	 * not yet implemented; cc detector does not stop at resource's last assignment but its declaration
 	 * Story#7634
 	 */
 	// this defines one of the ranges we detect: from close statement back to its 

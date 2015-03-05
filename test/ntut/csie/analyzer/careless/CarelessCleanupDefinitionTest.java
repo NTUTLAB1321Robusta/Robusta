@@ -117,7 +117,7 @@ public class CarelessCleanupDefinitionTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"exceptionBeforeLastResourceAssignment",
 				"fis.close()");
-		assertTrue(checker.isMayInterruptByException(methodInvocation));
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 
 	@Test

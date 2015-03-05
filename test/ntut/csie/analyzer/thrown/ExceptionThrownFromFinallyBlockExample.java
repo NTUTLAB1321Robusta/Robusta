@@ -29,7 +29,7 @@ public class ExceptionThrownFromFinallyBlockExample {
 		FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
 		try {
 		} finally {
-			fileOutputStream.close(); // ThrownInFinally
+			fileOutputStream.close(); // ThrownInFinally // Safe for CC
 		}
 	}
 
@@ -44,7 +44,7 @@ public class ExceptionThrownFromFinallyBlockExample {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} finally {
-			fileOutputStream.close(); // ThrownInFinally
+			fileOutputStream.close(); // ThrownInFinally // Safe for CC
 		}
 	}
 
@@ -80,7 +80,7 @@ public class ExceptionThrownFromFinallyBlockExample {
 			throw new RuntimeException(e);
 		} finally {
 			if (fileOutputStream != null)
-				fileOutputStream.close(); // ThrownInFinally
+				fileOutputStream.close(); // ThrownInFinally // Safe for CC
 		}
 	}
 
@@ -96,7 +96,7 @@ public class ExceptionThrownFromFinallyBlockExample {
 			throw new RuntimeException(e);
 		} finally {
 			while (fileOutputStream != null) {
-				fileOutputStream.close(); // ThrownInFinally
+				fileOutputStream.close(); // ThrownInFinally // Unsafe for CC
 				throw new IOException(); // ThrownInFinally
 			}
 		}
@@ -131,7 +131,7 @@ public class ExceptionThrownFromFinallyBlockExample {
 				System.out.println(e.toString());
 				throw e; // ThrownInFinally
 			} finally {
-				fileOutputStream.close(); // ThrownInFinally
+				fileOutputStream.close(); // ThrownInFinally // Safe for CC??
 			}
 		}
 	}
@@ -178,7 +178,7 @@ public class ExceptionThrownFromFinallyBlockExample {
 			throw new RuntimeException(e);
 		} finally {
 			try {
-				fileOutputStream.close();
+				fileOutputStream.close(); // Safe for CC
 				fileOutputStream2 = new FileOutputStream(outputFile);
 				fileOutputStream2.write(context);
 			} catch (RuntimeException e) {
@@ -188,7 +188,7 @@ public class ExceptionThrownFromFinallyBlockExample {
 			} catch (IOException e) {
 				throw new RuntimeException(e); // ThrowsInFinally
 			} finally {
-				fileOutputStream.close(); // ThrowsInFinally
+				fileOutputStream.close(); // ThrowsInFinally // Safe for CC
 				try {
 					fileOutputStream3 = new FileOutputStream(outputFile);
 					fileOutputStream3.write(context);
@@ -197,7 +197,7 @@ public class ExceptionThrownFromFinallyBlockExample {
 				} catch (IOException e) {
 					throw e; // ThrowsInFinally
 				} finally {
-					fileOutputStream3.close(); // ThrowsInFinally
+					fileOutputStream3.close(); // ThrowsInFinally // Safe for CC
 				}
 			}
 		}
@@ -216,12 +216,12 @@ public class ExceptionThrownFromFinallyBlockExample {
 			} catch (IOException e1) {
 				throw new RuntimeException(e1);
 			} finally {
-				fileOutputStream2.close(); // ThrownInFinally
+				fileOutputStream2.close(); // ThrownInFinally // Safe for CC
 			}
 			throw e;
 		} finally {
 			try {
-				fileOutputStream.close();
+				fileOutputStream.close(); // Safe for CC
 				fileOutputStream2 = new FileOutputStream(outputFile);
 				fileOutputStream2.write(context);
 			} catch (FileNotFoundException e) {
@@ -229,7 +229,7 @@ public class ExceptionThrownFromFinallyBlockExample {
 			} catch (IOException e) {
 				throw new RuntimeException(e); // ThrownInFinally
 			} finally {
-				fileOutputStream.close(); // ThrownInFinally
+				fileOutputStream.close(); // ThrownInFinally // Safe for CC
 			}
 		}
 	}
@@ -267,7 +267,7 @@ public class ExceptionThrownFromFinallyBlockExample {
 				} finally {
 					try {
 						// IOException will be caught by catch block
-						fileOutputStream3.close();
+						fileOutputStream3.close(); // Safe for CC
 					} catch (IOException e1) {
 						e1.printStackTrace();
 					}
@@ -392,13 +392,13 @@ public class ExceptionThrownFromFinallyBlockExample {
 				 * be catch by catch block
 				 */
 				fileOutputStream3 = new FileOutputStream(outputFile);
-				fileOutputStream.close();
+				fileOutputStream.close(); // Unsafe for CC
 				fileOutputStream2 = new FileOutputStream(outputFile);
 				fileOutputStream2.write(context);
 			} catch (IOException e) {
 				throw new RuntimeException(e); // ThrownInFinally
 			} finally {
-				fileOutputStream3.close(); // ThrownInFinally
+				fileOutputStream3.close(); // ThrownInFinally // Safe for CC??
 			}
 			if (fileOutputStream3.hashCode() != 0)
 				throw new IOException(); // ThrownInFinally
@@ -417,7 +417,7 @@ public class ExceptionThrownFromFinallyBlockExample {
 				fileOutputStream.write(context);
 			} catch (IOException e) {
 			} finally {
-				fileOutputStream.close(); // ThrownInFinally
+				fileOutputStream.close(); // ThrownInFinally // Safe for CC
 			}
 		} catch (IOException outE) {
 			try {
@@ -425,7 +425,7 @@ public class ExceptionThrownFromFinallyBlockExample {
 				fileOutputStream.write(context);
 			} catch (IOException e) {
 			} finally {
-				fileOutputStream.close(); // ThrownInFinally
+				fileOutputStream.close(); // ThrownInFinally // Safe for CC
 			}
 		} finally {
 			try {
@@ -433,7 +433,7 @@ public class ExceptionThrownFromFinallyBlockExample {
 				fileOutputStream.write(context);
 			} catch (IOException e) {
 			} finally {
-				fileOutputStream.close(); // ThrownInFinally
+				fileOutputStream.close(); // ThrownInFinally // Safe for CC
 			}
 		}
 	}
@@ -491,7 +491,7 @@ public class ExceptionThrownFromFinallyBlockExample {
 		FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
 		try {
 		} finally {
-			fileOutputStream.close(); // ThrownInFinally
+			fileOutputStream.close(); // ThrownInFinally // Safe for CC
 		}
 	}
 
