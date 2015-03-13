@@ -75,7 +75,7 @@ public class CarelessCleanupVisitorTest {
 			throws JavaModelException {
 		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupAdvancedExample.class);
 
-		Assertor.assertMarkerInfoListSize(6, smellList);
+		Assertor.assertMarkerInfoListSize(4, smellList);
 	}
 
 	@Test
@@ -90,7 +90,7 @@ public class CarelessCleanupVisitorTest {
 				SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupAdvancedExample.class);
 
-		Assertor.assertMarkerInfoListSize(13, smellList);
+		Assertor.assertMarkerInfoListSize(10, smellList);
 	}
 
 	@Ignore

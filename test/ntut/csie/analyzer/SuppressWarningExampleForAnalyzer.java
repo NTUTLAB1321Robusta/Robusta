@@ -430,7 +430,7 @@ public class SuppressWarningExampleForAnalyzer {
 		try {
 			new FileOutputStream("");
 			fileOutputStream = new FileOutputStream("");
-			fileOutputStream.close();  // CC #4
+			fileOutputStream.close();
 			throw new IOException("IOException throws in callee");
 		} catch(FileNotFoundException e) {
 			logger.log(Level.WARNING, e.getMessage());

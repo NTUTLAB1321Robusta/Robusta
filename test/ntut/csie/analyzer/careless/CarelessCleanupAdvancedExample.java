@@ -70,30 +70,6 @@ public class CarelessCleanupAdvancedExample {
 	}
 
 	/**
-	 * The close action will be reach even if any exception be thrown in that
-	 * try statement. But there is maybe a exception before the try statement.
-	 */
-	public void safeCloseInTryAndThrowInOtherStatementBeenCaught()
-			throws Exception {
-		FileInputStream fis = new FileInputStream(file);
-
-		/*
-		 * The thrown exception already been caught,
-		 * but maybe there is other exception to interrupt the close action below.
-		 */
-		try {
-			methodBeforeClose.declaredCheckedException();
-		} catch (IOException e) {
-		}
-
-		try {
-			methodBeforeClose.declaredCheckedException();
-		} finally {
-			fis.close(); // Unsafe
-		}
-	}
-
-	/**
 	 * The close action will be reach if and only if the resource been created.
 	 * Because if "declaredCheckedException" throws an exception, the creation
 	 * won't be reached.
@@ -136,12 +112,9 @@ public class CarelessCleanupAdvancedExample {
 	public void variableBeenAssignedAfterDeclared() throws IOException {
 		FileInputStream fis;
 		fis = new FileInputStream(file);
-		fis.close(); // Unsafe for Robusta (Not for human) 
+		fis.close(); // Safe
 	}
 
-	/**
-	 * For Robusta, this is a CC bad smell, but not for humans.
-	 */
 	public void throwExceptionBeforeAssignment(FileOutputStream fos)
 			throws IOException {
 		methodBeforeClose.declaredCheckedException();
@@ -150,7 +123,7 @@ public class CarelessCleanupAdvancedExample {
 			fileInputStream = new FileInputStream("path");
 			fileInputStream.read();
 		} finally {
-			fileInputStream.close(); // Unsafe for Robusta (Not for human) 
+			fileInputStream.close(); // Safe
 		}
 	}
 
@@ -205,6 +178,7 @@ public class CarelessCleanupAdvancedExample {
 		} while (0 == fileInputStream.available());
 	}
 
+	// the first try would be treated as a cause of exception
 	public void doTryFinallyTwice(OutputStream zOut) throws IOException {
 		InputStream is = null;
 		try {

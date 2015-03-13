@@ -20,8 +20,8 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 
 public class UserDefinedMethodAnalyzer {
 	public final static String SETTINGFILEPATH = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString() + File.separator + SmellSettings.SETTING_FILENAME;
-	private TreeMap<String, SmellSettings.UserDefinedConstraintsType> methodTreeMap;
-	boolean isEnable;
+	protected TreeMap<String, SmellSettings.UserDefinedConstraintsType> methodTreeMap;
+	protected boolean isEnable;
 	
 	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
 	public UserDefinedMethodAnalyzer(String smellName) {
