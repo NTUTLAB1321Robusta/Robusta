@@ -148,6 +148,12 @@ public class OverLoggingVisitor extends ASTVisitor {
 			return false;
 		}
 		
+		if(node.resolveMethodBinding() == null)
+			return false;
+		
+		if(node.resolveMethodBinding().getDeclaringClass() == null)
+			return false;
+		
 		String libName = node.resolveMethodBinding().getDeclaringClass().getQualifiedName();
 		Iterator<String> iterator = libMap.keySet().iterator();
 		while(iterator.hasNext()) {

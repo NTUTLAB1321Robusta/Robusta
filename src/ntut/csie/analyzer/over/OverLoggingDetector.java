@@ -175,6 +175,12 @@ public class OverLoggingDetector {
 	 */
 	private MethodDeclaration findMethodDeclaration(TypeDeclaration type, IMethod method) throws JavaModelException {
 		ISourceRange sourceRange = method.getSourceRange();
+		
+		if(type == null)
+			return null;
+		if(type.bodyDeclarations() == null)
+			return null;
+		
 		for (Iterator<?> I = type.bodyDeclarations().iterator(); I.hasNext();) {
 			BodyDeclaration declaration = (BodyDeclaration) I.next();
 			if (declaration.getNodeType() == ASTNode.METHOD_DECLARATION) {

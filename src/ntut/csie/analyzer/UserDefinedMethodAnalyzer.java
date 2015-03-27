@@ -15,6 +15,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 
 
@@ -50,12 +51,14 @@ public class UserDefinedMethodAnalyzer {
 		while(userDefinedMethodIterator.hasNext()) {
 			String condition = userDefinedMethodIterator.next();
 			// 目前知道的情況：Override Closeable的close，使其不會拋出IOException，會造成resolveMethodBinding為null
-			if(node.resolveMethodBinding() == null) {
+			if(node.resolveMethodBinding() == null)
 				continue;
-			}
-			if(node.resolveMethodBinding().getDeclaringClass().getQualifiedName().equals(condition)) {
+			
+			if(node.resolveMethodBinding().getDeclaringClass() == null)
+				continue;
+			
+			if(node.resolveMethodBinding().getDeclaringClass().getQualifiedName().equals(condition))
 				return true;
-			}
 		}
 		return false;
 	}

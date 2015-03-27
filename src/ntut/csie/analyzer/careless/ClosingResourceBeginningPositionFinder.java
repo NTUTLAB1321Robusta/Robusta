@@ -10,6 +10,7 @@ import ntut.csie.util.exception.ClosingResourceBeginningPositionException;
 import ntut.csie.util.exception.ExpressionIsNotInSimpleNameFormException;
 import ntut.csie.util.exception.NoAssignmentStatementInDetectionRangeException;
 import ntut.csie.util.exception.NoAssignmentStatementOrDeclarationInDetectionRangeException;
+import ntut.csie.util.exception.RetrieveVariableDeclarationPointFailException;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Assignment;
@@ -107,7 +108,7 @@ public class ClosingResourceBeginningPositionFinder {
 	 *  If the method invocation is not in "instance.close()" form or the instance has no assignment between the range
 	 *  it's supposed to be in, an exception would be raised
 	 */
-	private void setStartPositionByTheExpressionOfMethodInvocation(MethodInvocation methodInvocation) throws CloseMethodInvocationHasNoExpressionException, ExpressionIsNotInSimpleNameFormException, NoAssignmentStatementOrDeclarationInDetectionRangeException{
+	private void setStartPositionByTheExpressionOfMethodInvocation(MethodInvocation methodInvocation) throws CloseMethodInvocationHasNoExpressionException, ExpressionIsNotInSimpleNameFormException, NoAssignmentStatementOrDeclarationInDetectionRangeException, RetrieveVariableDeclarationPointFailException{
 		Expression expression = methodInvocation.getExpression();
 		// close()
 		if(expression == null)
@@ -198,6 +199,10 @@ public class ClosingResourceBeginningPositionFinder {
 	
 	private int getVariableDeclarationPosition(Expression expression) {
 		ASTNode variableDeclaration = getVariableDeclaration(expression);
+		
+		if(variableDeclaration == null)
+			throw new RetrieveVariableDeclarationPointFailException();
+		
 		return variableDeclaration.getStartPosition();
 	}
 
