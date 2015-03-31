@@ -7,6 +7,18 @@ import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IncrementalProjectBuilder;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -20,6 +32,9 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.ui.ISelectionService;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.PlatformUI;
 import org.jdom.Element;
 
 /**
@@ -409,7 +424,41 @@ public class SettingPage extends APropertyPage {
 		smellSettings.setPreferenceAttribute(SmellSettings.PRE_SHOWRLANNOTATIONWARNING, SmellSettings.ATTRIBUTE_ENABLE, preferenceList[0]);
 		//將檔案寫回
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		
+		rebuildProjectInBackground();
 		return true;
 	}
 
+	public void rebuildProjectInBackground(){
+		final IProject currentProject=getCurrentProject();
+		 Job job = new Job("Rebuilding Project") {
+		     protected IStatus run(IProgressMonitor monitor) {
+		    	   try {
+		    		   currentProject.build(IncrementalProjectBuilder.CLEAN_BUILD, monitor);
+				} catch (CoreException e) {
+					throw new RuntimeException(e);
+				}
+		           return Status.OK_STATUS;
+		        }
+		     };
+		  job.setPriority(Job.SHORT);
+		  job.schedule(); 
+	} 
+	
+	public IProject getCurrentProject(){  
+		IWorkbench iworkbench = PlatformUI.getWorkbench();
+        ISelectionService selectionService = iworkbench.getActiveWorkbenchWindow().getSelectionService();    
+        ISelection selection = selectionService.getSelection();    
+        IProject project = null;    
+        if(selection instanceof IStructuredSelection) {    
+            Object element = ((IStructuredSelection)selection).getFirstElement();    
+            if (element instanceof IResource) {    
+                project= ((IResource)element).getProject();    
+            }  else if (element instanceof IJavaElement) {    
+                IJavaProject jProject= ((IJavaElement)element).getJavaProject();    
+                project = jProject.getProject();    
+            }    
+        }     
+        return project;    
+    }
 }
