@@ -26,40 +26,25 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-/*要先了解一下如何產生測試專案，才能繼續下去*/
 public class EnableRLAnnotationTest {
 	private EnableRLAnnotation enableRLAnnotation;
-
 	JarFile answerJar = null;
 	IWorkspace workspace;
 	IWorkspaceRoot root;
 	IProject project;
-	IProject project2;
 
 	private IJavaProject javaProj;
-	private IJavaProject javaProj2;
 	JavaProjectMaker javaProjectMaker;
-	JavaProjectMaker javaProjectMaker2;
-
 	@Before
 	public void setUp() throws Exception {
 		enableRLAnnotation = new EnableRLAnnotation();
-		String projectname1 = "MyProject";
-		javaProjectMaker = new JavaProjectMaker(projectname1);
+		String projectname = "MyProject";
+		javaProjectMaker = new JavaProjectMaker(projectname);
 		javaProjectMaker.setJREDefaultContainer();
 		workspace = ResourcesPlugin.getWorkspace();
 		root = workspace.getRoot();
-		project = root.getProject(projectname1);
+		project = root.getProject(projectname);
 		javaProj = JavaCore.create(project);
-		// 新增兩個不同空專案 
-		String projectname2 = "MyProject2";
-		javaProjectMaker2 = new JavaProjectMaker(projectname2);
-		javaProjectMaker2.setJREDefaultContainer();
-		workspace = ResourcesPlugin.getWorkspace();
-		root = workspace.getRoot();
-		project2 = root.getProject(projectname2);
-		javaProj2 = JavaCore.create(project2);
-
 	}
 
 	@Test
@@ -75,7 +60,7 @@ public class EnableRLAnnotationTest {
 			testJarId = (String) testExtraJarIdMethod.invoke(
 					enableRLAnnotation, sampleFullJarId);
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			throw new RuntimeException(ex);	
 		}
 		Assert.assertTrue(testJarId.equals(answerJarId));
 	}
@@ -92,29 +77,27 @@ public class EnableRLAnnotationTest {
 			testJarId = (String) testExtraJarIdMethod.invoke(
 					enableRLAnnotation, sampleFullJarId);
 		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+			throw new RuntimeException(ex);	
+			}
 		Assert.assertFalse(testJarId.equals(answerJarId));
 	}
 
 	@Test
 	public void testCopyFileUsingFileStreams() {
 		String workingSapaceDir = System.getProperty("user.dir");
-		String filePath = workingSapaceDir + "/copytest/copy.txt";
-		File sampleFile = new File(filePath);
+		File sampleFile = new File(workingSapaceDir + "/copytest/copy.txt");
 		if (!sampleFile.exists()) {
 			sampleFile.getParentFile().mkdirs();
 			try {
 				sampleFile.createNewFile();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				throw new RuntimeException(e);
 			}
 		}
-
 		File destFileDir = new File(workingSapaceDir + "/copytest2/copy.txt");
+		FileInputStream originFileInput =null;
 		try {
-			FileInputStream originFileInput = new FileInputStream(
+			originFileInput = new FileInputStream(
 					workingSapaceDir + "/copytest/copy.txt");
 			Method testCopyFileUSingFileStreamMethod = EnableRLAnnotation.class
 					.getDeclaredMethod("copyFileUsingFileStreams",
@@ -123,7 +106,13 @@ public class EnableRLAnnotationTest {
 			testCopyFileUSingFileStreamMethod.invoke(enableRLAnnotation,
 					originFileInput, destFileDir);
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			throw new RuntimeException(ex);
+		}finally{
+			try {
+				originFileInput.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		File searFile = new File(workingSapaceDir + "/copytest2/copy.txt");
 		Assert.assertTrue(searFile.exists());
@@ -138,8 +127,7 @@ public class EnableRLAnnotationTest {
 			try {
 				fileDest.createNewFile();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				throw new RuntimeException(e);
 			}
 		}
 		try {
@@ -147,10 +135,9 @@ public class EnableRLAnnotationTest {
 					.getDeclaredMethod("setBuildPath", IProject.class,
 							File.class);
 			testSetBuildPathMethod.setAccessible(true);
-			testSetBuildPathMethod
-					.invoke(enableRLAnnotation, project, fileDest);
+			testSetBuildPathMethod.invoke(enableRLAnnotation, project, fileDest);
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			throw new RuntimeException(ex);
 		}
 
 		File classPath = new File(projPath + "/.classpath");
@@ -161,18 +148,15 @@ public class EnableRLAnnotationTest {
 			FileReader fileReader = new FileReader(classPath);
 			bufferedReader = new BufferedReader(fileReader);
 			stringBuffer = new StringBuffer();
-
 			while ((line = bufferedReader.readLine()) != null) {
 				stringBuffer.append(line);
 				stringBuffer.append("\n");
 			}
 			fileReader.close();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
 		Assert.assertTrue(stringBuffer.toString().contains("copy.txt"));
 	}
@@ -185,24 +169,22 @@ public class EnableRLAnnotationTest {
 					.getDeclaredMethod("checkExistInClassPath",
 							IJavaProject.class);
 			testCheckExistInClassPathMethod.setAccessible(true);
-			statecheck = (Boolean) testCheckExistInClassPathMethod.invoke(
-					enableRLAnnotation, javaProj2);
+			statecheck = (Boolean) testCheckExistInClassPathMethod.invoke(enableRLAnnotation, javaProj);
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			throw new RuntimeException(ex);
 		}
 		Assert.assertFalse(statecheck);
 	}
 
 	@After
-	public void shutDown() throws CoreException {
+	public void TearDown() throws CoreException {
 		enableRLAnnotation = null;
-		String workingDir = System.getProperty("user.dir");
-		String filePath = workingDir + "/copytest/copy.txt";
-		String filePath2 = workingDir + "/copytest2/copy.txt";
+		String workingSapaceDir = System.getProperty("user.dir");
+		String filePath = workingSapaceDir + "/copytest/copy.txt";
+		String filePath2 = workingSapaceDir + "/copytest2/copy.txt";
 		deleteAll(filePath);
 		deleteAll(filePath2);
 		javaProjectMaker.deleteProject();
-		javaProjectMaker2.deleteProject();
 	}
 
 	public void deleteAll(String path) {
