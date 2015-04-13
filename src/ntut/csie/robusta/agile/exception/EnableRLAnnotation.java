@@ -21,9 +21,12 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
@@ -35,7 +38,6 @@ import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 /**
  * @author Peter
  * 
@@ -47,7 +49,7 @@ public class EnableRLAnnotation implements IObjectActionDelegate {
 	// TODO globalize the pluginId and agileExceptionJarId
 	private final String pluginId = RLEHTPlugin.PLUGIN_ID;
 	private final String agileExceptionJarId = "taipeitech.csie.robusta.agile.exception";
-
+	
 	@Override
 	public void run(IAction action) {
 		if (selection instanceof IStructuredSelection) {
@@ -61,10 +63,20 @@ public class EnableRLAnnotation implements IObjectActionDelegate {
 					project = (IProject) ((IAdaptable) element)
 							.getAdapter(IProject.class);
 				}
-
+				
 				if (project != null) {
 					enableRLAnnotation(project);
-					refreshProject(project);
+					// save project to a final variable so that it can be used in Job,
+					// it should be safe for that project should not change over time
+					final IProject project2 = project;
+					Job job = new Job("Refreshing Project"){
+						protected IStatus run(IProgressMonitor monitor){
+							refreshProject(project2);
+							return Status.OK_STATUS;
+						}
+					};
+					job.setPriority(Job.SHORT);
+					job.schedule();
 				}
 			}
 		}

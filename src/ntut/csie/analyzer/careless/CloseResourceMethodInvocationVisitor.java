@@ -100,6 +100,6 @@ public class CloseResourceMethodInvocationVisitor extends ASTVisitor {
 	private static boolean isIMethodBindingImplementedCloseable(
 			IMethodBinding methodBinding) {
 		return NodeUtils.isITypeBindingImplemented(
-				methodBinding.getDeclaringClass(), Closeable.class);
+				methodBinding.getDeclaringClass(), Closeable.class); // not checking AutoCloseable?
 	}
 }
