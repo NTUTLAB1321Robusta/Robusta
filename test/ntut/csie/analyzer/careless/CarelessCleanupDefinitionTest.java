@@ -83,7 +83,7 @@ public class CarelessCleanupDefinitionTest {
 	}
 	
 	@Test
-	public void testCloseMethodNotNamedClose() throws Exception {
+	public void testCloseMethodNotNamedClosePassedInCloseableResource() throws Exception {
 		MockCloseResourceMethodInvocationVisitor closeResourceMethodInvocationCollector;
 		MethodInvocation methodInvocation;
 		List<MethodInvocation> carelessCleanupSuspectList;
@@ -96,7 +96,33 @@ public class CarelessCleanupDefinitionTest {
 		
 		try {
 			closeResourceMethodInvocationCollector = new MockCloseResourceMethodInvocationVisitor(compilationUnit);
-			methodInvocation = getMethodInvocationByMethodNameAndCode("closeMethodNotNamedClose", "cleanUp(fileInputStream)");
+			methodInvocation = getMethodInvocationByMethodNameAndCode("closeMethodNotNamedClosePassedInCloseableResource", "cleanUp(fileInputStream)");
+			compilationUnit.accept(closeResourceMethodInvocationCollector);
+			carelessCleanupSuspectList = closeResourceMethodInvocationCollector.getCloseMethodInvocations();
+		} finally {
+			// tear down
+			// delete fake smell setting file
+			fakeSmellSettingFile.delete();
+		}
+		
+		assertTrue(contains(carelessCleanupSuspectList, methodInvocation));
+	}
+	
+	@Test
+	public void testcloseMethodNotNamedClosePassedInAutoCloseableResource() throws Exception {
+		MockCloseResourceMethodInvocationVisitor closeResourceMethodInvocationCollector;
+		MethodInvocation methodInvocation;
+		List<MethodInvocation> carelessCleanupSuspectList;
+		
+		// set up
+		// create fake smell setting file to simulate user chooses to detect Careless Cleanup and 
+		// checks "Also detect this bad smell out of try statement"
+		fakeSmellSettingFile = new File("fakeSmellSettingFile.xml");
+		createFakeSmellSettingFileDetectingCCAndCheckingAlsoDetectThisBadSmellOutOfTry(fakeSmellSettingFile);
+		
+		try {
+			closeResourceMethodInvocationCollector = new MockCloseResourceMethodInvocationVisitor(compilationUnit);
+			methodInvocation = getMethodInvocationByMethodNameAndCode("closeMethodNotNamedClosePassedInAutoCloseableResource", "cleanUp(os)");
 			compilationUnit.accept(closeResourceMethodInvocationCollector);
 			carelessCleanupSuspectList = closeResourceMethodInvocationCollector.getCloseMethodInvocations();
 		} finally {

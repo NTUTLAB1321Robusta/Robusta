@@ -35,8 +35,6 @@ public class CloseResourceMethodInvocationExample {
 	public void userDefinedClassOrMethodOrFullQualifiedMethod() throws Exception {
 		UserDefinedCarelessCleanupClass clazz = new UserDefinedCarelessCleanupClass();
 		clazz.bark();
-		clazz.bark();
-		clazz.bite();
 		clazz.bite();
 		
 		UserDefinedCarelessCleanupMethod methods = new UserDefinedCarelessCleanupMethod();
@@ -117,5 +115,25 @@ public class CloseResourceMethodInvocationExample {
 	public void invokeGetResourceAndCloseItNotImpCloseable() throws Exception {
 		ClassWithGetResource resourceManager = new ClassWithGetResource();
 		resourceManager.getResourceNotImpCloseable().close(); // Is when user defined
+	}
+	
+	/**
+	 * This class is for testing if Robusta can collect close statements of 
+	 * resources of AutoCloseable type
+	 */
+	class ConcreteAutoCloseable implements AutoCloseable {
+		@Override
+		public void close() throws IOException {
+			// do some clean up here
+		}
+		public void write() throws IOException {
+			// do some writing here
+		}
+	}
+	
+	public void closeMethodInvocationOfConcreteAutoCloseable() throws Exception {
+		ConcreteAutoCloseable concreteAutoCloseableObject = new ConcreteAutoCloseable();
+		concreteAutoCloseableObject.write();
+		concreteAutoCloseableObject.close(); // Is
 	}
 }

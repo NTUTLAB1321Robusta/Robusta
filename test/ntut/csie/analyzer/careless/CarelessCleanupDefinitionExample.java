@@ -4,6 +4,7 @@ import java.io.Closeable;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * This class contains test examples that would help define Careless Cleanup rules.
@@ -38,12 +39,50 @@ public class CarelessCleanupDefinitionExample {
 		}
 	}
 	
+	/*
+	 * Since Java 7 Oracle introduced AutoCloseable interface
+	 * and developers stared using it instead of Closeable;
+	 * hence, we need to be able to detect Careless Cleanup for 
+	 * resources of AutoCloseable type.
+	 * 
+	 * commented because this example is also written somewhere else
+	 * but necessary to be here to help define our rules
+	 * 
+	class ConcreteAutoCloseable implements AutoCloseable {
+		@Override
+		public void close() throws IOException {
+			// do some clean up here
+		}
+		public void write() throws IOException {
+			// do some writing here
+		}
+	}
+	
+	public void closeMethodInvocationOfConcreteAutoCloseable() throws Exception {
+		ConcreteAutoCloseable concreteAutoCloseableObject = new ConcreteAutoCloseable();
+		concreteAutoCloseableObject.write();
+		concreteAutoCloseableObject.close(); //unsafe
+	}
+	 */
+	
+
+	class ConcreteAutoCloseableOutputStream implements AutoCloseable {
+		@Override
+		public void close() throws IOException {
+			// do some clean up here
+		}
+	}
+	
 	public void cleanUp(FileInputStream fileInputStream) {
 		close();
 	}
 	
+	public void cleanUp(AutoCloseable resource) {
+		close();
+	}
+	
 	public void close() {
-		// do nothing
+		// some clean up code
 	}
 	
 	// resource that does not implement closeable should not be detected by the CC detector
@@ -84,14 +123,27 @@ public class CarelessCleanupDefinitionExample {
 	}
 	
 	// clean up method that is not named "close" would not be detected by the CC detector 
-	// UNLESS it has a closeable parameter and the method contains a close in it body.
-	public void closeMethodNotNamedClose() throws IOException{
+	// UNLESS it has a "Closeable" parameter and the method contains a close in it body.
+	public void closeMethodNotNamedClosePassedInCloseableResource() throws IOException{
 		methodBeforeClose.declaredCheckedException();
 		
 		try{
 			// do something here
 		}finally {
 			cleanUp(fileInputStream); //unsafe if "also detect this bad smell out of try statement" is checked
+		}
+	}
+	
+	// clean up method that is not named "close" would not be detected by the CC detector 
+	// UNLESS it has a "AutoCloseable" parameter and the method contains a close in it body.
+	public void closeMethodNotNamedClosePassedInAutoCloseableResource() throws IOException{
+		ConcreteAutoCloseableOutputStream os = new ConcreteAutoCloseableOutputStream();
+		methodBeforeClose.declaredCheckedException();
+		
+		try{
+			// do something here
+		}finally {
+			cleanUp(os); //unsafe if "also detect this bad smell out of try statement" is checked
 		}
 	}
 	

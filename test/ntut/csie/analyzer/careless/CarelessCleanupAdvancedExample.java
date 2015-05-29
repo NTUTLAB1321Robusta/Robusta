@@ -179,15 +179,15 @@ public class CarelessCleanupAdvancedExample {
 	}
 
 	// the first try would be treated as a cause of exception
-	public void doTryFinallyTwice(OutputStream zOut) throws IOException {
+	public void doTryFinallyTwice(OutputStream os) throws IOException {
 		InputStream is = null;
 		try {
-			zOut.write(is.read());
+			os.write(is.read());
 		} finally {
 			is.close(); // Safe
 		}
 		try {
-			zOut.write(is.read());
+			os.write(is.read());
 		} finally {
 			is.close(); // Unsafe
 		}

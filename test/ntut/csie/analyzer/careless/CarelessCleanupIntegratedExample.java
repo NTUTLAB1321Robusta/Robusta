@@ -71,7 +71,7 @@ public class CarelessCleanupIntegratedExample {
 	public void thrownExceptionInFinallyWith2KindsUserDefinedInstance()
 			throws Exception {
 		MethodInvocationBeforeClose methodBeforeClose = new MethodInvocationBeforeClose();
-		
+
 		UserDefinedCarelessCleanupMethod udMethod = new UserDefinedCarelessCleanupMethod();
 		UserDefinedCarelessCleanupClass udClass = new UserDefinedCarelessCleanupClass();
 		try {
@@ -85,16 +85,16 @@ public class CarelessCleanupIntegratedExample {
 		}
 	}
 
-	public void doTryFinallyTwiceWithUserDefinition(OutputStream zOut)
+	public void doTryFinallyTwiceWithUserDefinition(OutputStream os)
 			throws IOException {
 		InputStream is = null;
 		try {
-			zOut.write(is.read());
+			os.write(is.read());
 		} finally {
 			ResourceCloser.closeResourceDirectly(is); // Safe
 		}
 		try {
-			zOut.write(is.read());
+			os.write(is.read());
 		} finally {
 			ResourceCloser.closeResourceDirectly(is); // Unsafe when user defined
 		}
@@ -141,6 +141,7 @@ public class CarelessCleanupIntegratedExample {
 		public void throwException() throws RuntimeException {
 			throw new RuntimeException();
 		}
+
 		public void close() {
 			System.out.println("Door already closed.");
 		}
@@ -156,10 +157,11 @@ public class CarelessCleanupIntegratedExample {
 	 * It is an example of a bug after 2014/04/01. When detecting body of
 	 * catch-clause, the parent block will be body of methodDeclaration instead
 	 * of try block, so we have to handle this as special case.
+	 * 
 	 * @author pig
 	 */
-	public void closeInCatchAndThereIsUncaughtDecalredInTry(OutputStream outputStream)
-			throws IOException {
+	public void closeInCatchAndThereIsUncaughtDecalredInTry(
+			OutputStream outputStream) throws IOException {
 		FileOutputStream fileOutputStream = null;
 		try {
 			throw new RuntimeException("Uncaught decalration");

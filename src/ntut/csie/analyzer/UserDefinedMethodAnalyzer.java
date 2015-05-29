@@ -126,9 +126,10 @@ public class UserDefinedMethodAnalyzer {
 
 		// Check if parameters implemented closeable
 		boolean isCloseable = NodeUtils.isParameterImplemented(node, Closeable.class);
+		boolean isAutoCloseable = NodeUtils.isParameterImplemented(node, AutoCloseable.class);
 		
 		ASTNode mdNode = (node.resolveMethodBinding() != null) ? root.findDeclaringNode(node.resolveMethodBinding().getMethodDeclaration()): null;
-		if(mdNode != null && isCloseable) {
+		if(mdNode != null && (isCloseable || isAutoCloseable)) {
 			DeclaredMethodAnalyzer analyzer = new DeclaredMethodAnalyzer();
 			mdNode.accept(analyzer);
 			return analyzer.BadSmellIsDetected();
