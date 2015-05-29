@@ -9,8 +9,8 @@
 	<fail unless="env.ECLIPSE_TEST_TARGET" message="ECLIPSE_TEST_TARGET not set."/>
 	<property name="ECLIPSE_TEST_TARGET" value="${env.ECLIPSE_TEST_TARGET}"/>
 	<property name="debuglevel" value="source,lines,vars"/>
-	<property name="target" value="1.6"/>
-	<property name="source" value="1.6"/>
+	<property name="target" value="1.7"/>
+	<property name="source" value="1.7"/>
 	
 	<!-- TASK DEFINING -->
 	<taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpath="external_lib/ant_lib/xmltask.jar"/>

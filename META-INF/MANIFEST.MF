@@ -101,5 +101,5 @@ Export-Package: .,
  org.slf4j.helpers,
  org.slf4j.impl,
  org.slf4j.spi
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: org.apache.tools.ant.taskdefs.optional.junit
