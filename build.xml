@@ -216,7 +216,7 @@
 
 <!-- compile project -->
 <target name="build-project">
-	<javac srcdir="${src-folder}:${test-folder}" debug="true" debuglevel="${debuglevel}" destdir="${bin-folder}" source="${source}" target="${target}" includeantruntime="false" encoding="UTF-8">
+	<javac srcdir="${src-folder}:${test-folder}" debug="true" debuglevel="${debuglevel}" destdir="${bin-folder}" source="${source}" includeantruntime="false" encoding="UTF-8">
 		<classpath refid="Robusta.classpath"/>
 	</javac>
 </target>
