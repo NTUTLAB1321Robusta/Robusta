@@ -14,10 +14,12 @@ import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.InfixExpression;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.PrefixExpression;
 import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
+
 
 /**
  * It will check if any exception may been thrown before
@@ -88,10 +90,8 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 		int leftType = expression.getLeftOperand().getNodeType();
 
 		// TODO should check one of them is the resource to be closed
-		if (rightType == ASTNode.NULL_LITERAL
-				|| leftType == ASTNode.NULL_LITERAL) {
-			if (rightType == ASTNode.SIMPLE_NAME
-					|| leftType == ASTNode.SIMPLE_NAME) {
+		if (rightType == ASTNode.NULL_LITERAL || leftType == ASTNode.NULL_LITERAL) {
+			if (rightType == ASTNode.SIMPLE_NAME || leftType == ASTNode.SIMPLE_NAME) {
 				return true;
 			}
 		}
@@ -103,12 +103,17 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 		// 判斷parent node是否為if statement
 		if (parent.getNodeType() == ASTNode.IF_STATEMENT) {
 			ifStatement = ((IfStatement) parent);
+		}else{
+			return false;
 		}
 		// 判斷ifstatement是否為simplename
-		if (ifStatement != null
-				&& ifStatement.getExpression().getNodeType() == ASTNode.SIMPLE_NAME) {
-			// 不須額外判斷simple name，complier會阻止飛simple name進入if statement
+		if (ifStatement.getExpression().getNodeType() == ASTNode.SIMPLE_NAME) {
+			// 不須額外判斷simple name，complier會阻止非simple name進入if statement
 			return true;
+		}
+		// 判斷ifstatement的expression是否為prefixexpression
+	    if(ifStatement.getExpression().getNodeType() == ASTNode.PREFIX_EXPRESSION){
+			return isSafePrefixExpressionInIfstatement(ifStatement.getExpression());
 		}
 		return false;
 	}
@@ -134,7 +139,7 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 		}
 		if (expression != null && expression.getNodeType() == ASTNode.INFIX_EXPRESSION) {
 			return isSafeInfixExpressionInIfstatement(expression);
-		}
+		} 
 		return false;
 	}
 	
@@ -143,6 +148,9 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 			return isSafeInInFixExpressionInOperand(operand);
 		}
 		if (operand.getNodeType() == ASTNode.SIMPLE_NAME) {
+			return true;
+		}
+		if (operand.getNodeType() == ASTNode.BOOLEAN_LITERAL) {
 			return true;
 		}
 		return false;
@@ -162,6 +170,12 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 		List<ASTNode> extendOperand = infix.extendedOperands();
 		List<Boolean> checkExtendOperandSafe = checkExtendOperandInInFixStatement(extendOperand);
 		return (isCheckingOperandSafe(rightOperand) && isCheckingOperandSafe(leftOperand) && isExtendOperandElementSafe(checkExtendOperandSafe));
+	}
+	
+	private boolean isSafePrefixExpressionInIfstatement(Expression expression) {
+		PrefixExpression prefix = (PrefixExpression) expression;
+		ASTNode operand = prefix.getOperand();
+		return isCheckingOperandSafe(operand);
 	}
 
 	private List<Boolean> checkExtendOperandInInFixStatement(List<ASTNode> extendOperand) {

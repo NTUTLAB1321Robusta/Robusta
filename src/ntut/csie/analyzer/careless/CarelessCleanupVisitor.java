@@ -65,9 +65,7 @@ public class CarelessCleanupVisitor extends ASTVisitor {
 	private void collectSmell(MethodInvocation node) {
 		MarkerInfo markerInfo = new MarkerInfo(RLMarkerAttribute.CS_CARELESS_CLEANUP,
 			(node.getExpression() != null)? node.getExpression().resolveTypeBinding() : null,
-			node.toString(), node.getStartPosition(),
-			root.getLineNumber(node.getStartPosition()),
-			null);
+			node.toString(), node.getStartPosition(), root.getLineNumber(node.getStartPosition()), null);
 		carelessCleanupList.add(markerInfo);
 	}
 

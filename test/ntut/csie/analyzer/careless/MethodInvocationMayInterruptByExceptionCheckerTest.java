@@ -254,7 +254,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseInsideInsideComparingBooleanStateIfStatement",
 				"fis.close()");
-		assertTrue(checker.isMayInterruptByException(methodInvocation));
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 	
 	@Test
@@ -281,7 +281,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseInsidElseStatementAfterComparingBooleanStateIfStatement",
 				"fis.close()");
-		assertTrue(checker.isMayInterruptByException(methodInvocation));
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 	
 	@Test
@@ -308,7 +308,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseAfterBooleanComparingIfStatementContainVariableDeclaration",
 				"fis.close()");
-		assertTrue(checker.isMayInterruptByException(methodInvocation));
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 	
 	@Test
@@ -344,7 +344,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseAfterBooleanCheckingIfStatementContainNestedBooleanComparingIfStatementAndVariableDeclaration",
 				"fis.close()");
-		assertTrue(checker.isMayInterruptByException(methodInvocation));
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 	
 	@Test
@@ -389,7 +389,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseAfterBooleanCheckingIfElseStatementContainBooleanComparingIfStatementAndVariableDeclaration",
 				"fis.close()");
-		assertTrue(checker.isMayInterruptByException(methodInvocation));
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 	
 	@Test
@@ -619,6 +619,59 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		assertTrue(checker.isMayInterruptByException(methodInvocation));
 	}
 	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseInThePrefixIfStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInThePrefixIfStatement",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseInThePrefixElseStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInThePrefixElseStatement",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseInThePrefixElseIfStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInThePrefixElseIfStatement",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterPrefixIfStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterPrefixIfStatement",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterPrefixElseStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterPrefixElseStatement",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterPrefixElseIfStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterPrefixElseIfStatement",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
 	
 	private MethodInvocation getMethodInvocationByMethodNameAndCode(
 			String methodName, String code) {
