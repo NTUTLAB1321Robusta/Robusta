@@ -171,9 +171,25 @@ public class CarelessCleanupDefinitionTest {
 	}
 
 	@Test
-	public void testIfStatementCheckingResourceIsNotNullBeforeCloseAndInBetweenDetectionRange() {
+	public void testIfStatementCheckingResourceIsNotNullContainClose() {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
-				"ifStatementCheckingResourceIsNotNullBeforeCloseAndInBetweenDetectionRange",
+				"ifStatementCheckingResourceIsNotNullContainClose",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIfStatementCheckingResourceIsSameContainClose() {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"ifStatementCheckingResourceIsSameContainClose",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIfStatementCheckingResourceIsSameBeforeClose() {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"ifStatementCheckingResourceIsSameBeforeClose",
 				"fis.close()");
 		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
@@ -198,6 +214,31 @@ public class CarelessCleanupDefinitionTest {
 	public void testPrimitiveVariableDeclarationWithAssignmentInBetweenDetectionRange() {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"primitiveVariableDeclarationWithAssignmentInBetweenDetectionRange",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceClosingInIfStatementCheckingQualifiedName() {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceClosingInIfStatementCheckingQualifiedName",
+				"qualifier.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterExpressionStatement() {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterExpressionStatement",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseInTheSynchronizedStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInTheSynchronizedStatement",
 				"fis.close()");
 		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}

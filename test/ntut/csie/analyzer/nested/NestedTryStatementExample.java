@@ -385,7 +385,7 @@ public class NestedTryStatementExample {
 				//return;
 			}
 			try {
-				fis.close(); // Unsafe
+				fis.close(); // Safe
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

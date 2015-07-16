@@ -14,12 +14,14 @@ import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.InfixExpression;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.ParenthesizedExpression;
 import org.eclipse.jdt.core.dom.PrefixExpression;
+import org.eclipse.jdt.core.dom.QualifiedName;
 import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.Statement;
+import org.eclipse.jdt.core.dom.SynchronizedStatement;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
-
 
 /**
  * It will check if any exception may been thrown before
@@ -34,7 +36,8 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 		ASTNode checkingNode = methodInvocation;
 		// The condition is checking whether any statement didn't be checked.
 		while (beginningPosition < checkingNode.getStartPosition()) {
-			if (isParentUnsafe(checkingNode) || isThereUnsafeBrother(checkingNode)) {
+			if (isParentUnsafe(checkingNode)
+					|| isThereUnsafeBrother(checkingNode)) {
 				return true;
 			}
 			checkingNode = checkingNode.getParent();
@@ -55,70 +58,20 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 		if (node instanceof Statement) {
 			ASTNode parent = node.getParent();
 			int parentType = parent.getNodeType();
-
 			boolean isParentBlock = (parentType == ASTNode.BLOCK);
 			boolean isParentFinallBlockOrCatchClause = (parentType == ASTNode.TRY_STATEMENT);
 			boolean isParentCatchBlock = (parentType == ASTNode.CATCH_CLAUSE);
-			boolean isParentSafeIfstatement = isCheckingBoolean(parent);
-			boolean isParentSafeMultiBooleanCheckingIfSatement = isCheckingMultiBoolean(parent);
-			// Check if the parent is a simple non-null checking expression
-			boolean isParentSimpleNonNullChecking = false;
-			try {
-				InfixExpression infixExpression = ((InfixExpression) ((IfStatement) parent)
-						.getExpression());
-				isParentSimpleNonNullChecking = isCheckingSimpleNonNull(infixExpression);
-			} catch (ClassCastException e) {
-				// This empty catch block is inevitable,
-				// the castings also act as if statements
-				// It is not a simple non-null checking expression, keep
-				// isSimpleNonnullChecking false
-			}
+			boolean isParentSafeIfSatement = isSafeIfStaementExpression(parent);
+			boolean isParentSafeSynchronizedStatement = isSynchronizedStatement(parent);
 
 			return !(isParentBlock || isParentFinallBlockOrCatchClause
-					|| isParentCatchBlock || isParentSimpleNonNullChecking
-					|| isParentSafeIfstatement || isParentSafeMultiBooleanCheckingIfSatement);
-		} else {
-			return false;
-		}
-	}
-
-	/**
-	 * Tell if it is one side NULL_LITERAL and other side SIMPLE_NAME
-	 */
-	private boolean isCheckingSimpleNonNull(InfixExpression expression) {
-		int rightType = expression.getRightOperand().getNodeType();
-		int leftType = expression.getLeftOperand().getNodeType();
-
-		// TODO should check one of them is the resource to be closed
-		if (rightType == ASTNode.NULL_LITERAL || leftType == ASTNode.NULL_LITERAL) {
-			if (rightType == ASTNode.SIMPLE_NAME || leftType == ASTNode.SIMPLE_NAME) {
-				return true;
-			}
+					|| isParentCatchBlock || isParentSafeIfSatement || isParentSafeSynchronizedStatement);
 		}
 		return false;
 	}
 
-	private boolean isCheckingBoolean(ASTNode parent) {
-		IfStatement ifStatement = null;
-		// 判斷parent node是否為if statement
-		if (parent.getNodeType() == ASTNode.IF_STATEMENT) {
-			ifStatement = ((IfStatement) parent);
-		}else{
-			return false;
-		}
-		// 判斷ifstatement是否為simplename
-		if (ifStatement.getExpression().getNodeType() == ASTNode.SIMPLE_NAME) {
-			// 不須額外判斷simple name，complier會阻止非simple name進入if statement
-			return true;
-		}
-		// 判斷ifstatement的expression是否為prefixexpression
-	    if(ifStatement.getExpression().getNodeType() == ASTNode.PREFIX_EXPRESSION){
-			return isSafePrefixExpressionInIfstatement(ifStatement.getExpression());
-		}
-		return false;
-	}
-
-	private boolean isExtendOperandElementSafe(List<Boolean> checkExtendOperandSafe) {
+	private boolean isExtendOperandElementSafe(
+			List<Boolean> checkExtendOperandSafe) {
 		Iterator<Boolean> iter = checkExtendOperandSafe.iterator();
 		while (iter.hasNext()) {
 			boolean statementsituation = iter.next();
@@ -129,29 +82,62 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 		return true;
 	}
 
-	private boolean isCheckingMultiBoolean(ASTNode parent) {
-		// 判斷ifstatement是否為simplename
+	private boolean isSafeIfStaementExpression(ASTNode parent) {
 		IfStatement ifStatement = null;
 		Expression expression = null;
 		if (parent.getNodeType() == ASTNode.IF_STATEMENT) {
 			ifStatement = ((IfStatement) parent);
 			expression = ifStatement.getExpression();
 		}
-		if (expression != null && expression.getNodeType() == ASTNode.INFIX_EXPRESSION) {
+		if (expression == null) {
+			return false;
+		}
+		if (expression.getNodeType() == ASTNode.SIMPLE_NAME) {
+			return true;
+		}
+		if (expression.getNodeType() == ASTNode.QUALIFIED_NAME) {
+			return true;
+		}
+		if (expression.getNodeType() == ASTNode.PREFIX_EXPRESSION) {
+			return isSafePrefixExpressionInIfstatement(ifStatement
+					.getExpression());
+		}
+		if (expression.getNodeType() == ASTNode.INFIX_EXPRESSION) {
 			return isSafeInfixExpressionInIfstatement(expression);
-		} 
+		}
 		return false;
 	}
-	
-	private boolean isCheckingOperandSafe(ASTNode operand) {
+
+	private boolean isSynchronizedStatement(ASTNode parent) {
+		if (parent.getNodeType() == ASTNode.SYNCHRONIZED_STATEMENT) {
+			SynchronizedStatement synchronizedStatement = ((SynchronizedStatement) parent);
+			Expression expression = synchronizedStatement.getExpression();
+			return expression.getNodeType() == ASTNode.SIMPLE_NAME;
+		}
+		return false;
+	}
+
+	private boolean isSafeOperand(ASTNode operand) {
 		if (operand.getNodeType() == ASTNode.INFIX_EXPRESSION) {
 			return isSafeInInFixExpressionInOperand(operand);
+		}
+		if (operand.getNodeType() == ASTNode.PREFIX_EXPRESSION) {
+			return isSafePrefixExpressionInIfstatement(operand);
 		}
 		if (operand.getNodeType() == ASTNode.SIMPLE_NAME) {
 			return true;
 		}
-		if (operand.getNodeType() == ASTNode.BOOLEAN_LITERAL) {
+		if (operand.getClass().getName().endsWith("Literal")) {
 			return true;
+		}
+		if (operand.getNodeType() == ASTNode.QUALIFIED_NAME) {
+			return true;
+		}
+		if (operand.getNodeType() == ASTNode.PARENTHESIZED_EXPRESSION) {
+			ParenthesizedExpression parenthesizedExpression = (ParenthesizedExpression) operand;
+			Expression expressionOfParenthesizedExpression = parenthesizedExpression
+					.getExpression();
+			return isExpressionSafe(expressionOfParenthesizedExpression);
 		}
 		return false;
 	}
@@ -160,7 +146,7 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 		InfixExpression infix = (InfixExpression) parent;
 		ASTNode rightOperand = infix.getRightOperand();
 		ASTNode leftOperand = infix.getLeftOperand();
-		return (isCheckingOperandSafe(rightOperand) && isCheckingOperandSafe(leftOperand));
+		return (isSafeOperand(rightOperand) && isSafeOperand(leftOperand));
 	}
 
 	private boolean isSafeInfixExpressionInIfstatement(Expression expression) {
@@ -169,21 +155,22 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 		ASTNode leftOperand = infix.getLeftOperand();
 		List<ASTNode> extendOperand = infix.extendedOperands();
 		List<Boolean> checkExtendOperandSafe = checkExtendOperandInInFixStatement(extendOperand);
-		return (isCheckingOperandSafe(rightOperand) && isCheckingOperandSafe(leftOperand) && isExtendOperandElementSafe(checkExtendOperandSafe));
-	}
-	
-	private boolean isSafePrefixExpressionInIfstatement(Expression expression) {
-		PrefixExpression prefix = (PrefixExpression) expression;
-		ASTNode operand = prefix.getOperand();
-		return isCheckingOperandSafe(operand);
+		return (isSafeOperand(rightOperand) && isSafeOperand(leftOperand) && isExtendOperandElementSafe(checkExtendOperandSafe));
 	}
 
-	private List<Boolean> checkExtendOperandInInFixStatement(List<ASTNode> extendOperand) {
+	private boolean isSafePrefixExpressionInIfstatement(ASTNode expression) {
+		PrefixExpression prefix = (PrefixExpression) expression;
+		ASTNode operand = prefix.getOperand();
+		return isSafeOperand(operand);
+	}
+
+	private List<Boolean> checkExtendOperandInInFixStatement(
+			List<ASTNode> extendOperand) {
 		List<Boolean> checkExtendOperandSafe = new ArrayList<Boolean>();
 		Iterator<ASTNode> iter = extendOperand.iterator();
 		while (iter.hasNext()) {
 			ASTNode ExtendOperandElement = iter.next();
-			checkExtendOperandSafe.add(isCheckingOperandSafe(ExtendOperandElement));
+			checkExtendOperandSafe.add(isSafeOperand(ExtendOperandElement));
 		}
 		return checkExtendOperandSafe;
 	}
@@ -213,54 +200,26 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 				}
 			}
 		}
-
 		return false;
 	}
 
-	private boolean isVariableDelarcation(Statement statement) {
-		// 判斷node是否為變數宣告
+	private boolean isSafeVariableDelarcation(Statement statement) {
 		if (statement.getNodeType() == ASTNode.VARIABLE_DECLARATION_STATEMENT) {
 			VariableDeclarationStatement variableDeclarationStatement = (VariableDeclarationStatement) statement;
-			// 把變數宣告內所有的fragment一一比對
-			for (int i = 0; i < variableDeclarationStatement.fragments().size(); i++) {
-				VariableDeclarationFragment fragment = (VariableDeclarationFragment) variableDeclarationStatement
-						.fragments().get(i);
-				// 變數宣告等號的右邊不為null才比對
+			List<VariableDeclarationFragment> allStatements = variableDeclarationStatement
+					.fragments();
+			Iterator<VariableDeclarationFragment> iter = allStatements
+					.iterator();
+			while (iter.hasNext()) {
+				VariableDeclarationFragment fragment = iter.next();
 				if (fragment.getInitializer() == null) {
-					// 變數宣告等號的右邊為null，此為一般變數宣告ex int a;
-					return true;// node是VariableDelarcation，安全
-				} else {// 變數宣告等號的右邊為不null，此為一般變數宣告ex int a=1;
-					if ((fragment.getInitializer().getClass() != null)
-							&& (fragment.getInitializer().getClass().getName()
-									.endsWith("Literal"))) {
-						return true;// node是VariableDelarcation，安全
-					}
+					return true;
+				}
+				if (fragment.getInitializer().getClass().getName()
+						.endsWith("Literal")) {
+					return true;
 				}
 			}
-			return false;// node是VariableDelarcationstatement，但不是單純VariableDelare，危險
-		}
-		// node不是VariableDelarcationstatement
-		return false;
-	}
-
-	private boolean isVariableAssignment(Statement statement) {
-		// 判斷node是否為expression
-		if (statement.getNodeType() == ASTNode.EXPRESSION_STATEMENT) {
-			ExpressionStatement expressionstatement = (ExpressionStatement) statement;
-			Expression expression = expressionstatement.getExpression();
-			// 判斷node屬性是否為assignment
-			if (expression.getNodeType() == ASTNode.ASSIGNMENT) {
-				Assignment assignment = (Assignment) expression;
-				// node assignment的結果是否為literal類型
-				if (assignment.getRightHandSide() != null) {
-					if ((assignment.getRightHandSide().getClass() != null)
-							&& assignment.getRightHandSide().getClass()
-									.getName().endsWith("Literal")) {
-						return true;
-					}
-				}
-			}
-			return false;
 		}
 		return false;
 	}
@@ -268,10 +227,12 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 	private boolean isLiteralReturnStatement(Statement statement) {
 		if (statement.getNodeType() == ASTNode.RETURN_STATEMENT) {
 			ReturnStatement returnStatememt = (ReturnStatement) statement;
-			if (returnStatememt.getExpression().getClass().getName().endsWith("Literal")) {
+			if (returnStatememt.getExpression() == null) {
 				return true;
-			} else {
-				return false;
+			}
+			if (returnStatememt.getExpression().getClass().getName()
+					.endsWith("Literal")) {
+				return true;
 			}
 		}
 		return false;
@@ -291,27 +252,28 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 	private List<Boolean> checkStatementSafe(ASTNode ifBodyStatement) {
 		List<Boolean> checkChildStatementSafe = new ArrayList<Boolean>();
 		if (ifBodyStatement.getNodeType() == ASTNode.BLOCK) {
-			List<Statement> allStatements = ((Block) ifBodyStatement).statements();
+			List<Statement> allStatements = ((Block) ifBodyStatement)
+					.statements();
 			Iterator<Statement> iter = allStatements.iterator();
 			while (iter.hasNext()) {
 				Statement statementInIfBody = iter.next();
-				checkChildStatementSafe.add(isUnsafeBrotherStatement(statementInIfBody));
+				checkChildStatementSafe
+						.add(isUnsafeBrotherStatement(statementInIfBody));
 			}
 		}
 		return checkChildStatementSafe;
 	}
 
-	private boolean isSafeInThenStatement(IfStatement statement) {
+	private boolean isSafeThenStatement(IfStatement statement) {
 		ASTNode thenStatement = statement.getThenStatement();
 		List<Boolean> checkStatementSafe = checkStatementSafe(thenStatement);
 		if (isSafeInStatement(checkStatementSafe)) {
 			return true;
-		} else {
-			return false;
 		}
+		return false;
 	}
 
-	private boolean isSafeInElseStatement(IfStatement statement) {
+	private boolean isSafeElseStatement(IfStatement statement) {
 		ASTNode elseStatement = statement.getElseStatement();
 		if (elseStatement != null) {
 			List<Boolean> checkStatementSafe = checkStatementSafe(elseStatement);
@@ -321,59 +283,113 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 				return false;
 			}
 		}
-		return true;// if statement 不一定都有 else
+		// if statement 不一定都有 else
+		return true;
 	}
 
-	private boolean isSimpleNameIfStatement(Statement statement) {
-		if (isCheckingBoolean(statement)) {
-			IfStatement ifstatement = (IfStatement) statement;
-			if (isSafeInThenStatement(ifstatement) && isSafeInElseStatement(ifstatement)) {
-				return true;
-			} else {
-				return false;
+	private boolean isSafeElseIfStatement(IfStatement statement) {
+		ASTNode elseStatement = statement.getElseStatement();
+		if (elseStatement != null) {
+			if (elseStatement.getNodeType() == ASTNode.IF_STATEMENT) {
+				IfStatement elseIfstatement = (IfStatement) elseStatement;
+				if (isSafeThenStatement(elseIfstatement)
+						&& isSafeElseStatement(elseIfstatement)) {
+					return true;
+				} else {
+					return false;
+				}
 			}
-		} else {
-			return false;
 		}
+		// if statement 不一定都有 else if
+		return true;
 	}
 
-	private boolean isMultiBolleanCheckingIfStatement(Statement statement) {
+	private boolean isSafeIfStatement(Statement statement) {
 		ASTNode sibilingStatement = (ASTNode) statement;
-		if (isCheckingMultiBoolean(sibilingStatement)) {
+		if (isSafeIfStaementExpression(sibilingStatement)) {
 			IfStatement ifstatement = (IfStatement) sibilingStatement;
-			if (isSafeInThenStatement(ifstatement) && isSafeInElseStatement(ifstatement)) {
+			if (isSafeThenStatement(ifstatement)
+					&& isSafeElseStatement(ifstatement)
+					&& isSafeElseIfStatement(ifstatement)) {
 				return true;
-			} else {
-				return false;
 			}
-		} else {
-			return false;
 		}
+		return false;
+	}
 
+	private boolean isSafeExpressionStatement(Statement statement) {
+		ASTNode sibilingStatement = (ASTNode) statement;
+		if (sibilingStatement.getNodeType() == ASTNode.EXPRESSION_STATEMENT) {
+			ExpressionStatement ExpressionExpression = (ExpressionStatement) sibilingStatement;
+			Expression expression = ExpressionExpression.getExpression();
+			if (expression.getNodeType() == ASTNode.ASSIGNMENT) {
+				Assignment assignment = (Assignment) expression;
+				return isExpressionSafe(assignment.getLeftHandSide())
+						&& isExpressionSafe(assignment.getRightHandSide());
+			}
+			if (expression.getNodeType() == ASTNode.POSTFIX_EXPRESSION) {
+				return true;
+			}
+			if (expression.getNodeType() == ASTNode.PREFIX_EXPRESSION) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean isExpressionSafe(Expression expression) {
+		if (expression.getNodeType() == ASTNode.SIMPLE_NAME) {
+			return true;
+		}
+		if (expression.getNodeType() == ASTNode.QUALIFIED_NAME) {
+			return true;
+		}
+		if (expression.getClass().getName().endsWith("Literal")) {
+			return true;
+		}
+		if (expression.getNodeType() == ASTNode.ASSIGNMENT) {
+			Assignment assignment = (Assignment) expression;
+			return isExpressionSafe(assignment.getLeftHandSide())
+					&& isExpressionSafe(assignment.getRightHandSide());
+		}
+		if (expression.getNodeType() == ASTNode.INFIX_EXPRESSION) {
+			return isSafeInfixExpressionInIfstatement(expression);
+		}
+		if (expression.getNodeType() == ASTNode.POSTFIX_EXPRESSION) {
+			return true;
+		}
+		if (expression.getNodeType() == ASTNode.PREFIX_EXPRESSION) {
+			return true;
+		}
+		if (expression.getNodeType() == ASTNode.PARENTHESIZED_EXPRESSION) {
+			ParenthesizedExpression parenthesizedExpression = (ParenthesizedExpression) expression;
+			Expression expressionOfParenthesizedExpression = parenthesizedExpression
+					.getExpression();
+			return isExpressionSafe(expressionOfParenthesizedExpression);
+		}
+		return false;
 	}
 
 	/**
 	 * Return false only if the statements will not throw any exception in 100%.
 	 */
 	private boolean isUnsafeBrotherStatement(Statement statement) {
-		if (isVariableDelarcation(statement)) {
+		if (statement.getNodeType() == ASTNode.EMPTY_STATEMENT) {
 			return false;
 		}
-		if (isVariableAssignment(statement)) {
+		if (statement.getParent().getNodeType() == ASTNode.TRY_STATEMENT) {
+			return false;
+		}
+		if (isSafeVariableDelarcation(statement)) {
 			return false;
 		}
 		if (isLiteralReturnStatement(statement)) {
 			return false;
 		}
-		if (isSimpleNameIfStatement(statement)) {
+		if (isSafeExpressionStatement(statement)) {
 			return false;
 		}
-		if (isMultiBolleanCheckingIfStatement(statement)) {
-			return false;
-		}
-		boolean isEmptyStatement = (statement.getNodeType() == ASTNode.EMPTY_STATEMENT);
-		boolean isTryBlock = (statement.getParent().getNodeType() == ASTNode.TRY_STATEMENT);
-		if (isEmptyStatement || isTryBlock) {
+		if (isSafeIfStatement(statement)) {
 			return false;
 		}
 		return true;

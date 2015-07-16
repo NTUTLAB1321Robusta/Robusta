@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import ntut.csie.analyzer.careless.closingmethod.ResourceCloser;
 import ntut.csie.filemaker.ASTNodeFinder;
 import ntut.csie.testutility.TestEnvironmentBuilder;
 
@@ -27,11 +28,9 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		environmentBuilder = new TestEnvironmentBuilder();
 		environmentBuilder.createEnvironment();
 
-		environmentBuilder
-				.loadClass(MethodInvocationMayInterruptByExceptionCheckerExample.class);
+		environmentBuilder.loadClass(MethodInvocationMayInterruptByExceptionCheckerExample.class);
 
-		compilationUnit = environmentBuilder
-				.getCompilationUnit(MethodInvocationMayInterruptByExceptionCheckerExample.class);
+		compilationUnit = environmentBuilder.getCompilationUnit(MethodInvocationMayInterruptByExceptionCheckerExample.class);
 
 		checker = new MethodInvocationMayInterruptByExceptionChecker();
 	}
@@ -89,7 +88,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		// First "fileOutputStream.close()" in method
 		// "sameResourceCloseManyTimes"
 		MethodInvocation methodInvocation = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 2048 - 1, 24);
+				.perform(compilationUnit, 2641 - 1, 24);
 		assertTrue(checker.isMayInterruptByException(methodInvocation));
 	}
 
@@ -99,7 +98,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		// Second "fileOutputStream.close()" in method
 		// "sameResourceCloseManyTimes"
 		MethodInvocation methodInvocation = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 2117 - 1, 24);
+				.perform(compilationUnit, 2710 - 1, 24);
 		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 
@@ -109,7 +108,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		// Third "fileOutputStream.close()" in method
 		// "sameResourceCloseManyTimes"
 		MethodInvocation methodInvocation = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 2213 - 1, 24);
+				.perform(compilationUnit, 2806 - 1, 24);
 		assertTrue(checker.isMayInterruptByException(methodInvocation));
 	}
 
@@ -452,7 +451,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseInsideBooleanComparingIfElseStatement",
 				"fis.close()");
-		assertTrue(checker.isMayInterruptByException(methodInvocation));
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 	
 	@Test
@@ -544,7 +543,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseAfterCheckingMultiBooleanBooleanIfStatementContainVariableDeclaration",
 				"fis.close()");
-		assertTrue(checker.isMayInterruptByException(methodInvocation));
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 	
 	@Test
@@ -616,7 +615,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseAfterMultiBooleanCheckingIfElseStatementContainMultiBooleanCheckingIfStatementAndVariableDeclaration",
 				"fis.close()");
-		assertTrue(checker.isMayInterruptByException(methodInvocation));
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 	
 	@Test
@@ -673,13 +672,235 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterCheckingInstanceIsNullIfStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterCheckingInstanceIsNullIfStatement",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterCheckingInstanceIsNullIfStatementAndAMethodInvocationInsideIfStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterCheckingInstanceIsNullIfStatementAndAMethodInvocationInsideIfStatement",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterCheckingInstanceIsNullIfStatementAndAMethodInvocationInsideElseStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterCheckingInstanceIsNullIfStatementAndAMethodInvocationInsideElseStatement",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterCheckingInstanceIsNullElseIfStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterCheckingInstanceIsNullElseIfStatement",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterCheckingInstanceIsNullElseIfStatementAndAMethodInvocationInside()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterCheckingInstanceIsNullElseIfStatementAndAMethodInvocationInside",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterCheckingInstanceIsSameIfStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterCheckingInstanceIsSameIfStatement",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterCheckingInstanceIsSameElseIfStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterCheckingInstanceIsSameElseIfStatement",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterCheckingInstanceIsSameIfStatementAndAMethodInvocationInside()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterCheckingInstanceIsSameIfStatementAndAMethodInvocationInside",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterCheckingInstanceIsSameElseIfStatementAndAMethodInvocationInside()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterCheckingInstanceIsSameElseIfStatementAndAMethodInvocationInside",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseInsideCheckingInstanceIsSameIfStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterCheckingInstanceIsSameElseIfStatementAndAMethodInvocationInside",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseInsideCheckingQualifiNameIfStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInTheCheckingQualifiedNameSameIfStatement",
+				"qualifier.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterTheCheckingQualifiedNameSameIfStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterTheCheckingQualifiedNameSameIfStatement",
+				"qualifier.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseInTheCheckingQualifiedNameSameElseIfStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInTheCheckingQualifiedNameSameElseIfStatement",
+				"qualifier.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterTheCheckingQualifiedNameSameElseIfStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterTheCheckingQualifiedNameSameElseIfStatement",
+				"qualifier.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterTheCheckingQualifiedNameSameIfStatementAndAMethodInvocationInside()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterTheCheckingQualifiedNameSameIfStatementAndAMethodInvocationInside",
+				"qualifier.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterTheCheckingQualifiedNameSameElseStatementAndAMethodInvocationInside()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterTheCheckingQualifiedNameSameElseStatementAndAMethodInvocationInside",
+				"qualifier.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterTheCheckingQualifiedNameSameElseIfStatementAndAMethodInvocationInside()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterTheCheckingQualifiedNameSameElseIfStatementAndAMethodInvocationInside",
+				"qualifier.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterVariableAssignmentStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterVariableAssignmentStatement",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterVariableAssignmenWithInfixExpressionStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterVariableAssignmenWithInfixExpressionStatement",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterVariableAssignmentWithInfixExpressionAndExtandOperandStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterVariableAssignmentWithInfixExpressionAndExtandOperandStatement",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterVariableAssignmentWithParenthesizeExpression()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterVariableAssignmentWithParenthesizeExpression",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterMultiVariableAssignmentStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterMultiVariableAssignmentStatement",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterVariablePrefixExpressionStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterVariablePrefixExpressionStatement",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterVariablePostfixExpressionStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterVariablePostfixExpressionStatement",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseInTheSynchronizedStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInTheSynchronizedStatement",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
 	private MethodInvocation getMethodInvocationByMethodNameAndCode(
 			String methodName, String code) {
-		List<MethodInvocation> methodInvocation = ASTNodeFinder
-				.getMethodInvocationByMethodNameAndCode(compilationUnit,
-						methodName, code);
+		List<MethodInvocation> methodInvocation = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(compilationUnit, methodName, code);
 		assertEquals(methodInvocation.size(), 1);
-
 		return methodInvocation.get(0);
 	}
 }

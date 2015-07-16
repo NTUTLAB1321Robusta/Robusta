@@ -1,5 +1,6 @@
 package ntut.csie.analyzer.careless;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -7,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import ntut.csie.analyzer.careless.CarelessCleanupDefinitionExample.ClosableResourceContainClassVariable;
 import ntut.csie.analyzer.careless.closingmethod.ResourceCloser;
 
 public class MethodInvocationMayInterruptByExceptionCheckerExample {
@@ -32,6 +34,23 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		public void closeResourceByInvokeMyClose() throws Exception {
 			this.close(); // Is not
 			close(); // Is
+		}
+	}
+	
+	class closableResourceContainsVariable implements Closeable {
+		public boolean a = true;
+		public void close() {
+			// do something
+		}
+		public boolean get(){
+			return this.a;
+		} 
+	}
+	
+	public void testResourceClosingInTheCheckingQualifiedNameSameIfStatement() throws IOException {
+		closableResourceContainsVariable qualifier = new closableResourceContainsVariable();
+		if (false != qualifier.a) {
+			qualifier.close(); // safe
 		}
 	}
 
@@ -76,7 +95,6 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		}
 	}
 
-	
 	public void variableIntDeclaration() throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		int intDeclare;
@@ -369,15 +387,15 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 			fis.close();// safe
 		}
 	}
-	
-	public void resourceCloseInsideCheckingThreeAndOperandBooleanIfStatement(boolean a,
-			boolean b, boolean c) throws Exception {
+
+	public void resourceCloseInsideCheckingThreeAndOperandBooleanIfStatement(
+			boolean a, boolean b, boolean c) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		if (a && b && c && a) {
 			fis.close();// safe
 		}
 	}
-	 
+
 	public void resourceCloseInsideCheckingThreeBooleanIfStatement(boolean a,
 			boolean b, boolean c) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
@@ -385,51 +403,52 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 			fis.close();// safe
 		}
 	}
-	
+
 	public void resourceCloseInsideCheckingtwoBooleanIfElseStatement(boolean a,
 			boolean b) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		if (a && b) {
-		}else{
+		} else {
 			fis.close();// safe
 		}
 	}
-	
-	public void resourceCloseInsideCheckingThreeAndOperandBooleanIfElseStatement(boolean a,
-			boolean b, boolean c) throws Exception {
+
+	public void resourceCloseInsideCheckingThreeAndOperandBooleanIfElseStatement(
+			boolean a, boolean b, boolean c) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		if (a && b && c && a) {
-		}else{
+		} else {
 			fis.close();// safe
 		}
 	}
-	
-	public void resourceCloseInsideCheckingThreeBooleanIfElseStatement(boolean a,
-			boolean b, boolean c) throws Exception {
+
+	public void resourceCloseInsideCheckingThreeBooleanIfElseStatement(
+			boolean a, boolean b, boolean c) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		if (a && b || c) {
-		}else{
+		} else {
 			fis.close();// safe
 		}
 	}
-	 
+
 	public void resourceCloseInsideBooleanComparingIfElseStatement(boolean a,
 			boolean b, boolean c) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		if (a && b || !c == c) {
-		}else{
-			fis.close();// unsafe
+		} else {
+			fis.close();// safe
 		}
 	}
-	
-	public void resourceCloseInsideCheckingBooleanIfElseStatement(boolean a, boolean b, boolean c) throws Exception {
+
+	public void resourceCloseInsideCheckingBooleanIfElseStatement(boolean a,
+			boolean b, boolean c) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		if (a && b || returnBoolean()) {
-		}else{
+		} else {
 			fis.close();// unsafe
 		}
 	}
-	
+
 	public void resourceCloseAfterCheckingtwoBooleanIfStatement(boolean a,
 			boolean b) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
@@ -437,15 +456,15 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		}
 		fis.close();// safe
 	}
-	
-	public void resourceCloseAfterCheckingThreeAndOperandBooleanIfStatement(boolean a,
-			boolean b, boolean c) throws Exception {
+
+	public void resourceCloseAfterCheckingThreeAndOperandBooleanIfStatement(
+			boolean a, boolean b, boolean c) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		if (a && b && c && a) {
 		}
 		fis.close();// safe
 	}
-	 
+
 	public void resourceCloseAfterCheckingThreeBooleanIfStatement(boolean a,
 			boolean b, boolean c) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
@@ -453,30 +472,30 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		}
 		fis.close();// safe
 	}
-	
+
 	public void resourceCloseAfterCheckingtwoBooleanIfElseStatement(boolean a,
 			boolean b) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		if (a && b) {
-		}else{
+		} else {
 		}
 		fis.close();// safe
 	}
-	
-	public void resourceCloseAfterCheckingThreeAndOperandBooleanIfElseStatement(boolean a,
-			boolean b, boolean c) throws Exception {
+
+	public void resourceCloseAfterCheckingThreeAndOperandBooleanIfElseStatement(
+			boolean a, boolean b, boolean c) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		if (a && b && c && a) {
-		}else{
+		} else {
 		}
 		fis.close();// safe
 	}
-	 
-	public void resourceCloseAfterCheckingThreeBooleanIfElseStatement(boolean a,
-			boolean b, boolean c) throws Exception {
+
+	public void resourceCloseAfterCheckingThreeBooleanIfElseStatement(
+			boolean a, boolean b, boolean c) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		if (a && b || c) {
-		}else{
+		} else {
 		}
 		fis.close();// safe
 	}
@@ -498,7 +517,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		}
 		fis.close();// unsafe
 	}
-	
+
 	public void resourceCloseAfterCheckingMultiBooleanBooleanIfStatementContainVariableDeclaration(
 			boolean a, boolean b, boolean c, boolean d) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
@@ -507,7 +526,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		}
 		fis.close();// safe
 	}
-	
+
 	public void resourceCloseInsideCheckingTwoBooleanIfStatementAfterMethodInvocation(
 			boolean a, boolean b) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
@@ -516,7 +535,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 			fis.close();// unsafe
 		}
 	}
-	
+
 	public void resourceCloseInsideCheckingTwoBooleanIfStatementBeforeMethodInvocation(
 			boolean a, boolean b) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
@@ -534,12 +553,12 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 			fis.close();// unsafe
 		}
 	}
-	
+
 	public void resourceCloseInsideCheckingMultiBooleanBooleanElseStatementContainMethodInvocation(
 			boolean a, boolean b, boolean c, boolean d) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
-		if (a && b || c && !d) {	
-		}else{
+		if (a && b || c && !d) {
+		} else {
 			int cc = returnInt();
 			fis.close();// unsafe
 		}
@@ -567,7 +586,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 			fis.close();// unsafe
 		}
 	}
-	
+
 	public void resourceCloseAfterMultiBooleanCheckingIfElseStatementContainMultiBooleanCheckingIfStatementAndMethodInvocation(
 			boolean a, boolean b, boolean c, boolean d) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
@@ -591,55 +610,278 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		}
 		fis.close();// safe
 	}
-	
-	public void resourceCloseInThePrefixIfStatement(
-			boolean a, boolean b, boolean c, boolean d) throws Exception {
+
+	public void resourceCloseInThePrefixIfStatement(boolean a, boolean b,
+			boolean c, boolean d) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		if (!a) {
-			fis.close();// safe
-		} 
-	}
-	
-	public void resourceCloseInThePrefixElseStatement(
-			boolean a, boolean b, boolean c, boolean d) throws Exception {
-		FileInputStream fis = new FileInputStream(new File("C:\\123"));
-		if (!a) {
-		} else{
 			fis.close();// safe
 		}
 	}
-	
-	public void resourceCloseInThePrefixElseIfStatement(
-			boolean a, boolean b, boolean c, boolean d) throws Exception {
+
+	public void resourceCloseInThePrefixElseStatement(boolean a, boolean b,
+			boolean c, boolean d) throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (!a) {
+		} else {
+			fis.close();// safe
+		}
+	}
+
+	public void resourceCloseInThePrefixElseIfStatement(boolean a, boolean b,
+			boolean c, boolean d) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		if (a) {
-		} else if(!a){
+		} else if (!a) {
 			fis.close();// safe
 		}
 	}
-	
-	public void resourceCloseAfterPrefixIfStatement(boolean a, boolean b, boolean c, boolean d) throws Exception {
+
+	public void resourceCloseAfterPrefixIfStatement(boolean a, boolean b,
+			boolean c, boolean d) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		if (!a) {
-		} 
-		fis.close();// safe
-	}
-	
-	public void resourceCloseAfterPrefixElseStatement(
-			boolean a, boolean b, boolean c, boolean d) throws Exception {
-		FileInputStream fis = new FileInputStream(new File("C:\\123"));
-		if (!a) {
-		} else{
 		}
 		fis.close();// safe
 	}
-	
-	public void resourceCloseAfterPrefixElseIfStatement(
-			boolean a, boolean b, boolean c, boolean d) throws Exception {
+
+	public void resourceCloseAfterPrefixElseStatement(boolean a, boolean b,
+			boolean c, boolean d) throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (!a) {
+		} else {
+		}
+		fis.close();// safe
+	}
+
+	public void resourceCloseAfterPrefixElseIfStatement(boolean a, boolean b,
+			boolean c, boolean d) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		if (a) {
-		} else if(!a){
+		} else if (!a) {
 		}
 		fis.close();// safe
+	}
+
+	public void resourceCloseAfterCheckingInstanceIsNullIfStatement()
+			throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (fis == null) {
+		} else {
+		}
+		fis.close();// safe
+	}
+	
+	public void resourceCloseAfterCheckingInstanceIsNullIfStatementAndAMethodInvocationInsideIfStatement()
+			throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (fis == null) {
+			int intDeclare = returnInt();
+		} else {
+		}
+		fis.close();// unsafe
+	}
+	
+	public void resourceCloseAfterCheckingInstanceIsNullIfStatementAndAMethodInvocationInsideElseStatement()
+			throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (fis == null) {
+		} else {
+			int intDeclare = returnInt();
+		}
+		fis.close();// unsafe
+	}
+
+	public void resourceCloseAfterCheckingInstanceIsNullElseIfStatement()
+			throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (fis == null) {
+		} else if (fis == null) {
+		}
+		fis.close();// safe
+	}
+	
+	public void resourceCloseAfterCheckingInstanceIsNullElseIfStatementAndAMethodInvocationInside()
+			throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (fis == null) {
+		} else if (fis == null) {
+			int intDeclare = returnInt();
+		}
+		fis.close();// unsafe
+	}
+	
+	public void resourceCloseAfterCheckingInstanceIsSameIfStatement()
+			throws Exception {
+		int a = 1;
+		int b = 2;
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (a == b) {
+		}
+		fis.close();// safe
+	}
+	
+	public void resourceCloseAfterCheckingInstanceIsSameElseIfStatement()
+			throws Exception {
+		int a = 1;
+		int b = 2;
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (fis == null) {
+		} else if (a == b) {
+		}
+		fis.close();// safe
+	}
+	
+	public void resourceCloseAfterCheckingInstanceIsSameIfStatementAndAMethodInvocationInside()
+			throws Exception {
+		int a = 1;
+		int b = 2;
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (a == b) {
+			int intDeclare = returnInt();
+		}
+		fis.close();// unsafe
+	}
+	
+	public void resourceCloseAfterCheckingInstanceIsSameElseIfStatementAndAMethodInvocationInside()
+			throws Exception {
+		int a = 1;
+		int b = 2;
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (fis == null) {
+		} else if (a == b) {
+			int intDeclare = returnInt();
+		}
+		fis.close();// unsafe
+	}
+	
+	public void resourceCloseInTheCheckingQualifiedNameSameIfStatement() throws IOException {
+		closableResourceContainsVariable qualifier = new closableResourceContainsVariable();
+		if (false != qualifier.a) {
+			qualifier.close(); // safe
+		}
+	}
+	
+	public void resourceCloseInTheCheckingQualifiedNameSameElseIfStatement() throws IOException {
+		closableResourceContainsVariable qualifier = new closableResourceContainsVariable();
+		if (qualifier == null) {
+		}else if (false != qualifier.a) {
+			qualifier.close(); // safe
+		}
+	}
+	
+	public void resourceCloseAfterTheCheckingQualifiedNameSameIfStatement() throws IOException {
+		closableResourceContainsVariable qualifier = new closableResourceContainsVariable();
+		if (false != qualifier.a) {
+		}
+		qualifier.close(); // safe
+	}
+	
+	public void resourceCloseAfterTheCheckingQualifiedNameSameElseIfStatement() throws IOException {
+		closableResourceContainsVariable qualifier = new closableResourceContainsVariable();
+		if (qualifier == null) {
+		}else if (false != qualifier.a) {
+		}
+		qualifier.close(); // safe
+	}
+	
+	public void resourceCloseAfterTheCheckingQualifiedNameSameIfStatementAndAMethodInvocationInside() throws IOException {
+		closableResourceContainsVariable qualifier = new closableResourceContainsVariable();
+		if (false != qualifier.a) {
+			int intDeclare = returnInt();
+		}
+		qualifier.close(); // unsafe
+	}
+	
+	public void resourceCloseAfterTheCheckingQualifiedNameSameElseStatementAndAMethodInvocationInside() throws IOException {
+		closableResourceContainsVariable qualifier = new closableResourceContainsVariable();
+		if (false != qualifier.a) {
+		}else{
+			int intDeclare = returnInt();
+		}
+		qualifier.close(); // unsafe
+	}
+	
+	public void resourceCloseAfterTheCheckingQualifiedNameSameElseIfStatementAndAMethodInvocationInside() throws IOException {
+		closableResourceContainsVariable qualifier = new closableResourceContainsVariable();
+		if (qualifier == null) {
+		}else if (false != qualifier.a) {
+			int intDeclare = returnInt();
+		}
+		qualifier.close(); // unsafe
+	}
+	
+	public void resourceCloseAfterVariableAssignmentStatement() throws Exception {
+		boolean a;
+		FileInputStream fis = null;
+		fis = new FileInputStream(new File("C:\\123"));
+		a = true;
+		fis.close();// safe
+	}
+	
+	public void resourceCloseAfterVariableAssignmenWithInfixExpressionStatement() throws Exception {
+		boolean a;
+		boolean b = true;
+		boolean c = false;
+		FileInputStream fis = null;
+		fis = new FileInputStream(new File("C:\\123"));
+		a = b == c;
+		fis.close();// safe
+	}
+
+	public void resourceCloseAfterVariableAssignmentWithInfixExpressionAndExtandOperandStatement() throws Exception {
+		boolean a;
+		boolean b = true;
+		boolean c = true;
+		boolean d = true;
+		FileInputStream fis = null;
+		fis = new FileInputStream(new File("C:\\123"));
+		a = b && c && d;
+		fis.close();// safe
+	}
+	
+	public void resourceCloseAfterVariableAssignmentWithParenthesizeExpression() throws Exception {
+		boolean a;
+		boolean b = true;
+		boolean c = true;
+		boolean d = true;
+		FileInputStream fis = null;
+		fis = new FileInputStream(new File("C:\\123"));
+		a = (b && (c && d));
+		fis.close();// safe
+	}
+	
+	public void resourceCloseAfterMultiVariableAssignmentStatement() throws Exception {
+		boolean a;
+		boolean b;
+		boolean c;
+		boolean d;
+		FileInputStream fis = null;
+		fis = new FileInputStream(new File("C:\\123"));
+		a = b = c = d = true;
+		fis.close();// safe
+	}
+	
+	
+	public void resourceCloseAfterVariablePrefixExpressionStatement() throws Exception {
+		int a = 1;
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		++a;
+		fis.close();// safe
+	}
+	
+	public void resourceCloseAfterVariablePostfixExpressionStatement() throws Exception {
+		int a = 1;
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		a++;
+		fis.close();// safe
+	}
+	
+	public void resourceCloseInTheSynchronizedStatement() throws Exception {
+		Integer a = new Integer(1);
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		synchronized (a) {
+			fis.close();// safe
+        }
 	}
 }
