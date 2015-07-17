@@ -727,10 +727,28 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 	}
 	
 	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseInCheckingInstanceIsSameIfStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInCheckingInstanceIsSameIfStatement",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
 	public void testIsMethodInvocationCaughtWhenResourceCloseAfterCheckingInstanceIsSameElseIfStatement()
 			throws Exception {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseAfterCheckingInstanceIsSameElseIfStatement",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseInCheckingInstanceIsSameElseIfStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInCheckingInstanceIsSameElseIfStatement",
 				"fis.close()");
 		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}

@@ -206,17 +206,12 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 	private boolean isSafeVariableDelarcation(Statement statement) {
 		if (statement.getNodeType() == ASTNode.VARIABLE_DECLARATION_STATEMENT) {
 			VariableDeclarationStatement variableDeclarationStatement = (VariableDeclarationStatement) statement;
-			List<VariableDeclarationFragment> allStatements = variableDeclarationStatement
-					.fragments();
-			Iterator<VariableDeclarationFragment> iter = allStatements
-					.iterator();
-			while (iter.hasNext()) {
-				VariableDeclarationFragment fragment = iter.next();
+			List<VariableDeclarationFragment> allStatements = variableDeclarationStatement.fragments();
+			for(VariableDeclarationFragment fragment : allStatements){
 				if (fragment.getInitializer() == null) {
 					return true;
 				}
-				if (fragment.getInitializer().getClass().getName()
-						.endsWith("Literal")) {
+				if (fragment.getInitializer().getClass().getName().endsWith("Literal")) {
 					return true;
 				}
 			}

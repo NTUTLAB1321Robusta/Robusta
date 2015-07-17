@@ -611,16 +611,14 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		fis.close();// safe
 	}
 
-	public void resourceCloseInThePrefixIfStatement(boolean a, boolean b,
-			boolean c, boolean d) throws Exception {
+	public void resourceCloseInThePrefixIfStatement(boolean a) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		if (!a) {
 			fis.close();// safe
 		}
 	}
 
-	public void resourceCloseInThePrefixElseStatement(boolean a, boolean b,
-			boolean c, boolean d) throws Exception {
+	public void resourceCloseInThePrefixElseStatement(boolean a) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		if (!a) {
 		} else {
@@ -628,8 +626,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		}
 	}
 
-	public void resourceCloseInThePrefixElseIfStatement(boolean a, boolean b,
-			boolean c, boolean d) throws Exception {
+	public void resourceCloseInThePrefixElseIfStatement(boolean a) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		if (a) {
 		} else if (!a) {
@@ -637,16 +634,14 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		}
 	}
 
-	public void resourceCloseAfterPrefixIfStatement(boolean a, boolean b,
-			boolean c, boolean d) throws Exception {
+	public void resourceCloseAfterPrefixIfStatement(boolean a) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		if (!a) {
 		}
 		fis.close();// safe
 	}
 
-	public void resourceCloseAfterPrefixElseStatement(boolean a, boolean b,
-			boolean c, boolean d) throws Exception {
+	public void resourceCloseAfterPrefixElseStatement(boolean a) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		if (!a) {
 		} else {
@@ -654,8 +649,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		fis.close();// safe
 	}
 
-	public void resourceCloseAfterPrefixElseIfStatement(boolean a, boolean b,
-			boolean c, boolean d) throws Exception {
+	public void resourceCloseAfterPrefixElseIfStatement(boolean a) throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		if (a) {
 		} else if (!a) {
@@ -720,6 +714,14 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		}
 		fis.close();// safe
 	}
+	public void resourceCloseInCheckingInstanceIsSameIfStatement()throws Exception {
+		int a = 1;
+		int b = 2;
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (a == b) {
+			fis.close();// safe
+		}
+	}
 	
 	public void resourceCloseAfterCheckingInstanceIsSameElseIfStatement()
 			throws Exception {
@@ -730,6 +732,17 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		} else if (a == b) {
 		}
 		fis.close();// safe
+	}
+	
+	public void resourceCloseInCheckingInstanceIsSameElseIfStatement()
+			throws Exception {
+		int a = 1;
+		int b = 2;
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if (fis == null) {
+		} else if (a == b) {
+			fis.close();// safe
+		}
 	}
 	
 	public void resourceCloseAfterCheckingInstanceIsSameIfStatementAndAMethodInvocationInside()
