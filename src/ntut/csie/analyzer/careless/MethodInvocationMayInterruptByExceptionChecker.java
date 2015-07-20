@@ -1,14 +1,18 @@
 package ntut.csie.analyzer.careless;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 
 import ntut.csie.util.BoundaryChecker;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.Block;
+import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.IfStatement;
@@ -16,10 +20,10 @@ import org.eclipse.jdt.core.dom.InfixExpression;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.ParenthesizedExpression;
 import org.eclipse.jdt.core.dom.PrefixExpression;
-import org.eclipse.jdt.core.dom.QualifiedName;
 import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.SynchronizedStatement;
+import org.eclipse.jdt.core.dom.TryStatement;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 
@@ -206,12 +210,14 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 	private boolean isSafeVariableDelarcation(Statement statement) {
 		if (statement.getNodeType() == ASTNode.VARIABLE_DECLARATION_STATEMENT) {
 			VariableDeclarationStatement variableDeclarationStatement = (VariableDeclarationStatement) statement;
-			List<VariableDeclarationFragment> allStatements = variableDeclarationStatement.fragments();
-			for(VariableDeclarationFragment fragment : allStatements){
+			List<VariableDeclarationFragment> allStatements = variableDeclarationStatement
+					.fragments();
+			for (VariableDeclarationFragment fragment : allStatements) {
 				if (fragment.getInitializer() == null) {
 					return true;
 				}
-				if (fragment.getInitializer().getClass().getName().endsWith("Literal")) {
+				if (fragment.getInitializer().getClass().getName()
+						.endsWith("Literal")) {
 					return true;
 				}
 			}
@@ -312,6 +318,31 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 		return false;
 	}
 
+	private boolean isSafeTryCatchStatement(Statement statement) {
+		ASTNode sibilingStatement = (ASTNode) statement;
+		if (sibilingStatement.getNodeType() == ASTNode.TRY_STATEMENT) {
+			TryStatement tryStatement = (TryStatement) sibilingStatement;
+			List<CatchClause> catchClauseList = tryStatement.catchClauses();
+			for (CatchClause catchClause : catchClauseList) {
+				if (catchClause.getException().getType().toString().equals("Exception")
+						|| catchClause.getException().getType().toString().equals("Throwable")) {
+					List<Statement> StatementList = catchClause.getBody().statements();
+					boolean allInBlockStatementSafe = true;
+					if (StatementList.isEmpty()) {
+						return true;
+					}
+					for (Statement suspectStatement : StatementList) {
+						if(isUnsafeBrotherStatement(suspectStatement)){
+							allInBlockStatementSafe = false;
+						}
+					}
+					return allInBlockStatementSafe;
+				}
+			}
+		}
+		return false;
+	}
+
 	private boolean isSafeExpressionStatement(Statement statement) {
 		ASTNode sibilingStatement = (ASTNode) statement;
 		if (sibilingStatement.getNodeType() == ASTNode.EXPRESSION_STATEMENT) {
@@ -385,6 +416,9 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 			return false;
 		}
 		if (isSafeIfStatement(statement)) {
+			return false;
+		}
+		if (isSafeTryCatchStatement(statement)) {
 			return false;
 		}
 		return true;

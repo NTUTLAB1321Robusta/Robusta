@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import ntut.csie.analyzer.careless.CarelessCleanupDefinitionExample.ClosableResourceContainClassVariable;
 import ntut.csie.analyzer.careless.closingmethod.ResourceCloser;
 
 public class MethodInvocationMayInterruptByExceptionCheckerExample {
@@ -36,18 +35,21 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 			close(); // Is
 		}
 	}
-	
+
 	class closableResourceContainsVariable implements Closeable {
 		public boolean a = true;
+
 		public void close() {
 			// do something
 		}
-		public boolean get(){
+
+		public boolean get() {
 			return this.a;
-		} 
+		}
 	}
-	
-	public void testResourceClosingInTheCheckingQualifiedNameSameIfStatement() throws IOException {
+
+	public void testResourceClosingInTheCheckingQualifiedNameSameIfStatement()
+			throws IOException {
 		closableResourceContainsVariable qualifier = new closableResourceContainsVariable();
 		if (false != qualifier.a) {
 			qualifier.close(); // safe
@@ -618,7 +620,8 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		}
 	}
 
-	public void resourceCloseInThePrefixElseStatement(boolean a) throws Exception {
+	public void resourceCloseInThePrefixElseStatement(boolean a)
+			throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		if (!a) {
 		} else {
@@ -626,7 +629,8 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		}
 	}
 
-	public void resourceCloseInThePrefixElseIfStatement(boolean a) throws Exception {
+	public void resourceCloseInThePrefixElseIfStatement(boolean a)
+			throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		if (a) {
 		} else if (!a) {
@@ -641,7 +645,8 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		fis.close();// safe
 	}
 
-	public void resourceCloseAfterPrefixElseStatement(boolean a) throws Exception {
+	public void resourceCloseAfterPrefixElseStatement(boolean a)
+			throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		if (!a) {
 		} else {
@@ -649,7 +654,8 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		fis.close();// safe
 	}
 
-	public void resourceCloseAfterPrefixElseIfStatement(boolean a) throws Exception {
+	public void resourceCloseAfterPrefixElseIfStatement(boolean a)
+			throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		if (a) {
 		} else if (!a) {
@@ -665,7 +671,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		}
 		fis.close();// safe
 	}
-	
+
 	public void resourceCloseAfterCheckingInstanceIsNullIfStatementAndAMethodInvocationInsideIfStatement()
 			throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
@@ -675,7 +681,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		}
 		fis.close();// unsafe
 	}
-	
+
 	public void resourceCloseAfterCheckingInstanceIsNullIfStatementAndAMethodInvocationInsideElseStatement()
 			throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
@@ -694,7 +700,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		}
 		fis.close();// safe
 	}
-	
+
 	public void resourceCloseAfterCheckingInstanceIsNullElseIfStatementAndAMethodInvocationInside()
 			throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
@@ -704,7 +710,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		}
 		fis.close();// unsafe
 	}
-	
+
 	public void resourceCloseAfterCheckingInstanceIsSameIfStatement()
 			throws Exception {
 		int a = 1;
@@ -714,7 +720,9 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		}
 		fis.close();// safe
 	}
-	public void resourceCloseInCheckingInstanceIsSameIfStatement()throws Exception {
+
+	public void resourceCloseInCheckingInstanceIsSameIfStatement()
+			throws Exception {
 		int a = 1;
 		int b = 2;
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
@@ -722,7 +730,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 			fis.close();// safe
 		}
 	}
-	
+
 	public void resourceCloseAfterCheckingInstanceIsSameElseIfStatement()
 			throws Exception {
 		int a = 1;
@@ -733,7 +741,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		}
 		fis.close();// safe
 	}
-	
+
 	public void resourceCloseInCheckingInstanceIsSameElseIfStatement()
 			throws Exception {
 		int a = 1;
@@ -744,7 +752,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 			fis.close();// safe
 		}
 	}
-	
+
 	public void resourceCloseAfterCheckingInstanceIsSameIfStatementAndAMethodInvocationInside()
 			throws Exception {
 		int a = 1;
@@ -755,7 +763,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		}
 		fis.close();// unsafe
 	}
-	
+
 	public void resourceCloseAfterCheckingInstanceIsSameElseIfStatementAndAMethodInvocationInside()
 			throws Exception {
 		int a = 1;
@@ -767,72 +775,81 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		}
 		fis.close();// unsafe
 	}
-	
-	public void resourceCloseInTheCheckingQualifiedNameSameIfStatement() throws IOException {
+
+	public void resourceCloseInTheCheckingQualifiedNameSameIfStatement()
+			throws IOException {
 		closableResourceContainsVariable qualifier = new closableResourceContainsVariable();
 		if (false != qualifier.a) {
 			qualifier.close(); // safe
 		}
 	}
-	
-	public void resourceCloseInTheCheckingQualifiedNameSameElseIfStatement() throws IOException {
+
+	public void resourceCloseInTheCheckingQualifiedNameSameElseIfStatement()
+			throws IOException {
 		closableResourceContainsVariable qualifier = new closableResourceContainsVariable();
 		if (qualifier == null) {
-		}else if (false != qualifier.a) {
+		} else if (false != qualifier.a) {
 			qualifier.close(); // safe
 		}
 	}
-	
-	public void resourceCloseAfterTheCheckingQualifiedNameSameIfStatement() throws IOException {
+
+	public void resourceCloseAfterTheCheckingQualifiedNameSameIfStatement()
+			throws IOException {
 		closableResourceContainsVariable qualifier = new closableResourceContainsVariable();
 		if (false != qualifier.a) {
 		}
 		qualifier.close(); // safe
 	}
-	
-	public void resourceCloseAfterTheCheckingQualifiedNameSameElseIfStatement() throws IOException {
+
+	public void resourceCloseAfterTheCheckingQualifiedNameSameElseIfStatement()
+			throws IOException {
 		closableResourceContainsVariable qualifier = new closableResourceContainsVariable();
 		if (qualifier == null) {
-		}else if (false != qualifier.a) {
+		} else if (false != qualifier.a) {
 		}
 		qualifier.close(); // safe
 	}
-	
-	public void resourceCloseAfterTheCheckingQualifiedNameSameIfStatementAndAMethodInvocationInside() throws IOException {
+
+	public void resourceCloseAfterTheCheckingQualifiedNameSameIfStatementAndAMethodInvocationInside()
+			throws IOException {
 		closableResourceContainsVariable qualifier = new closableResourceContainsVariable();
 		if (false != qualifier.a) {
 			int intDeclare = returnInt();
 		}
 		qualifier.close(); // unsafe
 	}
-	
-	public void resourceCloseAfterTheCheckingQualifiedNameSameElseStatementAndAMethodInvocationInside() throws IOException {
+
+	public void resourceCloseAfterTheCheckingQualifiedNameSameElseStatementAndAMethodInvocationInside()
+			throws IOException {
 		closableResourceContainsVariable qualifier = new closableResourceContainsVariable();
 		if (false != qualifier.a) {
-		}else{
+		} else {
 			int intDeclare = returnInt();
 		}
 		qualifier.close(); // unsafe
 	}
-	
-	public void resourceCloseAfterTheCheckingQualifiedNameSameElseIfStatementAndAMethodInvocationInside() throws IOException {
+
+	public void resourceCloseAfterTheCheckingQualifiedNameSameElseIfStatementAndAMethodInvocationInside()
+			throws IOException {
 		closableResourceContainsVariable qualifier = new closableResourceContainsVariable();
 		if (qualifier == null) {
-		}else if (false != qualifier.a) {
+		} else if (false != qualifier.a) {
 			int intDeclare = returnInt();
 		}
 		qualifier.close(); // unsafe
 	}
-	
-	public void resourceCloseAfterVariableAssignmentStatement() throws Exception {
+
+	public void resourceCloseAfterVariableAssignmentStatement()
+			throws Exception {
 		boolean a;
 		FileInputStream fis = null;
 		fis = new FileInputStream(new File("C:\\123"));
 		a = true;
 		fis.close();// safe
 	}
-	
-	public void resourceCloseAfterVariableAssignmenWithInfixExpressionStatement() throws Exception {
+
+	public void resourceCloseAfterVariableAssignmenWithInfixExpressionStatement()
+			throws Exception {
 		boolean a;
 		boolean b = true;
 		boolean c = false;
@@ -842,7 +859,8 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		fis.close();// safe
 	}
 
-	public void resourceCloseAfterVariableAssignmentWithInfixExpressionAndExtandOperandStatement() throws Exception {
+	public void resourceCloseAfterVariableAssignmentWithInfixExpressionAndExtandOperandStatement()
+			throws Exception {
 		boolean a;
 		boolean b = true;
 		boolean c = true;
@@ -852,8 +870,9 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		a = b && c && d;
 		fis.close();// safe
 	}
-	
-	public void resourceCloseAfterVariableAssignmentWithParenthesizeExpression() throws Exception {
+
+	public void resourceCloseAfterVariableAssignmentWithParenthesizeExpression()
+			throws Exception {
 		boolean a;
 		boolean b = true;
 		boolean c = true;
@@ -863,8 +882,9 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		a = (b && (c && d));
 		fis.close();// safe
 	}
-	
-	public void resourceCloseAfterMultiVariableAssignmentStatement() throws Exception {
+
+	public void resourceCloseAfterMultiVariableAssignmentStatement()
+			throws Exception {
 		boolean a;
 		boolean b;
 		boolean c;
@@ -874,27 +894,103 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		a = b = c = d = true;
 		fis.close();// safe
 	}
-	
-	
-	public void resourceCloseAfterVariablePrefixExpressionStatement() throws Exception {
+
+	public void resourceCloseAfterVariablePrefixExpressionStatement()
+			throws Exception {
 		int a = 1;
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		++a;
 		fis.close();// safe
 	}
-	
-	public void resourceCloseAfterVariablePostfixExpressionStatement() throws Exception {
+
+	public void resourceCloseAfterVariablePostfixExpressionStatement()
+			throws Exception {
 		int a = 1;
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		a++;
 		fis.close();// safe
 	}
-	
+
 	public void resourceCloseInTheSynchronizedStatement() throws Exception {
 		Integer a = new Integer(1);
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		synchronized (a) {
 			fis.close();// safe
-        }
+		}
+	}
+
+	public void resourceCloseAfterExceptionTryCatchBlock() throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		try {
+			// do something
+		} catch (Exception e) {
+			// do something
+		}
+		fis.close();// safe
+	}
+
+	public void resourceCloseAfterNestExceptionIOExceptionTryCatchBlock()
+			throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		try {
+			// do something
+		} catch (Exception e) {
+			try {
+				if (fis != null) {
+					throw new IOException();
+				}
+			} catch (IOException ex) {
+				// do something
+			}
+		}
+		fis.close();// unsafe
+	}
+	
+	public void resourceCloseAfterMethodInvocationTryCatchBlock()
+			throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		int a;
+		try {
+			// do something
+		} catch (Exception e) {
+			a = returnInt();
+		}
+		fis.close();// unsafe
+	}
+	
+	public void resourceCloseAfterNestExceptionTryCatchBlock()
+			throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		int a = 1;
+		try {
+			// do something
+		} catch (Exception e) {
+			try {
+				// do something
+			} catch (Exception ex) {
+				
+			}
+		}
+		fis.close();// safe
+	}
+
+	public void resourceCloseAfterThrowableTryCatchBlock() throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		try {
+			// do something
+		} catch (Throwable e) {
+			// do something
+		}
+		fis.close();// safe
+	}
+
+	public void resourceCloseAfterIOExceptionTryCatchBlock()
+			throws Exception {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		try {
+			throw new IOException();
+		} catch (IOException e) {
+		}
+		fis.close();// unsafe
 	}
 }

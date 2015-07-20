@@ -199,7 +199,7 @@ public class CarelessCleanupDefinitionTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"tryBlockCatchingAllPossibleExceptionInBetweenDetectionRange",
 				"fis.close()");
-		assertTrue(checker.isMayInterruptByException(methodInvocation));
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 
 	@Test

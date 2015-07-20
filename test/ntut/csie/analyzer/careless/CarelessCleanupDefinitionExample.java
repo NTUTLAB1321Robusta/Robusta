@@ -329,7 +329,7 @@ public class CarelessCleanupDefinitionExample {
 			// handle Exception e
 		}
 
-		fis.close(); // safe if bug fixed
+		fis.close(); // safe
 	}
 
 	public void objectDeclarationWithoutAssignmentInBetweenDetectionRange(

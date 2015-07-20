@@ -87,9 +87,8 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 	public void testIsMayInterruptByExceptionWithInTryBlock() throws Exception {
 		// First "fileOutputStream.close()" in method
 		// "sameResourceCloseManyTimes"
-		MethodInvocation methodInvocation = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 2641 - 1, 24);
-		assertTrue(checker.isMayInterruptByException(methodInvocation));
+		List<MethodInvocation> methodInvocationList = getSameResourceCloseManyTimesTestCaseInvocation();
+		assertTrue(checker.isMayInterruptByException(methodInvocationList.get(0)));
 	}
 
 	@Test
@@ -97,9 +96,8 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 			throws Exception {
 		// Second "fileOutputStream.close()" in method
 		// "sameResourceCloseManyTimes"
-		MethodInvocation methodInvocation = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 2710 - 1, 24);
-		assertFalse(checker.isMayInterruptByException(methodInvocation));
+		List<MethodInvocation> methodInvocationList = getSameResourceCloseManyTimesTestCaseInvocation();
+		assertFalse(checker.isMayInterruptByException(methodInvocationList.get(1)));
 	}
 
 	@Test
@@ -107,9 +105,8 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 			throws Exception {
 		// Third "fileOutputStream.close()" in method
 		// "sameResourceCloseManyTimes"
-		MethodInvocation methodInvocation = (MethodInvocation) NodeFinder
-				.perform(compilationUnit, 2806 - 1, 24);
-		assertTrue(checker.isMayInterruptByException(methodInvocation));
+		List<MethodInvocation> methodInvocationList = getSameResourceCloseManyTimesTestCaseInvocation();
+		assertTrue(checker.isMayInterruptByException(methodInvocationList.get(2)));
 	}
 
 	@Test
@@ -915,10 +912,70 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		assertFalse(checker.isMayInterruptByException(methodInvocation));
 	}
 	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterExceptionTryCatchBlock()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterExceptionTryCatchBlock",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterNestExceptionIOExceptionTryCatchBlock()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterNestExceptionIOExceptionTryCatchBlock",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterMethodInvocationTryCatchBlock()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterMethodInvocationTryCatchBlock",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterNestExceptionTryCatchBlock()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterNestExceptionTryCatchBlock",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterThrowableTryCatchBlock()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterThrowableTryCatchBlock",
+				"fis.close()");
+		assertFalse(checker.isMayInterruptByException(methodInvocation));
+	}
+	
+	@Test
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterIOExceptionTryCatchBlock()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterIOExceptionTryCatchBlock",
+				"fis.close()");
+		assertTrue(checker.isMayInterruptByException(methodInvocation));
+	}
+	
 	private MethodInvocation getMethodInvocationByMethodNameAndCode(
 			String methodName, String code) {
 		List<MethodInvocation> methodInvocation = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(compilationUnit, methodName, code);
 		assertEquals(methodInvocation.size(), 1);
 		return methodInvocation.get(0);
+	}
+	
+	private List<MethodInvocation> getSameResourceCloseManyTimesTestCaseInvocation() {
+		List<MethodInvocation> methodInvocation = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(compilationUnit, "sameResourceCloseManyTimes", "fileOutputStream.close()");
+		assertEquals(methodInvocation.size(), 3);
+		return methodInvocation;
 	}
 }
