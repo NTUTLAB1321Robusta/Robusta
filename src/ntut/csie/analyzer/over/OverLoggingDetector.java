@@ -53,6 +53,9 @@ public class OverLoggingDetector {
 	 * 尋查Method
 	 */
 	public void detect() {
+		if(startMethod.resolveBinding() == null)
+			return;
+		
 		// 將MethodDeclaration(AST)轉換成IMethod
 		IMethod method = (IMethod) startMethod.resolveBinding().getJavaElement();
 		// 解析AST看有沒有發生Logging又throw Exception (空白字串表示最底層Method)

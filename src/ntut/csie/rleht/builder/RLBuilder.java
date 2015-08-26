@@ -37,6 +37,16 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.Position;
+import org.eclipse.jface.text.source.AnnotationModel;
+import org.eclipse.jface.text.source.IAnnotationModel;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.editors.text.FileDocumentProvider;
+import org.eclipse.ui.editors.text.TextFileDocumentProvider;
+import org.eclipse.ui.texteditor.IDocumentProvider;
+import org.eclipse.ui.texteditor.MarkerAnnotation;
+import org.eclipse.ui.texteditor.ResourceMarkerAnnotationModel;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.slf4j.Logger;
@@ -57,14 +67,20 @@ public class RLBuilder extends IncrementalProjectBuilder {
 
 	private RobustaSettings robustaSettings;
 
+	// 幫使用者的editor裝listener, 開啟或更動editor才上Marker跟Annotation2 
+	private EditorTracker editorTracker = new EditorTracker(PlatformUI.getWorkbench());
+	
+	// 上Marker的好幫手
+	private MarkerModel markerModel= new MarkerModel(getProject());
 	/**
 	 * 將相關例外資訊貼上marker(RLMessage)
 	 * 使用於@RL時 
 	 */
-	private void addMarker(IFile file, String message, int lineNumber, int severity, String mtype, RLMessage msg,
+	private IMarker addMarker(IFile file, String message, int lineNumber, int severity, String mtype, RLMessage msg,
 			int msgIdx, int methodIdx) {
+		IMarker marker = null;
 		try {
-			IMarker marker = file.createMarker(MARKER_TYPE);
+			marker = file.createMarker(MARKER_TYPE);
 			marker.setAttribute(IMarker.MESSAGE, message);
 			marker.setAttribute(IMarker.SEVERITY, severity);
 			if (lineNumber == -1) {
@@ -83,41 +99,8 @@ public class RLBuilder extends IncrementalProjectBuilder {
 		catch (CoreException ex) {
 			logger.error("[addMarker] EXCEPTION ",ex);
 		}
-	}
-	
-	/**
-	 * 將相關例外資訊貼上marker
-	 * @param file
-	 * @param errmsg
-	 * @param severityLevel
-	 * @param markerInfo
-	 * @param csIdx
-	 * @param methodIdx
-	 * @author Crimson
-	 */
-	private void addMarker(IFile file, String errmsg, int severityLevel,
-			MarkerInfo markerInfo, int csIdx, int methodIdx) {
-		IMarker marker;
-		try{
-			marker = file.createMarker(MARKER_TYPE);
-			marker.setAttribute(IMarker.MESSAGE, errmsg);
-			marker.setAttribute(IMarker.SEVERITY, severityLevel);
-			if (markerInfo.getLineNumber() == -1) {
-				markerInfo.setLineNumber(1);
-			}
-			marker.setAttribute(IMarker.LINE_NUMBER, markerInfo.getLineNumber());
-			//marker type =  EH smell type
-			marker.setAttribute(RLMarkerAttribute.RL_MARKER_TYPE, markerInfo.getCodeSmellType());
-			marker.setAttribute(RLMarkerAttribute.RL_INFO_EXCEPTION, markerInfo.getExceptionType());
-			marker.setAttribute(RLMarkerAttribute.RL_INFO_SRC_POS, String.valueOf(markerInfo.getPosition()));
-			marker.setAttribute(RLMarkerAttribute.RL_METHOD_INDEX, String.valueOf(methodIdx));
-			marker.setAttribute(RLMarkerAttribute.RL_MSG_INDEX, String.valueOf(csIdx));
-			marker.setAttribute(RLMarkerAttribute.CCU_WITH_TRY, markerInfo.getIsInTry());
-			marker.setAttribute(RLMarkerAttribute.MI_WITH_Ex, markerInfo.getExceptionType());
-			marker.setAttribute(RLMarkerAttribute.RL_INFO_SUPPORT_REFACTORING, markerInfo.isSupportRefactoring());
-		} catch (CoreException e) {
-			logger.error("[addMarker] Exception ",e);
-		}
+		
+		return marker;
 	}
 
 	/**
@@ -191,139 +174,23 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	 * 進行fullBuild or inrementalBuild時,都會去呼叫這個method
 	 * @param resource
 	 */
+	/* 針對每一個Java程式的Method
+	/* 標記專案中所有的壞味道&
+	 * 檢查RLAnnotation */
 	private void checkBadSmells(IResource resource) {
 		if (isJavaFile(resource)) {
 			IFile file = (IFile) resource;
-			deleteMarkers(file);
+			markerModel.deleteMarkers(file);
+			
 			try {
-				/* STEP1:針對每一個Java程式的Method檢查RLAnnotation */
-				/*       並且找出專案中所有的Code Smell  */
-
-				IJavaElement javaElement = JavaCore.create(resource);
-
-				ASTParser parser = ASTParser.newParser(AST.JLS3);
-				parser.setKind(ASTParser.K_COMPILATION_UNIT);
-
-				parser.setSource((ICompilationUnit) javaElement);
-				parser.setResolveBindings(true);
-				CompilationUnit root = (CompilationUnit) parser.createAST(null);
-				ASTMethodCollector methodCollector = new ASTMethodCollector();
-				root.accept(methodCollector);
-				
-				// 取得專案中所有的method
-				List<MethodDeclaration> methodList = methodCollector.getMethodList();
-
-				ExceptionAnalyzer visitor = null;
-
-				// 目前method的Exception資訊
-				List<RLMessage> currentMethodExList = null;
-
-				// 目前method的RL Annotation資訊
-				List<RLMessage> currentMethodRLList = null;
-
-				List<SSMessage> suppressSmellList = null;
-				
-				BadSmellCollector badSmellCollector = new BadSmellCollector(getProject(), root);
-				badSmellCollector.collectBadSmell();
-				List<MarkerInfo> badSmellList = badSmellCollector.getAllBadSmells();
-				
-				for(int i = 0; i<badSmellList.size(); i++)
-				{
-					MarkerInfo markerInfo = badSmellList.get(i);
-					String errmsg = this.resource.getString("ex.smell.type.undealt") + markerInfo.getCodeSmellType() + this.resource.getString("ex.smell.type");
-					this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, markerInfo, markerInfo.getBadSmellIndex(), markerInfo.getMethodIndex());					
-				}
-				
-				int methodIdx = -1;
-				for (MethodDeclaration method : methodList) {
-					methodIdx++;
-
-					visitor = new ExceptionAnalyzer(root, method.getStartPosition(), 0);
-					method.accept(visitor);
-					currentMethodRLList = visitor.getMethodRLAnnotationList();
-					SuppressWarningVisitor swVisitor = new SuppressWarningVisitor(root);
-					method.accept(swVisitor);
-					suppressSmellList = swVisitor.getSuppressWarningList();
-
-					RLChecker checker = new RLChecker();
-					currentMethodExList = checker.check(visitor);
-					
-					// 檢查@RL是否存在(丟出的例外是否被註記)
-					int msgIdx = -1;
-					for (RLMessage msg : currentMethodExList) {
-						msgIdx++;
-						if (msg.getRLData().getLevel() >= 0) {
-							if (!msg.isHandling()) {
-								SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-								if(smellSettings.getPreferenceAttribute(SmellSettings.PRE_SHOWRLANNOTATIONWARNING))
-								{
-									String errmsg = this.resource.getString("tag.undefine1") + msg.getRLData().getExceptionType() + this.resource.getString("tag.undefine2");
-									this.addMarker(file, errmsg.toString(), msg.getLineNumber(), IMarker.SEVERITY_WARNING,
-											RLMarkerAttribute.ERR_NO_RL, msg, msgIdx, methodIdx);
-								}
-							}
-						}
-					}
-					
-					int ssIdx = -1;
-					for (SSMessage msg : suppressSmellList) {
-						ssIdx++;
-						// Smell名稱錯誤
-						if (msg.isFaultName()) {
-							String errmsg = this.resource.getString("error.smell.name");
-							this.addMarker(file, errmsg, msg.getLineNumber(),
-									IMarker.SEVERITY_ERROR, RLMarkerAttribute.ERR_SS_FAULT_NAME, msg, ssIdx,
-									methodIdx);
-						// 沒有任何Smell
-						} else if (msg.getSmellList().size() == 0) {
-							String errmsg = this.resource.getString("null.smell.name");
-							this.addMarker(file, errmsg, msg.getLineNumber(),
-									IMarker.SEVERITY_ERROR, RLMarkerAttribute.ERR_SS_NO_SMELL, msg, ssIdx,
-									methodIdx);
-						}
-					}
-
-					msgIdx = -1;
-					for (RLMessage msg : currentMethodRLList) {
-						msgIdx++;
-
-						int lineNumber = root.getLineNumber(method.getStartPosition());
-
-						// 檢查@RL清單內的level是否正確
-						if (!RLData.validLevel(msg.getRLData().getLevel())) {
-							String errmsg = this.resource.getString("tag.level1") + msg.getRLData().getLevel() + 
-											this.resource.getString("tag.level2") + msg.getRLData().getExceptionType() + 
-											this.resource.getString("tag.level3");
-
-							this.addMarker(file, errmsg, lineNumber, IMarker.SEVERITY_ERROR,
-									RLMarkerAttribute.ERR_RL_LEVEL, msg, msgIdx, methodIdx);
-						}
-
-						// 檢查@RL清單內的exception類別階層是否正確
-						int idx2 = 0;
-						for (RLMessage msg2 : currentMethodRLList) {
-							if (msgIdx >= idx2++) {
-								continue;
-							}
-
-							if (msg.getRLData().getExceptionType().equals(msg2.getRLData().getExceptionType())) {
-								this.addMarker(file, this.resource.getString("tag.level1") + msg.getRLData().getLevel() + this.resource.getString("tag.level2")
-										+ msg.getRLData().getExceptionType() + this.resource.getString("tag.level4"), lineNumber,
-										IMarker.SEVERITY_ERROR, RLMarkerAttribute.ERR_RL_DUPLICATE, msg, msgIdx,
-										methodIdx);
-							}
-							else if (ASTHandler.isInstance(msg2.getTypeBinding(), msg.getTypeBinding()
-									.getQualifiedName())) {
-								this.addMarker(file, this.resource.getString("tag.level1") + msg.getRLData().getLevel() + this.resource.getString("tag.level2")
-										+ msg.getRLData().getExceptionType() + this.resource.getString("tag.level5")
-										+ msg2.getRLData().getLevel() + this.resource.getString("tag.level2")
-										+ msg2.getRLData().getExceptionType() + this.resource.getString("tag.level6"), lineNumber,
-										IMarker.SEVERITY_ERROR, RLMarkerAttribute.ERR_RL_INSTANCE, msg, msgIdx,
-										methodIdx);
-							}
-						}
-					}
-				}
+				markerModel.applyMarkers(file);				
+			} catch (Exception e) {
+				logger.error("Fail to apply marker onto file: " + file.toString() + " \n", e);
+				throw new RuntimeException(e);
+			}
+			
+			try {
+				applyRLAnnotation(resource);
 			}
 			catch (Exception ex) {
 				logger.error("[checkRLAnnotation] EXCEPTION ",ex);
@@ -331,10 +198,123 @@ public class RLBuilder extends IncrementalProjectBuilder {
 			}
 		}
 	}
-	
-	/**
-	 * check if the resource is java file
-	 */
+
+	private CompilationUnit getRoot(IResource resource) {
+		IJavaElement javaElement = JavaCore.create(resource);
+
+		ASTParser parser = ASTParser.newParser(AST.JLS3);
+		parser.setKind(ASTParser.K_COMPILATION_UNIT);
+		parser.setSource((ICompilationUnit) javaElement);
+		parser.setResolveBindings(true);
+		
+		CompilationUnit root = (CompilationUnit) parser.createAST(null);
+		return root;
+	}
+
+	private void applyRLAnnotation(IResource resource) {
+		ExceptionAnalyzer visitor;
+		List<RLMessage> currentMethodExList;
+		List<RLMessage> currentMethodRLList;
+		List<SSMessage> suppressSmellList;
+		int methodIdx = -1;
+		
+		IFile file = (IFile) resource;
+		CompilationUnit root = getRoot(resource);
+		ASTMethodCollector methodCollector = new ASTMethodCollector();
+		root.accept(methodCollector);
+		List<MethodDeclaration> methodList = methodCollector.getMethodList();
+		
+		for (MethodDeclaration method : methodList) {
+			methodIdx++;
+
+			visitor = new ExceptionAnalyzer(root, method.getStartPosition(), 0);
+			method.accept(visitor);
+			currentMethodRLList = visitor.getMethodRLAnnotationList();
+			SuppressWarningVisitor swVisitor = new SuppressWarningVisitor(root);
+			method.accept(swVisitor);
+			suppressSmellList = swVisitor.getSuppressWarningList();
+
+			RLChecker checker = new RLChecker();
+			currentMethodExList = checker.check(visitor);
+			
+			// 檢查@RL是否存在(丟出的例外是否被註記)
+			int msgIdx = -1;
+			for (RLMessage msg : currentMethodExList) {
+				msgIdx++;
+				if (msg.getRLData().getLevel() >= 0) {
+					if (!msg.isHandling()) {
+						SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+						if(smellSettings.getPreferenceAttribute(SmellSettings.PRE_SHOWRLANNOTATIONWARNING))
+						{
+							String errmsg = this.resource.getString("tag.undefine1") + msg.getRLData().getExceptionType() + this.resource.getString("tag.undefine2");
+							this.addMarker(file, errmsg.toString(), msg.getLineNumber(), IMarker.SEVERITY_WARNING,
+									RLMarkerAttribute.ERR_NO_RL, msg, msgIdx, methodIdx);
+						}
+					}
+				}
+			}
+			
+			int ssIdx = -1;
+			for (SSMessage msg : suppressSmellList) {
+				ssIdx++;
+				// Smell名稱錯誤
+				if (msg.isFaultName()) {
+					String errmsg = this.resource.getString("error.smell.name");
+					this.addMarker(file, errmsg, msg.getLineNumber(),
+							IMarker.SEVERITY_ERROR, RLMarkerAttribute.ERR_SS_FAULT_NAME, msg, ssIdx,
+							methodIdx);
+				// 沒有任何Smell
+				} else if (msg.getSmellList().size() == 0) {
+					String errmsg = this.resource.getString("null.smell.name");
+					this.addMarker(file, errmsg, msg.getLineNumber(),
+							IMarker.SEVERITY_ERROR, RLMarkerAttribute.ERR_SS_NO_SMELL, msg, ssIdx,
+							methodIdx);
+				}
+			}
+
+			msgIdx = -1;
+			for (RLMessage msg : currentMethodRLList) {
+				msgIdx++;
+
+				int lineNumber = root.getLineNumber(method.getStartPosition());
+
+				// 檢查@RL清單內的level是否正確
+				if (!RLData.validLevel(msg.getRLData().getLevel())) {
+					String errmsg = this.resource.getString("tag.level1") + msg.getRLData().getLevel() + 
+									this.resource.getString("tag.level2") + msg.getRLData().getExceptionType() + 
+									this.resource.getString("tag.level3");
+
+					this.addMarker(file, errmsg, lineNumber, IMarker.SEVERITY_ERROR,
+							RLMarkerAttribute.ERR_RL_LEVEL, msg, msgIdx, methodIdx);
+				}
+
+				// 檢查@RL清單內的exception類別階層是否正確
+				int idx2 = 0;
+				for (RLMessage msg2 : currentMethodRLList) {
+					if (msgIdx >= idx2++) {
+						continue;
+					}
+
+					if (msg.getRLData().getExceptionType().equals(msg2.getRLData().getExceptionType())) {
+						this.addMarker(file, this.resource.getString("tag.level1") + msg.getRLData().getLevel() + this.resource.getString("tag.level2")
+								+ msg.getRLData().getExceptionType() + this.resource.getString("tag.level4"), lineNumber,
+								IMarker.SEVERITY_ERROR, RLMarkerAttribute.ERR_RL_DUPLICATE, msg, msgIdx,
+								methodIdx);
+					}
+					else if (ASTHandler.isInstance(msg2.getTypeBinding(), msg.getTypeBinding()
+							.getQualifiedName())) {
+						this.addMarker(file, this.resource.getString("tag.level1") + msg.getRLData().getLevel() + this.resource.getString("tag.level2")
+								+ msg.getRLData().getExceptionType() + this.resource.getString("tag.level5")
+								+ msg2.getRLData().getLevel() + this.resource.getString("tag.level2")
+								+ msg2.getRLData().getExceptionType() + this.resource.getString("tag.level6"), lineNumber,
+								IMarker.SEVERITY_ERROR, RLMarkerAttribute.ERR_RL_INSTANCE, msg, msgIdx,
+								methodIdx);
+					}
+				}
+			}
+		}
+	}
+
 	private boolean isJavaFile(IResource resource) {
 		try {
 			return resource.getFileExtension().equals("java");
@@ -344,16 +324,6 @@ public class RLBuilder extends IncrementalProjectBuilder {
 		}
 	}
 
-	private void deleteMarkers(IFile file) {
-		try {
-			file.deleteMarkers(MARKER_TYPE, false, IResource.DEPTH_ZERO);
-		}
-		catch (CoreException ce) {
-			throw new RuntimeException("Functional failure", ce);
-		}
-	}
-
-	
 	protected void fullBuild(final IProgressMonitor monitor) throws CoreException {
 		getProject().accept(new RLResourceVisitor());
 	}

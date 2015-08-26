@@ -28,6 +28,9 @@ public class SuppressWarningVisitor extends ASTVisitor {
 	}
 	
 	public boolean visit(MethodDeclaration node) {
+		if(node.resolveBinding() == null)
+			return false;
+		
 		IAnnotationBinding[] annoBinding = node.resolveBinding().getAnnotations();
 		
 		for (int i = 0, size = annoBinding.length; i < size; i++) {

@@ -76,6 +76,11 @@ public class CloseResourceMethodInvocationVisitor extends ASTVisitor {
 	 */
 	private static boolean isNodeACloseCodeAndImplementedCloseable(
 			MethodInvocation node) {
+		
+		if(node.resolveMethodBinding() == null){
+			return false;
+		}
+		
 		return isSimpleNameClose(node.getName())
 				&& isIMethodBindingImplementedCloseable(node
 						.resolveMethodBinding());
@@ -99,6 +104,7 @@ public class CloseResourceMethodInvocationVisitor extends ASTVisitor {
 
 	private static boolean isIMethodBindingImplementedCloseable(
 			IMethodBinding methodBinding) {
+		
 		return NodeUtils.isITypeBindingImplemented(
 				methodBinding.getDeclaringClass(), Closeable.class) || NodeUtils.isITypeBindingImplemented(
 						methodBinding.getDeclaringClass(), AutoCloseable.class);

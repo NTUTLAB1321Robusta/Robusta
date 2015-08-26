@@ -111,6 +111,7 @@
          name="RLProblem"
          point="org.eclipse.core.resources.markers">
       <super type="org.eclipse.core.resources.problemmarker"/>
+      <super type="org.eclipse.core.resources.textmarker"/>
       <persistent value="true"/>
    </extension>
    
@@ -122,8 +123,52 @@
             markerType="ntut.csie.rleht.builder.RLProblem"/>
    </extension>
    
-   <!-- property page-->
-   <extension
+   <!-- Define Annotation for inappropriate statement coloring -->
+	<extension 
+		point="org.eclipse.ui.editors.markerAnnotationSpecification"
+		id="ntut.csie.robusta.inappropriateAnnotation" 
+		name="InappropriateAnnotation">
+		<specification 
+			annotationType="org.eclipse.ui.workbench.texteditor.info"
+			label="InappropriateAnnotation"
+			overviewRulerPreferenceKey="clruler"
+			overviewRulerPreferenceValue="true"
+			colorPreferenceKey="clcolor"
+			colorPreferenceValue="255,255,0"
+			highlightPreferenceKey="inappropriateAnnotationHighlight"
+			highlightPreferenceValue ="true"
+			textPreferenceKey="cltext"
+			textPreferenceValue="true"
+			verticalRulerPreferenceKey="clvertical"
+			verticalRulerPreferenceValue="true"
+			textStylePreferenceKey="clstyle"
+			textStylePreferenceValue="BOX">
+		</specification>
+	</extension>
+	
+	<!-- Link inappropriateAnnotation to our bad smell marker -->
+	<!-- name = the annotationType attribute of the annotation that will be linked-->
+	<!-- markerType = the id attribute of the marker that will be linked -->
+	<extension point="org.eclipse.ui.editors.annotationTypes">
+    	<type 
+    		super="org.eclipse.ui.workbench.texteditor.info"
+        	name="org.eclipse.ui.workbench.texteditor.info" 
+        	markerType="ntut.csie.rleht.builder.RLProblem"
+    		markerSeverity="0">
+        </type>
+	</extension>
+	
+	<!-- A Marker Updater for syncing markers and corresponging annotations -->
+	<extension point="org.eclipse.ui.editors.markerUpdaters"> 
+               <updater
+                       id="ntut.csie.robusta.bsmarkerInappropriateAnnotationUpdater"
+                       class="ntut.csie.rleht.builder.BSMarkerInappropriateAnnotationUpdater"
+                       markerType="ntut.csie.rleht.builder.RLProblem">
+               </updater>
+	</extension>
+	
+   	<!-- property page-->
+   	<extension
          point="org.eclipse.ui.preferencePages">
       <page
             class="ntut.csie.rleht.preferences.PreferencePage"
@@ -156,5 +201,7 @@
          </enabledWhen>
       </page>
    </extension>
+   
+   
    <!-- STAND ALONE (HEADLESS) extension will be injected here AUTOMATICALLY when build by ANT (xmltask) -->
 </plugin>
