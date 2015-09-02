@@ -1,6 +1,5 @@
-package ntut.csie.rleht.builder;
+package ntut.csie.robusta.marker;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -8,6 +7,7 @@ import java.util.ResourceBundle;
 import ntut.csie.analyzer.ASTMethodCollector;
 import ntut.csie.analyzer.BadSmellCollector;
 import ntut.csie.csdet.data.MarkerInfo;
+import ntut.csie.rleht.builder.RLMarkerAttribute;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -31,13 +31,12 @@ public class MarkerModel {
 	
 	private ResourceBundle resourceBundle = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
 	
-	private List<MarkerInfo> markerList = new ArrayList<MarkerInfo>(32);
+	private MarkerData markerData = new MarkerData();
 	
 	public static final String MARKER_TYPE = "ntut.csie.rleht.builder.RLProblem";
 	
-	public MarkerModel(IProject project) {
+	public MarkerModel() {
 		super();
-		this.project = project;
 	}
 
 	public void applyMarkers(IFile file) {
@@ -50,27 +49,25 @@ public class MarkerModel {
 		List<MarkerInfo> badSmellList = badSmellCollector.getAllBadSmells();
 		
 		// for each class we scan store all the bad smells found
-		markerList.addAll(badSmellList);
+		markerData.append(badSmellList);
 		
 		for(int i = 0; i<badSmellList.size(); i++)
 		{
 			MarkerInfo markerInfo = badSmellList.get(i);
 			String errmsg = this.resourceBundle.getString("ex.smell.type.undealt") + markerInfo.getCodeSmellType() + this.resourceBundle.getString("ex.smell.type");
-			IMarker marker = this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, markerInfo, markerInfo.getBadSmellIndex(), markerInfo.getMethodIndex());		
+			this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, markerInfo, markerInfo.getBadSmellIndex(), markerInfo.getMethodIndex());		
 		}
 	}
 	
 	public void deleteMarkers(IFile file) {
 		try {
 			file.deleteMarkers(MARKER_TYPE, false, IResource.DEPTH_ZERO);
+			markerData.remove(file);
+			
 		}
 		catch (CoreException ce) {
 			throw new RuntimeException("Fail to clean up old markers", ce);
 		}
-	}
-	
-	public void updateMarker() {
-		
 	}
 	
 	private IMarker addMarker(IFile file, String errmsg, int severityLevel,
@@ -114,5 +111,18 @@ public class MarkerModel {
 			throw new RuntimeException(e);
 		}
 		return root;
+	}
+	
+	public void setProject(IProject proj) {
+		this.project = proj;
+	}
+	
+	public void clearMarkerData() {
+		markerData.clear();
+	}
+
+	public void updateMarker(IFile file) {
+		deleteMarkers(file);
+		applyMarkers(file);
 	}
 }

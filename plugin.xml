@@ -129,8 +129,9 @@
 		id="ntut.csie.robusta.inappropriateAnnotation" 
 		name="InappropriateAnnotation">
 		<specification 
-			annotationType="org.eclipse.ui.workbench.texteditor.info"
+			annotationType="ntut.csie.robusta.inappropriateAnnotation"
 			label="InappropriateAnnotation"
+			icon=""
 			overviewRulerPreferenceKey="clruler"
 			overviewRulerPreferenceValue="true"
 			colorPreferenceKey="clcolor"
@@ -151,20 +152,10 @@
 	<!-- markerType = the id attribute of the marker that will be linked -->
 	<extension point="org.eclipse.ui.editors.annotationTypes">
     	<type 
-    		super="org.eclipse.ui.workbench.texteditor.info"
-        	name="org.eclipse.ui.workbench.texteditor.info" 
+        	name="ntut.csie.robusta.inappropriateAnnotation" 
         	markerType="ntut.csie.rleht.builder.RLProblem"
     		markerSeverity="0">
         </type>
-	</extension>
-	
-	<!-- A Marker Updater for syncing markers and corresponging annotations -->
-	<extension point="org.eclipse.ui.editors.markerUpdaters"> 
-               <updater
-                       id="ntut.csie.robusta.bsmarkerInappropriateAnnotationUpdater"
-                       class="ntut.csie.rleht.builder.BSMarkerInappropriateAnnotationUpdater"
-                       markerType="ntut.csie.rleht.builder.RLProblem">
-               </updater>
 	</extension>
 	
    	<!-- property page-->

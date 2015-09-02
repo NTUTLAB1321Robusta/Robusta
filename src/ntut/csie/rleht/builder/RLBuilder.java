@@ -7,10 +7,8 @@ import java.util.ResourceBundle;
 import java.util.TreeMap;
 
 import ntut.csie.analyzer.ASTMethodCollector;
-import ntut.csie.analyzer.BadSmellCollector;
 import ntut.csie.analyzer.SuppressWarningVisitor;
 import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
-import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.data.SSMessage;
 import ntut.csie.csdet.preference.RobustaSettings;
 import ntut.csie.csdet.preference.SmellSettings;
@@ -19,6 +17,9 @@ import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLChecker;
 import ntut.csie.rleht.views.RLData;
 import ntut.csie.rleht.views.RLMessage;
+import ntut.csie.robusta.marker.EditorTracker;
+import ntut.csie.robusta.marker.InappropriateAnnotationModel;
+import ntut.csie.robusta.marker.MarkerModel;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -37,18 +38,7 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.Position;
-import org.eclipse.jface.text.source.AnnotationModel;
-import org.eclipse.jface.text.source.IAnnotationModel;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.editors.text.FileDocumentProvider;
-import org.eclipse.ui.editors.text.TextFileDocumentProvider;
-import org.eclipse.ui.texteditor.IDocumentProvider;
-import org.eclipse.ui.texteditor.MarkerAnnotation;
-import org.eclipse.ui.texteditor.ResourceMarkerAnnotationModel;
-import org.jdom.Document;
-import org.jdom.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,11 +57,13 @@ public class RLBuilder extends IncrementalProjectBuilder {
 
 	private RobustaSettings robustaSettings;
 
-	// 幫使用者的editor裝listener, 開啟或更動editor才上Marker跟Annotation2 
-	private EditorTracker editorTracker = new EditorTracker(PlatformUI.getWorkbench());
-	
 	// 上Marker的好幫手
-	private MarkerModel markerModel= new MarkerModel(getProject());
+	private MarkerModel markerModel= new MarkerModel();
+	//private InappropriateAnnotationModel inappropriateAnnotationModel = InappropriateAnnotationModel(markerModel);
+	
+	// 幫使用者的editor裝listener, 開啟或更動editor才上Annotation
+	private EditorTracker editorTracker = new EditorTracker(PlatformUI.getWorkbench(), markerModel);;
+	
 	/**
 	 * 將相關例外資訊貼上marker(RLMessage)
 	 * 使用於@RL時 
@@ -150,6 +142,9 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	 */
 	protected IProject[] build(int kind, @SuppressWarnings("rawtypes") Map args, IProgressMonitor monitor) throws CoreException {
 		loadRobustaSettingForProject(getProject());
+		markerModel.clearMarkerData();
+		markerModel.setProject(getProject());
+		
 		logger.debug("[RLBuilder] START !!");
 		long start = System.currentTimeMillis();
 		if (kind == FULL_BUILD) {
@@ -165,6 +160,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 			}
 		}
 		long end = System.currentTimeMillis();
+		
 		logger.debug("[RLBuilder] END !!");
 		System.out.println("RLBuild花費時間 " + (end - start) + " milli second.");
 		return null;
@@ -180,14 +176,15 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	private void checkBadSmells(IResource resource) {
 		if (isJavaFile(resource)) {
 			IFile file = (IFile) resource;
-			markerModel.deleteMarkers(file);
 			
-			try {
-				markerModel.applyMarkers(file);				
-			} catch (Exception e) {
-				logger.error("Fail to apply marker onto file: " + file.toString() + " \n", e);
-				throw new RuntimeException(e);
-			}
+			// with editor tracker, we no longer need to add all markers at once during proj build
+//			markerModel.deleteMarkers(file);
+//			try {
+//				markerModel.applyMarkers(file);				
+//			} catch (Exception e) {
+//				logger.error("Fail to apply marker onto file: " + file.toString() + " \n", e);
+//				throw new RuntimeException(e);
+//			}
 			
 			try {
 				applyRLAnnotation(resource);

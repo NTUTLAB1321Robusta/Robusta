@@ -2,6 +2,8 @@ package ntut.csie.csdet.data;
 
 import java.util.List;
 
+import ntut.csie.robusta.marker.AnnotationInfo;
+
 import org.eclipse.jdt.core.dom.ITypeBinding;
 
 /**
@@ -12,6 +14,7 @@ import org.eclipse.jdt.core.dom.ITypeBinding;
 public class MarkerInfo {
 	
 	private ITypeBinding typeBinding;
+	private String className;
 	private String statement;
 	private String cstype;
 	private int position;
@@ -24,6 +27,7 @@ public class MarkerInfo {
 	private int methodIndex = -1;
 	private int badSmellIndex = 0;
 	private boolean supportRefactoring = false;
+	private List<AnnotationInfo> annotationInfoList = null;
 	
 	public boolean isSupportRefactoring() {
 		return supportRefactoring;
@@ -45,13 +49,17 @@ public class MarkerInfo {
 	 * 除了NT以外目前都用這個，未來應改為與NT相同
 	 */
 	public MarkerInfo(String type, ITypeBinding typeBinding, String statement, int pos, int lineNumber, String exceptionType) {
-		// Method Name 未定義，先給空字串
-		this(type, typeBinding, statement, pos, lineNumber, exceptionType, "");
+		this(type, typeBinding, "", statement, pos, lineNumber, exceptionType, "", null);
+	}
+	
+	public MarkerInfo(String type, ITypeBinding typeBinding, String statement, int pos, int lineNumber, String exceptionType, List<AnnotationInfo> annotationPosList) {
+		this(type, typeBinding, "", statement, pos, lineNumber, exceptionType, "", annotationPosList);
+	}
+	
+	public MarkerInfo(String type, ITypeBinding typeBinding, String className, String statement, int pos, int lineNumber, String exceptionType, List<AnnotationInfo> annotationPosList) {
+		this(type, typeBinding, className, statement, pos, lineNumber, exceptionType, "", annotationPosList);
 	}
 
-	/*
-	 * NT 使用，附帶 Method Name 資訊給 Report 用
-	 */
 	public MarkerInfo(String type, ITypeBinding typeBinding, String statement,
 			int pos, int lineNumber, String exceptionType, String methodName) {
 		this.cstype = type;
@@ -61,6 +69,35 @@ public class MarkerInfo {
 		this.lineNumber = lineNumber;
 		this.exceptionType = exceptionType;
 		this.methodName = methodName;
+		this.annotationInfoList = null;
+	}
+	
+	/*
+	 * NT 使用，附帶 Method Name 資訊給 Report 用
+	 */
+	public MarkerInfo(String type, ITypeBinding typeBinding, String statement,
+			int pos, int lineNumber, String exceptionType, String methodName, List<AnnotationInfo> annotationPosList) {
+		this.cstype = type;
+		this.typeBinding = typeBinding;
+		this.statement = statement;
+		this.position = pos;
+		this.lineNumber = lineNumber;
+		this.exceptionType = exceptionType;
+		this.methodName = methodName;
+		this.annotationInfoList = annotationPosList;
+	}
+	
+	public MarkerInfo(String type, ITypeBinding typeBinding, String className, String statement,
+			int pos, int lineNumber, String exceptionType, String methodName, List<AnnotationInfo> annotationPosList) {
+		this.cstype = type;
+		this.typeBinding = typeBinding;
+		this.className = className;
+		this.statement = statement;
+		this.position = pos;
+		this.lineNumber = lineNumber;
+		this.exceptionType = exceptionType;
+		this.methodName = methodName;
+		this.annotationInfoList = annotationPosList;
 	}
 	
 	public void addSpecialProperty(String str) {
@@ -157,4 +194,15 @@ public class MarkerInfo {
 		this.methodIndex = methodIndex;
 	}
 	
+	public void addAnnotation(AnnotationInfo annotationInfo) {
+		this.annotationInfoList.add(annotationInfo);
+	}
+	
+	public List<AnnotationInfo> getAnnotationPosList() {
+		return this.annotationInfoList;
+	}
+	
+	public String getClassName() {
+		return className;
+	}
 }

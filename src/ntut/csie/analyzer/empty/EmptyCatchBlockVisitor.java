@@ -7,6 +7,7 @@ import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
+import ntut.csie.robusta.marker.AnnotationInfo;
 
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CatchClause;
@@ -51,12 +52,23 @@ public class EmptyCatchBlockVisitor extends ASTVisitor {
 
 	private void addSmellInfo(CatchClause node) {
 		SingleVariableDeclaration svd = node.getException();
+
+		ArrayList<AnnotationInfo> annotationList = new ArrayList<AnnotationInfo>(2);
+		AnnotationInfo ai = new AnnotationInfo(root.getLineNumber(node.getStartPosition()), 
+				node.getStartPosition(), 
+				node.getLength(), 
+				"Not handling exception!");
+		annotationList.add(ai);
+		
 		MarkerInfo markerInfo = new MarkerInfo(
 				RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK,
-				svd.resolveBinding().getType(), node.toString(),
+				svd.resolveBinding().getType(), 
+				((CompilationUnit)node.getRoot()).getJavaElement().getElementName(), // class name
+				node.toString(),
 				node.getStartPosition(),
 				root.getLineNumber(node.getStartPosition()),
-				svd.getType().toString());
+				svd.getType().toString(), 
+				annotationList);
 		emptyCatchBlockList.add(markerInfo);
 	}
 
