@@ -7,6 +7,7 @@ import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
+import ntut.csie.robusta.marker.AnnotationInfo;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
@@ -23,6 +24,7 @@ public class UnprotectedMainProgramVisitor extends ASTVisitor {
 	// AST tree的root(檔案名稱)
 	private CompilationUnit root;
 	private boolean isDetectingUnprotectedMainProgramSmell;
+	ArrayList<AnnotationInfo> annotationList = new ArrayList<AnnotationInfo>(32);
 	
 	public UnprotectedMainProgramVisitor(CompilationUnit root){
 		this.root = root;
@@ -41,12 +43,18 @@ public class UnprotectedMainProgramVisitor extends ASTVisitor {
 			return false;
 		// parse AST tree看看是否有void main(java.lang.String[])
 		if (node.resolveBinding().toString().contains("void main(java.lang.String[])")) {
-			List<?> statement = node.getBody().statements();
-			if(processMainFunction(statement)) {
+			List<?> statements = node.getBody().statements();
+			if(containUnprotectedStatement(statements)) {
 				//如果有找到code smell就將其加入
-				MarkerInfo markerInfo = new MarkerInfo(RLMarkerAttribute.CS_UNPROTECTED_MAIN, null,											
-										node.toString(),node.getStartPosition(),
-										getLineNumber(node), null);
+				MarkerInfo markerInfo = new MarkerInfo(
+						RLMarkerAttribute.CS_UNPROTECTED_MAIN, 
+						null,
+						((CompilationUnit)node.getRoot()).getJavaElement().getElementName(), // class name
+						node.toString(),
+						node.getStartPosition(),
+						getLineNumber(node), 
+						null,
+						annotationList);
 				unprotectedMainList.add(markerInfo);				
 				return false;
 			}
@@ -59,30 +67,40 @@ public class UnprotectedMainProgramVisitor extends ASTVisitor {
 	 * @param statement
 	 * @return
 	 */
-	private boolean processMainFunction(List<?> statement) {
-		if (statement.size() == 0) {
-			// main function裡面什麼都沒有就不算是code smell
-			return false;
-		} else if (statement.size() == 1) {
-			if (((ASTNode)statement.get(0)).getNodeType() == ASTNode.TRY_STATEMENT) {
-				List<?> catchList = ((TryStatement)statement.get(0)).catchClauses();
-				for (int i = 0; i < catchList.size(); i++) {
-					SingleVariableDeclaration svd = ((CatchClause)catchList.get(i)).getException();
-					// 如果有try還要判斷catch是否為catch(Exception ..)
-					if (svd.getType().resolveBinding().getQualifiedName().equals(Exception.class.getName()) ||
-						svd.getType().resolveBinding().getQualifiedName().equals(RuntimeException.class.getName())) {
-						//如果有catch(Exception ..)就不算code smell
-						return false;
-					}
-				}
+	private boolean containUnprotectedStatement(List<?> statement) {
+		/* 如果Main Block有statement沒被擁有catch(Exception e) 或 catch(Throwable t)
+		 * 的try statement包住, 就是Unprotected Main
+		 */
+		int unprotectedStatementCount = 0;
+		for(Object s: statement) {
+			ASTNode node = (ASTNode) s;
+			
+			if(node.getNodeType() == ASTNode.TRY_STATEMENT) {
+				if(doesCatchesAllException((TryStatement) node))
+					continue;
 			}
-			return true;
-		} else {
-			/* 如果Main Block有兩種以上的statement,就表示有東西沒被
-			 * Try block包住,或者根本沒有try block
-			 */
-			return true;
+			
+			AnnotationInfo ai = new AnnotationInfo(root.getLineNumber(node.getStartPosition()), 
+					node.getStartPosition(), 
+					node.getLength(), 
+					"Not All statements In Main Enclosed In A Try Statement Catching All Possible Exceptions");
+			annotationList.add(ai);
+			unprotectedStatementCount++;
 		}
+		
+		return unprotectedStatementCount != 0? true : false;
+	}
+
+	private boolean doesCatchesAllException(TryStatement tryStatement) {
+		List<CatchClause> catchClauseList = tryStatement.catchClauses();
+		for (CatchClause catchClause : catchClauseList) {
+			if (catchClause.getException().getType().toString().equals("Exception")
+					|| catchClause.getException().getType().toString().equals("Throwable")) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 
 	/**

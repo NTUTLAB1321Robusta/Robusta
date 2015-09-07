@@ -2,7 +2,7 @@ package ntut.csie.analyzer.unprotected;
 
 public class UnprotectedMainProgramWithTryAtMiddleStatement {
 	public static void main(String[] args) {
-		UnprotectedMainProgramWithCatchRuntimeExceptionExample test = new UnprotectedMainProgramWithCatchRuntimeExceptionExample();
+		UnprotectedMainProgramWithCatchThrowableExample test = new UnprotectedMainProgramWithCatchThrowableExample();
 		try {
 			int i = 0;
 			i = i++;

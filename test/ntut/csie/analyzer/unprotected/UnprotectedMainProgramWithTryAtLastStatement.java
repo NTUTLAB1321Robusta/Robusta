@@ -2,7 +2,7 @@ package ntut.csie.analyzer.unprotected;
 
 public class UnprotectedMainProgramWithTryAtLastStatement {
 	public static void main(String[] args) {
-		UnprotectedMainProgramWithCatchRuntimeExceptionExample test = new UnprotectedMainProgramWithCatchRuntimeExceptionExample();
+		UnprotectedMainProgramWithCatchThrowableExample test = new UnprotectedMainProgramWithCatchThrowableExample();
 		test.toString();
 		try {
 			int i = 0;

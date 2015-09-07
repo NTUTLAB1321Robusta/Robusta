@@ -4,18 +4,12 @@ import java.util.Iterator;
 
 import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
 import ntut.csie.csdet.preference.SmellSettings;
+import ntut.csie.robusta.marker.EditorTracker;
+import ntut.csie.robusta.marker.MarkerModel;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.IResourceDeltaVisitor;
-import org.eclipse.core.resources.IResourceVisitor;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceDescription;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -24,6 +18,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PlatformUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +27,12 @@ public class ToggleNatureAction implements IObjectActionDelegate {
 	private static final String REMOVEDETECTOR = "Robusta.removeRLNatureAction";
 	private static Logger logger = LoggerFactory.getLogger(ToggleNatureAction.class);
 	private ISelection selection;
+	
+	// 上Marker的好幫手
+	private static MarkerModel markerModel= new MarkerModel();
+	
+	// 幫使用者的editor裝listener, 開啟或更動editor才上Annotation
+	private static EditorTracker editorTracker = new EditorTracker(PlatformUI.getWorkbench(), markerModel);;
 
 	/*
 	 * (non-Javadoc)
@@ -103,7 +104,8 @@ public class ToggleNatureAction implements IObjectActionDelegate {
 						project.setDescription(description, null);
 
 						// 刪除Maker
-						project.accept(new RLResourceVisitor());
+						markerModel.deleteMarkers(project);
+						markerModel.unregisterMarkerService(project);
 						break;
 					}
 				}
@@ -114,6 +116,8 @@ public class ToggleNatureAction implements IObjectActionDelegate {
 				newNatures[natures.length] = RLNature.NATURE_ID;
 				description.setNatureIds(newNatures);
 				project.setDescription(description, null);
+				
+				markerModel.registerMarkerService(project);
 			}
 
 			// Build the project, even if marker exist prior to the click action
@@ -123,54 +127,4 @@ public class ToggleNatureAction implements IObjectActionDelegate {
 			logger.error("[toggleNature] EXCEPTION ",ex);
 		}
 	}
-
-	// ==========================================================================
-
-	class RLMethodDeltaVisitor implements IResourceDeltaVisitor {
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see org.eclipse.core.resources.IResourceDeltaVisitor#visit(org.eclipse.core.resources.IResourceDelta)
-		 */
-		public boolean visit(IResourceDelta delta) throws CoreException {
-			IResource resource = delta.getResource();
-			switch (delta.getKind()) {
-				case IResourceDelta.ADDED:
-					// handle added resource
-					deleteMarkers(resource);
-					break;
-				case IResourceDelta.REMOVED:
-					// handle removed resource
-					break;
-				case IResourceDelta.CHANGED:
-					// handle changed resource
-					deleteMarkers(resource);
-					break;
-			}
-			// return true to continue visiting children.
-			return true;
-		}
-	}
-
-	class RLResourceVisitor implements IResourceVisitor {
-		public boolean visit(IResource resource) {
-			deleteMarkers(resource);
-			// return true to continue visiting children.
-			return true;
-		}
-	}
-
-
-	private void deleteMarkers(IResource resource) {
-		try {
-			if (resource instanceof IFile && resource.getName().endsWith(".java")) {
-				IFile file = (IFile) resource;
-				file.deleteMarkers(RLBuilder.MARKER_TYPE, false, IResource.DEPTH_ZERO);
-			}
-		}
-		catch (CoreException ex) {
-			logger.error("[deleteMarkers] EXCEPTION ",ex);
-		}
-	}
-
 }

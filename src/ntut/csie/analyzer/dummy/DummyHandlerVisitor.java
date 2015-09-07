@@ -116,6 +116,8 @@ public class DummyHandlerVisitor extends ASTVisitor {
 	}
 
 	private boolean isPrintOrLog(IMethodBinding methodBinding) {
+		if(methodBinding == null)
+			return false;
 		// 取得Method的Library名稱
 		String libName = methodBinding.getDeclaringClass().getQualifiedName();
 		// 取得Method的名稱

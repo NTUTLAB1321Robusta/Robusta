@@ -7,6 +7,7 @@ import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
+import ntut.csie.robusta.marker.AnnotationInfo;
 import ntut.csie.util.NodeUtils;
 
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -68,9 +69,22 @@ public class NestedTryStatementVisitor extends ASTVisitor {
 	}
 	
 	private void collectSmell(TryStatement node) {
-		MarkerInfo markerInfo = new MarkerInfo(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT,
-				null, node.toString(), node.getStartPosition(),
-				compilationUnit.getLineNumber(node.getStartPosition()),	null);
+		ArrayList<AnnotationInfo> annotationList = new ArrayList<AnnotationInfo>(2);
+		AnnotationInfo ai = new AnnotationInfo(compilationUnit.getLineNumber(node.getStartPosition()), 
+				node.getStartPosition(), 
+				node.getLength(), 
+				"Nesting Try Statements!");
+		annotationList.add(ai);
+		
+		MarkerInfo markerInfo = new MarkerInfo(
+				RLMarkerAttribute.CS_NESTED_TRY_STATEMENT,
+				null, 
+				((CompilationUnit)node.getRoot()).getJavaElement().getElementName(), // class name
+				node.toString(), 
+				node.getStartPosition(),
+				compilationUnit.getLineNumber(node.getStartPosition()),	
+				null,
+				annotationList);
 		nestedTryStatementList.add(markerInfo);
 	}
 }

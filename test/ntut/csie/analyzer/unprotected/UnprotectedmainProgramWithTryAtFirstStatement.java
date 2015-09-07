@@ -7,7 +7,7 @@ public class UnprotectedmainProgramWithTryAtFirstStatement {
 			i = i++;
 		} catch (Exception ex) {
 		}
-		UnprotectedMainProgramWithCatchRuntimeExceptionExample test = new UnprotectedMainProgramWithCatchRuntimeExceptionExample();
+		UnprotectedMainProgramWithCatchThrowableExample test = new UnprotectedMainProgramWithCatchThrowableExample();
 		test.toString();
 	}
 }

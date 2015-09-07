@@ -24,7 +24,7 @@ import ntut.csie.analyzer.over.OverLoggingTheSecondOrderClass;
 import ntut.csie.analyzer.over.OverLoggingTheThirdOrderClass;
 import ntut.csie.analyzer.thrown.ExceptionThrownFromFinallyBlockExample;
 import ntut.csie.analyzer.unprotected.UnprotectedMainProgramExample;
-import ntut.csie.analyzer.unprotected.UnprotectedMainProgramWithCatchRuntimeExceptionExample;
+import ntut.csie.analyzer.unprotected.UnprotectedMainProgramWithCatchThrowableExample;
 import ntut.csie.analyzer.unprotected.UnprotectedMainProgramWithTry;
 import ntut.csie.analyzer.unprotected.UnprotectedMainProgramWithTryAtLastStatement;
 import ntut.csie.analyzer.unprotected.UnprotectedMainProgramWithTryAtMiddleStatement;
@@ -99,7 +99,7 @@ public class ReportBuilderIntergrationTest {
 		loadClass(OverLoggingTheSecondOrderClass.class);
 		loadClass(OverLoggingTheThirdOrderClass.class);
 		loadClass(UnprotectedMainProgramExample.class);
-		loadClass(UnprotectedMainProgramWithCatchRuntimeExceptionExample.class);
+		loadClass(UnprotectedMainProgramWithCatchThrowableExample.class);
 		loadClass(UnprotectedMainProgramWithoutStatementExample.class);	
 		loadClass(UnprotectedMainProgramWithoutTryExample.class);
 		loadClass(UnprotectedMainProgramWithTry.class);

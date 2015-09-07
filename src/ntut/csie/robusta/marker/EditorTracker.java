@@ -83,13 +83,6 @@ public class EditorTracker {
 		//annotateAllEditors();
 	}
 
-	public void setMarkerModel(MarkerModel markerModel) {
-		this.markerModel = markerModel;
-	}
-	
-	public void setAnnotationModel(InappropriateAnnotationModel inappropriateAnnotationModel) {
-	}
-
 	public void dispose() {
 		workbench.removeWindowListener(windowListener);
 		for (final IWorkbenchWindow w : workbench.getWorkbenchWindows()) {

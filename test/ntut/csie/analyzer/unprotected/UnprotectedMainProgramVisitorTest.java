@@ -51,13 +51,13 @@ public class UnprotectedMainProgramVisitorTest {
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		// unit2
-		javaFile2String.read(UnprotectedMainProgramWithCatchRuntimeExceptionExample.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaFile2String.read(UnprotectedMainProgramWithCatchThrowableExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker
 				.createJavaFile(
-						UnprotectedMainProgramWithCatchRuntimeExceptionExample.class.getPackage().getName(),
-						UnprotectedMainProgramWithCatchRuntimeExceptionExample.class.getSimpleName()
+						UnprotectedMainProgramWithCatchThrowableExample.class.getPackage().getName(),
+						UnprotectedMainProgramWithCatchThrowableExample.class.getSimpleName()
 						+ JavaProjectMaker.JAVA_FILE_EXTENSION,	"package "
-						+ UnprotectedMainProgramWithCatchRuntimeExceptionExample.class.getPackage().getName() + ";\n"
+						+ UnprotectedMainProgramWithCatchThrowableExample.class.getPackage().getName() + ";\n"
 						+ javaFile2String.getFileContent());
 		javaFile2String.clear();
 		// unit3
@@ -130,7 +130,7 @@ public class UnprotectedMainProgramVisitorTest {
 		unit1 = (CompilationUnit) parser.createAST(null); 
 		unit1.recordModifications();
 		/** unit2 */
-		Path path2 = new Path(PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithCatchRuntimeExceptionExample.class, testProjectName));
+		Path path2 = new Path(PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithCatchThrowableExample.class, testProjectName));
 		//Create AST to parse
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -240,7 +240,7 @@ public class UnprotectedMainProgramVisitorTest {
 		// check precondition
 		assertEquals(1, md.getBody().statements().size());
 		// test target
-		Method processMainFunction = UnprotectedMainProgramVisitor.class.getDeclaredMethod("processMainFunction", List.class);
+		Method processMainFunction = UnprotectedMainProgramVisitor.class.getDeclaredMethod("containUnprotectedStatement", List.class);
 		processMainFunction.setAccessible(true);
 		// check postcondition
 		assertFalse((Boolean)processMainFunction.invoke(mainVisitor, md.getBody().statements()));

@@ -17,10 +17,6 @@ import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLChecker;
 import ntut.csie.rleht.views.RLData;
 import ntut.csie.rleht.views.RLMessage;
-import ntut.csie.robusta.marker.EditorTracker;
-import ntut.csie.robusta.marker.InappropriateAnnotationModel;
-import ntut.csie.robusta.marker.MarkerModel;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -38,7 +34,6 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.ui.PlatformUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,13 +51,6 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
 
 	private RobustaSettings robustaSettings;
-
-	// 上Marker的好幫手
-	private MarkerModel markerModel= new MarkerModel();
-	//private InappropriateAnnotationModel inappropriateAnnotationModel = InappropriateAnnotationModel(markerModel);
-	
-	// 幫使用者的editor裝listener, 開啟或更動editor才上Annotation
-	private EditorTracker editorTracker = new EditorTracker(PlatformUI.getWorkbench(), markerModel);;
 	
 	/**
 	 * 將相關例外資訊貼上marker(RLMessage)
@@ -142,9 +130,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	 */
 	protected IProject[] build(int kind, @SuppressWarnings("rawtypes") Map args, IProgressMonitor monitor) throws CoreException {
 		loadRobustaSettingForProject(getProject());
-		markerModel.clearMarkerData();
-		markerModel.setProject(getProject());
-		
+
 		logger.debug("[RLBuilder] START !!");
 		long start = System.currentTimeMillis();
 		if (kind == FULL_BUILD) {

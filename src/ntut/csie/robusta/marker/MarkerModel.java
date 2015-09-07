@@ -1,5 +1,6 @@
 package ntut.csie.robusta.marker;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -8,6 +9,7 @@ import ntut.csie.analyzer.ASTMethodCollector;
 import ntut.csie.analyzer.BadSmellCollector;
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
+import ntut.csie.util.IFileCollectorVisitor;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -27,24 +29,24 @@ public class MarkerModel {
 
 	private static Logger logger = LoggerFactory.getLogger(MarkerModel.class);
 	
-	private IProject project = null;
-	
 	private ResourceBundle resourceBundle = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
 	
 	private MarkerData markerData = new MarkerData();
 	
 	public static final String MARKER_TYPE = "ntut.csie.rleht.builder.RLProblem";
 	
+	public List<IProject> projectRegisteredMarkerService = new ArrayList<IProject>();
+	
 	public MarkerModel() {
 		super();
 	}
 
-	public void applyMarkers(IFile file) {
+	private void applyMarkers(IFile file) {
 		CompilationUnit root = getRoot(file);
 		ASTMethodCollector methodCollector = new ASTMethodCollector();
 		root.accept(methodCollector);
 		
-		BadSmellCollector badSmellCollector = new BadSmellCollector(project, root);
+		BadSmellCollector badSmellCollector = new BadSmellCollector(file.getProject(), root);
 		badSmellCollector.collectBadSmell();
 		List<MarkerInfo> badSmellList = badSmellCollector.getAllBadSmells();
 		
@@ -56,17 +58,6 @@ public class MarkerModel {
 			MarkerInfo markerInfo = badSmellList.get(i);
 			String errmsg = this.resourceBundle.getString("ex.smell.type.undealt") + markerInfo.getCodeSmellType() + this.resourceBundle.getString("ex.smell.type");
 			this.addMarker(file, errmsg, IMarker.SEVERITY_WARNING, markerInfo, markerInfo.getBadSmellIndex(), markerInfo.getMethodIndex());		
-		}
-	}
-	
-	public void deleteMarkers(IFile file) {
-		try {
-			file.deleteMarkers(MARKER_TYPE, false, IResource.DEPTH_ZERO);
-			markerData.remove(file);
-			
-		}
-		catch (CoreException ce) {
-			throw new RuntimeException("Fail to clean up old markers", ce);
 		}
 	}
 	
@@ -113,16 +104,63 @@ public class MarkerModel {
 		return root;
 	}
 	
-	public void setProject(IProject proj) {
-		this.project = proj;
+	public void clearMarkerData(IProject project) {
+		try {
+			IFileCollectorVisitor iFileCollectorVisitor = new IFileCollectorVisitor(); // TODO extract??
+			project.accept(iFileCollectorVisitor);
+			
+			for(IFile file : iFileCollectorVisitor.getIFiles()) {
+				markerData.remove(file);
+			}
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
-	public void clearMarkerData() {
-		markerData.clear();
+	private void deleteMarkers(IFile file) {
+		try {
+			file.deleteMarkers(MARKER_TYPE, false, IResource.DEPTH_ZERO);
+			markerData.remove(file);
+		}
+		catch (CoreException ce) {
+			throw new RuntimeException("Fail to clean up old markers", ce);
+		}
+	}
+	
+	public void deleteMarkers(IProject project) {
+		try {
+			IFileCollectorVisitor iFileCollectorVisitor = new IFileCollectorVisitor();
+			project.accept(iFileCollectorVisitor);
+			
+			for(IFile file : iFileCollectorVisitor.getIFiles()) {
+				deleteMarkers(file);
+			}
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void updateMarker(IFile file) {
-		deleteMarkers(file);
-		applyMarkers(file);
+		IProject project = file.getProject();
+		if(projectRegisteredMarkerService.contains(project)) {
+			deleteMarkers(file);
+			applyMarkers(file);			
+		}
+	}
+	
+	public void registerMarkerService(IProject project) {
+		if(!projectRegisteredMarkerService.contains(project))
+		this.projectRegisteredMarkerService.add(project);
+	}
+	
+	public void unregisterMarkerService(IProject project) {
+		if(projectRegisteredMarkerService.contains(project))
+			projectRegisteredMarkerService.remove(project);
+	}
+	
+	public boolean hasRegisteredMarkerService(IProject project) {
+		return (projectRegisteredMarkerService.contains(project))? true : false;
 	}
 }
