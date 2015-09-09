@@ -104,9 +104,9 @@ public class InappropriateAnnotationModel implements IAnnotationModel {
 		 * which is a buy in eclipse's AnnotationModel library
 		 * Eclipse Bug ID: 410052
 		 */
-//		else {
-//			iaModel.updateAnnotations(true);
-//		}
+		else {
+			iaModel.updateAnnotations(true);
+		}
 	}
 
 	/**
@@ -193,7 +193,7 @@ public class InappropriateAnnotationModel implements IAnnotationModel {
 
 	private List<AnnotationInfo> findAnnotationForElement(Object element) {
 		try {
-			return MarkerData.getAnnotationInfo(((IJavaElement) element).getCorrespondingResource());
+			return markerModel.getAnnotationInfo(((IJavaElement) element).getCorrespondingResource());
 		} catch (JavaModelException e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);

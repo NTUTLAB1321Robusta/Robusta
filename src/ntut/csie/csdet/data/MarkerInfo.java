@@ -198,7 +198,7 @@ public class MarkerInfo {
 		this.annotationInfoList.add(annotationInfo);
 	}
 	
-	public List<AnnotationInfo> getAnnotationPosList() {
+	public List<AnnotationInfo> getAnnotationList() {
 		return this.annotationInfoList;
 	}
 	

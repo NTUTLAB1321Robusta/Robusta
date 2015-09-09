@@ -31,11 +31,11 @@ public class MarkerModel {
 	
 	private ResourceBundle resourceBundle = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
 	
-	private MarkerData markerData = new MarkerData();
-	
 	public static final String MARKER_TYPE = "ntut.csie.rleht.builder.RLProblem";
 	
-	public List<IProject> projectRegisteredMarkerService = new ArrayList<IProject>();
+	private List<IProject> projectRegisteredMarkerService = new ArrayList<IProject>();
+	
+	private static List<MarkerInfo> markerList = new ArrayList<MarkerInfo>();
 	
 	public MarkerModel() {
 		super();
@@ -51,7 +51,7 @@ public class MarkerModel {
 		List<MarkerInfo> badSmellList = badSmellCollector.getAllBadSmells();
 		
 		// for each class we scan store all the bad smells found
-		markerData.append(badSmellList);
+		markerList.addAll(badSmellList);
 		
 		for(int i = 0; i<badSmellList.size(); i++)
 		{
@@ -104,30 +104,6 @@ public class MarkerModel {
 		return root;
 	}
 	
-	public void clearMarkerData(IProject project) {
-		try {
-			IFileCollectorVisitor iFileCollectorVisitor = new IFileCollectorVisitor(); // TODO extract??
-			project.accept(iFileCollectorVisitor);
-			
-			for(IFile file : iFileCollectorVisitor.getIFiles()) {
-				markerData.remove(file);
-			}
-		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	private void deleteMarkers(IFile file) {
-		try {
-			file.deleteMarkers(MARKER_TYPE, false, IResource.DEPTH_ZERO);
-			markerData.remove(file);
-		}
-		catch (CoreException ce) {
-			throw new RuntimeException("Fail to clean up old markers", ce);
-		}
-	}
-	
 	public void deleteMarkers(IProject project) {
 		try {
 			IFileCollectorVisitor iFileCollectorVisitor = new IFileCollectorVisitor();
@@ -141,13 +117,48 @@ public class MarkerModel {
 			e.printStackTrace();
 		}
 	}
+	
+	private void deleteMarkers(IFile file) {
+		try {
+			file.deleteMarkers(MARKER_TYPE, false, IResource.DEPTH_ZERO);
+			removeMarkerInfo(file);
+		}
+		catch (CoreException ce) {
+			throw new RuntimeException("Fail to clean up old markers", ce);
+		}
+	}
 
+	private void removeMarkerInfo(IFile file) {
+		// to avoid concurrent modification of the marker data
+		List<MarkerInfo> removeList = new ArrayList<MarkerInfo>();
+		
+		for(MarkerInfo mi : markerList) {
+			if(mi.getClassName().equals(file.getName()))
+				removeList.add(mi);
+		}
+		
+		for(MarkerInfo mi : removeList) {
+			markerList.remove(mi);			
+		}
+	}
+	
 	public void updateMarker(IFile file) {
 		IProject project = file.getProject();
 		if(projectRegisteredMarkerService.contains(project)) {
 			deleteMarkers(file);
 			applyMarkers(file);			
 		}
+	}
+	
+	public List<AnnotationInfo> getAnnotationInfo(IResource correspondingResource) {
+		List<AnnotationInfo> annotationPosList = new ArrayList<AnnotationInfo>();
+
+		for(MarkerInfo mi : markerList) {
+			if(mi.getClassName().equals(correspondingResource.getName()))
+				annotationPosList.addAll(mi.getAnnotationList());
+		}
+		
+		return annotationPosList;
 	}
 	
 	public void registerMarkerService(IProject project) {

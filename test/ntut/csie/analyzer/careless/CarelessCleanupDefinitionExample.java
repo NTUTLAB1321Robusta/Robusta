@@ -11,8 +11,6 @@ import java.io.InputStream;
  * This class contains test examples that would help define Careless Cleanup
  * rules. Test samples that are necessary for defining Careless Cleanup but is
  * already written somewhere else would be kept and commented.
- * 
- * @author Peter
  */
 public class CarelessCleanupDefinitionExample {
 

@@ -1,5 +1,7 @@
 package ntut.csie.analyzer.careless;
 
+import static org.junit.Assert.*;
+
 import java.util.List;
 
 import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
@@ -208,6 +210,54 @@ public class CarelessCleanupVisitorTest {
 		Assertor.assertMarkerInfoListSize(DEFAULT_BAD_SMELLS_OF_INTEGRATED_EXAMPLE + 1, smellList);
 	}
 
+	@Test
+	public void testCollectingAnnotationInfoInForCarelessCleanupIntegratedExample() throws JavaModelException {
+		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupIntegratedExample.class);
+		assertEquals(6, smellList.size());
+		assertEquals(1, smellList.get(0).getAnnotationList().size());
+		assertEquals(1, smellList.get(1).getAnnotationList().size());
+		assertEquals(1, smellList.get(2).getAnnotationList().size());
+		assertEquals(1, smellList.get(3).getAnnotationList().size());
+		assertEquals(1, smellList.get(4).getAnnotationList().size());
+		assertEquals(2, smellList.get(5).getAnnotationList().size());
+	}
+	
+	@Test
+	public void testCollectingAnnotationInfoInForCarelessCleanupIntegratedExamplewithUserDefinedClass() throws JavaModelException {
+		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
+		smellSettings.addCarelessCleanupPattern(ResourceCloser.class.getName() + ".*", true);
+		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+
+		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupIntegratedExample.class);
+		
+		assertEquals(7, smellList.size());
+		assertEquals(1, smellList.get(0).getAnnotationList().size());
+		assertEquals(1, smellList.get(1).getAnnotationList().size());
+		assertEquals(1, smellList.get(2).getAnnotationList().size());
+		assertEquals(1, smellList.get(3).getAnnotationList().size());
+		assertEquals(1, smellList.get(4).getAnnotationList().size());
+		assertEquals(1, smellList.get(5).getAnnotationList().size());
+		assertEquals(2, smellList.get(6).getAnnotationList().size());
+	}
+
+	@Test
+	public void testCollectingAnnotationInfoInForCarelessCleanupIntegratedExamplewithUserDefinedMethod() throws JavaModelException {
+		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
+		smellSettings.addCarelessCleanupPattern(UserDefinedCarelessCleanupClass.class.getName() + ".bite", true);
+		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		
+		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupIntegratedExample.class);
+
+		assertEquals(7, smellList.size());
+		assertEquals(1, smellList.get(0).getAnnotationList().size());
+		assertEquals(1, smellList.get(1).getAnnotationList().size());
+		assertEquals(1, smellList.get(2).getAnnotationList().size());
+		assertEquals(1, smellList.get(3).getAnnotationList().size());
+		assertEquals(1, smellList.get(4).getAnnotationList().size());
+		assertEquals(2, smellList.get(5).getAnnotationList().size());
+		assertEquals(2, smellList.get(6).getAnnotationList().size());
+	}
+	
 	private List<MarkerInfo> visitCompilationAndGetSmellList(Class clazz)
 			throws JavaModelException {
 		return visitCompilationAndGetSmellList(clazz,

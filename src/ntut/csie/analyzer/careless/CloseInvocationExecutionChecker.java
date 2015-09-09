@@ -1,7 +1,5 @@
 package ntut.csie.analyzer.careless;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -30,37 +28,52 @@ import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 /**
  * It will check if any exception may been thrown before
  */
-public class MethodInvocationMayInterruptByExceptionChecker {
+public class CloseInvocationExecutionChecker {
 
-	private int beginningPosition;
+	private int startPosition;
+	private List<ASTNode> nodesThatMayThrowException = new ArrayList<ASTNode>();
 
-	public boolean isMayInterruptByException(MethodInvocation methodInvocation) {
-		findOutBeginningPosition(methodInvocation);
-
-		ASTNode checkingNode = methodInvocation;
-		// The condition is checking whether any statement didn't be checked.
-		while (beginningPosition < checkingNode.getStartPosition()) {
-			if (isParentUnsafe(checkingNode)
-					|| isThereUnsafeBrother(checkingNode)) {
-				return true;
-			}
+	public List<ASTNode> getASTNodesThatMayThrowExceptionBeforeCloseInvocation(MethodInvocation closeInvocation) {
+		startPosition = findStartPosition(closeInvocation);
+		ASTNode checkingNode = closeInvocation;
+		
+		while (startPosition < checkingNode.getStartPosition()) {
+			ASTNode unsafeParentNode = getParentNodeThatMayThrowException(checkingNode);
+			if(unsafeParentNode != null)
+				nodesThatMayThrowException.add(unsafeParentNode);
+			
+			List<ASTNode> unsafeSiblingNodes = getSiblingNodeThatMayThrowException(checkingNode);
+			if(unsafeSiblingNodes.size() != 0)
+				nodesThatMayThrowException.addAll(unsafeSiblingNodes);
+			
 			checkingNode = checkingNode.getParent();
 		}
-		return false;
+		return nodesThatMayThrowException;
 	}
 
-	private void findOutBeginningPosition(MethodInvocation methodInvocation) {
-		beginningPosition = new ClosingResourceBeginningPositionFinder()
-				.findPosition(methodInvocation);
+	private List<ASTNode> getSiblingNodeThatMayThrowException(ASTNode checkingNode) {
+		List<ASTNode> unsafeSiblingNodeList = new ArrayList<ASTNode>();
+		
+		// Set the detection area for checkingNode
+		BoundaryChecker boundChecker = new BoundaryChecker(startPosition, checkingNode.getStartPosition());
+
+		ASTNode parentNode = checkingNode.getParent();
+		if (parentNode.getNodeType() == ASTNode.BLOCK) {
+			List<Statement> siblingStatements = ((Block) parentNode).statements();
+			
+			for(Statement s : siblingStatements) {
+				if(boundChecker.isInOpenInterval(s.getStartPosition()) && isUnsafeSiblingStatement(s))
+					unsafeSiblingNodeList.add(s);
+			}
+		}
+
+		return unsafeSiblingNodeList;
 	}
 
-	private boolean isParentUnsafe(ASTNode node) {
-		/*
-		 * true: some situation will always safe, check it false: this node is a
-		 * element of statement, it is always safe
-		 */
-		if (node instanceof Statement) {
-			ASTNode parent = node.getParent();
+
+	private ASTNode getParentNodeThatMayThrowException(ASTNode checkingNode) {
+		if (checkingNode instanceof Statement) {
+			ASTNode parent = checkingNode.getParent();
 			int parentType = parent.getNodeType();
 			boolean isParentBlock = (parentType == ASTNode.BLOCK);
 			boolean isParentFinallBlockOrCatchClause = (parentType == ASTNode.TRY_STATEMENT);
@@ -68,10 +81,16 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 			boolean isParentSafeIfSatement = isSafeIfStaementExpression(parent);
 			boolean isParentSafeSynchronizedStatement = isSynchronizedStatement(parent);
 
-			return !(isParentBlock || isParentFinallBlockOrCatchClause
-					|| isParentCatchBlock || isParentSafeIfSatement || isParentSafeSynchronizedStatement);
+			if(!(isParentBlock || isParentFinallBlockOrCatchClause
+					|| isParentCatchBlock || isParentSafeIfSatement || isParentSafeSynchronizedStatement))
+				return parent;
 		}
-		return false;
+		return null;
+	}
+
+
+	private int findStartPosition(MethodInvocation methodInvocation) {
+		return new ClosingResourceBeginningPositionFinder().findPosition(methodInvocation);
 	}
 
 	private boolean isExtendOperandElementSafe(
@@ -179,34 +198,6 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 		return checkExtendOperandSafe;
 	}
 
-	/**
-	 * Tell if there is any may-thrown-exception between checkingNode and it's
-	 * parent.
-	 */
-	private boolean isThereUnsafeBrother(ASTNode checkingNode) {
-		// Set the area of detection for checkingNode
-		BoundaryChecker boundChecker = new BoundaryChecker(beginningPosition,
-				checkingNode.getStartPosition());
-
-		// Collect all brother statements, and return if there is any
-		// may-thrown-statement between
-		ASTNode parent = checkingNode.getParent();
-		if (parent.getNodeType() == ASTNode.BLOCK) {
-			List<Statement> allStatements = ((Block) parent).statements();
-
-			// Return is there any may-thrown-statement between
-			Iterator<Statement> iter = allStatements.iterator();
-			while (iter.hasNext()) {
-				Statement statement = iter.next();
-				if (boundChecker.isInOpenInterval(statement.getStartPosition())
-						&& isUnsafeBrotherStatement(statement)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
 	private boolean isSafeVariableDelarcation(Statement statement) {
 		if (statement.getNodeType() == ASTNode.VARIABLE_DECLARATION_STATEMENT) {
 			VariableDeclarationStatement variableDeclarationStatement = (VariableDeclarationStatement) statement;
@@ -259,7 +250,7 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 			while (iter.hasNext()) {
 				Statement statementInIfBody = iter.next();
 				checkChildStatementSafe
-						.add(isUnsafeBrotherStatement(statementInIfBody));
+						.add(isUnsafeSiblingStatement(statementInIfBody));
 			}
 		}
 		return checkChildStatementSafe;
@@ -332,7 +323,7 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 						return true;
 					}
 					for (Statement suspectStatement : StatementList) {
-						if(isUnsafeBrotherStatement(suspectStatement)){
+						if(isUnsafeSiblingStatement(suspectStatement)){
 							allInBlockStatementSafe = false;
 						}
 					}
@@ -399,7 +390,7 @@ public class MethodInvocationMayInterruptByExceptionChecker {
 	/**
 	 * Return false only if the statements will not throw any exception in 100%.
 	 */
-	private boolean isUnsafeBrotherStatement(Statement statement) {
+	private boolean isUnsafeSiblingStatement(Statement statement) {
 		if (statement.getNodeType() == ASTNode.EMPTY_STATEMENT) {
 			return false;
 		}

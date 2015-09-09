@@ -19,10 +19,6 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		public ClassWithGetResource() throws RuntimeException {
 		}
 
-		public java.nio.channels.Channel getResourceWithInterface() {
-			return null;
-		}
-
 		public ClassWithGetResource getResourceNotImpCloseable() {
 			return this;
 		}
@@ -54,11 +50,6 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		if (false != qualifier.a) {
 			qualifier.close(); // safe
 		}
-	}
-
-	public void invokeGetResourceAndCloseItWithInterface() throws Exception {
-		ClassWithGetResource resourceManager = new ClassWithGetResource();
-		resourceManager.getResourceWithInterface().close(); // Is
 	}
 
 	public void invokeGetResourceAndCloseItNotImpCloseable() throws Exception {

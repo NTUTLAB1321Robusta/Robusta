@@ -31,7 +31,7 @@ public class CarelessCleanupDefinitionTest {
 
 	private TestEnvironmentBuilder environmentBuilder;
 	private CompilationUnit compilationUnit;
-	private MethodInvocationMayInterruptByExceptionChecker checker;
+	private CloseInvocationExecutionChecker checker;
 	private CloseResourceMethodInvocationVisitor visitor;
 	private File fakeSmellSettingFile;
 
@@ -43,7 +43,7 @@ public class CarelessCleanupDefinitionTest {
 		environmentBuilder.loadClass(CarelessCleanupDefinitionExample.class);
 		compilationUnit = environmentBuilder.getCompilationUnit(CarelessCleanupDefinitionExample.class);
 
-		checker = new MethodInvocationMayInterruptByExceptionChecker();
+		checker = new CloseInvocationExecutionChecker();
 	}
 
 	@After
@@ -143,7 +143,7 @@ public class CarelessCleanupDefinitionTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"exceptionBeforeLastResourceAssignment",
 				"fis.close()");
-		assertFalse(checker.isMayInterruptByException(methodInvocation));
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 
 	@Test
@@ -151,7 +151,7 @@ public class CarelessCleanupDefinitionTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"exceptionBeforeLastResourceAssignmentThatMayNotBeExecuted",
 				"fis.close()");
-		assertTrue(checker.isMayInterruptByException(methodInvocation));
+		assertEquals(2, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 
 	@Test
@@ -159,7 +159,7 @@ public class CarelessCleanupDefinitionTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"aStatementInBetweenDetectionRange",
 				"fis.close()");
-		assertTrue(checker.isMayInterruptByException(methodInvocation));
+		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 
 	@Test
@@ -167,7 +167,7 @@ public class CarelessCleanupDefinitionTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"ifStatementCheckingBooleanVariableInBetweenDetectionRange",
 				"fis.close()");
-		assertFalse(checker.isMayInterruptByException(methodInvocation));
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 
 	@Test
@@ -175,7 +175,7 @@ public class CarelessCleanupDefinitionTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"ifStatementCheckingResourceIsNotNullContainClose",
 				"fis.close()");
-		assertFalse(checker.isMayInterruptByException(methodInvocation));
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 	
 	@Test
@@ -183,7 +183,7 @@ public class CarelessCleanupDefinitionTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"ifStatementCheckingResourceIsSameContainClose",
 				"fis.close()");
-		assertFalse(checker.isMayInterruptByException(methodInvocation));
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 	
 	@Test
@@ -191,7 +191,7 @@ public class CarelessCleanupDefinitionTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"ifStatementCheckingResourceIsSameBeforeClose",
 				"fis.close()");
-		assertFalse(checker.isMayInterruptByException(methodInvocation));
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 
 	@Test
@@ -199,7 +199,7 @@ public class CarelessCleanupDefinitionTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"tryBlockCatchingAllPossibleExceptionInBetweenDetectionRange",
 				"fis.close()");
-		assertFalse(checker.isMayInterruptByException(methodInvocation));
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 
 	@Test
@@ -207,7 +207,7 @@ public class CarelessCleanupDefinitionTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"objectDeclarationWithoutAssignmentInBetweenDetectionRange",
 				"fis.close()");
-		assertFalse(checker.isMayInterruptByException(methodInvocation));
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 
 	@Test
@@ -215,7 +215,7 @@ public class CarelessCleanupDefinitionTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"primitiveVariableDeclarationWithAssignmentInBetweenDetectionRange",
 				"fis.close()");
-		assertFalse(checker.isMayInterruptByException(methodInvocation));
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 	
 	@Test
@@ -223,7 +223,7 @@ public class CarelessCleanupDefinitionTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceClosingInIfStatementCheckingQualifiedName",
 				"qualifier.close()");
-		assertFalse(checker.isMayInterruptByException(methodInvocation));
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 	
 	@Test
@@ -231,7 +231,7 @@ public class CarelessCleanupDefinitionTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseAfterExpressionStatement",
 				"fis.close()");
-		assertFalse(checker.isMayInterruptByException(methodInvocation));
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 	
 	@Test
@@ -240,7 +240,7 @@ public class CarelessCleanupDefinitionTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseInTheSynchronizedStatement",
 				"fis.close()");
-		assertFalse(checker.isMayInterruptByException(methodInvocation));
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 
 	/* 
