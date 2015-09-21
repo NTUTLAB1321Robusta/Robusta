@@ -303,7 +303,7 @@ public class DummyHandlerVisitorTest {
 		adVisitor = new DummyHandlerVisitor(unit);
 		unit.accept(adVisitor);
 
-		return adVisitor.getDummyList();
+		return adVisitor.getDummyHandlerList();
 	}
 
 	private void detectAllExtraRules() {

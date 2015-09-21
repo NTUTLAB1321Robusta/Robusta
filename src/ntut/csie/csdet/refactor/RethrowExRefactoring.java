@@ -228,7 +228,7 @@ public class RethrowExRefactoring extends Refactoring {
 					} else {
 						DummyHandlerVisitor visitor = new DummyHandlerVisitor(this.actRoot);
 						currentMethodNode.accept(visitor);
-						currentExList = visitor.getDummyList();
+						currentExList = visitor.getDummyHandlerList();
 					}
 				}
 				return true;

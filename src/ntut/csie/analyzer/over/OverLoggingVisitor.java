@@ -10,121 +10,242 @@ import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.preference.SmellSettings.UserDefinedConstraintsType;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
+import ntut.csie.robusta.marker.AnnotationInfo;
+import ntut.csie.util.AbstractBadSmellVisitor;
+import ntut.csie.util.MethodDeclarationCollectorVisitor;
+import ntut.csie.util.MethodInvocationCollectorVisitor;
 import ntut.csie.util.NodeUtils;
+import ntut.csie.util.TryStatementCollectorVisitor;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IMember;
+import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.ThrowStatement;
+import org.eclipse.jdt.core.dom.TryStatement;
+import org.eclipse.jdt.internal.corext.callhierarchy.CallHierarchy;
+import org.eclipse.jdt.internal.corext.callhierarchy.MethodWrapper;
 
-public class OverLoggingVisitor extends ASTVisitor {
-	// 是否要繼續偵測
-	private boolean isKeepTrace = false;
-	// 是否有Logging
-	private boolean isLogging = false;
-	// 轉型是否繼續追蹤
-	private boolean isDetTransEx = false;
-	// 是否找到callee
-	private boolean isFoundCallee = false;
-	// 是否偵測OverLoggingBadSmell
-	private boolean isDetectingOverLoggingSmell;
-	// Callee的Class和Method的資訊
-	private String methodInfo;
-	// 預先儲存可能是overlogging的ExpressionStatement
-	private ASTNode suspectNode;
-	// AST Tree的root(檔案名稱)
+public class OverLoggingVisitor extends AbstractBadSmellVisitor {
 	private CompilationUnit root;
-	// 儲存所找到的OverLogging Exception 
-	private List<MarkerInfo> loggingList = new ArrayList<MarkerInfo>();
+	private List<MarkerInfo> overLoggingList = new ArrayList<MarkerInfo>();
 	// 儲存使用者定義的Log條件
 	private TreeMap<String, UserDefinedConstraintsType> libMap = new TreeMap<String, UserDefinedConstraintsType>();
 	// 設定檔
 	private SmellSettings smellSettings;
 
-	public OverLoggingVisitor(CompilationUnit root, String methodInfo) {
+	public OverLoggingVisitor(CompilationUnit root) {
 		this.root = root;
-		this.methodInfo = methodInfo;
 		smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		libMap = smellSettings.getSmellSettings(SmellSettings.SMELL_OVERLOGGING);
-		isDetTransEx = (libMap.get(SmellSettings.EXTRARULE_OVERLOGGING_DETECTWRAPPINGEXCEPTION) != null) ? true : false;
-		isDetectingOverLoggingSmell = smellSettings.isDetectingSmell(SmellSettings.SMELL_OVERLOGGING);
 	}
 	
-	/**
-	 * 根據設定檔的資訊，決定要不要拜訪整棵樹。
-	 */
-	public boolean visit(MethodDeclaration node) {
-		return isDetectingOverLoggingSmell;
-	}
-	
-	/**
-	 * 判斷Callee的Method是否出現在這個Try之中
-	 * 判斷是否有Logging
-	 */
 	public boolean visit(MethodInvocation node) {
-//		if(NodeUtils.getSpecifiedParentNode(node, ASTNode.TRY_STATEMENT) != null)
-//			return true;
-//		
-//		if(!node.getName().toString().equals(methodInfo))
-//			return true;
-//		
-//		isFoundCallee = true;
+		// check if the method invocation is in a catch block
+		ASTNode catchClause = NodeUtils.getSpecifiedParentNode(node, ASTNode.CATCH_CLAUSE);
+		if(catchClause == null)
+			return false;
 		
-		if(NodeUtils.getSpecifiedParentNode(node, ASTNode.CATCH_CLAUSE) == null)
-			return true;
+		if(!isLoggingStatement(node))
+			return false;
 		
-		if(!satisfyLoggingStatement(node))
-			return true;
-		// 有logging才加入之前疑似OverLogging的node，否則給予新發現的嫌疑犯
-		if(isLogging)
-			addOverLoggingMarkerInfo(suspectNode);
-		else
-			suspectNode = node;
-		
-		isLogging = true;
-		
-		return false;
-	}
-
-	/**
-	 * 判斷有沒有Throw，決定要不要繼繼Trace
-	 */
-	public boolean visit(ThrowStatement node) {
-		if(NodeUtils.getSpecifiedParentNode(node, ASTNode.CATCH_CLAUSE) == null)
-			return true;
-		
-		// 若有要log才追蹤，沒有log的動作，那也就沒有over logging的問題
-		if(isLogging)
-			isKeepTrace = true;
+		if(catchClause instanceof CatchClause) {
+			String exceptionCatched = ((CatchClause) catchClause).getException().getType().toString();
+			List<Statement> statementsInCatch = ((CatchClause) catchClause).getBody().statements();
+			for(Statement s: statementsInCatch) {
+				if(s instanceof ThrowStatement) {
+					// we found a potential over logger
+					ASTNode methodDeclaration = NodeUtils.getSpecifiedParentNode(node, ASTNode.METHOD_DECLARATION);
+					if(methodDeclaration == null) 
+						return false;
+					if(((MethodDeclaration) methodDeclaration).resolveBinding() == null)
+						return false;	
+					
+					Expression expression = ((ThrowStatement) s).getExpression();
+					if(isLoggingAgainInExceptionStack(node, isRethrowWithNewException(expression)? getExceptionType(expression) : exceptionCatched))
+						addOverLoggingMarkerInfo(node);
+				}	
+			}
+		}
 		
 		return true;
 	}
 
-	/**
-	 * 判斷是否為Throw new Exception
-	 */
-	public boolean visit(ClassInstanceCreation node) {
-		ASTNode parent = NodeUtils.getSpecifiedParentNode(node, ASTNode.CATCH_CLAUSE);
-		if(parent == null)
-			return true;
+	
+	private String getExceptionType(Expression expression) {
+		return ((SimpleType)((ClassInstanceCreation)expression).getType()).getName().toString();
+	}
+
+	private boolean isRethrowWithNewException(Expression expression) {
+		return (expression instanceof ClassInstanceCreation)? true : false;
+	}
+
+	private boolean isLoggingAgainInExceptionStack(ASTNode nodeInCatch, String exceptionType) {
+		IMethod method = (IMethod) getIMethodDeclaration(nodeInCatch);
+		MethodDeclaration calleeMethodDeclaration = (MethodDeclaration) NodeUtils.getSpecifiedParentNode(nodeInCatch, ASTNode.METHOD_DECLARATION);
+		// get callers for the method
+		IMember[] methodArray = new IMember[] {method};
+		MethodWrapper[] currentMW = CallHierarchy.getDefault().getCallerRoots(methodArray);
+		if (currentMW.length != 1)
+			return false;
+		MethodWrapper[] calls = currentMW[0].getCalls(new NullProgressMonitor());
 		
-		// 若不偵測轉型 或 沒有將catch exception代入(eg:RuntimeException(e))，則不繼續偵測
-		if (!isDetTransEx || node.arguments().size() == 0 || 
-			!node.arguments().get(0).toString().equals(((CatchClause)parent).getException().getName().toString())) {
-			isKeepTrace = false;
+		// check each caller for logging in a catch block
+		if(calls.length == 0)
+			return false;
+		
+		for(MethodWrapper mw : calls) {
+			if (mw.getMember() instanceof IMethod) {
+				IMethod callerMethod = (IMethod) mw.getMember();
+				
+				// to avoid recursion
+				if (callerMethod.equals(method))
+					continue;	
+				
+				MethodDeclaration callerMethodDeclaration = getMethodNode(callerMethod);
+				if(callerMethodDeclaration == null)
+					continue;
+				
+				TryStatement tryStatement = getTryStatementContainingTargetMethodInvocation(callerMethodDeclaration, calleeMethodDeclaration);
+				if(tryStatement == null)
+					continue;
+				
+				CatchClause  catchClause = getCatchClauseForException(tryStatement, exceptionType);
+				if(catchClause == null)
+					continue;
+				
+				if(hasLoggingStatement(catchClause))
+					return true;
+				
+				String exceptionCatched = ((CatchClause) catchClause).getException().getType().toString();
+				List<Statement> statementsInCatch = ((CatchClause) catchClause).getBody().statements();
+				for(Statement s: statementsInCatch) {
+					if(s instanceof ThrowStatement) {
+						// no logging but re-throw
+						Expression expression = ((ThrowStatement) s).getExpression();
+						return isLoggingAgainInExceptionStack(s, isRethrowWithNewException(expression)? getExceptionType(expression) : exceptionCatched);
+					}	
+				}
+			}
 		}
-		
+		// no caller has logging for the corresponding exception
 		return false;
 	}
 
+	private boolean hasLoggingStatement(CatchClause catchClause) {
+		MethodInvocationCollectorVisitor micVisitor = new MethodInvocationCollectorVisitor();
+		catchClause.accept(micVisitor);
+		List<MethodInvocation> methodInvocationInCatch = micVisitor.getMethodInvocations();
+		for(MethodInvocation mi : methodInvocationInCatch) {
+			if(isLoggingStatement(mi))
+				return true;
+		}
+		return false;
+	}
+
+	private CatchClause getCatchClauseForException(TryStatement tryStatement, String exceptionType) {
+		List<CatchClause> catchClauses = tryStatement.catchClauses();
+		for(CatchClause cc : catchClauses) {
+			if(cc.getException().getType().toString().equals(exceptionType)) {
+				return cc;
+			}
+		}
+		return null;
+	}
+
+	private TryStatement getTryStatementContainingTargetMethodInvocation(MethodDeclaration methodDeclaration, MethodDeclaration calleeMethodDeclaration) {
+		TryStatementCollectorVisitor tscVisitor = new TryStatementCollectorVisitor();
+		methodDeclaration.accept(tscVisitor);
+		List<TryStatement> tryStatementsInCallerMethod = tscVisitor.getTryStatements();
+		
+		for(TryStatement ts : tryStatementsInCallerMethod) {
+			List<Statement> statementsInTry = ts.getBody().statements();
+			for(Statement s : statementsInTry) {
+				MethodInvocationCollectorVisitor micVisitor = new MethodInvocationCollectorVisitor();
+				s.accept(micVisitor);
+				List<MethodInvocation> methodInvocations = micVisitor.getMethodInvocations();
+				for(MethodInvocation mi : methodInvocations) {
+					if(compare(mi, calleeMethodDeclaration)) {
+						return ts;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	private boolean compare(MethodInvocation mi, MethodDeclaration calleeMethodDeclaration) {
+		String miName = mi.getName().toString();
+		String mdName = calleeMethodDeclaration.resolveBinding().getName();
+		if(!mi.getName().toString().equals(calleeMethodDeclaration.resolveBinding().getName()))
+			return false;
+		
+		List<Expression> miArgument = mi.arguments();
+		List<SingleVariableDeclaration> loggingMethodParameter = calleeMethodDeclaration.parameters();
+		if(!(miArgument.size() == loggingMethodParameter.size()))
+			return false;
+			
+		for(int i = 0; i < mi.arguments().size(); i++) {
+			if(!miArgument.get(i).resolveTypeBinding().getName().equals(((SimpleType)loggingMethodParameter.get(i).getType()).getName()))
+				return false;
+		}
+		
+		return true;
+	}
+
+	private MethodDeclaration getMethodNode(IMethod callerMethod) {
+		final ICompilationUnit cu = callerMethod.getCompilationUnit();
+		final ASTParser astParser = ASTParser.newParser(AST.JLS3);
+	    astParser.setSource(cu);
+	    astParser.setKind(ASTParser.K_COMPILATION_UNIT);
+	    astParser.setResolveBindings(true);
+	    astParser.setBindingsRecovery(true);
+	    final ASTNode rootNode = astParser.createAST( null );
+	    final CompilationUnit compilationUnitNode = (CompilationUnit) rootNode;
+	    
+	    MethodDeclarationCollectorVisitor mdcVisitor = new MethodDeclarationCollectorVisitor();
+	    compilationUnitNode.accept(mdcVisitor);
+	    List<MethodDeclaration> methodDeclarations = mdcVisitor.getMethods();
+	    
+	    for(MethodDeclaration md : methodDeclarations) {
+	    	if(md.resolveBinding() == null)
+	    		return null;
+	    	if(md.resolveBinding().getJavaElement().equals(callerMethod)) {
+	    		return md;
+	    	}
+	    }
+		return null;
+	}
+
+	private IJavaElement getIMethodDeclaration(ASTNode node) {
+		ASTNode methodDeclaration = NodeUtils.getSpecifiedParentNode(node, ASTNode.METHOD_DECLARATION);
+		if(methodDeclaration == null) 
+			return null;
+		if(((MethodDeclaration) methodDeclaration).resolveBinding() == null)
+			return null;	
+		
+		return ((MethodDeclaration) methodDeclaration).resolveBinding().getJavaElement();
+	}
+	
+	private MethodDeclaration getMethodDeclaration(MethodInvocation node) {
+		return (MethodDeclaration)NodeUtils.getSpecifiedParentNode(node, ASTNode.METHOD_DECLARATION);
+	}
+	
 	/**
 	 * 儲存偵測到的over logging
-	 * @param parent bad smell的parent
 	 */
 	private void addOverLoggingMarkerInfo(ASTNode node) {
 		ASTNode compilationUnit = NodeUtils.getSpecifiedParentNode(node, ASTNode.COMPILATION_UNIT);
@@ -136,14 +257,28 @@ public class OverLoggingVisitor extends ASTVisitor {
 			ASTNode parent = NodeUtils.getSpecifiedParentNode(node, ASTNode.CATCH_CLAUSE);
 			CatchClause cc = (CatchClause)parent;
 			SingleVariableDeclaration svd = cc.getException();
-			MarkerInfo marker = new MarkerInfo(	RLMarkerAttribute.CS_OVER_LOGGING, svd.resolveBinding().getType(), cc.toString(),										
-												cc.getStartPosition(), root.getLineNumber(node.getStartPosition()), svd.getType().toString());
-			loggingList.add(marker);
-			suspectNode = null;
+			
+			ArrayList<AnnotationInfo> annotationList = new ArrayList<AnnotationInfo>(2);
+			AnnotationInfo ai = new AnnotationInfo(root.getLineNumber(node.getStartPosition()), 
+					node.getStartPosition(), 
+					node.getLength(), 
+					"Multiple Logging for an exception instance");
+			annotationList.add(ai);
+			
+			MarkerInfo marker = new MarkerInfo(	
+					RLMarkerAttribute.CS_OVER_LOGGING, 
+					svd.resolveBinding().getType(), 
+					((CompilationUnit)node.getRoot()).getJavaElement().getElementName(), // class name
+					cc.toString(),										
+					cc.getStartPosition(), 
+					root.getLineNumber(node.getStartPosition()), 
+					svd.getType().toString(),
+					annotationList);
+			overLoggingList.add(marker);
 		}
 	}
 
-	private boolean satisfyLoggingStatement(MethodInvocation node) {
+	private boolean isLoggingStatement(MethodInvocation node) {
 		if(libMap.isEmpty()) {
 			return false;
 		}
@@ -154,41 +289,27 @@ public class OverLoggingVisitor extends ASTVisitor {
 		if(node.resolveMethodBinding().getDeclaringClass() == null)
 			return false;
 		
-		String libName = node.resolveMethodBinding().getDeclaringClass().getQualifiedName();
+		String classNameInFullyQualifiedForm = node.resolveMethodBinding().getDeclaringClass().getQualifiedName();
 		Iterator<String> iterator = libMap.keySet().iterator();
 		while(iterator.hasNext()) {
-			String condition = iterator.next();
-			if(libName.equals(condition)) {
+			String userSettingRule = iterator.next();
+			if(classNameInFullyQualifiedForm.equals(userSettingRule))
 				return true;
-			} else if(libName.length() >= condition.length()) {
-				if(libName.substring(0, condition.length()).equals(condition))
-					return true;
-			}
+			
+			if(classNameInFullyQualifiedForm.length() >= userSettingRule.length() &&
+				classNameInFullyQualifiedForm.substring(0, userSettingRule.length()).equals(userSettingRule))
+				return true;
 		}
+		
 		return false;
 	}
 
-	/**
-	 * 取得是否要繼續Trace
-	 */
-	public boolean getIsKeepTrace() {
-		return isKeepTrace;
+	public List<MarkerInfo> getOverLoggingList() {
+		return overLoggingList;
 	}
 
-	/**
-	 * 回傳是否有Logging
-	 * @return
-	 */
-	public boolean getIsLogging() {
-		// 如果有要log，也要追蹤，而且有疑似OverLogging的node，就回傳false，為了讓detector繼續遞迴
-		return !(isLogging && isKeepTrace && (suspectNode != null) ? true : false);
-	}
-	
-	/**
-	 * 取得OverLogging 行數的資訊
-	 * @return
-	 */
-	public List<MarkerInfo> getOverLoggingList() {
-		return loggingList;
+	@Override
+	public List<MarkerInfo> getBadSmellCollected() {
+		return getOverLoggingList();
 	}
 }

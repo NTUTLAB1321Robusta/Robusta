@@ -6,15 +6,15 @@ import java.util.List;
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.robusta.marker.AnnotationInfo;
+import ntut.csie.util.AbstractBadSmellVisitor;
 import ntut.csie.util.NodeUtils;
 
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 
-public class CarelessCleanupVisitor extends ASTVisitor {
+public class CarelessCleanupVisitor extends AbstractBadSmellVisitor {
 	CompilationUnit root;
 	MethodDeclaration methodDeclaration;
 	boolean isOnlyDetectingInTry;
@@ -89,5 +89,10 @@ public class CarelessCleanupVisitor extends ASTVisitor {
 
 	public List<MarkerInfo> getCarelessCleanupList() {
 		return carelessCleanupList;
+	}
+
+	@Override
+	public List<MarkerInfo> getBadSmellCollected() {
+		return getCarelessCleanupList();
 	}
 }

@@ -8,16 +8,16 @@ import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.robusta.marker.AnnotationInfo;
+import ntut.csie.util.AbstractBadSmellVisitor;
 import ntut.csie.util.NodeUtils;
 
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TryStatement;
 
-public class NestedTryStatementVisitor extends ASTVisitor {
+public class NestedTryStatementVisitor extends AbstractBadSmellVisitor {
 	private CompilationUnit compilationUnit;
 	private List<MarkerInfo> nestedTryStatementList;
 	private boolean isDetectingNestedTryStatementSmell;
@@ -86,5 +86,10 @@ public class NestedTryStatementVisitor extends ASTVisitor {
 				null,
 				annotationList);
 		nestedTryStatementList.add(markerInfo);
+	}
+
+	@Override
+	public List<MarkerInfo> getBadSmellCollected() {
+		return getNestedTryStatementList();
 	}
 }

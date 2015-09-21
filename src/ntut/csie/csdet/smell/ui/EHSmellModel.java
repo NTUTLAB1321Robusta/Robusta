@@ -121,7 +121,7 @@ public class EHSmellModel {
 			EmptyCatchBlockVisitor ecbVisitor = new EmptyCatchBlockVisitor(actRoot);
 			this.methodNode.accept(dhVisitor);
 			this.methodNode.accept(ecbVisitor);
-			dummyHandlerList = dhVisitor.getDummyList();
+			dummyHandlerList = dhVisitor.getDummyHandlerList();
 			emptyCatchList = ecbVisitor.getEmptyCatchList();
 	
 			//取得專案中的Nested Try Statement
@@ -132,7 +132,7 @@ public class EHSmellModel {
 			//尋找該method內的unprotected main program
 			UnprotectedMainProgramVisitor mainVisitor = new UnprotectedMainProgramVisitor(actRoot);
 			methodNode.accept(mainVisitor);
-			unprotectedMainList = mainVisitor.getUnprotedMainList();
+			unprotectedMainList = mainVisitor.getUnprotectedMainList();
 		}
 
 		//清除Smell

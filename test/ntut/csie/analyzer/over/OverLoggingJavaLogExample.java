@@ -132,7 +132,7 @@ public class OverLoggingJavaLogExample {
 			theThirdOrderInTheSameClassWithJavaLogAndSomeConditions();
 		} catch(FileNotFoundException e) {
 			e.printStackTrace();
-			// OverLogging
+			// Not OverLogging, exception thrown from the method in try is not catched here
 			javaLogger.log(Level.WARNING, e.getMessage() + "theSecondOrderInTheSameClassWithJavaLogAndSomeConditions");
 			throw e;
 		}
@@ -145,7 +145,6 @@ public class OverLoggingJavaLogExample {
 		} catch(FileNotFoundException e) {
 			e.printStackTrace();
 			System.out.println(e);
-			// 例外轉型，但是有帶入之前的例外資訊，所以要繼續追蹤
 			throw new IOException(e);
 		}
 	}
@@ -156,7 +155,7 @@ public class OverLoggingJavaLogExample {
 			throw new FileNotFoundException("FileNotFoundException throws in callee");
 		} catch(FileNotFoundException e) {
 			e.printStackTrace();
-			// OverLogging
+			// OverLogging, if we can trace exceptions with the "throws xxxException" in method declaration
 			javaLogger.log(Level.WARNING, e.getMessage() + "theFourthOrderInTheSameClassWithJavaLogAndSomeConditions");
 			throw e;
 		}
@@ -167,8 +166,8 @@ public class OverLoggingJavaLogExample {
 		try {
 			theSixthOrderInTheSameClassWithJavaLogAndSomeConditions();
 		} catch(FileNotFoundException e) {
+			// OverLogging
 			javaLogger.log(Level.WARNING, e.getMessage() + "theFifthOrderInTheSameClassWithJavaLogAndSomeConditions");
-			// 拋全新的例外，所以不繼續追蹤
 			throw new IOException();
 		}
 	}

@@ -518,7 +518,7 @@ public class RethrowExRefactoringTest {
 		node.accept(visitor);
 		Field currentExList = RethrowExRefactoring.class.getDeclaredField("currentExList");
 		currentExList.setAccessible(true);
-		currentExList.set(refactoring, visitor.getDummyList());
+		currentExList.set(refactoring, visitor.getDummyHandlerList());
 		
 		// check precondition
 		assertEquals(	"public void true_printStackTrace_public(){\n" +

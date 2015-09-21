@@ -11,8 +11,8 @@ import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.csdet.preference.SmellSettings.UserDefinedConstraintsType;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.robusta.marker.AnnotationInfo;
+import ntut.csie.util.AbstractBadSmellVisitor;
 
-import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Expression;
@@ -25,7 +25,7 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 
-public class DummyHandlerVisitor extends ASTVisitor {
+public class DummyHandlerVisitor extends AbstractBadSmellVisitor {
 	private List<MarkerInfo> dummyHandlerList;
 	// 儲存偵測"Library的Name"和"是否Library"
 	// store使用者要偵測的library名稱，和"是否要偵測此library"
@@ -42,7 +42,7 @@ public class DummyHandlerVisitor extends ASTVisitor {
 		isDetectingDummyHandlerSmell = smellSettings.isDetectingSmell(SmellSettings.SMELL_DUMMYHANDLER);
 	}
 
-	public List<MarkerInfo> getDummyList() {
+	public List<MarkerInfo> getDummyHandlerList() {
 		return dummyHandlerList;
 	}
 
@@ -176,6 +176,11 @@ public class DummyHandlerVisitor extends ASTVisitor {
 				svd.getType().toString(), 
 				annotationList);
 		dummyHandlerList.add(markerInfo);
+	}
+
+	@Override
+	public List<MarkerInfo> getBadSmellCollected() {
+		return getDummyHandlerList();
 	}
 
 }

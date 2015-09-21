@@ -90,7 +90,7 @@ public class OverLoggingSelf4JExample {
 	public void theSecondOrderInTheSameClassWithJavaLogAndSomeConditions() throws IOException {
 		try {
 			theThirdOrderInTheSameClassWithJavaLogAndSomeConditions();
-		} catch(FileNotFoundException e) {
+		} catch(IOException e) {
 			e.printStackTrace();
 			// OverLogging
 			self4jLogger.error(e.getMessage() + "theFifththOrderInTheSameClassWithJavaLogAndSomeConditions");
@@ -105,7 +105,7 @@ public class OverLoggingSelf4JExample {
 		} catch(FileNotFoundException e) {
 			e.printStackTrace();
 			System.out.println(e);
-			// 例外轉型，但是有帶入之前的例外資訊，所以要繼續追蹤
+			// 例外轉型，要繼續追蹤
 			throw new IOException(e);
 		}
 	}
@@ -128,7 +128,7 @@ public class OverLoggingSelf4JExample {
 			theSixthOrderInTheSameClassWithJavaLogAndSomeConditions();
 		} catch(FileNotFoundException e) {
 			self4jLogger.error(e.getMessage() + "theSecondOrderInTheSameClassWithJavaLogAndSomeConditions");
-			// 拋全新的例外，所以不繼續追蹤
+			// OverLogging
 			throw new IOException();
 		}
 	}

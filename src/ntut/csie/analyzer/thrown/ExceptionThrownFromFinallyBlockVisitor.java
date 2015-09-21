@@ -5,10 +5,11 @@ import java.util.List;
 
 import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
+import ntut.csie.robusta.marker.AnnotationInfo;
+import ntut.csie.util.AbstractBadSmellVisitor;
 import ntut.csie.util.NodeUtils;
 
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -18,8 +19,8 @@ import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TryStatement;
 
-public class ExceptionThrownFromFinallyBlockVisitor extends ASTVisitor {
-	private CompilationUnit root; // For getting bad smell info
+public class ExceptionThrownFromFinallyBlockVisitor extends AbstractBadSmellVisitor {
+	private CompilationUnit root;
 	private List<MarkerInfo> thrownInFinallyList;
 	private int finallyStack = 0; // To check if in any finally block
 	private Block outermostFinallyBlock = null;
@@ -177,10 +178,22 @@ public class ExceptionThrownFromFinallyBlockVisitor extends ASTVisitor {
 	 */
 	private MarkerInfo createThrownInFinallyMarkerInfo(ASTNode node,
 			ITypeBinding typeBinding) {
+		ArrayList<AnnotationInfo> annotationList = new ArrayList<AnnotationInfo>(2);
+		AnnotationInfo ai = new AnnotationInfo(root.getLineNumber(node.getStartPosition()), 
+				node.getStartPosition(), 
+				node.getLength(), 
+				"May throw exception in this finally block and swallow exception thrown in associated try block");
+		annotationList.add(ai);
+		
 		return new MarkerInfo(
 				RLMarkerAttribute.CS_EXCEPTION_THROWN_FROM_FINALLY_BLOCK,
-				typeBinding, node.toString(), node.getStartPosition(),
-				root.getLineNumber(node.getStartPosition()), null);
+				typeBinding, 
+				((CompilationUnit)node.getRoot()).getJavaElement().getElementName(), // class name
+				node.toString(), 
+				node.getStartPosition(),
+				root.getLineNumber(node.getStartPosition()), 
+				null,
+				annotationList);
 	}
 
 	public List<MarkerInfo> getThrownInFinallyList() {
@@ -204,5 +217,10 @@ public class ExceptionThrownFromFinallyBlockVisitor extends ASTVisitor {
 		}
 
 		return false;
+	}
+
+	@Override
+	public List<MarkerInfo> getBadSmellCollected() {
+		return getThrownInFinallyList();
 	}
 }

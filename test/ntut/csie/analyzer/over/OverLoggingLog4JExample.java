@@ -87,7 +87,7 @@ public class OverLoggingLog4JExample {
 	public void theSecondOrderInTheSameClassWithJavaLogAndSomeConditions() throws IOException {
 		try {
 			theThirdOrderInTheSameClassWithJavaLogAndSomeConditions();
-		} catch(FileNotFoundException e) {
+		} catch(IOException e) {
 			e.printStackTrace();
 			// OverLogging
 			log4jLogger.error(e.getMessage() + "theFifththOrderInTheSameClassWithJavaLogAndSomeConditions");
@@ -125,7 +125,7 @@ public class OverLoggingLog4JExample {
 			theSixthOrderInTheSameClassWithJavaLogAndSomeConditions();
 		} catch(FileNotFoundException e) {
 			log4jLogger.error(e.getMessage() + "theSecondOrderInTheSameClassWithJavaLogAndSomeConditions");
-			// 拋全新的例外，所以不繼續追蹤
+			// OverLogging
 			throw new IOException();
 		}
 	}

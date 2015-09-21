@@ -405,7 +405,7 @@ public class SuppressWarningExampleForAnalyzer {
 		try {
 			withoutSuppressWaringTheThirdOrderInTheSameClass();
 		} catch(IOException e) {
-			logger.log(Level.WARNING, e.getMessage());
+			logger.log(Level.WARNING, e.getMessage()); // Over logging
 			throw e;
 		}
 	}
@@ -414,7 +414,7 @@ public class SuppressWarningExampleForAnalyzer {
 		try {
 			withoutSuppressWaringTheFourthOrderInTheSameClass();
 		} catch(IOException e) {
-			logger.log(Level.WARNING, e.getMessage());
+			logger.log(Level.WARNING, e.getMessage()); // Over logging
 			throw e;
 		}
 	}
@@ -430,11 +430,11 @@ public class SuppressWarningExampleForAnalyzer {
 		try {
 			new FileOutputStream("");
 			fileOutputStream = new FileOutputStream("");
-			fileOutputStream.close();
+			fileOutputStream.close();  // CC #4
 			throw new IOException("IOException throws in callee");
-		} catch(FileNotFoundException e) {
-			logger.log(Level.WARNING, e.getMessage());
-			throw e;
+//		} catch(FileNotFoundException e) {
+//			logger.log(Level.WARNING, e.getMessage());  // Over logging, if our system can detect FileNotFoundException is a sub class of IOException
+//			throw e;
 		} catch(FileLockInterruptionException e) {
 			
 		} catch(IOException e) { // DummyHandler

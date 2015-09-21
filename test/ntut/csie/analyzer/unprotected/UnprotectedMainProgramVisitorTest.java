@@ -336,7 +336,7 @@ public class UnprotectedMainProgramVisitorTest {
 	public void testUnprotectedMainProgramExample() {
 		mainVisitor = new UnprotectedMainProgramVisitor(unit1);
 		unit1.accept(mainVisitor);
-		assertEquals(0, mainVisitor.getUnprotedMainList().size());
+		assertEquals(0, mainVisitor.getUnprotectedMainList().size());
 	}
 	
 	@Test
@@ -346,63 +346,63 @@ public class UnprotectedMainProgramVisitorTest {
 		
 		mainVisitor = new UnprotectedMainProgramVisitor(unit2);
 		unit2.accept(mainVisitor);
-		assertEquals(0, mainVisitor.getUnprotedMainList().size());
+		assertEquals(0, mainVisitor.getUnprotectedMainList().size());
 	}
 	
 	@Test
 	public void testUnprotectedMainProgramWithCatchRuntimeExceptionExample() {
 		mainVisitor = new UnprotectedMainProgramVisitor(unit2);
 		unit2.accept(mainVisitor);
-		assertEquals(0, mainVisitor.getUnprotedMainList().size());
+		assertEquals(0, mainVisitor.getUnprotectedMainList().size());
 	}
 	
 	@Test
 	public void testUnprotectedMainProgramWithoutCatchExceptionExample() {
 		mainVisitor = new UnprotectedMainProgramVisitor(unit9);
 		unit9.accept(mainVisitor);
-		assertEquals(1, mainVisitor.getUnprotedMainList().size());
+		assertEquals(1, mainVisitor.getUnprotectedMainList().size());
 	}
 	
 	@Test
 	public void testUnprotectedMainProgramWithoutStatementExample() {
 		mainVisitor = new UnprotectedMainProgramVisitor(unit3);
 		unit3.accept(mainVisitor);
-		assertEquals(0, mainVisitor.getUnprotedMainList().size());
+		assertEquals(0, mainVisitor.getUnprotectedMainList().size());
 	}
 	
 	@Test
 	public void testUnprotectedMainProgramWithoutTryExample() {
 		mainVisitor = new UnprotectedMainProgramVisitor(unit4);
 		unit4.accept(mainVisitor);
-		assertEquals(1, mainVisitor.getUnprotedMainList().size());
+		assertEquals(1, mainVisitor.getUnprotectedMainList().size());
 	}
 	
 	@Test
 	public void testUnprotectedmainProgramWithTryAtFirstStatement() {
 		mainVisitor = new UnprotectedMainProgramVisitor(unit5);
 		unit5.accept(mainVisitor);
-		assertEquals(1, mainVisitor.getUnprotedMainList().size());
+		assertEquals(1, mainVisitor.getUnprotectedMainList().size());
 	}
 	
 	@Test
 	public void testUnprotectedMainProgramWithTryAtLastStatement() {
 		mainVisitor = new UnprotectedMainProgramVisitor(unit6);
 		unit6.accept(mainVisitor);
-		assertEquals(1, mainVisitor.getUnprotedMainList().size());
+		assertEquals(1, mainVisitor.getUnprotectedMainList().size());
 	}
 	
 	@Test
 	public void testUnprotectedMainProgramWithTryAtMiddleStatement() {
 		mainVisitor = new UnprotectedMainProgramVisitor(unit7);
 		unit7.accept(mainVisitor);
-		assertEquals(1, mainVisitor.getUnprotedMainList().size());
+		assertEquals(1, mainVisitor.getUnprotectedMainList().size());
 	}
 	
 	@Test
 	public void testUnprotectedMainProgramWithTry() {
 		mainVisitor = new UnprotectedMainProgramVisitor(unit8);
 		unit8.accept(mainVisitor);
-		assertEquals(1, mainVisitor.getUnprotedMainList().size());
+		assertEquals(1, mainVisitor.getUnprotectedMainList().size());
 	}
 	
 	private void CreateSettings() {

@@ -8,15 +8,15 @@ import ntut.csie.csdet.data.MarkerInfo;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.robusta.marker.AnnotationInfo;
+import ntut.csie.util.AbstractBadSmellVisitor;
 
-import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 
-public class EmptyCatchBlockVisitor extends ASTVisitor {
+public class EmptyCatchBlockVisitor extends AbstractBadSmellVisitor {
 	CompilationUnit root;
 	private List<MarkerInfo> emptyCatchBlockList;
 	private boolean isDetectingEmptyCatchBlock;
@@ -74,6 +74,11 @@ public class EmptyCatchBlockVisitor extends ASTVisitor {
 
 	public List<MarkerInfo> getEmptyCatchList() {
 		return emptyCatchBlockList;
+	}
+
+	@Override
+	public List<MarkerInfo> getBadSmellCollected() {
+		return getEmptyCatchList();
 	}
 	
 }
