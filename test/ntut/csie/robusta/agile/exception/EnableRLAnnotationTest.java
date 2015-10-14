@@ -35,6 +35,7 @@ public class EnableRLAnnotationTest {
 
 	private IJavaProject javaProj;
 	JavaProjectMaker javaProjectMaker;
+	
 	@Before
 	public void setUp() throws Exception {
 		enableRLAnnotation = new EnableRLAnnotation();
@@ -45,77 +46,6 @@ public class EnableRLAnnotationTest {
 		root = workspace.getRoot();
 		project = root.getProject(projectname);
 		javaProj = JavaCore.create(project);
-	}
-
-	@Test
-	public void testExtractJarIdTrue() {
-		String sampleFullJarId = "D:/Timelog-v2.4.2-x64/123/taipeitech.csie.robusta.agile.exception.txt";
-
-		String answerJarId = "taipeitech.csie.robusta.agile.exception.txt";
-		String testJarId = "";
-		try {
-			Method testExtraJarIdMethod = EnableRLAnnotation.class
-					.getDeclaredMethod("extractJarId", String.class);
-			testExtraJarIdMethod.setAccessible(true);
-			testJarId = (String) testExtraJarIdMethod.invoke(
-					enableRLAnnotation, sampleFullJarId);
-		} catch (Exception ex) {
-			throw new RuntimeException(ex);	
-		}
-		Assert.assertTrue(testJarId.equals(answerJarId));
-	}
-
-	@Test
-	public void testExtractJarIdFalse() {
-		String sampleFullJarId = "D:/Timelog-v2.4.2-x64/123";
-		String answerJarId = "taipeitech.csie.robusta.agile.exception.txt";
-		String testJarId = "";
-		try {
-			Method testExtraJarIdMethod = EnableRLAnnotation.class
-					.getDeclaredMethod("extractJarId", String.class);
-			testExtraJarIdMethod.setAccessible(true);
-			testJarId = (String) testExtraJarIdMethod.invoke(
-					enableRLAnnotation, sampleFullJarId);
-		} catch (Exception ex) {
-			throw new RuntimeException(ex);	
-			}
-		Assert.assertFalse(testJarId.equals(answerJarId));
-	}
-
-	@Test
-	public void testCopyFileUsingFileStreams() {
-		String workingSapaceDir = System.getProperty("user.dir");
-		File sampleFile = new File(workingSapaceDir + "/copytest/copy.txt");
-		if (!sampleFile.exists()) {
-			sampleFile.getParentFile().mkdirs();
-			try {
-				sampleFile.createNewFile();
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		}
-		File destFileDir = new File(workingSapaceDir + "/copytest2/copy.txt");
-		FileInputStream originFileInput =null;
-		try {
-			originFileInput = new FileInputStream(
-					workingSapaceDir + "/copytest/copy.txt");
-			Method testCopyFileUSingFileStreamMethod = EnableRLAnnotation.class
-					.getDeclaredMethod("copyFileUsingFileStreams",
-							InputStream.class, File.class);
-			testCopyFileUSingFileStreamMethod.setAccessible(true);
-			testCopyFileUSingFileStreamMethod.invoke(enableRLAnnotation,
-					originFileInput, destFileDir);
-		} catch (Exception ex) {
-			throw new RuntimeException(ex);
-		}finally{
-			try {
-				originFileInput.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		File searFile = new File(workingSapaceDir + "/copytest2/copy.txt");
-		Assert.assertTrue(searFile.exists());
 	}
 
 	@Test
@@ -159,21 +89,6 @@ public class EnableRLAnnotationTest {
 			throw new RuntimeException(e);
 		}
 		Assert.assertTrue(stringBuffer.toString().contains("copy.txt"));
-	}
-
-	@Test
-	public void testCheckExistInClassPath() {
-		boolean statecheck = true;
-		try {
-			Method testCheckExistInClassPathMethod = EnableRLAnnotation.class
-					.getDeclaredMethod("checkExistInClassPath",
-							IJavaProject.class);
-			testCheckExistInClassPathMethod.setAccessible(true);
-			statecheck = (Boolean) testCheckExistInClassPathMethod.invoke(enableRLAnnotation, javaProj);
-		} catch (Exception ex) {
-			throw new RuntimeException(ex);
-		}
-		Assert.assertFalse(statecheck);
 	}
 
 	@After

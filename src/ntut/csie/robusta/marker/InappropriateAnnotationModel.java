@@ -101,7 +101,7 @@ public class InappropriateAnnotationModel implements IAnnotationModel {
 		} 
 		/* if we want to automatically remove annotation when the user remove markers, we have to update here;
 		 * however, it would cause List concurrent modification exception
-		 * which is a buy in eclipse's AnnotationModel library
+		 * which is a bug in eclipse's AnnotationModel library
 		 * Eclipse Bug ID: 410052
 		 */
 		else {

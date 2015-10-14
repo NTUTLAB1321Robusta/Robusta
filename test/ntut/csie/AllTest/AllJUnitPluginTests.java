@@ -39,6 +39,7 @@ import ntut.csie.robusta.codegen.VariableDeclarationStatementFinderVisitorTest;
 import ntut.csie.robusta.codegen.refactoring.ExtractMethodAnalyzerTest;
 import ntut.csie.robusta.codegen.refactoring.TEFBExtractMethodRefactoringTest;
 import ntut.csie.util.NodeUtilsTest;
+import ntut.csie.util.RLAnnotationFileUtilTest;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -94,7 +95,9 @@ import org.junit.runners.Suite;
 	TrendReportDocumentTest.class,
 	
 	EnableRLAnnotationTest.class,
-	CarelessCleanupDefinitionTest.class
+	CarelessCleanupDefinitionTest.class,
+	
+	RLAnnotationFileUtilTest.class
 })
 public class AllJUnitPluginTests {
 }

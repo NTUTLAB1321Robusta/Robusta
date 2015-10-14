@@ -105,16 +105,26 @@
       </objectContribution>           
    </extension>
    
-   <!-- extend problem view-->
+   <!-- extend problem view for RL annotation-->
    <extension
          id="ntut.csie.rleht.builder.RLProblem"
          name="RLProblem"
          point="org.eclipse.core.resources.markers">
       <super type="org.eclipse.core.resources.problemmarker"/>
       <super type="org.eclipse.core.resources.textmarker"/>
+      <persistent value="false"/>
+   </extension>
+
+	<!-- extend problem view for bad smell marker-->
+   	<extension
+         id="ntut.csie.robusta.marker.BSProblem"
+         name="BSProblem"
+         point="org.eclipse.core.resources.markers">
+      <super type="org.eclipse.core.resources.problemmarker"/>
+      <super type="org.eclipse.core.resources.textmarker"/>
       <persistent value="true"/>
    </extension>
-   
+      
    <!-- marker的quick fix-->
    <extension
          point="org.eclipse.ui.ide.markerResolution">

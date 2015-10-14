@@ -17,6 +17,8 @@ import ntut.csie.rleht.views.ExceptionAnalyzer;
 import ntut.csie.rleht.views.RLChecker;
 import ntut.csie.rleht.views.RLData;
 import ntut.csie.rleht.views.RLMessage;
+import ntut.csie.util.RLAnnotationFileUtil;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -43,14 +45,16 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	public static final String BUILDER_ID = "ntut.csie.rleht.builder.RLBuilder";
 
 	// 延伸problem view好讓自己的marker可以加進去view中
-	public static final String MARKER_TYPE = "ntut.csie.rleht.builder.RLProblem";
-
+	public static final String MARKER_TYPE_ROBUSTNESS_LEVEL = "ntut.csie.rleht.builder.RLProblem";
+	
 	// 使用者所設定的是否偵測EH Smell設定
 	private TreeMap<String, Boolean> detSmellSetting = new TreeMap<String, Boolean>();
 	
 	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
 
 	private RobustaSettings robustaSettings;
+	
+	private SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 	
 	/**
 	 * 將相關例外資訊貼上marker(RLMessage)
@@ -60,7 +64,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 			int msgIdx, int methodIdx) {
 		IMarker marker = null;
 		try {
-			marker = file.createMarker(MARKER_TYPE);
+			marker = file.createMarker(MARKER_TYPE_ROBUSTNESS_LEVEL);
 			marker.setAttribute(IMarker.MESSAGE, message);
 			marker.setAttribute(IMarker.SEVERITY, severity);
 			if (lineNumber == -1) {
@@ -90,7 +94,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 			int msgIdx, int methodIdx) {
 
 		try {
-			IMarker marker = file.createMarker(MARKER_TYPE);
+			IMarker marker = file.createMarker(MARKER_TYPE_ROBUSTNESS_LEVEL);
 			marker.setAttribute(IMarker.MESSAGE, message);
 			marker.setAttribute(IMarker.SEVERITY, severity);
 			if (lineNumber == -1) {
@@ -122,8 +126,17 @@ public class RLBuilder extends IncrementalProjectBuilder {
 		}
 	}
 	
+	public void deleteMarkers(IFile file) {
+		try {
+			file.deleteMarkers(MARKER_TYPE_ROBUSTNESS_LEVEL, false, IResource.DEPTH_ZERO);
+		}
+		catch (CoreException ce) {
+			throw new RuntimeException("Fail to clean up old markers", ce);
+		}
+	}
+	
 	/*
-	 * this method will be invoked every build
+	 * this method will be invoked at every build
 	 * 
 	 * @see org.eclipse.core.internal.events.InternalBuilder#build(int,
 	 *      java.util.Map, org.eclipse.core.runtime.IProgressMonitor)
@@ -156,24 +169,19 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	 * 進行fullBuild or inrementalBuild時,都會去呼叫這個method
 	 * @param resource
 	 */
-	/* 針對每一個Java程式的Method
-	/* 標記專案中所有的壞味道&
-	 * 檢查RLAnnotation */
-	private void checkBadSmells(IResource resource) {
+	/* 針對每一個Java程式的Method標記RLAnnotation */
+	private void reapplyRLAnnotation(IResource resource) {
 		if (isJavaFile(resource)) {
 			IFile file = (IFile) resource;
 			
-			// with editor tracker, we no longer need to add all markers at once during proj build
-//			markerModel.deleteMarkers(file);
-//			try {
-//				markerModel.applyMarkers(file);				
-//			} catch (Exception e) {
-//				logger.error("Fail to apply marker onto file: " + file.toString() + " \n", e);
-//				throw new RuntimeException(e);
-//			}
-			
 			try {
-				applyRLAnnotation(resource);
+				deleteMarkers(file);
+				boolean userProjectLibFolderContainsRLAnnotationJar = RLAnnotationFileUtil.isRLAnnotationJarInProjLibFolder(resource.getProject());
+				boolean userProjectClassPathContainsRLAnnotationTag = RLAnnotationFileUtil.doesRLAnnotationExistInClassPath(JavaCore.create(resource.getProject()));
+				boolean isRLAnnotationDetectionCheckedByUser = smellSettings.isAddingRobustnessAnnotation();
+				
+				if(userProjectLibFolderContainsRLAnnotationJar && userProjectClassPathContainsRLAnnotationTag && isRLAnnotationDetectionCheckedByUser)
+					applyRLAnnotation(resource);
 			}
 			catch (Exception ex) {
 				logger.error("[checkRLAnnotation] EXCEPTION ",ex);
@@ -327,12 +335,12 @@ public class RLBuilder extends IncrementalProjectBuilder {
 			IResource resource = delta.getResource();
 			/*
 			 * do nothing when the IResourceDelta is REMOVED
-			 * otherwise have to call checkBadSmells()
+			 * otherwise have to call reapplyRLAnnotation()
 			 */
 			if(delta.getKind() != IResourceDelta.REMOVED) {
 				if (!shouldGoInInside(resource))
 					return false;
-				checkBadSmells(resource);
+				reapplyRLAnnotation(resource);
 			} 
 			// return true to continue visiting children.
 			return true;
@@ -343,7 +351,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 		public boolean visit(IResource resource) {
 			if (!shouldGoInInside(resource))
 				return false;
-			checkBadSmells(resource);
+			reapplyRLAnnotation(resource);
 			// return true to continue visiting children.
 			return true;
 		}

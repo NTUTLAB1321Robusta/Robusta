@@ -41,6 +41,10 @@ public class UnprotectedMainProgramVisitor extends AbstractBadSmellVisitor {
 		if(!isDetectingUnprotectedMainProgramSmell)
 			return false;
 		// parse AST tree看看是否有void main(java.lang.String[])
+		if(node == null)
+			return false;
+		if(node.resolveBinding() == null)
+			return false;
 		if (node.resolveBinding().toString().contains("void main(java.lang.String[])")) {
 			List<?> statements = node.getBody().statements();
 			if(containUnprotectedStatement(statements)) {

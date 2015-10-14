@@ -434,7 +434,7 @@ public class SettingPage extends APropertyPage {
 		 Job job = new Job("Rebuilding Project") {
 		     protected IStatus run(IProgressMonitor monitor) {
 		    	   try {
-		    		   currentProject.build(IncrementalProjectBuilder.CLEAN_BUILD, monitor);
+		    		   currentProject.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
 				} catch (CoreException e) {
 					throw new RuntimeException(e);
 				}

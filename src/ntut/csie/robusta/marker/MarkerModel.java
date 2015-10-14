@@ -31,7 +31,7 @@ public class MarkerModel {
 	
 	private ResourceBundle resourceBundle = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
 	
-	public static final String MARKER_TYPE = "ntut.csie.rleht.builder.RLProblem";
+	public static final String MARKER_TYPE_BAD_SMELL = "ntut.csie.robusta.marker.BSProblem";
 	
 	private List<IProject> projectRegisteredMarkerService = new ArrayList<IProject>();
 	
@@ -65,7 +65,7 @@ public class MarkerModel {
 			MarkerInfo markerInfo, int csIdx, int methodIdx) {
 		IMarker marker = null;
 		try{
-			marker = file.createMarker(MARKER_TYPE);
+			marker = file.createMarker(MARKER_TYPE_BAD_SMELL);
 			marker.setAttribute(IMarker.MESSAGE, errmsg);
 			marker.setAttribute(IMarker.SEVERITY, severityLevel);
 			if (markerInfo.getLineNumber() == -1) {
@@ -118,9 +118,9 @@ public class MarkerModel {
 		}
 	}
 	
-	private void deleteMarkers(IFile file) {
+	public void deleteMarkers(IFile file) {
 		try {
-			file.deleteMarkers(MARKER_TYPE, false, IResource.DEPTH_ZERO);
+			file.deleteMarkers(MARKER_TYPE_BAD_SMELL, false, IResource.DEPTH_ZERO);
 			removeMarkerInfo(file);
 		}
 		catch (CoreException ce) {
