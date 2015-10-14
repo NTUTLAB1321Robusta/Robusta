@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
-Bundle-SymbolicName: taipeitech.csie.robusta;singleton:=true
+Bundle-SymbolicName: ntut.csie.robusta;singleton:=true
 Bundle-Version: 1.6.8.2
 Bundle-Activator: ntut.csie.rleht.RLEHTPlugin
 Bundle-Vendor: %Bundle-Vendor

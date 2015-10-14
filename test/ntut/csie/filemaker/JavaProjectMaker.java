@@ -54,7 +54,6 @@ public class JavaProjectMaker {
 	public static final int UNITTEST_CODE_FOLDER = 17;
 	/** 定義強健度等級的class位於哪個Package */
 	public static final String RL_PACKAGE_NAME = "ntut.csie.robusta.agile.exception";
-	
 	/** 專案存放Jar檔的資料夾名稱 */
 	public static final String FOLDERNAME_LIB_JAR = "lib";
 	/** 專案存放Class檔的資料夾名稱 */
