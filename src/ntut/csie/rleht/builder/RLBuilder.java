@@ -54,8 +54,6 @@ public class RLBuilder extends IncrementalProjectBuilder {
 
 	private RobustaSettings robustaSettings;
 	
-	private SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-	
 	/**
 	 * 將相關例外資訊貼上marker(RLMessage)
 	 * 使用於@RL時 
@@ -178,6 +176,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 				deleteMarkers(file);
 				boolean userProjectLibFolderContainsRLAnnotationJar = RLAnnotationFileUtil.isRLAnnotationJarInProjLibFolder(resource.getProject());
 				boolean userProjectClassPathContainsRLAnnotationTag = RLAnnotationFileUtil.doesRLAnnotationExistInClassPath(JavaCore.create(resource.getProject()));
+				SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 				boolean isRLAnnotationDetectionCheckedByUser = smellSettings.isAddingRobustnessAnnotation();
 				
 				if(userProjectLibFolderContainsRLAnnotationJar && userProjectClassPathContainsRLAnnotationTag && isRLAnnotationDetectionCheckedByUser)
@@ -238,7 +237,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 						if(smellSettings.getPreferenceAttribute(SmellSettings.PRE_SHOWRLANNOTATIONWARNING))
 						{
 							String errmsg = this.resource.getString("tag.undefine1") + msg.getRLData().getExceptionType() + this.resource.getString("tag.undefine2");
-							this.addMarker(file, errmsg.toString(), msg.getLineNumber(), IMarker.SEVERITY_WARNING,
+							this.addMarker(file, errmsg.toString(), msg.getLineNumber(), IMarker.SEVERITY_INFO,
 									RLMarkerAttribute.ERR_NO_RL, msg, msgIdx, methodIdx);
 						}
 					}

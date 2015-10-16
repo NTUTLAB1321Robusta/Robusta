@@ -132,17 +132,6 @@ public class RLAnnotationFileUtilTest {
 		Assert.assertFalse(statecheck);
 	}
 	
-	@Test
-	public void testIsRLAnnotationJarInProjLibFolderBeforePuttingItIn() {
-		Assert.assertFalse(ntut.csie.util.RLAnnotationFileUtil.isRLAnnotationJarInProjLibFolder(javaProj.getProject()));
-	}
-	
-	@Test
-	public void testIsRLAnnotationJarInProjLibFolderAfterPuttingItIn() throws IOException, CoreException {
-		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.FOLDERNAME_LIB_JAR, JavaProjectMaker.FOLDERNAME_BIN_CLASS);
-		Assert.assertTrue(ntut.csie.util.RLAnnotationFileUtil.isRLAnnotationJarInProjLibFolder(javaProj.getProject()));
-	}
-	
 	@After
 	public void TearDown() throws CoreException {
 		RLAnnotationFileUtil = null;

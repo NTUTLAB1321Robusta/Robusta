@@ -98,24 +98,23 @@ public class RLAnnotationFileUtil {
 		}
 	}
 
-	public static String getRLAnnotationJarId() {
-//		URL installURL = Platform.getInstallLocation().getURL();
-//		Path eclipsePath = new Path(installURL.getPath());
-//		JarFile RobustaJar = RLAnnotationFileUtil.getRobustaJar(eclipsePath);
-//		
-//		if (RobustaJar != null) {
-//			final Enumeration<JarEntry> entries = RobustaJar.entries();
-//			while (entries.hasMoreElements()) {
-//				final JarEntry entry = entries.nextElement();
-//				String jarPath = entry.getName();
-//				if (jarPath.contains(RLAnnotationJarId)) {
-//					return extractRLAnnotationJarId(jarPath);
-//				}
-//			}
-//		}
-//		
-//		return null;
-		return RLAnnotationJarId + "_1.0.0.jar";
+	private static String getRLAnnotationJarId() {
+		URL installURL = Platform.getInstallLocation().getURL();
+		Path eclipsePath = new Path(installURL.getPath());
+		JarFile RobustaJar = RLAnnotationFileUtil.getRobustaJar(eclipsePath);
+		
+		if (RobustaJar != null) {
+			final Enumeration<JarEntry> entries = RobustaJar.entries();
+			while (entries.hasMoreElements()) {
+				final JarEntry entry = entries.nextElement();
+				String jarPath = entry.getName();
+				if (jarPath.contains(RLAnnotationJarId)) {
+					return extractRLAnnotationJarId(jarPath);
+				}
+			}
+		}
+		
+		return null;
 	}
 	
 	static public JarEntry getRLAnnotationJarEntry(IProject project)  {
