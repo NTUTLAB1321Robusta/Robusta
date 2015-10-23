@@ -2,7 +2,6 @@ package ntut.csie.AllTest;
 
 import ntut.csie.analyzer.ASTCatchCollectTest;
 import ntut.csie.analyzer.BadSmellCollectorTest;
-import ntut.csie.analyzer.SpareHandlerVisitorTest;
 import ntut.csie.analyzer.SuppressWarningVisitorTest;
 import ntut.csie.analyzer.TryStatementCounterVisitorTest;
 import ntut.csie.analyzer.careless.CarelessCleanupDefinitionTest;
@@ -19,7 +18,6 @@ import ntut.csie.analyzer.unprotected.UnprotectedMainProgramVisitorTest;
 import ntut.csie.csdet.preference.RobustaSettingsTest;
 import ntut.csie.csdet.quickfix.BaseQuickFixTest;
 import ntut.csie.csdet.refactor.RethrowExRefactoringTest;
-import ntut.csie.csdet.refactor.RetryRefactoringTest;
 import ntut.csie.csdet.report.BadSmellDataEntityTest;
 import ntut.csie.csdet.report.BadSmellDataStorageTest;
 import ntut.csie.csdet.report.PastReportHistoryTest;
@@ -48,7 +46,6 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
 	ASTCatchCollectTest.class,
 	BadSmellCollectorTest.class,
-	SpareHandlerVisitorTest.class,
 	SuppressWarningVisitorTest.class,
 	TryStatementCounterVisitorTest.class,
 
@@ -69,7 +66,6 @@ import org.junit.runners.Suite;
 	BaseQuickFixTest.class,
 	
 	RethrowExRefactoringTest.class,
-	RetryRefactoringTest.class,
 	
 	ReportBuilderIntergrationTest.class,
 	ReportBuilderTest.class,

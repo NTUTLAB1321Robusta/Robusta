@@ -78,31 +78,6 @@
                menubarPath="Robusta.menu/group">
          </action>
       </objectContribution>  
-
-      <!-- Code Smell Refactor 選單 -->
-      <objectContribution
-           	objectClass="org.eclipse.ui.IFileEditorInput"
-           	id="Robusta.contribution2">
-         <menu
-               id="Robusta.popmenu1"
-               label="Robusta Smell Refactor"
-               path="additions">
-            <separator name="group1"/>
-         </menu>  
-         <action
-               class="ntut.csie.csdet.refactor.NoAlternativeRetryAction"
-			   enablesFor="1"
-               id="Robusta.RetryAction"
-               label="Retry with original values"             
-               menubarPath="Robusta.popmenu1/group1"/>
-         <action
-               class="ntut.csie.csdet.refactor.RetryAction"
-			   enablesFor="1"
-               id="Robusta.RetryAction"
-               label="Introduce resourceful try clause"
-               menubarPath="Robusta.popmenu1/group1"/>
-
-      </objectContribution>           
    </extension>
    
    <!-- extend problem view for RL annotation-->
