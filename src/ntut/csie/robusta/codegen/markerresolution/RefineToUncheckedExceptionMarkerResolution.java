@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 在Marker上面的Quick Fix中加入Refactoring(Rethrow Unchecked Exception)的功能
+ * add refactoring(Rethrow Unchecked Exception) feature to the quick fix of marker
  * @author chewei
  */
 
@@ -33,26 +33,25 @@ public class RefineToUncheckedExceptionMarkerResolution implements IMarkerResolu
 
 	@Override
 	public void run(IMarker marker) {
-		//使用者點選Empty Catch Block 或者dummy handler的marker時,會去找尋對應的Refactor方法
+		//user click the marker of empty catch block or dummy handler will invoke specified refactor feature
 		String problem;
 		try {
 			problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
 			/*
-			 * 其實在QuickFixer裡面，每個warning都已經決定會附上哪種resolution，
-			 * 這裡其實不用特地再做一次壞味道類型的判斷才對，除非每個壞味道都會跑進來。
-			 * 讓我們繼續試下去。
+			 * actually, each warning marker will be attached specified refactoring or quick fix resolution.
+			 * so, we don't need to check the bad smell type again. 
 			 */
 			if (((problem == null) || (!problem.equals(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK))) &&
 				((problem == null) || (!problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)))){
 				return;
 			}
 
-			// 建立操作Refactor的物件,並將marker傳進去以利之後取得code smell相關資訊
 			RefineExceptionRefactoring refactoring = new RefineExceptionRefactoring(marker);
 
 			/*
-			 * 1. 啟動Refactor dialog (使用者還是可以要求拋出 Checked Exception，這邊算是Bug)
-			 * 2. 使用者拋出某些Unchecked Exception會失敗，可能原因是那些例外類型的建構子沒有throwable
+			 * 1. pop up refactor dialog (there is a bug because user can select to throw checked exception)
+			 * 2. if user decide to throw some kind of unchecked exception will cause error. 
+			 *    we guess the reason may be the constructor of some kind of exception doesn't implement throwable. 
 			 */
 			CodeSmellRefactoringWizard csRefactoringWizard = new CodeSmellRefactoringWizard(refactoring);
 			csRefactoringWizard.setUserInputPage(new RethrowExInputPage("Rethrow Unchecked Exception"));
@@ -60,10 +59,6 @@ public class RefineToUncheckedExceptionMarkerResolution implements IMarkerResolu
 			RefactoringWizardOpenOperation operation = 
 				new RefactoringWizardOpenOperation(csRefactoringWizard);
 			operation.run(new Shell(), "Rethrow Unchecked Exception");
-
-//			//若Annotation順序不對，則交換順序。最後再定位
-//			refactoring.changeAnnotation();
-			
 		} catch (CoreException e) {
 			logger.error("");
 			throw new RuntimeException(e);

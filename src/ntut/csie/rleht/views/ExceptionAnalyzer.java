@@ -31,13 +31,10 @@ import org.slf4j.LoggerFactory;
 
 public class ExceptionAnalyzer extends RLBaseVisitor {
 	private static Logger logger = LoggerFactory.getLogger(ExceptionAnalyzer.class);
-	// 目前源碼選擇之開始位置
 	private int sourceStart;
 
-	// 目前源碼選擇之結束位置
 	private int sourceEnd;
 
-	// 目前所在之Method節點
 	private MethodDeclaration currentMethodNode;
 
 	private int currentMethodStart;
@@ -58,10 +55,6 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 
 	private List<RLMessage> methodRLList;
 
-//	private List<SSMessage> suppressList;
-	
-	// 紀錄Nested Try Statement的位置
-//	private List<MarkerInfo> nestedTryList;
 
 	private ASTNode currentRLAnnotationNode;
 
@@ -83,8 +76,6 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		this.root = root;
 		exceptionList = new ArrayList<RLMessage>();
 		methodRLList = new ArrayList<RLMessage>();
-//		suppressList = new ArrayList<SSMessage>();
-//		nestedTryList = new ArrayList<MarkerInfo>();
 	}
 
 	protected ExceptionAnalyzer(CompilationUnit root, boolean currentMethodFound, String parentId) {
@@ -95,42 +86,19 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		idxTry = 0;
 		idxCatch = 0;
 		exceptionList = new ArrayList<RLMessage>();
-//		suppressList = new ArrayList<SSMessage>();
-//		nestedTryList = new ArrayList<MarkerInfo>();
 	}
 
 	/**
-	 * 取得Method上的Annotation資訊
+	 * get annotation information of method
 	 * @param node
 	 */
 	private void getMethodAnnotation(ASTNode node) {
 		MethodDeclaration method = (MethodDeclaration) node;
 		
-		//logger.debug("#####===>method=" + method.getName());
 		
 		IAnnotationBinding[] annoBinding = method.resolveBinding().getAnnotations();
 		
 		for (int i = 0, size = annoBinding.length; i < size; i++) {
-//			//取得Method上的SuppressSmell資訊
-//			if (annoBinding[i].getAnnotationType().getQualifiedName().equals(SuppressSmell.class.getName())) {
-//				IMemberValuePairBinding[] mvpb = annoBinding[i].getAllMemberValuePairs();
-//
-//				SSMessage ssmsg = new SSMessage(node.getStartPosition(),
-//												getLineNumber(node.getStartPosition()));
-//				//若SuppressSmell內為String
-//				if (mvpb[0].getValue() instanceof String) {
-//					ssmsg.addSmellList((String) mvpb[0].getValue());
-//				//若SuppressSmell內為Array
-//				} else if (mvpb[0].getValue() instanceof Object[]) {
-//					Object[] values = (Object[]) mvpb[0].getValue();
-//					for (Object obj : values) {
-//						if (obj instanceof String)
-//							ssmsg.addSmellList((String) obj);
-//					}
-//				}
-//				suppressList.add(ssmsg);
-//			}		
-			//取得Method上的Robustness資訊
 			if (annoBinding[i].getAnnotationType().getQualifiedName().equals(Robustness.class.getName())) {
 				IMemberValuePairBinding[] mvpb = annoBinding[i].getAllMemberValuePairs();
 
@@ -140,7 +108,6 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 						Object[] values = (Object[]) mvpb[x].getValue();
 						for (int y = 0, ysize = values.length; y < ysize; y++) {
 							IAnnotationBinding binding = (IAnnotationBinding) values[y];
-							// 處理RL
 							IMemberValuePairBinding[] rlMvpb = binding.getAllMemberValuePairs();
 							if (rlMvpb.length == 2) {
 
@@ -165,7 +132,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 	}
 
 	/**
-	 * 取得Method所宣告的throws Exception Type Name
+	 * get exception type name which will be throw from method 
 	 * @param node	MethodDeclaration
 	 */
 	private void getMethodThrowsList(ASTNode node) {
@@ -173,7 +140,6 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		List<Name> throwsList = method.thrownExceptions();
 
 		for (Name name : throwsList) {
-			//logger.debug("#####===>throw list=" + name.getFullyQualifiedName());
 			
 			String code = node.toString();
 			int pos1 = code.indexOf("throws");
@@ -199,13 +165,9 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 	 */
 	protected boolean visitNode(ASTNode node) {
 
-		//long m1=Runtime.getRuntime().freeMemory();
-		//logger.debug("!!!!!===>["+parentId+"][BEGIN] freeMemory=["+m1+ "] max mem="+Runtime.getRuntime().maxMemory() + " totalMem="+Runtime.getRuntime().totalMemory() );		
-
 		try {
 			switch (node.getNodeType()) {
 				case ASTNode.METHOD_DECLARATION:
-					// 尋找所選擇文字在那一個Method內
 					currentMethodStart = node.getStartPosition();
 					currentMethodEnd = currentMethodStart + node.getLength();
 
@@ -223,17 +185,12 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 					}
 					return true;					
 				case ASTNode.TRY_STATEMENT:
-					// currentMethodFound + ":" + node);
 					if (currentMethodFound) {
-//						processTryStatement(node);
 						return false;
 					}
 					return true;
 				case ASTNode.THROW_STATEMENT:
-					// ConsoleLog.debug("THROW_STATEMENT=>currentMethodFound="
-					// + currentMethodFound + ":" + node);
 					if (currentMethodFound) {
-						// ConsoleLog.debug("THROW_STATEMENT");
 						ThrowStatement ts = (ThrowStatement) node;
 						Object obj = ts.getStructuralProperty(ThrowStatement.EXPRESSION_PROPERTY);
 						
@@ -256,7 +213,6 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 					if (currentMethodFound) {
 						ClassInstanceCreation cic = (ClassInstanceCreation) node;
 						if (!this.findAnnotation(node, cic.resolveConstructorBinding().getAnnotations())) {
-							// 取得Method的Throw Exception Type
 							this.findExceptionTypes(node, cic.resolveConstructorBinding().getExceptionTypes());
 						}
 					}
@@ -265,7 +221,6 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 					if (currentMethodFound) {
 						ConstructorInvocation ci = (ConstructorInvocation) node;
 						if (!this.findAnnotation(node, ci.resolveConstructorBinding().getAnnotations())) {
-							// 取得Method的Throw Exception Type
 							this.findExceptionTypes(node, ci.resolveConstructorBinding().getExceptionTypes());
 						}
 					}
@@ -273,14 +228,15 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 				case ASTNode.METHOD_INVOCATION:
 					if (currentMethodFound) {
 						MethodInvocation mi = (MethodInvocation) node;
-						/* 如果User的code不符合IDE的規定，會造成MethdoInvocation的Binding錯誤，
-						 * 導致mi.resolveMethodBinding()為null。
-						 * ex: 在try block宣告一個需要close的instance
+						/* 
+						 * if code is not obey the rule of IDE, it will cause binding fail of MethdoInvocation.
+						 * when binding is fail, it will return null. 
+						 * ex. announce a closable instance in the try block
 						 */
+						
 						if (mi.resolveMethodBinding() == null)
-							return false;	//避免下面的程式碼傳回null pointer exception
+							return false;	
 						if (!this.findAnnotation(node, mi.resolveMethodBinding().getAnnotations())) {
-							// 取得Method的Throw Exception Type
 							findExceptionTypes(node, mi.resolveMethodBinding().getExceptionTypes());
 						}
 					}
@@ -292,56 +248,36 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 			logger.error("[visitNode] EXCEPTION ", ex);
 			return false;
 		}
-		finally{
-			//long m2=Runtime.getRuntime().freeMemory();
-			//logger.debug("!!!!!===>["+parentId+"][END]  freeMemory=["+ m2 +"] ["+(m2-m1)+"] " );
-		}
 	}
 
 	/**
-	 * 1. 偵測Nested Try Statement的EH Smell，對其Try、Catch與Finally再使用Visitor偵測。
-	 * 2. 記錄Catch Clause所宣告的Exception Type
-	 * 3. 取得Catch內的Suppress Smell的資訊
+	 * 1. detect exception handling smell of Nested Try Statement，and then use visitor to analyze Try, Catch and Finally block.
+	 * 2. record exception type of catch clause.
+	 * 3. get suppress smell information of catch block 
 	 * 
 	 * @param node	TryStatement
 	 */
 	private void processTryStatement(ASTNode node) {
 		
-		//logger.debug("#####===>TRY_STATEMENT " );
-		
-		// ConsoleLog.debug("TRY_STATEMENT");
-		// ------------------------------------------------------
-
 		idxTry = (++tryBlock);
 		idxCatch = 0;
 
 		TryStatement trystat = (TryStatement) node;		
-
-		// ConsoleLog.debug("[TRY_STATEMENT][BEGIN]>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-		// ConsoleLog.debug("TRY===>" + idxTry + ":" + idxCatch + "\t[BEGIN]" +
-		// trystat.getBody().getStartPosition());
 		
-		// 假如是第一個Try,那就不是Code Smell,不用加進去
+		//if trystat is the first one try statement, we won't take it as code smell
 		if(!parentId.equals("")){
 			MarkerInfo csmsg = new MarkerInfo(	RLMarkerAttribute.CS_NESTED_TRY_STATEMENT, null,											
 												trystat.toString(), trystat.getStartPosition(),
 												getLineNumber(trystat.getStartPosition()), trystat.toString());
-//			nestedTryList.add(csmsg);	
 		}
 		
-		// 處理Try Block
+		// access Try Block
 		ExceptionAnalyzer visitor = new ExceptionAnalyzer(root, true, createParentId());
 		trystat.getBody().accept(visitor);
 		
-//		mergeCS(visitor.getNestedTryList());
 		mergeRL(visitor.getExceptionList());
 		visitor.clear();
 
-		// this.visitNode(trystat.getBody());
-
-//		 ConsoleLog.debug("TRY===>" + idxTry + ":" + idxCatch + "\t[END]"+
-//		 trystat.getBody().getStartPosition());
-		
 		List<?> catchList = trystat.catchClauses();
 		CatchClause cc = null;
 		
@@ -350,81 +286,39 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 			
 			cc = (CatchClause) catchList.get(i);
 			
-			// 處理各個Catch
+			// access catch block
 			SingleVariableDeclaration svd = (SingleVariableDeclaration) cc.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
-			//logger.debug("\t#####===>CatchClause= "+cc.toString() );
 			
 			if (svd == null || cc == null) {
 				continue;
 			}
 			
-			//取得Catch內的SuppressSmell Annotation
-//			List<?> modifyList = svd.modifiers();
-//			for (int j = 0; j < modifyList.size(); j++) {
-//				if (modifyList.get(j) instanceof Annotation) {
-//					Annotation annotation = (Annotation) modifyList.get(j);
-//					IAnnotationBinding iab  = annotation.resolveAnnotationBinding();
-//					//判斷Annotation Type是否為SuppressSmell
-//					if (iab.getAnnotationType().getQualifiedName().equals(SuppressSmell.class.getName())) {
-//						IMemberValuePairBinding[] mvpb = iab.getAllMemberValuePairs();
-//
-//						SSMessage ssmsg = new SSMessage(cc.getStartPosition(), getLineNumber(cc.getStartPosition()), i);
-//						//若Annotation內容為String
-//						if (mvpb[0].getValue() instanceof String) {
-//							ssmsg.addSmellList((String) mvpb[0].getValue());
-//						//若Annotation內容為Array
-//						} else if (mvpb[0].getValue() instanceof Object[]) {
-//							Object[] values = (Object[]) mvpb[0].getValue();
-//							for (Object obj : values) {
-//								if (obj instanceof String)
-//									ssmsg.addSmellList((String) obj);
-//							}
-//						}
-//						suppressList.add(ssmsg);
-//					}
-//				}
-//			}
-
 			RLMessage rlmsg = new RLMessage(-1, svd.resolveBinding().getType(), cc.toString(),
 											cc.getStartPosition(), this.getLineNumber(cc.getStartPosition()));
-			// addRL(rlmsg, idxCatch);
 			String key = parentId + idxTry + "." + idxCatch + "-0.0";			
 			addRL(rlmsg, key);
 
-			// ConsoleLog.debug(i + ") CATCH===>" + idxTry + ":" + idxCatch +
-			// "\t\t[BEGIN]" + cc.getBody().getStartPosition());
-			// ConsoleLog.debug("CATCH===>" + cc.getBody());
-
-			// this.visitNode(trystat.getBody());
 			visitor = new ExceptionAnalyzer(root, true, createParentId());
 			
 			cc.getBody().accept(visitor);
 			mergeRL(visitor.getExceptionList());
-//			mergeCS(visitor.getNestedTryList());
 			visitor.clear();
 
-			// ConsoleLog.debug(i + ") CATCH===>" + idxTry + ":" + idxCatch +
-			// "\t\t[END]" + cc.getBody().getStartPosition());
 		}
 
-		// 處理Finally Block
+		// access finally block
 		Block finallyBlock = trystat.getFinally();
 		
 		if (finallyBlock != null) {
-			//logger.debug("\t#####===> FinallyBlock  " );			
 			idxCatch++;
 			visitor = new ExceptionAnalyzer(root, true, createParentId());
 			finallyBlock.accept(visitor);
 			mergeRL(visitor.getExceptionList());
-//			mergeCS(visitor.getNestedTryList());
 			visitor.clear();
 		}
 
 		idxCatch = 0;
 		idxTry = 0;
-
-		// ConsoleLog.debug("[TRY_STATEMENT][END]<<<<<<<<<<<<<<<<<<<<<<<<<");
-
 	}
 
 	private void findExceptionTypes(ASTNode node, ITypeBinding[] tbary) {
@@ -432,31 +326,20 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 			RLMessage rlmsg = new RLMessage(0, tbary[i], node.toString(), node.getStartPosition(),
 											getLineNumber(node.getStartPosition()));
 			addRL(rlmsg, idxCatch);
-			//logger.debug("\t#####===> findExceptionTypes="+node.toString() );
 		}
 	}
 
 	private boolean findAnnotation(ASTNode node, IAnnotationBinding[] annotationBinding) {
 		boolean hasRLAnnoation = false;
 
-		// logger.debug("=========>>>" + node.toString());
-		// logger.debug("=========>>>IAnnotationBinding[] size=" +
-		// annotationBinding.length);
-
-		// 取得Anotatoin 的訊息
+		// get annotation message
 		for (int i = 0, size = annotationBinding.length; i < size; i++) {
-
-			// logger.debug(i + " >>>" +
-			// annotationBinding[i].getAnnotationType().getQualifiedName() + ":"
-			// + Robustness.class.getCanonicalName());
 
 			ITypeBinding typeBinding = annotationBinding[i].getAnnotationType();
 
 			if (typeBinding.getQualifiedName().equals(Robustness.class.getCanonicalName())) {
 
 				IMemberValuePairBinding[] mvpb = annotationBinding[i].getAllMemberValuePairs();
-				// IMemberValuePairBinding[]
-				// mvpb=annotationBinding[i].getDeclaredMemberValuePairs();
 
 				for (int x = 0, xsize = mvpb.length; x < xsize; x++) {
 					if (mvpb[x].getValue() instanceof Object[]) {
@@ -465,7 +348,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 						for (int y = 0, ysize = values.length; y < ysize; y++) {
 							IAnnotationBinding binding = (IAnnotationBinding) values[y];
 
-							// 處理RL
+							// access robustness level
 							IMemberValuePairBinding[] rlMvpb = binding.getAllMemberValuePairs();
 							if (rlMvpb.length == 2) {
 								int level = ((Integer) rlMvpb[0].getValue()).intValue();
@@ -497,14 +380,12 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		rlmsg.setKey(key);
 		rlmsg.setKeyList((List<String>) new StrTokenizer(key, "-").getTokenList());
 		this.exceptionList.add(rlmsg);
-		// ConsoleLog.debug("[addRL]===>" + key + "---->>>" + rlmsg);
 	}
 
 	private void addRL(RLMessage rlmsg, String key) {
 		rlmsg.setKey(key);
 		rlmsg.setKeyList((List<String>) new StrTokenizer(key, "-").getTokenList());
 		exceptionList.add(rlmsg);
-		// ConsoleLog.debug("[addRL]===>" + key + "---->>>" + rlmsg);
 	}
 	
 	private void mergeRL(List<RLMessage> childInfo) {
@@ -516,19 +397,10 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		}
 	}
 	
-//	private void mergeCS(List<MarkerInfo> childInfo) {
-//		if (childInfo == null || childInfo.size() == 0) {
-//			return;
-//		}
-//		for(MarkerInfo msg : childInfo){
-//			nestedTryList.add(msg);
-//		}
-//	}
 	
 	public void clear() {
 		if(exceptionList != null) {
 			exceptionList.clear();
-//			nestedTryList.clear();
 		}
 		
 		if(methodRLList != null) {
@@ -539,13 +411,6 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 		currentMethodNode = null;
 	}
 	
-	/**
-	 * 紀錄Nested Try Statement的位置
-	 */
-//	public List<MarkerInfo> getNestedTryList() {
-//		return nestedTryList;
-//	}
-	
 	public MethodDeclaration getCurrentMethodNode() {
 		return currentMethodNode;
 	}
@@ -555,7 +420,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 	}
 
 	/**
-	 * 取得目前method內所有可能發生的exception及catch資訊
+	 * get all exception which is possible happening and catch clause information from current method  
 	 * 
 	 * @return
 	 */
@@ -564,19 +429,11 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 	}
 
 	/**
-	 * 取得目前所在method的RL訊息
+	 * get robustness level information from current method
 	 * 
 	 * @return
 	 */
 	public List<RLMessage> getMethodRLAnnotationList() {
 		return this.methodRLList;
 	}
-	
-	/**
-	 * 取得SuppressSmell資訊(包含Method上與Catch內)
-	 * @return
-	 */
-//	public List<SSMessage> getSuppressSemllAnnotationList() {
-//		return suppressList;
-//	}
 }

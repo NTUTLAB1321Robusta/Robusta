@@ -82,14 +82,7 @@ public class NodeUtils {
 		return false;
 	}
 
-	/**
-	 * 判斷MethodInvocation傳入的參數是否有實作指定的介面
-	 * 
-	 * @param node
-	 * @param looking4Interface
-	 * @return
-	 */
-	public static boolean isParameterImplemented(MethodInvocation node,
+	public static boolean isParameterImplementedSpecifiedInterface(MethodInvocation node,
 			Class<?> looking4Interface) {
 		List<?> arguments = node.arguments();
 		for (Object object : arguments) {
@@ -103,7 +96,7 @@ public class NodeUtils {
 	}
 
 	/**
-	 * 從輸入的節點開始，尋找特定的父節點。 如果找不到特定父節點，則回傳null
+	 * from given child node to find a specified parent node.
 	 * @return null if can't find the specified parent node
 	 */
 	public static ASTNode getSpecifiedParentNode(ASTNode startNode, int nodeType) {
@@ -111,11 +104,10 @@ public class NodeUtils {
 		if (startNode == null)
 			return null;
 		ASTNode parentNode = startNode.getParent();
-		// 如果parentNode是null，表示傳進來的node已經是rootNode(CompilationUnit)
+		// if parentNode is null, it means that startNode is rootNode(CompilationUnit)
 		if (parentNode != null) {
 			while (parentNode.getNodeType() != nodeType) {
 				parentNode = parentNode.getParent();
-				// 無窮迴圈終止條件 - 已經沒有parentNode
 				if (parentNode == null) {
 					break;
 				}
@@ -216,10 +208,10 @@ public class NodeUtils {
 	}
 
 	/**
-	 * If it forms like "xx.close()", then return the SimpleName of "xx"
+	 * If method invocation's forms like "xx.close()", then return the SimpleName of "xx"
 	 */
 	public static SimpleName getSimpleNameFromExpression(Expression expression) {
-		// 如果是close(xxx)的形式，則傳進來的expression為null
+		// If method invocation's forms like "close(xxx)", then this method's SimpleName will be null
 		if (expression == null) {
 			return null;
 		}

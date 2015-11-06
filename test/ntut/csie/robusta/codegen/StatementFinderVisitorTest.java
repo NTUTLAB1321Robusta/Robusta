@@ -40,7 +40,6 @@ public class StatementFinderVisitorTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		// 準備測試檔案樣本內容
 		javaProjectMaker = new JavaProjectMaker(testProjectName);
 		javaProjectMaker.setJREDefaultContainer();
 
@@ -56,10 +55,8 @@ public class StatementFinderVisitorTest {
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// 設定要被建立AST的檔案
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
-		// 取得AST
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 	}
 

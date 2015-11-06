@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 在mark資料之前，有很多找Statement，蒐集message的動作
+ * before add marker, there is some much preprocess need to be node such as searching statement and collecting smell message 
  * @author Charles
  * @version 0.0.1
  */
@@ -23,7 +23,7 @@ public class GainMarkerInfoUtil {
 	private static Logger logger = LoggerFactory.getLogger(GainMarkerInfoUtil.class);
 	
 	/**
-	 * 找出被mark那行的相關資訊
+	 * get smell message of line which is marked
 	 * @param marker
 	 * @param actRoot
 	 * @param currentMethodNode
@@ -44,7 +44,7 @@ public class GainMarkerInfoUtil {
 	}
 	
 	/**
-	 * 找到欲修改的程式碼資訊
+	 * get information of code which is needed to be modified
 	 * @param msgIdx
 	 * @param actRoot
 	 * @param currentMethodNode
@@ -53,14 +53,14 @@ public class GainMarkerInfoUtil {
 	public String findMoveLine(String msgIdx, CompilationUnit actRoot, ASTNode currentMethodNode) {
 		RLAnalyzer rlVisitor = new RLAnalyzer(actRoot); 
 		currentMethodNode.accept(rlVisitor);
-		//有try block的，才有可能提供quick fix
+		//only provide quick fix to the statement with try block
 		List<RLAdviceMessage> ccList = rlVisitor.getExceptionRLAdviceList();
 		RLAdviceMessage csMsg = ccList.get(Integer.parseInt(msgIdx));
 		return csMsg.getStatement();
 	}
 	
 	/**
-	 * 找出被mark的那行，屬於哪個try node
+	 * find out the line, which is marked, is belonged to which try block 
 	 * @param node
 	 * @param moveLine
 	 * @return

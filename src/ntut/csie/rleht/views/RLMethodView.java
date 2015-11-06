@@ -102,22 +102,16 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 	// -------------------------------------------------------------------------
 	// Action Object
 	// -------------------------------------------------------------------------
-	// 顯示所有 Exception
-	private Action actionShowAll;
+	private Action actionShowAllException;
 
-	// 顯示有@RL的Exception
-	private Action actionShowRL;
+	private Action actionShowExceptionWithRL;
 
-	// 顯示在Method內未處理的Exception
-	private Action actionShowThrow;
+	private Action actionShowExceptionWithoutHandling;
 
-	// 顯示在Method內已處理的Exception
-	private Action actionShowCatch;
+	private Action actionShowExceptionHasBeenCaught;
 
-	// 是否連結至源碼
 	private Action actionGotoSource;
 
-	// 增加RL Annotation
 	private Action actionAddRLAnnotation;
 
 	private Action doubleClickAction;
@@ -153,13 +147,11 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 	public void createPartControl(Composite parent) {
 
 		this.init2Table(parent);
-		// this.initExListTable(parent);
 
 		makeActions();
-		hookContextMenu();
 		contributeToActionBars();
 
-		ConsoleLog.debug("初始化完成！");
+		ConsoleLog.debug("initialize successfully！");
 		try {
 
 			IEditorPart part = EditorUtils.getActiveEditor();
@@ -249,18 +241,17 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 	}
 
 	/**
-	 * 將訊息顯示在View的Table上
+	 * show the information on the table of view
 	 * 
 	 * @param list
-	 *            資料來源
+	 *            information's resource
 	 */
 	private void showExListTableContent() {
-		// logger.debug("@@@@=====>>showExListTableContent==>"+this.currentMethodNode);
 		this.tableExList.removeAll();
 		this.tableExList.clearAll();
 
 		if (!model.hasExceptionData()) {
-			ConsoleLog.debug("目前Method內無例外資訊！");
+			ConsoleLog.debug("there is not any exception information in this method！");
 			return;
 		}
 
@@ -273,15 +264,15 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 				continue;
 			}
 
-			if (this.actionShowRL.isChecked()) {
+			if (this.actionShowExceptionWithRL.isChecked()) {
 				if (msg.getRLData().getLevel() <= 0) {
 					continue;
 				}
-			} else if (this.actionShowThrow.isChecked()) {
+			} else if (this.actionShowExceptionWithoutHandling.isChecked()) {
 				if (msg.isHandleByCatch()) {
 					continue;
 				}
-			} else if (this.actionShowCatch.isChecked()) {
+			} else if (this.actionShowExceptionHasBeenCaught.isChecked()) {
 				if (!msg.isHandleByCatch()) {
 					continue;
 				}
@@ -310,27 +301,23 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 				item.setImage(3, ImageManager.getInstance().get("annotation"));
 			}
 
-			// 顯示行數
 			item.setText(4, String.valueOf(msg.getLineNumber()));
 
 			if (currentLineNumber == msg.getLineNumber()) {
 				item.setBackground(colorHighLight);
 			}
-
-			// ConsoleLog.debug("###==>"+msg);
 		}
-
 	}
 
 	private void showRLListTableContent() {
 		this.tableRLList.removeAll();
 
 		if (model.getRLAnnotationList() == null || model.getRLAnnotationList().size() == 0) {
-			ConsoleLog.debug("目前無＠RL資訊！");
+			ConsoleLog.debug("There is not any ＠RL informaion！");
 			return;
 		}
 
-		ConsoleLog.debug("目前＠RL資訊：" + model.getRLAnnotationList().size() + "個");
+		ConsoleLog.debug("there are" + model.getRLAnnotationList().size() + "＠RL information");
 
 		int idx = -1;
 		for (RLMessage msg : model.getRLAnnotationList()) {
@@ -359,7 +346,6 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 				item.setForeground(colorWarning);
 				item.setText(3, resource.getString("update.message"));
 			}
-
 		}
 	}
 
@@ -375,10 +361,8 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 	// *************************************************************************
 
 	private void makeActions() {
-		//顯示方法內所有的例外
-		this.initActionShowAll();
-		//顯示方法內呼叫物件方法之定義強健度等級的例外
-		this.initActionShowRL();
+		this.initActionShowAllException();
+		this.initActionShowExceptionWithRL();
 		this.initActionShowThrow();
 		this.initActionShowCatch();
 		this.initActionGotoSource();
@@ -395,23 +379,6 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 
 	}
 
-	private void hookContextMenu() {
-		// MenuManager menuMgr = new MenuManager("#PopupMenu");
-		// menuMgr.setRemoveAllWhenShown(true);
-		// menuMgr.addMenuListener(new IMenuListener() {
-		// public void menuAboutToShow(IMenuManager manager) {
-		// //RLMethodView.this.fillContextMenu(manager);
-		// }
-		// });
-		//
-		// Menu menu = menuMgr.createContextMenu(table);
-
-		// table.setMenu(menu);
-		//		
-		// getSite().registerContextMenu(menuMgr,
-		// getSite().getSelectionProvider());
-	}
-
 	private void contributeToActionBars() {
 		IActionBars bars = getViewSite().getActionBars();
 		fillLocalPullDown(bars.getMenuManager());
@@ -421,125 +388,110 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 	private void fillLocalPullDown(IMenuManager manager) {
 		manager.add(actionGotoSource);
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-		manager.add(actionShowThrow);
-		manager.add(actionShowRL);
-		manager.add(actionShowAll);
-		manager.add(actionShowCatch);
+		manager.add(actionShowExceptionWithoutHandling);
+		manager.add(actionShowExceptionWithRL);
+		manager.add(actionShowAllException);
+		manager.add(actionShowExceptionHasBeenCaught);
 	}
-
-	// private void fillContextMenu(IMenuManager manager) {
-	//
-	// manager.add(this.actionAddRLAnnotation);
-	// manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-	// manager.add(actionGotoSource);
-	// manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-	// manager.add(actionShowAll);
-	// manager.add(actionShowRL);
-	// manager.add(actionShowThrow);
-	// manager.add(actionShowCatch);
-	//
-	// // Other plug-ins can contribute there actions here
-	// manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-	// }
 
 	private void fillLocalToolBar(IToolBarManager manager) {
 		manager.add(actionGotoSource);
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 
-		manager.add(actionShowThrow);
-		manager.add(actionShowRL);
-		manager.add(actionShowAll);
-		manager.add(actionShowCatch);
+		manager.add(actionShowExceptionWithoutHandling);
+		manager.add(actionShowExceptionWithRL);
+		manager.add(actionShowAllException);
+		manager.add(actionShowExceptionHasBeenCaught);
 	}
 
-	private void initActionShowAll() {
-		actionShowAll = new Action() {
+	private void initActionShowAllException() {
+		actionShowAllException = new Action() {
 			public void run() {
 				this.setChecked(true);
 				this.setEnabled(false);
 
-				actionShowRL.setEnabled(true);
-				actionShowThrow.setEnabled(true);
-				actionShowCatch.setEnabled(true);
-				actionShowRL.setChecked(false);
-				actionShowThrow.setChecked(false);
-				actionShowCatch.setChecked(false);
+				actionShowExceptionWithRL.setEnabled(true);
+				actionShowExceptionWithoutHandling.setEnabled(true);
+				actionShowExceptionHasBeenCaught.setEnabled(true);
+				actionShowExceptionWithRL.setChecked(false);
+				actionShowExceptionWithoutHandling.setChecked(false);
+				actionShowExceptionHasBeenCaught.setChecked(false);
 
 				actEditor.setFocus();
 			}
 		};
-		actionShowAll.setText(resource.getString("display.all"));
-		actionShowAll.setToolTipText(resource.getString("display.all.in.method"));
-		actionShowAll.setImageDescriptor(ImageManager.getInstance().getDescriptor("showall"));
-		actionShowAll.setChecked(false);
+		actionShowAllException.setText(resource.getString("display.all"));
+		actionShowAllException.setToolTipText(resource.getString("display.all.in.method"));
+		actionShowAllException.setImageDescriptor(ImageManager.getInstance().getDescriptor("showall"));
+		actionShowAllException.setChecked(false);
 	}
 
-	private void initActionShowRL() {
-		this.actionShowRL = new Action() {
+	private void initActionShowExceptionWithRL() {
+		this.actionShowExceptionWithRL = new Action() {
 			public void run() {
 				this.setChecked(true);
 				this.setEnabled(false);
-				actionShowAll.setEnabled(true);
-				actionShowThrow.setEnabled(true);
-				actionShowCatch.setEnabled(true);
-				actionShowAll.setChecked(false);
-				actionShowThrow.setChecked(false);
-				actionShowCatch.setChecked(false);
+				actionShowAllException.setEnabled(true);
+				actionShowExceptionWithoutHandling.setEnabled(true);
+				actionShowExceptionHasBeenCaught.setEnabled(true);
+				actionShowAllException.setChecked(false);
+				actionShowExceptionWithoutHandling.setChecked(false);
+				actionShowExceptionHasBeenCaught.setChecked(false);
 				actEditor.setFocus();
 			}
 		};
-		actionShowRL.setText(resource.getString("display.rl"));
-		actionShowRL.setToolTipText(resource.getString("display.rl.in.method"));
-		actionShowRL.setImageDescriptor(ImageManager.getInstance().getDescriptor("annotation"));
-		actionShowRL.setChecked(false);
+		actionShowExceptionWithRL.setText(resource.getString("display.rl"));
+		actionShowExceptionWithRL.setToolTipText(resource.getString("display.rl.in.method"));
+		actionShowExceptionWithRL.setImageDescriptor(ImageManager.getInstance().getDescriptor("annotation"));
+		actionShowExceptionWithRL.setChecked(false);
 	}
 
 	private void initActionShowThrow() {
-		this.actionShowThrow = new Action() {
+		this.actionShowExceptionWithoutHandling = new Action() {
 			public void run() {
 				this.setChecked(true);
 				this.setEnabled(false);
 
-				actionShowAll.setEnabled(true);
-				actionShowRL.setEnabled(true);
-				actionShowCatch.setEnabled(true);
+				actionShowAllException.setEnabled(true);
+				actionShowExceptionWithRL.setEnabled(true);
+				actionShowExceptionHasBeenCaught.setEnabled(true);
 
-				actionShowAll.setChecked(false);
-				actionShowRL.setChecked(false);
-				actionShowCatch.setChecked(false);
+				actionShowAllException.setChecked(false);
+				actionShowExceptionWithRL.setChecked(false);
+				actionShowExceptionHasBeenCaught.setChecked(false);
 				actEditor.setFocus();
 			}
 		};
-		actionShowThrow.setText(resource.getString("display.undealt.ex"));
-		actionShowThrow.setToolTipText(resource.getString("display.undealt.ex.in.catch"));
-		actionShowThrow.setImageDescriptor(ImageManager.getInstance().getDescriptor("showthrow"));
+		actionShowExceptionWithoutHandling.setText(resource.getString("display.undealt.ex"));
+		actionShowExceptionWithoutHandling.setToolTipText(resource.getString("display.undealt.ex.in.catch"));
+		actionShowExceptionWithoutHandling.setImageDescriptor(ImageManager.getInstance().getDescriptor("showthrow"));
 
-		actionShowThrow.setChecked(true);
-		actionShowThrow.setEnabled(false);
+		actionShowExceptionWithoutHandling.setChecked(true);
+		actionShowExceptionWithoutHandling.setEnabled(false);
 
 	}
 
 	private void initActionShowCatch() {
-		actionShowCatch = new Action() {
+		actionShowExceptionHasBeenCaught = new Action() {
 			public void run() {
 				this.setChecked(true);
 				this.setEnabled(false);
 
-				actionShowAll.setEnabled(true);
-				actionShowRL.setEnabled(true);
-				actionShowThrow.setEnabled(true);
+				actionShowAllException.setEnabled(true);
+				actionShowExceptionWithRL.setEnabled(true);
+				actionShowExceptionWithoutHandling.setEnabled(true);
 
-				actionShowAll.setChecked(false);
-				actionShowRL.setChecked(false);
-				actionShowThrow.setChecked(false);
+				actionShowAllException.setChecked(false);
+				actionShowExceptionWithRL.setChecked(false);
+				actionShowExceptionWithoutHandling.setChecked(false);
 				actEditor.setFocus();
 
 			}
 		};
-		actionShowCatch.setText(resource.getString("display.deal.ex"));
-		actionShowCatch.setToolTipText(resource.getString("display.deal.ex.in.catch"));
-		actionShowCatch.setImageDescriptor(ImageManager.getInstance().getDescriptor("showcatch"));
-		actionShowCatch.setChecked(false);
+		actionShowExceptionHasBeenCaught.setText(resource.getString("display.deal.ex"));
+		actionShowExceptionHasBeenCaught.setToolTipText(resource.getString("display.deal.ex.in.catch"));
+		actionShowExceptionHasBeenCaught.setImageDescriptor(ImageManager.getInstance().getDescriptor("showcatch"));
+		actionShowExceptionHasBeenCaught.setChecked(false);
 	}
 
 	private void initActionGotoSource() {
@@ -591,10 +543,6 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 		this.tableExList.setMenu(popupMenu);
 	}
 
-	/**
-	 * 初始化RL List Table的Popup Menu事件處理
-	 * 
-	 */
 	private void initRLListTablePopupMenu() {
 		Menu popupMenu = new Menu(this.tableRLList);
 
@@ -663,10 +611,6 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 		this.tableRLList.setMenu(popupMenu);
 	}
 
-	/**
-	 * 設定表格Ｃlick事件處理
-	 * 
-	 */
 	private void initExListTableRowClick() {
 		tableExList.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
@@ -687,10 +631,6 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 
 	}
 
-	/**
-	 * 設定表格Double click事件處理
-	 * 
-	 */
 	private void initExListTableDoubleClick() {
 		tableExList.addListener(SWT.DefaultSelection, new Listener() {
 			public void handleEvent(Event e) {
@@ -742,10 +682,6 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 
 	}
 
-	/**
-	 * 設定表格Double click事件處理
-	 * 
-	 */
 	private void initRLListTableDoubleClick() {
 
 		editor = new TableEditor(tableRLList);
@@ -822,7 +758,7 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 					});
 
 				} catch (Exception ex) {
-					ErrorLog.getInstance().logError("處理@Tag Table發生錯誤！", ex);
+					ErrorLog.getInstance().logError("There are errors when processes @Tag Table！", ex);
 				}
 
 			}
@@ -869,10 +805,6 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 		ConsoleLog.debug("[handleSelectionChanged4Editor] BEGIN ===================");
 		if (selection instanceof ITextSelection || selection instanceof IStructuredSelection) {
 
-			// ConsoleLog.debug("[handleSelectionChanged4Editor]fRoot=" +
-			// actRoot.getLength() + ",part=" + part.getTitle() + ",fEditor="
-			// + actEditor.getTitle());
-
 			int offset = -1;
 			int length = 0;
 
@@ -899,10 +831,8 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 				return;
 			}
 
-			// 判斷目前編輯器及文件是否為現有View呈現的
 			if (this.changeDocument || !model.hasData() || part != actEditor) {
-				ConsoleLog.debug("[handleSelectionChanged4Editor]重新再取得Java文件及編輯器!");
-				// 重新再取得Java文件及編輯器
+				ConsoleLog.debug("[handleSelectionChanged4Editor]reload java doc and editor!");
 				if (part instanceof ITextEditor && (EditorUtils.getJavaInput((ITextEditor) part) != null)) {
 					try {
 
@@ -915,8 +845,7 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 					}
 				}
 			} else {
-				// 文件及編輯器為現存的
-				ConsoleLog.debug("[handleSelectionChanged4Editor]文件及編輯器為現存的!");
+				ConsoleLog.debug("[handleSelectionChanged4Editor]java doc and editor are nowaday!");
 				ConsoleLog.debug("[handleSelectionChanged4Editor]offset=" + offset + ",length=" + length);
 			}
 
@@ -956,7 +885,6 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 	}
 
 	public ShowInContext getShowInContext() {
-		// 移到Eclipse 3.4這邊會發生null point exception,所以這邊改成這樣
 		IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
 		if (editor == null)	return null;
 
@@ -990,7 +918,6 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 			if (selection instanceof ITextSelection) {
 				ITextSelection textSelection = (ITextSelection) selection;
 
-				// model.associateWithRL(EditorUtils.getProject(editor));
 				if (!model.createAST(EditorUtils.getJavaInput(editor), textSelection.getOffset())) {
 					setContentDescription("AST could not be created.");
 				}
@@ -1003,5 +930,4 @@ public class RLMethodView extends ViewPart implements IShowInSource {
 		}
 
 	}
-
 }

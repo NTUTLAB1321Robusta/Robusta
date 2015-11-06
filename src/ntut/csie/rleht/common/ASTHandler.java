@@ -98,7 +98,7 @@ public class ASTHandler {
 		}
 		if (root != null) {
 
-			ConsoleLog.debug("[ASTHandler][createAST]" + ((IJavaElement) input).getElementName() + "--->花費：" + (endTime - startTime) + " ms");
+			ConsoleLog.debug("[ASTHandler][createAST]" + ((IJavaElement) input).getElementName() + "--->takes ：" + (endTime - startTime) + " ms");
 		}
 		return root;
 	}
@@ -133,10 +133,10 @@ public class ASTHandler {
 	
 
 	/**
-	 * 判斷是否為Checked Exception
+	 * check whether is checked exception
 	 * 
 	 * @param typeBinding
-	 * @return Y:是Checked Exception N:否
+	 * @return Y:is Checked Exception N: none
 	 */
 	public static boolean isCheckedException(ITypeBinding typeBinding) {
 		try {
@@ -148,11 +148,11 @@ public class ASTHandler {
 	}
 
 	/**
-	 * 是否為指定類型的實例
+	 * check whether is required class' instance
 	 * 
 	 * @param typeBinding
 	 * @param typeName
-	 *            指定之類型名稱(完整名稱)
+	 *            required class' name(full name)
 	 * @return Y:是 N:否
 	 */
 	public static boolean isInstance(ITypeBinding typeBinding, String typeName) {
@@ -166,7 +166,7 @@ public class ASTHandler {
 			return true;
 		}
 
-		// 判斷父類別
+		// check super class
 		ITypeBinding superClass = typeBinding.getSuperclass();
 		if (superClass != null) {
 			if (superClass.getQualifiedName().equals(typeName)) {
@@ -174,7 +174,7 @@ public class ASTHandler {
 			}
 		}
 
-		// 判斷介面
+		// check interface
 		ITypeBinding[] interfaceType = typeBinding.getInterfaces();
 		if (interfaceType != null && interfaceType.length > 0) {
 			for (int i = 0, size = interfaceType.length; i < size; i++) {

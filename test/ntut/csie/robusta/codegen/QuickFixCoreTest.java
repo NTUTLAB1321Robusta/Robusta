@@ -41,20 +41,16 @@ public class QuickFixCoreTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		// 準備測試檔案樣本內容
 		javaProjectMaker = new JavaProjectMaker(projectNameString);
 		javaProjectMaker.setJREDefaultContainer();
 		
-		// 新增欲載入的library
 		javaProjectMaker.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR + "/log4j-1.2.15.jar");
 		
-		// 若example code中有robustness notation則有此行可以讓編譯通過
-		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(
+		javaProjectMaker.packageAgileExceptionClassesToJarIntoLibFolder(
 				JavaProjectMaker.FOLDERNAME_LIB_JAR,
 				JavaProjectMaker.FOLDERNAME_BIN_CLASS);
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/" + JavaProjectMaker.FOLDERNAME_LIB_JAR + JavaProjectMaker.FOLDERNAME_LIB_JAR);
 
-		// 建立新的檔案DummyAndEmptyExample
 		javaFile2String = new JavaFileToString();
 		javaFile2String.read(CommonExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
@@ -63,7 +59,6 @@ public class QuickFixCoreTest {
 				"package " + CommonExample.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		
-		// 繼續建立測試用的UserDefineDummyHandlerFish
 		javaFile2String.clear();
 		javaFile2String.read(UserDefineDummyHandlerFish.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
@@ -73,10 +68,8 @@ public class QuickFixCoreTest {
 				+ javaFile2String.getFileContent());
 		
 		path = new Path(PathUtils.getPathOfClassUnderSrcFolder(CommonExample.class, projectNameString));
-		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// 設定要被建立AST的檔案
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
 	}
@@ -92,12 +85,12 @@ public class QuickFixCoreTest {
 	
 	@Ignore
 	public void testPerformChange() throws Exception {
-		fail("目前不知道如何在Unit Test中抓到EditorPart，所以未實作");
+		fail("we don't know how to get editor part during testing, so this feature has not been implemented yet");
 	}
 	
 	@Ignore
 	public void testApplyChange() throws Exception {
-		fail("目前不知道如何在Unit Test中抓到EditorPart，所以未實作");
+		fail("we don't know how to get editor part during testing, so this feature has not been implemented yet");
 	}
 	
 }

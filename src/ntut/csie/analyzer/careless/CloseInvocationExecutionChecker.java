@@ -275,8 +275,8 @@ public class CloseInvocationExecutionChecker {
 				return false;
 			}
 		}
-		// if statement 不一定都有 else
-		return true;
+		// doesn't each if statement have else statement
+ 		return true;
 	}
 
 	private boolean isSafeElseIfStatement(IfStatement statement) {
@@ -292,7 +292,7 @@ public class CloseInvocationExecutionChecker {
 				}
 			}
 		}
-		// if statement 不一定都有 else if
+		// doesn't each if statement have else if statement
 		return true;
 	}
 

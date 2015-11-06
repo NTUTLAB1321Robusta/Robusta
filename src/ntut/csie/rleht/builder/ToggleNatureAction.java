@@ -28,10 +28,9 @@ public class ToggleNatureAction implements IObjectActionDelegate {
 	private static Logger logger = LoggerFactory.getLogger(ToggleNatureAction.class);
 	private ISelection selection;
 	
-	// 上Marker的好幫手
 	private static MarkerModel markerModel= new MarkerModel();
 	
-	// 幫使用者的editor裝listener, 開啟或更動editor才上Annotation
+	//add listener on editor that when open or update editor's content, editor will be added annotation
 	private static EditorTracker editorTracker = new EditorTracker(PlatformUI.getWorkbench(), markerModel);;
 
 	/*
@@ -88,7 +87,6 @@ public class ToggleNatureAction implements IObjectActionDelegate {
 			IProjectDescription description = project.getDescription();
 			String[] natures = description.getNatureIds();
 
-			// 沒有設定檔存在時，幫使用者預設為所有的條件都勾選
 			SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 			smellSettings.activateAllConditionsIfNotConfugured(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 			
@@ -103,7 +101,7 @@ public class ToggleNatureAction implements IObjectActionDelegate {
 						description.setNatureIds(newNatures);
 						project.setDescription(description, null);
 
-						// 刪除Maker
+						// delete Maker
 						markerModel.deleteMarkers(project);
 						markerModel.unregisterMarkerService(project);
 						break;

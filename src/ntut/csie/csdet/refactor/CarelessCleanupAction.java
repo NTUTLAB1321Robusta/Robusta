@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 在Marker上加入Refactoring的功能
+ * 在Marker上加入Refactoring的功能 待刪程式碼!!!
  * @author Min
  */
 public class CarelessCleanupAction implements IMarkerResolution{

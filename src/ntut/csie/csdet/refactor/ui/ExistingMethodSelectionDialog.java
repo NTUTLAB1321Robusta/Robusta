@@ -33,13 +33,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 提供選擇已存在Method的Dialog
+ * provide dialog to select existing method
  * @author Shiau
  */
 public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
 	private static Logger logger = LoggerFactory.getLogger(ExistingMethodSelectionDialog.class);
 
-	//UI元件
+	//UI element
 	private ProgressBar progressBar;	
 	private Button parameBtn;
 	private Button privateBtn;
@@ -55,27 +55,26 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
 		super(parent, new JavaElementLabelProvider(JavaElementLabelProvider.SHOW_DEFAULT),
 					  new ClassRenderer());
 
-		//取得Method所有
 		analyzeSuperClass(methodNode);
 	}
 
 	/**
 	 * 分析Method的Class，找出所有的SuperClass
+	 * analyze the class, which contains specified method, to find out all super class
 	 * @param methodNode
 	 */
 	private void analyzeSuperClass(MethodDeclaration methodNode) {
 		if (methodNode.getParent() instanceof TypeDeclaration) {
 			TypeDeclaration typeDeclaration = (TypeDeclaration) methodNode.getParent();
-			//取得Method的Class Name
+			//get class name which contains specified method
 			className = typeDeclaration.getName() + ".java";
 			superClassList.add(typeDeclaration.resolveBinding().getBinaryName());
 			
-			//取得所有SuperClass
+			//find out all super class of class which contains specified method
 			if (typeDeclaration.resolveBinding().getSuperclass() != null) {
 				ITypeBinding type = typeDeclaration.resolveBinding().getSuperclass();					
 				superClassList.add(type.getBinaryName());
 
-				//一直追蹤到沒有SuperClass
 				while (true) {
 					if (type.getSuperclass() == null)
 						break;
@@ -88,17 +87,16 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
 	}
 
 	/**
-	 * 記錄傳入的Method資料
+	 * record method information
 	 */
     public void setElements(Object[] elements) {
-    	//記錄傳入資料
     	methods = elements;
 
         super.setElements(elements);
     }
     
     /**
-     * Filter Check Button改變時的動作
+     * listing Check Button change
      */
     private void handleFilterChange() {
     	List<Object> filterList = new ArrayList<Object>();
@@ -113,20 +111,20 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
 				if (element instanceof IMethod) {
 					IMethod method = (IMethod) element;
 	
-					//濾掉Private
+					//filter out private method
 		    		if (!isFiltered && privateBtn.getSelection())
-	    				isFiltered = filterPrivate(method);
+	    				isFiltered = filterOutPrivate(method);
 
-		    		//轉成MethodDeclaration (速度會變很慢)
+		    		//transform IMethod to MethodDeclaration 
 		    		MethodDeclaration md = transMethodNode(method);
 		    		if (md == null)
 		    			continue;
 
-		    		//濾掉Protected
+		    		//filter out protected method
 		    		if (!isFiltered && protectedBtn.getSelection())
-		    			isFiltered = filterProtected(method, md);
+		    			isFiltered = filterOutProtected(method, md);
 
-		    		//濾掉參數不合的
+		    		//filter out method with unsuitable parameter
 		    		if (!isFiltered && parameBtn.getSelection())
 						isFiltered = filterParame(method, md);
 				}
@@ -142,15 +140,14 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
     }
 
     /**
-     * 濾掉不同Class的Private Method
+     * filter out private method from different class
      * @param method
      * @return
      * @throws JavaModelException
      */
-	private boolean filterPrivate(IMethod method) throws JavaModelException {
-		//若為Private則濾掉
+	private boolean filterOutPrivate(IMethod method) throws JavaModelException {
 		if ((method.getFlags() & Flags.AccPrivate) != 0) {
-			//同一class內的Private Method不用濾掉
+			//bypass private in the same class
 			if (className.equals(method.getCompilationUnit().getElementName()))
 				return false;
 
@@ -160,15 +157,14 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
 	}
 
 	/**
-	 * 濾掉不為SuperClass的Protected Method
+	 * filter out protected method which the superclass of its' class is not in superClassList
 	 * @param isFiltered
 	 * @param method
 	 * @param md
 	 * @return
 	 * @throws JavaModelException
 	 */
-	private boolean filterProtected(IMethod method,	MethodDeclaration md) throws JavaModelException {
-		//若要濾掉Protected
+	private boolean filterOutProtected(IMethod method,	MethodDeclaration md) throws JavaModelException {
 		if ((method.getFlags() & Flags.AccProtected) != 0) {
 			if (md.getParent() instanceof TypeDeclaration) {
 				TypeDeclaration typeDeclaration = (TypeDeclaration) md.getParent();
@@ -184,13 +180,13 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
 	}
 
 	/**
-	 * 濾掉參數內沒有Close型態的Method
+	 * filter out method whose parameter is not name xxxclose() 
 	 * @param isFiltered
 	 * @param md
 	 * @return
 	 */
 	private boolean filterParame(IMethod method, MethodDeclaration md) {
-		//若沒有參數直接濾掉
+		//filter out method without parameter
 		if (method.getNumberOfParameters() == 0)
 			return true;
 
@@ -198,7 +194,6 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
 			List<?> paramTypes = md.parameters();
 
 			for (int i=0; i < paramTypes.size(); i++) {
-				//若參數內有包含有Close的Method則不濾掉
 				if (paramTypes.get(i) instanceof SingleVariableDeclaration) {
 					SingleVariableDeclaration svd = (SingleVariableDeclaration) paramTypes.get(i);
 					if (svd.resolveBinding().getType().toString().contains("close()"))
@@ -210,7 +205,7 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
 	}
     
 	/**
-	 * 轉換成ASTNode MethodDeclaration
+	 * transform method to ASTNode MethodDeclaration
 	 * @param method
 	 * @return
 	 */
@@ -218,21 +213,18 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
 		MethodDeclaration md = null;
 		
 		try {
-			//Parser Jar檔時，會取不到ICompilationUnit
+			//if method is from xx.jar, we can not get method's ICompilationUnit
 			if (method.getCompilationUnit() == null)
 				return null;
 
-			//產生AST
 			ASTParser parserAST = ASTParser.newParser(AST.JLS3);
 			parserAST.setKind(ASTParser.K_COMPILATION_UNIT);
 			parserAST.setSource(method.getCompilationUnit());
 			parserAST.setResolveBindings(true);
 			ASTNode ast = parserAST.createAST(null);
 
-			//取得AST的Method部份
 			ASTNode methodNode = NodeFinder.perform(ast, method.getSourceRange().getOffset(), method.getSourceRange().getLength());
 
-			//若此ASTNode屬於MethodDeclaration，則轉型
 			if(methodNode instanceof MethodDeclaration) {
 				md = (MethodDeclaration) methodNode;
 			}
@@ -244,19 +236,18 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
 	}
 
 	/**
-	 * 在Dialog下方建立ProgressBar
+	 *  create progress bar under dialog
 	 */
     public Control createDialogArea(Composite parent) {
 		Composite contents = (Composite) super.createDialogArea(parent);
 		
-		//建立ProgressBar (Range 0~100)
 		createProgressBar(contents, 0, 100);
 
     	return contents;
     }
 	
     /**
-     * 建立不顯示的Progress Bar
+     * create invisible progress bar
      * @param contents
      * @param min
      * @param max
@@ -270,7 +261,7 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
 	}
 	
     /**
-     * 在Filter Text下方新建立Filter CheckButton
+     * create filter check button under filter text
      */
     protected Text createFilterText(Composite parent) {
     	Text contents = (Text) super.createFilterText(parent);
@@ -289,7 +280,6 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
     }
 
 	/**
-	 * 建立Composite
 	 * @param parent
 	 * @return
 	 */
@@ -307,7 +297,6 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
 	}
 
 	/**
-	 * 建立CheckButton
 	 * @param composite
 	 * @return 
 	 */
@@ -323,7 +312,7 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
 	}
 	
 	/**
-	 * 建立選擇所有Filter條件的Button
+	 * create button to select all filter rule
 	 * @param parent
 	 */
 	private void createSelectAllButton(Composite parent) {
@@ -340,7 +329,7 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
 	}
 
 	/**
-	 * 顯示Class資訊的ElementLabel
+	 * element label to display class information
 	 * @author Shiau
 	 */
 	private static class ClassRenderer extends JavaElementLabelProvider {

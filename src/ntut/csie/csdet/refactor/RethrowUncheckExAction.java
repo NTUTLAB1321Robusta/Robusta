@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 在Marker上面的Quick Fix中加入Refactoring(Rethrow Unchecked Exception)的功能
+ * add "Rethrow Unchecked Exception" feature to quick fix of the marker
  * @author chewei
  */
 
@@ -30,24 +30,22 @@ public class RethrowUncheckExAction implements IMarkerResolution{
 
 	@Override
 	public void run(IMarker marker) {
-		//使用者點選Empty Catch Block 或者dummy handler的marker時,會去找尋對應的Refactor方法
+		//it will invoke specified refactor feature if user select "empty catch block" or "dummy handler" marker. 
 		try {
 			String problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
 			if ((problem != null && problem.equals(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK)) ||
 					(problem != null && problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER))){
-				//建立操作Refactor的物件,並將marker傳進去以利之後取得code smell相關資訊
 				RethrowExRefactoring refactoring = new RethrowExRefactoring();				
 				refactoring.setMarker(marker);
-				//啟動Refactor dialog
 				RefactoringWizardOpenOperation operation = 
 					new RefactoringWizardOpenOperation(new RethrowExWizard(refactoring, 0));
 				operation.run(new Shell(), "Rethrow Unchecked Exception");
-
-				//若Annotation順序不對，則交換順序。最後再定位
-				refactoring.changeAnnotation();
+				
+				//if annotation's order is not correct then swap the order 
+				refactoring.swapTheIndexOfAnnotation();
 			}
 		} catch (Exception e) {
-			// 會拋出的利外型有InterruptedException、CoreException
+			//the exception type will be thrown is InterruptedException、CoreException
 			logger.error("[Refactor][My Extract Method] EXCEPTION ", e);
 		}
 	}

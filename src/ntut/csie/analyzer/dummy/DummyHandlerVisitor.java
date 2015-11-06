@@ -27,8 +27,7 @@ import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 
 public class DummyHandlerVisitor extends AbstractBadSmellVisitor {
 	private List<MarkerInfo> dummyHandlerList;
-	// 儲存偵測"Library的Name"和"是否Library"
-	// store使用者要偵測的library名稱，和"是否要偵測此library"
+	//store library name and token of whether detect this library from user setting
 	private TreeMap<String, UserDefinedConstraintsType> libMap;
 	private boolean isDetectingDummyHandlerSmell;
 	private CompilationUnit root;
@@ -45,12 +44,11 @@ public class DummyHandlerVisitor extends AbstractBadSmellVisitor {
 	public List<MarkerInfo> getDummyHandlerList() {
 		return dummyHandlerList;
 	}
-
 	/**
-	 * 根據設定檔的資訊，決定要不要拜訪整棵樹。
+	 * According to configure that visitor decide whether visit all class ASTnode structure or not.
 	 */
 	public boolean visit(MethodDeclaration node) {
-		// 如果是Main Program，就不拜訪
+		// don't visit main(){}
 		if(node.getName().toString().equals("main")) {
 			return false;
 		}
@@ -118,33 +116,31 @@ public class DummyHandlerVisitor extends AbstractBadSmellVisitor {
 	private boolean isPrintOrLog(IMethodBinding methodBinding) {
 		if(methodBinding == null)
 			return false;
-		// 取得Method的Library名稱
+		
 		String libName = methodBinding.getDeclaringClass().getQualifiedName();
-		// 取得Method的名稱
+		
 		String methodName = methodBinding.getName();
 
-		// 如果該行有Array(如java.util.ArrayList<java.lang.Boolean>)，把<>與其內容都拿掉
+		//remove Greater than marker, Less than marker, and other content between these two marker from library name
 		if (libName.indexOf("<") != -1)
 			libName = libName.substring(0, libName.indexOf("<"));
 			
 		Iterator<String> libIt = libMap.keySet().iterator();
-		// 判斷是否要偵測 且 此句也包含欲偵測Library
 		while(libIt.hasNext()){
 			String temp = libIt.next();
-				
-			// 只偵測Library
+			
 			if (libMap.get(temp) == UserDefinedConstraintsType.Library) {
-				//若Library長度大於偵測長度，否則表不相同直接略過
+				
 				if (libName.length() >= temp.length()) {
-					//比較前半段長度的名稱是否相同
+					
 					if (libName.substring(0, temp.length()).equals(temp))
 						return true;
 				}
-			// 只偵測Method
+			
 			} else if (libMap.get(temp) == UserDefinedConstraintsType.Method) {
 				if (methodName.equals(temp))
 					return true;
-			// 偵測Library.Method的形式
+			
 			} else if (libMap.get(temp) == UserDefinedConstraintsType.FullQulifiedMethod) {
 				int pos = temp.lastIndexOf(".");
 				if (libName.equals(temp.substring(0, pos)) &&

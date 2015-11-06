@@ -93,7 +93,7 @@ public class CommonExample {
 	}
 	
 	/**
-	 * 同時測試若在catch內出現的expression statement內含的不是method invocation時，是否能正常運行
+	 * to test if there is an expression statement, not a method invocation, exist in catch clause whether the detection can work 
 	 */
 	public void true_systemOutPrintlnWithE() {
 		FileInputStream fis = null;
@@ -114,7 +114,7 @@ public class CommonExample {
 			fis.read();
 		} catch (IOException e) {
 			System.out.println("I am Dummy.");
-			// 使用者自訂type2 - *.toString時 - true
+			// user defined type2 - when meet a template like "*.toString" - true
 			e.toString();
 		}
 	}
@@ -155,13 +155,11 @@ public class CommonExample {
 			fis = new FileInputStream("");
 			fis.read();
 		} catch (IOException e) { // DummyHandler
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			try {
 				fis.close();
 			} catch (IOException e) { // DummyHandler
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -262,7 +260,7 @@ public class CommonExample {
 	}
 
 	/**
-	 * 在catch內使用outer class來測試使用者自訂的pattern
+	 * use outer class in catch clause to test user defined pattern 
 	 */
 	public void false_userPatternType1WhitOuterClass() {
 		FileInputStream fis = null;
@@ -271,17 +269,17 @@ public class CommonExample {
 			fis.read();
 		} catch (IOException e) {
 			UserDefineDummyHandlerFish userDefineDummyHandlerFish = new UserDefineDummyHandlerFish();
-			// 使用者自訂type1 - [javaFilePath].UserDefineDummyHandlerFish.*時 - true
+			//user defined type1 - when meet a template like "*[javaFilePath].UserDefineDummyHandlerFish.*" - true
 			userDefineDummyHandlerFish.eat();
 			/*
-			 * 使用者自訂type1 - [javaFilePath].UserDefineDummyHandlerFish.*時 - true
-			 * swim()有去呼叫System.out.println，但不會被「*.toString」偵測到
+			 * user defined type1 - when meet a template like "*[javaFilePath].UserDefineDummyHandlerFish.*" - true
+			 * there is a System.out.println() invocation in swim(), but swim() would not be detected as "*.toString()"
 			 */
 			userDefineDummyHandlerFish.swim();
 			/*
-			 * 使用者自訂type1 - [javaFilePath].UserDefineDummyHandlerFish.*時 - false
-			 * 雖然使用userDefineDummyHandlerFish，但此method是繼承Object來的，故不被記入
-			 * 若讓userDefineDummyHandlerFish override此method，就會被記入
+			 * ser defined type1 - when meet a template like "*[javaFilePath].UserDefineDummyHandlerFish.*" - false
+		 	 * this "userDefineDummyHandlerFish.toString()" will not be detected, due to its' .toString() is inherited from Object class.
+		 	 * if "userDefineDummyHandlerFish.toString()"'s .toString() is a override method, userDefineDummyHandlerFish.toString() will be detected as "*.toString()".
 			 */
 			userDefineDummyHandlerFish.toString();
 		}

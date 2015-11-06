@@ -15,21 +15,19 @@ import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.rleht.common.RLBaseVisitor;
 
 /**
- * 分析會拋出例外，以及有定義RL的外部Method，應用了visitor pattern
+ * apply visitor pattern to analyze the exception which may be thrown and method which has been defined robustness level
  * @author Charles
  * @version 0.0.1
  *  2011/02/10
  */
 public class RLAnalyzer extends RLBaseVisitor {
 
-	/** AST tree的root(檔案名稱) */
+	/** AST tree's root(file name)*/
 	private CompilationUnit root;
 	
-	/** 收集class中的method */
+	/** collect all method in class*/
 	private ASTMethodCollector methodCollector;
 	
-//	/** 儲存找到的Method List */
-//	private List<ASTNode> lstMethod;
 	
 	private List<RLAdviceMessage> lstRLAdviceMessage;
 	
@@ -42,7 +40,7 @@ public class RLAnalyzer extends RLBaseVisitor {
 	}
 
 	/**
-	 * 檢查有拋出例外的宣告
+	 * check method invocation with exception signature 
 	 */
 	protected boolean visitNode(ASTNode node){
 		switch(node.getNodeType()){
@@ -56,7 +54,7 @@ public class RLAnalyzer extends RLBaseVisitor {
 	}
 	
 	/**
-	 * 檢查此node有沒有拋出例外
+	 * check whether the node will throw exception 
 	 * @param node
 	 */
 	private void addAdvice(ASTNode node) {
@@ -75,9 +73,11 @@ public class RLAnalyzer extends RLBaseVisitor {
 	}
 
 	/**
-	 * 呼叫這個Class的function，在檢查過MethodInvocation，且得知會拋出例外後， 會addMarker。
-	 * 這裡的addMarker，負責把程式碼的資訊，紀錄到RLAdviceMessage裡面。
-	 * 相較於RLBuilder.class的addMarker，則是利用RLAdviceMessage的資訊以後，重新貼一次marker
+	 * 
+	 * if this visitor visit a MethodInvocation and this MethodInvocation will throw exception, this condition will invoke addMarker().
+	 * this addMarker(ASTNode node) method will put code's smell information into RLAdviceMessage.
+	 * this addMarker(ASTNode node) method is different from the method in RLBuilder.class with the same name, addMarker(ASTNode node) in the RLBuilder.class 
+	 * is adding marker in editor according to RLAdviceMessage.
 	 * @param node
 	 */
 	private void addMarker(ASTNode node){
@@ -101,7 +101,7 @@ public class RLAnalyzer extends RLBaseVisitor {
 	}
 	
 	/**
-	 * 找出這個node所屬的TryStatement
+	 * find out the try statement which is belonged to the input node
 	 * @param node
 	 * @return
 	 */
@@ -110,7 +110,7 @@ public class RLAnalyzer extends RLBaseVisitor {
 		if(node.getParent().getNodeType() == ASTNode.TRY_STATEMENT){
 			return tryNodeCadidate;
 		}else if(node.getParent().getNodeType() == ASTNode.TYPE_DECLARATION){
-			//防止一直往上找不停，所以以TYPE_DECLARATION當作往上找的最後一層
+			//avoid non stopping searching, set TYPE_DECLARATION as the break point
 			return null;
 		}else{
 			return findTryNode(tryNodeCadidate);

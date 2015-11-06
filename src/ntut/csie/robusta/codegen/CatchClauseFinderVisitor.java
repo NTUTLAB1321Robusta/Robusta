@@ -6,22 +6,20 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TryStatement;
 
 public class CatchClauseFinderVisitor extends ASTVisitor {
-	/**	將找到的CatchClause存在這裡 */
-	private CatchClause foundCatchClause;
-	/** 要找的CatchClause所在位置 */
-	private int ccStartPosition;
+	private CatchClause catchClauseHasBeenVisited;
+	private int startPositionOfCatchClauseHasBeenVisited;
 	
 	public CatchClauseFinderVisitor(int startPosition) {
-		foundCatchClause = null;
-		ccStartPosition = startPosition;
+		catchClauseHasBeenVisited = null;
+		startPositionOfCatchClauseHasBeenVisited = startPosition;
 	}
 	
 	public boolean visit(MethodDeclaration node) {
-		if(node.getStartPosition() > ccStartPosition) {
+		if(node.getStartPosition() > startPositionOfCatchClauseHasBeenVisited) {
 			return false;
 		}
 		
-		if((node.getStartPosition() + node.getLength()) < ccStartPosition) {
+		if((node.getStartPosition() + node.getLength()) < startPositionOfCatchClauseHasBeenVisited) {
 			return false;
 		}
 		
@@ -29,11 +27,11 @@ public class CatchClauseFinderVisitor extends ASTVisitor {
 	}
 	
 	public boolean visit(TryStatement node) {
-		if(node.getStartPosition() > ccStartPosition) {
+		if(node.getStartPosition() > startPositionOfCatchClauseHasBeenVisited) {
 			return false;
 		}
 		
-		if((node.getStartPosition() + node.getLength()) < ccStartPosition) {
+		if((node.getStartPosition() + node.getLength()) < startPositionOfCatchClauseHasBeenVisited) {
 			return false;
 		}
 		
@@ -41,13 +39,13 @@ public class CatchClauseFinderVisitor extends ASTVisitor {
 	}
 	
 	public boolean visit(CatchClause node) {
-		if(node.getStartPosition() == ccStartPosition) {
-			foundCatchClause = node;
+		if(node.getStartPosition() == startPositionOfCatchClauseHasBeenVisited) {
+			catchClauseHasBeenVisited = node;
 		}
 		return false; 
 	}
 	
 	public CatchClause getFoundCatchClause() {
-		return foundCatchClause;
+		return catchClauseHasBeenVisited;
 	}
 }

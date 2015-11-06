@@ -9,8 +9,8 @@ import org.eclipse.jdt.core.dom.ITypeBinding;
 
 
 /**
- * 從會throw出exception的expressionStatement中，蒐集跟他相關的資訊
- * 本class參考了CSMessage的作法
+ * collect information from expression statement which may throw exception
+ * this class consult the practice of CSMessage
  * @author Charles
  * @version 0.0.1
  */
@@ -68,7 +68,7 @@ public class RLAdviceMessage {
 	}
 	
 	/**
-	 * 拿來紀錄Method定義的RL等級及其對應的Exception class
+	 * RLinfo is used to record the Robustness level and corresponding exception class of method have defined
 	 * @author Charles
 	 *
 	 */
@@ -90,22 +90,20 @@ public class RLAdviceMessage {
 	}
 	
 	/**
-	 * @return 此method所有的RL annotation。
+	 * @return all RL annotation of method 
 	 */
 	public RLInfo[] getRobustnessLevel(){
 		RLInfo[] rlinfo = null;
 		boolean isRobustnessAnnotationExist = false;
-		//method可能有很多annotation
 		for (IAnnotationBinding annotation : annotations) {
-			//尋找Robustness的annotation
 			if (annotation.getAnnotationType().getBinaryName().equals("ntut.csie.robusta.agile.exception.Robustness")) {
 				IMemberValuePairBinding[] mvpb = annotation.getAllMemberValuePairs();
-				//這裡有點醜，反正就是把robustness的annotation中，RL跟exception的資訊都存起來
+				//save robustness level and exception information inside the robustness annotation 
 				Object[] values = (Object[]) mvpb[0].getValue();
 				rlinfo = new RLInfo[values.length];
 				for(int j = 0; j<values.length; j++){
 					IAnnotationBinding binding = (IAnnotationBinding) values[j];
-					// 處理RL
+					// access robustness level
 					IMemberValuePairBinding[] rlMvpb = binding.getAllMemberValuePairs();
 					if (rlMvpb.length == 2) {
 						rlinfo[j] = new RLInfo();
@@ -124,7 +122,6 @@ public class RLAdviceMessage {
 			rlinfo[0] = new RLInfo();
 			rlinfo[0].setLevel(RTag.LEVEL_1_ERR_REPORTING);
 			rlinfo[0].setException(getExceptionType());
-//			System.out.println("RLAdviceMessage沒有Annotation，例外類型為: "+ getExceptionType());
 		}
 		return rlinfo;
 	}

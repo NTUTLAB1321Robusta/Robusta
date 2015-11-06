@@ -32,21 +32,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 提供一個介面給user, 讓user可以選擇要Extract什麼樣的Method
+ * provide a user interface that user can select method to extract.
  * @author Min, Shiau
  */
 public class ExtractCleanupMethodInputPage extends UserInputWizardPage {
 
 	private static Logger logger = LoggerFactory.getLogger(ExtractCleanupMethodInputPage.class);
 
-	//Extract Method的變數名稱
+	//variable name of extract method
 	private Text newMethodText;
 	private Text existMethodText;
-	//Public、Protected、private三擇一的RadioButton
+	//radio button to select public, protected or private
 	private Button publicRadBtn;
 	private Button protectedRadBtn;
 	private Button privateRadBtn;
-	//e.printStack、java.logger二擇一的RadioButton
+	//radio button to select e.printStack or java.logger
 	private Button printRadBtn;
 	private Button loggerRadBtn;
 	//Exist Method Check Button
@@ -90,28 +90,26 @@ public class ExtractCleanupMethodInputPage extends UserInputWizardPage {
 		existMethodText = createText(composite, SWT.BORDER | SWT.READ_ONLY, "");
 		browseBtn = createButton(composite, SWT.NONE, "Browse...");
 
-		//設定Control動作
 		addControlListener();
 
-		//初始動作
+		//initialize
 		privateRadBtn.setSelection(true);
 		printRadBtn.setSelection(true);
 		browseBtn.setEnabled(false);
 		existMethodText.setEnabled(false);
 
-		//使用者未更改Text內容，而直接按確定，會執行此行。否則Text內容會抓不到。
 		handleInputChange();
 	}
 
 	/**
-	 * 是否使用既有的Method設定 (否則使用新的Method設定)
+	 * whether use existing configure or new configure to set up this user interface
 	 */
 	private void setGroupSetting(boolean isTrue) {
-		//若使用既有的Method
+		//use existing configure
 		browseBtn.setEnabled(isTrue);
 		existMethodText.setEnabled(isTrue);
 
-		//若新增新的Method
+		//use new configure
 		newMethodText.setEnabled(!isTrue);
 		printRadBtn.setEnabled(!isTrue);
 		loggerRadBtn.setEnabled(!isTrue);
@@ -121,7 +119,7 @@ public class ExtractCleanupMethodInputPage extends UserInputWizardPage {
 	}
 	
 	/**
-	 * 假入Text中的東西有改變時要處理
+	 * if there is something change in text, we should handle it 
 	 */
 	private void handleInputChange(){
 		RefactoringStatus status = new RefactoringStatus();
@@ -150,13 +148,12 @@ public class ExtractCleanupMethodInputPage extends UserInputWizardPage {
 				status.merge(refactoring.setNewMethodLogType(loggerRadBtn.getText()));
 		}
 
-		//先確認有沒有error的情形
+		//check whether there is error or not
 		setPageComplete(!status.hasError());
 		int severity = status.getSeverity();
 		String message = status.getMessageMatchingSeverity(severity);
 
 		if(severity >= RefactoringStatus.INFO) {
-			//有Error的情形就把他設定進來
 			setMessage(message,RefactoringStatus.WARNING);
 		} else {
 			setMessage("", NONE);
@@ -164,7 +161,7 @@ public class ExtractCleanupMethodInputPage extends UserInputWizardPage {
 	}
 
 	/**
-	 * 取得Refactoring的物件型態
+	 * get refactoring object type
 	 * @return
 	 */
 	private CarelessCleanupRefactor getEMRefactoring(){
@@ -172,28 +169,27 @@ public class ExtractCleanupMethodInputPage extends UserInputWizardPage {
 	}
 
 	/**
-	 * 跳出Dialog讓使用者選擇已存在的Method
+	 * pup up dialog that allow user select existing method
 	 * @return
 	 */
 	private IMethod selectExistingMethod(){
 
-		//透過Eclipse所提供的Dialog來找尋專案中所有的Method
+		//through dialog to find all method in project
 		try {
 
-			//取得存在getRethrowExRefactoring中的project
+			//get project in getRethrowExRefactoring
 			IJavaProject project = getEMRefactoring().getProject();
 
-			//尋找所有存在的Method
 			List<IJavaElement> methodList = searchProjectMethods(project);
 
-			//尋找專案中已存在的Method放入MethodSelectionDialog之中
+			//put all method in MethodSelectionDialog
 			ExistingMethodSelectionDialog dialog = new ExistingMethodSelectionDialog(getShell(), getEMRefactoring().getCurrentMethodNode());
 			dialog.setElements(methodList.toArray(new IJavaElement[methodList.size()]));
 			dialog.setTitle("Choose Existing Method");
 			dialog.setMessage("Choose Existing Method to Close Resource:");
 
 			if(dialog.open() == Window.OK){
-				//按下ok後回傳使用者所選擇的
+				//press ok and return user selection
 				return (IMethod)dialog.getFirstResult();
 			}
 		} catch (JavaModelException e) {			
@@ -203,7 +199,6 @@ public class ExtractCleanupMethodInputPage extends UserInputWizardPage {
 	}
 
 	/**
-	 * 尋找Project中的所有Method
 	 * @param project
 	 * @return
 	 * @throws JavaModelException
@@ -211,7 +206,7 @@ public class ExtractCleanupMethodInputPage extends UserInputWizardPage {
 	private List<IJavaElement> searchProjectMethods(IJavaProject project)
 			throws JavaModelException {
 
-		//取得Project中的CompilationUnit
+		//get all ICompilationUnit in project
 		List<ICompilationUnit> compilationUnitList = new ArrayList<ICompilationUnit>();
 		for (IJavaElement element : project.getChildren()) {
 			if (!element.getElementName().endsWith(".jar")) {
@@ -223,7 +218,7 @@ public class ExtractCleanupMethodInputPage extends UserInputWizardPage {
 			}
 		}
 
-		//取得CompilationUnit中的Method
+		//get all method in ICompilationUnit
 		List<IJavaElement> methodList = new ArrayList<IJavaElement>();
 		for (ICompilationUnit icu : compilationUnitList) {
 			for (IJavaElement element : icu.getChildren()) {
@@ -238,7 +233,6 @@ public class ExtractCleanupMethodInputPage extends UserInputWizardPage {
 	}
 	
 	/**
-	 * 建立Label
 	 * @param composite
 	 * @param name
 	 */
@@ -249,7 +243,6 @@ public class ExtractCleanupMethodInputPage extends UserInputWizardPage {
 	}
 
 	/**
-	 * 建立Radio Button
 	 * @param parent
 	 * @param name
 	 * @return
@@ -266,9 +259,8 @@ public class ExtractCleanupMethodInputPage extends UserInputWizardPage {
 	}
 	
 	/**
-	 * 建立有Layout的Composite
 	 * @param parent
-	 * @param columnNumber Column個數
+	 * @param columnNumber Column amount
 	 * @return
 	 */
 	private Composite createLayoutComposite(Composite parent, int columnNumber) {
@@ -282,7 +274,6 @@ public class ExtractCleanupMethodInputPage extends UserInputWizardPage {
 	}
 	
 	/**
-	 * 建立Text
 	 * @param composite
 	 * @param style
 	 * @param defaultText
@@ -296,7 +287,6 @@ public class ExtractCleanupMethodInputPage extends UserInputWizardPage {
 	}
 
 	/**
-	 * 建立Button
 	 * @param composite
 	 * @return 
 	 */
@@ -308,16 +298,15 @@ public class ExtractCleanupMethodInputPage extends UserInputWizardPage {
 	}
 	
 	/**
-	 * 將Control元件添加動作
+	 * add Control action
 	 */
 	private void addControlListener() {
-		//假如內容被更改的話,將資訊存到CarelessCleanupRefactoring
+		//if content has been modified, save information in CarelessCleanupRefactoring
 		newMethodText.addModifyListener(new ModifyListener(){
 			public void modifyText(ModifyEvent e) {
 				handleInputChange();				
 			}
 		});
-		//使用者按下ExistMethod，將部分群組顯示/不顯示
 		existMethodBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				if (existMethodBtn.getSelection())
@@ -328,15 +317,15 @@ public class ExtractCleanupMethodInputPage extends UserInputWizardPage {
 				handleInputChange();
 			}
 		});
-		//使用者按下BrowseButton，跳出MethodSelectionDialog
+		//press browse button and then pup up MethodSelectionDialog
 		browseBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				//跳出Dialog
+				//pup up dialog
 				existingMethod = selectExistingMethod();
 				if (existingMethod == null)
 					return;
 
-				//顯示使用者選擇Method資訊
+				//display method information which user select
 				IType className = (IType) existingMethod.getParent();
 				String path = className.getFullyQualifiedName() + "." + existingMethod.getElementName();
 				existMethodText.setText(path);

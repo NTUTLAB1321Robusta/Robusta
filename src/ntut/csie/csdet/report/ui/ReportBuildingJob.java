@@ -15,7 +15,7 @@ import org.eclipse.core.runtime.jobs.Job;
  * 
  */
 public class ReportBuildingJob extends Job {
-	//Project的資料
+	//project information
 	private IProject project;
 	private BadSmellDataStorage dataStorage;
 

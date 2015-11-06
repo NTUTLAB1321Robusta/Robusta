@@ -38,7 +38,6 @@ public class CatchClauseFinderVisitorTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		// 準備測試檔案樣本內容
 		javaProjectMaker = new JavaProjectMaker(testProjectName);
 		javaProjectMaker.setJREDefaultContainer();
 
@@ -51,13 +50,10 @@ public class CatchClauseFinderVisitorTest {
 				+ javaFile2String.getFileContent());
 		
 		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(CatchClauseSampleCode.class, testProjectName));
-		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// 設定要被建立AST的檔案
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
-		// 取得AST
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
 	}
@@ -69,7 +65,7 @@ public class CatchClauseFinderVisitorTest {
 
 	@Test
 	public void testCatchClauseFinderVisitor_2CatchClause() {
-		// 不知道為什麼，測試時候，ASTView上面看到的數字還要減一，答案才會正確。實際用的時候沒差。
+		//to get correct position of statement, you should minus the position from ASTVise with 1 
 		int targetCatchClauseStartPosition = 459 - 1;
 		CatchClauseFinderVisitor catchClauseFinder = new CatchClauseFinderVisitor(targetCatchClauseStartPosition);
 		compilationUnit.accept(catchClauseFinder);

@@ -122,7 +122,6 @@ public class RobustaSettingsTest {
 		robustaSettings.setProjectDetectAttribute("src", "enable", false);
 		robustaSettings.setProjectDetectAttribute("srcTest", "enable", false);
 		robustaSettings.writeNewXMLFile(robustaSettingFile.getPath());
-		// 驗證結果是否正確
 		String fileContent = readFileContents(robustaSettingFile);
 		assertEquals(
 				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
@@ -143,10 +142,8 @@ public class RobustaSettingsTest {
 	@Test
 	public void testWriteNewXMLFile() throws Exception {
 		robustaSettings.writeNewXMLFile(robustaSettingFile.getPath());
-		// 檢查檔案是否生成
 		assertTrue(robustaSettingFile.exists());
 
-		// 檢查檔案內容是否正確
 		String fileContent = readFileContents(robustaSettingFile);
 		assertEquals(
 				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><RobustaSettings />",
@@ -156,21 +153,17 @@ public class RobustaSettingsTest {
 	@Test
 	public void testWriteNewXMLFile_OverwriteNonXMLFormatFile()
 			throws Exception {
-		// 生成一個文字檔案，裡面都是中文字
+		// generate a text file with Chinese character
 		String chineseString = "天地玄黃宇宙洪荒";
 		FileWriter fw = new FileWriter(robustaSettingFile);
 		fw.write(chineseString);
 		fw.close();
-		// 確認檔案裡面的中文字
 		String chineseContent = readFileContents(robustaSettingFile);
 		assertEquals(chineseString, chineseContent);
 
-		// 生成XML檔案
 		robustaSettings.writeNewXMLFile(robustaSettingFile.getPath());
-		// 檢查檔案是否生成
 		assertTrue(robustaSettingFile.exists());
 
-		// 檢查檔案內容是否正確
 		String fileContent = readFileContents(robustaSettingFile);
 		assertEquals(
 				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><RobustaSettings />",
@@ -180,26 +173,20 @@ public class RobustaSettingsTest {
 	@Test
 	public void testWriteNewXMLFile_OtherTextWriterWriteRobustaSettingXMLFormatFileAfterSmellSettingInstanceIsCreated()
 			throws Exception {
-		// 生成一個文字檔案，裡面是舊有的XML設定檔
 		String xmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><RobustaSettings><ProjectDetect FolderName=\"src\" enable=\"true\"></ProjectDetect></RobustaSettings>";
 		FileWriter fw = new FileWriter(robustaSettingFile);
 		fw.write(xmlString);
 		fw.close();
-		// 確認檔案裡面的XML設定檔內容
 		String xmlReadContent = readFileContents(robustaSettingFile);
 		assertEquals(xmlString, xmlReadContent);
 
-		// 生成XML檔案
 		robustaSettings.writeNewXMLFile(robustaSettingFile.getPath());
-		// 檢查檔案是否生成
 		assertTrue(robustaSettingFile.exists());
 
-		// 檢查檔案內容是否正確
 		String fileContent = readFileContents(robustaSettingFile);
 		assertEquals(
 				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><RobustaSettings />",
 				fileContent);
 
 	}
-
 }

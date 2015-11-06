@@ -13,7 +13,7 @@ public class OverLoggingSelf4JExample {
 	Logger self4jLogger = LoggerFactory.getLogger(this.getClass());
 	
 	/** --------------------------------------------------------------------------- *
-	 * 								Self4J當作使用者自訂								*
+	 * 								take Self4J as user defined					    *
 	 * ---------------------------------------------------------------------------- */
 	/** ---------------------Call Chain In Normal Case----------------------------- */
 	/* ----------------------Call Chain In the Same Class-------------------------- */
@@ -22,7 +22,7 @@ public class OverLoggingSelf4JExample {
 		try {
 			theSecondOrderInTheSameClassWithSelf4J();
 		} catch(IOException e) {
-			// Call chain最上層不會標示OverLogging
+			//it will not marked as OverLogging at the top of call chain.
 			self4jLogger.error(e.getMessage() + "theFirstOrderInTheSameClassWithSelf4J");
 		}
 	}
@@ -45,7 +45,7 @@ public class OverLoggingSelf4JExample {
 		} catch(IOException e) {
 			e.printStackTrace();
 			System.out.println(e);
-			// 沒有log動作，但是有往上拋，故需要繼續追蹤
+			//there is not logger but a throw e to upper caller in this method, so the detection need to be continued.
 			throw e;
 		}
 	}
@@ -68,7 +68,7 @@ public class OverLoggingSelf4JExample {
 			OverLoggingTheFirstOrderClass outer = new OverLoggingTheFirstOrderClass();
 			outer.calleeWithSelf4J();
 		} catch(IOException e) {
-			// Call chain最上層不會標示OverLogging
+			//it will not marked as OverLogging at the top of call chain.
 			self4jLogger.error(e.getMessage() + "calleeInOutterClassWithSelf4J");
 		}
 	}
@@ -81,7 +81,7 @@ public class OverLoggingSelf4JExample {
 			theSecondOrderInTheSameClassWithJavaLogAndSomeConditions();
 			theFifthOrderInTheSameClassWithJavaLogAndSomeConditions();
 		} catch (IOException e) {
-			// Call chain最上層不會標示OverLogging
+		//it will not marked as OverLogging at the top of call chain.
 			self4jLogger.error(e.getMessage() + "theFirstOrderInTheSameClassWithJavaLogAndSomeConditions");
 		}
 	}
@@ -105,7 +105,7 @@ public class OverLoggingSelf4JExample {
 		} catch(FileNotFoundException e) {
 			e.printStackTrace();
 			System.out.println(e);
-			// 例外轉型，要繼續追蹤
+			//the detection needs to be continued when it meet a exception casting. 
 			throw new IOException(e);
 		}
 	}
@@ -152,7 +152,7 @@ public class OverLoggingSelf4JExample {
 			OverLoggingTheFirstOrderClass outer = new OverLoggingTheFirstOrderClass();
 			outer.calleeWithSelf4J();
 		} catch(IOException e) {
-			// Call chain最上層不會標示OverLogging
+		//it will not marked as OverLogging at the top of call chain.
 			self4jLogger.error(e.getMessage() + "calleeInOutterClassWithSelf4JAndSomeConditions");
 		}
 	}

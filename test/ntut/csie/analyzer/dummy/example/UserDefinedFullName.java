@@ -7,7 +7,7 @@ import java.util.ArrayList;
 public class UserDefinedFullName {
 
 	/**
-	 * 測試使用者自訂type3 同時測試addDummyHandlerSmellInfo的去<>功能是否能正常運行
+	 * testing user defined pattern and testing whether the remove "<>" function of addDummyHandlerSmellInfo is working
 	 */
 	public void method() {
 		ArrayList<Boolean> booleanList = new ArrayList<Boolean>();
@@ -17,7 +17,7 @@ public class UserDefinedFullName {
 			fis = new FileInputStream("");
 			fis.read();
 		} catch (IOException e) { // DummyHandler
-			// 使用者自訂type3 - java.util.ArrayList.add
+			// user defined type3 - java.util.ArrayList.add
 			booleanList.add(true);
 		}
 	}

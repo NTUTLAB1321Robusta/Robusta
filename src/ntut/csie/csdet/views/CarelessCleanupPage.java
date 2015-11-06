@@ -23,23 +23,14 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
 public class CarelessCleanupPage  extends APropertyPage {
-	// 放code template的區域
 	private StyledText templateArea;
-	//是否要偵測使用者自訂方法的按鈕
 	private Button isOnlyDetectingInTryStatement;
-	// 不偵測的template字型風格
 	StyleRange[] beforeSampleStyles = new StyleRange[8];
-	// 偵測的template的字型風格
 	StyleRange[] afterSampleStyles = new StyleRange[8];
-	// code template Before detect的內容
 	private String beforeText;
-	// code template After detect的內容
 	private String afterText;
-	// 打開extraRuleDialog的按鈕
 	private Button extraRuleBtn;
-	// Library Data
 	private TreeMap<String, Boolean> userDefinedCode = new TreeMap<String, Boolean>();
-	// 負責處理讀寫XML
 	private SmellSettings smellSettings;
 
 	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
@@ -47,7 +38,7 @@ public class CarelessCleanupPage  extends APropertyPage {
 	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
 	public CarelessCleanupPage(Composite composite, CSPropertyPage page, SmellSettings smellSettings){
 		super(composite,page);
-		// Context of TextBox, when only detected in try statement
+		//Context of TextBox, when only detected in try statement
 		beforeText = "InputStream in = new FileInputStream(inputFile);\n" +
 				"OutputStream out = new FileOutputStream(outputFile);\n" +
 				"try {\n" +
@@ -58,7 +49,7 @@ public class CarelessCleanupPage  extends APropertyPage {
 				"}\n" +
 				"in.close(); // will not be detected";
 
-		// Context of TextBox, when detected whole area
+		//Context of TextBox, when detected whole area
 		afterText =	"InputStream in = new FileInputStream(inputFile);\n" +
 				"OutputStream out = new FileOutputStream(outputFile);\n" +
 				"try {\n" +
@@ -70,21 +61,21 @@ public class CarelessCleanupPage  extends APropertyPage {
 				"in.close(); // will be detected";
 
 		this.smellSettings = smellSettings;
-		// 加入頁面的內容
+		//add page content
 		addFirstSection(composite);
 	}
 
 	/**
-	 * 加入頁面的內容
+	 * add page content
 	 */
 	private void addFirstSection(final Composite CarelessCleanupPage){
 		userDefinedCode = smellSettings.getSmellPatterns(SmellSettings.SMELL_CARELESSCLEANUP);
-		// 偵測條件
+
 		final Label detectSettingsLabel = new Label(CarelessCleanupPage, SWT.NONE);
 		detectSettingsLabel.setText(resource.getString("detect.rule"));
 		detectSettingsLabel.setLocation(10, 10);
 		detectSettingsLabel.pack();
-		// Release Method Button
+		//Release Method Button
 		isOnlyDetectingInTryStatement = new Button(CarelessCleanupPage, SWT.CHECK);
 		isOnlyDetectingInTryStatement.setText(resource.getString("detect.out.of.try.statement"));
 		isOnlyDetectingInTryStatement.setLocation(
@@ -93,18 +84,18 @@ public class CarelessCleanupPage  extends APropertyPage {
 		isOnlyDetectingInTryStatement.pack();
 		isOnlyDetectingInTryStatement.addSelectionListener(new SelectionAdapter(){
 			public void widgetSelected(final SelectionEvent e1){
-				// 按下按鈕而改變Text文字和顏色
+				//press button to change text and text color
 				adjustText();
 				adjustFont();
 			}
 		});
 
-		// Customize Rule
+		//Customize Rule
 		final Label detectSettingsLabel2 = new Label(CarelessCleanupPage, SWT.NONE);
 		detectSettingsLabel2.setText(resource.getString("customize.rule"));
 		detectSettingsLabel2.setLocation(getLowerRightCoordinate(isOnlyDetectingInTryStatement).x+80, 10);
 		detectSettingsLabel2.pack();
-		// Open Dialog Button
+		//Open Dialog Button
 		extraRuleBtn = new Button(CarelessCleanupPage, SWT.NONE);
 		extraRuleBtn.setText(resource.getString("extra.rule"));
 		extraRuleBtn.setLocation(detectSettingsLabel2.getLocation().x+5, getLowerRightCoordinate(detectSettingsLabel2).y+5);
@@ -116,11 +107,11 @@ public class CarelessCleanupPage  extends APropertyPage {
 				userDefinedCode = dialog.getLibMap();
 			}
 		});
-		// 若要偵測,將button打勾,並改變TextBox的文字和顏色
+		//checked the check box to apply detect rule and change text and text color
 		isOnlyDetectingInTryStatement.setSelection(
 			smellSettings.isExtraRuleExist(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT));
 
-		// 分隔線
+		//separator bar
 		final Label separateLabel1 = new Label(CarelessCleanupPage, SWT.VERTICAL | SWT.SEPARATOR);
 		separateLabel1.setLocation(getLowerRightCoordinate(isOnlyDetectingInTryStatement).x+60, 5);
 		separateLabel1.setSize(1, getLowerRightCoordinate(isOnlyDetectingInTryStatement).y+5);
@@ -128,12 +119,12 @@ public class CarelessCleanupPage  extends APropertyPage {
 		separateLabel2.setLocation(10, getLowerRightCoordinate(extraRuleBtn).y+10);
 		separateLabel2.setSize(getLowerRightCoordinate(detectSettingsLabel2).x-10, 1);
 		
-		// Template Label
+		//Template Label
 		final Label detBeforeLbl = new Label(CarelessCleanupPage, SWT.NONE);
 		detBeforeLbl.setText(resource.getString("detect.example"));
 		detBeforeLbl.setLocation(10, getLowerRightCoordinate(separateLabel2).y+10);
 		detBeforeLbl.pack();
-		// TextBox
+		//TextBox
 		templateArea = new StyledText(CarelessCleanupPage, SWT.BORDER);
 		Font font = new Font(CarelessCleanupPage.getDisplay(),"Courier New",14,SWT.NORMAL);		
 		templateArea.setFont(font);
@@ -144,25 +135,23 @@ public class CarelessCleanupPage  extends APropertyPage {
 		templateArea.setEditable(false);
 		templateArea.setText(beforeText);
 		
-		// 分隔線與Template等長(取最長的)
+		//set separator bar and template label the same length
 		if (getLowerRightCoordinate(separateLabel2).x < templateAreaWidth)
 			separateLabel2.setSize(templateAreaWidth, 1);
 		else
 			templateArea.setSize(getLowerRightCoordinate(separateLabel2).x, templateAreaHeight);
 		
-		// 載入預定的字型、顏色
+		//apply default text style
 		addBeforeSampleStyle(CarelessCleanupPage.getDisplay());	
 		addAfterSampleStyle(CarelessCleanupPage.getDisplay());
 		
-		// 調整TextBox的文字
 		adjustText();
 
-		// 調整程式碼的顏色
 		adjustFont();
 	}
 	
 	/**
-	 * 調整TextBox的文字
+	 * adjust text on TextBox
 	 */
 	private void adjustText() {
 		if (isOnlyDetectingInTryStatement.getSelection()) {
@@ -174,7 +163,7 @@ public class CarelessCleanupPage  extends APropertyPage {
 	}
 	
 	/**
-	 * 將程式碼中可能會用到的字型、顏色先行載入(Try only)
+	 * pre-load text style which will be use in program(Try only)   
 	 */
 	private void addBeforeSampleStyle(Display display){
 		beforeSampleStyles[0] = createBoldMagentaStyleRange(display); // key word new
@@ -188,7 +177,7 @@ public class CarelessCleanupPage  extends APropertyPage {
 	}
 	
 	/**
-	 * 將程式碼中可能會用到的字型、顏色先行載入(Whole area)
+	 *pre-load font style which will be use in program(Whole area)
 	 */
 	private void addAfterSampleStyle(Display display){
 		afterSampleStyles[0] = createBoldMagentaStyleRange(display); // key word new
@@ -222,38 +211,38 @@ public class CarelessCleanupPage  extends APropertyPage {
 	}
 	
 	/**
-	 * 調整TextBox的文字的字型和顏色
+	 * adjust TextBox's font style
 	 */
 	private void adjustFont(){
 		// When Button is selected
 		if(isOnlyDetectingInTryStatement.getSelection()){
-			// Template的字型風格的位置範圍
+			// set Template font style apply boundary
 			int[] beforeRange=new int[]{17,3,68,3,102,3,112,32,162,19,184,5,210,5,233,19};
-			// 取得template字型風格
+			//get Template font style
 			StyleRange[] beforeStyles=new StyleRange[8];
 			for(int i=0;i<beforeSampleStyles.length;i++){
 				beforeStyles[i]=beforeSampleStyles[i];
 			}
-			//把字型的風格和風格的範圍套用在Template上
+			//apply font boundary and style to Template 
 			templateArea.setStyleRanges(beforeRange, beforeStyles);
 		}
 		
 		// When Button isn't selected
 		if(!isOnlyDetectingInTryStatement.getSelection()){
-			// Template的字型風格的位置範圍
+			// boundary of Template's font style
 			int[] afterRange=new int[]{17,3,68,3,102,3,112,32,162,19,184,5,210,5,233,23};
-			//取得template字型風格
+			//get template font style
 			StyleRange[] afterStyles=new StyleRange[8];
 			for(int i=0;i<afterSampleStyles.length;i++){
 				afterStyles[i]=afterSampleStyles[i];
 			}
-			//把字型的風格和風格的範圍套用在Template上
+			//apply font boundary and style to Template 
 			templateArea.setStyleRanges(afterRange, afterStyles);
 		}
 	}
 	
 	/**
-	 * 儲存使用者設定
+	 * store user configure
 	 */
 	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
 	@Override
@@ -262,21 +251,20 @@ public class CarelessCleanupPage  extends APropertyPage {
 		smellSettings.removeExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		
 		/* 
-		 * 判斷這個Smell的Extra Rule是不是要被偵測。
-		 * 如果被打勾就是要被偵測。
+		 * get user selection to decide whether detect extra rule 
 		 */
 		if(isOnlyDetectingInTryStatement.getSelection()) {
 			smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		}
 		
-		// 存入使用者自訂Rule
+		// save user define rule
 		Iterator<String> userDefinedCodeIterator = userDefinedCode.keySet().iterator();
 		while(userDefinedCodeIterator.hasNext()) {
 			String key = userDefinedCodeIterator.next();
 			smellSettings.addCarelessCleanupPattern(key, userDefinedCode.get(key));
 		}
 		
-		// 將檔案寫回
+		// save user modify back to XML
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		return true;
 	}

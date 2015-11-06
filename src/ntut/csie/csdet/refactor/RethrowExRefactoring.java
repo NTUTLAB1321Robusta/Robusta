@@ -66,7 +66,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * Rethrow Unchecked exception的具體操作都在這個class中
+ * the implement of rethrow unchecked exception is in this class 
  * @author chewei
  */
 
@@ -75,29 +75,23 @@ public class RethrowExRefactoring extends Refactoring {
 	
 	private IJavaProject project;
 	
-	// 紀錄code smell的type
-	private String problem;
-	// 使用者所選擇的Exception Type
-	private IType exType;
+	private String badSmellType;
 	
-	// 使用者所點選的Marker
+	private IType userSelectingexceptionType;
+	
 	private IMarker marker;
 	
 	private IOpenable actOpenable;
 	
-	// user 所填寫要丟出的Exception,預設是RunTimeException
-	private String exceptionType;
+	private String exceptionTypeWillBeRethrown;
 	
 	private TextFileChange textFileChange;
 	
-	// 目前method的RL Annotation資訊
-	private List<RLMessage> currentMethodRLList = null;
+	private List<RLMessage> methodRobustnessLevelList = null;
 	
-	// 存放目前要修改的.java檔
-	private CompilationUnit actRoot;
+	private CompilationUnit javaFileWillBeRefactored;
 	
-	// 存放目前所要fix的method node
-	private MethodDeclaration currentMethodNode = null;
+	private MethodDeclaration methodNodeWillBeRefactored = null;
 	
 	private List<MarkerInfo> currentExList = null;
 	
@@ -114,9 +108,7 @@ public class RethrowExRefactoring extends Refactoring {
 	@Override
 	public RefactoringStatus checkFinalConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
-			// 去修改AST Tree
 			collectChange(marker.getResource());
-			// 不需check final condition
 			RefactoringStatus status = new RefactoringStatus();		
 			return status;
 	}
@@ -124,7 +116,6 @@ public class RethrowExRefactoring extends Refactoring {
 	@Override
 	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
-		// 不需check initial condition
 		RefactoringStatus status = new RefactoringStatus();		
 		return status;
 	}
@@ -132,20 +123,13 @@ public class RethrowExRefactoring extends Refactoring {
 	@Override
 	public Change createChange(IProgressMonitor pm)
 								throws CoreException, OperationCanceledException {
-		// 2010.07.20 之前的寫法，Preview的Token不會變色
-		// 把要變更的結果包成composite傳出去
-		// Change[] changes = new Change[] {textFileChange};
-		// CompositeChange change = new CompositeChange("Rethrow Unchecked Exception", changes);
-
 		String name = "Rethrow Unchecked Exception";
 		ICompilationUnit unit = (ICompilationUnit) this.actOpenable;
 		CompilationUnitChange result = new CompilationUnitChange(name, unit);
 		result.setSaveMode(TextFileChange.KEEP_SAVE_STATE);
 
-		// 將修改結果設置在CompilationUnitChange
 		TextEdit edits = textFileChange.getEdit();
 		result.setEdit(edits);
-		// 將修改結果設成Group，會顯示在Preview上方節點。
 		result.addTextEditGroup(new TextEditGroup("Rethrow Unchecked Exception", 
 								new TextEdit[] {edits} ));
 
@@ -157,27 +141,17 @@ public class RethrowExRefactoring extends Refactoring {
 		return "Rethrow Unchecked Exception";
 	}
 
-	/**
-	 * 把marker傳進來供此class存取一些code smell資訊
-	 * @param marker
-	 */
 	public void setMarker(IMarker marker) {
 		this.marker = marker;
 		this.project = JavaCore.create(marker.getResource().getProject());
 	}
 	
-	/**
-	 * parse AST Tree並取得要修改的method node
-	 * @param resource
-	 */
 	private void collectChange(IResource resource) {
 		try {
-			problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
+			badSmellType = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
 			methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
 
-			// 取得Method相關資訊
 			if (findMethod(resource)) {
-				// 去修改AST Tree的內容
 				rethrowException();
 			}
 		} catch (CoreException e) {
@@ -186,48 +160,44 @@ public class RethrowExRefactoring extends Refactoring {
 	}
 	
 	/**
-	 * 取得Method相關資訊
-	 * @param resource		來源
+	 * get the information of method which will be refactored
+	 * @param resource		
 	 * @param methodIdx		Method的Index
-	 * @return				是否成功
+	 * @return				
 	 */
 	private boolean findMethod(IResource resource) { 
-		// 取得要修改的CompilationUnit
 		if (resource instanceof IFile && resource.getName().endsWith(".java")) {
 			try {
 				IJavaElement javaElement = JavaCore.create(resource);
 				if (javaElement instanceof IOpenable)
 					actOpenable = (IOpenable) javaElement;
 				
-				// Create AST to parse
 				ASTParser parser = ASTParser.newParser(AST.JLS3);
 				parser.setKind(ASTParser.K_COMPILATION_UNIT);
 				
 				parser.setSource((ICompilationUnit) javaElement);
 				parser.setResolveBindings(true);
-				actRoot = (CompilationUnit) parser.createAST(null);
+				javaFileWillBeRefactored = (CompilationUnit) parser.createAST(null);
 				
-				// 取得該class所有的method
 				ASTMethodCollector methodCollector = new ASTMethodCollector();
-				actRoot.accept(methodCollector);
+				javaFileWillBeRefactored.accept(methodCollector);
 				List<MethodDeclaration> methodList = methodCollector.getMethodList();
 				
-				// 取得目前要被修改的method node
-				currentMethodNode = methodList.get(Integer.parseInt(methodIdx));
-				if (currentMethodNode != null) {
-					// 取得這個method的RL資訊
-					ExceptionAnalyzer exVisitor = new ExceptionAnalyzer(this.actRoot, currentMethodNode.getStartPosition(), 0);
-					currentMethodNode.accept(exVisitor);
-					currentMethodRLList = exVisitor.getMethodRLAnnotationList();
+				methodNodeWillBeRefactored = methodList.get(Integer.parseInt(methodIdx));
+				if (methodNodeWillBeRefactored != null) {
+					// get robustness level information of method
+					ExceptionAnalyzer exVisitor = new ExceptionAnalyzer(this.javaFileWillBeRefactored, methodNodeWillBeRefactored.getStartPosition(), 0);
+					methodNodeWillBeRefactored.accept(exVisitor);
+					methodRobustnessLevelList = exVisitor.getMethodRLAnnotationList();
 
 					// Check if it is Empty Catch Block or Dummy handler, and get code smell list
-					if(problem.equals(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK)) {
-						EmptyCatchBlockVisitor visitor = new EmptyCatchBlockVisitor(this.actRoot);
-						currentMethodNode.accept(visitor);
+					if(badSmellType.equals(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK)) {
+						EmptyCatchBlockVisitor visitor = new EmptyCatchBlockVisitor(this.javaFileWillBeRefactored);
+						methodNodeWillBeRefactored.accept(visitor);
 						currentExList = visitor.getEmptyCatchList();
 					} else {
-						DummyHandlerVisitor visitor = new DummyHandlerVisitor(this.actRoot);
-						currentMethodNode.accept(visitor);
+						DummyHandlerVisitor visitor = new DummyHandlerVisitor(this.javaFileWillBeRefactored);
+						methodNodeWillBeRefactored.accept(visitor);
 						currentExList = visitor.getDummyHandlerList();
 					}
 				}
@@ -240,44 +210,39 @@ public class RethrowExRefactoring extends Refactoring {
 	}
 	
 	/**
-	 *建立Throw Exception的資訊 
+	 *establish rethrow exception 
 	 */
 	@Robustness(value = { @RTag(level = 1, exception = RuntimeException.class) })
 	private void rethrowException() {
 		try {
-			actRoot.recordModifications();
-			AST ast = currentMethodNode.getAST();
+			javaFileWillBeRefactored.recordModifications();
+			AST ast = methodNodeWillBeRefactored.getAST();
 			
-			// 準備在Catch Clause中加入throw exception
-			// 取得EH smell的資訊
+			// add throw exception in catch clause
 			msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
 			MarkerInfo markerInfo = currentExList.get(Integer.parseInt(msgIdx));
-			// 收集該method所有的catch clause
+			// collect all catch clause of method
 			ASTCatchCollect catchCollector = new ASTCatchCollect();
-			currentMethodNode.accept(catchCollector);
+			methodNodeWillBeRefactored.accept(catchCollector);
 			List<CatchClause> catchList = catchCollector.getMethodList();
 			
-			// 去比對startPosition,找出要修改的catch
+			// compare the position to find out specified catch clause which will be refactored.
 			for (int i =0; i < catchList.size(); i++) {
 				if(catchList.get(i).getStartPosition() == markerInfo.getPosition()) {
 					catchIdx = i;
-					// 在catch clause中建立throw statement
-					addThrowStatement(catchList.get(i), ast);
+					// add throw statement in catch clause
+					addThrowExceptionStatement(catchList.get(i), ast);
 					if(smellSettings.isAddingRobustnessAnnotation()) {
-						// 建立RLAnnotation
 						addAnnotationRoot(ast);
 					}
-					// 加入未import的Library(遇到RuntimeException就不用加Library)
-					if (!exceptionType.equals("RuntimeException")) {
-						addImportDeclaration();
-						/* no need to declare runtimeexcpetion on method signature 
-						 because user can only select runtime exception on the search dialog */
-						//checkMethodThrow(ast);
+					if (!exceptionTypeWillBeRethrown.equals("RuntimeException")) {
+						importExceptionLibrary();
+						/* don't need to declare Runtimeexcpetion on method signature 
+						 because user can only select Runtimeexception on the search dialog */
 						break;
 					}
 				}
 			}
-			// 寫回Edit中
 			applyChange();
 		}catch (Exception e) {
 			throw new RuntimeException(e);
@@ -285,64 +250,52 @@ public class RethrowExRefactoring extends Refactoring {
 	}
 	
 	/**
-	 * 檢查在method前面有沒有throw exception
+	 * check whether there is a exception declare on method signature.
 	 * @param ast
 	 */
 	private void checkMethodThrow(AST ast) {
-		MethodDeclaration md = (MethodDeclaration)currentMethodNode;
+		MethodDeclaration md = (MethodDeclaration)methodNodeWillBeRefactored;
 		List<SimpleName> thStat = md.thrownExceptions();
 		boolean isExist = false;
 		for(int i=0;i<thStat.size();i++) {
 			if(thStat.get(i).getNodeType() ==  ASTNode.SIMPLE_NAME) {
 				SimpleName sn = (SimpleName)thStat.get(i);
-				if(sn.getIdentifier().equals(exceptionType)) {
+				if(sn.getIdentifier().equals(exceptionTypeWillBeRethrown)) {
 					isExist = true;
 					break;
 				}
 			}
 		}
 		if(!isExist)
-			thStat.add(ast.newSimpleName(this.exceptionType));
+			thStat.add(ast.newSimpleName(this.exceptionTypeWillBeRethrown));
 	}
 	
-	/**
-	 * 在catch中增加throw new RuntimeException(..)
-	 * @param cc
-	 * @param ast
-	 */
-	private void addThrowStatement(CatchClause cc, AST ast) {
-		// 取得該catch()中的exception variable
+	
+	private void addThrowExceptionStatement(CatchClause cc, AST ast) {
+		// get exception variable form catch clause expression
 		SingleVariableDeclaration svd = (SingleVariableDeclaration) cc
 		.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
-		// 自行建立一個throw statement加入
 		ThrowStatement ts = ast.newThrowStatement();
-		// 將throw的variable傳入
 		ClassInstanceCreation cic = ast.newClassInstanceCreation();
 		//throw new RuntimeException()
-		cic.setType(ast.newSimpleType(ast.newSimpleName(exceptionType)));
-		// 將throw new RuntimeException(ex)括號中加入參數 
+		cic.setType(ast.newSimpleType(ast.newSimpleName(exceptionTypeWillBeRethrown)));
+		// add argument to throw new RuntimeException() 
 		cic.arguments().add(ast.newSimpleName(svd.resolveBinding().getName()));
 		
-		// 取得CatchClause所有的statement,將相關print例外資訊的東西移除
 		List<Statement> statement = cc.getBody().statements();
-		if(problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)) {
-			// 假如要fix的code smell是dummy handler,就要把catch中的列印資訊刪除
+		if(badSmellType.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)) {
+			// delete the statement which will cause dummy handler
 			deleteStatement(statement);
 		}
-		// 將新建立的節點寫回
 		ts.setExpression(cic);
 		statement.add(ts);	
 	}
 	
-	/**
-	 * FIXME - 參數沒使用到 2012.3.30
-	 * @param markerInfo
-	 */
 	private void applyChange() {		
 		try {
 			ICompilationUnit cu = (ICompilationUnit) actOpenable;
 			Document document = new Document(cu.getBuffer().getContents());
-			TextEdit edits = actRoot.rewrite(document, cu.getJavaProject().getOptions(true));
+			TextEdit edits = javaFileWillBeRefactored.rewrite(document, cu.getJavaProject().getOptions(true));
 			textFileChange = new TextFileChange(cu.getElementName(), (IFile)cu.getResource());
 			textFileChange.setEdit(edits);
 		} catch (JavaModelException e) {
@@ -351,20 +304,18 @@ public class RethrowExRefactoring extends Refactoring {
 	}
 	
 	/**
-	 * 在Rethrow之前,先將相關的print字串都清除掉
+	 * delete the statement which will cause dummy handler
 	 */
 	private void deleteStatement(List<Statement> statementTemp) {
-		// 從Catch Clause裡面剖析兩種情形
 		if(statementTemp.size() != 0) {
 			for(int i=0;i<statementTemp.size();i++) {		
 				if(statementTemp.get(i) instanceof ExpressionStatement ) {
 					ExpressionStatement statement = (ExpressionStatement) statementTemp.get(i);
-					// 遇到System.out.print or printStackTrace就把他remove掉
+					// remove System.out.print and printStackTrace
 					if (statement.getExpression().toString().contains("System.out.print") ||
 						statement.getExpression().toString().contains("printStackTrace") ||
 						statement.getExpression().toString().contains("System.err.print")) {	
 						statementTemp.remove(i);
-						// 移除完之後ArrayList的位置會重新調整過,所以利用遞回來繼續往下找符合的條件並移除
 						i--;
 					}
 				}			
@@ -373,8 +324,7 @@ public class RethrowExRefactoring extends Refactoring {
 	}
 	
 	private void addAnnotationRoot(AST ast) {
-		// 要建立@Robustness(value={@RTag(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
-		// 建立Annotation root
+		// establish the annotation like "@Robustness(value={@RTag(level=1, exception=java.lang.RuntimeException.class)})"
 		NormalAnnotation root = ast.newNormalAnnotation();
 		root.setTypeName(ast.newSimpleName("Robustness"));
 
@@ -384,27 +334,26 @@ public class RethrowExRefactoring extends Refactoring {
 		ArrayInitializer rlary = ast.newArrayInitializer();
 		value.setValue(rlary);
 		
-		MethodDeclaration method = (MethodDeclaration) currentMethodNode;		
-		if(currentMethodRLList.size() == 0) {		
-			rlary.expressions().add(getRLAnnotation(ast,1,exceptionType));
+		MethodDeclaration method = (MethodDeclaration) methodNodeWillBeRefactored;		
+		if(methodRobustnessLevelList.size() == 0) {		
+			rlary.expressions().add(getRLAnnotation(ast,1,exceptionTypeWillBeRethrown));
 		} else {
 		
-			for(RLMessage rlmsg : currentMethodRLList) {
-				// 把舊的annotation加進去
+			for(RLMessage rlmsg : methodRobustnessLevelList) {
 				int pos = rlmsg.getRLData().getExceptionType().toString().lastIndexOf(".");
 				String cut = rlmsg.getRLData().getExceptionType().toString().substring(pos+1);
 				
-				// 如果有有RL annotation重複就不加進去
-				if((!cut.equals(exceptionType)) && (rlmsg.getRLData().getLevel() == 1)) {					
+				// if there are duplicate RL annotation then ignore it.
+				if((!cut.equals(exceptionTypeWillBeRethrown)) && (rlmsg.getRLData().getLevel() == 1)) {					
 					rlary.expressions().add(
 							getRLAnnotation(ast, rlmsg.getRLData().getLevel(), rlmsg.getRLData().getExceptionType()));	
 				}	
 			}
-			rlary.expressions().add(getRLAnnotation(ast,1,exceptionType));
+			rlary.expressions().add(getRLAnnotation(ast,1,exceptionTypeWillBeRethrown));
 			
 			List<IExtendedModifier> modifiers = method.modifiers();
 			for (int i = 0, size = modifiers.size(); i < size; i++) {
-				// 找到舊有的annotation後將它移除
+				// remove existing annotation
 				if (modifiers.get(i).isAnnotation() && modifiers.get(i).toString().indexOf("Robustness") != -1) {
 					method.modifiers().remove(i);
 					break;
@@ -414,36 +363,35 @@ public class RethrowExRefactoring extends Refactoring {
 		if (rlary.expressions().size() > 0) {
 			method.modifiers().add(0, root);
 		}
-		// 將RL的library加進來
-		addImportRLDeclaration();
+		importRobuatnessLevelLibrary();
 	}
 	
 	
 	/**
-	 * 產生RL Annotation之RL資料
+	 * generate robustness level information for robustness level annotation
 	 * @param ast:AST Object
-	 * @param levelVal:強健度等級
-	 * @param exClass:例外類別
+	 * @param robustnessLevelVal
+	 * @param exceptionType
 	 * @return NormalAnnotation AST Node
 	 */
-	private NormalAnnotation getRLAnnotation(AST ast, int levelVal, String excption) {
-		// 要建立@Robustness(value={@RTag(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
+	private NormalAnnotation getRLAnnotation(AST ast, int robustnessLevelVal, String exceptionType) {
+		// generate the annotation like "@Robustness(value={@RTag(level=1, exception=java.lang.RuntimeException.class)})"
 		NormalAnnotation rl = ast.newNormalAnnotation();
 		rl.setTypeName(ast.newSimpleName(RTag.class.getSimpleName().toString()));
 
 		// level = 1
 		MemberValuePair level = ast.newMemberValuePair();
 		level.setName(ast.newSimpleName(RTag.LEVEL));
-		//throw statement 預設level = 1
-		level.setValue(ast.newNumberLiteral(String.valueOf(levelVal)));
+		//default level of throw statement is 1
+		level.setValue(ast.newNumberLiteral(String.valueOf(robustnessLevelVal)));
 		rl.values().add(level);
 
 		// exception=java.lang.RuntimeException.class
 		MemberValuePair exception = ast.newMemberValuePair();
 		exception.setName(ast.newSimpleName(RTag.EXCEPTION));
 		TypeLiteral exclass = ast.newTypeLiteral();
-		// 預設為RuntimeException
-		exclass.setType(ast.newSimpleType(ast.newName(excption)));
+		// default exception is RuntimeException
+		exclass.setType(ast.newSimpleType(ast.newName(exceptionType)));
 		exception.setValue(exclass);
 		rl.values().add(exception);
 	
@@ -451,30 +399,26 @@ public class RethrowExRefactoring extends Refactoring {
 	}
 	
 	/**
-	 * 判斷是否有未加入的Library,但throw RuntimeException的情況要排除
-	 * 因為throw RuntimeException不需import Library
+	 * import required exception's library except RuntimeException, because it don't need to import RuntimeException's library.
 	 */
-	private void addImportDeclaration() {
-		// 判斷是否有import library
+	private void importExceptionLibrary() {
 		boolean isImportLibrary = false;
-		List<ImportDeclaration> importList = actRoot.imports();
+		List<ImportDeclaration> importList = javaFileWillBeRefactored.imports();
 		for(ImportDeclaration id : importList) {
-			if(exType.getFullyQualifiedName().equals(id.getName().getFullyQualifiedName()))
+			if(userSelectingexceptionType.getFullyQualifiedName().equals(id.getName().getFullyQualifiedName()))
 				isImportLibrary = true;
 		}
 		
-		// 假如沒有import就加入到AST中
-		AST rootAst = actRoot.getAST(); 
+		AST rootAst = javaFileWillBeRefactored.getAST(); 
 		if(!isImportLibrary) {
 			ImportDeclaration imp = rootAst.newImportDeclaration();
-			imp.setName(rootAst.newName(exType.getFullyQualifiedName()));
-			actRoot.imports().add(imp);
+			imp.setName(rootAst.newName(userSelectingexceptionType.getFullyQualifiedName()));
+			javaFileWillBeRefactored.imports().add(imp);
 		}
 	}
 
-	private void addImportRLDeclaration() {
-		// 判斷是否已經Import Robustness及RL的宣告
-		List<ImportDeclaration> importList = actRoot.imports();
+	private void importRobuatnessLevelLibrary() {
+		List<ImportDeclaration> importList = javaFileWillBeRefactored.imports();
 		boolean isImportRobustnessClass = false;
 		boolean isImportRLClass = false;
 		for (ImportDeclaration id : importList) {
@@ -484,81 +428,62 @@ public class RethrowExRefactoring extends Refactoring {
 				isImportRLClass = true;
 		}
 
-		AST rootAst = this.actRoot.getAST();
+		AST rootAst = this.javaFileWillBeRefactored.getAST();
 		if (!isImportRobustnessClass) {
 			ImportDeclaration imp = rootAst.newImportDeclaration();
 			imp.setName(rootAst.newName(Robustness.class.getName()));
-			actRoot.imports().add(imp);
+			javaFileWillBeRefactored.imports().add(imp);
 		}
 		if (!isImportRLClass) {
 			ImportDeclaration imp = rootAst.newImportDeclaration();
 			imp.setName(rootAst.newName(RTag.class.getName()));
-			actRoot.imports().add(imp);
+			javaFileWillBeRefactored.imports().add(imp);
 		}
 	}
 	
-	/**
-	 * 紀錄user所要throw的exception type
-	 * @param name : exception type
-	 */
-	public RefactoringStatus setExceptionName(String name) {
-		// 假如使用者沒有填寫任何東西,把RefactoringStatus設成Error
-		if(name.length() == 0) {
+	public RefactoringStatus setExceptionType(String exceptionType) {
+		if(exceptionType.length() == 0) {
 			return RefactoringStatus.createFatalErrorStatus("Please Choose an Exception Type");
 		} else {
-			// 假如有寫就把他存下來
-			exceptionType = name;
+			exceptionTypeWillBeRethrown = exceptionType;
 			return new RefactoringStatus();
 		}		
 	}
 	
-	/**
-	 * 取得JavaProject
-	 */
 	public IJavaProject getProject() {
 		return project;
 	}
 	
 	/**
-	 * 儲存要Throw的Exception位置(要import使用)
-	 * @param type
+	 * save exception type which user select that is used for import library 
+	 * @param exceptionType
 	 */
-	public void setExType(IType type) {		
-		exType = type;
+	public void setUserSelectingExceptionType(IType exceptionType) {		
+		userSelectingexceptionType = exceptionType;
 	}
 	
-	/**
-	 * 交換Annotation順序，再定位
-	 */
-	public void changeAnnotation() {
+	public void swapTheIndexOfAnnotation() {
 		if (methodIdx != null && msgIdx != null) {
-			// 交換Annotation的順序
+			// swap Annotation's index
 			new RLOrderFix().run(marker.getResource(), methodIdx, msgIdx);
-			// 定位
-			selectSourceLine();
+			// high light line number
+			highLightSpecifiedLineNumber();
 		}
 	}
 	
-	/**
-	 * 取得Throw Statement行數
-	 * @param catchIdx	catch的index
-	 * @return			反白行數
-	 */
-	private int getThrowStatementSourceLine(int catchIdx) {
-		// 反白行數
+	private int getLineNumberOfThrowExceptionStatement(int catchIdx) {
 		int selectLine = -1;
 
 		if (catchIdx != -1) {
 			ASTCatchCollect catchCollector = new ASTCatchCollect();
-			currentMethodNode.accept(catchCollector);
+			methodNodeWillBeRefactored.accept(catchCollector);
 			List<CatchClause> catchList = catchCollector.getMethodList();
-			// 尋找Throw statement的行數
 			List<?> catchStatements = catchList.get(catchIdx).getBody().statements();
 			for (int i = 0; i < catchStatements.size(); i++) {
 				if (catchStatements.get(i) instanceof ThrowStatement) {
 					ThrowStatement statement = (ThrowStatement) catchStatements.get(i);
-					// 誰可以告訴我，為什麼selectLine要減一以後才回傳? charles 20120912
-					selectLine = this.actRoot.getLineNumber(statement.getStartPosition()) - 1;
+					// due to the line number is 0 based, so we should -1 to get correct line number
+					selectLine = this.javaFileWillBeRefactored.getLineNumber(statement.getStartPosition()) - 1;
 					return selectLine;
 				}
 			}
@@ -566,36 +491,23 @@ public class RethrowExRefactoring extends Refactoring {
 		return selectLine;
 	}
 	
-	/**
-	 * 反白指定行數
-	 * @param marker		欲反白Statement的Resource
-	 * @param methodIdx		欲反白Statement的Method Index
-	 * @param catchIdx		欲反白Statement的Catch Index
-	 */
-	private void selectSourceLine() {
-		// 重新取得Method資訊
+	private void highLightSpecifiedLineNumber() {
 		boolean isOK = findMethod(marker.getResource());
 		if (isOK) {
 			try {
 				ICompilationUnit cu = (ICompilationUnit) actOpenable;
 				Document document = new Document(cu.getBuffer().getContents());
-				// 取得目前的EditPart
 				IEditorPart editorPart = EditorUtils.getActiveEditor();
 				ITextEditor editor = (ITextEditor) editorPart;
 	
-				// 取得反白Statement的行數
-				int selectLine = getThrowStatementSourceLine(catchIdx);
-				// 若反白行數為
+				int selectLine = getLineNumberOfThrowExceptionStatement(catchIdx);
 				if (selectLine == -1) {
-					// 取得Method的起點位置
-					int srcPos = currentMethodNode.getStartPosition();
-					// 用Method起點位置取得Method位於第幾行數(起始行數從0開始，不是1，所以減1)
-					selectLine = actRoot.getLineNumber(srcPos) - 1;
+					int srcPos = methodNodeWillBeRefactored.getStartPosition();
+					// due to the line number is 0 based, so we should -1 to get correct line number
+					selectLine = javaFileWillBeRefactored.getLineNumber(srcPos) - 1;
 				}
-				//取得反白行數在SourceCode的行數資料
 				IRegion lineInfo = document.getLineInformation(selectLine);
 
-				//反白該行 在Quick fix完之後,可以將游標定位在Quick Fix那行
 				editor.selectAndReveal(lineInfo.getOffset(), lineInfo.getLength());
 			} catch (JavaModelException e) {
 				logger.error("[Rethrow checked Exception] EXCEPTION ", e);

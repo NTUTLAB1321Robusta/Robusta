@@ -38,17 +38,16 @@ public class OverLoggingVisitorTest {
 	@Before
 	public void setUp() throws Exception {
 		projectName = "OverLoggingExampleProject";
-		// 讀取測試檔案樣本內容
+		
 		javaFile2String = new JavaFileToString();
 		javaProjectMaker = new JavaProjectMaker(projectName);
-		// 新增欲載入的library
-		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.FOLDERNAME_LIB_JAR, JavaProjectMaker.FOLDERNAME_BIN_CLASS);
+
+		javaProjectMaker.packageAgileExceptionClassesToJarIntoLibFolder(JavaProjectMaker.FOLDERNAME_LIB_JAR, JavaProjectMaker.FOLDERNAME_BIN_CLASS);
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/" + JavaProjectMaker.RL_LIBRARY_PATH);
 		javaProjectMaker.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR + "/log4j-1.2.15.jar");
 		javaProjectMaker.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR + "/slf4j-api-1.5.0.jar");
 		javaProjectMaker.setJREDefaultContainer();
 		
-		// 根據測試檔案樣本內容建立新的檔案
 		javaFile2String.read(OverLoggingIntegrationExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(OverLoggingIntegrationExample.class.getPackage().getName(),
 										OverLoggingIntegrationExample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
@@ -98,18 +97,16 @@ public class OverLoggingVisitorTest {
 										+ ";\n" + javaFile2String.getFileContent());
 		javaFile2String.clear();
 		
-		// 建立XML
 		CreateSettings();
 		
 		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(OverLoggingJavaLogExample.class, projectName));
 		
-		// Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// 設定要被建立AST的檔案
+
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
-		// 取得AST
+
 		overLoggingJavaLogExampleUnit = (CompilationUnit) parser.createAST(null); 
 		overLoggingJavaLogExampleUnit.recordModifications();
 		
@@ -119,10 +116,8 @@ public class OverLoggingVisitorTest {
 	@After
 	public void tearDown() throws Exception {
 		File xmlFile = new File(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		// 如果xml檔案存在，則刪除之
 		if(xmlFile.exists())
 			assertTrue(xmlFile.delete());
-		// 刪除專案
 		javaProjectMaker.deleteProject();
 	}
 

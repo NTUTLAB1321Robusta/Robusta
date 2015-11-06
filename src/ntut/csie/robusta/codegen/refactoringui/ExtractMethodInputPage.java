@@ -30,20 +30,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 提供一個介面給user, 讓user可以選擇要Extract什麼樣的Method
+ * provide a user interface to allow user select what method will be extracted
  * @author Min, Shiau
  */
 public class ExtractMethodInputPage extends UserInputWizardPage {
 
 	private static Logger logger = LoggerFactory.getLogger(ExtractMethodInputPage.class);
 
-	//Extract Method的變數名稱
 	private Text newMethodText;
-	//Public、Protected、private三擇一的RadioButton
+	//Public、Protected、private RadioButton
 	private Button publicRadBtn;
 	private Button protectedRadBtn;
 	private Button privateRadBtn;
-	//e.printStack、java.logger二擇一的RadioButton
+	//e.printStack、java.logger RadioButton
 	private Button printRadBtn;
 	private Button loggerRadBtn;
 	private JavaSourceViewer fSignaturePreview;
@@ -83,14 +82,13 @@ public class ExtractMethodInputPage extends UserInputWizardPage {
 
 		Composite previewComposite = createLayoutComposite(composite, 1);
 		createSignaturePreview(previewComposite);
-		//設定Control動作
+		//set control action
 		addControlListener();
 
-		//初始動作
+		//initialize
 		privateRadBtn.setSelection(true);
 		printRadBtn.setSelection(true);
 
-		//使用者未更改Text內容，而直接按確定，會執行此行。否則Text內容會抓不到。
 		handleInputChange();
 	}
 
@@ -131,11 +129,7 @@ public class ExtractMethodInputPage extends UserInputWizardPage {
 		fSignaturePreview.getTextWidget().setTopPixel(top);
 	}
 	
-	/**
-	 * 是否使用既有的Method設定 (否則使用新的Method設定)
-	 */
 	private void setGroupSetting(boolean isTrue) {
-		//若新增新的Method
 		newMethodText.setEnabled(!isTrue);
 		printRadBtn.setEnabled(!isTrue);
 		loggerRadBtn.setEnabled(!isTrue);
@@ -144,9 +138,6 @@ public class ExtractMethodInputPage extends UserInputWizardPage {
 		privateRadBtn.setEnabled(!isTrue);
 	}
 	
-	/**
-	 * 假入Text中的東西有改變時要處理
-	 */
 	private void handleInputChange(){
 		RefactoringStatus status = new RefactoringStatus();
 		TEFBExtractMethodRefactoring refactoring = getEMRefactoring();
@@ -166,13 +157,11 @@ public class ExtractMethodInputPage extends UserInputWizardPage {
 			status.merge(refactoring.setNewMethodLogType(loggerRadBtn.getText()));
 		
 
-		//先確認有沒有error的情形
 		setPageComplete(!status.hasError());
 		int severity = status.getSeverity();
 		String message = status.getMessageMatchingSeverity(severity);
 
 		if(severity >= RefactoringStatus.INFO) {
-			//有Error的情形就把他設定進來
 			fSignaturePreviewDocument.set("");
 			setMessage(message,RefactoringStatus.ERROR);
 		} else {
@@ -181,31 +170,16 @@ public class ExtractMethodInputPage extends UserInputWizardPage {
 		}	
 	}
 
-	/**
-	 * 取得Refactoring的物件型態
-	 * @return
-	 */
 	private TEFBExtractMethodRefactoring getEMRefactoring(){
 		return (TEFBExtractMethodRefactoring) getRefactoring();
 	}
 	
-	/**
-	 * 建立Label
-	 * @param composite
-	 * @param name
-	 */
 	private void createLabel(Composite composite, String name) {
 		Label handlerLabel = new Label(composite, SWT.NONE);
 		handlerLabel.setLayoutData(new GridData());
 		handlerLabel.setText(name);
 	}
 
-	/**
-	 * 建立Radio Button
-	 * @param parent
-	 * @param name
-	 * @return
-	 */
 	private Button createRadioButton(Composite parent, String name) {
 		Button protectedRadBtn= new Button(parent, SWT.RADIO);
 		protectedRadBtn.setText(name);
@@ -217,12 +191,6 @@ public class ExtractMethodInputPage extends UserInputWizardPage {
 		return protectedRadBtn;
 	}
 	
-	/**
-	 * 建立有Layout的Composite
-	 * @param parent
-	 * @param columnNumber Column個數
-	 * @return
-	 */
 	private Composite createLayoutComposite(Composite parent, int columnNumber) {
 		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
@@ -233,13 +201,6 @@ public class ExtractMethodInputPage extends UserInputWizardPage {
 		return composite;
 	}
 	
-	/**
-	 * 建立Text
-	 * @param composite
-	 * @param style
-	 * @param defaultText
-	 * @return 
-	 */
 	private Text createText(Composite composite, int style, String defaultText) {
 		Text text = new Text(composite, style);
 		text.setText(defaultText);
@@ -247,11 +208,6 @@ public class ExtractMethodInputPage extends UserInputWizardPage {
 		return text;
 	}
 
-	/**
-	 * 建立Button
-	 * @param composite
-	 * @return 
-	 */
 	private Button createButton(Composite composite, int style, String name) {
 		Button button = new Button(composite, style);
 		button.setLayoutData(new GridData());
@@ -259,11 +215,8 @@ public class ExtractMethodInputPage extends UserInputWizardPage {
 		return button;
 	}
 	
-	/**
-	 * 將Control元件添加動作
-	 */
 	private void addControlListener() {
-		//假如內容被更改的話,將資訊存到CarelessCleanupRefactoring
+		//if content has been modified, save content in CarelessCleanupRefactoring
 		newMethodText.addModifyListener(new ModifyListener(){
 			public void modifyText(ModifyEvent e) {
 				handleInputChange();				

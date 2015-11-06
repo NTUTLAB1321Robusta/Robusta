@@ -18,7 +18,7 @@ public class OverLoggingJavaLogExample {
 		try {
 			theSecondOrderInTheSameClassWithJavaLog();
 		} catch(IOException e) {
-			// Call chain最上層不會標示OverLogging
+			//it will not marked as OverLogging at the top of call chain.
 			javaLogger.log(Level.WARNING, e.getMessage() + "theFirstOrderInTheSameClassWithJavaLog");
 		}
 	}
@@ -41,7 +41,7 @@ public class OverLoggingJavaLogExample {
 		} catch(IOException e) {
 			e.printStackTrace();
 			System.out.println(e);
-			// 沒有log動作，但是有往上拋，故需要繼續追蹤
+			//there is not logger but a throw e to upper caller in this method, so the detection need to be continued.
 			throw e;
 		}
 	}
@@ -64,7 +64,7 @@ public class OverLoggingJavaLogExample {
 		try {
 			theSecondOrderInTheSameClassWithJavaLogAndWithoutLoggingAtBeginning();
 		} catch(IOException e) {
-			// Call chain最上層不會標示OverLogging
+			//it will not marked as OverLogging at the top of call chain.
 			javaLogger.log(Level.WARNING, e.getMessage() + "theFirstOrderInTheSameClassWithJavaLogAndWithoutLoggingAtBeginning");
 		}
 	}
@@ -108,7 +108,7 @@ public class OverLoggingJavaLogExample {
 			OverLoggingTheFirstOrderClass outer = new OverLoggingTheFirstOrderClass();
 			outer.calleeWithJavaLog();
 		} catch(IOException e) {
-			// Call chain最上層不會標示OverLogging
+			//it will not marked as OverLogging at the top of call chain.
 			javaLogger.log(Level.WARNING, e.getMessage() + "calleeInOutterClassWithJavaLog");
 		}
 	}
@@ -121,7 +121,7 @@ public class OverLoggingJavaLogExample {
 			theSecondOrderInTheSameClassWithJavaLogAndSomeConditions();
 			theFifthOrderInTheSameClassWithJavaLogAndSomeConditions();
 		} catch (IOException e) {
-			// Call chain最上層不會標示OverLogging
+			//it will not marked as OverLogging at the top of call chain.
 			javaLogger.log(Level.WARNING, e.getMessage() + "theFirstOrderInTheSameClassWithJavaLogAndSomeConditions");
 		}
 	}
@@ -191,7 +191,7 @@ public class OverLoggingJavaLogExample {
 			OverLoggingTheFirstOrderClass outer = new OverLoggingTheFirstOrderClass();
 			outer.calleeWithJavaLog();
 		} catch(IOException e) {
-			// Call chain最上層不會標示OverLogging
+			//it will not marked as OverLogging at the top of call chain.
 			javaLogger.log(Level.WARNING, e.getMessage() + "calleeInOutterClassWithJavaLogAndSomeConditions");
 		}
 	}

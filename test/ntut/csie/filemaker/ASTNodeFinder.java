@@ -23,44 +23,35 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.TryStatement;
 
 /**
- * 從指定的專案中的類別取得CompilationUnit
+ * get CompilationUnit from specified project
  * @author charles
  *
  */
 public class ASTNodeFinder {
 	public static CompilationUnit getCompilationUnit(Class<?> clazz, String projectName) {
 		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(clazz, projectName));
-		//Create AST to parse
+
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// 設定要被建立AST的檔案
+
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin
 				.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
-		// 取得AST
+
 		CompilationUnit compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
 		return compilationUnit;
 	}
 
-	/**
-	 * 從指定class尋找特定節點
-	 * 如果找不到特定節點，則回傳null。
-	 * @param className 指定class名稱
-	 * @param lineNumber 該class行號
-	 * @return
-	 * @throws IOException 
-	 * @throws CoreException 
-	 */
 	public static ASTNode getNodeFromSpecifiedClass (Class<?> className, String projectName, int lineNumber) throws IOException, CoreException {
 		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(className, projectName));
-		//Create AST to parse
+
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// 設定要被建立AST的檔案
+
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
-		// 取得AST
+
 		CompilationUnit compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
 		
@@ -72,7 +63,7 @@ public class ASTNodeFinder {
 	}
 	
 	/**
-	 * 根據特定的Method Name找回MethodDeclaration Node <br />
+	 * use method name to get specified MethodDeclaration Node <br />
 	 * Known Issue: {@link NameOfMethodDeclarationVisitor}
 	 * @param clazz
 	 * @param projectName
@@ -87,7 +78,7 @@ public class ASTNodeFinder {
 	}
 
 	/**
-	 * 根據指定的Method Name，找出java檔中，第一個符合此Method Name的MethodDeclaration
+	 * use method name to search the first matching MethodDeclaration in java file
 	 * @param compilationUnit
 	 * @param methodName
 	 * @return
@@ -103,8 +94,8 @@ public class ASTNodeFinder {
 	}
 	
 	/**
-	 * 根據指定的MethodName，找出這個Method所有的TryStatement。
-	 * (巢狀的Try不會另外被抓出來)
+	 * find out all try statement in a specified method with method name
+	 * (nested try statement will be ignored)
 	 * @param compilationUnit
 	 * @param methodName
 	 * @return
@@ -136,23 +127,25 @@ public class ASTNodeFinder {
 	}
 	
 	/**
-	 * 從巢狀的TryStatement中取出內層的TryStatement
-	 * @param outerTryStatment 有巢狀結構的TryStatement
-	 * @param subNodeTypeOfOuterTryStatement 根據傳入ASTNode Type，決定要從TryBlock裡面去取TryStatement或是從 Catch Clause裡面去取 TryStatement
+	 * get inner try statement of nested try statement
+	 * @param nestedTryStatment 
+	 * @param locationToFindInnerTryStatement 
+	 * 								decide where to find inner try statement, in try block or in catch clause  
 	 * @return
 	 */
-	public static List<TryStatement> getTryStatementInNestedTryStatement(TryStatement outerTryStatment, int subNodeTypeOfOuterTryStatement) {
-		TryStatementInNestedTryStatementVisitor nestedTryStatementCollectorVisitor = new ASTNodeFinder().new TryStatementInNestedTryStatementVisitor(outerTryStatment, subNodeTypeOfOuterTryStatement);
-		outerTryStatment.accept(nestedTryStatementCollectorVisitor);
+	public static List<TryStatement> getTryStatementInNestedTryStatement(TryStatement nestedTryStatment, int locationToFindInnerTryStatement) {
+		TryStatementInNestedTryStatementVisitor nestedTryStatementCollectorVisitor = new ASTNodeFinder().new TryStatementInNestedTryStatementVisitor(nestedTryStatment, locationToFindInnerTryStatement);
+		nestedTryStatment.accept(nestedTryStatementCollectorVisitor);
 		
 		return nestedTryStatementCollectorVisitor.getResultTryStatementList();
 	}
 	
 	/**
-	 * 從巢狀的TryStatement中，蒐集TryStatement。<br />
-	 * 可以選擇從Try Block裡面蒐集，也可以選擇從Catch Clause裡面蒐集。<br />
-	 * lacks: 如果選擇從CatchClause裡面蒐集，會去尋找所有CatchClause裡面的TryStatement，而不能指定特定的CatchClause。
-	 * lacks: 目前只有考慮巢狀結構只有一層的情況，再多可能會超乎預期。
+	 * collect try statement from nested try statemen<br />
+	 * can decide the location to search try statement, from try block or catch clause<br />
+	 * lacks: if we decide to search in CatchClause, visitor will scan try statement in all CatchClause. we can not decide a specified CatchClause to scan.
+	 * lacks: we only take one level deep nested try statement in consider. 
+	 * if nested level is too deep, the result would be over estimated.
 	 * @author charles
 	 *
 	 */
@@ -163,12 +156,13 @@ public class ASTNodeFinder {
 		
 		/**
 		 * 
-		 * @param nestedTryStatement 具有巢狀結構的TryStatement
-		 * @param subNodeTypeOfOuterTryStatement 你想要挖的TryStatement在Try Block裡面還是在Catch Clause裡面，請給定ASTNode Type。
+		 * @param nestedTryStatement nested TryStatement
+		 * @param locationToFindInnerTryStatement 
+										decide where to find inner try statement, in try block or in catch clause  
 		 */
-		public TryStatementInNestedTryStatementVisitor(TryStatement nestedTryStatement, int subNodeTypeOfOuterTryStatement) {
+		public TryStatementInNestedTryStatementVisitor(TryStatement nestedTryStatement, int locationToFindInnerTryStatement) {
 			bigTryStatement = nestedTryStatement;
-			this.subNodeTypeOfOuterTryStatement = subNodeTypeOfOuterTryStatement;
+			this.subNodeTypeOfOuterTryStatement = locationToFindInnerTryStatement;
 			collectResultOfTryStatements = new ArrayList<TryStatement>();
 		}
 		
@@ -193,8 +187,9 @@ public class ASTNodeFinder {
 	}
 	
 	/**
-	 * 利用Method Name找到指定的MethodDeclaration Node。<br />
-	 * Known Issue: 如果Class中擁有兩個使用相同名稱的Method，只會回傳最先找到的那個。
+	 * 
+	 * find specified MethodDeclaration node by method name。<br />
+	 * Known Issue: if there are two method with the same name, this feature will return the MethodDeclaration of the first method.
 	 * @author charles
 	 *
 	 */
@@ -232,9 +227,8 @@ public class ASTNodeFinder {
 	}
 	
 	/**
-	 * 利用MethodName與程式碼片段找到所屬的MethodInvocation node。
-	 * 因為符合的程式碼片段可能有多個，所以回傳找到的MethodInvocation Node以List表示。
-	 * 如果程式碼片段所符合的Node不是MethodInvocation，
+	 * use method name or part of code to find specified method invocation.
+	 * return a node list due to this feature would find out so much corresponding result. 
 	 * @author charles
 	 *
 	 */

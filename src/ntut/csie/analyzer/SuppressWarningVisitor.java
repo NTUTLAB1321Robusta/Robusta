@@ -34,7 +34,7 @@ public class SuppressWarningVisitor extends ASTVisitor {
 		IAnnotationBinding[] annoBinding = node.resolveBinding().getAnnotations();
 		
 		for (int i = 0, size = annoBinding.length; i < size; i++) {
-			//取得Method上的SuppressSmell資訊
+			//get suppress smell information on method signature
 			if (annoBinding[i].getAnnotationType().getQualifiedName().equals(SuppressSmell.class.getName()))
 				addSuppressWarning(node, annoBinding[i].getAllMemberValuePairs(), -1);
 		}
@@ -42,7 +42,7 @@ public class SuppressWarningVisitor extends ASTVisitor {
 	}
 	
 	public boolean visit(CatchClause node) {
-		// 找出catch index
+		// get catch index in catch clauses list
 		int index = -1;
 		TryStatement ts = (TryStatement)NodeUtils.getSpecifiedParentNode(node, ASTNode.TRY_STATEMENT);
 		List<?> cc = ts.catchClauses();
@@ -52,14 +52,14 @@ public class SuppressWarningVisitor extends ASTVisitor {
 				break;
 			}
 		}
-		// 判斷catch上是否有Suppress Warning
+		// tell whether there is suppress warning on catch statement
 		SingleVariableDeclaration svd = (SingleVariableDeclaration) node.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
 		List<?> modifyList = svd.modifiers();
 		for (int j = 0; j < modifyList.size(); j++) {
 			if (modifyList.get(j) instanceof Annotation) {
 				Annotation annotation = (Annotation) modifyList.get(j);
 				IAnnotationBinding iab  = annotation.resolveAnnotationBinding();
-				//判斷Annotation Type是否為SuppressSmell
+				//tell whether annotation type is suppress smell
 				if (iab.getAnnotationType().getQualifiedName().equals(SuppressSmell.class.getName()))
 					addSuppressWarning(node, iab.getAllMemberValuePairs(), index);
 			}
@@ -74,10 +74,9 @@ public class SuppressWarningVisitor extends ASTVisitor {
 		else			// suppress warning on catch
 			ssmsg = new SSMessage(node.getStartPosition(), root.getLineNumber(node.getStartPosition()), index);
 		
-		//若Annotation內容為String
 		if (mvpb[0].getValue() instanceof String) {
 			ssmsg.addSmellList((String) mvpb[0].getValue());
-		//若Annotation內容為Array
+		//check whether annotation content is array
 		} else if (mvpb[0].getValue() instanceof Object[]) {
 			Object[] values = (Object[]) mvpb[0].getValue();
 			for (Object obj : values) {
