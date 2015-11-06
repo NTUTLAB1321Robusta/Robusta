@@ -31,16 +31,16 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * 提供一個介面給user,讓user可以選擇要Rethrow什麼樣的Exception type
+ * provide a user interface that user can select what exception type will be rethrown
  * @author chewei
  */
 public class RethrowExInputPage extends UserInputWizardPage {
 	private static Logger logger = LoggerFactory.getLogger(RethrowExInputPage.class);
 	
 	
-	//填寫要throw的Excpetion type
+	//input what Excpetion type thrown
 	private Text exNameField;
-	//使用者所選擇的Exception Type
+	//exception Type selected by user
 	private IType exType;
 	public RethrowExInputPage(String name) {
 		super(name);		
@@ -67,23 +67,23 @@ public class RethrowExInputPage extends UserInputWizardPage {
 
 		exNameField = createNameField(composite);		
 		exNameField.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-		// 預設拋出RuntimeException
+		//RuntimeException is default exception type
 		exNameField.setText("RuntimeException");
 		
-		//Browse Button 用來呼叫Selection Dialog
+		//use browse button to pup up selection dialog
 		final Button browseButton= new Button(composite, SWT.PUSH);
 		browseButton.setText("&Browse...");
 		GridData data= new GridData();
 		data.horizontalAlignment= GridData.END;
 		browseButton.setLayoutData(data);
-		//假如內容被更改的話,將資訊存到RethrowExRefactoring
+		//if content has been modified, save information in RethrowExRefactoring
 		exNameField.addModifyListener(new ModifyListener(){
 			public void modifyText(ModifyEvent e) {
 				handleInputChange();				
 			}			
 		});
 		
-		//被按下的時候去開啟Selection Dialog
+		//press browse button to pup up selection dialog
 		browseButton.addSelectionListener(new SelectionAdapter(){
 			@Override
 			public void widgetSelected(SelectionEvent event) {
@@ -96,12 +96,11 @@ public class RethrowExInputPage extends UserInputWizardPage {
 		exNameField.setFocus();
 		exNameField.selectAll();
 		
-		//使用者未更改Text內容，而直接按確定，會執行此行。否則Text內容會抓不到。
 		handleInputChange();	
 	}
 	
 	/**
-	 * 取得Refactoring的物件型態
+	 * get Refactoring object type
 	 * @return
 	 */
 	private RethrowExRefactoring getRethrowExRefactoring(){
@@ -109,7 +108,7 @@ public class RethrowExInputPage extends UserInputWizardPage {
 	}
 	
 	/**
-	 * 填寫Exception Type的Text UI設置 
+	 * create text UI to edit exception type 
 	 */
 	private Text createNameField(Composite result) {
 		Text field= new Text(result, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -118,20 +117,19 @@ public class RethrowExInputPage extends UserInputWizardPage {
 	}
 	
 	/**
-	 * 假入Text中的東西有改變時要處理
+	 * if there is something change in text, we should handle it 
 	 */
 	private void handleInputChange(){	
 		RefactoringStatus status = new RefactoringStatus();
 		RethrowExRefactoring refactoring = getRethrowExRefactoring();
-		status.merge(refactoring.setExceptionName(exNameField.getText()));
-		//假如要Throw的exception沒有import進來的話,可利用保留的type來import		
-		refactoring.setExType(exType);
-		//先確認有沒有error的情形
+		status.merge(refactoring.setExceptionType(exNameField.getText()));
+		//if exception type which will be thrown has not been imported, use retain exception type to replace it    
+		refactoring.setUserSelectingExceptionType(exType);
+		//check whether there is error or not
 		setPageComplete(!status.hasError());
 		int severity = status.getSeverity();
 		String message = status.getMessageMatchingSeverity(severity);
 		if(severity >= RefactoringStatus.INFO){
-			//有Error的情形就把他設定進來
 			setMessage(message,RefactoringStatus.WARNING);
 		}else{
 			setMessage("",NONE);
@@ -139,16 +137,16 @@ public class RethrowExInputPage extends UserInputWizardPage {
 	}
 	
 	/**
-	 * 跳出Dialog讓使用者選擇要Throw的Class
+	 * pup up dialog that allow user to select class to throw exception
 	 * @return
 	 */
 	private IType selectExType(){
-		//取得存在getRethrowExRefactoring中的project
+		//get project exist in getRethrowExRefactoring
 		IJavaProject project = getRethrowExRefactoring().getProject();
 		
-		//透過Eclipse 所提供的Dialog來找尋專案中所有的class or library......等等
+		//through out Dialog to find out all class or library......ect in project
 		try {
-			//可定義exception範圍
+			//set the boundary of exception type 
 			IType runtimeExceptionType = project.findType("java.lang.RuntimeException");
 
 			ITypeHierarchy hierarchy = runtimeExceptionType.newTypeHierarchy(project, new NullProgressMonitor());
@@ -167,7 +165,7 @@ public class RethrowExInputPage extends UserInputWizardPage {
 			dialog.setTitle("Choose Exception type");
 			dialog.setMessage("Choose the Exception type to Rethrow:");
 			if(dialog.open() == Window.OK){
-				//按下ok後回傳使用者所選擇的
+				//press ok and return all user selection
 				return (IType)dialog.getFirstResult();
 			}
 		} catch (JavaModelException e) {			

@@ -4,7 +4,7 @@ import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
 
 /**
- * Careless Cleanup Refactoring的Wizard,wizard之下會有page
+ * there is a input page owned by Careless Cleanup Refactoring Wizard
  * @author Min
  */
 public class ExtractCleanupMethodWizard  extends RefactoringWizard{
@@ -17,7 +17,7 @@ public class ExtractCleanupMethodWizard  extends RefactoringWizard{
 	
 	@Override
 	protected void addUserInputPages() {
-		//加入My Extract Method的Page
+		//add my extract method page
 		addPage(new ExtractCleanupMethodInputPage("Extract Cleanup Method"));
 		
 	}

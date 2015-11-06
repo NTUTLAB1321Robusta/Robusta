@@ -41,7 +41,6 @@ public class ExpressionStatementStringFinderVisitorTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		// 準備測試檔案樣本內容
 		javaProjectMaker = new JavaProjectMaker(testProjectName);
 		javaProjectMaker.setJREDefaultContainer();
 
@@ -54,13 +53,10 @@ public class ExpressionStatementStringFinderVisitorTest {
 				+ javaFile2String.getFileContent());
 		
 		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(StatementBeFoundSampleCode.class, testProjectName));
-		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// 設定要被建立AST的檔案
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
-		// 取得AST
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 	}
 
@@ -81,10 +77,9 @@ public class ExpressionStatementStringFinderVisitorTest {
 		compilationUnit.accept(statementFinderVisitor);
 		assertEquals(556, statementFinderVisitor.getFoundExpressionStatement().getStartPosition());
 		
-		// line 22 & line 32的程式碼內容一樣，但是程式先找到符合的就會停下來
 		targetStatement = "e.printStackTrace();";
 		statementFinderVisitor = new ExpressionStatementStringFinderVisitor(targetStatement);
 		compilationUnit.accept(statementFinderVisitor);
-		assertFalse("此方法只能找到最先出現的ExpressionStatement", (statementFinderVisitor.getFoundExpressionStatement().getStartPosition() == (867 - 1)));
+		assertFalse("this method only can find out the first ExpressionStatement in code", (statementFinderVisitor.getFoundExpressionStatement().getStartPosition() == (867 - 1)));
 	}
 }

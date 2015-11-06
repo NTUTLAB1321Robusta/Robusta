@@ -67,7 +67,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Careless Cleanup Refactoring的具體操作都在這個class中
+ * Careless Cleanup Refactoring的具體操作都在這個class中 待刪程式碼!!!
  * @author Min, Shiau
  */
 public class CarelessCleanupRefactor extends Refactoring {

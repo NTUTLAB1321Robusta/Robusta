@@ -6,27 +6,26 @@ import java.util.List;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 
 /**
- * 記錄SuppressSmell的相關資訊
+ * record SuppressSmell information
  * @author Shiau
  */
 public class SSMessage {
-	/** 欲Suppress的Smell名稱 */
+	/** the smell list which will be suppressed*/
 	private List<String> smellList = null;
-	/** Annotation所在位置 */
+	/** annotation position */
 	private int position;
-	/** Annotation所在行數 */
+	/** annotation line number */
 	private int lineNumber;
-	/** 是否在Catch內，否則在Method上 */
-	private boolean inCatch = false;
-	/** 在Catch內的Index */
+	private boolean isInCatchStatement = false;
+	/** Index position inside Catch statement */
 	private int catchIdx;
-	/** 是否有錯誤名稱 */
-	public boolean haveFaultName = false;
-	/** 稱錯誤的Smell名稱 */
-	private String faultName;
+
+	public boolean isFaultName = false;
+
+	private String isFaultSmellName;
 	
 	/**
-	 * 在Method上建立的Annotation
+	 * set annotation on method signature
 	 * @param pos
 	 * @param lineNumber
 	 */
@@ -35,11 +34,11 @@ public class SSMessage {
 		this.position = pos;
 		this.lineNumber = lineNumber;
 		
-		this.inCatch = false;
+		this.isInCatchStatement = false;
 	}
 
 	/**
-	 * 在Catch內建立的Annotation
+	 * set annotation in catch statement
 	 * @param pos
 	 * @param lineNumber
 	 * @param catchIdx
@@ -50,7 +49,7 @@ public class SSMessage {
 		this.lineNumber = lineNumber;
 		this.catchIdx = catchIdx;
 		
-		this.inCatch = true;
+		this.isInCatchStatement = true;
 	}
 	/// catch index ///
 	public int getCatchIdx() {
@@ -64,23 +63,20 @@ public class SSMessage {
 		return smellList;
 	}
 	/**
-	 * 加入欲Suppress的Smell名稱
+	 * add smell name which will be suppressed
 	 * @param smell
 	 */
 	public void addSmellList(String smell) {
-		//若沒有錯誤名稱則偵測，若有錯誤名稱則不偵測
-		if (!haveFaultName) {
-			boolean isCorrectName = false;
-			//判斷是否為正確的Smell名稱
+		if (!isFaultName) {
+			boolean isCorrectSmellName = false;
 			for (String type : RLMarkerAttribute.CS_TOTAL_TYPE)
 				if (smell.equals(type)) {
-					isCorrectName = true;
+					isCorrectSmellName = true;
 					break;
 				}
-			//若Smell名稱不正確，則記錄此錯誤Smell名稱
-			if (!isCorrectName) {
-				faultName = smell;
-				haveFaultName = true;
+			if (!isCorrectSmellName) {
+				isFaultSmellName = smell;
+				isFaultName = true;
 			}
 		}
 		this.smellList.add(smell);
@@ -100,24 +96,18 @@ public class SSMessage {
 		this.position = position;
 	}
 	/**
-	 * 是否有錯誤名稱
+	 * check whether name is correct or not
 	 * @return
 	 */
 	public boolean isFaultName() {
-		return haveFaultName;
+		return isFaultName;
 	}
-	/**
-	 * 取得錯誤的Smell名稱
-	 * @return
-	 */
+
 	public String getFaultName() {
-		return faultName;
+		return isFaultSmellName;
 	}
-	/**
-	 * 此Annotation是否在Catch內
-	 * @return
-	 */
-	public boolean isInCatch() {
-		return inCatch;
+	
+	public boolean isInsideCatchStatement() {
+		return isInCatchStatement;
 	}
 }

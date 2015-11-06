@@ -6,7 +6,6 @@ import java.util.List;
 public class ReportModel {
 	private List<PackageModel> packageModelList = new ArrayList<PackageModel>();
 	private String projectName = "";
-	// 取得code counter
 	private int tryCounter = 0;
 	private int catchCounter = 0;
 	private int finallyCounter = 0;
@@ -20,7 +19,7 @@ public class ReportModel {
 	}
 
 	/**
-	 * 取得PackageModel
+	 * get PackageModel by index
 	 * @param i PackageIndex
 	 * @return
 	 */
@@ -31,7 +30,7 @@ public class ReportModel {
 			return packageModelList.get(i);
 	}
 	/**
-	 * 取得Package總數
+	 * get package size
 	 * @return
 	 */
 	public int getPackagesSize() {
@@ -45,7 +44,6 @@ public class ReportModel {
 		return total;
 	}
 	
-	// 存取Code的資訊 //
 	public int getTryCounter() {
 		return tryCounter;
 	}

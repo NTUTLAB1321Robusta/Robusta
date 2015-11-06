@@ -7,21 +7,17 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public class NodeUtilsTestSample {
-	// Object類別的方法
+	// Object's method 
 	public void objectMethod() {
 		Object object = new Object();
-		// NodeUtils不會抓出他是實作Closeable的
 		object.toString();
 	}
 	
-	// File類別的方法
 	public void fileMethod() {
 		File f = new File("");
-		// NodeUtils不會抓出他是實作Closeable的
 		f.toString();
 	}
 	
-	// OutputStream類別的方法(此類別有實作Closeable)
 	public void outputStreamMethod() throws IOException {
 		OutputStream os = null;
 		os = new OutputStream() {		
@@ -30,19 +26,14 @@ public class NodeUtilsTestSample {
 				throw new IOException();
 			}
 		};
-		// NodeUtils會抓出他是實作Closeable的
 		os.write(1);
-		// NodeUtils會抓出他是實作Closeable的
 		os.close();
 	}
 	
-	// FileInputStream類別的方法(實作Closeable)
 	public void fileInputStreamMethod() throws IOException {
 		FileInputStream fis = null;
 		fis = new FileInputStream("");
-		// NodeUtils不會抓出他是實作Closeable的
 		fis.toString();
-		// NodeUtils會抓出他是實作Closeable的
 		fis.close();
 	}
 	

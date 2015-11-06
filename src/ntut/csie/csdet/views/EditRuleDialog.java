@@ -20,16 +20,12 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * 讓使用者修改Rule的Dialog
+ * dialog allow user modify user defined rule
  */
 public class EditRuleDialog  extends Dialog{
-	//給予使用者修改的Text
 	private Text tempText;
-	//上一層所選擇修改的Rule名稱
 	private String ruleName;
-	//上一層儲存Rule資料
 	private Table ruleTable;
-	//警告圖示和文字
 	private Label warningLabel;
 	private Label picLabel;
 
@@ -60,7 +56,7 @@ public class EditRuleDialog  extends Dialog{
 		tempText = new Text(container, SWT.BORDER);
 		tempText.addKeyListener(new KeyAdapter() {
 			public void keyPressed(final KeyEvent e) {
-				//若有修改把警告標語消掉
+				//if user modify dialog content, disable warring
 				picLabel.setVisible(false);
 				warningLabel.setVisible(false);
 			}
@@ -99,22 +95,20 @@ public class EditRuleDialog  extends Dialog{
 		String temp = tempText.getText().trim();
 		if (temp.length() > 0)
 		{
-			//若沒有"."表示為Method，自行幫使用者加"*."
+			//if input doesn't contain ".", it means input is a method and append "*." to input automatically
 			if (!temp.contains("."))
 				temp = "*." + temp;
 			
 			boolean isWarning = false;
-			//看Library的Name有沒有重複
+			//check whether there are duplicate library name 
 			for(int i=0;i<ruleTable.getItemCount();i++){
-				//若重複就顯示警告訊息
+				//if duplicate library name is true then pup up warning
 				if(temp.equals(ruleTable.getItem(i).getText()))
 					isWarning = true;
 			}
-			//若重複就出現警告訊息，否則修改Key
 			if (isWarning){
 				tempText.setText(temp);
 				showWarningText(resource.getString("rule.exist"));
-			//沒有重複就修改
 			}else{
 				ruleTable.getItem(ruleTable.getSelectionIndex()).setText(temp);
 				super.okPressed();
@@ -143,7 +137,7 @@ public class EditRuleDialog  extends Dialog{
 	}
 	
 	/**
-	 * 更改警告標語並顯示
+	 * show modify warning
 	 */
 	protected void showWarningText(String warningInf) {
 		warningLabel.setText(warningInf);

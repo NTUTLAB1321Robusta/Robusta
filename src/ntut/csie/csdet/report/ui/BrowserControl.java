@@ -26,48 +26,47 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Browser動作
+ * Browser control action
  * @author Shiau
  */
 public class BrowserControl extends LocationAdapter {
 	private static Logger logger = LoggerFactory.getLogger(BrowserControl.class);
-	//來源Browser
+	//resource browser
 	Browser browser;
 
-	//欲選取SourceCode的專案名稱
+	//source code project name
 	String projectName = "";
-	//欲選取SourceCode的Package路徑
+	//source code Package path
 	String packagePath = "";
-	//欲選取SourceCode的行數
+	//source code line number
 	String LineString  = "";
 
-	//觸發動作為網址一改變
+	//when URl has changed, this function will be invocated
 	public void changed(final LocationEvent event) {
-		//若Browser為Null，去取得Browser來源
+		//if Browser is null，get a new browser resource
 		if (browser == null)
 			browser = (Browser) event.getSource();
 
-		//網址變更，傳入訊息
+		//get input information when URL change
 		String info = browser.getUrl();
 
-		//URL最後一碼為"#"，表示要Link到SourceCode
+		//check for valid URL
 		if (info.charAt(info.length()- 1) == '#')
 		{
-			//解析URL，取得程式碼行數必要資訊
+			//parse URL to separate information inside
 			parseUrl(info);
 
-			//取得File的ProjectName
+			//get project name of file 
 			IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 			if (project != null) {
 
-				//取得Class的Path
+				//get class path
 				IFile javaFile = project.getFile(new Path(packagePath));
 				if (javaFile != null) {
-					//打開File的Editor
+					//launch editor to open file 
 					IEditorPart edit = openEditor(project, javaFile);
-					//取得
 					Document document = getDocument(javaFile);
-					//反白選擇行數
+					//high light selected line number
 					selectLine(edit, LineString, document);
 				}
 			}
@@ -75,9 +74,9 @@ public class BrowserControl extends LocationAdapter {
 	}
 
 	/**
-	 * 取得File的Document
-	 * @param javaFile		欲連結的.java檔
-	 * @return				File的Document
+	 * transform java file into document
+	 * @param javaFile		target java file
+	 * @return				return file document
 	 */
 	private Document getDocument(IFile javaFile) {
 		ICompilationUnit icu = (ICompilationUnit)JavaCore.create(javaFile);
@@ -92,7 +91,7 @@ public class BrowserControl extends LocationAdapter {
 	}
 
 	/**
-	 * 開啟File的Editor
+	 * the editor to open java file
 	 * @param project
 	 * @param javaFile
 	 * @return
@@ -113,7 +112,7 @@ public class BrowserControl extends LocationAdapter {
 	}
 
 	/**
-	 * 反白選擇行數
+	 * high light selected line number
 	 * @param edit
 	 * @param LineString
 	 * @param document
@@ -125,24 +124,23 @@ public class BrowserControl extends LocationAdapter {
 			if (sourceEditor instanceof ITextEditor) {
 				ITextEditor editor = (ITextEditor) sourceEditor;
 				
-				//欲反白的行數資料
+				//the code region which will be high light
 				IRegion lineInfo = null;
 				lineInfo = getLineInfo(LineString, document, lineInfo);
 				
-				//反白指定的行數
+				//high light selected line number
 				editor.selectAndReveal(lineInfo.getOffset(), lineInfo.getLength());
 			}
 		} catch (NumberFormatException nfe) {
-			RLEHTPlugin.logError("行數錯誤！", nfe);
+			RLEHTPlugin.logError("wrong line number！", nfe);
 		} catch (Exception ex) {
-			RLEHTPlugin.logError("其它錯誤！", ex);
+			RLEHTPlugin.logError("some other problem happen！", ex);
 		}
 	}
 
 	private IRegion getLineInfo(String LineString, Document document,
 			IRegion lineInfo) {
 		try {
-			//取得行數的資料
 			lineInfo = document.getLineInformation(Integer.valueOf(LineString) - 1);
 		} catch (BadLocationException e) {
 			logger.error("[BadLocation] EXCEPTION ",e);
@@ -155,17 +153,16 @@ public class BrowserControl extends LocationAdapter {
 	 * @param info
 	 */
 	private void parseUrl(String info) {
-		//URL網址規格：file:///..../#ProjectName/PackagePath.../ClassName.java#行數#
-		//去掉HTML位置
+		//URL formate：file:///..../#ProjectName/PackagePath.../ClassName.java#line number#
+		//remove HTML tag
 		info = info.substring(info.indexOf("#") + 2, info.length() - 1);
-		//專案名稱結尾位置
+		//get end index of project name 
 		int projectEndLocation = info.indexOf("/");
-		//Package路徑結尾位置
+		//get end index of package
 		int pathEndLocation = info.indexOf("#");
-		//行數起始位置
+		//get start index of line number
 		int lineStartLocation = info.lastIndexOf("#") + 1;
 
-		///取得資訊///
 		projectName = info.substring(0, projectEndLocation);
 		packagePath = info.substring(projectEndLocation, pathEndLocation);
 		LineString = info.substring(lineStartLocation);

@@ -44,10 +44,9 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	
 	public static final String BUILDER_ID = "ntut.csie.rleht.builder.RLBuilder";
 
-	// 延伸problem view好讓自己的marker可以加進去view中
 	public static final String MARKER_TYPE_ROBUSTNESS_LEVEL = "ntut.csie.rleht.builder.RLProblem";
 	
-	// 使用者所設定的是否偵測EH Smell設定
+	// user's EH Smell setting
 	private TreeMap<String, Boolean> detSmellSetting = new TreeMap<String, Boolean>();
 	
 	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
@@ -55,8 +54,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	private RobustaSettings robustaSettings;
 	
 	/**
-	 * 將相關例外資訊貼上marker(RLMessage)
-	 * 使用於@RL時 
+	 * create marker with RLMessage
 	 */
 	private IMarker addMarker(IFile file, String message, int lineNumber, int severity, String mtype, RLMessage msg,
 			int msgIdx, int methodIdx) {
@@ -86,7 +84,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 	}
 
 	/**
-	 * 將相關例外資訊貼上marker(SSMessage)
+	 * create marker with SSMessage
 	 */
 	private void addMarker(IFile file, String message, int lineNumber, int severity, String mtype, SSMessage msg,
 			int msgIdx, int methodIdx) {
@@ -104,7 +102,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 			marker.setAttribute(RLMarkerAttribute.RL_METHOD_INDEX, String.valueOf(methodIdx));
 			marker.setAttribute(RLMarkerAttribute.RL_MSG_INDEX, String.valueOf(msgIdx));
 			
-			marker.setAttribute(RLMarkerAttribute.SS_IN_CATCH, String.valueOf(msg.isInCatch()));
+			marker.setAttribute(RLMarkerAttribute.SS_IN_CATCH, String.valueOf(msg.isInsideCatchStatement()));
 
 			if (msg.isFaultName()) {
 				marker.setAttribute(RLMarkerAttribute.ERR_SS_FAULT_NAME, msg.getFaultName());
@@ -159,15 +157,15 @@ public class RLBuilder extends IncrementalProjectBuilder {
 		long end = System.currentTimeMillis();
 		
 		logger.debug("[RLBuilder] END !!");
-		System.out.println("RLBuild花費時間 " + (end - start) + " milli second.");
+		System.out.println("RLBuild takes " + (end - start) + " milli second.");
 		return null;
 	}
 
 	/**
-	 * 進行fullBuild or inrementalBuild時,都會去呼叫這個method
+	 * to process full Build or inrementalBuild will invoke this method
 	 * @param resource
 	 */
-	/* 針對每一個Java程式的Method標記RLAnnotation */
+	/* add robustness level annotation for each method in java class */
 	private void reapplyRLAnnotation(IResource resource) {
 		if (isJavaFile(resource)) {
 			IFile file = (IFile) resource;
@@ -227,7 +225,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 			RLChecker checker = new RLChecker();
 			currentMethodExList = checker.check(visitor);
 			
-			// 檢查@RL是否存在(丟出的例外是否被註記)
+			//check whether RLannotation is existing or not
 			int msgIdx = -1;
 			for (RLMessage msg : currentMethodExList) {
 				msgIdx++;
@@ -247,13 +245,11 @@ public class RLBuilder extends IncrementalProjectBuilder {
 			int ssIdx = -1;
 			for (SSMessage msg : suppressSmellList) {
 				ssIdx++;
-				// Smell名稱錯誤
 				if (msg.isFaultName()) {
 					String errmsg = this.resource.getString("error.smell.name");
 					this.addMarker(file, errmsg, msg.getLineNumber(),
 							IMarker.SEVERITY_ERROR, RLMarkerAttribute.ERR_SS_FAULT_NAME, msg, ssIdx,
 							methodIdx);
-				// 沒有任何Smell
 				} else if (msg.getSmellList().size() == 0) {
 					String errmsg = this.resource.getString("null.smell.name");
 					this.addMarker(file, errmsg, msg.getLineNumber(),
@@ -268,7 +264,6 @@ public class RLBuilder extends IncrementalProjectBuilder {
 
 				int lineNumber = root.getLineNumber(method.getStartPosition());
 
-				// 檢查@RL清單內的level是否正確
 				if (!RLData.validLevel(msg.getRLData().getLevel())) {
 					String errmsg = this.resource.getString("tag.level1") + msg.getRLData().getLevel() + 
 									this.resource.getString("tag.level2") + msg.getRLData().getExceptionType() + 
@@ -278,7 +273,7 @@ public class RLBuilder extends IncrementalProjectBuilder {
 							RLMarkerAttribute.ERR_RL_LEVEL, msg, msgIdx, methodIdx);
 				}
 
-				// 檢查@RL清單內的exception類別階層是否正確
+				// validate exception index in RLannotation list
 				int idx2 = 0;
 				for (RLMessage msg2 : currentMethodRLList) {
 					if (msgIdx >= idx2++) {

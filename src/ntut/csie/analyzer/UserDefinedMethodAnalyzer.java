@@ -37,10 +37,10 @@ public class UserDefinedMethodAnalyzer {
 	}
 	
 	/**
-	 * 判斷這個Library是不是使用者定義的Library。
+	 * check whether library is under user define.
 	 * @param node
-	 * @return true，這個node符合使用者定義的Library，外部程式可以考慮加上marker<br />
-	 * 		   false，這個node不符合使用者定義的Library。
+	 * @return true，this node is under user define, the caller can add marker on it<br />
+	 * 		   false，this node is not under user define.
 	 */
 	public boolean analyzeLibrary(MethodInvocation node) {
 		if(methodTreeMap.isEmpty()) {
@@ -50,7 +50,7 @@ public class UserDefinedMethodAnalyzer {
 		Iterator<String> userDefinedMethodIterator = methodTreeMap.keySet().iterator();
 		while(userDefinedMethodIterator.hasNext()) {
 			String condition = userDefinedMethodIterator.next();
-			// 目前知道的情況：Override Closeable的close，使其不會拋出IOException，會造成resolveMethodBinding為null
+			//As we know, to avoid throw IOException from close(), the close() which override closable will cause resolveMethodBinding() return null
 			if(node.resolveMethodBinding() == null)
 				continue;
 			
@@ -64,10 +64,10 @@ public class UserDefinedMethodAnalyzer {
 	}
 	
 	/**
-	 * 判斷這個方法(method / Lib+method)是不是使用者定義的method
+	 * tell whether method is under user define
 	 * @param node
-	 * @return true，這個node符合使用者定義的method，外部程式可以考慮加上marker<br />
-	 * 		   false，這個node不符合使用者定義的method。
+	 * @return true，this node is under user define, the caller can add marker on it<br />
+	 * 		   false，this node is not under user define.
 	 */
 	public boolean analyzeMethods(MethodInvocation node) {
 		if(methodTreeMap.isEmpty()) {
@@ -97,11 +97,9 @@ public class UserDefinedMethodAnalyzer {
 			return false;
 		}
 		
-		// method name符合，且是SmellSettings.UserDefinedConstraintsType.Method
 		if(methodTreeMap.get(matchedKey) == SmellSettings.UserDefinedConstraintsType.Method) {
 			return true;
 		} else {
-		// method name符合，且是SmellSettings.UserDefinedConstraintsType.FullQulifiedMethod
 			String declareClass = matchedKey.substring(0, dotIndex - 1);
 			if(node.resolveMethodBinding().getDeclaringClass().getQualifiedName().equals(declareClass)) {
 				return true;
@@ -125,8 +123,8 @@ public class UserDefinedMethodAnalyzer {
 		}
 
 		// Check if parameters implemented closeable
-		boolean isCloseable = NodeUtils.isParameterImplemented(node, Closeable.class);
-		boolean isAutoCloseable = NodeUtils.isParameterImplemented(node, AutoCloseable.class);
+		boolean isCloseable = NodeUtils.isParameterImplementedSpecifiedInterface(node, Closeable.class);
+		boolean isAutoCloseable = NodeUtils.isParameterImplementedSpecifiedInterface(node, AutoCloseable.class);
 		
 		ASTNode mdNode = (node.resolveMethodBinding() != null) ? root.findDeclaringNode(node.resolveMethodBinding().getMethodDeclaration()): null;
 		if(mdNode != null && (isCloseable || isAutoCloseable)) {
@@ -139,7 +137,7 @@ public class UserDefinedMethodAnalyzer {
 	}
 	
 	/**
-	 * 取得是否偵測的設定
+	 * get whether this feature is enable 
 	 * @return
 	 */
 	public boolean getEnable() {

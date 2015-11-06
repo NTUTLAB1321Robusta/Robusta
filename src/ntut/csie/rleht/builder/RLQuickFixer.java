@@ -47,7 +47,7 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 			if (problem.equals(RLMarkerAttribute.ERR_RL_LEVEL)) {
 				for (int i = RLData.LEVEL_MIN; i <= RLData.LEVEL_MAX; i++) {
 					markerList.add(new RLQuickFix(resource.getString("err.rl.level") + i + " (" + exception + ")", i, errMsg));
-					logger.debug("變更成level=" + i + " (" + exception + ")");
+					logger.debug("change robustness level to =" + i + " (" + exception + ")");
 				}
 			} else if (problem.equals(RLMarkerAttribute.ERR_NO_RL)) {
 				if (!RLData.validLevel(RLUtils.str2int(level, -1))) {
@@ -58,28 +58,28 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				markerList.add(new RLQuickFix(resource.getString("err.rl.duplicate") + exception + ")",errMsg));
 			} else if (problem.equals(RLMarkerAttribute.ERR_RL_INSTANCE)) {
 				markerList.add(new RLQuickFix(resource.getString("err.rl.instance") + marker.getAttribute(IMarker.MESSAGE) + ")",errMsg));
-				// SuppressSmell內沒有名稱
+				// there is not a smell name in SuppressSmell
 			} else if (problem.equals(RLMarkerAttribute.ERR_SS_NO_SMELL)) {
 				boolean inCatch = Boolean.valueOf((String)marker.getAttribute(RLMarkerAttribute.SS_IN_CATCH));
 				String[] smellList;
-				if (inCatch)	//若Marker位於Catch內
+				if (inCatch)	
 					smellList = RLMarkerAttribute.CS_CATCH_TYPE;
-				else			//若Marker位於Method上
+				else			
 					smellList = RLMarkerAttribute.CS_TOTAL_TYPE;
 
 				for (int i= 0; i < smellList.length; i++) {
 					String type = smellList[i];
 					markerList.add(new CSQuickFix(resource.getString("err.ss.no.smell") + type, type, inCatch));
 				}
-				// SuppressSmell內Smell名稱錯誤
+				// there is a wrong smell name in SuppressSmell
 			} else if (problem.equals(RLMarkerAttribute.ERR_SS_FAULT_NAME)) {
 				boolean inCatch = Boolean.valueOf((String)marker.getAttribute(RLMarkerAttribute.SS_IN_CATCH));
 				String faultName = (String) marker.getAttribute(RLMarkerAttribute.ERR_SS_FAULT_NAME);
 
 				String[] smellList;
-				if (inCatch)	//若Marker位於Catch內
+				if (inCatch)	
 					smellList = RLMarkerAttribute.CS_CATCH_TYPE;
-				else			//若Marker位於Method上
+				else			
 					smellList = RLMarkerAttribute.CS_TOTAL_TYPE;
 
 				for (String type : smellList) {
@@ -87,12 +87,12 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 					if (!isDetect)
 						markerList.add(new CSQuickFix(resource.getString("err.ss.fault.name1") + " " + faultName + " " + resource.getString("err.ss.fault.name2") + " " + type, type, inCatch));
 				}
-				// 碰到Empty Catch Block的Quick fix and refactor方法
+				// quick fix and refactor for empty catch block
 			} else if(problem.equals(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK)) {
 				markerList.add(new RefineRuntimeExceptionQuickFix("Quick Fix==>Rethrow RuntimeException"));
 				markerList.add(new RethrowUncheckExAction("Refactor==>Rethrow Unchecked Excetpion"));
 				markerList.add(new ThrowCheckedExceptionQuickFix("Quick Fix==>Throw Checked Exception"));
-				// 碰到Dummy Handler的Quick fix and refactor方法
+				// quick fix and refactor for dummy handler
 			} else if(problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)) {
 				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
 				if(!methodIdx.equals("-1")) {
@@ -100,15 +100,15 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 					markerList.add(new RethrowUncheckExAction("Refactor==>Rethrow Unchecked Excetpion"));
 					markerList.add(new ThrowCheckedExceptionQuickFix("Quick Fix==>Throw Checked Exception"));
 				}
-				// 碰到Nested Try Statement的refactor
+				// refactor for nested try statement
 			} else if(problem.equals(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT)) {
 				markerList.add(new NTMarkerResolution("Refactor==>Use Extract Method"));
-				// 碰到Unprotected Main program的Quick fix
+				// quick fix for unprotected main program
 			} else if(problem.equals(RLMarkerAttribute.CS_UNPROTECTED_MAIN)) {
 				markerList.add(new MoveCodeIntoBigOuterTryQuickFix("Quick Fix==>Add Big outer try block"));
-				// 碰到Careless Cleanup的Quick fix and refactor方法
-			} else if(problem.equals(RLMarkerAttribute.CS_CARELESS_CLEANUP)){
-				//只有CCMessage才會有這個，所以只能在這邊get
+				// quick fix and refactor for Careless Cleanup
+			} else if(problem.equals(RLMarkerAttribute.CS_CARELESS_CLEANUP)){//這一個block之後會拿掉!
+				//only CCMessage needs this attribute
 				boolean withTryBlock = false;
 				if(marker.getAttribute(RLMarkerAttribute.CCU_WITH_TRY) != null){
 					withTryBlock = (Boolean) marker.getAttribute(RLMarkerAttribute.CCU_WITH_TRY);
@@ -119,7 +119,7 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				if ((withTryBlock) && (exceptionType == null)) {
 					markerList.add(new MoveCloseResouceFromTryCatchToFinallyBlockQuickFix("Quick Fix==>Move code to finally block"));
 
-				// FIXME - MethodInv. not in try block, should use "Three steps to refactor" 左邊說明為原本構想，目前對應方法為不提供任何功能
+				// FIXME - MethodInv. not in try block, should use "Three steps to refactor" 
 				} else if ((!withTryBlock) && (exceptionType == null)) {
 					//  Surround MethodDeclaration Body with big outer Try and close in finally
 
@@ -127,33 +127,30 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				} else if ((withTryBlock) && (exceptionType != null)) {
 					markerList.add(new CarelessCleanupAction("Refactor==>Use Extract Method"));
 				} else {
-					// 需要提供Refactoring的功能
+					// provide refactor feature
 				}
 					
-				// 碰到OverLogging的Quick fix and refactor方法
+				// quick fix and refactor for OverLogging
 			}else if(problem.equals(RLMarkerAttribute.CS_OVER_LOGGING)){
 				// not going to provide any resolution for now.
 				
 			}else if(problem.equals(RLMarkerAttribute.CS_EXCEPTION_RLADVICE)){
 				String advice = (String) marker.getAttribute(IMarker.MESSAGE);
-				//有RL annotation，才是有拋出這個例外(我有偷偷幫throw e的都硬上RL)
 				if(advice.contains(RTag.class.getSimpleName())){
 					markerList.add(new AchieveRL1QuickFix("RL1 quick gene ==> Rethrow Unckecked Exception"));
 				}
 				
-				// 碰到TEFB的refactor方法
+				// refactor for throw exception in finally block
 			} else if(problem.equals(RLMarkerAttribute.CS_EXCEPTION_THROWN_FROM_FINALLY_BLOCK)) {
 				boolean isSupportRefactoring = (Boolean)marker.getAttribute(RLMarkerAttribute.RL_INFO_SUPPORT_REFACTORING);
 				if(isSupportRefactoring)
 					markerList.add(new TEFBExtractMethodMarkerResolution("Refactor==>Use Extract Method"));
 			}
-			//List轉Array
 			IMarkerResolution[] markerArray = markerList.toArray(new IMarkerResolution[markerList.size()]);
 			return markerArray;
 		} catch (CoreException ex) {
 			logger.error("[getResolutions] EXCEPTION ",ex);
 			return new IMarkerResolution[0];
 		}
-
 	}
 }

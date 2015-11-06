@@ -38,10 +38,10 @@ public class UnprotectedMainProgramVisitorTest {
 		String testProjectName = "UnprotectedMainProgramTest";
 		javaFile2String = new JavaFileToString();
 		javaProjectMaker = new JavaProjectMaker(testProjectName);
-		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.FOLDERNAME_LIB_JAR, JavaProjectMaker.FOLDERNAME_BIN_CLASS);
+		javaProjectMaker.packageAgileExceptionClassesToJarIntoLibFolder(JavaProjectMaker.FOLDERNAME_LIB_JAR, JavaProjectMaker.FOLDERNAME_BIN_CLASS);
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/" + JavaProjectMaker.RL_LIBRARY_PATH);
 		javaProjectMaker.setJREDefaultContainer();
-		// 根據測試檔案樣本內容建立新的檔案
+
 		// unit1
 		javaFile2String.read(UnprotectedMainProgramExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
@@ -116,105 +116,105 @@ public class UnprotectedMainProgramVisitorTest {
 				, "package " + UnprotectedMainProgramWithoutCatchRightExceptionExample.class.getPackage().getName() + ";\n"
 				+ javaFile2String.getFileContent());
 		javaFile2String.clear();
-		// 建立XML
+		
 		CreateSettings();
 		/** unit1 */ 
 		Path path1 = new Path(PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramExample.class, testProjectName));
-		//Create AST to parse
+		
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// 設定要被建立AST的檔案
+
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path1)));
 		parser.setResolveBindings(true);
-		// 取得AST
+
 		unit1 = (CompilationUnit) parser.createAST(null); 
 		unit1.recordModifications();
 		/** unit2 */
 		Path path2 = new Path(PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithCatchThrowableExample.class, testProjectName));
-		//Create AST to parse
+		
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// 設定要被建立AST的檔案
+
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path2)));
 		parser.setResolveBindings(true);
-		// 取得AST
+
 		unit2 = (CompilationUnit) parser.createAST(null); 
 		unit2.recordModifications();
 		/** unit3 */
 		Path path3 = new Path(PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithoutStatementExample.class, testProjectName));
-		//Create AST to parse
+		
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// 設定要被建立AST的檔案
+
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path3)));
 		parser.setResolveBindings(true);
-		// 取得AST
+		
 		unit3 = (CompilationUnit) parser.createAST(null); 
 		unit3.recordModifications();
 		/** unit4 */
 		Path path4 = new Path(PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithoutTryExample.class, testProjectName));
-		//Create AST to parse
+		
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// 設定要被建立AST的檔案
+
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path4)));
 		parser.setResolveBindings(true);
-		// 取得AST
+
 		unit4 = (CompilationUnit) parser.createAST(null);
 		unit4.recordModifications();
 		/** unit5 */
 		Path path5 = new Path(PathUtils.getPathOfClassUnderSrcFolder(UnprotectedmainProgramWithTryAtFirstStatement.class, testProjectName));
-		//Create AST to parse
+		
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// 設定要被建立AST的檔案
+		
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path5)));
 		parser.setResolveBindings(true);
-		// 取得AST
+		
 		unit5 = (CompilationUnit) parser.createAST(null);
 		unit5.recordModifications();
 		/** unit6 */
 		Path path6 = new Path(PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithTryAtMiddleStatement.class, testProjectName));
-		//Create AST to parse
+		
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// 設定要被建立AST的檔案
+		
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path6)));
 		parser.setResolveBindings(true);
-		// 取得AST
+		
 		unit6 = (CompilationUnit) parser.createAST(null);
 		unit6.recordModifications();
 		/** unit7 */
 		Path path7 = new Path(PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithTryAtLastStatement.class, testProjectName));
-		//Create AST to parse
+		
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// 設定要被建立AST的檔案
+		
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path7)));
 		parser.setResolveBindings(true);
-		// 取得AST
+		
 		unit7 = (CompilationUnit) parser.createAST(null);
 		unit7.recordModifications();
 		/** unit8 */
 		Path path8 = new Path(PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithTry.class, testProjectName));
-		//Create AST to parse
+		
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// 設定要被建立AST的檔案
+		
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path8)));
 		parser.setResolveBindings(true);
-		// 取得AST
+		
 		unit8 = (CompilationUnit) parser.createAST(null);
 		unit8.recordModifications();
 		/** unit9 */
 		Path path9 = new Path(PathUtils.getPathOfClassUnderSrcFolder(UnprotectedMainProgramWithoutCatchRightExceptionExample.class, testProjectName));
-		//Create AST to parse
+		
 		parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// 設定要被建立AST的檔案
+		
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path9)));
 		parser.setResolveBindings(true);
-		// 取得AST
+		
 		unit9 = (CompilationUnit) parser.createAST(null);
 		unit9.recordModifications();
 	}
@@ -222,10 +222,10 @@ public class UnprotectedMainProgramVisitorTest {
 	@After
 	public void tearDown() throws Exception {
 		File xmlFile = new File(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		// 如果xml檔案存在，則刪除之
+		
 		if(xmlFile.exists())
 			assertTrue(xmlFile.delete());
-		// 刪除專案
+		
 		javaProjectMaker.deleteProject();
 	}
 	
@@ -289,8 +289,8 @@ public class UnprotectedMainProgramVisitorTest {
 		MethodDeclaration md = list.get(0);
 		// check precondition
 		assertEquals(1, md.getBody().statements().size());
-		// 如果main function上面有annotation的話，該method的起始位置會從annotation開始算起
-		// 故marker必須加在下一行
+		//if there is an annotation on main function, the start position of the method will start at annotation.
+		//so the marker need to be added at next line.
 		assertEquals(7, unit1.getLineNumber(md.getStartPosition()));
 		// test target
 		Method getLineNumber = UnprotectedMainProgramVisitor.class.getDeclaredMethod("getLineNumber", MethodDeclaration.class);
@@ -306,7 +306,7 @@ public class UnprotectedMainProgramVisitorTest {
 		md = list.get(0);
 		// check precondition
 		assertEquals(1, md.getBody().statements().size());
-		// 因為main function上面沒有annotation，所以main function在第幾行，marker就加在第幾行
+		//due to there is not annotation on main function, so the marker will be added at the first line of main function.
 		assertEquals(4, unit2.getLineNumber(md.getStartPosition()));
 		// test target & check postcondition
 		assertEquals(4, getLineNumber.invoke(mainVisitor, md));

@@ -8,12 +8,12 @@ import java.io.IOException;
 import java.util.Scanner;
 
 /**
- * 讀取專案內java檔的內容。
- * 方便讀取一些bad smell的code，在Unit test時，寫成測試用的code。
+ * read java file content in project。
+ * use these content as test sample for unit test 
  * @author Charles
  */
 public class JavaFileToString {
-	/** 儲存檔案的文字 */
+	/** store the content of file */
 	StringBuilder stringBuilder;
 
 	public JavaFileToString() {
@@ -21,10 +21,11 @@ public class JavaFileToString {
 	}
 
 	/**
-	 * 讀取java檔的內容，但是會略過Package那行。副檔名會自動認定為.java。
-	 * 請參考{@link #read(Class, String, String)}
-	 * @param clazz 要讀的class
-	 * @param folder 要讀的class是來自src資料夾或是test資料夾
+	 * read content of java file and this feature will ignore "package xxxxxx" statement.
+	 * this method will take .java as default file extend name.。
+	 * please consult{@link #read(Class, String, String)}
+	 * @param clazz class will be read
+	 * @param folder class is coming from src folder or test folder
 	 * @throws FileNotFoundException
 	 */
 	public void read(Class<?> clazz, String folder) throws FileNotFoundException {
@@ -32,16 +33,14 @@ public class JavaFileToString {
 	}
 	
 	/**
-	 * 讀取java檔的內容，但是會略過Package那行。
-	 * @param clazz 要讀的class
-	 * @param folder src資料夾或是test資料夾
-	 * @param extension 這個class的副檔名。
+	 * read content of java file and this feature will ignore "package xxxxxx" statement.
+	 * @param clazz class will be read
+	 * @param folder class is coming from src folder or test folder
+	 * @param extension extension's name of class 
 	 * @throws FileNotFoundException
 	 */
 	public void read(Class<?> clazz, String folder, String extension) throws FileNotFoundException {
-		/**	用來讀取class的串流 */
 		FileInputStream fileInputStream = null;
-		/** 掃描串流，轉成文字 */
 		Scanner scanner = null;
 		
 		String classCanonicalName = clazz.getCanonicalName();
@@ -53,10 +52,9 @@ public class JavaFileToString {
 		scanner = new Scanner(fileInputStream);
 		
 		try {
-			// 跳過package的那行不要儲存
+			// ignore package xxxx
 			scanner.nextLine();
 			
-			// 把檔案串流，文字一行一行讀出來
 			while(scanner.hasNextLine()) {
 				stringBuilder.append(scanner.nextLine() + lineSeparator);
 			}
@@ -66,26 +64,14 @@ public class JavaFileToString {
 		}
 	}
 	
-	/**
-	 * 取得檔案的文字內容。
-	 * @return
-	 */
 	public String getFileContent() {
 		return stringBuilder.toString();
 	}
 	
-	/**
-	 * 清除已經讀取過的內容。
-	 * @return
-	 */
 	public void clear() {
 		stringBuilder = new StringBuilder();
 	}
 	
-	/**
-	 * 關閉串流
-	 * @param cloz
-	 */
 	private void closeStream(Closeable cloz) {
 		try {
 			if (cloz != null) {

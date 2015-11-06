@@ -57,9 +57,8 @@ import org.slf4j.LoggerFactory;
 public class QuickFixCore {
 	private static Logger logger = LoggerFactory.getLogger(QuickFixCore.class);
 	
-	/** 要被設定為Navigatable的Java檔，後面要從resource去設定他 */
 	protected IOpenable actOpenable = null;
-	/** 要被Quick Fix的Java AST root node */
+	/**Java AST root node whick will be Quick Fix */
 	private CompilationUnit compilationUnit = null;
 	
 	private ASTRewrite astRewrite = null;
@@ -71,14 +70,12 @@ public class QuickFixCore {
 			actOpenable = (IOpenable) javaElement;
 		}
 		
-		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 
 		parser.setSource((ICompilationUnit) javaElement);
 		parser.setResolveBindings(true);
 		compilationUnit = (CompilationUnit) parser.createAST(null);
-		//AST 2.0紀錄方式
 		compilationUnit.recordModifications();
 		astRewrite = ASTRewrite.create(compilationUnit.getRoot().getAST());
 	}
@@ -146,7 +143,7 @@ public class QuickFixCore {
 		ListRewrite rlArrayInitializerRewrite = astRewrite.getListRewrite(rlArrayInitializer, ArrayInitializer.EXPRESSIONS_PROPERTY);
 		rlArrayInitializerRewrite.insertLast(QuickFixUtils.makeRLAnnotation(rootAST, level, exceptionType.getName()), null);
 		
-//		// 這段程式碼的意義，在於移除全部舊的RLAnnotation
+//		// the meaning of this code is removing original RLAnnotation
 //		List<IExtendedModifier> lstModifiers = methodDeclaration.modifiers();
 //		
 //		for(IExtendedModifier ieModifier : lstModifiers){
@@ -168,18 +165,18 @@ public class QuickFixCore {
 	}
 	
 	/**
-	 * 在Method Declaration 後面加上拋出例外的宣告
+	 * add an exception's declare on method's signature
 	 * @param astRewrite
 	 * @param methodDeclaration
 	 */
-	public void generateThrowExceptionOnMethodDeclaration(MethodDeclaration methodDeclaration, Class<?> exceptionType) {
+	public void generateThrowExceptionOnMethodSignature(MethodDeclaration methodDeclaration, Class<?> exceptionType) {
 		ListRewrite addingThrownException = astRewrite.getListRewrite(methodDeclaration, MethodDeclaration.THROWN_EXCEPTIONS_PROPERTY);
 		ASTNode simpleName = QuickFixUtils.generateThrowExceptionForDeclaration(methodDeclaration.getAST(), exceptionType);
 		addingThrownException.insertLast(simpleName, null);
 	}
 	
 	/**
-	 * 根據給定的程式碼，移除CatchClause中特定的節點
+	 * remove specified code statement in specified catch clause
 	 * @param catchClause
 	 * @param removingStatement
 	 */
@@ -197,12 +194,12 @@ public class QuickFixCore {
 	}
 	
 	public void removeExpressionStatement(int removingStartPosition, MethodDeclaration methodDeclaration) {
-		// 用StartPosition找出要移除的ExpressionStatement
+		//find ExpressionStatement which will be removed with StartPosition
 		StatementFinderVisitor statementFinderVisitor = new StatementFinderVisitor(removingStartPosition);
 		methodDeclaration.accept(statementFinderVisitor);
 		ASTNode removingNode = statementFinderVisitor.getFoundExpressionStatement();
 		
-		// 找出要移除的ExpressionStatement所屬的Block
+		// find the block which contains ExpressionStatement which will be removed
 		ASTNode parentNode = NodeUtils.getSpecifiedParentNode(removingNode, ASTNode.BLOCK);
 		
 		ListRewrite modifyingBlock = astRewrite.getListRewrite(parentNode, Block.STATEMENTS_PROPERTY);
@@ -210,7 +207,7 @@ public class QuickFixCore {
 	}
 	
 	/**
-	 * 增加throw new XxxException(e)的程式碼
+	 * add throw new xxxException(e) statement
 	 * @param cc
 	 * @param exceptionType
 	 */
@@ -252,12 +249,12 @@ public class QuickFixCore {
 	}
 	
 	/**
-	 * 將Quick Fix 要變更的內容寫回Edit中
+	 * update modification of quick fix in editor 
 	 * @param rewrite
 	 */
 	public void applyChange() {
 		try {
-			// 參考org.eclipse.jdt.internal.ui.text.correction.CorrectionMarkerResolutionGenerator run
+			// consult org.eclipse.jdt.internal.ui.text.correction.CorrectionMarkerResolutionGenerator run
 			// org.eclipse.jdt.internal.ui.text.correction.ChangeCorrectionProposal apply與performChange
 			ICompilationUnit cu = (ICompilationUnit) actOpenable;
 			IEditorPart part = EditorUtility.isOpenInEditor(cu);
@@ -271,7 +268,7 @@ public class QuickFixCore {
 	}
 	
 	/**
-	 * 套用Refactoring要變更的內容
+	 * update modification of refactoring in editor 
 	 * @param textFileChange
 	 * @throws CoreException 
 	 */
@@ -285,7 +282,7 @@ public class QuickFixCore {
 	}
 	
 	/**
-	 * 執行 Quick Fix 變更
+	 * invoke Quick Fix
 	 * @param activeEditor
 	 * @param document
 	 * @param rewrite
@@ -335,8 +332,7 @@ public class QuickFixCore {
 		}
 	}
 	
-	/**
-	 * 取得Quick Fix後改變的程式碼
+	/**get statements after Quick Fix
 	 */
 	private Change getChange(CompilationUnit actRoot, ASTRewrite rewrite) {
 		try {
@@ -357,34 +353,33 @@ public class QuickFixCore {
 	}
 	
 	/**
-	 * 產生一個大的TryStatement包住MethodDeclaration裡面所有程式碼
-	 * @param methodDeclaration 要產生大TryStatement的MethodDeclaration
+	 * generate a try statement to contain all statements in method
+	 * @param methodDeclaration 
+	 * 						a method which will have a try statement to contain all statement of method
 	 */
 	public void generateBigOuterTryStatement(MethodDeclaration methodDeclaration) {
 		ListRewrite addingBigOuterTry = astRewrite.getListRewrite(methodDeclaration.getBody(), Block.STATEMENTS_PROPERTY);
 
 		AST ast = compilationUnit.getAST();
-		/* 產生一個TryStatement */
-		// 產生Try
+		// generate a Try statement
 		TryStatement bigOuterTryStatement = ast.newTryStatement();
-		// 產生Catch Clause
+		// generate Catch Clause
 		@SuppressWarnings("unchecked")
 		List<CatchClause> catchStatement = bigOuterTryStatement.catchClauses();
 		CatchClause cc = ast.newCatchClause();
 		ListRewrite catchRewrite = astRewrite.getListRewrite(cc.getBody(), Block.STATEMENTS_PROPERTY);
-		// 建立catch的type為 catch(Exception ex)
+		// set the exception type will be caught. ex. catch(Exception ex) 
 		SingleVariableDeclaration sv = ast.newSingleVariableDeclaration();
 		sv.setType(ast.newSimpleType(ast.newSimpleName("Exception")));
 		sv.setName(ast.newSimpleName("ex"));
 		cc.setException(sv);
-		// 在Catch中加入TODO的註解
 		StringBuffer comment = new StringBuffer();
 		comment.append("// TODO: handle exception");
 		ASTNode placeHolder = astRewrite.createStringPlaceholder(comment.toString(), ASTNode.EMPTY_STATEMENT);
 		catchRewrite.insertLast(placeHolder, null);
 		catchStatement.add(cc);
 		
-		/* 將原本在try block之外的程式都移動進來 */
+		/* move all statements of method in try block */
 		ListRewrite tryStatement = astRewrite.getListRewrite(bigOuterTryStatement.getBody(), Block.STATEMENTS_PROPERTY);
 		int listSize = addingBigOuterTry.getRewrittenList().size();
 		tryStatement.insertLast(addingBigOuterTry.createMoveTarget((ASTNode) addingBigOuterTry.getRewrittenList().get(0), 
@@ -394,11 +389,14 @@ public class QuickFixCore {
 	}
 	
 	/**
-	 * 將Try裡面宣告的變數移到Try外面
-	 * @param tryStatement 裡面有宣告變數的Try
-	 * @param variableDeclarationStatement 宣告變數的那行程式碼
-	 * @param rootAST 整個compilation unit 的 AST
-	 * @param methodDeclaration 這個Try所屬的method declaration
+	 * 
+	 * move the variable declaration out, which is contained by try statement in method.
+	 * @param tryStatement 
+	 * @param variableDeclarationStatement 
+	 * @param rootAST 
+	 * 				compilation unit 
+	 * @param methodDeclaration
+	 * 				 method declaration which contains specified try statement
 	 */
 	public void moveOutVariableDeclarationStatementFromTry(TryStatement tryStatement, 
 			VariableDeclarationStatement variableDeclarationStatement, AST rootAST, MethodDeclaration methodDeclaration) {
@@ -408,8 +406,8 @@ public class QuickFixCore {
 		}
 		VariableDeclarationFragment fragment = (VariableDeclarationFragment) fragments.get(0);
 		/* 
-		 * 將   InputStream fos = new ImputStream();
-		 * 改為 fos = new InputStream();
+		 * change  InputStream fos = new ImputStream();
+		 * to fos = new InputStream();
 		 */
 		Assignment assignment = rootAST.newAssignment();
 		assignment.setOperator(Assignment.Operator.ASSIGN);
@@ -421,7 +419,7 @@ public class QuickFixCore {
 		assignment.setRightHandSide((Expression) copyNode);
 
 		ListRewrite tsRewrite = astRewrite.getListRewrite(tryStatement.getBody(), Block.STATEMENTS_PROPERTY);
-		// 將fos = new ImputStream(); 替換到原本的程式裡
+		// use "fos = new ImputStream();" to replace original statement 
 		if(assignment.getRightHandSide().getNodeType() != ASTNode.NULL_LITERAL) {
 			ExpressionStatement expressionStatement = rootAST.newExpressionStatement(assignment);
 			tsRewrite.replace(variableDeclarationStatement, expressionStatement, null);
@@ -429,23 +427,26 @@ public class QuickFixCore {
 			tsRewrite.remove(variableDeclarationStatement, null);
 		}
 		
-		// 將InputStream fos = new ImputStream(); 改成 InputStream fos = null;
+		// change "InputStream fos = new ImputStream();" to InputStream fos = null;
 		VariableDeclarationFragment newFragment = rootAST.newVariableDeclarationFragment();
 		newFragment.setName(rootAST.newSimpleName(fragment.getName().toString()));
 		newFragment.setInitializer(rootAST.newNullLiteral());
 		ListRewrite vdsRewrite = astRewrite.getListRewrite(variableDeclarationStatement, VariableDeclarationStatement.FRAGMENTS_PROPERTY);
 		vdsRewrite.replace(fragment, newFragment, null);
 
-		// 將InputStream fos = null，移到try外面
+		// move "InputStream fos = null" out of try statement
 		ASTNode placeHolder = astRewrite.createMoveTarget(variableDeclarationStatement);
 		ListRewrite moveRewrite = astRewrite.getListRewrite(methodDeclaration.getBody(), Block.STATEMENTS_PROPERTY);
 		moveRewrite.insertFirst(placeHolder, null);
 	}
 	
 	/**
-	 * 取得TryStatement附屬的finally block。若不存在，新增一個出來。
-	 * @param tryStatement 你想從哪個TryStatement找finally block
-	 * @param compilationUnit 你要告訴我是哪個compilation unit，我才能幫你修改
+	 * get finally block of specified try statement.
+	 * if finally block does not exist and then create a new finally block. 
+	 * @param tryStatement 
+	 * 				specified try statement
+	 * @param compilationUnit 
+	 * 				which compilationUnit need to be modified
 	 */
 	public Block getFinallyBlock(TryStatement tryStatement, CompilationUnit compilationUnit) {
 		if(tryStatement.getFinally() != null) {
@@ -468,10 +469,5 @@ public class QuickFixCore {
 		moveRewrite.insertLast(placeHolder, null);
 	}
 	
-	/**
-	 * 重新整理強健度等級註記的順序
-	 */
-	public void rearrangeRobustnessAnnotationOrder() {
-		
-	}
+	
 }

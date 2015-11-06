@@ -21,7 +21,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class SmellSettingsTest {
-	/** 產生出來的XML檔案 */
 	private File smellSettingFile;
 	private SmellSettings smellSettings;
 	
@@ -166,13 +165,10 @@ public class SmellSettingsTest {
 	
 	@Test
 	public void testGetAllDetectingPatterns() {
-		/* 沒有Pattern存在 */
+		/* there is not any pattern */
 		List<String> patterns = smellSettings.getAllDetectingPatterns(SmellSettings.SMELL_CARELESSCLEANUP);
 		assertEquals(0, patterns.size());
 		
-		/* 有CarelessCleaup Pattern與DummyHandelr Pattern存在，
-		 * 蒐集所有CarelessCleanup Pattern
-		 */
 		smellSettings.addDummyHandlerPattern("kkkkk.k", true);
 		int testDataCount = 4;
 		String[] patternContent = new String[testDataCount];
@@ -227,7 +223,7 @@ public class SmellSettingsTest {
 		Method addPattern = SmellSettings.class.getDeclaredMethod("addPattern", String.class, String.class, boolean.class);
 		addPattern.setAccessible(true);
 		
-		// 加入的pattern是全新的
+		// add a new pattern
 		addPattern.invoke(smellSettings, SmellSettings.SMELL_CARELESSCLEANUP, "a.b.c", true);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		String fileContent = readFileContents(smellSettingFile);
@@ -236,7 +232,7 @@ public class SmellSettingsTest {
 				+ "<pattern name=\"a.b.c\" isDetecting=\"true\" />"
 				+ "</SmellTypes></CodeSmells>", fileContent);
 		
-		// 加入的pattern是已經存在過的
+		// add an existing pattern
 		addPattern.invoke(smellSettings, SmellSettings.SMELL_CARELESSCLEANUP, "a.b.c", true);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		fileContent = readFileContents(smellSettingFile);
@@ -251,7 +247,7 @@ public class SmellSettingsTest {
 		Method addPattern = SmellSettings.class.getDeclaredMethod("addExtraRule", String.class, String.class);
 		addPattern.setAccessible(true);
 		
-		// 增加一個還沒存在過的規則
+		// add a new extra rule
 		addPattern.invoke(smellSettings, SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		String fileContent = readFileContents(smellSettingFile);
@@ -261,7 +257,7 @@ public class SmellSettingsTest {
 				SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT +
 				"\" /></SmellTypes></CodeSmells>", fileContent);
 		
-		// 增加一個已經存在的規則
+		// add an existing extra rule
 		addPattern.invoke(smellSettings, SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		fileContent = readFileContents(smellSettingFile);
@@ -274,7 +270,7 @@ public class SmellSettingsTest {
 
 	@Test
 	public void testRemoveExtraRule() throws Exception {
-		/* extraRule的節點不存在 */
+		/* without extraRule */
 		assertFalse(smellSettings.removeExtraRule(
 			SmellSettings.SMELL_CARELESSCLEANUP,
 			SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT));
@@ -285,7 +281,7 @@ public class SmellSettingsTest {
 						"<SmellTypes name=\"CarelessCleanup\" isDetecting=\"true\" />" +
 						"</CodeSmells>", fileContent);
 		
-		/* extraRule的節點存在 */
+		/* extraRule exist */
 		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		assertTrue(smellSettings.removeExtraRule(
 				SmellSettings.SMELL_CARELESSCLEANUP,
@@ -323,114 +319,98 @@ public class SmellSettingsTest {
 	@Test
 	public void testWriteXMLFile() throws Exception {
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
-		// 檢查檔案是否生成
 		assertTrue(smellSettingFile.exists());
 		
-		// 檢查檔案內容是否正確
 		String fileContent = readFileContents(smellSettingFile);
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells />", fileContent);
 	}
 	
 	@Test
 	public void testWriteXMLFile_OverwriteNonXMLFormatFile() throws Exception {
-		// 生成一個文字檔案，裡面都是中文字
+		// generate a file with Chinese character
 		String chineseString = "天地玄黃宇宙洪荒";
 		FileWriter fw = new FileWriter(smellSettingFile);
 		fw.write(chineseString);
 		fw.close();
-		// 確認檔案裡面的中文字
+
 		String chineseContent = readFileContents(smellSettingFile);
 		assertEquals(chineseString, chineseContent);
 		
-		// 生成XML檔案
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
-		// 檢查檔案是否生成
 		assertTrue(smellSettingFile.exists());
 		
-		// 檢查檔案內容是否正確
 		String fileContent = readFileContents(smellSettingFile);
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells />", fileContent);		
 	}
 	
 	/**
-	 * 如果SmellSettings的instance已經被產生出來，使用者同時再用其他文字編輯器寫入設定檔內容，
-	 * 最後再用SmellSettigs存檔後，其他文字編輯器寫入的內容會遺失。
+	 * if the instance of SmellSettings has been generated and user modify the same SmellSettings file with other editor at the same time.
+	 * when SmellSettings save, the modification of user made by other editor will vanish.
 	 * @throws Exception
 	 */
 	@Test
 	public void testWriteXMLFile_OtherTextWriterWriteSmellSettingXMLFormatFileAfterSmellSettingInstanceIsCreated() throws Exception {
-		// 生成一個文字檔案，裡面是舊有的XML設定檔
+
 		String xmlString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells><SmellTypes name=\"DummyHandler\" isDetecting=\"true\"><pattern name=\"*.toString\" isDetecting=\"true\" /></SmellTypes></CodeSmells>";
 		FileWriter fw = new FileWriter(smellSettingFile);
 		fw.write(xmlString);
 		fw.close();
-		// 確認檔案裡面的XML設定檔內容
+
 		String xmlReadContent = readFileContents(smellSettingFile);
 		assertEquals(xmlString, xmlReadContent);
 		
-		// 生成XML檔案
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
-		// 檢查檔案是否生成
 		assertTrue(smellSettingFile.exists());
 		
-		// 檢查檔案內容是否正確
 		String fileContent = readFileContents(smellSettingFile);
 		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells />", fileContent);		
 	}
 	
 	/**
-	 * 相同路徑下已經有設定檔，則每次產生SmellSettings新的instance，都應該會自動讀取舊的設定檔。
+	 * if there is an original setting file at the specified path, the generation of SmellSettings'instance will consult the original setting file.
 	 * @throws Exception
 	 */
 	@Test
 	public void testWriteXMLFile_UsingSameVariableTwiceWithDifferentNewInstance() throws Exception {
-		// 先用一個新的instace產生xml檔
 		smellSettings = new SmellSettings(smellSettingFile);
 		smellSettings.addDummyHandlerPattern("*.toString", true);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		
 		String expectedResult = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells><SmellTypes name=\"DummyHandler\" isDetecting=\"true\"><pattern name=\"*.toString\" isDetecting=\"true\" /></SmellTypes></CodeSmells>";
 		
-		// 確認內容
 		String firstTimeContent = readFileContents(smellSettingFile);
 		assertEquals(expectedResult, firstTimeContent);
 		
-		// 再用同一個變數產生新的instace，再產生xml檔
 		smellSettings = new SmellSettings(smellSettingFile);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
-		// 確認內容
 		String fileContent = readFileContents(smellSettingFile);
 		assertEquals(expectedResult, fileContent);
 	}
 	
 	/**
-	 * 相同路徑下已經有設定檔，則每次產生SmellSettings新的instance，都應該會自動讀取舊的設定檔。
+	 * 
+	 * if there is an original setting file at the specified path, the generation of SmellSettings'instance will consult the original setting file.
 	 * @throws Exception
 	 */
 	@Test
 	public void testWriteXMLFile_UsingTwoDifferentVariable() throws Exception {
-		// 先用一個新的變數產生xml檔
 		SmellSettings setting = new SmellSettings(smellSettingFile);
 		setting.addDummyHandlerPattern("*.toString", true);
 		setting.writeXMLFile(smellSettingFile.getPath());
 		
 		String expectedResult = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells><SmellTypes name=\"DummyHandler\" isDetecting=\"true\"><pattern name=\"*.toString\" isDetecting=\"true\" /></SmellTypes></CodeSmells>";
 		
-		// 確認內容
 		String firstTimeContent = readFileContents(smellSettingFile);
 		assertEquals(expectedResult, firstTimeContent);
 		
-		// 再用另一個變數產生xml檔
 		smellSettings = new SmellSettings(smellSettingFile);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
-		// 確認內容
 		String fileContent = readFileContents(smellSettingFile);
 		assertEquals(expectedResult, fileContent);
 	}
 	
 	@Test
 	public void testRemovePatterns() throws Exception {
-		// 準備測試需要內容
 		smellSettingFile.createNewFile();
 		smellSettings.addDummyHandlerPattern(SmellSettings.EXTRARULE_SystemErrPrint, true);
 		smellSettings.addDummyHandlerPattern(SmellSettings.EXTRARULE_ePrintStackTrace, false);
@@ -439,7 +419,6 @@ public class SmellSettingsTest {
 		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		String content = readFileContents(smellSettingFile);
-		// 檢查準備資料是否正確
 		assertEquals(	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
 						"<CodeSmells><SmellTypes name=\"DummyHandler\" isDetecting=\"true\">" +
 						"<pattern name=\"System.err.print\" isDetecting=\"true\" />" +
@@ -452,7 +431,6 @@ public class SmellSettingsTest {
 		
 		assertTrue(smellSettings.removePatterns(SmellSettings.SMELL_DUMMYHANDLER));
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
-		// 驗證結果是否正確
 		content = readFileContents(smellSettingFile);
 		assertEquals(	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
 						"<CodeSmells>" +
@@ -464,7 +442,6 @@ public class SmellSettingsTest {
 	
 	@Test
 	public void testSetSmellTypeAttribute() throws Exception {
-		// 準備測試需要內容
 		smellSettingFile.createNewFile();
 		smellSettings.addDummyHandlerPattern(SmellSettings.EXTRARULE_SystemErrPrint, true);
 		smellSettings.addDummyHandlerPattern(SmellSettings.EXTRARULE_ePrintStackTrace, false);
@@ -473,7 +450,6 @@ public class SmellSettingsTest {
 		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		String content = readFileContents(smellSettingFile);
-		// 檢查準備資料是否正確
 		assertEquals(	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
 						"<CodeSmells>" +
 						"<SmellTypes name=\"DummyHandler\" isDetecting=\"true\">" +
@@ -488,7 +464,6 @@ public class SmellSettingsTest {
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.ATTRIBUTE_ISDETECTING, false);
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.ATTRIBUTE_ISDETECTING, false);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
-		// 驗證結果是否正確
 		content = readFileContents(smellSettingFile);
 		assertEquals(	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
 						"<CodeSmells>" +
@@ -504,35 +479,29 @@ public class SmellSettingsTest {
 	
 	@Test
 	public void testGetSmellPatterns() throws Exception {
-		/** 當沒有這個Bad Smell設定值時 */
+		/** when without specified bad smell setting */
 		smellSettingFile.createNewFile();
 		String content = readFileContents(smellSettingFile);
-		// 檢查準備資料是否正確
 		assertEquals("", content);
 		TreeMap<String, Boolean> libMap = smellSettings.getSmellPatterns(SmellSettings.SMELL_DUMMYHANDLER);
-		// 驗證結果是否正確
 		assertEquals(0, libMap.size());
 		
-		/** 當沒有任何設定值時 */
-		// 準備測試需要內容
+		/** when without any bad smell setting */
 		smellSettings.getSmellType(SmellSettings.SMELL_DUMMYHANDLER);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		content = readFileContents(smellSettingFile);
-		// 檢查準備資料是否正確
 		assertEquals(	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
 						"<CodeSmells><SmellTypes name=\"DummyHandler\" isDetecting=\"true\" />" +
 						"</CodeSmells>", content);
 		libMap = smellSettings.getSmellPatterns(SmellSettings.SMELL_DUMMYHANDLER);
-		// 驗證結果是否正確
 		assertEquals(0, libMap.size());
 		
-		/** 當有設定值時 */
+		/** when there are some bad smell setting */
 		smellSettings.addDummyHandlerPattern(SmellSettings.EXTRARULE_SystemErrPrint, true);
 		smellSettings.addDummyHandlerPattern(SmellSettings.EXTRARULE_ePrintStackTrace, false);
 		smellSettings.addDummyHandlerPattern(SmellSettings.EXTRARULE_OrgApacheLog4j, true);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		content = readFileContents(smellSettingFile);
-		// 檢查準備資料是否正確
 		assertEquals(	"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
 						"<CodeSmells><SmellTypes name=\"DummyHandler\" isDetecting=\"true\">" +
 						"<pattern name=\"System.err.print\" isDetecting=\"true\" />" +
@@ -541,7 +510,6 @@ public class SmellSettingsTest {
 						"</SmellTypes></CodeSmells>", content);
 		
 		libMap = smellSettings.getSmellPatterns(SmellSettings.SMELL_DUMMYHANDLER);
-		// 驗證結果是否正確
 		assertEquals(3, libMap.size());
 		assertTrue(libMap.get(SmellSettings.EXTRARULE_SystemErrPrint));
 		assertFalse(libMap.get(SmellSettings.EXTRARULE_ePrintStackTrace));
@@ -552,14 +520,14 @@ public class SmellSettingsTest {
 	public void testIsExtraRuleExist() throws Exception {
 		smellSettingFile.createNewFile();
 		
-		/** 當bad smell的節點不存在時 */
+		/** when bad smell's node is missing*/
 		assertFalse(smellSettings.isExtraRuleExist(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT));
 		
-		/** 當bad smell的節點存在，卻沒有設定值時 */
+		/** when bad smell's node is exist but without setting */
 		smellSettings.getSmellType(SmellSettings.SMELL_CARELESSCLEANUP);
 		assertFalse(smellSettings.isExtraRuleExist(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT));
 		
-		/** 當bad smell的節點存在，也有設定值時 */
+		/** when bad smell's node is exist and setting has been specified*/
 		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		assertTrue(smellSettings.isExtraRuleExist(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT));
@@ -569,10 +537,10 @@ public class SmellSettingsTest {
 	public void testGetSmellSettings() throws Exception {
 		smellSettingFile.createNewFile();
 		
-		/** 當bad smell的節點不存在時 */
+		/** when bad smell's node is missing*/
 		assertEquals(0, smellSettings.getSmellSettings(SmellSettings.SMELL_DUMMYHANDLER).size());
 		
-		/** 當bad smell的節點存在，而只有extra rule時 */
+		/** when bad smell is exist and only with extra rule */
 		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_ePrintStackTrace);
 		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_JavaUtilLoggingLogger);
 		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_SystemOutPrintln);
@@ -589,11 +557,11 @@ public class SmellSettingsTest {
 		assertEquals(UserDefinedConstraintsType.Library, libMap.get(SmellSettings.EXTRARULE_JavaUtilLoggingLogger));
 		assertEquals(UserDefinedConstraintsType.Method, libMap.get(SmellSettings.EXTRARULE_ePrintStackTrace));
 		
-		// 刪除檔案以便下個case測試
+		// clear data for next test case
 		assertTrue(smellSettingFile.delete());
 		smellSettings = new SmellSettings(smellSettingFile.getPath());
 		
-		/** 當bad smell的節點存在，而只有pattern時 */
+		/** when bad smell is exist and only with bad smell pattern*/
 		assertTrue(smellSettingFile.createNewFile());
 		smellSettings.addDummyHandlerPattern("Java.io.File", true);
 		smellSettings.addDummyHandlerPattern("Java.io.FileInputStream", false);
@@ -643,7 +611,7 @@ public class SmellSettingsTest {
 		assertEquals(UserDefinedConstraintsType.Method, libMap.get("File"));
 		assertNull(libMap.get("FileInputStream"));
 		
-		/** 設定檔未選取時，則無任何讀取動作 */
+		/** without any action when without any selection of SmellSetting */
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.ATTRIBUTE_ISDETECTING, false);
 		libMap = smellSettings.getSmellSettings(SmellSettings.SMELL_DUMMYHANDLER);
 		assertEquals(0, libMap.size());
@@ -662,28 +630,23 @@ public class SmellSettingsTest {
 
 	@Test
 	public void testActivateAllConditions() throws Exception {
-		// 先用一個新的instace產生xml檔
 		smellSettings = new SmellSettings(smellSettingFile);
 		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_ePrintStackTrace);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		
 		String expectedResult = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells><SmellTypes name=\"DummyHandler\" isDetecting=\"true\"><extraRule name=\"printStackTrace\" /></SmellTypes></CodeSmells>";
 		
-		// 確認內容
 		String firstTimeContent = readFileContents(smellSettingFile);
 		assertEquals(expectedResult, firstTimeContent);
 		
-		// 呼叫activateAllConditions，使其勾選所有設定
 		smellSettings.activateAllConditionsIfNotConfugured(smellSettingFile.getPath());
 
-		// 因為檔案存在，所以不會寫入任何新的資訊
 		assertEquals(expectedResult, firstTimeContent);
 		
-		// 刪除已經存在的檔案，並且重新勾選所有設定
+		// clear data for next test case
 		assertTrue(smellSettingFile.delete());
 		smellSettings.activateAllConditionsIfNotConfugured(smellSettingFile.getPath());
 		
-		// 重新確認內容
 		String fileContent = readFileContents(smellSettingFile);
 		assertEquals(
 				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><CodeSmells>" +

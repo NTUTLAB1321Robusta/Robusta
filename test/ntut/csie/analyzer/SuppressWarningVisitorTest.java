@@ -37,20 +37,17 @@ public class SuppressWarningVisitorTest {
 
 	@Before
 	public void setUp() throws Exception {
-		// 讀取測試檔案樣本內容
 		javaFileToString = new JavaFileToString();
 		javaFileToString.read(SuppressWarningExampleForAnalyzer.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker = new JavaProjectMaker("SuppressWarningTest");
 		javaProjectMaker.setJREDefaultContainer();
 		
-		// 新增欲載入的 library
-		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(
+		javaProjectMaker.packageAgileExceptionClassesToJarIntoLibFolder(
 				JavaProjectMaker.FOLDERNAME_LIB_JAR,
 				JavaProjectMaker.FOLDERNAME_BIN_CLASS);
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/"
 				+ JavaProjectMaker.RL_LIBRARY_PATH);
 		
-		// 根據測試檔案樣本內容建立新的檔案
 		javaProjectMaker.createJavaFile(
 				SuppressWarningExampleForAnalyzer.class.getPackage().getName(),
 				SuppressWarningExampleForAnalyzer.class.getSimpleName()
@@ -67,20 +64,16 @@ public class SuppressWarningVisitorTest {
 				+ javaFileToString.getFileContent());
 		javaFileToString.clear();
 		
-		// 建立 XML
 		smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		smellSettings.activateAllConditionsIfNotConfugured(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(SuppressWarningExampleForAnalyzer.class, javaProjectMaker.getProjectName()));
 		
-		// Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		
-		// 設定要被建立 AST 的檔案
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
 		
-		// 取得 AST
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
 		
@@ -90,10 +83,8 @@ public class SuppressWarningVisitorTest {
 	@After
 	public void tearDown() throws Exception {
 		File xmlFile = new File(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		// 如果 XML 檔案存在，則刪除之
 		if(xmlFile.exists())
 			assertTrue(xmlFile.delete());
-		// 刪除專案
 		javaProjectMaker.deleteProject();
 	}
 	
@@ -103,7 +94,7 @@ public class SuppressWarningVisitorTest {
 		method.accept(visitor);
 		List<SSMessage> ssList = visitor.getSuppressWarningList();
 		assertEquals(1, ssList.size());
-		assertFalse(ssList.get(0).isInCatch());
+		assertFalse(ssList.get(0).isInsideCatchStatement());
 		assertEquals(compilationUnit.getLineNumber(method.getStartPosition()), ssList.get(0).getLineNumber());
 		assertEquals(method.getStartPosition(), ssList.get(0).getPosition());
 		assertEquals(1, ssList.get(0).getSmellList().size());
@@ -118,7 +109,7 @@ public class SuppressWarningVisitorTest {
 		List<TryStatement> tryList = ASTNodeFinder.getTryStatementNodeListByMethodDeclarationName(compilationUnit, "withSuppressWaringDummyHandlerOnCatch");
 		CatchClause cc = (CatchClause)tryList.get(0).catchClauses().get(0);
 		assertEquals(1, ssList.size());
-		assertTrue(ssList.get(0).isInCatch());
+		assertTrue(ssList.get(0).isInsideCatchStatement());
 		assertEquals(compilationUnit.getLineNumber(cc.getStartPosition()), ssList.get(0).getLineNumber());
 		assertEquals(cc.getStartPosition(), ssList.get(0).getPosition());
 		assertEquals(1, ssList.get(0).getSmellList().size());
@@ -144,7 +135,7 @@ public class SuppressWarningVisitorTest {
 		List<SSMessage> ssList = visitor.getSuppressWarningList();
 		assertEquals(8, ssList.size());
 		assertEquals(2, ssList.get(0).getSmellList().size());
-		assertFalse(ssList.get(0).isInCatch());
+		assertFalse(ssList.get(0).isInsideCatchStatement());
 		assertEquals("Careless_Cleanup", ssList.get(0).getSmellList().get(0));
 		assertEquals("Nested_Try_Statement", ssList.get(0).getSmellList().get(1));
 		assertEquals(2, ssList.get(1).getSmellList().size());

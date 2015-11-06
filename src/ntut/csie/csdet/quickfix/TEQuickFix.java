@@ -33,23 +33,21 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * 在Marker上面的Quick Fix中加入直接Throw Checked Exception的功能
+ * add throw checked exception feature to quick fix marker
  * @author Shiau
  */
 public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 	private static Logger logger = LoggerFactory.getLogger(TEQuickFix.class);
 
 	private String label;
-	//紀錄code smell的type
-	private String problem;
 
-	// 目前method的RL Annotation資訊
-	private List<RLMessage> currentMethodRLList = null;
+	private String badSmellType;
 
-	//按下QuickFix該行的程式起始位置(Catch位置)
-	private String srcPos;
-	//刪掉的Statement數目
-	private int delStatement = 0;
+	private List<RLMessage> robustnessLevelAnnotationList = null;
+
+	private String lineNumberOfQuickFixInvocation;
+
+	private int amountOFDeletedStatement = 0;
 
 	public TEQuickFix(String label) {
 		this.label = label;
@@ -63,27 +61,26 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 	@Override
 	public void run(IMarker marker) {
 		try {
-			problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
+			badSmellType = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
 			
-			if(problem != null && (problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)) || 
-								  (problem.equals(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK))) {
-				//如果碰到dummy handler,則將exception rethrow
+			if(badSmellType != null && (badSmellType.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)) || 
+								  (badSmellType.equals(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK))) {
+				//rethrow exception when meet dummy handler
 				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
 				String msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
 				String exception = marker.getAttribute(RLMarkerAttribute.RL_INFO_EXCEPTION).toString();
-				//儲存按下QuickFix該行的程式起始位置
-				srcPos = marker.getAttribute(RLMarkerAttribute.RL_INFO_SRC_POS).toString();
+				lineNumberOfQuickFixInvocation = marker.getAttribute(RLMarkerAttribute.RL_INFO_SRC_POS).toString();
 
-				boolean isok = this.findCurrentMethod(marker.getResource(), Integer.parseInt(methodIdx));
+				boolean isok = this.findMethodNodeWillBeQuickFixed(marker.getResource(), Integer.parseInt(methodIdx));
 				if(isok) {
-					currentMethodRLList = findRLList();
+					robustnessLevelAnnotationList = getRobustnessLevelList();
 					
-					//將Method加入Throw Exception，並回傳Catch的Index
+					//add throw exception statement in method and then return index of catch clause
 					int catchIdx = rethrowException(exception,Integer.parseInt(msgIdx));
 
-					//調整RL Annotation順序 TODO 待修正
+					//adjust order of RL annotation TODO need to be fixed
 					//new RLOrderFix().run(marker.getResource(), methodIdx, msgIdx);
-					//反白指定行數 (暫時不需要反白行數)
+					//high light specified line number (omit this feature temporarily)
 					//selectSourceLine(marker, methodIdx, catchIdx);
 				}
 			}
@@ -92,47 +89,35 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 		}
 	}
 
-	/**
-	 * 取得RL Annotation List
-	 * @param resource		來源
-	 * @param methodIdx		Method的Index
-	 * @return				是否成功
-	 */
-	private List<RLMessage> findRLList() {
-		if (currentMethodNode != null) {
-			//取得這個method的RL資訊
-			ExceptionAnalyzer exVisitor = new ExceptionAnalyzer(this.actRoot, currentMethodNode.getStartPosition(), 0);
-			currentMethodNode.accept(exVisitor);
+	private List<RLMessage> getRobustnessLevelList() {
+		if (methodNodeWillBeQuickFixed != null) {
+			ExceptionAnalyzer exVisitor = new ExceptionAnalyzer(this.javaFileWillBeQuickFixed, methodNodeWillBeQuickFixed.getStartPosition(), 0);
+			methodNodeWillBeQuickFixed.accept(exVisitor);
 			return exVisitor.getMethodRLAnnotationList();
 		}
 		return null;
 	}
 	
 	/**
-	 * 將該method Throw Checked Exception
+	 * rethrow checked exception in method
 	 * @param exception
 	 * @param msgIdx
 	 * @return				
 	 */
 	private int rethrowException(String exception, int msgIdx) {
-		AST ast = currentMethodNode.getAST();
+		AST ast = methodNodeWillBeQuickFixed.getAST();
 
-		//準備在Catch Caluse中加入throw exception
-		//收集該method所有的catch clause
+		//add throw exception statement in catch clause
+		//collect all catch clause in method
 		ASTCatchCollect catchCollector = new ASTCatchCollect();
-		currentMethodNode.accept(catchCollector);
+		methodNodeWillBeQuickFixed.accept(catchCollector);
 		List<CatchClause> catchList = catchCollector.getMethodList();
 
 		for (int i = 0; i < catchList.size(); i++) {
-			//找到該Catch(如果Catch的位置與按下Quick那行的起始位置相同)
-			if (catchList.get(i).getStartPosition() == Integer.parseInt(srcPos)) {
-				//建立RL Annotation
+			if (catchList.get(i).getStartPosition() == Integer.parseInt(lineNumberOfQuickFixInvocation)) {
 				addAnnotationRoot(exception, ast);
-				//在catch clause中建立throw statement
-				addThrowStatement(catchList.get(i), ast);
-				//檢查在method前面有沒有throw exception
-				checkMethodThrow(ast, exception);
-				//寫回Edit中
+				addThrowExceptionStatement(catchList.get(i), ast);
+				checkExceptionOnMethodSignature(ast, exception);
 				this.applyChange();
 				return i;
 			}
@@ -142,8 +127,7 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 
 	@SuppressWarnings("unchecked")
 	private void addAnnotationRoot(String exception,AST ast) {
-		//要建立@Robustness(value={@RTag(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
-		//建立Annotation root
+		//establish the annotation like "@Robustness(value={@RTag(level=1, exception=java.lang.RuntimeException.class)})"
 		NormalAnnotation root = ast.newNormalAnnotation();
 		root.setTypeName(ast.newSimpleName("Robustness"));
 
@@ -153,14 +137,13 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 		ArrayInitializer rlary = ast.newArrayInitializer();
 		value.setValue(rlary);
 
-		MethodDeclaration method = (MethodDeclaration) currentMethodNode;		
+		MethodDeclaration method = (MethodDeclaration) methodNodeWillBeQuickFixed;		
 		
-		if(currentMethodRLList.size() == 0) {		
+		if(robustnessLevelAnnotationList.size() == 0) {		
 			rlary.expressions().add(getRLAnnotation(ast,1,exception));
 		}else{
-			for (RLMessage rlmsg : currentMethodRLList) {
-				//把舊的annotation加進去
-				//判斷如果遇到重複的就不要加annotation
+			for (RLMessage rlmsg : robustnessLevelAnnotationList) {
+				//if there has been a duplicate annotation then ignore to add annotation in list.
 				int pos = rlmsg.getRLData().getExceptionType().toString().lastIndexOf(".");
 				String cut = rlmsg.getRLData().getExceptionType().toString().substring(pos+1);
 
@@ -173,7 +156,7 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 
 			List<IExtendedModifier> modifiers = method.modifiers();
 			for (int i = 0, size = modifiers.size(); i < size; i++) {
-				//找到舊有的annotation後將它移除
+				//remove existing annotation
 				if (modifiers.get(i).isAnnotation() && modifiers.get(i).toString().indexOf("Robustness") != -1) {
 					method.modifiers().remove(i);
 					break;
@@ -183,44 +166,42 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 		if (rlary.expressions().size() > 0) {
 			method.modifiers().add(0, root);
 		}
-		//將RL的library加進來
-		addImportDeclaration();
+		importRobustnessLevelLibrary();
 	}
 	
 	/**
-	 * 產生RL Annotation之RL資料
+	 * generate robustness level information of robustness level annotation
 	 * @param ast: AST Object
-	 * @param levelVal:強健度等級
-	 * @param exClass:例外類別
+	 * @param robustnessLevelVal
+	 * @param excptionType
 	 * @return NormalAnnotation AST Node
 	 */
-	private NormalAnnotation getRLAnnotation(AST ast, int levelVal,String excption) {
-		//要建立@Robustness(value={@RTag(level=1, exception=java.lang.RuntimeException.class)})這樣的Annotation
+	private NormalAnnotation getRLAnnotation(AST ast, int robustnessLevelVal,String excptionType) {
+		//generate the annotation like "@Robustness(value={@RTag(level=1, exception=java.lang.RuntimeException.class)})"
 		NormalAnnotation rl = ast.newNormalAnnotation();
 		rl.setTypeName(ast.newSimpleName("RTag"));
 
 		// level = 1
 		MemberValuePair level = ast.newMemberValuePair();
 		level.setName(ast.newSimpleName("level"));
-		//throw statement 預設level = 1
-		level.setValue(ast.newNumberLiteral(String.valueOf(levelVal)));
+		//default level of throw statement is 1
+		level.setValue(ast.newNumberLiteral(String.valueOf(robustnessLevelVal)));
 		rl.values().add(level);
 
 		// exception=java.lang.RuntimeException.class
 		MemberValuePair exception = ast.newMemberValuePair();
 		exception.setName(ast.newSimpleName("exception"));
 		TypeLiteral exclass = ast.newTypeLiteral();
-		// 預設為RuntimeException
-		exclass.setType(ast.newSimpleType(ast.newName(excption)));
+		// default exception is RuntimeException
+		exclass.setType(ast.newSimpleType(ast.newName(excptionType)));
 		exception.setValue(exclass);
 		rl.values().add(exception);
 
 		return rl;
 	}
 
-	private void addImportDeclaration() {
-		// 判斷是否已經Import Robustness及RL的宣告
-		List<ImportDeclaration> importList = this.actRoot.imports();
+	private void importRobustnessLevelLibrary() {
+		List<ImportDeclaration> importList = this.javaFileWillBeQuickFixed.imports();
 		boolean isImportRobustnessClass = false;
 		boolean isImportRLClass = false;
 
@@ -233,83 +214,59 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 			}
 		}
 
-		AST rootAst = this.actRoot.getAST();
+		AST rootAst = this.javaFileWillBeQuickFixed.getAST();
 		if (!isImportRobustnessClass) {
 			ImportDeclaration imp = rootAst.newImportDeclaration();
 			imp.setName(rootAst.newName(Robustness.class.getName()));
-			this.actRoot.imports().add(imp);
+			this.javaFileWillBeQuickFixed.imports().add(imp);
 		}
 		if (!isImportRLClass) {
 			ImportDeclaration imp = rootAst.newImportDeclaration();
 			imp.setName(rootAst.newName(RTag.class.getName()));
-			this.actRoot.imports().add(imp);
+			this.javaFileWillBeQuickFixed.imports().add(imp);
 		}
 	}
 
-	/**
-	 * 在catch中增加throw checked exception
-	 * 
-	 * @param cc
-	 * @param ast
-	 */
-	private void addThrowStatement(CatchClause cc, AST ast) {
-		//取得該catch()中的exception variable
+	private void addThrowExceptionStatement(CatchClause cc, AST ast) {
+		//get exception variable from catch expression
 		SingleVariableDeclaration svd = 
 			(SingleVariableDeclaration) cc.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
 
-		//自行建立一個throw statement加入
 		ThrowStatement ts = ast.newThrowStatement();
 
-		//取得Catch後Exception的變數
 		SimpleName name = ast.newSimpleName(svd.resolveBinding().getName());		
 		
-		//加到throw statement
 		ts.setExpression(name);
 
-		//取得CatchClause所有的statement,將相關print例外資訊的東西移除
 		List statement = cc.getBody().statements();
 
-		delStatement = statement.size();
-		if(problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)) {	
-			//假如要fix的code smell是dummy handler,就要把catch中的列印資訊刪除
-			deleteStatement(statement);
+		amountOFDeletedStatement = statement.size();
+		if(badSmellType.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)) {	
+			deleteStatementWhichWillCauseDummtHandler(statement);
 		}
-		delStatement -= statement.size();
+		amountOFDeletedStatement -= statement.size();
 
-		//將新建立的節點寫回
 		statement.add(ts);
 	}
 
-	/**
-	 * 在Rethrow之前,先將相關的print字串都清除掉
-	 */
-	private void deleteStatement(List<Statement> statementTemp) {
-		// 從Catch Clause裡面剖析兩種情形
+	private void deleteStatementWhichWillCauseDummtHandler(List<Statement> statementTemp) {
 		if(statementTemp.size() != 0){
 			for(int i=0;i<statementTemp.size();i++) {			
 				if(statementTemp.get(i) instanceof ExpressionStatement ) {
 					ExpressionStatement statement = (ExpressionStatement) statementTemp.get(i);
-					// 遇到System.out.print or printStackTrace就把他remove掉
+					// remove System.out.print and printStackTrace
 					if (statement.getExpression().toString().contains("System.out.print") ||
 						statement.getExpression().toString().contains("printStackTrace")) {
-
 						statementTemp.remove(i);
-						//移除完之後ArrayList的位置會重新調整過,所以利用遞回來繼續往下找符合的條件並移除
-						deleteStatement(statementTemp);
+						deleteStatementWhichWillCauseDummtHandler(statementTemp);
 					}
 				}
 			}
 		}
 	}
 
-	/**
-	 * 檢查在method前面有沒有throw exception
-	 * 
-	 * @param ast
-	 * @param exception 
-	 */
-	private void checkMethodThrow(AST ast, String exception) {
-		MethodDeclaration md = (MethodDeclaration)currentMethodNode;
+	private void checkExceptionOnMethodSignature(AST ast, String exception) {
+		MethodDeclaration md = (MethodDeclaration)methodNodeWillBeQuickFixed;
 		List thStat = md.thrownExceptions();
 		boolean isExist = false;
 		for(int i=0;i<thStat.size();i++) {
@@ -325,70 +282,4 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 			thStat.add(ast.newSimpleName(exception));
 		}
 	}
-	
-//	/**
-//	 * 反白指定行數
-//	 * @param marker		欲反白Statement的Resource
-//	 * @param methodIdx		欲反白Statement的Method Index
-//	 * @param catchIdx		欲反白Statement的Catch Index
-//	 */
-//	private void selectSourceLine(IMarker marker, String methodIdx, int catchIdx) {
-//		//重新取得Method資訊
-//		boolean isOK = this.findCurrentMethod(marker.getResource(),Integer.parseInt(methodIdx));
-//		if (isOK) {
-//			try {
-//				ICompilationUnit cu = (ICompilationUnit) actOpenable;
-//				Document document = new Document(cu.getBuffer().getContents());
-//				//取得目前的EditPart
-//				IEditorPart editorPart = EditorUtils.getActiveEditor();
-//				ITextEditor editor = (ITextEditor) editorPart;
-//
-//				//取得反白Statement的行數
-//				int selectLine = getThrowStatementSourceLine(catchIdx);
-//				//若反白行數為
-//				if (selectLine == -1) {
-//					//取得Method的起點位置
-//					int srcPos = currentMethodNode.getStartPosition();
-//					//用Method起點位置取得Method位於第幾行數(起始行數從0開始，不是1，所以減1)
-//					selectLine = this.actRoot.getLineNumber(srcPos)-1;
-//				}
-//				//取得反白行數在SourceCode的行數資料
-//				IRegion lineInfo = document.getLineInformation(selectLine);
-//
-//				//反白該行 在Quick fix完之後,可以將游標定位在Quick Fix那行
-//				editor.selectAndReveal(lineInfo.getOffset(), lineInfo.getLength());
-//			} catch (JavaModelException e) {
-//				logger.error("[Rethrow checked Exception] EXCEPTION ",e);
-//			} catch (BadLocationException e) {
-//				logger.error("[BadLocation] EXCEPTION ",e);
-//			}
-//		}
-//	}
-	
-//	/**
-//	 * 取得Throw Statement行數
-//	 * @param catchIdx	catch的index
-//	 * @return			反白行數
-//	 */
-//	private int getThrowStatementSourceLine(int catchIdx) {
-//		//反白行數
-//		int selectLine = -1;
-//
-//		if (catchIdx != -1) {
-//			ASTCatchCollect catchCollector = new ASTCatchCollect();
-//			currentMethodNode.accept(catchCollector);
-//			List<ASTNode> catchList = catchCollector.getMethodList();
-//			//取得指定的Catch
-//			CatchClause clause = (CatchClause) catchList.get(catchIdx);
-//			//尋找Throw statement的行數
-//			List catchStatements = clause.getBody().statements();
-//			for (int i = 0; i < catchStatements.size(); i++) {
-//				if (catchStatements.get(i) instanceof ThrowStatement) {
-//					ThrowStatement statement = (ThrowStatement) catchStatements.get(i);
-//					selectLine = this.actRoot.getLineNumber(statement.getStartPosition()) -1;
-//				}
-//			}
-//		}
-//		return selectLine;
-//	}
 }

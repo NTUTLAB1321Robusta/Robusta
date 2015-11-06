@@ -51,22 +51,19 @@ public class ReportBuilderTest {
 	@Before
 	public void setUp() throws Exception {
 		
-		// 讀取測試檔案樣本內容
 		javaFileToString = new JavaFileToString();
 		javaProjectMaker = new JavaProjectMaker(projectName);
 		javaProjectMaker.setJREDefaultContainer();
 
-		// 新增欲載入的library
 		javaProjectMaker
 				.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR
 						+ "/log4j-1.2.15.jar");
-		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(
+		javaProjectMaker.packageAgileExceptionClassesToJarIntoLibFolder(
 				JavaProjectMaker.FOLDERNAME_LIB_JAR,
 				JavaProjectMaker.FOLDERNAME_BIN_CLASS);
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/"
 				+ JavaProjectMaker.RL_LIBRARY_PATH);
 
-		// 根據測試檔案樣本內容建立新的檔案
 		javaFileToString.read(CommonExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				CommonExample.class.getPackage().getName(),
@@ -92,15 +89,12 @@ public class ReportBuilderTest {
 
 		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(CommonExample.class, projectName));
 		
-		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		
-		// 設定要被建立AST的檔案
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
 		
-		// 取得AST
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
 	}
@@ -117,12 +111,12 @@ public class ReportBuilderTest {
 	@Test
 	public void testCountFileLOC() throws Exception {
 		
-		/** 正確路徑下的class file */
+		/** correct class file path*/
 		Method countFileLOC = ReportBuilder.class.getDeclaredMethod("countFileLOC", String.class);
 		countFileLOC.setAccessible(true);
-		// 檢查測試專案檔案的行數
-		assertEquals(289, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(CommonExample.class, projectName)));
-		/** 路徑不正確或者不存在的class file */
+		// LOC = line of code
+		assertEquals(287, countFileLOC.invoke(reportBuilder, "/" + PathUtils.getPathOfClassUnderSrcFolder(CommonExample.class, projectName)));
+		/** wrong class file path*/
 		assertEquals(0, countFileLOC.invoke(reportBuilder, "not/exist/example.java"));
 	}
 	
@@ -159,16 +153,13 @@ public class ReportBuilderTest {
 		model.setAccessible(true);
 		ReportModel reportModel = (ReportModel)model.get(reportBuilder); 
 		
-		// 取得目前專案
 		IJavaProject javaPrj = JavaCore.create(project);
 		List<IPackageFragmentRoot> root = reportBuilder.getSourcePaths(javaPrj);
 		for(int i = 0; i < root.size(); i++) {
-			// 取得Root底下的所有Package
 			IJavaElement[] packages = root.get(i).getChildren();
 			for(IJavaElement iJavaElement : packages) {
 				if (iJavaElement.getElementType() == IJavaElement.PACKAGE_FRAGMENT) {
 					IPackageFragment iPackageFgt = (IPackageFragment) iJavaElement;
-					// 取得Package底下的class
 					ICompilationUnit[] compilationUnits = iPackageFgt.getCompilationUnits();
 					for(int j = 0; j < compilationUnits.length; j++) {
 						PackageModel newPackageModel = new PackageModel();

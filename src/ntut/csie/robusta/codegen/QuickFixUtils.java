@@ -46,42 +46,42 @@ public class QuickFixUtils {
 	@SuppressWarnings("unchecked")
 	public static NormalAnnotation makeRLAnnotation(AST ast, int levelVal, String exceptionType) {
 		/*
-		 * 這樣一整段，是一種NormalAnnotation
+		 * this paragraph is NormalAnnotation
 		 * @Robustness(value = {
             @RTag(level = 2, exception = java.io.FileNotFoundException.class),
             @RTag(level = 2, exception = java.io.IOException.class) })
          *   
-         * 這樣一整段，都是MemberValuePair
+         * this paragraph is MemberValuePair
 		 * value = {
             @RTag(level = 2, exception = java.io.FileNotFoundException.class),
             @RTag(level = 2, exception = java.io.IOException.class) }
          *
-         * 在MemberValuePair中的Value裡面，下面這段是ArrayInitializer
+         * in MemberValuePair, this is ArrayInitializer
          * {
             @RTag(level = 2, exception = java.io.FileNotFoundException.class),
             @RTag(level = 2, exception = java.io.IOException.class) }
          *
-         * 在ArrayInitializer裡的其中一個元素，又是另一段Normal Annotation
+         * one element in ArrayInitializer is a Normal Annotation
            @RTag(level = 2, exception = java.io.FileNotFoundException.class)
          * 
-         * 在這段NormalAnnotation裡面，有兩個MemberValuePair
+         *  there are two MemberValuePair in this NormalAnnotation
            level = 2
            exception = java.io.FileNotFoundException.class
          *
-         * 在 level = 2這個MemberValuePair中，2 是NumberLiteral
+         * in "level = 2", 2 is NumberLiteral
            
            exception = java.io.FileNotFoundException.class，
            java.io.FileNotFoundException.class 是TypeLiteral
          * 
 		 */
 		
-		//要建立@RTag(level=1, exception=java.lang.RuntimeException.class)這樣的Annotation
+		//to generate @RTag(level=1, exception=java.lang.RuntimeException.class) this kind of Annotation
 		NormalAnnotation rlNormalAnnotation = ast.newNormalAnnotation();
 		rlNormalAnnotation.setTypeName(ast.newSimpleName(RTag.class.getSimpleName()));
 
 		MemberValuePair level = ast.newMemberValuePair();
 		level.setName(ast.newSimpleName(RTag.LEVEL));
-		//throw statement 預設level = 1
+		//default level of throw statement is 1
 		level.setValue(ast.newNumberLiteral(String.valueOf(levelVal)));
 		//TODO HOW TO ADD without warning
 		rlNormalAnnotation.values().add(level);
@@ -133,8 +133,8 @@ public class QuickFixUtils {
 	}
 	
 	/**
-	 * 在指定的method declaration上面宣告拋出例外。
-	 * 如果有已經有宣告拋出例外，就不再宣告。
+	 * add exception declaration on specified method declaration 
+	 * it would not declare exception if there has been a exception declaration on method declaration.
 	 * @param ast
 	 * @param methodDeclaration
 	 * @param exceptionName
@@ -143,13 +143,13 @@ public class QuickFixUtils {
 	public static void addThrowExceptionOnMethodDeclaration(AST ast, MethodDeclaration methodDeclaration, String exceptionName) {
 		// TODO unchecked type
 		List<SimpleName> thrownExceptions = methodDeclaration.thrownExceptions();
-		// 沒有任何拋出例外的宣告，那就直接加上去
+		//add an exception declaration if there are not any exception declaration.
 		if(thrownExceptions.size() == 0) {
 			thrownExceptions.add(ast.newSimpleName(exceptionName));
 			return;
 		}
 		
-		// 有拋出例外的宣告，再檢查後才拋出
+		//check whether there are duplicate exception declaration.
 		for(SimpleName thrownEx : thrownExceptions) {
 			if(thrownEx.getIdentifier().equals(exceptionName)) {
 				thrownExceptions.add(ast.newSimpleName(exceptionName));
@@ -159,7 +159,7 @@ public class QuickFixUtils {
 	}
 
 	/**
-	 * 在特定Method上增加強健度等級註記
+	 * add robustness level annotation on specified method
 	 * @param ast
 	 * @param compilationUnit
 	 * @param methodDeclaration
@@ -177,11 +177,10 @@ public class QuickFixUtils {
 		value.setValue(rlary);
 		
 		List<RLMessage> existedRobustnessLevelAnnotation = getExceptionCodeSmells(compilationUnit, methodDeclaration);
+		//check whether has added robust level annotation
 		if(existedRobustnessLevelAnnotation.size() == 0) {
-			// 本來沒有強健度等級註記
 			rlary.expressions().add(getRobustnessAnnotation(ast, 1,	RuntimeException.class.getSimpleName()));
 		}else {
-			// 本來就有強健度等級註記
 			for(RLMessage robustnessAnnotation : existedRobustnessLevelAnnotation) {
 				int pos = robustnessAnnotation.getRLData().getExceptionType().lastIndexOf(".");
 				String cut = robustnessAnnotation.getRLData().getExceptionType().toString().substring(pos+1);
@@ -196,7 +195,7 @@ public class QuickFixUtils {
 			
 			List<IExtendedModifier> modifiers = methodDeclaration.modifiers();
 			for (int i = 0, size = modifiers.size(); i < size; i++) {
-				//找到舊有的annotation後將它移除
+				// remove original annotation
 				if (modifiers.get(i).isAnnotation() && modifiers.get(i).toString().indexOf(Robustness.class.getSimpleName()) != -1) {
 					methodDeclaration.modifiers().remove(i);
 					break;
@@ -212,13 +211,13 @@ public class QuickFixUtils {
 	}
 	
 	/**
-	 * 加上強健度等級註記的import資訊
+	 * import Robustness class and RTag class
 	 * @param compilationUnit
 	 */
 	private static void addRobustnessAndRTagImporting(CompilationUnit compilationUnit) {
-		// 判斷是否已經Import Robustness及RL的宣告
+		// check whether has imported Robustness class and RTag class
 		List<ImportDeclaration> importList = compilationUnit.imports();
-		//是否已存在Robustness及RL的宣告
+
 		boolean isImportRobustnessClass = false;
 		boolean isImportRLClass = false;
 
@@ -245,15 +244,15 @@ public class QuickFixUtils {
 	}
 	
 	private static NormalAnnotation getRobustnessAnnotation(AST ast, int levelVal, String excption) {
-		// 要建立@Tag(level=1,
-		// exception=java.lang.RuntimeException.class)這樣的Annotation
+		// establish @Tag(level=1,
+		// Annotation will be like exception=java.lang.RuntimeException.class)
 		NormalAnnotation rl = ast.newNormalAnnotation();
 		rl.setTypeName(ast.newSimpleName(RTag.class.getSimpleName().toString()));
 
 		// level = 1
 		MemberValuePair level = ast.newMemberValuePair();
 		level.setName(ast.newSimpleName(RTag.LEVEL));
-		// throw statement 預設level = 1
+		//default level of throw statement is 1
 		level.setValue(ast.newNumberLiteral(String.valueOf(levelVal)));
 		rl.values().add(level);
 
@@ -261,7 +260,7 @@ public class QuickFixUtils {
 		MemberValuePair exception = ast.newMemberValuePair();
 		exception.setName(ast.newSimpleName(RTag.EXCEPTION));
 		TypeLiteral exclass = ast.newTypeLiteral();
-		// 預設為RuntimeException
+		// default exception is RuntimeException
 		exclass.setType(ast.newSimpleType(ast.newName(excption)));
 		exception.setValue(exclass);
 		rl.values().add(exception);
@@ -270,10 +269,10 @@ public class QuickFixUtils {
 	}
 
 	/**
-	 * 從特定Method上，取得指定的例外處理壞味道
+	 * get the bad smells of exception handling from specified method 
 	 * 
-	 * @param problem 你想要蒐集的例外處理壞味道
-	 * @param methodDeclaration 你指定從哪個Method上蒐集
+	 * @param CompilationUnit the class file of specified method
+	 * @param methodDeclaration specified method
 	 * @return
 	 */
 	public static List<RLMessage> getExceptionCodeSmells(
@@ -286,7 +285,7 @@ public class QuickFixUtils {
 	}
 	
 	/**
-	 * 從IResource取得CompilationUnit
+	 * get CompilationUnit from IResource 
 	 * @param resource
 	 * @return
 	 */
@@ -304,14 +303,13 @@ public class QuickFixUtils {
 				parser.setResolveBindings(true);
 				compilationUnit = (CompilationUnit) parser.createAST(null);
 				
-				//AST 2.0紀錄方式
 				compilationUnit.recordModifications();			
 		}
 		return compilationUnit;
 	}
 	
 	/**
-	 * 根據MethodDeclaration的索引編號，從CompilationUnit取出MethodDeclaration node
+	 * take MethodDeclaration as index to get MethodDeclaration node from CompilationUnit
 	 * @param compilationUnit
 	 * @param methodIndex
 	 * @return
@@ -321,12 +319,11 @@ public class QuickFixUtils {
 		compilationUnit.accept(methodCollector);
 		List<MethodDeclaration> methodList = methodCollector.getMethodList();
 		
-		//取得目前要被修改的method node
 		return methodList.get(methodIndex);
 	}
 	
 	/**
-	 * 增加一個拋出例外的宣告
+	 * generate an exception declaration will been thrown
 	 * @param ast
 	 * @param exceptionType
 	 * @return
@@ -348,33 +345,29 @@ public class QuickFixUtils {
 	}
 
 	/**
-	 * 產生throw new xxxException()的節點
+	 * generate an ASTNode of throw new xxxException()
 	 * @param ast
-	 * @param exceptionVariableName catch(IOException e)裡面的e
-	 * @param exceptionType 要重新拋出的例外類型
+	 * @param exceptionVariableName 
+	 *                   the name of e in "catch(IOException e)"
+	 * @param exceptionType 
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")	
 	public static ASTNode generateThrowNewExceptionNode(String exceptionVariableName, AST ast, String exceptionType) {
-		// 自行建立一個throw statement加入
 		ThrowStatement ts = ast.newThrowStatement();
 		
-		// 將throw的variable傳入
 		ClassInstanceCreation cic = ast.newClassInstanceCreation();
-		// throw new RuntimeException()
 		cic.setType(ast.newSimpleType(ast.newSimpleName(exceptionType)));
-		// TODO: How to add without warning
-		// 將throw new RuntimeException(ex)括號中加入參數
 		cic.arguments().add(ast.newSimpleName(exceptionVariableName));
 		ts.setExpression(cic);
 		return ts;
 	}
 	
 	/**
-	 * 將指定的catch clause中原來拋出的例外轉型成其他例外拋出
-	 * @param cc 指定的catch clause
-	 * @param ast CompilationUnit的AST
-	 * @param exceptionType 想要轉型成此種例外拋出
+	 * cast exception,thrown from catch clause, to another exception type
+	 * @param cc specified catch clause
+	 * @param ast CompilationUnit
+	 * @param exceptionType another exception type want to be casted to
 	 */
 	@SuppressWarnings("unchecked")
 	public static void addThrowRefinedException(CatchClause cc, AST ast, String exceptionType) {
@@ -405,7 +398,6 @@ public class QuickFixUtils {
 	
 	@SuppressWarnings("unchecked")
 	public static void addImportDeclaration(CompilationUnit compilationUnit, IType exceptionType) {
-		// 判斷是否有import library
 		boolean isImportLibrary = false;
 		List<ImportDeclaration> importList = compilationUnit.imports();
 		for(ImportDeclaration id : importList) {
@@ -415,7 +407,6 @@ public class QuickFixUtils {
 			}
 		}
 		
-		// 假如沒有import就加入到AST中
 		AST compilationUnitAST = compilationUnit.getAST(); 
 		if(!isImportLibrary) {
 			ImportDeclaration imp = compilationUnitAST.newImportDeclaration();

@@ -48,31 +48,30 @@ public class BaseQuickFixTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		// 讀取測試檔案樣本內容
 		jfs = new JavaFileToString();
 		jfs.read(CommonExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		
 		jpm = new JavaProjectMaker(testProjectNameString);
 		jpm.setJREDefaultContainer();
-		// 新增欲載入的library
+
 		jpm.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR + "/log4j-1.2.15.jar");
-		jpm.packAgileExceptionClasses2JarIntoLibFolder(JavaProjectMaker.FOLDERNAME_LIB_JAR, JavaProjectMaker.FOLDERNAME_BIN_CLASS);
+		jpm.packageAgileExceptionClassesToJarIntoLibFolder(JavaProjectMaker.FOLDERNAME_LIB_JAR, JavaProjectMaker.FOLDERNAME_BIN_CLASS);
 		jpm.addJarFromTestProjectToBuildPath("/" + JavaProjectMaker.FOLDERNAME_LIB_JAR + JavaProjectMaker.FOLDERNAME_LIB_JAR);
-		// 根據測試檔案樣本內容建立新的檔案
+
 		jpm.createJavaFile(testPackageNameString,
 				testClassSimpleNameString + JavaProjectMaker.JAVA_FILE_EXTENSION,
 				"package " + testPackageNameString + ";\n" + jfs.getFileContent());
-		// 建立XML
+
 		CreateSettings();
 		
 		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(CommonExample.class, testProjectNameString));
-		//Create AST to parse
+
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// 設定要被建立AST的檔案
+
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
-		// 取得AST
+
 		unit = (CompilationUnit) parser.createAST(null); 
 		unit.recordModifications();
 	}
@@ -80,10 +79,8 @@ public class BaseQuickFixTest {
 	@After
 	public void tearDown() throws Exception {
 		File xmlFile = new File(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		// 如果xml檔案存在，則刪除之
 		if(xmlFile.exists())
 			assertTrue(xmlFile.delete());
-		// 刪除專案
 		jpm.deleteProject();
 	}
 	
@@ -94,10 +91,10 @@ public class BaseQuickFixTest {
 		Field actOpenable = BaseQuickFix.class.getDeclaredField("actOpenable");
 		actOpenable.setAccessible(true);
 		
-		Field actRoot = BaseQuickFix.class.getDeclaredField("actRoot");
+		Field actRoot = BaseQuickFix.class.getDeclaredField("methodNodeWillBeQuickFixed");
 		actRoot.setAccessible(true);
 		
-		Field currentMethodNode = BaseQuickFix.class.getDeclaredField("currentMethodNode");
+		Field currentMethodNode = BaseQuickFix.class.getDeclaredField("methodNodeWillBeQuickFixed");
 		currentMethodNode.setAccessible(true);
 		
 		// check precondition
@@ -106,7 +103,7 @@ public class BaseQuickFixTest {
 		assertNull(currentMethodNode.get(bqFix));
 		
 		// test
-		Method findCurrentMethod = BaseQuickFix.class.getDeclaredMethod("findCurrentMethod", IResource.class, int.class);
+		Method findCurrentMethod = BaseQuickFix.class.getDeclaredMethod("findMethodNodeWillBeQuickFixed", IResource.class, int.class);
 		findCurrentMethod.setAccessible(true);
 		findCurrentMethod.invoke(bqFix, RuntimeEnvironmentProjectReader.getType(testProjectNameString, testPackageNameString, testClassSimpleNameString).getResource(), 6);
 		
@@ -132,7 +129,7 @@ public class BaseQuickFixTest {
 	public void testGetChange() throws Exception {
 		BaseQuickFix bqFix = new BaseQuickFix();
 		
-		Method findCurrentMethod = BaseQuickFix.class.getDeclaredMethod("findCurrentMethod", IResource.class, int.class);
+		Method findCurrentMethod = BaseQuickFix.class.getDeclaredMethod("findMethodNodeWillBeQuickFixed", IResource.class, int.class);
 		findCurrentMethod.setAccessible(true);
 		findCurrentMethod.invoke(bqFix, RuntimeEnvironmentProjectReader.getType(testProjectNameString, testPackageNameString, testClassSimpleNameString).getResource(), 6);
 		
@@ -145,17 +142,14 @@ public class BaseQuickFixTest {
 	
 //	@Test
 	public void testPerformChange() throws Exception {
-		fail("目前不知道如何在Unit Test中抓到EditorPart，所以未實作");
+		fail("we don't know how to get editor part during unit test, so performChange has not been implemented");
 	}
 	
 //	@Test
 	public void testApplyChange() throws Exception {
-		fail("目前不知道如何在Unit Test中抓到EditorPart，所以未實作");
+		fail("we don't know how to get editor part during unit test, so performChange has not been implemented");
 	}
-	
-	/**
-	 * 建立xml檔案
-	 */
+
 	private void CreateSettings() {
 		smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_ePrintStackTrace);

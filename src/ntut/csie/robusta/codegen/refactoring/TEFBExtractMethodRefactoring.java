@@ -291,39 +291,33 @@ public class TEFBExtractMethodRefactoring extends org.eclipse.jdt.internal.corex
 			}
 		}
 		
-		//加入private Logger logger = Logger.getLogger(LoggerTest.class.getName());
+		//add private Logger logger = Logger.getLogger(LoggerTest.class.getName());
 		VariableDeclarationFragment vdf = ast.newVariableDeclarationFragment();
-		//設定logger
+		//set logger
 		vdf.setName(ast.newSimpleName("logger"));
 		
-		//vdf的initializer的Method Invocation
+		//initialize vdf 
 		MethodInvocation initMI = ast.newMethodInvocation();
-		//設定initMI的Name
 		initMI.setName(ast.newSimpleName("getLogger"));
-		//設定initMI的Expression
 		initMI.setExpression(ast.newSimpleName("Logger"));
 
-		/* 設定arguMI的Expression */
+		/* set Expression of arguMI */
 		MethodInvocation arguMI = ast.newMethodInvocation();
-		//設定arguMI的Name
 		arguMI.setName(ast.newSimpleName("getName"));
 
-		/* 取得class Name */
+		/* get class name */
 		ICompilationUnit icu = iCompilationUnit;
 		String javaName = icu.getElementName();
-		//濾掉".java"
+		//filter out ".java"
 		String className = javaName.substring(0, javaName.length()-5);
-		//設定Expression的Type Literal
 		TypeLiteral tl = ast.newTypeLiteral();
 		tl.setType(ast.newSimpleType(ast.newName(className)));
 
 		arguMI.setExpression(tl);
 		
-		//設定initMI的arguments的Method Invocation
 		initMI.arguments().add(arguMI);
 		vdf.setInitializer(initMI);
 
-		//建立FieldDeclaration
 		FieldDeclaration fd = ast.newFieldDeclaration(vdf);
 		fd.modifiers().add(ast.newModifier(Modifier.ModifierKeyword.PRIVATE_KEYWORD));
 		fd.setType(ast.newSimpleType(ast.newName("Logger")));

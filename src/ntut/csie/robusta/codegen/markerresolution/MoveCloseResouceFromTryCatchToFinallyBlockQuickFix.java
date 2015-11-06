@@ -23,7 +23,7 @@ import org.eclipse.ui.IMarkerResolution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MoveCloseResouceFromTryCatchToFinallyBlockQuickFix implements IMarkerResolution {
+public class MoveCloseResouceFromTryCatchToFinallyBlockQuickFix implements IMarkerResolution {//這一個class跟careless cleanup quick fix有關，先跳過!
 	private static Logger logger = LoggerFactory.getLogger(MoveCloseResouceFromTryCatchToFinallyBlockQuickFix.class);
 	private QuickFixCore quickFixCore;
 	private String label;

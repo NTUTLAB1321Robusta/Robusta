@@ -78,7 +78,6 @@ public class EHSmellView extends ViewPart implements IShowInSource {
 	
 	public void init(IViewSite site) throws PartInitException {
 		super.setSite(site);
-		//加入正在使用Edit的Listener
 		if (this.eventHandler == null) {
 			this.eventHandler = new EHSmellViewEventHandler(this);
 			site.getWorkbenchWindow().getSelectionService().addPostSelectionListener(eventHandler);
@@ -92,16 +91,12 @@ public class EHSmellView extends ViewPart implements IShowInSource {
 	 * it.
 	 */
 	public void createPartControl(Composite parent) {
-		//建置smellList
 		buildTableList(parent);
-		//建置smellList的Listener
 		smellListTableDoubleClick();
 		
-		//TODO Menu還未寫
-		//建置Menu
 		buildMenu();
 
-		ConsoleLog.debug("初始化完成！");
+		ConsoleLog.debug("initialize successfully！");
 		try {
 			IEditorPart part = EditorUtils.getActiveEditor();
 			if (part instanceof ITextEditor) {
@@ -125,7 +120,7 @@ public class EHSmellView extends ViewPart implements IShowInSource {
 	// GUI
 	// *************************************************************************
 	/**
-	 * 建置Menu
+	 * set up menu
 	 */
 	private void buildMenu() {
 		//hook context menu
@@ -149,7 +144,7 @@ public class EHSmellView extends ViewPart implements IShowInSource {
 	}
 
 	/**
-	 * 建置smellList
+	 * set up smellList
 	 */
 	private void buildTableList(Composite parent) {
 		smellList = new Table(parent, SWT.SINGLE | SWT.FULL_SELECTION | SWT.HIDE_SELECTION);
@@ -163,12 +158,7 @@ public class EHSmellView extends ViewPart implements IShowInSource {
 		colMethodName.setText(resource.getString("smell.type"));
 	}
 
-	/**
-	 * 將資料顯示在View的Table上
-	 * @param list
-	 */
 	private void showExListTableContent() {
-		//清除表格
 		this.smellList.removeAll();
 		this.smellList.clearAll();
 
@@ -180,15 +170,14 @@ public class EHSmellView extends ViewPart implements IShowInSource {
 			TableItem item = new TableItem(smellList, SWT.NONE);
 			item.setData(String.valueOf(idx));
 
-			//第一行顯示行數
+			//show line number at first column
 			item.setText(0, String.valueOf(msg.getLineNumber()));
-			//把Smell Type的底線改成空格
 			String smellType = msg.getCodeSmellType();
 			smellType = smellType.replace('_' , ' ');
-			//第二行顯示Smell Type
+			//show smell type at second column
 			item.setText(1, smellType);
 
-			//如果指到的行數是Smell的行數
+			//if cursor is at the same line number as MarkerInfo
 			if (currentLineNumber == msg.getLineNumber()) {
 				item.setBackground(new Color(null,0,255,0));
 			}
@@ -234,10 +223,10 @@ public class EHSmellView extends ViewPart implements IShowInSource {
 				return;
 			}
 
-			// 判斷目前編輯器及文件是否為現有View呈現的
+			// check whether current editor and document is the same as on view
 			if (this.changeDocument || !model.hasData() || part != actEditor) {
-				ConsoleLog.debug("[handleSelectionChanged4Editor]重新再取得Java文件及編輯器!");
-				// 重新再取得Java文件及編輯器
+				ConsoleLog.debug("[handleSelectionChanged4Editor]reload Java class file and editor!");
+				// reload java doc and editor
 				if (part instanceof ITextEditor && (EditorUtils.getJavaInput((ITextEditor) part) != null)) {
 					try {
 						this.getEditorInput((ITextEditor) part);
@@ -249,8 +238,7 @@ public class EHSmellView extends ViewPart implements IShowInSource {
 					}
 				}
 			} else {
-				// 文件及編輯器為現存的
-				ConsoleLog.debug("[handleSelectionChanged4Editor]文件及編輯器為現存的!");
+				ConsoleLog.debug("[handleSelectionChanged4Editor]Java class file and editor is the same as on view!");
 				ConsoleLog.debug("[handleSelectionChanged4Editor]offset=" + offset + ",length=" + length);
 			}
 
@@ -284,7 +272,6 @@ public class EHSmellView extends ViewPart implements IShowInSource {
 	}
 
 	public ShowInContext getShowInContext() {
-		//移到Eclipse 3.4這邊會發生null point exception,所以這邊改成這樣 
 		IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
 		if (editor == null)	return null;
 
@@ -336,12 +323,12 @@ public class EHSmellView extends ViewPart implements IShowInSource {
 		editor.horizontalAlignment = SWT.LEFT;
 		editor.grabHorizontal = true;
 
-		//Table按兩下時能自動跳到該行程式碼
+		//double click at table can direct developer to corresponding line number
 		smellList.addListener(SWT.DefaultSelection, new Listener() {
 			public void handleEvent(Event e) {
-				//取得Table裡的所有欄位
+				//get all table item in table
 				TableItem[] allItems = smellList.getItems();
-				//取得點選的Item
+				//get selected table item
 				TableItem[] selection = smellList.getSelection();
 				if (selection.length >= 1) {
 					int pos = Integer.parseInt(selection[0].getText()) -1;
@@ -352,12 +339,12 @@ public class EHSmellView extends ViewPart implements IShowInSource {
 					} catch (BadLocationException e1) {
 						logger.error("[BadLocation] EXCEPTION ",e);
 					}
-					//游標定位
+					//get position 
 					actEditor.selectAndReveal(lineInfo.getOffset(), 0);
-					//清掉所有的Item顏色
+					//clear all table item background color
 					for (TableItem a:allItems)
 						a.setBackground(null);
-					//把點選的Item標上顏色
+					//set table item background color
 					selection[0].setBackground(new Color(null,0,255,0));
 				}
 			}

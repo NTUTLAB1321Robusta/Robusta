@@ -38,26 +38,26 @@ import org.eclipse.ui.PlatformUI;
 import org.jdom.Element;
 
 /**
- * EH TOOL設定畫面
+ * exception handling tool setting page
  * @author Shiau
  *
  */
 public class SettingPage extends APropertyPage {
 	
 	private Composite mainPageComposite;
-	/** 例外處理壞味道設定主畫面的Container */
+	/** Container of exception handling tool's setting page */
 	private Composite selectComposite;
-	/** Frame，例外處理壞味道類型外框 */
+	/** frame of exception handling's bad smell type */
 	private Group smellTypeGroup;
-	/** 例外處理壞味道清單 */
+	/** bad smell list of exception handling*/
 	private Table smellList;
-	/** Frame，壞味道範例程式碼外框 */
+	/** frame of bad smell's template code */
 	private Group templateCodeGroup;
-	/** 例外處理壞味道程式碼*/
+	/** bad smell's template code*/
 	private StyledText templateCode;
-	/** Checkbox，選擇偵測所有例外處理壞味道 */
+	/** Checkbox of selecting all bad smell to be detected */
 	private Button checkbox_DetectAllSmells;
-	/** Checkbox，選擇是否要將壞味道程式碼反白 */
+	/** Checkbox of highlighting the line of bad smell */
 	private Button checkbox_HighlightSmellCode;
 	
 	/** Preference group */
@@ -73,7 +73,6 @@ public class SettingPage extends APropertyPage {
 	
 	private TemplateText[] tempText;
 	private String[] descText;
-	// 負責處理讀寫XML
 	private SmellSettings smellSettings;
 	
 	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
@@ -99,7 +98,6 @@ public class SettingPage extends APropertyPage {
 
 		smellList.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
-				//取得點選的Item
 				int index = smellList.getSelectionIndex();
 				changeTemplateText(index);
 				changeTemplateSize();
@@ -211,7 +209,7 @@ public class SettingPage extends APropertyPage {
 	}
 
 	/**
-	 * 讀取使用者之前設定
+	 * get the previous user setting
 	 */
 	private void readSetting() {
 		Element[] smellElements = new Element[RLMarkerAttribute.CS_TOTAL_TYPE.length];
@@ -234,7 +232,7 @@ public class SettingPage extends APropertyPage {
 	}
 
 	/**
-	 * 建立Page外觀View
+	 * establish view of page
 	 * @param composite
 	 */
 	private void buildPage(Composite composite) {
@@ -291,12 +289,11 @@ public class SettingPage extends APropertyPage {
 		preferenceGroup.pack();
 		
 		
-		// 上半部，選擇要偵測的Smell群組
+		//select and put the smells to be detected in a group
 		smellTypeGroup = new Group(selectComposite, SWT.NONE);
 		smellTypeGroup.setText(resource.getString("settingPage.smell.type"));
 		smellTypeGroup.setLocation(10, getLowerRightCoordinate(preferenceGroup).y + 5);
 
-		//是否要選擇性偵測的Button
 		checkbox_DetectAllSmells = new Button(smellTypeGroup, SWT.CHECK);
 		checkbox_DetectAllSmells.setText(resource.getString("check.all.smell"));
 		checkbox_DetectAllSmells.setLocation(10, 20);
@@ -309,7 +306,6 @@ public class SettingPage extends APropertyPage {
 			}
 		});
 		
-		//選擇EH Smell List
 		smellList = new Table(smellTypeGroup, SWT.CHECK | SWT.SINGLE | SWT.FULL_SELECTION | SWT.BORDER | SWT.HIDE_SELECTION );
 		smellList.setLocation(checkbox_DetectAllSmells.getBounds().x, checkbox_DetectAllSmells.getBounds().y + checkbox_DetectAllSmells.getBounds().height);
 		smellList.setFont(new Font(composite.getDisplay(),"Arial", 11, SWT.NONE));
@@ -321,7 +317,7 @@ public class SettingPage extends APropertyPage {
 		String smellColumnDisplayText = resource.getString("settingPage.smell.type");
 		smellColumn.setText(smellColumnDisplayText);
 		smellColumn.setWidth(smellColumnDisplayText.length() * 9);
-		// 自動調整bad smell Type Column的大小
+		// adjust the size of bad smell type's column automatically
 		smellColumn.pack();
 		final TableColumn descColumn = new TableColumn(smellList, SWT.NONE);
 		descColumn.setText(resource.getString("settingPage.smell.description"));
@@ -332,10 +328,10 @@ public class SettingPage extends APropertyPage {
 			item.setFont(0, new Font(composite.getDisplay(),"Arial", 11, SWT.BOLD));			
 			item.setText(1, descText[i]);
 		}
-		// 自動調整bad smell Description Column的大小
+		// adjust the size of bad smell description's column automatically
 		descColumn.pack();
 		
-		// 自動調整設定主頁面上半部視窗的大小
+		// adjust the size of the top half of setting page automatically
 		smellList.pack();
 		smellTypeGroup.pack();
 
@@ -344,7 +340,6 @@ public class SettingPage extends APropertyPage {
 		templateCodeGroup.setText(resource.getString("settingPage.codeExample"));
 		templateCodeGroup.setLocation(10, getLowerRightCoordinate(smellTypeGroup).y + 5);
 
-		//是否要醒目標記程式碼
 		checkbox_HighlightSmellCode = new Button(templateCodeGroup, SWT.CHECK);
 		checkbox_HighlightSmellCode.setText(resource.getString("settingPage.codeExample.highlight"));
 		checkbox_HighlightSmellCode.setLocation(10, 20);
@@ -368,14 +363,13 @@ public class SettingPage extends APropertyPage {
 		templateCode.setFont(font);
 		templateCodeGroup.pack();
 		
-		// 自動調整設定主頁面Container的大小
+		// adjust the size of setting page's container automatically 
 		selectComposite.pack();
 		selectComposite.setSize(getLowerRightCoordinate(smellTypeGroup).x + 15, selectComposite.getBounds().height);
 	}
 
 	private void checkOrUncheckAllSmellSettings() {
 		TableItem[] item = smellList.getItems();
-		//去traverse整個table看item的Text和是否被勾選到
 		for (int i=0; i < item.length; i++) {
 			detSmellList[i] = isDetectingAllSmells;
 		}
@@ -410,9 +404,7 @@ public class SettingPage extends APropertyPage {
 
 	@Override
 	public boolean storeSettings() {
-		//先將列表的item取出來
 		TableItem[] item = smellList.getItems();
-		//去traverse整個table看item的Text和是否被勾選到
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_EMPTYCATCHBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, item[0].getChecked());
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.ATTRIBUTE_ISDETECTING, item[1].getChecked());
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_NESTEDTRYSTATEMENT, SmellSettings.ATTRIBUTE_ISDETECTING, item[2].getChecked());
@@ -422,7 +414,6 @@ public class SettingPage extends APropertyPage {
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_EXCEPTIONTHROWNFROMFINALLYBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, item[6].getChecked());
 
 		smellSettings.setPreferenceAttribute(SmellSettings.PRE_SHOWRLANNOTATIONWARNING, SmellSettings.ATTRIBUTE_ENABLE, preferenceList[0]);
-		//將檔案寫回
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		
 		rebuildProjectInBackground();

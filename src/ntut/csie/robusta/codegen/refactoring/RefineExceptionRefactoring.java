@@ -56,7 +56,7 @@ public class RefineExceptionRefactoring extends Refactoring {
 	}
 
 	/**
-	 * 這個名字會顯示在 Undo Redo 清單上面
+	 * this name will display on Undo Redo list
 	 */
 	@Override
 	public String getName() {
@@ -64,8 +64,8 @@ public class RefineExceptionRefactoring extends Refactoring {
 	}
 
 	/**
-	 * 使用重構前的初始狀態，建議先檢查程式碼是否有錯誤。
-	 * 可以設定成「程式碼無錯誤才提供重構功能」。
+	 * check initial state of code before refactoring.
+	 * suggest that we can provide refactoring only when code without any syntax error.
 	 */
 	@Override
 	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
@@ -77,7 +77,7 @@ public class RefineExceptionRefactoring extends Refactoring {
 	public RefactoringStatus checkFinalConditions(IProgressMonitor pm)
 			throws CoreException, OperationCanceledException {
 		RefactoringStatus status = new RefactoringStatus();
-		// TODO 要如何讓記錄過的改變，在使用者選擇back的時候一併Roll back??
+		// TODO how to record modification to roll back when user select "back"??
 		AST cuAST = compilationUnit.getAST();
 		CatchClauseFinderVisitor catchClauseFinder = new CatchClauseFinderVisitor(catchClauseStartPosition);
 		compilationUnit.accept(catchClauseFinder);
@@ -88,11 +88,11 @@ public class RefineExceptionRefactoring extends Refactoring {
 		}
 		QuickFixUtils.removeStatementsInCatchClause(exactlyCatchClause, ".printStackTrace()", "System.out.print", "System.err.print");
 		QuickFixUtils.addThrowRefinedException(exactlyCatchClause, cuAST, exceptionName);
-		// 不是拋出 RuntimeException就要幫他import (其實Unchecked Exception都不用import，但是我先不管啦)
+		//import exception when it does not throw RuntimeException(ps.actually, we don't need to import Unchecked Exception)  
 		if(!exceptionName.equals(RuntimeException.class.getSimpleName())) {
 			QuickFixUtils.addImportDeclaration(compilationUnit, exceptionType);
 		}
-		// 如果拋出的是Checked exception，就要幫他宣告在method上面
+		//add exception's declaration on method signature when it will throw checked exception 
 		if(!Clazz.isUncheckedException(exceptionName)) {
 			QuickFixUtils.addThrowExceptionOnMethodDeclaration(
 					cuAST, 
@@ -111,21 +111,20 @@ public class RefineExceptionRefactoring extends Refactoring {
 		CompilationUnitChange result = new CompilationUnitChange(name, unit);
 		result.setSaveMode(TextFileChange.KEEP_SAVE_STATE);
 
-		// 將修改結果設置在CompilationUnitChange
 		TextEdit edits = applyRefactoringChange().getEdit();
 		result.setEdit(edits);
-		// 將修改結果設成Group，會顯示在Preview上方節點。
+		// set modification as Group, and show them above Preview node.
 		result.addTextEditGroup(new TextEditGroup("Rethrow Unchecked Exception", 
 								new TextEdit[] {edits} ));
 		return result;
 	}
 
 	public RefactoringStatus setExceptionName(String name) {
-		// 假如使用者沒有填寫任何東西,把RefactoringStatus設成Error
+		//if user doesn't input any content, then set RefactoringStatus is error
 		if(name.length() == 0) {
 			return RefactoringStatus.createFatalErrorStatus("Please Choose an Exception Type");
 		} else {
-			// 假如有寫就把他存下來
+			//if user has something input and then save it.
 			exceptionName = name;
 			return new RefactoringStatus();
 		}
@@ -140,7 +139,7 @@ public class RefineExceptionRefactoring extends Refactoring {
 	}
 	
 	/**
-	 * 套用Refactoring要變更的內容
+	 * apply Refactoring modification
 	 * @param textFileChange
 	 * @throws CoreException 
 	 */

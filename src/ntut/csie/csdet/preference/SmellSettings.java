@@ -30,16 +30,16 @@ import org.jdom.output.XMLOutputter;
  * &lt;/CodeSmells&gt; <br />
  */
 public class SmellSettings {
-	/*Sample:
-	 * 
+	/*
 	 * <CodeSmells> <SmellTypes name="DummyHandler" isDetecting="true"> <pattern
 	 * name="" isDetecting="" /> <extraRule name="EXTRARULE_ePrintStackTrace" />
 	 * </SmellTypes> <SmellTypes name="NestedTryStatement" isDetecting="false"
-	 * /> <Preferences name="ShowRLAnnotationWarning" enable="false" /> </CodeSmells>
+	 * /> <AnnotationTypes name="RobusnessLevel" enable="false" /> </CodeSmells>
 	 */
 	public final static String SETTING_FILENAME = "SmellSetting.xml";
 	public final static String TAG_ROOT = "CodeSmells";
 	public final static String TAG_SMELLTYPE4DETECTING = "SmellTypes";
+	public final static String TAG_ANNOTATIONTYPE = "AnnotationTypes";
 	public final static String TAG_PATTERN = "pattern";
 	public final static String TAG_EXTRARULE = "extraRule";
 	public final static String ATTRIBUTE_NAME = "name";
@@ -63,9 +63,9 @@ public class SmellSettings {
 			SMELL_OVERLOGGING, SMELL_CARELESSCLEANUP,
 			SMELL_EXCEPTIONTHROWNFROMFINALLYBLOCK };
 	
-	/** 例外轉型後繼續偵測 */
+	
 	public final static String EXTRARULE_OVERLOGGING_DETECTWRAPPINGEXCEPTION = "DetectWrappingExcetion";
-	/** 偵測釋放資源的程式碼是否在函式中 */
+	/** detect out of try statement close method*/
 	public final static String EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT = "DetectOutOfTryStatement";
 
 	public final static String EXTRARULE_ePrintStackTrace = "printStackTrace";
@@ -103,10 +103,9 @@ public class SmellSettings {
 	}
 
 	/**
-	 * 輸入要要查詢的bad smell名稱，回傳設定檔中是否有勾選要偵測
-	 * 
+	 * input bad smell name option and this function will return bad smell is selected to detect or not 
 	 * @param badSmellName
-	 *            要查詢的bad smell名稱
+	 *            bad smell name wants to be consulted
 	 * @return
 	 */
 	public boolean isDetectingSmell(String badSmellName) {
@@ -127,18 +126,19 @@ public class SmellSettings {
 	}
 
 	/**
-	 * 是否要使用強健度等級註記
+	 * whether robustness annotation is enable or not
+	 * 
 	 * 
 	 * @return
 	 */
 	public boolean isAddingRobustnessAnnotation() {
-		return getPreferenceAttribute(SmellSettings.PRE_SHOWRLANNOTATIONWARNING);
+		Element annotationType = getAnnotationType(TAG_ANNOTATIONTYPE);
+		return Boolean.parseBoolean(annotationType
+				.getAttributeValue(ATTRIBUTE_ENABLE));
 	}
 
 	/**
-	 * 如果想取得的bad smell name不存在， 就會自動產生以這個bad smell name為屬性name的節點，
-	 * 並且設定isDetecting屬性為true。
-	 * 
+	 * if input bad smell name is not existing, this function will create a new element named as this bad smell name and set its' isDetecting attribute as true.
 	 * @param badSmellName
 	 * @return
 	 */
@@ -164,6 +164,34 @@ public class SmellSettings {
 			root.addContent(tagSmellTypeElement);
 		}
 		return tagSmellTypeElement;
+	}
+
+	/**
+	 * return robustness annotation, if input annotation name is not existing, this function will create a new element and set its' enable attribute as false.
+	 * @param annotationName
+	 * @return
+	 */
+	public Element getAnnotationType(String annotationName) {
+		Element root = settingDoc.getRootElement();
+		List<?> elements = root.getChildren(TAG_ANNOTATIONTYPE);
+		Element tagAnnotationTypeElement = null;
+		for (Object s : elements) {
+			Element annotationTypeElement = (Element) s;
+			if (annotationTypeElement.getName().equals(annotationName)) {
+				tagAnnotationTypeElement = annotationTypeElement;
+				return tagAnnotationTypeElement;
+			}
+		}
+
+		if (tagAnnotationTypeElement == null) {
+			tagAnnotationTypeElement = new Element(TAG_ANNOTATIONTYPE);
+			tagAnnotationTypeElement.setAttribute(ATTRIBUTE_NAME,
+					annotationName);
+			tagAnnotationTypeElement.setAttribute(ATTRIBUTE_ENABLE,
+					String.valueOf(false));
+			root.addContent(tagAnnotationTypeElement);
+		}
+		return tagAnnotationTypeElement;
 	}
 
 	public Element getPreference(String preferenceName) {
@@ -222,7 +250,7 @@ public class SmellSettings {
 	}
 
 	/**
-	 * 找出指定的bad smell中所有啟用的patterns 沒有啟用的pattern就不會被加入list中
+	 * add specified and enabled bad smell patterns to list 
 	 * 
 	 * @param smellName
 	 * @return
@@ -255,8 +283,9 @@ public class SmellSettings {
 		return patternList;
 	}
 
-	/**
+	/**此method只有測試呼叫，為dead code
 	 * 讓使用者選擇要尋找的Pattern是Class、Method、或是Class+Method
+	 * 
 	 * 
 	 * @param smellName
 	 * @param type
@@ -289,7 +318,7 @@ public class SmellSettings {
 	}
 
 	/**
-	 * 取回特定smell所有Pattern的設定值
+	 * return specified bad smell's pattern configure 
 	 * 
 	 * @param smellName
 	 * @return
@@ -322,9 +351,10 @@ public class SmellSettings {
 	}
 
 	/**
-	 * pattern是使用者自行輸入的程式碼，這些程式碼會被記錄起來， 然後用一個isDetecting來決定檢查bad
-	 * smell的時候要不要一起做檢查。 只有在使用者刪除自行輸入的程式碼時，pattern node才會被刪除。
-	 * 
+	 * patternContent is a peace of special code inputed by user manually, these patternContent
+	 * will be stored and used as pattern to detected bad smell. all patternContent will be deleted 
+	 * only when user delete them in person.  
+	 *  
 	 * @param badSmellName
 	 * @param patternContent
 	 * @param isDetecting
@@ -333,7 +363,7 @@ public class SmellSettings {
 			boolean isDetecting) {
 		Element badSmellElement = getSmellType(badSmellName);
 
-		// 除了這裡做檢查動作，防止使用者加入重複的pattern，前端也要記得檢查
+		//check whether patternContent is duplicate, 
 		List<?> patternElements = badSmellElement.getChildren(TAG_PATTERN);
 		for (Object object : patternElements) {
 			Element pattern = (Element) object;
@@ -344,7 +374,7 @@ public class SmellSettings {
 				return;
 			}
 		}
-		// 確定pattern不存在，就加入新的node
+		// if patternContent is not existing, add a new one.
 		Element pattern = new Element(TAG_PATTERN);
 		pattern.setAttribute(ATTRIBUTE_NAME, patternContent);
 		pattern.setAttribute(ATTRIBUTE_ISDETECTING, String.valueOf(isDetecting));
@@ -358,8 +388,8 @@ public class SmellSettings {
 	}
 
 	/**
-	 * extraRule是我們提供給使用者勾選的選項，所以當使用者有勾選時，
-	 * 這個extraRule的node才會出現，使用者如果取消勾選，就會刪除這個node。
+	 * extraRule are options for user. only when user check one of them,
+	 * extraRule will be used to detected bad smell. 
 	 * 
 	 * @param badSmellName
 	 * @param ruleName
@@ -384,7 +414,6 @@ public class SmellSettings {
 	public boolean isExtraRuleExist(String badSmellName, String ruleName) {
 		Element badSmellElement = getSmellType(badSmellName);
 
-		// 如果節點在，則找出是否有這個extra rule
 		List<?> extraRules = badSmellElement.getChildren();
 		for (Object object : extraRules) {
 			Element extraRule = (Element) object;
@@ -400,8 +429,8 @@ public class SmellSettings {
 	 * 
 	 * @param badSmellName
 	 * @param ruleName
-	 * @return true代表Rule存在，並且移除成功。<br />
-	 *         false可能是移除失敗，也可能是Rule從來不存在。
+	 * @return true means remove successfully。<br />
+	 *         false means remove fail or extra rule is not existing。
 	 */
 	public boolean removeExtraRule(String badSmellName, String ruleName) {
 		Element badSmellElement = getSmellType(badSmellName);
@@ -420,7 +449,7 @@ public class SmellSettings {
 			String badSmellName) {
 		TreeMap<String, UserDefinedConstraintsType> libMap = new TreeMap<String, UserDefinedConstraintsType>();
 		Element badSmellElement = getSmellType(badSmellName);
-		// 未選取偵測此bad smell，則不做任何讀取動作
+		// don't detect anything without checking anything any bad smell type
 		if (!Boolean.parseBoolean(badSmellElement
 				.getAttributeValue(ATTRIBUTE_ISDETECTING))) {
 			return libMap;
@@ -506,7 +535,7 @@ public class SmellSettings {
 	}
 
 	/**
-	 * 將所有的條件都勾選，並寫到設定檔中
+	 * check all conditions in configure.
 	 */
 	public void activateAllConditionsIfNotConfugured(String path) {
 		File settingFile = new File(path);

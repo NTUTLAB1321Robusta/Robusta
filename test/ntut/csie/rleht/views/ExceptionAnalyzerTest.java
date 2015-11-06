@@ -47,20 +47,17 @@ public class ExceptionAnalyzerTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		// 讀取測試檔案樣本內容
 		javaFileToString = new JavaFileToString();
 		javaFileToString.read(SuppressWarningExampleForAnalyzer.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker = new JavaProjectMaker("ExceptionAnalyerTest");
 		javaProjectMaker.setJREDefaultContainer();
 		
-		// 新增欲載入的 library
-		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(
+		javaProjectMaker.packageAgileExceptionClassesToJarIntoLibFolder(
 				JavaProjectMaker.FOLDERNAME_LIB_JAR,
 				JavaProjectMaker.FOLDERNAME_BIN_CLASS);
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/"
 				+ JavaProjectMaker.RL_LIBRARY_PATH);
 		
-		// 根據測試檔案樣本內容建立新的檔案
 		javaProjectMaker.createJavaFile(
 				SuppressWarningExampleForAnalyzer.class.getPackage().getName(),
 				SuppressWarningExampleForAnalyzer.class.getSimpleName()
@@ -75,7 +72,6 @@ public class ExceptionAnalyzerTest {
 				, "package " + UnprotectedMainProgramWithoutTryExample.class.getPackage().getName() + ";\n"
 				+ javaFileToString.getFileContent());
 		
-		// 建立 XML
 		CreateSettings();
 		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(SuppressWarningExampleForAnalyzer.class, javaProjectMaker.getProjectName()));
 		
@@ -83,11 +79,9 @@ public class ExceptionAnalyzerTest {
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		
-		// 設定要被建立 AST 的檔案
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
 		
-		// 取得 AST
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
 	}
@@ -97,60 +91,10 @@ public class ExceptionAnalyzerTest {
 		javaProjectMaker.deleteProject();
 	}
 	
-//	@Test
-//	public void testExceptionAnalyzerWithIntArgument() {
-//		ASTMethodCollector collector = new ASTMethodCollector();
-//		compilationUnit.accept(collector);
-//		
-//		// 儲存專區
-//		List<MethodDeclaration> methodList = collector.getMethodList();
-//		List<MarkerInfo> totalNTList = new ArrayList<MarkerInfo>();
-//		List<RLMessage> totalMethodRLList = new ArrayList<RLMessage>();
-//		List<SSMessage> totalSSList = new ArrayList<SSMessage>();
-//		
-//		for (int i = 0; i < methodList.size(); i++) {
-//			exceptionAnalyzer = new ExceptionAnalyzer(compilationUnit,  methodList.get(i).getStartPosition(), 0);
-//			compilationUnit.accept(exceptionAnalyzer);
-//			totalNTList.addAll(exceptionAnalyzer.getNestedTryList());
-//			totalMethodRLList.addAll(exceptionAnalyzer.getMethodRLAnnotationList());
-//			totalSSList.addAll(exceptionAnalyzer.getSuppressSemllAnnotationList());
-//		}
-//		
-//		assertEquals(8, totalNTList.size());
-//		for (int i = 0; i < totalNTList.size(); i++) {
-//			assertTrue(totalNTList.get(i).getCodeSmellType().toString().equals("Nested_Try_Statement"));
-//		}
-//		assertEquals(78, totalNTList.get(0).getLineNumber());
-//		assertEquals(98, totalNTList.get(1).getLineNumber());
-//		assertEquals(254, totalNTList.get(2).getLineNumber());
-//		assertEquals(258, totalNTList.get(3).getLineNumber());
-//		assertEquals(308, totalNTList.get(4).getLineNumber());
-//		assertEquals(324, totalNTList.get(5).getLineNumber());
-//		assertEquals(443, totalNTList.get(6).getLineNumber());
-//		assertEquals(447, totalNTList.get(7).getLineNumber());
-//		
-//		assertEquals(6, totalMethodRLList.size());
-//
-//		assertEquals(totalMethodRLList.get(0).getRLData().getExceptionType().toString(),"java.lang.RuntimeException");
-//		assertEquals(totalMethodRLList.get(1).getRLData().getExceptionType().toString(),"java.lang.RuntimeException");
-//		assertEquals(totalMethodRLList.get(2).getRLData().getExceptionType().toString(),"java.lang.RuntimeException");
-//		assertEquals(totalMethodRLList.get(3).getRLData().getExceptionType().toString(),"java.io.IOException");
-//		assertEquals(totalMethodRLList.get(4).getRLData().getExceptionType().toString(),"java.io.IOException");
-//		assertEquals(totalMethodRLList.get(5).getRLData().getExceptionType().toString(),"java.io.IOException");
-//		
-//		assertEquals(133,totalMethodRLList.get(0).getLineNumber());
-//		assertEquals(152,totalMethodRLList.get(1).getLineNumber());
-//		assertEquals(172,totalMethodRLList.get(2).getLineNumber());
-//		assertEquals(204,totalMethodRLList.get(3).getLineNumber());
-//		assertEquals(218,totalMethodRLList.get(4).getLineNumber());
-//		assertEquals(231,totalMethodRLList.get(5).getLineNumber());
-//
-//		assertEquals("suppress warning 的資訊在 nested 底下不會被記錄到。應該是26個，但是目前功能只能檢查到19個",19, totalSSList.size());
-//	}
 
 	@Ignore
 	public void testExceptionAnalyzerWithBooleanArgument() {
-		fail("第二種overloading的ExceptionAnalyzer未被測試");
+		fail("analyzer with boolean argument has not been tested");
 	}
 	
 	@Test
@@ -206,64 +150,13 @@ public class ExceptionAnalyzerTest {
 		}
 	}
 	
-//	@Test
-//	public void testProcessTryStatement() throws Exception {
-//		Method methodProcessTryStatement = ExceptionAnalyzer.class.getDeclaredMethod("processTryStatement", ASTNode.class);
-//		methodProcessTryStatement.setAccessible(true);
-//		ASTMethodCollector astMethodCollector = new ASTMethodCollector();
-//		compilationUnit.accept(astMethodCollector);
-//		
-//		List<MethodDeclaration> methodList = astMethodCollector.getMethodList();
-//		List<MarkerInfo> totalNTList = new ArrayList<MarkerInfo>();
-//		List<RLMessage> totalMethodRLList = new ArrayList<RLMessage>();
-//		List<SSMessage> totalSSList = new ArrayList<SSMessage>();
-//		
-//		for (int i = 0; i < methodList.size(); i++) {
-//			MethodDeclaration md = methodList.get(i);
-//			for (int j = 0; j < md.getBody().statements().size(); j++) {
-//				ASTNode node = (ASTNode)md.getBody().statements().get(j);
-//				if (node.getNodeType() == ASTNode.TRY_STATEMENT) {
-//					exceptionAnalyzer = new ExceptionAnalyzer(compilationUnit, methodList.get(i).getStartPosition(), 0);
-//					methodProcessTryStatement.invoke(exceptionAnalyzer, node);
-//					totalNTList.addAll(exceptionAnalyzer.getNestedTryList());
-//					totalMethodRLList.addAll(exceptionAnalyzer.getMethodRLAnnotationList());
-//					totalSSList.addAll(exceptionAnalyzer.getSuppressSemllAnnotationList());
-//				}
-//			}
-//		}
-//		
-//		/*
-//		 * 發生 nested try 所在的 line number
-//		 */
-//		int[] lineNumber = { 78, 98, 254, 258, 308, 324, 443, 447 };
-//		
-//		for (int i = 0; i < totalNTList.size(); i++) {
-//			assertEquals(lineNumber[i], totalNTList.get(i).getLineNumber());
-//		}
-//		
-//		/*
-//		 * 不再 method 上
-//		 */
-//		assertEquals(0, totalMethodRLList.size());
-//		
-//		/*
-//		 * nested try
-//		 */
-//		assertEquals(8, totalNTList.size());
-//		
-//		/*
-//		 * 在巢狀 try-catch 要在 catch 上 suppress bad smell 時
-//		 * 反觀在 method 上 suppress bad smell 時可以正確的被 suppress
-//		 */
-//		assertEquals("suppress warning 的資訊在 nested 底下不會被記錄到。預計要抓到15個，但是目前功能只能抓到9個", 9, totalSSList.size());
-//	}
 	
 	@Test
 	public void testFindExceptionTypes() throws Exception {
 		Method methodFindExceptionTypes = ExceptionAnalyzer.class.getDeclaredMethod("findExceptionTypes", ASTNode.class, ITypeBinding[].class);
 		methodFindExceptionTypes.setAccessible(true);
 		
-		// 資料產生
+		// generate data
 		ASTMethodCollector astMethodCollector = new ASTMethodCollector();
 		compilationUnit.accept(astMethodCollector);
 		List<MethodDeclaration> methodlist = astMethodCollector.getMethodList();
@@ -274,7 +167,7 @@ public class ExceptionAnalyzerTest {
 		ClassInstanceCreation cic = (ClassInstanceCreation)statement.getExpression();
 		
 		// Class Instance Creation
-		// 初始狀態
+		// initial state
 		exceptionAnalyzer = new ExceptionAnalyzer(compilationUnit, methodlist.get(7).getStartPosition(), 0);
 		totalRLList.addAll(exceptionAnalyzer.getExceptionList());
 		assertEquals(0, totalRLList.size());
@@ -282,7 +175,7 @@ public class ExceptionAnalyzerTest {
 		totalRLList.addAll(exceptionAnalyzer.getExceptionList());
 		assertEquals(1, totalRLList.size());
 		
-		// 清除資料
+		// clear data
 		exceptionAnalyzer = new ExceptionAnalyzer(compilationUnit, methodlist.get(6).getStartPosition(), 0);
 		totalRLList = new ArrayList<RLMessage>();
 		assertEquals(0, totalRLList.size());
@@ -293,7 +186,6 @@ public class ExceptionAnalyzerTest {
 		cic = (ClassInstanceCreation) assignment.getRightHandSide();
 		methodFindExceptionTypes.invoke(exceptionAnalyzer, (ASTNode) cic, cic.resolveConstructorBinding().getExceptionTypes());
 		
-		// 疊加測試
 		totalRLList.addAll(exceptionAnalyzer.getExceptionList());
 		totalRLList.addAll(exceptionAnalyzer.getExceptionList());
 		assertEquals(2, totalRLList.size());
@@ -322,12 +214,10 @@ public class ExceptionAnalyzerTest {
 			methodGetMethodAnnotation.invoke(exceptionAnalyzer, methodlist.get(i));
 			totalRLList.addAll(exceptionAnalyzer.getMethodRLAnnotationList());
 		}
-		// 抓到 6 個 Tag 註記的 method overloading for addRL(RLMessage rlmsg, int currentCatch)
 		assertEquals(6, totalRLList.size());
 		for (int i = 0; i < totalRLList.size(); i++) {
 			methodAddRLForInt.invoke(exceptionAnalyzer, totalRLList.get(i), i);
 		}
-		// 將 6 個 Tag 註記的 method 利用 addRL 這個 method 是否成功加入 
 		assertEquals(6, exceptionAnalyzer.getExceptionList().size());
 
 		totalRLList =  new ArrayList<RLMessage>();
@@ -338,7 +228,6 @@ public class ExceptionAnalyzerTest {
 			methodGetMethodAnnotation.invoke(exceptionAnalyzer, methodlist.get(i));
 			totalRLList.addAll(exceptionAnalyzer.getMethodRLAnnotationList());
 		}
-		// 抓到 6 個 Tag 註記的 method overloading for addRL(RLMessage rlmsg, String key) 
 		assertEquals(6, totalRLList.size());
 		for (int i = 0; i < totalRLList.size(); i++) {
 			methodAddRLForString.invoke(exceptionAnalyzer, totalRLList.get(i), "父母親的id哀豬叉踹." + i);
@@ -403,42 +292,6 @@ public class ExceptionAnalyzerTest {
 		
 		assertEquals(6, totalList.size());
 	}
-
-//	@Test
-//	public void testGetMethodAnnotationForSuppressSemllAnnotation() throws Exception {
-//		ASTMethodCollector astMethodCollector = new ASTMethodCollector();
-//		compilationUnit.accept(astMethodCollector);
-//		List<MethodDeclaration> methodlist = astMethodCollector.getMethodList();
-//		List<SSMessage> totalList = new ArrayList<SSMessage>();
-//		Method methodGetMethodAnnotation = ExceptionAnalyzer.class.getDeclaredMethod("getMethodAnnotation", ASTNode.class);
-//		methodGetMethodAnnotation.setAccessible(true);
-//		
-//		for (int i = 0; i < methodlist.size(); i++) {
-//			exceptionAnalyzer = new ExceptionAnalyzer(compilationUnit, methodlist.get(i).getStartPosition(), 0);
-//			methodGetMethodAnnotation.invoke(exceptionAnalyzer, methodlist.get(i));
-//			totalList.addAll(exceptionAnalyzer.getSuppressSemllAnnotationList());
-//		}
-//		
-//		assertEquals("[Unprotected_Main_Program]", totalList.get(0).getSmellList().toString());
-//		assertEquals("[Dummy_Handler]", totalList.get(1).getSmellList().toString());
-//		assertEquals("[Nested_Try_Statement, Dummy_Handler]", totalList.get(2).getSmellList().toString());
-//		assertEquals("[Nested_Try_Statement, Dummy_Handler]", totalList.get(3).getSmellList().toString());
-//		assertEquals("[Empty_Catch_Block]",totalList.get(4).getSmellList().toString());
-//		assertEquals("[Careless_Cleanup]", totalList.get(5).getSmellList().toString());
-//		assertEquals("[Careless_Cleanup]", totalList.get(6).getSmellList().toString());
-//		assertEquals("[Careless_Cleanup]", totalList.get(7).getSmellList().toString());
-//		
-//		assertEquals(34, totalList.get(0).getLineNumber());
-//		assertEquals(43, totalList.get(1).getLineNumber());
-//		assertEquals(70, totalList.get(2).getLineNumber());
-//		assertEquals(87, totalList.get(3).getLineNumber());
-//		assertEquals(106, totalList.get(4).getLineNumber());
-//		assertEquals(133, totalList.get(5).getLineNumber());
-//		assertEquals(152, totalList.get(6).getLineNumber());
-//		assertEquals(172, totalList.get(7).getLineNumber());
-//		
-//		assertEquals(10, totalList.size());
-//	}
 
 	private void CreateSettings() {
 		smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
