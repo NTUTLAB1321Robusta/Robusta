@@ -103,9 +103,12 @@
    <!-- marker的quick fix-->
    <extension
          point="org.eclipse.ui.ide.markerResolution">
-      <markerResolutionGenerator
+    <markerResolutionGenerator
             class="ntut.csie.rleht.builder.RLQuickFixer"
             markerType="ntut.csie.rleht.builder.RLProblem"/>
+	<markerResolutionGenerator
+            class="ntut.csie.rleht.builder.RLQuickFixer"
+            markerType="ntut.csie.robusta.marker.BSProblem"/>
    </extension>
    
    <!-- Define Annotation for inappropriate statement coloring -->

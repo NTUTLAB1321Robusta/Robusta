@@ -52,24 +52,8 @@ public class MarkerInfo {
 		this(type, typeBinding, "", statement, pos, lineNumber, exceptionType, "", null);
 	}
 	
-	public MarkerInfo(String type, ITypeBinding typeBinding, String statement, int pos, int lineNumber, String exceptionType, List<AnnotationInfo> annotationPosList) {
-		this(type, typeBinding, "", statement, pos, lineNumber, exceptionType, "", annotationPosList);
-	}
-	
 	public MarkerInfo(String type, ITypeBinding typeBinding, String className, String statement, int pos, int lineNumber, String exceptionType, List<AnnotationInfo> annotationPosList) {
 		this(type, typeBinding, className, statement, pos, lineNumber, exceptionType, "", annotationPosList);
-	}
-
-	public MarkerInfo(String type, ITypeBinding typeBinding, String statement,
-			int pos, int lineNumber, String exceptionType, String methodName) {
-		this.cstype = type;
-		this.typeBinding = typeBinding;
-		this.statement = statement;
-		this.position = pos;
-		this.lineNumber = lineNumber;
-		this.exceptionType = exceptionType;
-		this.methodName = methodName;
-		this.annotationInfoList = null;
 	}
 	
 	/*

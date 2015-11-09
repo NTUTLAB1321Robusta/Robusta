@@ -1,20 +1,14 @@
 package ntut.csie.robusta.codegen.markerresolution;
 
 import ntut.csie.rleht.builder.RLMarkerAttribute;
+import ntut.csie.robusta.codegen.QuickFixUtils;
 import ntut.csie.robusta.codegen.refactoring.ExtractMethodAnalyzer;
 import ntut.csie.robusta.codegen.refactoring.TEFBExtractMethodRefactoring;
 import ntut.csie.robusta.codegen.refactoringui.CodeSmellRefactoringWizard;
 import ntut.csie.robusta.codegen.refactoringui.ExtractMethodInputPage;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.JavaCore;
-import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.NodeFinder;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizardOpenOperation;
@@ -45,7 +39,7 @@ public class TEFBExtractMethodMarkerResolution implements IMarkerResolution {
 			if(problem == null)
 				return;
 			
-			CompilationUnit root = getCompilationUnit(marker.getResource());
+			CompilationUnit root = QuickFixUtils.getCompilationUnit(marker.getResource());
 			ASTNode enclosingNode = findRefactoringNode(marker, root);
 			
 			TEFBExtractMethodRefactoring refactoring = new TEFBExtractMethodRefactoring(root, enclosingNode);
@@ -53,36 +47,12 @@ public class TEFBExtractMethodMarkerResolution implements IMarkerResolution {
 			csRefactoringWizard.setUserInputPage(new ExtractMethodInputPage("It is your way!"));
 			csRefactoringWizard.setDefaultPageTitle("Extract Method");
 			RefactoringWizardOpenOperation operation = new RefactoringWizardOpenOperation(csRefactoringWizard);
-			operation.run(new Shell(), "It's my way");
+			operation.run(new Shell(), refactoring.getName());
 			
 		} catch(Exception e) {
 			logger.error(e.getMessage());
 			throw new RuntimeException(e);
 		}
-	}
-	
-	/*
-	 * TODO: Extract this method to utilities class later, used in a lot of places
-	 */
-	private CompilationUnit getCompilationUnit(IResource resource) {
-		
-		if (resource instanceof IFile && resource.getName().endsWith(".java")) {
-			try {
-				IJavaElement javaElement = JavaCore.create(resource);
-	
-				//Create AST to parse
-				ASTParser parser = ASTParser.newParser(AST.JLS3);
-				parser.setKind(ASTParser.K_COMPILATION_UNIT);
-
-				parser.setSource((ICompilationUnit) javaElement);
-				parser.setResolveBindings(true);
-				CompilationUnit root = (CompilationUnit) parser.createAST(null);
-				return root;			
-			} catch (Exception e) {
-				logger.error("[Extract Method] EXCEPTION ", e);
-			}
-		}
-		return null;
 	}
 	
 	/*
