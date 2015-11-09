@@ -91,7 +91,7 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 			if (problem.equals(RLMarkerAttribute.ERR_RL_LEVEL)) {
 				for (int i = RLData.LEVEL_MIN; i <= RLData.LEVEL_MAX; i++) {
 					markerList.add(new RLQuickFix(resource.getString("err.rl.level") + i + " (" + exception + ")", i, errMsg));
-					logger.debug("變更成level=" + i + " (" + exception + ")");
+					logger.debug("change robustness level to =" + i + " (" + exception + ")");
 				}
 			} else if (problem.equals(RLMarkerAttribute.ERR_NO_RL)) {
 				if (!RLData.validLevel(RLUtils.str2int(level, -1)))
@@ -101,14 +101,12 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				markerList.add(new RLQuickFix(resource.getString("err.rl.duplicate") + exception + ")",errMsg));
 			} else if (problem.equals(RLMarkerAttribute.ERR_RL_INSTANCE)) {
 				markerList.add(new RLQuickFix(resource.getString("err.rl.instance") + marker.getAttribute(IMarker.MESSAGE) + ")",errMsg));
-			// SuppressSmell內沒有名稱
+				// there is not a smell name in SuppressSmell
 			} else if (problem.equals(RLMarkerAttribute.ERR_SS_NO_SMELL)) {
 				boolean inCatch = Boolean.valueOf((String)marker.getAttribute(RLMarkerAttribute.SS_IN_CATCH));
 				String[] smellList;
-				//若Marker位於Catch內
-				if (inCatch)
+				if (inCatch)	
 					smellList = RLMarkerAttribute.CS_CATCH_TYPE;
-				//若Marker位於Method上
 				else			
 					smellList = RLMarkerAttribute.CS_TOTAL_TYPE;
 
@@ -116,17 +114,15 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 					String type = smellList[i];
 					markerList.add(new CSQuickFix(resource.getString("err.ss.no.smell") + type, type, inCatch));
 				}
-			// SuppressSmell內Smell名稱錯誤
+				// there is a wrong smell name in SuppressSmell
 			} else if (problem.equals(RLMarkerAttribute.ERR_SS_FAULT_NAME)) {
 				boolean inCatch = Boolean.valueOf((String)marker.getAttribute(RLMarkerAttribute.SS_IN_CATCH));
 				String faultName = (String) marker.getAttribute(RLMarkerAttribute.ERR_SS_FAULT_NAME);
 
 				String[] smellList;
-				//若Marker位於Catch內
-				if (inCatch)
+				if (inCatch)	
 					smellList = RLMarkerAttribute.CS_CATCH_TYPE;
-				//若Marker位於Method上
-				else
+				else			
 					smellList = RLMarkerAttribute.CS_TOTAL_TYPE;
 
 				for (String type : smellList) {
@@ -136,18 +132,15 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				}
 			} else if(problem.equals(RLMarkerAttribute.CS_EXCEPTION_RLADVICE)){
 				String advice = (String) marker.getAttribute(IMarker.MESSAGE);
-				//有RL annotation，才是有拋出這個例外(我有偷偷幫throw e的都硬上RL)
 				if(advice.contains(RTag.class.getSimpleName())){
 					markerList.add(new AchieveRL1QuickFix("RL1 quick gene ==> Rethrow Unckecked Exception"));
 				}
 			}
-			
 			IMarkerResolution[] markerArray = markerList.toArray(new IMarkerResolution[markerList.size()]);
 			return markerArray;
 		} catch (CoreException ex) {
 			logger.error("[getResolutions] EXCEPTION ",ex);
 			return new IMarkerResolution[0];
 		}
-
 	}
 }
