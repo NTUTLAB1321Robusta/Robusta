@@ -36,47 +36,44 @@ public class RLOrderFix {
 	private CompilationUnit actRoot;
 	
 	private IOpenable actOpenable;
-	//目前method的RL Annotation資訊
 	private List<RLMessage> currentMethodRLList = null;
-	//目前的Method AST Node
 	private ASTNode currentMethodNode = null;
 
 	/**
-	 * 進行調整RL Annotation順序
+	 * adjust RL Annotation order
 	 * @param resource		
 	 * @param methodIdx		
 	 * @param msgIdx		
-	 * @param selectLine	欲反白的行數
+	 * @param selectLine	high light selected line number
 	 */
 	public void run(IResource resource, String methodIdx, String msgIdx)
 	{		
-		//取得currentMethodRLList
+		//get currentMethodRLList
 		findMethod(resource, Integer.parseInt(methodIdx));
 
-		//判斷currentMethodRLList是否需要重置
+		//check whether currentMethodRLList is error or not 
 		boolean isError = checkCurrentMethodRLList();
 
-		//若需要重置，則進行重置作業
+		//reset currentMethodRLList when it is error
 		if (isError)
 		{			
-			//把currentMethodRLList存成Array + 1(加1為排序時可調整的空間)
+			//create RLArray with one extra space than currentMethodRLList size(this extra space is used to reorder element)
 			RLMessage[] newRLList = new RLMessage[currentMethodRLList.size()+1];
-			//currentMethodRLList放入Array中
+			//put currentMethodRLList element in RLArray
 			for (int i=0;i < currentMethodRLList.size();i++)
 				newRLList[i] = currentMethodRLList.get(i);
-			//在新增調整空間放入資料，使它不為Null，才不會出錯
+			//add redundant data to newRLList's last index in case null pointer
 			newRLList[currentMethodRLList.size()] = newRLList[0];
 
-			//把RL List重新排序，若位置正確把結果存到currentMethodRLList中
+			//reorder newRLList element, if order is correct then save newRLList element in currentMethodRLList
 			permutation(newRLList,1);
 		}
 
-		//更新全部的 Tag Annotation List
 		updateRLAnnotation(Integer.parseInt(msgIdx));
 	}
 	
 	/**
-	 * 取得currentMethodRLList
+	 * get currentMethodRLList
 	 * 
 	 * @param resource
 	 * @param methodIdx
@@ -118,16 +115,16 @@ public class RLOrderFix {
 	}
 	
 	/**
-	 * 判斷currentMethodRLList是否需要重置
+	 * check currentMethodRLList whether it is needed to be reset
 	 * 
-	 * @return	是否需要重置
+	 * @return	true is error
+	 * 			false  is correct
 	 */
 	private boolean checkCurrentMethodRLList() {
 		boolean isError = false;
 		int idx = -1;
 		for (RLMessage msg : currentMethodRLList) {
 			idx++;
-			// 檢查@RL清單內的exception類別階層是否正確
 			int idx2 = 0;
 			for (RLMessage msg2 : currentMethodRLList) {
 				if (idx >= idx2++) {
@@ -141,31 +138,33 @@ public class RLOrderFix {
 	}
 	
 	/**
-	 * 把RL List排列組合排序，每排列一次判斷順序是否正確，若正確把正確結果存到currentMethodRLList中
+	 * Reorder RLList element order. 
+	 * During reordering, check RLList element order is correct or not. 
+	 * If RLList element is in order then put the element into currentMethodRLList.
 	 * 
 	 * @param newRLList
-	 * 				新排序的RL Annotation List	
+	 * 				newRLList which need to be reordered	
 	 * @param i
-	 * 				排列群組位置
+	 * 				order index
 	 */
 	private void permutation(RLMessage[] newRLList, int i) {
-		//排列中
+		//reorder element
 		if(i < newRLList.length - 1) {
     		for(int j = i; j <= newRLList.length - 1; j++) {
     			RLMessage tmp = newRLList[j];
-                //旋轉該區段最右邊數字至最左邊
+                //shift the rightmost element to leftmost
                 for(int k = j; k > i; k--)
                 	newRLList[k] = newRLList[k-1];
                 newRLList[i] = tmp;
                 permutation(newRLList, i+1);
-                //還原
+                //recover the position's change
                 for(int k = i; k < j; k++)
                 	newRLList[k] = newRLList[k+1];
                 newRLList[j] = tmp;
         	}
-   		//排列完成
+   		//reorder element completely
     	} else {
-        	//若RL Annotation List順序全部正確，把它記錄到currentMethodRLList裡
+        	//if newRLList element order is correct，put element in currentMethodRLList
         	if (!isRLListCorrect(newRLList)) {
         		currentMethodRLList.clear();
         		for(int j = 1; j <= newRLList.length - 1; j++)
@@ -175,12 +174,12 @@ public class RLOrderFix {
     }
 	
 	/**
-	 * 判斷所有的RL List位置是否正確
+	 * check RLList element order is correct
 	 * 
 	 * @param newRLList
-	 * 		新位置的RL Annotation List
+	 * 		new RLlist which is unknown about order
 	 * @return
-	 * 		Tag List順序是否全部正確
+	 * 		is newRLList element is in order
 	 */
 	private boolean isRLListCorrect(RLMessage[] newRLList)
 	{
@@ -192,7 +191,7 @@ public class RLOrderFix {
 				if (msg1 >= k++)
 					continue;
 
-				//判斷父類別是否在子類別前
+				//check whether position in newRLList of super class is in front of the position of the subclass  
 				boolean isErr = isParentFrontSon(newRLList[j].getTypeBinding(),newRLList[i].getTypeBinding().getQualifiedName());
 				if (isErr)
 					return true;
@@ -202,14 +201,15 @@ public class RLOrderFix {
 	}
 	
 	/**
-	 * 判斷父類別是否在子類別前
+	 * check whether position of super class is in front of the position of the subclass
 	 * 
 	 * @param typeBinding
-	 * 			父類別
+	 * 			super class
 	 * @param typeName
-	 * 			子類別名稱
+	 * 			subclass name
 	 * @return
-	 * 			父類別是否在子類別前
+	 * 			true, super class is in front of subclass
+	 * 			false, typeBinding or typeName is null or class' order is wrong 
 	 */
     private boolean isParentFrontSon(ITypeBinding typeBinding,String typeName)
 	{
@@ -220,14 +220,14 @@ public class RLOrderFix {
 		if (qname.equals(typeName))
 			return true;
 
-		//判斷父類別
+		//identify supper class
 		ITypeBinding superClass = typeBinding.getSuperclass();
 		if (superClass != null) {
 			if (superClass.getQualifiedName().equals(typeName))
 				return true;
 		}
 
-		//判斷介面
+		//identify sub class
 		ITypeBinding[] interfaceType = typeBinding.getInterfaces();
 		if (interfaceType != null && interfaceType.length > 0) {
 			for (int i = 0, size = interfaceType.length; i < size; i++) {
@@ -239,12 +239,8 @@ public class RLOrderFix {
 	}
     
 	/**
-	 * 更新RL Annotation
-	 * 
-	 * @param isAllUpdate
-	 * 		是否更新全部的Annotation
+	 * update RLannotation // dead code
 	 * @param pos
-	 * @param level
 	 */
 	private void updateRLAnnotation(int pos) {
 		try {
@@ -264,7 +260,6 @@ public class RLOrderFix {
 			ArrayInitializer rlary = ast.newArrayInitializer();
 			value.setValue(rlary);
 
-			//若全部更新，表示為currentMethodRLList排序，所以加入Annotation Library宣告
 			
 			int msgIdx = 0;
 			for (RLMessage rlmsg : currentMethodRLList) {
@@ -276,7 +271,7 @@ public class RLOrderFix {
 
 			List<IExtendedModifier> modifiers = method.modifiers();
 			for (int i = 0, size = modifiers.size(); i < size; i++) {
-				//找到舊有的annotation後將它移除
+				//remove annotation which has existed
 				if (modifiers.get(i).isAnnotation() && modifiers.get(i).toString().indexOf("Robustness") != -1) {
 					method.modifiers().remove(i);
 					break;
@@ -284,11 +279,10 @@ public class RLOrderFix {
 			}
 
 			if (rlary.expressions().size() > 0) {
-				//將新建立的annotation root加進去
 				method.modifiers().add(0, root);
 			}
 			
-			//將要變更的資料寫回至Document中，並反白
+			//store modifying data back document and high light
 			applyChange();
 		}
 		catch (Exception ex) {
@@ -297,13 +291,13 @@ public class RLOrderFix {
 	}
 	
 	/**
-	 * 產生RL Annotation之RL資料
+	 * generate RLinformation for RLannotation
 	 * @param ast
 	 *            AST Object
 	 * @param levelVal
-	 *            強健度等級
+	 *            robustness level
 	 * @param exClass
-	 *            例外類別
+	 *            exception class
 	 * @return NormalAnnotation AST Node
 	 */
 	@SuppressWarnings("unchecked")
@@ -328,11 +322,10 @@ public class RLOrderFix {
 	}
 	
 	/**
-	 * 將要變更的資料寫回至Document中
+	 * update change information back to document 
 	 */
 	private void applyChange()
 	{
-		//寫回Edit中
 		try{
 			ICompilationUnit cu = (ICompilationUnit) actOpenable;
 			Document document = new Document(cu.getBuffer().getContents());

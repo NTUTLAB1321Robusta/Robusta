@@ -16,16 +16,12 @@ public class ClazzTest {
 
 	@Test
 	public void testIsImplemented() {
-		// FileOutputStream是因為繼承OutputStream，而OutputStream有實作Closeable
 		assertTrue(Clazz.isImplemented(FileOutputStream.class, Closeable.class));
 
-		// InputStream自己就有實作Closeable
 		assertTrue(Clazz.isImplemented(InputStream.class, Closeable.class));
 
-		// File是Object的子類別
 		assertFalse(Clazz.isImplemented(File.class, Closeable.class));
 
-		// 沒有實作Closeable的interface
 		assertFalse(Clazz.isImplemented(Serializable.class, Closeable.class));
 	}
 	

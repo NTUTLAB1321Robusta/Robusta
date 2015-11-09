@@ -41,7 +41,7 @@ public class ASTNodeFinderTest {
 		javaFileToString = new JavaFileToString();
 		javaProjectMaker = new JavaProjectMaker(projectName);
 		javaProjectMaker.setJREDefaultContainer();
-		// 根據測試檔案樣本內容建立新的檔案
+
 		javaFileToString.read(NodeUtilsTestSample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(NodeUtilsTestSample.class.getPackage().getName(),
 				NodeUtilsTestSample.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
@@ -55,11 +55,11 @@ public class ASTNodeFinderTest {
 		// Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// 設定要被建立AST的檔案
+
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin
 				.getWorkspace().getRoot().getFile(ccExamplePath)));
 		parser.setResolveBindings(true);
-		// 取得AST
+
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
 	}
@@ -73,49 +73,47 @@ public class ASTNodeFinderTest {
 	public void testGetNodeFromSpecifiedClass() throws Exception {
 		/**
 		 * 略述
-		 * lineNumber = 1 → 該目標 .java 全部 code
-		 * lineNumber method → 整個 method code
-		 * lineNumber class → 整個 class code
-		 * lineNumber 分號 → null (line number not match)
-		 * lineNumber 註解 → null
-		 * lineNumber 大括弧 → null (line number not match)
-		 * lineNumber 空白行數 → null
+		 * lineNumber = 1 →  hole program code in java file
+		 * lineNumber of method →  hole method code
+		 * lineNumber of class → hole class code
+		 * lineNumber of ":" → null (line number not match)
+		 * lineNumber of comment → null
+		 * lineNumber of braces → null (line number not match)
+		 * lineNumber of empty line → null
 		 */
 		
-		//取得該行內容
 		ASTMethodCollector methodCollector = new ASTMethodCollector();
 		compilationUnit.accept(methodCollector);
 		List<MethodDeclaration> list = methodCollector.getMethodList();
 		MethodDeclaration mDeclaration = list.get(1);
 		ExpressionStatement statement = (ExpressionStatement) mDeclaration.getBody().statements().get(1);
 		
-		//輸入class指定行數
-		int lineNumber = 21;
+		int lineNumber = 18;
 		
-		//case#1:一般情況
+		//case#1:normal state
 		ASTNode astNode = ASTNodeFinder.getNodeFromSpecifiedClass(NodeUtilsTestSample.class, projectName, lineNumber);
 		assertEquals(ASTNode.EXPRESSION_STATEMENT, astNode.getNodeType());
 		assertEquals(lineNumber, compilationUnit.getLineNumber(astNode.getStartPosition()));
 		assertEquals(astNode.toString(), statement.toString());
 		
-		//case#2:指向註解
+		//case#2:line number of comment 
 		lineNumber = 10;
 		astNode = ASTNodeFinder.getNodeFromSpecifiedClass(NodeUtilsTestSample.class, projectName, lineNumber);
 		assertNull(astNode);
 		
-		//case#3:指向method
-		lineNumber = 18;
+		//case#3:line number of method
+		lineNumber = 16;
 		astNode = ASTNodeFinder.getNodeFromSpecifiedClass(NodeUtilsTestSample.class, projectName, lineNumber);
 		assertEquals(ASTNode.METHOD_DECLARATION, astNode.getNodeType());
 		assertEquals(lineNumber, compilationUnit.getLineNumber(astNode.getStartPosition()));
 		assertEquals(astNode.toString(), mDeclaration.toString());
 		
-		//case#4:指向空白
-		lineNumber = 48;
+		//case#4:line number of empty line
+		lineNumber = 32;
 		astNode = ASTNodeFinder.getNodeFromSpecifiedClass(NodeUtilsTestSample.class, projectName, lineNumber);
 		assertNull(astNode);
 		
-		//case#5:超過該java行數
+		//case#5:line number over java file 
 		lineNumber = 999999999;
 		astNode = ASTNodeFinder.getNodeFromSpecifiedClass(NodeUtilsTestSample.class, projectName, lineNumber);
 		assertNull(astNode);
@@ -123,19 +121,16 @@ public class ASTNodeFinderTest {
 	
 	@Ignore
 	public void testGetNodeFromSpecifiedClass_caseSemicolonParentheses() throws Exception {
-		//取得該行內容
 		ASTMethodCollector methodCollector = new ASTMethodCollector();
 		compilationUnit.accept(methodCollector);
-//		List<MethodDeclaration> list = methodCollector.getMethodList();
-//		MethodDeclaration mDeclaration = list.get(1);
 		
-		//輸入class指定行數
 		int lineNumber = 20;
 		
-		//(尚未解決)
-		//類似的case有 ";" "{" "}"
-		//case#6:指向分號get到node是正確的但是行數不match回傳null
-		lineNumber = 46;
+		//(unsolved issue)
+		//similar case like input the line number of ";", "{" and "}"
+		//case#6: use the line number of ";" can get the correct astnode.
+		//        but line number got by using astnode is not match to the original line number 
+		lineNumber = 37;
 		ASTNode astNode = ASTNodeFinder.getNodeFromSpecifiedClass(NodeUtilsTestSample.class, projectName, lineNumber);
 		// FIXME the bug need to be fix.
 		assertEquals("FIXME the bug need to be fix.",lineNumber, compilationUnit.getLineNumber(astNode.getStartPosition()));

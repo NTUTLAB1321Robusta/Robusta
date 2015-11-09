@@ -25,7 +25,7 @@ public class SuppressWarningExampleForAnalyzer {
 	 * 4.empty catch block
 	 * 5.careless cleanup
 	 * 6.over logging
-	 * 7.待補
+	 * 7.to be continued...
 	 */
 	
 	/* ---------------------- With Suppress warning & Tag Example --------------------- */
@@ -41,7 +41,7 @@ public class SuppressWarningExampleForAnalyzer {
 	}
 	
 	/**
-	 * 在 method 上有 suppress warning 的 dummy handler
+	 * method, which has dummy handler, marked suppress warning
 	 */
 	@SuppressSmell("Dummy_Handler")
 	public void withSuppressWaringDummyHandlerOnMethod() {
@@ -55,7 +55,7 @@ public class SuppressWarningExampleForAnalyzer {
 	}
 
 	/**
-	 * 在 catch 上有 suppress warning 的 dummy handler
+	 * catch, which has dummy handler, marked suppress warning
 	 */
 	public void withSuppressWaringDummyHandlerOnCatch() {
 		FileInputStream fis = null;
@@ -68,7 +68,7 @@ public class SuppressWarningExampleForAnalyzer {
 	}
 
 	/**
-	 * 在 catch 上有  suppress warning 的 nested try statement
+	 * catch, which has nested try statement, marked suppress warning
 	 */
 	@SuppressSmell({ "Nested_Try_Statement", "Dummy_Handler" })
 	public void withSuppressWaringNestedTryStatementOnCatch() {
@@ -85,7 +85,7 @@ public class SuppressWarningExampleForAnalyzer {
 	}
 	
 	/**
-	 * 在 method 上有 suppress warning 的 nested try statement
+	 * method, which has nested try statement, marked suppress warning
 	 */
 	@SuppressSmell({ "Nested_Try_Statement", "Dummy_Handler" })
 	public void withSuppressWaringNestedTryStatementOnMethod() {
@@ -104,7 +104,7 @@ public class SuppressWarningExampleForAnalyzer {
 	}
 
 	/**
-	 * 在 method 上有 suppress warning 的 EmptyCatchBlock
+	 * method, which has empty catch block, marked suppress warning
 	 */
 	@SuppressSmell("Empty_Catch_Block")
 	public void withSuppressWaringEmptyCatchBlcokionOnMethod() {
@@ -118,7 +118,7 @@ public class SuppressWarningExampleForAnalyzer {
 	}
 
 	/**
-	 * 在 catch 上有 suppress warning 的 EmptyCatchBlock
+	 * catch, which has empty catch block, marked suppress warning
 	 */
 	public void withSuppressWaringEmptyCatchBlockOnCatch() {
 		FileInputStream fis = null;
@@ -131,7 +131,7 @@ public class SuppressWarningExampleForAnalyzer {
 	}
 
 	/**
-	 * 有 suppress waring 的 careless cleanup
+	 * method, which has careless cleanup, marked suppress warning
 	 */
 	@SuppressSmell("Careless_Cleanup")
 	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
@@ -150,7 +150,7 @@ public class SuppressWarningExampleForAnalyzer {
 	}
 	
 	/**
-	 * 有 suppress waring 的 careless cleanup 在 try 進行 close 的動作
+	 * method, which has careless cleanup and there is a close invocation in try statement, marked suppress warning
 	 * @param context
 	 * @param outputFile
 	 */
@@ -170,7 +170,7 @@ public class SuppressWarningExampleForAnalyzer {
 	}
 	
 	/**
-	 * 有 suppress waring 的 careless cleanup 加上 finally block
+	 * method, which has careless cleanup and added a vacant finally block, marked suppress warning
 	 */
 	@SuppressSmell("Careless_Cleanup")
 	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
@@ -202,7 +202,7 @@ public class SuppressWarningExampleForAnalyzer {
 	}
 	
 	/**
-	 * @SuppressSmell("Over_Logging")在 method 上
+	 * @SuppressSmell("Over_Logging") on method signature
 	 */
 	@SuppressSmell("Over_Logging")
 	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
@@ -216,7 +216,7 @@ public class SuppressWarningExampleForAnalyzer {
 	}
 	
 	/**
-	 * @SuppressSmell("Over_Logging")在 catch 上
+	 * @SuppressSmell("Over_Logging")on catch block
 	 */
 	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void theThirdOrderInTheSameClass() throws IOException {
@@ -228,10 +228,6 @@ public class SuppressWarningExampleForAnalyzer {
 		}
 	}
 	
-	/**
-	 * 在巢狀 try-catch 要在 catch 上 suppress bad smell 時
-	 * 反觀在 method 上 suppress bad smell 時可以正確的被 suppress
-	 */
 	@SuppressSmell({ "Careless_Cleanup", "Nested_Try_Statement" })
 	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
 	public void theFourthOrderInTheSameClass() throws IOException {
@@ -254,7 +250,7 @@ public class SuppressWarningExampleForAnalyzer {
 			try {
 				fis = new FileInputStream("");
 				fis.read();
-				//三層
+				//three level deep
 				try {
 					fileInputStream = new FileInputStream("");
 					fileInputStream.read();
@@ -419,10 +415,6 @@ public class SuppressWarningExampleForAnalyzer {
 		}
 	}
 	
-	/**
-	 * 在巢狀 try-catch 要在 catch 上 suppress bad smell 時
-	 * 反觀在 method 上 suppress bad smell 時可以正確的被 suppress
-	 */
 	public void withoutSuppressWaringTheFourthOrderInTheSameClass() throws IOException {
 		FileOutputStream fileOutputStream = null;
 		FileInputStream fileInputStream = null;
@@ -443,7 +435,7 @@ public class SuppressWarningExampleForAnalyzer {
 			try {
 				fis = new FileInputStream("");
 				fis.read();
-				//三層
+				//three level deep
 				try {
 					fileInputStream = new FileInputStream("");
 					fileInputStream.read();

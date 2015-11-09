@@ -47,7 +47,7 @@ public class TestEnvironmentBuilder {
 		// Add some library
 		javaProjectMaker.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR + "/log4j-1.2.15.jar");
 		javaProjectMaker.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR + "/slf4j-api-1.5.0.jar");
-		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(
+		javaProjectMaker.packageAgileExceptionClassesToJarIntoLibFolder(
 				JavaProjectMaker.FOLDERNAME_LIB_JAR,
 				JavaProjectMaker.FOLDERNAME_BIN_CLASS);
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/"

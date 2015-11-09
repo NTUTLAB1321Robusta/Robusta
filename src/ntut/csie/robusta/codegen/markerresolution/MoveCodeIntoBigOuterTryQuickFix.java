@@ -20,7 +20,7 @@ public class MoveCodeIntoBigOuterTryQuickFix implements IMarkerResolution{
 	private QuickFixCore quickFixCore;
 	
 	private String label;
-	//紀錄code smell的type
+	//record type of code smell 
 	private String problem;
 
 	public MoveCodeIntoBigOuterTryQuickFix(String label) {

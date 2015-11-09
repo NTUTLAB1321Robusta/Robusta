@@ -55,7 +55,7 @@ public class ReportBuilder {
 	}
 	
 	/**
-	 * 儲存單一Class內所有Smell資訊
+	 * save all smell information in class
 	 * 
 	 * @param icu
 	 * @param pkPath
@@ -100,9 +100,9 @@ public class ReportBuilder {
 				//Check if the user dont want to detect some root source folders.
 				if(!shouldDetectPackageFragmentRoot(root.get(i)))
 					continue;
-				// 取得Folder的名稱
+				// get folder's name
 				String folderName = root.get(i).getElementName();
-				// 取得Root底下的所有Package
+				// get all package under IPackageFragmentRoot
 				IPackageFragmentRoot fragmentRoot = root.get(i);				
 				
 				IJavaElement[] packages = fragmentRoot.getChildren();
@@ -112,12 +112,11 @@ public class ReportBuilder {
 					if (iJavaElement.getElementType() == IJavaElement.PACKAGE_FRAGMENT) {
 						IPackageFragment iPackageFgt = (IPackageFragment) iJavaElement;
 
-						// 取得Package底下的class
+						//get all class under package
 						ICompilationUnit[] compilationUnits = iPackageFgt.getCompilationUnits();
 						PackageModel newPackageModel = null;
 						if (compilationUnits.length != 0) {
 							newPackageModel = new PackageModel();
-							//設置Package名稱
 							newPackageModel.setPackageName(iPackageFgt.getElementName());
 							newPackageModel.setFolderName(folderName);
 
@@ -182,19 +181,17 @@ public class ReportBuilder {
 	}
 
 	/**
-	 * 計算Class File的LOC
+	 * calculate LOC of class file 
 	 * 
 	 * @param filePath	class的File Path
-	 * @return class的LOC數
+	 * @return LOC of class
 	 */
 	private int countFileLOC(String filePath) {
 		File file = new File(project.getLocation().toString() + "/.." + filePath);
 
-		// 若Class存在，計算Class
 		if (file.exists()) {
 			LOCData noFormatData = null;
 			try {
-				// 計算LOC
 				noFormatData = noFormatCounter.countFileLOC(file);
 			} catch (FileNotFoundException e) {
 				logger.error("[File Not Found Exception] FileNotFoundException ", e);

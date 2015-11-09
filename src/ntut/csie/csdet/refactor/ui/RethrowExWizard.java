@@ -19,7 +19,7 @@ public class RethrowExWizard extends RefactoringWizard {
 
 	@Override
 	protected void addUserInputPages() {
-		//加入Rethrow exception的Page
+		//add rethrow exception page
 		addPage(new RethrowExInputPage("Rethrow Unchecked Exception"));
 		
 		

@@ -50,10 +50,8 @@ public class VariableDeclarationStatementFinderVisitorTest {
 		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// 設定要被建立AST的檔案
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
-		// 取得AST
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
 	}
@@ -64,7 +62,7 @@ public class VariableDeclarationStatementFinderVisitorTest {
 	}
 
 	/**
-	 * 變數是在class裡面被宣告的，所以會是一個FieldDeclaration，用這個Visitor就什麼都找不到。
+	 * variable is declared in class, so it would be a FieldDeclaration which visitor can not find it.
 	 */
 	@Test
 	public void testVariableDeclarationStatementFinder_Field() {
@@ -85,19 +83,13 @@ public class VariableDeclarationStatementFinderVisitorTest {
 	}
 	
 	/**
-	 * 檢查不同的MethodDeclaration擁有相同程式碼的宣告時，會不會出錯。
-	 * 從MD1的mi尋找他的VariableDeclarationStatement
+	 * check whether visitor can detect two different method which they has the same program code inside.
 	 */
 	@Test
 	public void testVariableDeclarationStatementFinder_DifferentMethodDeclaraionOwnsSameCode_1st() {
-		// sameName.toCharArray(); in declareSameNameInstanceInDifferentMethodDeclaration_MD1()
 		MethodInvocation mi = (MethodInvocation)NodeFinder.perform(compilationUnit, 639 - 1, 22);
 		VariableDeclarationStatementFinderVisitor vdsfv = new VariableDeclarationStatementFinderVisitor(mi);
 		compilationUnit.accept(vdsfv);
-		/*
-		 * String sameName = "一粥一飯，當思來處不易"; in declareSameNameInstanceInDifferentMethodDeclaration_MD1()
-		 * Start position is 620, 32
-		 */
 		assertEquals((603 - 1), vdsfv.getFoundVariableDeclarationStatement().getStartPosition());
 	}
 	
@@ -107,14 +99,9 @@ public class VariableDeclarationStatementFinderVisitorTest {
 	 */
 	@Test
 	public void testVariableDeclarationStatementFinder_DifferentMethodDeclaraionOwnsSameCode_2rd() {
-		// sameName.toCharArray(); in declareSameNameInstanceInDifferentMethodDeclaration_MD2()
 		MethodInvocation mi = (MethodInvocation)NodeFinder.perform(compilationUnit, 783 - 1, 22);
 		VariableDeclarationStatementFinderVisitor vdsfv = new VariableDeclarationStatementFinderVisitor(mi);
 		compilationUnit.accept(vdsfv);
-		/*
-		 * String sameName = "一粥一飯，當思來處不易"; in declareSameNameInstanceInDifferentMethodDeclaration_MD2()
-		 * Start position is 764, 32
-		 */
 		assertEquals((747 - 1), vdsfv.getFoundVariableDeclarationStatement().getStartPosition());
 	}
 	

@@ -38,13 +38,10 @@ import org.slf4j.LoggerFactory;
 
 public class RLMethodModel {
 	private static Logger logger = LoggerFactory.getLogger(RLMethodModel.class);
-	// 目前method的Exception資訊
 	private List<RLMessage> exceptionList = null;
 
-	// 目前method的RL Annotation資訊
 	private List<RLMessage> rlAnnotationList = null;
 
-	// 目前的Method AST Node
 	private ASTNode methodNode = null;
 
 	private ASTHandler astHandler = null;
@@ -59,9 +56,6 @@ public class RLMethodModel {
 		astHandler = new ASTHandler();
 	}
 
-	// ************************************************************************
-	// 其它事件相關處理
-	// ************************************************************************
 	
 	public void clear(){
 		if(exceptionList != null) exceptionList.clear();
@@ -100,22 +94,18 @@ public class RLMethodModel {
 	 */
 	public boolean createAST(IOpenable openable, int pos) throws CoreException {
 		if (openable == null) {
-			System.err.println("編輯器內容不是java程式！");
+			System.err.println("There is not a java program in editor！");
 			throw createCoreException("編輯器內容不是java程式！", null);
 		}
 
 		this.actOpenable = openable;
 
-		// 判斷Java源碼的版本是否為1.5以上(因為要使用Annotation)
+		// check whether Java version is above 1.5(due to using annotation)
 		IJavaProject project = (IJavaProject) ((IJavaElement) actOpenable).getAncestor(IJavaElement.JAVA_PROJECT);
 		String option = project.getOption(JavaCore.COMPILER_SOURCE, true);
 		if (!JavaCore.VERSION_1_5.equals(option) && !JavaCore.VERSION_1_6.equals(option)) {
 			throw createCoreException("java程式不是1.5以上版本！", null);
 		}
-
-//		if (actOpenable.getBuffer() == null) {
-//			throw createCoreException("Input has no buffer", null);
-//		}
 
 		try {
 
@@ -134,7 +124,7 @@ public class RLMethodModel {
 	}
 
 	/**
-	 * 增加Nature 到本Project上
+	 * add nature to this project
 	 * 
 	 * @throws CoreException
 	 */
@@ -172,13 +162,7 @@ public class RLMethodModel {
 	}
 
 	/**
-	 * 將RL Annotation訊息增加到指定Method上
-	 * 
-	 * @param msg
-	 *            目前事件所在的RLMessage物件訊息
-	 * 
-	 * 
-	 * 
+	 * add robustness level annotation information to specific method 
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean addOrRemoveRLAnnotation(boolean add, int pos) {
@@ -205,18 +189,18 @@ public class RLMethodModel {
 			if (add) {
 				addImportDeclaration();
 
-				// 增加現在所選Exception的@Tag Annotation
+				//add selected exception @tag annotation 
 				rlary.expressions().add(getRLAnnotation(ast, msg.getRLData()));
 			}
 
-			// 加入舊有的@Tag Annotation
+			//add original @tag annotation
 			int idx = 0;
 			for (RLMessage rlmsg : rlAnnotationList) {
 				if (add) {
-					// 新增
+					// add
 					rlary.expressions().add(getRLAnnotation(ast, rlmsg.getRLData()));
 				} else {
-					// 移除
+					// remove
 					if (idx++ != pos) {
 						rlary.expressions().add(getRLAnnotation(ast, rlmsg.getRLData()));
 					}
@@ -256,7 +240,6 @@ public class RLMethodModel {
 
 	@SuppressWarnings("unchecked")
 	private void addImportDeclaration() {
-		// 判斷是否已經Import Robustness及RL的宣告
 		List<ImportDeclaration> importList = this.actRoot.imports();
 		boolean isImportRobustnessClass = false;
 		boolean isImportRLClass = false;
@@ -337,14 +320,14 @@ public class RLMethodModel {
 	}
 
 	/**
-	 * 產生RL Annotation之RL資料
+	 * generate robustness level information for robustness level's annotation
 	 * 
 	 * @param ast
 	 *            AST Object
 	 * @param levelVal
-	 *            強健度等級
+	 *            robustness level value
 	 * @param exClass
-	 *            例外類別
+	 *            exception class
 	 * @return NormalAnnotation AST Node
 	 */
 
@@ -396,20 +379,12 @@ public class RLMethodModel {
 	// Setter/Getter
 	// ************************************************************************
 	/**
-	 * 取得目前游標所在行數
-	 * 
+	 * get cursor position line number
+	 *  
 	 * @param pos
 	 * @return
 	 */
 	public int getCurrentLine() {
-
-		// if (this.actRoot != null) {
-		// return
-		// this.actRoot.getLineNumber(this.methodNode.getStartPosition());
-		// }
-		// else {
-		// return -1;
-		// }
 		return this.currentLine;
 	}
 
@@ -427,7 +402,6 @@ public class RLMethodModel {
 
 	public void clearData() {
 		this.actRoot = null;
-		// this.currentMethodNode=null;
 	}
 
 	public boolean hasData() {
@@ -458,5 +432,4 @@ public class RLMethodModel {
 			return null;
 		}
 	}
-
 }

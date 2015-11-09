@@ -37,22 +37,14 @@ import org.eclipse.ui.IEditorPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BaseQuickFix {
+public class BaseQuickFix {  
 	private static Logger logger = LoggerFactory.getLogger(BaseQuickFix.class);
 
 	protected IOpenable actOpenable = null;
-	/** 存放目前要修改的.java檔 */
-	protected CompilationUnit actRoot = null;
-	/** 存放目前所要fix的method node */
-	protected MethodDeclaration currentMethodNode = null;
+	protected CompilationUnit javaFileWillBeQuickFixed = null;
+	protected MethodDeclaration methodNodeWillBeQuickFixed = null;
 
-	/**
-	 * 取得Method相關資訊
-	 * @param resource		來源
-	 * @param methodIdx		Method的Index
-	 * @return				是否成功
-	 */
-	protected boolean findCurrentMethod(IResource resource, int methodIdx){
+	protected boolean findMethodNodeWillBeQuickFixed(IResource resource, int methodIdx){
 		if (resource instanceof IFile && resource.getName().endsWith(".java")) {
 			try {
 				IJavaElement javaElement = JavaCore.create(resource);
@@ -67,17 +59,15 @@ public class BaseQuickFix {
 	
 				parser.setSource((ICompilationUnit) javaElement);
 				parser.setResolveBindings(true);
-				actRoot = (CompilationUnit) parser.createAST(null);
-				//AST 2.0紀錄方式
-				actRoot.recordModifications();
+				javaFileWillBeQuickFixed = (CompilationUnit) parser.createAST(null);
+				javaFileWillBeQuickFixed.recordModifications();
 				
-				//取得該class所有的method
+				//collect all method in class
 				ASTMethodCollector methodCollector = new ASTMethodCollector();
-				actRoot.accept(methodCollector);
+				javaFileWillBeQuickFixed.accept(methodCollector);
 				List<MethodDeclaration> methodList = methodCollector.getMethodList();
 				
-				//取得目前要被修改的method node
-				currentMethodNode = methodList.get(methodIdx);
+				methodNodeWillBeQuickFixed = methodList.get(methodIdx);
 			
 				return true;
 			} catch (Exception ex) {
@@ -88,18 +78,19 @@ public class BaseQuickFix {
 	}
 
 	/**
-	 * 將所要變更的內容寫回Edit中 (Old)
+	 * update the change of Editor (Old)
 	 */
 	protected void applyChange() {
 		applyChange(null);
 	}
+	
 	/**
-	 * 將所要變更的內容寫回Edit中  (New)
+	 * update the change of Editor  (New)
 	 * @param msg
 	 */
 	protected void applyChange(ASTRewrite rewrite) {
 		try {
-			// 參考org.eclipse.jdt.internal.ui.text.correction.CorrectionMarkerResolutionGenerator run
+			// consult org.eclipse.jdt.internal.ui.text.correction.CorrectionMarkerResolutionGenerator run
 			// org.eclipse.jdt.internal.ui.text.correction.ChangeCorrectionProposal apply與performChange
 			ICompilationUnit cu = (ICompilationUnit) actOpenable;
 			IEditorPart part = EditorUtility.isOpenInEditor(cu);
@@ -113,7 +104,7 @@ public class BaseQuickFix {
 	}
 
 	/**
-	 * 執行Quick Fix變更
+	 * invoke Quick Fix
 	 * @param activeEditor
 	 * @param document
 	 * @throws CoreException
@@ -122,7 +113,7 @@ public class BaseQuickFix {
 		Change change= null;
 		IRewriteTarget rewriteTarget= null;
 		try {
-			change= getChange(actRoot, rewrite);
+			change= getChange(javaFileWillBeQuickFixed, rewrite);
 			if (change != null) {
 				if (document != null) {
 					LinkedModeModel.closeAllModels(document);
@@ -163,7 +154,7 @@ public class BaseQuickFix {
 	}
 
 	/**
-	 * 取得Quick Fix後改變的程式碼
+	 * get modified code after quick fix
 	 */
 	private Change getChange(CompilationUnit actRoot, ASTRewrite rewrite) {
 		try {

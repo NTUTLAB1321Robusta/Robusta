@@ -33,19 +33,14 @@ public class RLMessage {
 
 	private int lineNumber;
 
-	// 是否被處理
-	private boolean handling = false;
+	private boolean isHandling = false;
 
-	// 是否被降級(Tag Level)
-	private boolean reduction = false;
+	private boolean isReduction = false;
 
-	// 是否為Checked Exception
-	private boolean checkedException = false;
+	private boolean isCheckedException = false;
 
-	// 是否被Catch
-	private boolean handleByCatch = false;
+	private boolean isHandleByCatch = false;
 
-	// 註記的Exception清冊位置
 	private Map<String, String> handleExMap;
 
 	public RLMessage(int level, ITypeBinding typeBinding, int pos, int lineNumber) {
@@ -58,7 +53,7 @@ public class RLMessage {
 		this.position = pos;
 		this.typeBinding = typeBinding;
 		this.keyList = new ArrayList<String>();
-		this.checkedException = ASTHandler.isCheckedException(typeBinding);
+		this.isCheckedException = ASTHandler.isCheckedException(typeBinding);
 		this.lineNumber = lineNumber;
 		this.handleExMap = new HashMap<String, String>();
 
@@ -114,22 +109,22 @@ public class RLMessage {
 	 * @return
 	 */
 	public boolean isHandling() {
-		return handling;
+		return isHandling;
 	}
 
 	public boolean isReduction() {
-		return reduction;
+		return isReduction;
 	}
 
 	public void setReduction(boolean reduction) {
-		this.reduction = reduction;
+		this.isReduction = reduction;
 	}
 
 	/**
 	 * @param handling
 	 */
 	public void setHandling(boolean handling) {
-		this.handling = handling;
+		this.isHandling = handling;
 	}
 
 	public String getKey() {
@@ -145,15 +140,15 @@ public class RLMessage {
 	}
 
 	public boolean isCheckedException() {
-		return checkedException;
+		return isCheckedException;
 	}
 
 	public void setHandleByCatch(boolean handleByCatch) {
-		this.handleByCatch = handleByCatch;
+		this.isHandleByCatch = handleByCatch;
 	}
 
 	public boolean isHandleByCatch() {
-		return handleByCatch;
+		return isHandleByCatch;
 	}
 
 	public String getKeyString(int pos) {
@@ -182,7 +177,7 @@ public class RLMessage {
 	}
 
 	/**
-	 * 刪除Key Array的最後一個元素
+	 * delete last element of key array
 	 * 
 	 */
 	public void decreaseKeyList() {
@@ -258,7 +253,7 @@ public class RLMessage {
 	public String toString() {
 		return this.toControlString() + " ==> LEVEL=[" + this.getRLData().getLevel() + "] EXCEPTION=[" + this.getRLData().getExceptionType()
 				+ "] STATEMENT=[" + StringUtils.replace(this.statement, "\n", "") + "] StartPosition=[" + this.position
-				+ "] HANDLING=[" + this.handling + "]";
+				+ "] HANDLING=[" + this.isHandling + "]";
 	}
 
 	public String toControlString() {

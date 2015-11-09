@@ -6,40 +6,36 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 
 public class StatementFinderVisitor extends ASTVisitor {
 
-	/**	將找到的結果存在這裡 */
-	private ExpressionStatement foundExpressionStatement;
+	private ExpressionStatement expressionStatementHasBeenVisited;
 	
-	/** 想比對的startPosition */
-	private int comparisingStartPosition;
+	private int startPositionUsedToBeCompared;
 	
-	/** 是否繼續Visit整個Tree */
 	private boolean isKeepVisiting;
 	
 	public StatementFinderVisitor(int startPosition) {
-		foundExpressionStatement = null;
+		expressionStatementHasBeenVisited = null;
 		isKeepVisiting = true;
-		comparisingStartPosition = startPosition;
+		startPositionUsedToBeCompared = startPosition;
 	}
 	
 	public boolean visit(MethodDeclaration methodDeclaration) {
 		/*
-		 * 如果不繼續visit整個Tree，就在MethodDeclaration的節點擋掉，
-		 * 不繼續往子節點拜訪，加快結束的速度。
-		 * 這個是針對使用此Class的Caller要求拜訪CompilationUnit的時候才有作用。
-		 * 換句話說，如果只是拜訪IfStatement, TryStatement..., and so on，這段程式碼就沒差。
+		 * early return when visit MethodDeclaration statement that can speed up scanning velocity.
+		 * this mechanism is only useful for visiting CompilationUnit.
+		 * if visit IfStatement, TryStatement and so on, this mechanism is useless.
 		 */
 		return isKeepVisiting;
 	}
 	
 	public boolean visit(ExpressionStatement node) {
-		if(node.getStartPosition() == comparisingStartPosition) {
-			foundExpressionStatement = node;
+		if(node.getStartPosition() == startPositionUsedToBeCompared) {
+			expressionStatementHasBeenVisited = node;
 			isKeepVisiting = false;
 		}
 		return false;
 	}
 	
 	public ExpressionStatement getFoundExpressionStatement() {
-		return foundExpressionStatement;
+		return expressionStatementHasBeenVisited;
 	}
 }

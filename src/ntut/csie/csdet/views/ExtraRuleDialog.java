@@ -32,20 +32,15 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * 讓user設定要偵測試的Dummy Handler
+ * allow user to define that what kind of dummy handler should be detected
  * @author Shiau
  *
  */
 public class ExtraRuleDialog extends Dialog{
-	//顯示Rule資訊的Table
 	private Table displayTable;
-	//Dialog上方的Text
 	private Text tempText;
-	//修改Item的按鈕
 	private Button editBtn;
-	//存放Library或Statement的Rule資料
 	private TreeMap<String, Boolean> ruleMap;
-	//為放置所有Button的Composite
 	private Composite btnComposite;
 
 	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
@@ -68,45 +63,42 @@ public class ExtraRuleDialog extends Dialog{
 	@Override
 	protected Control createDialogArea(Composite parent) {
 		final Composite container = (Composite) super.createDialogArea(parent);
-		//若改變視窗大小
+		//listen container size changing event
 		container.addControlListener(new ControlAdapter() {
 			public void controlResized(final ControlEvent e) {
 				//Resize
-				//243為tempText預設寬度，342為container預設寬度
+				//243 is tempText default width，342 is container default width
 				tempText.setSize(243 + container.getSize().x - 342, tempText.getSize().y);
-				//243為displayTable預設寬度，342為container預設寬度；150為displayTable預設高度，247為container預設高度
+				//243 is displayTable default width，342 is container default width；150 is displayTable default high，247 is container default high
 				displayTable.setSize(243 + container.getSize().x - 342, 150 + container.getSize().y - 247);
-				//10為displayTable預設位置，6為displayTable和btnComposite中間的空白長度
+				//10 is displayTable default position，6 is blank space length between displayTable and btnComposite
 				btnComposite.setLocation(10 + tempText.getSize().x + 6, btnComposite.getLocation().y);
 			}
 		});
 		container.setLayout(null);
 		
-		//顯示Table
 		displayTable = new Table(container, SWT.FULL_SELECTION | SWT.CHECK | SWT.MULTI | SWT.BORDER);
 		displayTable.setFont(new Font(this.getShell().getDisplay(),"Arial", 11,SWT.NONE));
 		final GridData gd_testList = new GridData(SWT.FILL, SWT.FILL, true, true);
 		displayTable.setBounds(10, 66, 243, 150);
 		displayTable.setLayoutData(gd_testList);
-		//如果選擇的displayTable的Item把其名稱顯示在Text上
+		//if user select item on displayTable, then display item name on displaytable 
 		displayTable.addListener(SWT.Selection, new Listener(){
 			public void handleEvent(Event e){
 				int selectionIndex = displayTable.getSelectionIndex();
-				//防止一開Dialog就先勾選checkbox,出現index=-1的情況
+				//avoid selectionIndex is -1 when displayTable just pup up and then user select one checked box on it
 				if(selectionIndex >= 0){
-					//把選擇的Item其Library名稱顯示在Text上
 					editBtn.setEnabled(true);
 					tempText.setText(displayTable.getItem(selectionIndex).getText());
 				}
 			}
 		});
-		//若在displayTable的Item上點選兩下，跳出修改視窗
+		//add double click listener to displayTable that when double click occur, modify dialog pup up
 		displayTable.addMouseListener(new MouseAdapter() {
 			public void mouseDoubleClick(final MouseEvent e) {
 				int selectionIndex = displayTable.getSelectionIndex();
 				if (selectionIndex >= 0) {
 					String temp = displayTable.getItem(selectionIndex).getText();
-					//呼叫修改Dialog
 					EditRuleDialog dialog = new EditRuleDialog(new Shell(),temp,displayTable);
 					dialog.open();
 					tempText.setText(displayTable.getItem(selectionIndex).getText());
@@ -114,10 +106,8 @@ public class ExtraRuleDialog extends Dialog{
 			}
 		});
 
-		//放置Button的composite
 		btnComposite = new Composite(container, SWT.NONE);
 
-		//警告圖示和文字
 		final Label picLabel = new Label(container, SWT.NONE);
 		picLabel.setBounds(10, 222, 16, 15);
 		picLabel.setVisible(false);
@@ -127,13 +117,12 @@ public class ExtraRuleDialog extends Dialog{
 		warningLabel.setVisible(false);
 		warningLabel.setBounds(32, 222, 85, 12);
 
-		//使用都輸入Text
 		tempText = new Text(container, SWT.BORDER);
 		tempText.setFont(new Font(parent.getDisplay(), "Courier New",12,SWT.NORMAL));
 		tempText.setBounds(10, 38, 243, 22);
 		tempText.addKeyListener(new KeyAdapter() {
 			public void keyPressed(final KeyEvent e) {
-				//若Text一改變就把警告訊息消掉
+				//when text has modified, disable warning
 				picLabel.setVisible(false);
 				warningLabel.setVisible(false);
 			}
@@ -141,17 +130,16 @@ public class ExtraRuleDialog extends Dialog{
 		
 		Label nameLabel = new Label(container, SWT.NONE);
 		nameLabel.setBounds(10, 10, 97, 22);
-		//依是否為library或statement來改變不同的範例
+		//according to whether is library or statement to change template
 		nameLabel.setText(resource.getString("detect.rule"));
 
-		//全取消按鈕
 		final Button clearBtn = new Button(btnComposite, SWT.NONE);
 		clearBtn.setBounds(0, 112, 68, 22);
 		clearBtn.setText(resource.getString("deselect.all"));
 		clearBtn.pack();
 		clearBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
-				//取消全部的Item
+				//uncheck all Item
 				for (int i=0;i<displayTable.getItemCount();i++) {
 					TableItem item = displayTable.getItem(i);
 					item.setChecked(false);
@@ -160,13 +148,12 @@ public class ExtraRuleDialog extends Dialog{
 		});
 		int maxButtonWidth = clearBtn.getBounds().width;
 
-		//全選按鈕
 		final Button selectBtn = new Button(btnComposite, SWT.NONE);
 		selectBtn.setBounds(0, 84, maxButtonWidth, 22);
 		selectBtn.setText(resource.getString("select.all"));
 		selectBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
-				//選擇全部的Item
+				//check all Item
 				for (int i=0;i<displayTable.getItemCount();i++) {
 					TableItem item = displayTable.getItem(i);
 					item.setChecked(true);
@@ -174,14 +161,13 @@ public class ExtraRuleDialog extends Dialog{
 			}
 		});
 		
-		//新增按鈕
 		Button addBtn = new Button(btnComposite, SWT.NONE);
 		addBtn.setBounds(0, 0, maxButtonWidth, 22);
 		addBtn.setText(resource.getString("add"));
 		addBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
 				boolean isWarning = addRule();
-				//若重複就顯示警告訊息
+				//check whether is duplicate rule then pup up warning
 				if (isWarning){
 					picLabel.setVisible(true);
 					warningLabel.setVisible(true);
@@ -189,23 +175,20 @@ public class ExtraRuleDialog extends Dialog{
 			}
 		});
 
-		//刪除按鈕
 		final Button removeButton = new Button(btnComposite, SWT.NONE);
 		removeButton.setBounds(0, 28, maxButtonWidth, 22);
 		removeButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e)
 			{
-				//Table不為空的且有選到Library 就把選擇的Library給刪掉
+				//remove selected library in displayTable(precondition: displayTable is not empty and user select one library listed in it)
 				if (displayTable.getItemCount() != 0 && displayTable.getSelectionIndex()!=-1) {
 					displayTable.remove(displayTable.getSelectionIndices());
-					//刪除時把Text清除
 					tempText.setText("");
 				}
 			}
 		});
 		removeButton.setText(resource.getString("remove"));
 
-		//修改的按鈕
 		editBtn = new Button(btnComposite, SWT.NONE);
 		editBtn.setBounds(0, 56, maxButtonWidth, 22);
 		editBtn.addSelectionListener(new SelectionAdapter() {
@@ -213,7 +196,7 @@ public class ExtraRuleDialog extends Dialog{
 				int selectionIndex = displayTable.getSelectionIndex();
 				if (selectionIndex >= 0) {
 					String temp = displayTable.getItem(selectionIndex).getText();
-					//呼叫修改Dialog
+					//pup up modify rule dialog
 					EditRuleDialog dialog = new EditRuleDialog(new Shell(),temp,displayTable);
 					dialog.open();
 					tempText.setText(displayTable.getItem(selectionIndex).getText());
@@ -223,12 +206,10 @@ public class ExtraRuleDialog extends Dialog{
 		editBtn.setText(resource.getString("edit"));
 		editBtn.setEnabled(false);
 
-		//說明視窗
 		final Button explainBtn = new Button(btnComposite, SWT.NONE);
 		explainBtn.setBounds(0, 140, maxButtonWidth, 22);
 		explainBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
-				//跳出說明的Dialog
 				MessageDialog.openInformation(
 						new Shell(),
 						resource.getString("caption"),
@@ -237,10 +218,9 @@ public class ExtraRuleDialog extends Dialog{
 		});
 		explainBtn.setText(resource.getString("help"));
 		explainBtn.setImage(ImageManager.getInstance().get("help"));
-		
 		btnComposite.setBounds(259, 38, maxButtonWidth, 199);
 
-		//將該所有的偵測Library資料顯示在List
+		//list all detecting template on display table
 		setInput();
 
 		return container;
@@ -254,13 +234,11 @@ public class ExtraRuleDialog extends Dialog{
 		
 	@Override
 	protected void okPressed() {
-		//增加Rule
 		addRule();
-		//清除掉原本的Rule
+		//initialize rule map 
 		ruleMap.clear();
-		//先將列表的item取出來
 		TableItem[] temp = displayTable.getItems();
-		//去traverse整個table看item的Text和是否被勾選到
+		//traverse hole table to check whether each item's text is checked
 		for(int i=0;i<temp.length;i++){
 			ruleMap.put(temp[i].getText(),temp[i].getChecked());
 		}
@@ -274,30 +252,29 @@ public class ExtraRuleDialog extends Dialog{
 	
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		//顯示Dialog標題
+		//dialog title
 		newShell.setText(resource.getString("extra.rules.dialog.title"));
 	}
 
 	/**
-	 * 增加Rule資料
+	 * add rule
 	 */
 	private boolean addRule() {
 		boolean isWarning = false;
-		//刪除Text前後空格部份
 		String temp = tempText.getText().trim();
 
 		if (tempText.getText().length() != 0) {			
-			//若沒有"."表示為Method，自行幫使用者加"*."
+			//if temp doesn't contain ".", temp would be a method and then add "*." at head of temp
 			if (!temp.contains("."))
 				temp = "*." + temp;
 
 			boolean isExist = false;
-			//看Library的Name有沒有重複
+			//check whether duplicate library name
 			for(int i=0;i<displayTable.getItemCount();i++) {
 				if(temp.equals(displayTable.getItem(i).getText()))
 					isExist = true;
 			}
-			//沒有重複就加入新的Library
+			//add new library when there are not duplicate library
 			if (!isExist) {
 				TableItem item = new TableItem(displayTable,SWT.NONE);
 				item.setText(temp);
@@ -313,13 +290,14 @@ public class ExtraRuleDialog extends Dialog{
 	
 	/**
 	 * 取得設定偵測的Library資料
+	 * get configure for detecting library 
 	 */
 	public TreeMap<String, Boolean> getLibMap() {
 		return ruleMap;
 	}
 	
 	/**
-	 * 將所有偵測案例顯示在table中
+	 * show all detect template on table 
 	 */
 	private void setInput() {
 		Iterator<String> libIt = ruleMap.keySet().iterator();

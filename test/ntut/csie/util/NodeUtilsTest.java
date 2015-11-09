@@ -48,7 +48,7 @@ public class NodeUtilsTest {
 		javaFile2String = new JavaFileToString();
 		javaProjectMaker = new JavaProjectMaker(projectName);
 		javaProjectMaker.setJREDefaultContainer();
-		// 根據測試檔案樣本內容建立新的檔案
+		// create a new file according to test sample
 		javaFile2String.read(NodeUtilsTestSample.class,
 				JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(NodeUtilsTestSample.class.getPackage()
@@ -63,11 +63,9 @@ public class NodeUtilsTest {
 		// Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// 設定要被建立AST的檔案
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin
 				.getWorkspace().getRoot().getFile(ccExamplePath)));
 		parser.setResolveBindings(true);
-		// 取得AST
 		compilationUnit = (CompilationUnit) parser.createAST(null);
 		compilationUnit.recordModifications();
 		miVisitor = new MethodInvocationVisitor();
@@ -109,18 +107,15 @@ public class NodeUtilsTest {
 
 	@Test
 	public void testIsITypeBindingImplemented() {
-		// null的情況
 		assertFalse(NodeUtils.isITypeBindingImplemented(null, Closeable.class));
 
 		compilationUnit.accept(miVisitor);
 		assertEquals(15, miVisitor.countMethodInvocations());
 
-		// ITypeBinding為Object的情況
 		assertFalse(NodeUtils.isITypeBindingImplemented(miVisitor
 				.getMethodInvocation(0).resolveMethodBinding()
 				.getDeclaringClass(), Closeable.class));
 
-		// ITypeBinding的SuperClass也不是使用者指定之interface的情況
 		assertFalse(NodeUtils.isITypeBindingImplemented(miVisitor
 				.getMethodInvocation(1).resolveMethodBinding()
 				.getDeclaringClass(), Closeable.class));
@@ -129,7 +124,6 @@ public class NodeUtilsTest {
 				.getMethodInvocation(4).resolveMethodBinding()
 				.getDeclaringClass(), Closeable.class));
 
-		// ITypeBinding為使用者指定之interface的情況
 		assertTrue(
 				miVisitor.getMethodInvocation(2).toString(),
 				NodeUtils.isITypeBindingImplemented(miVisitor
@@ -140,7 +134,6 @@ public class NodeUtilsTest {
 				.getMethodInvocation(3).resolveMethodBinding()
 				.getDeclaringClass(), Closeable.class));
 
-		// ITypeBinding的superClass為使用者指定之interface的情況
 		assertTrue(NodeUtils.isITypeBindingImplemented(miVisitor
 				.getMethodInvocation(5).resolveMethodBinding()
 				.getDeclaringClass(), Closeable.class));
@@ -149,9 +142,10 @@ public class NodeUtilsTest {
 	@Test
 	public void testIsMethodInvocationInFinally() {
 		// public void readFile() throws Exception - fos.close();
-		MethodInvocation node = (MethodInvocation) NodeFinder.perform(
-				compilationUnit, 1507, 11);
-		assertTrue(NodeUtils.isMethodInvocationInFinally(node));
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"readFile",
+				"fos.close()");
+		assertTrue(NodeUtils.isMethodInvocationInFinally(methodInvocation));
 	}
 
 	@Test
@@ -216,6 +210,13 @@ public class NodeUtilsTest {
 			String message = "We can not recognize the exception type what defined by user";
 			assertTrue(message, false);
 		}
+	}
+	
+	private MethodInvocation getMethodInvocationByMethodNameAndCode(
+			String methodName, String code) {
+		List<MethodInvocation> methodInvocation = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(compilationUnit, methodName, code);
+		assertEquals(methodInvocation.size(), 1);
+		return methodInvocation.get(0);
 	}
 
 	public class MethodInvocationVisitor extends ASTVisitor {

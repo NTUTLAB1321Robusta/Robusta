@@ -20,13 +20,10 @@ public class RLChecker {
 
 	public List<RLMessage> check(ExceptionAnalyzer visitor) {
 
-//		long t1 = System.currentTimeMillis();
-
 		int maxKeySize = 0;
 		this.exList = visitor.getExceptionList();
 		this.rlList = visitor.getMethodRLAnnotationList();
 
-		// 取得最大的Key Size
 		for (RLMessage msg : exList) {
 			if (msg.getKeySize() > maxKeySize) {
 				maxKeySize = msg.getKeySize();
@@ -42,11 +39,11 @@ public class RLChecker {
 			ConsoleLog.debug("[check]max key size=" + maxKeySize);
 		}
 
-		// 由內向外剖析Exception call chain
+		// parse exception call chain
 		for (int idx = maxKeySize; idx > 0; idx--) {
 
 			String lastPreKey = "";
-			// 目前的Try階層數
+			// current try statement deep level
 			int lastTryLevel = 0;
 			boolean isFirst = true;
 			RLMessage msg = null;
@@ -57,7 +54,6 @@ public class RLChecker {
 
 					if (msg.getKeySize() == idx) {
 
-						// 處理同一等級
 						String preKey = idx >= 2 ? msg.getKeyString(idx - 2) : "ROOT";
 						String levelKey = msg.getKeyList().get(idx - 1);
 						String[] keyItems = new StrTokenizer(levelKey, ".").getTokenArray();
@@ -98,8 +94,6 @@ public class RLChecker {
 		}
 		this.checkRLHandling();
 
-		//ConsoleLog.debug("[check]花費時間：" + (System.currentTimeMillis() - t1) + " ms");
-
 		return this.exList;
 	}
 
@@ -138,7 +132,7 @@ public class RLChecker {
 		}
 
 		try {
-			// 判斷Catch是否有處理throw的Exception
+			// check whether the catch block handle the thrown exception
 			for (Integer catchIdx : catchList) {
 				RLMessage catchMsg = this.exList.get(catchIdx);
 
@@ -152,7 +146,6 @@ public class RLChecker {
 						ConsoleLog.debug("[checkHandling] throwMsg=" + throwMsg);
 					}
 					if (!throwMsg.isHandling()) {
-						// 判斷catch只能catch比自已位置小的Exception且需檢查類別包含之關係
 						if (throwMsg.getPosition() < catchMsg.getPosition()
 								&& throwMsg.equalClassType(catchMsg.getRLData().getExceptionType())) {
 							throwMsg.setHandling(true);
@@ -163,7 +156,6 @@ public class RLChecker {
 				}
 			}
 
-			// 將未處理的Exception往上一Level傳
 			for (Integer throwIdx : throwList) {
 				RLMessage throwMsg = this.exList.get(throwIdx);
 				if (!throwMsg.isHandling()) {

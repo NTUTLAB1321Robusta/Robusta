@@ -37,10 +37,8 @@ public class EmptyCatchBlockVisitorTest {
 		javaProjectMaker = new JavaProjectMaker(testProjectName);
 		javaProjectMaker.setJREDefaultContainer();
 		
-		// 新增欲載入的library
 		javaProjectMaker.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR + "/log4j-1.2.15.jar");
 
-		// 根據測試檔案樣本內容建立新的檔案
 		javaFile2String = new JavaFileToString();
 		javaFile2String.read(EmptyCatchBlockExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
@@ -49,7 +47,6 @@ public class EmptyCatchBlockVisitorTest {
 				"package " + EmptyCatchBlockExample.class.getPackage().getName() + ";\n"
 						+ javaFile2String.getFileContent());
 
-		// 繼續建立測試用的UserDefineDummyHandlerFish
 		javaFile2String.clear();
 		javaFile2String.read(UserDefineDummyHandlerFish.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
@@ -59,13 +56,11 @@ public class EmptyCatchBlockVisitorTest {
 				+ javaFile2String.getFileContent());
 		
 		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(EmptyCatchBlockExample.class, testProjectName));
-		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// 設定要被建立AST的檔案
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
-		// 取得AST
+
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
 	}
@@ -91,7 +86,6 @@ public class EmptyCatchBlockVisitorTest {
 		if(emptyCatchBlockVisitor.getEmptyCatchList() != null)
 			emptyCatchSmellCount = emptyCatchBlockVisitor.getEmptyCatchList().size();
 		
-		// 驗證總共抓到幾個bad smell
 		assertEquals(0, emptyCatchSmellCount);
 	}
 	
@@ -107,7 +101,6 @@ public class EmptyCatchBlockVisitorTest {
 		if(emptyCatchBlockVisitor.getEmptyCatchList() != null)
 			emptySmellCount = emptyCatchBlockVisitor.getEmptyCatchList().size();
 		
-		// 驗證總共抓到幾個bad smell
 		assertEquals(7, emptySmellCount);
 	}
 
@@ -119,7 +112,6 @@ public class EmptyCatchBlockVisitorTest {
 		if(emptyCatchBlockVisitor.getEmptyCatchList() != null)
 			emptyCatchSmellCount = emptyCatchBlockVisitor.getEmptyCatchList().size();
 		
-		// 驗證總共抓到幾個bad smell
 		assertEquals(7, emptyCatchSmellCount);
 	}
 }

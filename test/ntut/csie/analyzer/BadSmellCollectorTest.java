@@ -38,16 +38,14 @@ public class BadSmellCollectorTest {
 	
 	@Before
 	public void setUp() throws Exception {
-		// 讀取測試檔案樣本內容
 		javaFileToString = new JavaFileToString();
 		javaProjectMaker = new JavaProjectMaker(projectName);
 		javaProjectMaker.setJREDefaultContainer();
 		
-		// 新增欲載入的library
 		javaProjectMaker.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR + "/log4j-1.2.15.jar");
 		javaProjectMaker.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR + "/slf4j-api-1.5.0.jar");
 		javaProjectMaker.addClasspathEntryToBuildPath(BuildPathSupport.getJUnit4ClasspathEntry(), null);
-		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(
+		javaProjectMaker.packageAgileExceptionClassesToJarIntoLibFolder(
 				JavaProjectMaker.FOLDERNAME_LIB_JAR,
 				JavaProjectMaker.FOLDERNAME_BIN_CLASS);
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/"

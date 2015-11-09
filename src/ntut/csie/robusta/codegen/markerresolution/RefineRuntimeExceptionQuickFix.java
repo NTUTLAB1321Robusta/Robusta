@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 將Catch到的例外轉型成RuntimeException拋出，並且移除System.out.println或e.printStackTrace等資訊
+ * cast exception in catch clause to RuntimeException and remove "System.out.println" or "e.printStackTrace" statement from catch clause
  * @author Charles
  *
  */
@@ -79,7 +79,7 @@ public class RefineRuntimeExceptionQuickFix implements IMarkerResolution {
 				return methodIdx;
 			}
 			methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
-			//儲存按下QuickFix該行的程式起始位置
+			//store the line number of QuickFix invocation
 			srcPos = marker.getAttribute(RLMarkerAttribute.RL_INFO_SRC_POS).toString();
 			return methodIdx;
 		} catch (CoreException e) {

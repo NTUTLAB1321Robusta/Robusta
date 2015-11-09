@@ -60,7 +60,6 @@ public class SelectedFolderPage extends APropertyPage {
 		setUserSetting();
 		selectedFolderList.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
-				// 取得點選的Item
 				TableItem[] item = selectedFolderList.getItems();
 				for (int i = 0; i < item.length; i++) {
 					if (!item[i].getChecked()) {
@@ -194,7 +193,7 @@ public class SelectedFolderPage extends APropertyPage {
 
 	private void setUserSetting() {
 		TableItem[] item = selectedFolderList.getItems();
-		// 去traverse整個table看item的Text和是否被勾選到
+		// traverse hole table to check whether any checked item 
 		for (int i = 0; i < item.length; i++) {
 			if (isFolderSelect)
 				folderList[i] = isFolderSelect;

@@ -67,22 +67,20 @@ public class ReportBuilderIntergrationTest {
 	@Before
 	public void setUp() throws Exception {
 		
-		// 讀取測試檔案樣本內容
 		javaFileToString = new JavaFileToString();
 		javaProjectMaker = new JavaProjectMaker(projectName);
 		javaProjectMaker.setJREDefaultContainer();
 		
-		// 新增欲載入的library
 		javaProjectMaker.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR + "/log4j-1.2.15.jar");
 		javaProjectMaker.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR + "/slf4j-api-1.5.0.jar");
 		javaProjectMaker.addClasspathEntryToBuildPath(BuildPathSupport.getJUnit4ClasspathEntry(), null);
-		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(
+		javaProjectMaker.packageAgileExceptionClassesToJarIntoLibFolder(
 				JavaProjectMaker.FOLDERNAME_LIB_JAR,
 				JavaProjectMaker.FOLDERNAME_BIN_CLASS);
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/"
 				+ JavaProjectMaker.RL_LIBRARY_PATH);
 		
-		// 根據測試檔案樣本內容建立新的檔案
+		// load test example
 		loadClass(NestedTryStatementExample.class); 
 		loadClass(CarelessCleanupBaseExample.class); 
 		loadClass(MethodInvocationBeforeClose.class);
@@ -134,10 +132,8 @@ public class ReportBuilderIntergrationTest {
 	}
 	
 	/**
-	 * 全勾設定擋除了 Dummy & Empty 沒勾
-	 * 以及自定義的部分也已經加入了
-	 * 因為在別的 class 已經處理過了
-	 * 很長的檔案路徑字串記得要改
+	 * checked all bad smell type on detecting setting page except dummy handler and empty catch block.
+	 * load user define setting.
 	 */
 	private void CreateAllSettings() {
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
@@ -403,10 +399,8 @@ public class ReportBuilderIntergrationTest {
 	}
 	
 	/**
-	 * 設定檔全勾
-	 * 正常測試情況
-	 * 測試除了 DummyHandler & EmptyCatchBlock 以外的報表
-	 * 以及相關資訊
+	 * checked all bad smell type on detecting setting page.
+	 * this testing is focus on generating report except DummyHandler's and EmptyCatchBlock's report
 	 * @throws Exception
 	 */
 	@Test

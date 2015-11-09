@@ -18,7 +18,7 @@ public class OverLoggingLog4JExample {
 		try {
 			theSecondOrderInTheSameClassWithLog4J();
 		} catch(IOException e) {
-			// Call chain最上層不會標示OverLogging
+			//it will not marked as OverLogging at the top of call chain.
 			log4jLogger.error(e.getMessage() + "theFirstOrderInTheSameClassWithLog4J");
 		}
 	}
@@ -41,7 +41,7 @@ public class OverLoggingLog4JExample {
 		} catch(IOException e) {
 			e.printStackTrace();
 			System.out.println(e);
-			// 沒有log動作，但是有往上拋，故需要繼續追蹤
+			//there is not logger but a throw e to upper caller in this method, so the detection need to be continued.
 			throw e;
 		}
 	}
@@ -65,7 +65,7 @@ public class OverLoggingLog4JExample {
 			OverLoggingTheFirstOrderClass outer = new OverLoggingTheFirstOrderClass();
 			outer.calleeWithLog4J();
 		} catch(IOException e) {
-			// Call chain最上層不會標示OverLogging
+			//it will not marked as OverLogging at the top of call chain.
 			log4jLogger.error(e.getMessage() + "calleeInOutterClassWithLog4J");
 		}
 	}
@@ -78,7 +78,7 @@ public class OverLoggingLog4JExample {
 			theSecondOrderInTheSameClassWithJavaLogAndSomeConditions();
 			theFifthOrderInTheSameClassWithJavaLogAndSomeConditions();
 		} catch (IOException e) {
-			// Call chain最上層不會標示OverLogging
+			//it will not marked as OverLogging at the top of call chain.
 			log4jLogger.error(e.getMessage() + "theFirstOrderInTheSameClassWithJavaLogAndSomeConditions");
 		}
 	}
@@ -102,7 +102,7 @@ public class OverLoggingLog4JExample {
 		} catch(FileNotFoundException e) {
 			e.printStackTrace();
 			System.out.println(e);
-			// 例外轉型，但是有帶入之前的例外資訊，所以要繼續追蹤
+			//the detection needs to be continued when it meet a exception casting. 
 			throw new IOException(e);
 		}
 	}
@@ -149,7 +149,7 @@ public class OverLoggingLog4JExample {
 			OverLoggingTheFirstOrderClass outer = new OverLoggingTheFirstOrderClass();
 			outer.calleeWithLog4J();
 		} catch(IOException e) {
-			// Call chain最上層不會標示OverLogging
+			//it will not marked as OverLogging at the top of call chain.
 			log4jLogger.error(e.getMessage() + "calleeInOutterClassWithLog4JAndSomeConditions");
 		}
 	}

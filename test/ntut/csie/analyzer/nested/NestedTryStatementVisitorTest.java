@@ -34,13 +34,13 @@ public class NestedTryStatementVisitorTest {
 		String testProjectName = "NestedTryStatementExampleProject";
 		javaFile2String = new JavaFileToString();
 		javaProjectMaker = new JavaProjectMaker(testProjectName);
-		javaProjectMaker.packAgileExceptionClasses2JarIntoLibFolder(
+		javaProjectMaker.packageAgileExceptionClassesToJarIntoLibFolder(
 				JavaProjectMaker.FOLDERNAME_LIB_JAR,
 				JavaProjectMaker.FOLDERNAME_BIN_CLASS);
 		javaProjectMaker.addJarFromTestProjectToBuildPath("/"
 				+ JavaProjectMaker.RL_LIBRARY_PATH);
 		javaProjectMaker.setJREDefaultContainer();
-		// 根據測試檔案樣本內容建立新的檔案
+
 		javaFile2String.read(NestedTryStatementExample.class,
 				JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
@@ -56,16 +56,16 @@ public class NestedTryStatementVisitorTest {
 		Path nestedTryExamplePath = new Path(
 				PathUtils.getPathOfClassUnderSrcFolder(
 						NestedTryStatementExample.class, testProjectName));
-		// Create AST to parse
+
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// 設定要被建立AST的檔案
+
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin
 				.getWorkspace().getRoot().getFile(nestedTryExamplePath)));
 		parser.setResolveBindings(true);
-		// 建立XML
+		// generate setting XML file
 		createSettings(true);
-		// 取得AST
+
 		compilationUnit = (CompilationUnit) parser.createAST(null);
 		compilationUnit.recordModifications();
 		nestedTryStatementVisitor = new NestedTryStatementVisitor(

@@ -42,9 +42,9 @@ import org.eclipse.jdt.internal.corext.callhierarchy.MethodWrapper;
 public class OverLoggingVisitor extends AbstractBadSmellVisitor {
 	private CompilationUnit root;
 	private List<MarkerInfo> overLoggingList = new ArrayList<MarkerInfo>();
-	// 儲存使用者定義的Log條件
+	//store user define rule for logging 
 	private TreeMap<String, UserDefinedConstraintsType> libMap = new TreeMap<String, UserDefinedConstraintsType>();
-	// 設定檔
+	// configure of bad smell setting
 	private SmellSettings smellSettings;
 
 	public OverLoggingVisitor(CompilationUnit root) {
@@ -245,14 +245,14 @@ public class OverLoggingVisitor extends AbstractBadSmellVisitor {
 	}
 	
 	/**
-	 * 儲存偵測到的over logging
+	 * store over logging which is detected
 	 */
 	private void addOverLoggingMarkerInfo(ASTNode node) {
 		ASTNode compilationUnit = NodeUtils.getSpecifiedParentNode(node, ASTNode.COMPILATION_UNIT);
-		// compilation unit如果是null，則不動作 
+		
 		if(compilationUnit == null)
 			return;
-		// 只儲存目前分析的檔案中的marker，如果追蹤到其他檔案，則不儲存
+		//only store marker in specified compilationUnit
 		if(compilationUnit.toString().equals(root.toString())) {
 			ASTNode parent = NodeUtils.getSpecifiedParentNode(node, ASTNode.CATCH_CLAUSE);
 			CatchClause cc = (CatchClause)parent;

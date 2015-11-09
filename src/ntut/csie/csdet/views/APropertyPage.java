@@ -18,9 +18,9 @@ public abstract class APropertyPage {
 	}
 
 	/**
-	 * 取得Control的右下角座標
+	 * get control's right below coordinate  的右下角座標
 	 * @param control
-	 * @return			右下角座標
+	 * @return			right below coordinate
 	 */
 	protected Point getLowerRightCoordinate(Control control) {
 		if (control == null) return new Point(0,0);

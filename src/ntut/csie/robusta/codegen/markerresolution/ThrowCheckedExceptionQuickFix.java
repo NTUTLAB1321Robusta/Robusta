@@ -32,7 +32,7 @@ public class ThrowCheckedExceptionQuickFix implements IMarkerResolution{
 	private QuickFixCore quickFixCore;
 	
 	private String label;
-	//紀錄code smell的type
+
 	private String problem;
 
 	private String srcPos;
@@ -78,22 +78,17 @@ public class ThrowCheckedExceptionQuickFix implements IMarkerResolution{
 		Class<?> exceptionType = NodeUtils.getClassFromCatchClause(exactlyCatchClause);
 
 		if(smellSettings.isAddingRobustnessAnnotation()) {
-			// 建立Robustness Annotation
 			quickFixCore.generateRobustnessLevelAnnotation(methodDeclaration, 1, exceptionType);
 		}
-		// 在Method上宣告例外拋出
-		quickFixCore.generateThrowExceptionOnMethodDeclaration(methodDeclaration, exceptionType);
-		// 移除dummy handler的敘述
+		quickFixCore.generateThrowExceptionOnMethodSignature(methodDeclaration, exceptionType);
 		quickFixCore.removeNodeInCatchClause(exactlyCatchClause, ".printStackTrace()", "System.out.print");
-		// 加上拋出例外 throw e
 		quickFixCore.addThrowExceptionInCatchClause(exactlyCatchClause);
 
-		// 寫回Edit中
 		quickFixCore.applyChange();
 	}
 
 	/**
-	 * 蒐集marker資訊，並回傳methodDelcaration的index
+	 * collect marker information and return the index of methodDelcaration 
 	 * @param marker
 	 * @return
 	 * @throws CoreException
@@ -111,7 +106,7 @@ public class ThrowCheckedExceptionQuickFix implements IMarkerResolution{
 			}
 
 			methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
-			//儲存按下QuickFix該行的程式起始位置
+			//save the start line position of statement which invoke QuickFix  
 			srcPos = marker.getAttribute(RLMarkerAttribute.RL_INFO_SRC_POS).toString();
 			
 		} catch (CoreException e) {

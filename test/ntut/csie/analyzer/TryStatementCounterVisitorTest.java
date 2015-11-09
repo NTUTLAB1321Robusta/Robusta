@@ -25,7 +25,7 @@ import static org.junit.Assert.*;
  *
  */
 public class TryStatementCounterVisitorTest {
-	JavaFileToString javaFile2String;
+	JavaFileToString javaFileToString;
 	JavaProjectMaker javaProjectMaker;
 	CompilationUnit compilationUnit;
 	/**
@@ -37,29 +37,24 @@ public class TryStatementCounterVisitorTest {
 		javaProjectMaker = new JavaProjectMaker(testProjectName);
 		javaProjectMaker.setJREDefaultContainer();
 		
-		// 新增欲載入的library
 		javaProjectMaker.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR + "/log4j-1.2.15.jar");
 
-		// 根據測試檔案樣本內容建立新的檔案
-		javaFile2String = new JavaFileToString();
-		javaFile2String.read(NestedTryStatementExample.class, JavaProjectMaker.FOLDERNAME_TEST);
+		javaFileToString = new JavaFileToString();
+		javaFileToString.read(NestedTryStatementExample.class, JavaProjectMaker.FOLDERNAME_TEST);
 		javaProjectMaker.createJavaFile(
 				NestedTryStatementExample.class.getPackage().getName(),
 				NestedTryStatementExample.class.getSimpleName() +  JavaProjectMaker.JAVA_FILE_EXTENSION,
 				"package " + NestedTryStatementExample.class.getPackage().getName() + ";\n"
-						+ javaFile2String.getFileContent());
+						+ javaFileToString.getFileContent());
 		
 		Path path = new Path(testProjectName + "/"
 				+ JavaProjectMaker.FOLDERNAME_SOURCE + "/"
 				+ PathUtils.dot2slash(NestedTryStatementExample.class.getName())
 				+ JavaProjectMaker.JAVA_FILE_EXTENSION);
-		//Create AST to parse
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// 設定要被建立AST的檔案
 		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
 		parser.setResolveBindings(true);
-		// 取得AST
 		compilationUnit = (CompilationUnit) parser.createAST(null); 
 		compilationUnit.recordModifications();
 	}

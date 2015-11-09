@@ -21,46 +21,46 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
 /**
- * 讓user定義一些簡單的detect rule
+ * allow user to define manual detect rule
  * @author chewei
  */
 public class DummyHandlerPage extends APropertyPage{
-	// 放code template的區域
+	// the area contains code template
 	private StyledText templateArea;
-	// 是否要捕捉System.out.println() and print()的按鈕
+	// button to invoke catching System.out.println() and print() these method invocation 
 	private Button sysoBtn;
-	// 是否要捕捉e.printStackTrace的button
+	// button to invoke catching e.printStackTrace this method invocation 
 	private Button eprintBtn;
-	// 是否要捕捉log4j的button
+	// button to invoke catching log4j this method invocation
 	private Button log4jBtn;
-	// 是否要捕捉java.util.logging的button
+	// button to invoke catching java.util.logging this method invocation
 	private Button javaUtillogBtn;
-	// 預設的template的字型風格
+	// default template's font style
 	StyleRange[] sampleStyles = new StyleRange[9];
-	// code template前半部內容
+	// First half of code template
 	private String mainText;
-	//　code template的結尾"}"
+	//　After half of code template ex. "}"
 	private String endText;
-	// system.out.println的button的字串
+	// text of sysoBtn
 	private String sysoText;
-	// e.print的button的字串
+	// text of eprintBtn
 	private String eprintText;
-	// log4j的button的字串
+	// text of log4jBtn
 	private String log4jText;
-	// java.util.logging的字串
+	// text of javaUtillogBtn
 	private String javaUtillogText;
-	// 打開extraRuleDialog的按鈕
+	// button to pup up extraRuleDialog
 	private Button extraRuleBtn;
 	// Library Data
 	private TreeMap<String, Boolean> libMap = new TreeMap<String, Boolean>();
-	// 負責處理讀寫XML
+	//access configure stored in XML 
 	private SmellSettings smellSettings;
 
 	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
 	
 	public DummyHandlerPage(Composite composite, CSPropertyPage page, SmellSettings smellSettings) {
 		super(composite,page);
-		//程式碼的內容
+		//prepare text for each button and template
 		mainText =			"try {   \n" +
 							"    // code in here\n" +
 							"} catch (Exception e) { \n";
@@ -74,67 +74,67 @@ public class DummyHandlerPage extends APropertyPage{
 							"    java_logger.info(e.getMessage()"+ "); \n";
 
 		this.smellSettings = smellSettings;
-		//加入頁面的內容
+		//add page content
 		addFirstSection(composite);
 	}
 	
 	private void addFirstSection(final Composite dummyHandlerPage) {
 		libMap = smellSettings.getSmellPatterns(SmellSettings.SMELL_DUMMYHANDLER);
-		/// 預設偵測條件  ///
+		/// default detection rule  ///
 		final Label detectSettingsLabel = new Label(dummyHandlerPage, SWT.NONE);
 		detectSettingsLabel.setText(resource.getString("detect.rule"));
 		detectSettingsLabel.setLocation(10, 10);
 		detectSettingsLabel.pack();
-		//是否偵測e.printStackTrace的按鈕
+		//button to detect e.printStackTrace invocation
 		eprintBtn = new Button(dummyHandlerPage, SWT.CHECK);
 		eprintBtn.setText(resource.getString("print.stack.trace"));
 		eprintBtn.setLocation(detectSettingsLabel.getLocation().x+10, getLowerRightCoordinate(detectSettingsLabel).y+5);
 		eprintBtn.pack();
 		eprintBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
-				//按下按鈕而改變Text文字和顏色
+				//change font style
 				adjustText();
 				adjustFont();
 			}
 		});
 		eprintBtn.setSelection(smellSettings.isExtraRuleExist(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_ePrintStackTrace));
 		
-		//是否偵測System.out.print的按鈕
+		//button to detect System.out.print invocation
 		sysoBtn = new Button(dummyHandlerPage, SWT.CHECK);
 		sysoBtn.setText(resource.getString("system.out.print"));
 		sysoBtn.setLocation(detectSettingsLabel.getLocation().x+10, getLowerRightCoordinate(eprintBtn).y+5);
 		sysoBtn.pack();
 		sysoBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
-				//按下按鈕而改變Text文字和顏色
+				//change font style
 				adjustText();
 				adjustFont();
 			}
 		});
 		sysoBtn.setSelection(smellSettings.isExtraRuleExist(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_SystemOutPrint));
 		
-		//是否偵測Log4j的按鈕
+		//button to detect Log4j invocation
 		log4jBtn = new Button(dummyHandlerPage, SWT.CHECK);
 		log4jBtn.setText(resource.getString("detect.log4j"));
 		log4jBtn.setLocation(detectSettingsLabel.getLocation().x+10, getLowerRightCoordinate(sysoBtn).y+5);
 		log4jBtn.pack();
 		log4jBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
-				//按下按鈕而改變Text文字和顏色
+				//change font style
 				adjustText();
 				adjustFont();
 			}
 		});
 		log4jBtn.setSelection(smellSettings.isExtraRuleExist(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_OrgApacheLog4j));
 		
-		//是否偵測JavaUtillog的按鈕
+		//button to detect JavaUtillog invocation
 		javaUtillogBtn = new Button(dummyHandlerPage, SWT.CHECK);
 		javaUtillogBtn.setText(resource.getString("detect.logger"));
 		javaUtillogBtn.setLocation(detectSettingsLabel.getLocation().x+10, getLowerRightCoordinate(log4jBtn).y+5);
 		javaUtillogBtn.pack();
 		javaUtillogBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
-				//按下按鈕而改變Text文字和顏色
+				//change font style
 				adjustText();
 				adjustFont();
 			}
@@ -159,7 +159,7 @@ public class DummyHandlerPage extends APropertyPage{
 			}
 		});
 
-		/// 分隔線 ///
+		//set separator bar 
 		final Label separateLabel1 = new Label(dummyHandlerPage, SWT.VERTICAL | SWT.SEPARATOR);
 		separateLabel1.setLocation(getLowerRightCoordinate(javaUtillogBtn).x+28, 5);
 		separateLabel1.setSize(1, getLowerRightCoordinate(javaUtillogBtn).y-5);
@@ -167,7 +167,7 @@ public class DummyHandlerPage extends APropertyPage{
 		separateLabel2.setLocation(10, getLowerRightCoordinate(javaUtillogBtn).y+5);
 		separateLabel2.setSize(getLowerRightCoordinate(detectSettingsLabel2).x, 1);
 
-		/// Template ///
+		//set template label 
 		final Label codeTemplateLabel = new Label(dummyHandlerPage, SWT.NONE);
 		codeTemplateLabel.setText(resource.getString("detect.example"));
 		codeTemplateLabel.setLocation(10, getLowerRightCoordinate(separateLabel2).y+10);
@@ -180,24 +180,22 @@ public class DummyHandlerPage extends APropertyPage{
 		templateArea.setSize(458, 263);
 		templateArea.setEditable(false);
 
-		//分隔線與Template等長(取最長的)
+		//set separator bar and template label the same length
 		if (getLowerRightCoordinate(separateLabel2).x < 458)
 			separateLabel2.setSize(458, 1);
 		else
 			templateArea.setSize(getLowerRightCoordinate(separateLabel2).x, 263);
 
-		//載入預定的字型、顏色
+		//apply default text style
 		addSampleStyle(dummyHandlerPage.getDisplay());
 
-		//調整Text的文字
 		adjustText();
 
-		//調整程式碼的顏色
 		adjustFont();
 	}
 	
 	/**
-	 * 調整Text的文字
+	 * adjust template text
 	 */
 	private void adjustText() {
 		String temp = mainText;
@@ -216,7 +214,7 @@ public class DummyHandlerPage extends APropertyPage{
 	}
 
 	/**
-	 * 將程式碼中的可能會用到的字型、顏色先行輸入
+	 * pre-load font style which will be use in program
 	 * @param display
 	 */
 	private void addSampleStyle(Display display) {
@@ -224,7 +222,7 @@ public class DummyHandlerPage extends APropertyPage{
 		sampleStyles[0] = new StyleRange();
 		sampleStyles[0].fontStyle = SWT.BOLD;
 		sampleStyles[0].foreground = display.getSystemColor(SWT.COLOR_DARK_MAGENTA);
-		// 註解
+		// comment
 		sampleStyles[1] = new StyleRange();
 		sampleStyles[1].fontStyle = SWT.ITALIC;
 		sampleStyles[1].foreground = display.getSystemColor(SWT.COLOR_DARK_GREEN);
@@ -240,7 +238,7 @@ public class DummyHandlerPage extends APropertyPage{
 		sampleStyles[4] = new StyleRange();
 		sampleStyles[4].fontStyle = SWT.ITALIC;
 		sampleStyles[4].foreground = display.getSystemColor(SWT.COLOR_BLUE);
-		// 註解
+		// comment
 		sampleStyles[5] = new StyleRange();
 		sampleStyles[5].fontStyle = SWT.ITALIC;
 		sampleStyles[5].foreground = display.getSystemColor(SWT.COLOR_DARK_GREEN);		
@@ -248,7 +246,7 @@ public class DummyHandlerPage extends APropertyPage{
 		sampleStyles[6] = new StyleRange();
 		sampleStyles[6].fontStyle = SWT.ITALIC;
 		sampleStyles[6].foreground = display.getSystemColor(SWT.COLOR_BLUE);
-		// 註解
+		// comment
 		sampleStyles[7] = new StyleRange();
 		sampleStyles[7].fontStyle = SWT.ITALIC;
 		sampleStyles[7].foreground = display.getSystemColor(SWT.COLOR_DARK_GREEN);	
@@ -259,13 +257,12 @@ public class DummyHandlerPage extends APropertyPage{
 	}
 	
 	/**
-	 * 將程式碼中的Try ,catch,out標上顏色
+	 * set Try, catch and out colored
 	 */
 	private void adjustFont() {
-		//目前文字長度
 		int textLength = mainText.length();
 
-		//(styles和ranges)需要配置多少空間
+		//allocate space for style and range 
 		int spaceSize = 6;
 		if (sysoBtn.getSelection())
 			spaceSize+=4;
@@ -274,53 +271,52 @@ public class DummyHandlerPage extends APropertyPage{
 		if (javaUtillogBtn.getSelection())
 			spaceSize+=4;
 
-		//ranges為字型風格的位置範圍，根據spaceSize來決定需要多少空間
+		//ranges is boundary of font location position
 		int[] ranges = new int[spaceSize];
-		//字型的風格，根據spaceSize來決定需要多少空間
+		//styles is font style 
 		StyleRange[] styles = new StyleRange[spaceSize/2];
 
-		//ranges和styles的index
+		//set index of ranges and styles 
 		int range_i=0;
 		int style_i=0;
 
-		//本文(try catch)文字的對應位置(兩個一組{起始位置,個數})
+		//try statement and catch statement corresponding position(these two statement is pair{start position, start position,.... , amount})
 		int[] main = new int[] {0,3,13,15,31,5};
-		//把本文(try catch)文字的字型風格和對應的位置存入
+		//save font style correspond to try statement and catch statement position
 		for (int i=0;i<3;i++)
 			styles[style_i++] = sampleStyles[i];
 		for (int i=0;i<6;i++)
 			ranges[range_i++] = main[i];
 
-		//如果e.printStack選項被選中
 		if (eprintBtn.getSelection())
 			textLength += eprintText.length();
-		//如果SystemOut選項被選中
+		
 		if (sysoBtn.getSelection()) {
-			//SystemOut文字的對應位置(相對位置+目前位章的長度)
+			//SystemOut statement corresponding position(relative position + current statement length)
 			int[] syso = new int[] {11 + textLength,3,38 + textLength,3};
-			//把本文SystemOut文字的字型風格和對應的位置存入
+			//save font style correspond to SystemOut statement position
 			for (int i=0;i<4;i++)
 				ranges[range_i++] = syso[i];
 			for (int i=3;i<5;i++)
 				styles[style_i++] = sampleStyles[i];
 			textLength += sysoText.length();
 		}
-		//如果Log4j選項被選中
+		
 		if (log4jBtn.getSelection()) {
-			//Log4J文字的對應位置(相對位置+目前位章的長度)
+			//Log4J statement corresponding position(relative position + current statement length)
 			int[] log4j = new int[] {4+textLength,14,23+textLength,6,};
-			//把本文Log4j文字的字型風格和對應的位置存入
+			//save font style correspond to Log4j statement position
 			for (int i=0;i<4;i++)
 				ranges[range_i++] = log4j[i];			
 			for (int i=5;i<7;i++)
 				styles[style_i++] = sampleStyles[i];
 			textLength += log4jText.length();
 		}
-		//如果JavaUtillog選項被選中
+
 		if (javaUtillogBtn.getSelection()) {
-			//javaUtillog文字的對應位置(相對位置+目前位章的長度)
+			//javaUtillog statement corresponding position(relative position + current statement length)
 			int[] javaUtillog = new int[] {4 + textLength,33,43 + textLength,11};
-			//把本文JavaUtillog文字的字型風格和對應的位置存入
+			//save font style correspond to javaUtillog statement position
 			for (int i=0;i<4;i++)
 				ranges[range_i++] = javaUtillog[i];
 			for (int i=7;i<9;i++)
@@ -328,7 +324,7 @@ public class DummyHandlerPage extends APropertyPage{
 			textLength += javaUtillogText.length();
 		}
 
-		//把字型的風格和風格的範圍套用在Template上
+		//apply style on template
 		templateArea.setStyleRanges(ranges, styles);
 	}
 
@@ -354,14 +350,14 @@ public class DummyHandlerPage extends APropertyPage{
 		if(javaUtillogBtn.getSelection())
 			smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_JavaUtilLoggingLogger);
 		
-		// 存入使用者自訂Rule
+		// save user define rule
 		Iterator<String> userDefinedCodeIterator = libMap.keySet().iterator();
 		while(userDefinedCodeIterator.hasNext()) {
 			String key = userDefinedCodeIterator.next();
 			smellSettings.addDummyHandlerPattern(key, libMap.get(key));
 		}
 
-		// 將檔案寫回
+		// save smell configure back to XML
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		return true;
 	}

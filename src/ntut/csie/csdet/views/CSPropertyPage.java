@@ -26,7 +26,7 @@ import org.eclipse.ui.PlatformUI;
 
 public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage {
 
-	// 儲存每一個page
+	// save each tab in page
 	private ArrayList<APropertyPage> tabPages;
 	private SmellSettings smellSettings;
 	private RobustaSettings robustaSettings;
@@ -40,8 +40,7 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage {
 				.getActiveWorkbenchWindow();
 		IStructuredSelection selection = null;
 		if (window != null) {
-			selection = (IStructuredSelection) window.getSelectionService()
-					.getSelection();
+			selection = (IStructuredSelection) window.getSelectionService().getSelection();
 		}
 		for (Iterator<?> it = ((IStructuredSelection) selection).iterator(); it
 				.hasNext();) {
@@ -56,7 +55,7 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage {
 		robustaSettings = new RobustaSettings(
 				UserDefinedMethodAnalyzer.getRobustaSettingXMLPath(project), project);
 		
-		// 沒有設定檔存在時，幫使用者預設為所有的條件都勾選
+		//select all bad smell as default detection rule for user when without rule configure 
 		smellSettings = new SmellSettings(
 				UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		smellSettings.activateAllConditionsIfNotConfugured(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
@@ -75,7 +74,6 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage {
 		final TabFolder tabFolder = new TabFolder(composite, SWT.NONE);
 		tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		// 將每個分頁加入
 		addPage(tabFolder);
 
 		return composite;
@@ -132,7 +130,7 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage {
 	}
 
 	/**
-	 * 按下ok的時候去抓取每個Tab Page的資料 然後將他儲存下來
+	 * save configure in each tab when Ok button is pressed 
 	 */
 	public boolean performOk() {
 		for (int i = 0; i < tabPages.size(); i++) {

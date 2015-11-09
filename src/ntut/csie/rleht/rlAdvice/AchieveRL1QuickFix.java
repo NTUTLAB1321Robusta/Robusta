@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * 當使用者希望程式碼可以達到RL1時，我們幫他整理code，並產生一些提示
+ * when user want to make his program achieve robustness level 1, we provide some way and suggestion to help user.
  * @author Charles
  * @version 0.0.1
  */
@@ -22,7 +22,6 @@ public class AchieveRL1QuickFix extends BaseQuickFix implements IMarkerResolutio
 	private static Logger logger = LoggerFactory.getLogger(AchieveRL1QuickFix.class);
 	private String label;
 	
-	//欲修改的程式碼資訊
 	private String moveLine;
 	
 	public AchieveRL1QuickFix(String label){
@@ -43,38 +42,33 @@ public class AchieveRL1QuickFix extends BaseQuickFix implements IMarkerResolutio
 			if(problem != null && (problem.equals(RLMarkerAttribute.CS_EXCEPTION_RLADVICE))){
 				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
 				String msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
-				//取得目前要被修改的method node
-				findCurrentMethod(marker.getResource(), Integer.parseInt(methodIdx));
+				//get the method node which will be modified.
+				findMethodNodeWillBeQuickFixed(marker.getResource(), Integer.parseInt(methodIdx));
 				
 				GainMarkerInfoUtil gmi = new GainMarkerInfoUtil();
 				
-				//找到要被修改的程式碼資訊
-				moveLine  = gmi.findMoveLine(msgIdx, this.actRoot, currentMethodNode);
+				moveLine = gmi.findMoveLine(msgIdx, this.javaFileWillBeQuickFixed, methodNodeWillBeQuickFixed);
 
 				/* 
-				 * p.s. 
-				 *  如果那一行有warning，就不會出現info的選項。
-				 *  所以目前只考慮warning修完的情況，提供使用者code gene
+				 * p.s.
+				 * if there is a warning mark appearing in editor then info mark will be suppressed.
 				 */		
-				actRoot.recordModifications();
+				javaFileWillBeQuickFixed.recordModifications();
 				
 				QuickFixUtil qf = new QuickFixUtil();
 				
-				TryStatement ts = (TryStatement) gmi.findTryInMethodDeclaration(currentMethodNode, moveLine);
+				TryStatement ts = (TryStatement) gmi.findTryInMethodDeclaration(methodNodeWillBeQuickFixed, moveLine);
 				if(ts != null){
-					//目前達成RL1的code gene，只幫使用者移除dummy handler，並且throw unchecked exception
+					//to achieve robustness level 1 , we only help user to remove dummy handler with throwing unchecked exception.
 					for(Object obj : ts.catchClauses()){
 						CatchClause cc = (CatchClause)obj;
 						if(((String)marker.getAttribute(RLMarkerAttribute.MI_WITH_Ex)).contains(cc.getException().getType().toString())){
-							//加入RL annotation
-							qf.addAnnotationRoot(actRoot, currentMethodNode, 
+							qf.addAnnotationRoot(javaFileWillBeQuickFixed, methodNodeWillBeQuickFixed, 
 									RTag.LEVEL_1_ERR_REPORTING, QuickFixUtil.runtimeException);
 							
-							//加入RuntimeException
-							qf.addThrowStatement(cc, currentMethodNode.getAST(), 
+							qf.addThrowStatement(cc, methodNodeWillBeQuickFixed.getAST(), 
 									QuickFixUtil.runtimeException);
 							
-							//刪掉printStackTrace或是System.out.println的資訊
 							qf.deleteStatement(cc.getBody().statements(), QuickFixUtil.dummyHandlerStrings);
 							this.applyChange();
 							break;

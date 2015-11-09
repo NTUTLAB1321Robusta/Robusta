@@ -44,10 +44,10 @@ public class TemplateText {
 	}
 
 	/**
-	 * 解析文字(把文字Token拆解，並把每個Token對應一個Style)
-	 * @param text		輸入文字
-	 * @param textList	儲存每一個Token
-	 * @param typeList	儲存每一個Token的Style
+	 * parse text into tokens which is corresponding to text style
+	 * @param text		input text
+	 * @param textList	a list for storing token
+	 * @param typeList	a list for storing token's style
 	 */
 	private void parserText() {
 		int i = 0;
@@ -56,7 +56,6 @@ public class TemplateText {
 		String temp = "";
 		for (; i < text.length(); i++) {
 			if (!isContinue && !isError) {
-				//遇到進行Parser
 				if (i == text.length()-1 || text.charAt(i) ==  ' ' ||
 					text.charAt(i) ==  '\n' || text.charAt(i) ==  '\t'){
 					textList.add(temp);
@@ -70,7 +69,6 @@ public class TemplateText {
 					} else {
 						typeList.add(STYLE_NULL);
 					}
-					//把該符號("\n" "\t"...)加入
 					textList.add(String.valueOf(text.charAt(i)));
 					typeList.add(STYLE_NULL);
 					temp = "";
@@ -80,7 +78,7 @@ public class TemplateText {
 					typeList.add(STYLE_FIELD);
 					temp = "";
 					temp += text.charAt(i);
-				//遇到"/"為註解
+				//take "/" as comment
 				} else if (text.charAt(i) == '/') {
 					isContinue = true;
 					textList.add(temp);
@@ -98,7 +96,7 @@ public class TemplateText {
 					temp += text.charAt(i);
 				}
 			} else if (isContinue) {
-				//註解 遇空白仍偵測，直至換行為止
+				// ignore blank token until meet line wrap token(ex."\n")
 				if (text.charAt(i) == '\n') {
 					temp += text.charAt(i);
 					isContinue = false;
@@ -108,21 +106,21 @@ public class TemplateText {
 				} else {
 					if (text.length() > i+4 &&
 						text.substring(i,i+4).equals("TODO")) {
-						//把之前的註解存起來
+						//store previous comment
 						textList.add(temp);
 						typeList.add(STYLE_COMMENT);
 						temp = "";
-						//加入新的Task註解
+						//add new task token
 						textList.add("TODO");
 						typeList.add(STYLE_TASK);
-						//指標移到Task Token結束位置
+						//move index to the end of new task token
 						i+=3;
 					} else {
 						temp += text.charAt(i);
 					}
 				}
 			} else if (isError) {
-				//註解 遇空白仍偵測，直至換行為止
+				// ignore blank token until meet line wrap token
 				if (text.charAt(i) == '$') {
 					isError = false;
 					textList.add(temp);
@@ -136,10 +134,10 @@ public class TemplateText {
 	}
 	
 	/**
-	 * 將文字Token和Style，取得出起始位置和長度、Style
+	 * get the start index, length and style from text token
 	 * @param display
-	 * @param counter	字數(紀錄起點)
-	 * @return			回傳字數
+	 * @param counter	start index of text's length
+	 * @return			length of text
 	 */
 	public int setTemplateStyle(Display display, int counter) {
 		clearLocationData();
@@ -148,9 +146,9 @@ public class TemplateText {
 			if (typeList.get(i) != STYLE_NULL) {
 				//Style
 				styleList.add(this.getStyle(display, typeList.get(i)));
-				//起始位置
+				//start index
 				locationList.add(counter);
-				//長度
+				//length
 				locationList.add(textList.get(i).length());
 			}
 			counter += textList.get(i).length();
@@ -159,9 +157,10 @@ public class TemplateText {
 	}
 
 	/**
-	 * 取得程式碼中會用到的字型、顏色
+	 * get font style which will be used in code
 	 * @param display
-	 * @param type	Style種類
+	 * @param type 
+	 * 	 		Style type
 	 */
 	private StyleRange getStyle(Display display, int type) {
 		StyleRange style = new StyleRange();
@@ -219,7 +218,6 @@ public class TemplateText {
 		return styleList;
 	}
 	public StyleRange[] getStyleArrray() {
-		//將List轉成Array
 		StyleRange[] calleeStyles = styleList.toArray(new StyleRange[styleList.size()]);
 		return calleeStyles;
 	}
@@ -228,9 +226,8 @@ public class TemplateText {
 		return locationList;
 	}	
 	public int[] getLocationArray() {
-		//將List轉成Array
 		Integer[] rangeInteger = locationList.toArray(new Integer[locationList.size()]);
-		//將Integer Array 轉成 int Array
+		//transform Integer Array to int Array
 		int[] rangeInt = ArrayUtils.toPrimitive(rangeInteger);
 		return rangeInt;
 	}

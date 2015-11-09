@@ -18,9 +18,9 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TryStatement;
 
 public class UnprotectedMainProgramVisitor extends AbstractBadSmellVisitor {
-	// 儲存所找到的Unprotected main Program 
+	//store Unprotected main Program which is detected
 	private List<MarkerInfo> unprotectedMainList;	
-	// AST tree的root(檔案名稱)
+
 	private CompilationUnit root;
 	private boolean isDetectingUnprotectedMainProgramSmell;
 	ArrayList<AnnotationInfo> annotationList = new ArrayList<AnnotationInfo>(32);
@@ -34,13 +34,12 @@ public class UnprotectedMainProgramVisitor extends AbstractBadSmellVisitor {
 	}
 	
 	/**
-	 * 先根據設定檔的資訊，決定要不要繼續拜訪，
-	 * 再尋找main function
+	 * according to configure to decide whether to visit and find out main function
 	 */
 	public boolean visit(MethodDeclaration node) {
 		if(!isDetectingUnprotectedMainProgramSmell)
 			return false;
-		// parse AST tree看看是否有void main(java.lang.String[])
+
 		if(node == null)
 			return false;
 		if(node.resolveBinding() == null)
@@ -48,7 +47,6 @@ public class UnprotectedMainProgramVisitor extends AbstractBadSmellVisitor {
 		if (node.resolveBinding().toString().contains("void main(java.lang.String[])")) {
 			List<?> statements = node.getBody().statements();
 			if(containUnprotectedStatement(statements)) {
-				//如果有找到code smell就將其加入
 				MarkerInfo markerInfo = new MarkerInfo(
 						RLMarkerAttribute.CS_UNPROTECTED_MAIN, 
 						null,
@@ -66,14 +64,11 @@ public class UnprotectedMainProgramVisitor extends AbstractBadSmellVisitor {
 	}
 	
 	/**
-	 * 檢查main function中是否有code smell
+	 * check whether there are statements not placed in try catch(Exception e) statement or try catch(Throwable t) statement in main function
 	 * @param statement
 	 * @return
 	 */
 	private boolean containUnprotectedStatement(List<?> statement) {
-		/* 如果Main Block有statement沒被擁有catch(Exception e) 或 catch(Throwable t)
-		 * 的try statement包住, 就是Unprotected Main
-		 */
 		int unprotectedStatementCount = 0;
 		for(Object s: statement) {
 			ASTNode node = (ASTNode) s;
@@ -107,26 +102,22 @@ public class UnprotectedMainProgramVisitor extends AbstractBadSmellVisitor {
 	}
 
 	/**
-	 * 根據startPosition來取得行數
+	 * according to start position to get line number
 	 */
 	private int getLineNumber(MethodDeclaration method) {
 		int position = method.getStartPosition();
 		List<?> modifiers = method.modifiers();
 		for (int i = 0, size = modifiers.size(); i < size; i++) {
-			// 如果原本main function上有annotation的話,marker會變成標在annotation那行
-			// 所以透過尋找public那行的位置,來取得marker要標示的行數
+			//if there is an annotation on method signature, according to method declare keyword "public" to get marker position line number 
 			if ((!((IExtendedModifier)modifiers.get(i)).isAnnotation()) && (modifiers.get(i).toString().contains("public"))) {
 				position = ((ASTNode)modifiers.get(i)).getStartPosition();
 				break;
 			}
 		}
-		//如果沒有annotation,就可以直接取得main function那行
+		//if there is not an annotation on method signature, according to compilation unit to get marker position line number 
 		return root.getLineNumber(position);
 	}
 
-	/**
-	 * 取得unprotected Main的清單
-	 */
 	public List<MarkerInfo> getUnprotectedMainList(){
 		return unprotectedMainList;
 	}
