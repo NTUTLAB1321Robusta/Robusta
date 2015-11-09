@@ -59,7 +59,7 @@ public class RefineRuntimeExceptionQuickFix implements IMarkerResolution {
 			return;
 		}
 
-		quickFixCore.generateThrowExceptionOnMethodDeclaration(methodDeclaration, RuntimeException.class);
+		quickFixCore.generateThrowExceptionOnMethodSignature(methodDeclaration, RuntimeException.class);
 		quickFixCore.removeNodeInCatchClause(exactlyCatchClause, ".printStackTrace()", "System.out.print", "System.err.print");
 		quickFixCore.addThrowRefinedExceptionInCatchClause(exactlyCatchClause, RuntimeException.class);
 
