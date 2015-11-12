@@ -30,16 +30,15 @@ import org.jdom.output.XMLOutputter;
  * &lt;/CodeSmells&gt; <br />
  */
 public class SmellSettings {
-	/*
+	/*Sample
 	 * <CodeSmells> <SmellTypes name="DummyHandler" isDetecting="true"> <pattern
 	 * name="" isDetecting="" /> <extraRule name="EXTRARULE_ePrintStackTrace" />
 	 * </SmellTypes> <SmellTypes name="NestedTryStatement" isDetecting="false"
-	 * /> <AnnotationTypes name="RobusnessLevel" enable="false" /> </CodeSmells>
+	 * /> <Preferences name="ShowRLAnnotationWarning" enable="false" /> </CodeSmells>
 	 */
 	public final static String SETTING_FILENAME = "SmellSetting.xml";
 	public final static String TAG_ROOT = "CodeSmells";
 	public final static String TAG_SMELLTYPE4DETECTING = "SmellTypes";
-	public final static String TAG_ANNOTATIONTYPE = "AnnotationTypes";
 	public final static String TAG_PATTERN = "pattern";
 	public final static String TAG_EXTRARULE = "extraRule";
 	public final static String ATTRIBUTE_NAME = "name";
@@ -132,9 +131,7 @@ public class SmellSettings {
 	 * @return
 	 */
 	public boolean isAddingRobustnessAnnotation() {
-		Element annotationType = getAnnotationType(TAG_ANNOTATIONTYPE);
-		return Boolean.parseBoolean(annotationType
-				.getAttributeValue(ATTRIBUTE_ENABLE));
+		return getPreferenceAttribute(SmellSettings.PRE_SHOWRLANNOTATIONWARNING);
 	}
 
 	/**
@@ -164,34 +161,6 @@ public class SmellSettings {
 			root.addContent(tagSmellTypeElement);
 		}
 		return tagSmellTypeElement;
-	}
-
-	/**
-	 * return robustness annotation, if input annotation name is not existing, this function will create a new element and set its' enable attribute as false.
-	 * @param annotationName
-	 * @return
-	 */
-	public Element getAnnotationType(String annotationName) {
-		Element root = settingDoc.getRootElement();
-		List<?> elements = root.getChildren(TAG_ANNOTATIONTYPE);
-		Element tagAnnotationTypeElement = null;
-		for (Object s : elements) {
-			Element annotationTypeElement = (Element) s;
-			if (annotationTypeElement.getName().equals(annotationName)) {
-				tagAnnotationTypeElement = annotationTypeElement;
-				return tagAnnotationTypeElement;
-			}
-		}
-
-		if (tagAnnotationTypeElement == null) {
-			tagAnnotationTypeElement = new Element(TAG_ANNOTATIONTYPE);
-			tagAnnotationTypeElement.setAttribute(ATTRIBUTE_NAME,
-					annotationName);
-			tagAnnotationTypeElement.setAttribute(ATTRIBUTE_ENABLE,
-					String.valueOf(false));
-			root.addContent(tagAnnotationTypeElement);
-		}
-		return tagAnnotationTypeElement;
 	}
 
 	public Element getPreference(String preferenceName) {
