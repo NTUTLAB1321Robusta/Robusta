@@ -231,13 +231,13 @@ public class CarelessCleanupDefinitionExample {
 
 	/*
 	 * Any statement in between a resource's close and last assignment would be
-	 * treated as would or has possibility to raise an exception EXCEPT: 1. a IF
-	 * statement that contains only one or more boolean variables 2. a IF
-	 * statement enclosing a resource's close statement that is checking if the
-	 * resource is NULL 3. a TRY block which has catch block(s) catching all
-	 * possible exception that may be thrown from it 4. a variable
-	 * declaration(without instance assignment or null assignment) 5. a variable
-	 * declaration of primitive types (with/without instance assignment)
+	 * treated as would or has possibility to raise an exception EXCEPT: 
+	 * 1. a IF statement that contains only one or more boolean variables 
+	 * 2. a IF statement enclosing a resource's close statement that is checking if the resource is NULL 
+	 * 3. a TRY statement which has catch block(s) catching all CHECKED exception that may be thrown from it
+	 *  or a TRY statement which has a blanket catch clause  
+	 * 4. a variable declaration(without instance assignment or null assignment) 
+	 * 5. a variable declaration of primitive types (with/without instance assignment)
 	 */
 	public void aStatementInBetweenDetectionRange(boolean a) throws IOException {
 		someRandomClassThatWouldDoRandomThings randomObject = new someRandomClassThatWouldDoRandomThings();
@@ -312,10 +312,7 @@ public class CarelessCleanupDefinitionExample {
 		}
 	}
 
-	/*
-	 * not yet implemented;
-	 */
-	public void tryBlockCatchingAllPossibleExceptionInBetweenDetectionRange(
+	public void tryStatementCatchingAllCheckedExceptionInBetweenDetectionRange(
 			boolean a) throws IOException {
 		FileInputStream fis = new FileInputStream("C:\\FileNotExist.txt");
 
@@ -323,6 +320,17 @@ public class CarelessCleanupDefinitionExample {
 			methodBeforeClose.declaredCheckedException();
 		} catch (IOException e) {
 			// handle IOException e
+		}
+
+		fis.close(); // safe
+	}
+	
+	public void tryBlockCatchingGenericExceptionInBetweenDetectionRange(
+			boolean a) throws IOException {
+		FileInputStream fis = new FileInputStream("C:\\FileNotExist.txt");
+
+		try {
+			methodBeforeClose.declaredCheckedException();
 		} catch (Exception e) {
 			// handle Exception e
 		}

@@ -6,6 +6,8 @@ import java.util.List;
 
 
 import ntut.csie.util.BoundaryChecker;
+import ntut.csie.util.CheckedExceptionCollectorVisitor;
+import ntut.csie.util.NodeUtils;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Assignment;
@@ -13,6 +15,7 @@ import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.InfixExpression;
 import org.eclipse.jdt.core.dom.MethodInvocation;
@@ -313,23 +316,54 @@ public class CloseInvocationExecutionChecker {
 		ASTNode sibilingStatement = (ASTNode) statement;
 		if (sibilingStatement.getNodeType() == ASTNode.TRY_STATEMENT) {
 			TryStatement tryStatement = (TryStatement) sibilingStatement;
+
+			// a visitor to collect all checked exceptions that might be thrown from the try block. 
+			CheckedExceptionCollectorVisitor cecv = new CheckedExceptionCollectorVisitor();
+			for(Object obj : tryStatement.getBody().statements()) {
+				Statement s = (Statement) obj;
+				s.accept(cecv);
+			}
+
+			List<ITypeBinding> thrownExceptions = cecv.getException();
 			List<CatchClause> catchClauseList = tryStatement.catchClauses();
-			for (CatchClause catchClause : catchClauseList) {
-				if (catchClause.getException().getType().toString().equals("Exception")
-						|| catchClause.getException().getType().toString().equals("Throwable")) {
-					List<Statement> StatementList = catchClause.getBody().statements();
-					boolean allInBlockStatementSafe = true;
-					if (StatementList.isEmpty()) {
-						return true;
-					}
-					for (Statement suspectStatement : StatementList) {
-						if(isUnsafeSiblingStatement(suspectStatement)){
-							allInBlockStatementSafe = false;
-						}
-					}
-					return allInBlockStatementSafe;
+			
+			return (isAllCatchBlockSafe(catchClauseList)
+				&& isAllExceptionCaught(thrownExceptions, catchClauseList));
+		}
+		return false;
+	}
+
+	private boolean isAllExceptionCaught(List<ITypeBinding> thrownExceptions,
+			List<CatchClause> catchClauseList) {
+		ArrayList<ITypeBinding> caughtExceptions = new ArrayList<ITypeBinding>();
+		
+		// compare the lists using an utility method
+		for(ITypeBinding exception : thrownExceptions) {
+			for(CatchClause catchClause : catchClauseList) {
+				if(NodeUtils.isExceptionCatught(exception, catchClause)) {
+					caughtExceptions.add(exception);
+					// an exception can be caught by more than one catch clause; thus,
+					// to avoid record the same exception multiple times.
+					break;
 				}
 			}
+		}
+		return caughtExceptions.size() == thrownExceptions.size();
+	}
+
+	private boolean isAllCatchBlockSafe(List<CatchClause> catchClauseList) {
+		for (CatchClause catchClause : catchClauseList) {
+			List<Statement> StatementList = catchClause.getBody().statements();
+			boolean allInBlockStatementSafe = true;
+			if (StatementList.isEmpty()) {
+				return true;
+			}
+			for (Statement suspectStatement : StatementList) {
+				if(isUnsafeSiblingStatement(suspectStatement)){
+					allInBlockStatementSafe = false;
+				}
+			}
+			return allInBlockStatementSafe;
 		}
 		return false;
 	}
