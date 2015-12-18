@@ -910,6 +910,35 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		}
 	}
 
+	public void resourceCloseAfterAUnsafeSynchronizedStatement() throws Exception {
+		Integer a = new Integer(1);
+		FileOutputStream fos = new FileOutputStream(new File("D:\\234"));
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		synchronized (a) {
+			try {
+				fos.close();
+				throw new RuntimeException();
+			} catch (IOException e) {
+				// ignore exception
+			}
+		}
+		fis.close();// unsafe
+	}
+	
+	public void resourceCloseAfterASafeSynchronizedStatement() throws Exception {
+		Integer a = new Integer(1);
+		FileOutputStream fos = new FileOutputStream(new File("D:\\234"));
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		synchronized (a) {
+			try {
+				fos.close();
+			} catch (IOException e) {
+				// ignore exception
+			}
+		}
+		fis.close();// safe
+	}
+	
 	public void resourceCloseAfterExceptionTryCatchBlock() throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		try {
