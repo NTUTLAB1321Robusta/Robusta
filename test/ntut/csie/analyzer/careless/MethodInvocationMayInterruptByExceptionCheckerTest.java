@@ -906,6 +906,24 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 	}
 	
 	@Test
+	public void testResourceCloseAfterAUnsafeSynchronizedStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterAUnsafeSynchronizedStatement",
+				"fis.close()");
+		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+	}
+	
+	@Test
+	public void testResourceCloseAfterASafeSynchronizedStatement()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterASafeSynchronizedStatement",
+				"fis.close()");
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+	}
+	
+	@Test
 	public void testIsMethodInvocationCaughtWhenResourceCloseAfterExceptionTryCatchBlock()
 			throws Exception {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(

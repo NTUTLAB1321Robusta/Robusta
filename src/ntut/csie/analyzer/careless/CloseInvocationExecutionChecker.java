@@ -88,7 +88,6 @@ public class CloseInvocationExecutionChecker {
 		return unsafeSiblingNodeList;
 	}
 
-
 	private ASTNode getParentNodeThatMayThrowException(ASTNode checkingNode) {
 		if (checkingNode instanceof Statement) {
 			ASTNode parent = checkingNode.getParent();
@@ -189,6 +188,21 @@ public class CloseInvocationExecutionChecker {
 			SynchronizedStatement synchronizedStatement = ((SynchronizedStatement) parent);
 			Expression expression = synchronizedStatement.getExpression();
 			return expression.getNodeType() == ASTNode.SIMPLE_NAME;
+		}
+		return false;
+	}
+	
+
+	private boolean isSafeSiblingSynchronizedStatement(Statement statement) {
+		if(statement.getNodeType() == ASTNode.SYNCHRONIZED_STATEMENT) {
+			SynchronizedStatement synchronizedStatement = (SynchronizedStatement) statement;
+			
+			for(Object obj : synchronizedStatement.getBody().statements()) {
+				Statement s = (Statement) obj;
+				if(isUnsafeSiblingStatement(s))
+					return false;
+			}
+			return true;
 		}
 		return false;
 	}
@@ -494,6 +508,9 @@ public class CloseInvocationExecutionChecker {
 			return false;
 		}
 		if (isSafeTryCatchStatement(statement)) {
+			return false;
+		}
+		if (isSafeSiblingSynchronizedStatement(statement)) {
 			return false;
 		}
 		return true;
