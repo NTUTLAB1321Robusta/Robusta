@@ -173,12 +173,12 @@ public class ReportBuilderTest {
 		assertEquals(25, reportModel.getTryCounter());
 		assertEquals(25, reportModel.getCatchCounter());
 		assertEquals(2, reportModel.getFinallyCounter());
-		assertEquals(5, reportModel.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP));
+		assertEquals(4, reportModel.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP));
 		// 14 dummy handler in methods and 1 dummy handler in an initializer
 		assertEquals(15, reportModel.getSmellSize(RLMarkerAttribute.CS_DUMMY_HANDLER));
 		assertEquals(1, reportModel.getSmellSize(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK));
 		assertEquals(3, reportModel.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
-		assertEquals(24, reportModel.getAllSmellSize());
+		assertEquals(23, reportModel.getAllSmellSize());
 	}
 	
 	@Test

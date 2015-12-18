@@ -180,7 +180,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"suspectVariableIntDeclarationOrAssignment",
 				"fis.close()");
-		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 
 	@Test
@@ -189,7 +189,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"suspectVariableStringDeclarationOrAssignment",
 				"fis.close()");
-		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 
 	@Test
@@ -198,7 +198,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"suspectVariableCharDeclarationOrAssignment",
 				"fis.close()");
-		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 
 	@Test
@@ -207,7 +207,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"suspectVariableBooleanDeclarationOrAssignment",
 				"fis.close()");
-		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 
 	@Test
@@ -288,7 +288,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseAfterCheckingBooleanIfStatementContainMethodInvocation",
 				"fis.close()");
-		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 	
 	@Test
@@ -306,7 +306,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseAfterCompareBooleanStateIfStatementContainMethodInvocation",
 				"fis.close()");
-		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 	
 	@Test
@@ -324,7 +324,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseAfterBooleanCheckingIfStatementContainBooleanCheckingIfStatementAndMethodInvocation",
 				"fis.close()");
-		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 	
 	@Test
@@ -342,7 +342,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseAfterBooleanCheckingIfStatementContainNestedBooleanComparingIfStatementAndMethodInvocation",
 				"fis.close()");
-		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 	
 	@Test
@@ -369,7 +369,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseAfterBooleanCheckingIfElseStatementContainBooleanCheckingIfStatementAndMethodInvocation",
 				"fis.close()");
-		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 	
 	@Test
@@ -450,7 +450,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseInsideCheckingBooleanIfElseStatement",
 				"fis.close()");
-		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 	
 	//sibiling test???
@@ -515,7 +515,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseAfterCheckingTwoBooleanIfStatementContainMethodInvocation",
 				"fis.close()");
-		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 	
 	@Test
@@ -524,7 +524,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseAfterCheckingMultiBooleanBooleanIfStatementContainMethodInvocation",
 				"fis.close()");
-		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 	
 	@Test
@@ -542,7 +542,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseInsideCheckingTwoBooleanIfStatementAfterMethodInvocation",
 				"fis.close()");
-		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 	
 	@Test
@@ -560,7 +560,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseInsideCheckingMultiBooleanBooleanIfStatementContainMethodInvocation",
 				"fis.close()");
-		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 	
 	@Test
@@ -569,7 +569,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseInsideCheckingMultiBooleanBooleanElseStatementContainMethodInvocation",
 				"fis.close()");
-		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 	
 	@Test
@@ -578,7 +578,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseAfterMultiBooleanOperandCheckingIfStatementContainMultiBooleanOperandCheckingIfStatementAndMethodInvocation",
 				"fis.close()");
-		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 	
 	@Test
@@ -587,7 +587,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseAfterMultiBooleanCheckingIfElseStatementContainMultiBooleanCheckingIfStatementAndMethodInvocation",
 				"fis.close()");
-		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 	
 	@Test
@@ -596,7 +596,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseInsideMultiBooleanCheckingIfElseStatementContainMultiBooleanCheckingIfStatementAndMethodInvocation",
 				"fis.close()");
-		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 	
 	@Test
@@ -677,7 +677,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseAfterCheckingInstanceIsNullIfStatementAndAMethodInvocationInsideIfStatement",
 				"fis.close()");
-		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 	
 	@Test
@@ -686,7 +686,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseAfterCheckingInstanceIsNullIfStatementAndAMethodInvocationInsideElseStatement",
 				"fis.close()");
-		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 	
 	@Test
@@ -704,7 +704,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseAfterCheckingInstanceIsNullElseIfStatementAndAMethodInvocationInside",
 				"fis.close()");
-		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 	
 	@Test
@@ -749,7 +749,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseAfterCheckingInstanceIsSameIfStatementAndAMethodInvocationInside",
 				"fis.close()");
-		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 	
 	@Test
@@ -758,7 +758,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseAfterCheckingInstanceIsSameElseIfStatementAndAMethodInvocationInside",
 				"fis.close()");
-		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 	
 	@Test
@@ -767,7 +767,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseAfterCheckingInstanceIsSameElseIfStatementAndAMethodInvocationInside",
 				"fis.close()");
-		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 	
 	@Test
@@ -812,7 +812,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseAfterTheCheckingQualifiedNameSameIfStatementAndAMethodInvocationInside",
 				"qualifier.close()");
-		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 	
 	@Test
@@ -821,7 +821,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseAfterTheCheckingQualifiedNameSameElseStatementAndAMethodInvocationInside",
 				"qualifier.close()");
-		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 	
 	@Test
@@ -830,7 +830,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseAfterTheCheckingQualifiedNameSameElseIfStatementAndAMethodInvocationInside",
 				"qualifier.close()");
-		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 	
 	@Test
@@ -915,7 +915,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 	}
 	
 	@Test
-	public void testIsMethodInvocationCaughtWhenResourceCloseAfterNestExceptionIOExceptionTryCatchBlock()
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterNestExceptionIOExceptionTryCatchBlock()//待跟peter合併便會消除
 			throws Exception {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseAfterNestExceptionIOExceptionTryCatchBlock",
@@ -929,7 +929,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseAfterMethodInvocationTryCatchBlock",
 				"fis.close()");
-		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 	
 	@Test
@@ -951,7 +951,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 	}
 	
 	@Test
-	public void testIsMethodInvocationCaughtWhenResourceCloseAfterIOExceptionTryCatchBlock()
+	public void testIsMethodInvocationCaughtWhenResourceCloseAfterIOExceptionTryCatchBlock()//合併後會消失
 			throws Exception {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseAfterIOExceptionTryCatchBlock",

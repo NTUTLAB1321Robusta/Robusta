@@ -5,7 +5,13 @@ import java.util.Iterator;
 import java.util.List;
 
 
+
+
+
+
+
 import ntut.csie.util.BoundaryChecker;
+import ntut.csie.util.CheckedExceptionCollectorVisitor;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Assignment;
@@ -13,8 +19,10 @@ import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
+import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.InfixExpression;
+import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.ParenthesizedExpression;
 import org.eclipse.jdt.core.dom.PrefixExpression;
@@ -32,20 +40,29 @@ public class CloseInvocationExecutionChecker {
 
 	private int startPosition;
 	private List<ASTNode> nodesThatMayThrowException = new ArrayList<ASTNode>();
-
 	public List<ASTNode> getASTNodesThatMayThrowExceptionBeforeCloseInvocation(MethodInvocation closeInvocation) {
 		startPosition = findStartPosition(closeInvocation);
 		ASTNode checkingNode = closeInvocation;
 		
 		while (startPosition < checkingNode.getStartPosition()) {
 			ASTNode unsafeParentNode = getParentNodeThatMayThrowException(checkingNode);
-			if(unsafeParentNode != null)
-				nodesThatMayThrowException.add(unsafeParentNode);
-			
+			if(unsafeParentNode != null){
+				CheckedExceptionCollectorVisitor checkExceptionVisitor = new CheckedExceptionCollectorVisitor();
+				unsafeParentNode.accept(checkExceptionVisitor);
+				if(checkExceptionVisitor.getException().size()!=0){
+					nodesThatMayThrowException.add(unsafeParentNode);
+				}
+			}
 			List<ASTNode> unsafeSiblingNodes = getSiblingNodeThatMayThrowException(checkingNode);
-			if(unsafeSiblingNodes.size() != 0)
-				nodesThatMayThrowException.addAll(unsafeSiblingNodes);
-			
+			if(unsafeSiblingNodes.size() != 0){
+				for(ASTNode node : unsafeSiblingNodes){
+					CheckedExceptionCollectorVisitor checkExceptionVisitor = new CheckedExceptionCollectorVisitor();
+					node.accept(checkExceptionVisitor);
+					if(checkExceptionVisitor.getException().size()!=0){
+						nodesThatMayThrowException.add(node);
+					}
+				}
+			}
 			checkingNode = checkingNode.getParent();
 		}
 		return nodesThatMayThrowException;
@@ -78,16 +95,47 @@ public class CloseInvocationExecutionChecker {
 			boolean isParentBlock = (parentType == ASTNode.BLOCK);
 			boolean isParentFinallBlockOrCatchClause = (parentType == ASTNode.TRY_STATEMENT);
 			boolean isParentCatchBlock = (parentType == ASTNode.CATCH_CLAUSE);
-			boolean isParentSafeIfSatement = isSafeIfStaementExpression(parent);
+			boolean isSafeIfStaementExpression = isSafeIfStaementExpression(parent);
+			boolean isSafeForStaementExpression = isSafeForStaementExpression(parent);
 			boolean isParentSafeSynchronizedStatement = isSynchronizedStatement(parent);
 
-			if(!(isParentBlock || isParentFinallBlockOrCatchClause
-					|| isParentCatchBlock || isParentSafeIfSatement || isParentSafeSynchronizedStatement))
+			if(!(isParentBlock || isParentCatchBlock || isParentFinallBlockOrCatchClause || 
+					isSafeIfStaementExpression || isParentSafeSynchronizedStatement || isSafeForStaementExpression))
 				return parent;
 		}
 		return null;
 	}
 
+	private boolean isSafeForStaementExpression(ASTNode parent) {
+		
+		ForStatement forStatement = null;
+		Expression expression = null;
+		List<Expression> initializer = null;
+		List<Expression> updater =  null;
+		boolean safeForStatement = true;
+		if (parent.getNodeType() == ASTNode.FOR_STATEMENT) {
+			forStatement = ((ForStatement) parent);
+			expression = forStatement.getExpression();
+			initializer = forStatement.initializers();
+			updater = forStatement.updaters();
+			CheckedExceptionCollectorVisitor checkExpression = new CheckedExceptionCollectorVisitor();
+			expression.accept(checkExpression);
+			boolean isExpressionSafe = checkExpression.getException().size()==0;
+			System.out.println(checkExpression.getException().size());
+			
+			CheckedExceptionCollectorVisitor checkInitializer = new CheckedExceptionCollectorVisitor();
+			initializer.get(0).accept(checkInitializer);
+			boolean isInitializer = checkInitializer.getException().size()==0;
+			System.out.println(checkInitializer.getException().size());
+			
+			CheckedExceptionCollectorVisitor checkUpdater = new CheckedExceptionCollectorVisitor();
+			updater.get(0).accept(checkUpdater);
+			boolean isUpdater = checkUpdater.getException().size()==0;
+			System.out.println(checkUpdater.getException().size());
+			return isExpressionSafe && isInitializer && isUpdater;
+		}
+		return safeForStatement;
+	}
 
 	private int findStartPosition(MethodInvocation methodInvocation) {
 		return new ClosingResourceBeginningPositionFinder().findPosition(methodInvocation);
@@ -108,27 +156,31 @@ public class CloseInvocationExecutionChecker {
 	private boolean isSafeIfStaementExpression(ASTNode parent) {
 		IfStatement ifStatement = null;
 		Expression expression = null;
+		boolean safeIfStatement = false;
 		if (parent.getNodeType() == ASTNode.IF_STATEMENT) {
 			ifStatement = ((IfStatement) parent);
 			expression = ifStatement.getExpression();
+			CheckedExceptionCollectorVisitor checkExpression = new CheckedExceptionCollectorVisitor();
+			expression.accept(checkExpression);
+			safeIfStatement = checkExpression.getException().size()==0;
 		}
-		if (expression == null) {
-			return false;
-		}
-		if (expression.getNodeType() == ASTNode.SIMPLE_NAME) {
-			return true;
-		}
-		if (expression.getNodeType() == ASTNode.QUALIFIED_NAME) {
-			return true;
-		}
-		if (expression.getNodeType() == ASTNode.PREFIX_EXPRESSION) {
-			return isSafePrefixExpressionInIfstatement(ifStatement
-					.getExpression());
-		}
-		if (expression.getNodeType() == ASTNode.INFIX_EXPRESSION) {
-			return isSafeInfixExpressionInIfstatement(expression);
-		}
-		return false;
+//		if (expression == null) {
+//			return false;
+//		}
+//		if (expression.getNodeType() == ASTNode.SIMPLE_NAME) {
+//			return true;
+//		}
+//		if (expression.getNodeType() == ASTNode.QUALIFIED_NAME) {
+//			return true;
+//		}
+//		if (expression.getNodeType() == ASTNode.PREFIX_EXPRESSION) {
+//			return isSafePrefixExpressionInIfstatement(ifStatement
+//					.getExpression());
+//		}
+//		if (expression.getNodeType() == ASTNode.INFIX_EXPRESSION) {
+//			return isSafeInfixExpressionInIfstatement(expression);
+//		}
+		return safeIfStatement;
 	}
 
 	private boolean isSynchronizedStatement(ASTNode parent) {

@@ -158,7 +158,7 @@ public class CommonExample {
 			e.printStackTrace();
 		} finally {
 			try {
-				fis.close();
+				fis.close();//none cc
 			} catch (IOException e) { // DummyHandler
 				e.printStackTrace();
 			}
@@ -179,7 +179,7 @@ public class CommonExample {
 		try {
 			FileInputStream fis = new FileInputStream("");
 			fis.read();
-			fis.close();
+			fis.close();//cc
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw e;
@@ -190,7 +190,7 @@ public class CommonExample {
 		try {
 			FileInputStream fis = new FileInputStream("");
 			fis.read();
-			fis.close();
+			fis.close();//cc
 		} catch (IOException e) {
 			System.out.println(e);
 			throw e;
@@ -201,7 +201,7 @@ public class CommonExample {
 		try {
 			FileInputStream fis = new FileInputStream("");
 			fis.read();
-			fis.close();
+			fis.close();//cc
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -214,7 +214,7 @@ public class CommonExample {
 	public void false_systemOutNotInTryStatement() throws IOException {
 		try {
 			FileInputStream fis = new FileInputStream("");
-			fis.close();
+			fis.close();//none cc
 		} catch (FileNotFoundException e) {
 			throw e;
 		} catch (IOException e) {
@@ -229,7 +229,7 @@ public class CommonExample {
 			fis = new FileInputStream("");
 			fis.read();
 			try {
-				fis.close();
+				fis.close();//cc
 			} catch (IOException e) { // DummyHandler
 				e.printStackTrace();
 			}
@@ -246,8 +246,8 @@ public class CommonExample {
 		} catch (IOException e) {
 			e.printStackTrace();
 			try {
-				fis.close();
-			} catch (IOException e1) { // DummyHandler
+				fis.close();//none cc
+ 			} catch (IOException e1) { // DummyHandler
 				e1.printStackTrace();
 			}
 		}

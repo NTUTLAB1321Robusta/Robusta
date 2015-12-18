@@ -58,7 +58,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 	}
 
 	public void closeByUserDefinedMethod(OutputStream zOut) throws IOException {
-		(new MethodInvocationBeforeClose()).declaredCheckedException();
+		(new MethodInvocationBeforeClose()).declaredCheckedExceptionOnMethodSignature();
 		InputStream is = null;
 		try {
 			zOut.write(is.read());
@@ -576,7 +576,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 			if (a && b || c && !d) {
 				int as = returnInt();
 			}
-			fis.close();// unsafe
+			fis.close();// safe
 		}
 	}
 

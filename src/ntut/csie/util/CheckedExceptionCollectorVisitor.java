@@ -9,6 +9,7 @@ import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 
 public class CheckedExceptionCollectorVisitor extends ASTVisitor {
 	private final ArrayList<ITypeBinding> exceptions = new ArrayList<ITypeBinding>();
@@ -22,12 +23,29 @@ public class CheckedExceptionCollectorVisitor extends ASTVisitor {
 		if(mb != null) {
 			for(ITypeBinding itb : mb.getExceptionTypes()) {
 				// if any exception listed on the signature then add to the list
+				
 				exceptions.add(itb);
 			}
 		}
 		
 		return super.visit(methodInvocation);
 	}
+	
+	// method super method invocation
+		@Override
+		public boolean visit(final SuperMethodInvocation superMethodInvocation) {
+			// get method signature from a node of constructor call
+			IMethodBinding mb = superMethodInvocation.resolveMethodBinding();
+			
+			if(mb != null) {
+				for(ITypeBinding itb : mb.getExceptionTypes()) {
+					// if any exception listed on the signature then add to the list
+					exceptions.add(itb);
+				}
+			}
+			
+			return super.visit(superMethodInvocation);
+		}
 
 	// constructor
 	@Override

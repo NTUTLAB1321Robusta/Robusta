@@ -159,7 +159,7 @@ public class CarelessCleanupDefinitionTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"aStatementInBetweenDetectionRange",
 				"fis.close()");
-		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 
 	@Test

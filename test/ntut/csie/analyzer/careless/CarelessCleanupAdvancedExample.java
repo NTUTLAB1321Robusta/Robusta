@@ -23,7 +23,7 @@ public class CarelessCleanupAdvancedExample {
 	public void closeInBothTryBlockAndFinallyBlock() throws Exception {
 		FileInputStream fis = new FileInputStream(file);
 		try {
-			methodBeforeClose.declaredCheckedException();
+			methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 			methodBeforeClose.didNotDeclareAnyExceptionButThrowUnchecked();
 			fis.close(); // Unsafe
 		} catch (IOException e) {
@@ -41,10 +41,10 @@ public class CarelessCleanupAdvancedExample {
 			throws Exception {
 		FileInputStream fis = new FileInputStream(file);
 
-		methodBeforeClose.declaredCheckedException();
+		methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 
 		try {
-			methodBeforeClose.declaredCheckedException();
+			methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 		} finally {
 			fis.close(); // Unsafe
 		}
@@ -59,11 +59,11 @@ public class CarelessCleanupAdvancedExample {
 		FileInputStream fis = new FileInputStream(file);
 
 		if (true) {
-			methodBeforeClose.declaredCheckedException();
+			methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 		}
 
 		try {
-			methodBeforeClose.declaredCheckedException();
+			methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 		} finally {
 			fis.close(); // Unsafe
 		}
@@ -75,12 +75,12 @@ public class CarelessCleanupAdvancedExample {
 	 * won't be reached.
 	 */
 	public void safeCloseInTryWithDidNotThrowBetweenCreationAndClosed() throws Exception {
-		methodBeforeClose.declaredCheckedException();
+		methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 
 		FileInputStream fis = new FileInputStream(file);
 		
 		try {
-			methodBeforeClose.declaredCheckedException();
+			methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 		} finally {
 			fis.close(); // Safe
 		}
@@ -100,7 +100,7 @@ public class CarelessCleanupAdvancedExample {
 	 */
 	class ConcreteCloseable extends SuperCloseable {
 		public void close() {
-			methodBeforeClose.declaredUncheckedException();
+			methodBeforeClose.declaredUncheckedExceptionOnMethodSignature();
 			super.close(); // Safe for Robusta (Not for human) 
 		}
 	}
@@ -117,7 +117,7 @@ public class CarelessCleanupAdvancedExample {
 
 	public void throwExceptionBeforeAssignment(FileOutputStream fos)
 			throws IOException {
-		methodBeforeClose.declaredCheckedException();
+		methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 		
 		try {
 			fileInputStream = new FileInputStream("path");
@@ -232,20 +232,20 @@ public class CarelessCleanupAdvancedExample {
 		}
 		
 		public void closeResourceByInvokeMyClose() throws Exception {
-			methodBeforeClose.declaredCheckedException();
+			methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 			close(); // Unsafe
 		}
 	}
 
 	public void closeResourceFromGetResourceWithImp() throws Exception {
 		ClassWithGetResource resourceManager = new ClassWithGetResource();
-		methodBeforeClose.declaredUncheckedException();
+		methodBeforeClose.declaredUncheckedExceptionOnMethodSignature();
 		resourceManager.getResourceWithImp().close(); // Unsafe
 	}
 	
 	public void closeResourceFromGetResourceWithInterface() throws Exception {
 		ClassWithGetResource resourceManager = new ClassWithGetResource();
-		methodBeforeClose.declaredCheckedException();
+		methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 		resourceManager.getResourceWithInterface().close(); // Unsafe
 	}
 }

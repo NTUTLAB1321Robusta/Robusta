@@ -91,7 +91,7 @@ public class CarelessCleanupDefinitionExample {
 	// CC detector
 	public void noncloseableResourceClosing() throws IOException {
 		ConcreteNonCloseable nonCloseableResource = new ConcreteNonCloseable();
-		methodBeforeClose.declaredCheckedException();
+		methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 
 		try {
 			// do something here
@@ -104,7 +104,7 @@ public class CarelessCleanupDefinitionExample {
 	// detector
 	public void closeableResourceClosing() throws IOException {
 		ConcreteCloseable closeableResource = new ConcreteCloseable();
-		methodBeforeClose.declaredCheckedException();
+		methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 
 		try {
 			// do something here
@@ -119,7 +119,7 @@ public class CarelessCleanupDefinitionExample {
 	public void closeableResourceClosingMethodNotNamedClose()
 			throws IOException {
 		ConcreteCloseable resource = new ConcreteCloseable();
-		methodBeforeClose.declaredCheckedException();
+		methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 
 		try {
 			// do something here
@@ -134,7 +134,7 @@ public class CarelessCleanupDefinitionExample {
 	// it body.
 	public void closeMethodNotNamedClosePassedInCloseableResource()
 			throws IOException {
-		methodBeforeClose.declaredCheckedException();
+		methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 
 		try {
 			// do something here
@@ -152,7 +152,7 @@ public class CarelessCleanupDefinitionExample {
 	public void closeMethodNotNamedClosePassedInAutoCloseableResource()
 			throws IOException {
 		ConcreteAutoCloseableOutputStream os = new ConcreteAutoCloseableOutputStream();
-		methodBeforeClose.declaredCheckedException();
+		methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 
 		try {
 			// do something here
@@ -194,7 +194,7 @@ public class CarelessCleanupDefinitionExample {
 	public void exceptionBeforeLastResourceAssignment(boolean a)
 			throws IOException {
 		FileInputStream fis = null;
-		methodBeforeClose.declaredCheckedException();
+		methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 
 		fis = new FileInputStream("C:\\FileNotExist.txt");
 
@@ -215,7 +215,7 @@ public class CarelessCleanupDefinitionExample {
 	public void exceptionBeforeLastResourceAssignmentThatMayNotBeExecuted(
 			boolean a) throws IOException {
 		FileInputStream fis = null;
-		methodBeforeClose.declaredCheckedException();
+		fis.read();
 
 		if (a) {
 			fis = new FileInputStream("C:\\FileNotExist.txt");
@@ -245,7 +245,7 @@ public class CarelessCleanupDefinitionExample {
 
 		randomObject.doSomething();
 
-		fis.close(); // unsafe
+		fis.close(); // safe
 	}
 
 	public void ifStatementCheckingBooleanVariableInBetweenDetectionRange(
@@ -320,7 +320,7 @@ public class CarelessCleanupDefinitionExample {
 		FileInputStream fis = new FileInputStream("C:\\FileNotExist.txt");
 
 		try {
-			methodBeforeClose.declaredCheckedException();
+			methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 		} catch (IOException e) {
 			// handle IOException e
 		} catch (Exception e) {

@@ -64,7 +64,7 @@ public class CarelessCleanupVisitorTest {
 				SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupBaseExample.class);
 
-		Assertor.assertMarkerInfoListSize(8, smellList);
+		Assertor.assertMarkerInfoListSize(6, smellList);
 	}
 
 	@Test
@@ -91,7 +91,7 @@ public class CarelessCleanupVisitorTest {
 		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP,SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupAdvancedExample.class);
 
-		Assertor.assertMarkerInfoListSize(10, smellList);
+		Assertor.assertMarkerInfoListSize(8, smellList);
 	}
 
 	@Ignore
@@ -127,7 +127,7 @@ public class CarelessCleanupVisitorTest {
 		Assertor.assertMarkerInfoListSize(1, smellList);
 	}
 
-	final int DEFAULT_BAD_SMELLS_OF_INTEGRATED_EXAMPLE = 6;
+	final int DEFAULT_BAD_SMELLS_OF_INTEGRATED_EXAMPLE = 5;
 	
 	@Test
 	public void testIntegratedExampleWithDefaultSetting()
@@ -157,8 +157,8 @@ public class CarelessCleanupVisitorTest {
 	@Test
 	public void testIntegratedExampleWithUserDefinedClass()
 			throws JavaModelException {
-		// Create setting file with user defined
 		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP,
+				// Create setting file with user defined
 				SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		smellSettings.addCarelessCleanupPattern(UserDefinedCarelessCleanupClass.class.getName() + ".*", true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
@@ -213,13 +213,11 @@ public class CarelessCleanupVisitorTest {
 	@Test
 	public void testCollectingAnnotationInfoInForCarelessCleanupIntegratedExample() throws JavaModelException {
 		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupIntegratedExample.class);
-		assertEquals(6, smellList.size());
+		assertEquals(5, smellList.size());
 		assertEquals(1, smellList.get(0).getAnnotationList().size());
 		assertEquals(1, smellList.get(1).getAnnotationList().size());
 		assertEquals(1, smellList.get(2).getAnnotationList().size());
 		assertEquals(1, smellList.get(3).getAnnotationList().size());
-		assertEquals(1, smellList.get(4).getAnnotationList().size());
-		assertEquals(2, smellList.get(5).getAnnotationList().size());
 	}
 	
 	@Test
@@ -230,14 +228,13 @@ public class CarelessCleanupVisitorTest {
 
 		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupIntegratedExample.class);
 		
-		assertEquals(7, smellList.size());
+		assertEquals(6, smellList.size());
 		assertEquals(1, smellList.get(0).getAnnotationList().size());
 		assertEquals(1, smellList.get(1).getAnnotationList().size());
 		assertEquals(1, smellList.get(2).getAnnotationList().size());
 		assertEquals(1, smellList.get(3).getAnnotationList().size());
 		assertEquals(1, smellList.get(4).getAnnotationList().size());
 		assertEquals(1, smellList.get(5).getAnnotationList().size());
-		assertEquals(2, smellList.get(6).getAnnotationList().size());
 	}
 
 	@Test
@@ -248,14 +245,13 @@ public class CarelessCleanupVisitorTest {
 		
 		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupIntegratedExample.class);
 
-		assertEquals(7, smellList.size());
+		assertEquals(6, smellList.size());
 		assertEquals(1, smellList.get(0).getAnnotationList().size());
 		assertEquals(1, smellList.get(1).getAnnotationList().size());
 		assertEquals(1, smellList.get(2).getAnnotationList().size());
 		assertEquals(1, smellList.get(3).getAnnotationList().size());
 		assertEquals(1, smellList.get(4).getAnnotationList().size());
-		assertEquals(2, smellList.get(5).getAnnotationList().size());
-		assertEquals(2, smellList.get(6).getAnnotationList().size());
+		assertEquals(1, smellList.get(5).getAnnotationList().size());
 	}
 	
 	private List<MarkerInfo> visitCompilationAndGetSmellList(Class clazz)
