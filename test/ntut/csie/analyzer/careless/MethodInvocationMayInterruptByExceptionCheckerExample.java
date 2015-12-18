@@ -982,6 +982,55 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 			throw new IOException();
 		} catch (IOException e) {
 		}
-		fis.close();// unsafe
+		fis.close(); //safe
+	}
+	
+	public void resourceCloseAfterTryStatementThatThrowsRuntimeException() throws IOException {
+		FileOutputStream fos = new FileOutputStream(new File("D:\\234"));
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));;
+		try {
+			fos.close();
+			throw new RuntimeException();
+		} catch (IOException e) {
+		}
+		fis.close(); //unsafe
+	}
+	
+	public void resourceCloseAfterTryStatementThatCatchGenericException() throws IOException {
+		FileOutputStream fos = new FileOutputStream(new File("D:\\234"));
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));;
+		try {
+			fos.close();
+			if(true)
+				throw new RuntimeException();
+		} catch (Exception e) {
+		}
+		fis.close(); //safe
+	}
+	
+	public void resourceCloseAfterTryStatementThatUsesBlanketCatchClause() throws IOException {
+		FileOutputStream fos = new FileOutputStream(new File("D:\\234"));
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));;
+		try {
+			fos.close();
+			if(true)
+				throw new RuntimeException();
+		} catch (IOException io) { 
+		} catch (Exception e) {
+		}
+		fis.close(); //safe
+	}
+	
+	public void resourceCloseAfterTryStatementThatCatchesThrowable() throws IOException {
+		FileOutputStream fos = new FileOutputStream(new File("D:\\234"));
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));;
+		try {
+			fos.close();
+			if(true)
+				throw new RuntimeException();
+		} catch (IOException io) { 
+		} catch (Throwable e) {
+		}
+		fis.close(); //safe
 	}
 }

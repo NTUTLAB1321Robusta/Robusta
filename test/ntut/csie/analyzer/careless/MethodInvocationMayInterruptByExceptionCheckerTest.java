@@ -920,7 +920,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseAfterNestExceptionIOExceptionTryCatchBlock",
 				"fis.close()");
-		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 	
 	@Test
@@ -940,7 +940,6 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 				"fis.close()");
 		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
-	
 	@Test
 	public void testIsMethodInvocationCaughtWhenResourceCloseAfterThrowableTryCatchBlock()
 			throws Exception {
@@ -956,7 +955,43 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseAfterIOExceptionTryCatchBlock",
 				"fis.close()");
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+	}
+	
+	@Test
+	public void testResourceCloseAfterTryStatementThatThrowsRuntimeException()
+	throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterTryStatementThatThrowsRuntimeException",
+				"fis.close()");
 		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+	}
+	
+	@Test
+	public void testResourceCloseAfterTryStatementThatCatchGenericException()
+	throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterTryStatementThatCatchGenericException",
+				"fis.close()");
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+	}
+	
+	@Test
+	public void testResourceCloseAfterTryStatementThatUsesBlanketCatchClause()
+	throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterTryStatementThatUsesBlanketCatchClause",
+				"fis.close()");
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+	}
+	
+	@Test
+	public void testResourceCloseAfterTryStatementThatCatchesThrowable()
+	throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterTryStatementThatCatchesThrowable",
+				"fis.close()");
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 	
 	private MethodInvocation getMethodInvocationByMethodNameAndCode(
