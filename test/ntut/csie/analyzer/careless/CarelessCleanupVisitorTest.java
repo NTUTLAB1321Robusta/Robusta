@@ -142,7 +142,7 @@ public class CarelessCleanupVisitorTest {
 			throws JavaModelException {
 		// Create user defined setting file
 		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP,
-				SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
+		SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		smellSettings.addCarelessCleanupPattern(UserDefinedCarelessCleanupClass.class.getName() + ".*", true);
 		smellSettings.addCarelessCleanupPattern("*.bark", true);
 		smellSettings.addCarelessCleanupPattern("*.close", true);
@@ -159,8 +159,7 @@ public class CarelessCleanupVisitorTest {
 			throws JavaModelException {
 		// Create user defined setting file
 		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP,
-				// Create setting file with user defined
-				SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
+		SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		smellSettings.addCarelessCleanupPattern(UserDefinedCarelessCleanupClass.class.getName() + ".*", true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 
@@ -174,7 +173,7 @@ public class CarelessCleanupVisitorTest {
 			throws JavaModelException {
 		// Create user defined setting file
 		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP,
-				SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
+		SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		smellSettings.addCarelessCleanupPattern(UserDefinedCarelessCleanupClass.class.getName() + ".bite", true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 
@@ -188,7 +187,7 @@ public class CarelessCleanupVisitorTest {
 			throws JavaModelException {
 		// Create user defined setting file
 		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP,
-				SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
+		SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		smellSettings.addCarelessCleanupPattern("*.bark", true);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 

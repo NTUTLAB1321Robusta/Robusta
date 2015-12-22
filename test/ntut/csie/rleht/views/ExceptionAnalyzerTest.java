@@ -286,9 +286,9 @@ public class ExceptionAnalyzerTest {
 		assertTrue(methodlist.get(8).toString().equals(totalList.get(1).getStatement().toString()));
 		assertTrue(methodlist.get(9).toString().equals(totalList.get(2).getStatement().toString()));
 		
-		assertEquals(133, totalList.get(0).getLineNumber());
-		assertEquals(152, totalList.get(1).getLineNumber());
-		assertEquals(172, totalList.get(2).getLineNumber());
+		assertEquals(115, totalList.get(0).getLineNumber());
+		assertEquals(131, totalList.get(1).getLineNumber());
+		assertEquals(146, totalList.get(2).getLineNumber());
 		
 		assertEquals(6, totalList.size());
 	}

@@ -423,7 +423,7 @@ public class ReportBuilderIntergrationTest {
 		assertEquals(50, reportModel.getFinallyCounter());
 		assertEquals(6, reportModel.getPackagesSize());
 		assertEquals(projectName, reportModel.getProjectName());
-		assertEquals(2092, reportModel.getTotalLine());
+		assertEquals(2088, reportModel.getTotalLine());
 		assertEquals(197, reportModel.getAllSmellSize());
 	}
 }

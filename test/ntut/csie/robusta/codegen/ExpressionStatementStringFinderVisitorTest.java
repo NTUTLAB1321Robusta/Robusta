@@ -70,12 +70,12 @@ public class ExpressionStatementStringFinderVisitorTest {
 		String targetStatement = "e.printStackTrace();";
 		ExpressionStatementStringFinderVisitor statementFinderVisitor = new ExpressionStatementStringFinderVisitor(targetStatement);
 		compilationUnit.accept(statementFinderVisitor);
-		assertEquals(502, statementFinderVisitor.getFoundExpressionStatement().getStartPosition());
+		assertEquals(527, statementFinderVisitor.getFoundExpressionStatement().getStartPosition());
 		
 		targetStatement = "System.out.println(e);";
 		statementFinderVisitor = new ExpressionStatementStringFinderVisitor(targetStatement);
 		compilationUnit.accept(statementFinderVisitor);
-		assertEquals(556, statementFinderVisitor.getFoundExpressionStatement().getStartPosition());
+		assertEquals(581, statementFinderVisitor.getFoundExpressionStatement().getStartPosition());
 		
 		targetStatement = "e.printStackTrace();";
 		statementFinderVisitor = new ExpressionStatementStringFinderVisitor(targetStatement);
