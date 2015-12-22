@@ -6,8 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
- * 這個範例程式碼是拿來測試Visitor用的。這邊的Visitor，泛指非例外處理壞味道偵測的Visitor。
- * 例外處理外味道的範例程式碼，都不應該寫在這裡。
+ * this sample code is used to test normal visitor, it isn't related to a visitor which detects the bad smell.
  * @author Charles
  *
  */

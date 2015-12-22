@@ -66,7 +66,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * the implement of rethrow unchecked exception is in this class 
+ * the implementation of rethrow unchecked exception is in this class 
  * @author chewei
  */
 
@@ -237,8 +237,8 @@ public class RethrowExRefactoring extends Refactoring {
 					}
 					if (!exceptionTypeWillBeRethrown.equals("RuntimeException")) {
 						importExceptionLibrary();
-						/* don't need to declare Runtimeexcpetion on method signature 
-						 because user can only select Runtimeexception on the search dialog */
+						/* don't need to declare RuntimeExcpetion on method signature 
+						 because user can only select RuntimeException on the search dialog */
 						break;
 					}
 				}
@@ -250,7 +250,7 @@ public class RethrowExRefactoring extends Refactoring {
 	}
 	
 	/**
-	 * check whether there is a exception declare on method signature.
+	 * check whether there is an exception declaration on method signature.
 	 * @param ast
 	 */
 	private void checkMethodThrow(AST ast) {
@@ -272,7 +272,7 @@ public class RethrowExRefactoring extends Refactoring {
 	
 	
 	private void addThrowExceptionStatement(CatchClause cc, AST ast) {
-		// get exception variable form catch clause expression
+		// get exception variable from catch clause expression
 		SingleVariableDeclaration svd = (SingleVariableDeclaration) cc
 		.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
 		ThrowStatement ts = ast.newThrowStatement();
@@ -399,7 +399,7 @@ public class RethrowExRefactoring extends Refactoring {
 	}
 	
 	/**
-	 * import required exception's library except RuntimeException, because it don't need to import RuntimeException's library.
+	 * import required exception's library except RuntimeException, because it doesn't need to import RuntimeException's library.
 	 */
 	private void importExceptionLibrary() {
 		boolean isImportLibrary = false;
@@ -455,7 +455,7 @@ public class RethrowExRefactoring extends Refactoring {
 	}
 	
 	/**
-	 * save exception type which user select that is used for import library 
+	 * save the exception type which user has selected and that is used for to import library 
 	 * @param exceptionType
 	 */
 	public void setUserSelectingExceptionType(IType exceptionType) {		
@@ -466,7 +466,7 @@ public class RethrowExRefactoring extends Refactoring {
 		if (methodIdx != null && msgIdx != null) {
 			// swap Annotation's index
 			new RLOrderFix().run(marker.getResource(), methodIdx, msgIdx);
-			// high light line number
+			// highlight line number
 			highLightSpecifiedLineNumber();
 		}
 	}
@@ -482,7 +482,7 @@ public class RethrowExRefactoring extends Refactoring {
 			for (int i = 0; i < catchStatements.size(); i++) {
 				if (catchStatements.get(i) instanceof ThrowStatement) {
 					ThrowStatement statement = (ThrowStatement) catchStatements.get(i);
-					// due to the line number is 0 based, so we should -1 to get correct line number
+					// due to the line number is 0 based, so we should subtract by 1 to get correct line number
 					selectLine = this.javaFileWillBeRefactored.getLineNumber(statement.getStartPosition()) - 1;
 					return selectLine;
 				}
@@ -503,7 +503,7 @@ public class RethrowExRefactoring extends Refactoring {
 				int selectLine = getLineNumberOfThrowExceptionStatement(catchIdx);
 				if (selectLine == -1) {
 					int srcPos = methodNodeWillBeRefactored.getStartPosition();
-					// due to the line number is 0 based, so we should -1 to get correct line number
+					// due to the line number is 0 based, so we should subtract by 1 to get correct line number
 					selectLine = javaFileWillBeRefactored.getLineNumber(srcPos) - 1;
 				}
 				IRegion lineInfo = document.getLineInformation(selectLine);

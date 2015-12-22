@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * cast exception in catch clause to RuntimeException and remove "System.out.println" or "e.printStackTrace" statement from catch clause
+ * cast an exception in catch clause to RuntimeException and remove "System.out.println" or "e.printStackTrace" statement from catch clause
  * @author Charles
  *
  */

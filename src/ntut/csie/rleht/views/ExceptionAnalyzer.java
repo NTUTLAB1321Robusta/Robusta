@@ -132,7 +132,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 	}
 
 	/**
-	 * get exception type name which will be throw from method 
+	 * get exception type name which will be thrown from method 
 	 * @param node	MethodDeclaration
 	 */
 	private void getMethodThrowsList(ASTNode node) {
@@ -229,8 +229,8 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 					if (currentMethodFound) {
 						MethodInvocation mi = (MethodInvocation) node;
 						/* 
-						 * if code is not obey the rule of IDE, it will cause binding fail of MethdoInvocation.
-						 * when binding is fail, it will return null. 
+						 * if code does not obey the rule of IDE, it will cause binding fail of MethdoInvocation.
+						 * when binding fails, it will return null. 
 						 * ex. announce a closable instance in the try block
 						 */
 						
@@ -264,7 +264,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 
 		TryStatement trystat = (TryStatement) node;		
 		
-		//if trystat is the first one try statement, we won't take it as code smell
+		//if trystat is the first try statement, we won't take it as code smell
 		if(!parentId.equals("")){
 			MarkerInfo csmsg = new MarkerInfo(	RLMarkerAttribute.CS_NESTED_TRY_STATEMENT, null,											
 												trystat.toString(), trystat.getStartPosition(),
@@ -420,8 +420,7 @@ public class ExceptionAnalyzer extends RLBaseVisitor {
 	}
 
 	/**
-	 * get all exception which is possible happening and catch clause information from current method  
-	 * 
+	 * get information of exception that might happen and catch clause information in a specified method 
 	 * @return
 	 */
 	public List<RLMessage> getExceptionList() {

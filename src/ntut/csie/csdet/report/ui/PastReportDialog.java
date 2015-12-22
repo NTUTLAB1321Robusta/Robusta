@@ -240,7 +240,7 @@ public class PastReportDialog extends Dialog {
 			}
 		}
 
-		// apply modified histoty of each report for each project
+		// apply modified history of each report for each project
 		if (buttonId == APPLY_SELECTION) {
 			saveReportDataDescriptions();
 			getButton(APPLY_SELECTION).setEnabled(false);

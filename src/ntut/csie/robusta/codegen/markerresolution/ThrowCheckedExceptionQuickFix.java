@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * 將Catch到的例外直接拋出，並且移除System.out.println或e.printStackTrace等資訊
+ * remove "System.out.println" and "e.printStackTrace" in catch clause. then throw the exception that has been caught by catch clause to upper caller.
  * @author Charles
  */
 public class ThrowCheckedExceptionQuickFix implements IMarkerResolution{

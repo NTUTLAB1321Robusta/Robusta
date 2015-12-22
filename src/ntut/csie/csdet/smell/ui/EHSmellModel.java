@@ -125,7 +125,7 @@ public class EHSmellModel {
 		}
 
 		smellList.clear();
-		//combine all smell in smellList
+		//combine all smells in smellList
 		if (dummyHandlerList != null) {
 			smellList.addAll(dummyHandlerList);
 		}

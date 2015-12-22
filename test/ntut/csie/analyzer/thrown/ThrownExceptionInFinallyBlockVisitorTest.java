@@ -91,7 +91,7 @@ public class ThrownExceptionInFinallyBlockVisitorTest {
 	}
 
 	/**
-	 * This test case will fault if any of the rest test cases fault
+	 * This test case will be fault if any of the rest test cases are fault
 	 */
 	@Test
 	public void visitWithWholeCompilationUnit() {

@@ -116,7 +116,7 @@ public class QuickFixCore {
 	}
 	
 	/**
-	 * When a method without any Robustness Level Annotation, you should use this method to create RL Annotation.
+	 * When a method is without any Robustness Level Annotation, you should use this method to create RL Annotation.
 	 * @param level
 	 * @param exceptionType
 	 * @param rootAST
@@ -165,7 +165,7 @@ public class QuickFixCore {
 	}
 	
 	/**
-	 * add an exception's declare on method's signature
+	 * add an exception's declaration on method's signature
 	 * @param astRewrite
 	 * @param methodDeclaration
 	 */
@@ -442,7 +442,7 @@ public class QuickFixCore {
 	
 	/**
 	 * get finally block of specified try statement.
-	 * if finally block does not exist and then create a new finally block. 
+	 * if finally block does not exist then create a new finally block. 
 	 * @param tryStatement 
 	 * 				specified try statement
 	 * @param compilationUnit 
@@ -458,10 +458,13 @@ public class QuickFixCore {
 	}
 	
 	/**
-	 * 將TryStatement裡面某個Node移動到Finally
-	 * @param tryStatement 某個Node所屬的TryStatement
-	 * @param node 某個Node
-	 * @param finallyBlock 你想移動的那個Finally Block
+	 * move specified node in try block to finally block
+	 * @param tryStatement 
+	 * 			specified Node belongs to TryStatement
+	 * @param node
+	 * 			specified node
+	 * @param finallyBlock 
+	 * 			destination of Finally Block 
 	 */
 	public void moveNodeToFinally(TryStatement tryStatement, ASTNode node, Block finallyBlock) {
 		ASTNode placeHolder = astRewrite.createMoveTarget(node);

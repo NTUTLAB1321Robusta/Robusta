@@ -19,7 +19,7 @@ import org.eclipse.jdt.core.dom.TryStatement;
 
 /**
  * This class is about how statements behave in the block given in the constructor.
- * Methods in the class answer whether a statement throws exception(s) to this block.
+ * Methods in the class informs whether a statement throws exception(s) to this block.
  * @author pig
  */
 public class ThrownExceptionBeCaughtDetector {
@@ -27,7 +27,7 @@ public class ThrownExceptionBeCaughtDetector {
 	private List<ITypeBinding> thrownExceptions;
 
 	/**
-	 * @param block The detection is about exception in this block 
+	 * @param block focuses on the exception occurred in this block 
 	 */
 	public ThrownExceptionBeCaughtDetector(Block block) {
 		onlyDetectInThisBlock = block;
@@ -71,12 +71,12 @@ public class ThrownExceptionBeCaughtDetector {
 		TryStatement tryStatement = getParentTryStatementWithinRangeToDetect(statement);
 
 		/*
-		 * Is these any exception may be thrown out? Go through each parent
+		 * Is there any exception may be thrown out? Go through each parent
 		 * which is try statement
 		 */
 		while (thrownExceptions.size() > 0) {
 			/*
-			 * These isn't any more catch, but still are some exceptions will be
+			 * There aren't any more catch, but still are there some exceptions will be
 			 * thrown out
 			 */
 			if (tryStatement == null) {
@@ -84,7 +84,7 @@ public class ThrownExceptionBeCaughtDetector {
 			}
 
 			/*
-			 * Remove the exception already been caught by this try statement
+			 * Remove the exception which is already been caught by this try statement
 			 */
 			if (isPositionInTryBlock(statementStartAt, tryStatement)) {
 				removeThrownExceptionWhichBeenCaught(tryStatement);
@@ -114,7 +114,7 @@ public class ThrownExceptionBeCaughtDetector {
 			return null;
 		}
 
-		// if the try statement is in the area that should be detected
+		// if the try statement is in the area that it should be detected
 		if (tryStatement.getStartPosition() >= onlyDetectInThisBlock
 				.getStartPosition()
 				&& tryStatement.getLength() < onlyDetectInThisBlock.getLength()) {
@@ -125,7 +125,7 @@ public class ThrownExceptionBeCaughtDetector {
 	}
 
 	/**
-	 * Remove all exception been caught for this specific TryStatement
+	 * Remove all exceptions that has been caught for this specific TryStatement
 	 */
 	private void removeThrownExceptionWhichBeenCaught(TryStatement tryStatement) {
 		@SuppressWarnings("unchecked")
@@ -147,8 +147,8 @@ public class ThrownExceptionBeCaughtDetector {
 			exceptionType = NodeUtils.getClassFromCatchClause(catchClause);
 		} catch (RuntimeException e) {
 			/*
-			 * It means the exception can't be recognized. So treat it as never
-			 * been caught.
+			 * It means the exception can't be recognized. So treat it as 
+			 * it has never been caught.
 			 */
 			return false;
 		}

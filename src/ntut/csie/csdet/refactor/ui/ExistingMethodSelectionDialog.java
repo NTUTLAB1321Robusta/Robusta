@@ -59,7 +59,6 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
 	}
 
 	/**
-	 * 分析Method的Class，找出所有的SuperClass
 	 * analyze the class, which contains specified method, to find out all super class
 	 * @param methodNode
 	 */
@@ -180,7 +179,7 @@ public class ExistingMethodSelectionDialog  extends TwoPaneElementSelector  {
 	}
 
 	/**
-	 * filter out method whose parameter is not name xxxclose() 
+	 * filter out method whose parameter is not named xxxclose() 
 	 * @param isFiltered
 	 * @param md
 	 * @return

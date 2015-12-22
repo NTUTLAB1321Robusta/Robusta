@@ -45,9 +45,12 @@ public class TemplateText {
 
 	/**
 	 * parse text into tokens which is corresponding to text style
-	 * @param text		input text
-	 * @param textList	a list for storing token
-	 * @param typeList	a list for storing token's style
+	 * @param text		
+	 * 				input text
+	 * @param textList	
+	 * 				a list for storing token
+	 * @param typeList	
+	 * 				a list for storing token's style
 	 */
 	private void parserText() {
 		int i = 0;
@@ -136,7 +139,8 @@ public class TemplateText {
 	/**
 	 * get the start index, length and style from text token
 	 * @param display
-	 * @param counter	start index of text's length
+	 * @param counter	
+	 * 				start index of text's length
 	 * @return			length of text
 	 */
 	public int setTemplateStyle(Display display, int counter) {

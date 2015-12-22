@@ -55,7 +55,7 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage {
 		robustaSettings = new RobustaSettings(
 				UserDefinedMethodAnalyzer.getRobustaSettingXMLPath(project), project);
 		
-		//select all bad smell as default detection rule for user when without rule configure 
+		//select all bad smell as default detection rule for user who are without the rule configuration
 		smellSettings = new SmellSettings(
 				UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		smellSettings.activateAllConditionsIfNotConfugured(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
@@ -130,7 +130,7 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage {
 	}
 
 	/**
-	 * save configure in each tab when Ok button is pressed 
+	 * save configuration in each tab when Ok button is pressed 
 	 */
 	public boolean performOk() {
 		for (int i = 0; i < tabPages.size(); i++) {

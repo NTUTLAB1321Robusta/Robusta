@@ -19,7 +19,7 @@ public class ExtractMethodAnalyzer {
 	}
 	
 	/*
-	 * This method will return the enclosing node need to move to new method
+	 * This method will return the enclosing node which needs to be moved to new method
 	 * It should be MethodInvocation, SupperMethodInvocation which return type is void
 	 * The throw statement is not included in refactoring
 	 */

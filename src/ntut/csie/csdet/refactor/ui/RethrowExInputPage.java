@@ -31,14 +31,13 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * provide a user interface that user can select what exception type will be rethrown
+ * provide a user interface where user can select what exception type will be rethrown
  * @author chewei
  */
 public class RethrowExInputPage extends UserInputWizardPage {
 	private static Logger logger = LoggerFactory.getLogger(RethrowExInputPage.class);
 	
-	
-	//input what Excpetion type thrown
+	//input the Exception type to throw
 	private Text exNameField;
 	//exception Type selected by user
 	private IType exType;
@@ -70,7 +69,7 @@ public class RethrowExInputPage extends UserInputWizardPage {
 		//RuntimeException is default exception type
 		exNameField.setText("RuntimeException");
 		
-		//use browse button to pup up selection dialog
+		//use browse button to pop up selection dialog
 		final Button browseButton= new Button(composite, SWT.PUSH);
 		browseButton.setText("&Browse...");
 		GridData data= new GridData();
@@ -83,7 +82,7 @@ public class RethrowExInputPage extends UserInputWizardPage {
 			}			
 		});
 		
-		//press browse button to pup up selection dialog
+		//press browse button to pop up selection dialog
 		browseButton.addSelectionListener(new SelectionAdapter(){
 			@Override
 			public void widgetSelected(SelectionEvent event) {
@@ -125,7 +124,7 @@ public class RethrowExInputPage extends UserInputWizardPage {
 		status.merge(refactoring.setExceptionType(exNameField.getText()));
 		//if exception type which will be thrown has not been imported, use retain exception type to replace it    
 		refactoring.setUserSelectingExceptionType(exType);
-		//check whether there is error or not
+		//check whether there is an error or not
 		setPageComplete(!status.hasError());
 		int severity = status.getSeverity();
 		String message = status.getMessageMatchingSeverity(severity);
@@ -137,14 +136,14 @@ public class RethrowExInputPage extends UserInputWizardPage {
 	}
 	
 	/**
-	 * pup up dialog that allow user to select class to throw exception
+	 * pop up dialog that allows user to select a class to throw exception
 	 * @return
 	 */
 	private IType selectExType(){
 		//get project exist in getRethrowExRefactoring
 		IJavaProject project = getRethrowExRefactoring().getProject();
 		
-		//through out Dialog to find out all class or library......ect in project
+		//through out Dialog find out all class or library......etc in project
 		try {
 			//set the boundary of exception type 
 			IType runtimeExceptionType = project.findType("java.lang.RuntimeException");

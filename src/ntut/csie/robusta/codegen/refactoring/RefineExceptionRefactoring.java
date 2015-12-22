@@ -65,7 +65,7 @@ public class RefineExceptionRefactoring extends Refactoring {
 
 	/**
 	 * check initial state of code before refactoring.
-	 * suggest that we can provide refactoring only when code without any syntax error.
+	 * suggest that we can provide refactoring only when code is without any syntax error.
 	 */
 	@Override
 	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
@@ -124,7 +124,7 @@ public class RefineExceptionRefactoring extends Refactoring {
 		if(name.length() == 0) {
 			return RefactoringStatus.createFatalErrorStatus("Please Choose an Exception Type");
 		} else {
-			//if user has something input and then save it.
+			//if user has something, input and then save it.
 			exceptionName = name;
 			return new RefactoringStatus();
 		}

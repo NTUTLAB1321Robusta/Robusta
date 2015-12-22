@@ -62,7 +62,7 @@ public class BaseQuickFix {
 				javaFileWillBeQuickFixed = (CompilationUnit) parser.createAST(null);
 				javaFileWillBeQuickFixed.recordModifications();
 				
-				//collect all method in class
+				//collect all methods in a class
 				ASTMethodCollector methodCollector = new ASTMethodCollector();
 				javaFileWillBeQuickFixed.accept(methodCollector);
 				List<MethodDeclaration> methodList = methodCollector.getMethodList();

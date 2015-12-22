@@ -18,7 +18,7 @@ public class OverLoggingJavaLogExample {
 		try {
 			theSecondOrderInTheSameClassWithJavaLog();
 		} catch(IOException e) {
-			//it will not marked as OverLogging at the top of call chain.
+			//it will not be marked as OverLogging at the top of call chain.
 			javaLogger.log(Level.WARNING, e.getMessage() + "theFirstOrderInTheSameClassWithJavaLog");
 		}
 	}
@@ -41,7 +41,7 @@ public class OverLoggingJavaLogExample {
 		} catch(IOException e) {
 			e.printStackTrace();
 			System.out.println(e);
-			//there is not logger but a throw e to upper caller in this method, so the detection need to be continued.
+			//there is not logger but there is throw e to upper caller in this method, so that detection needs to be continued.
 			throw e;
 		}
 	}
@@ -64,7 +64,7 @@ public class OverLoggingJavaLogExample {
 		try {
 			theSecondOrderInTheSameClassWithJavaLogAndWithoutLoggingAtBeginning();
 		} catch(IOException e) {
-			//it will not marked as OverLogging at the top of call chain.
+			//it will not be marked as OverLogging at the top of call chain.
 			javaLogger.log(Level.WARNING, e.getMessage() + "theFirstOrderInTheSameClassWithJavaLogAndWithoutLoggingAtBeginning");
 		}
 	}
@@ -108,7 +108,7 @@ public class OverLoggingJavaLogExample {
 			OverLoggingTheFirstOrderClass outer = new OverLoggingTheFirstOrderClass();
 			outer.calleeWithJavaLog();
 		} catch(IOException e) {
-			//it will not marked as OverLogging at the top of call chain.
+			//it will not be marked as OverLogging at the top of call chain.
 			javaLogger.log(Level.WARNING, e.getMessage() + "calleeInOutterClassWithJavaLog");
 		}
 	}
@@ -121,7 +121,7 @@ public class OverLoggingJavaLogExample {
 			theSecondOrderInTheSameClassWithJavaLogAndSomeConditions();
 			theFifthOrderInTheSameClassWithJavaLogAndSomeConditions();
 		} catch (IOException e) {
-			//it will not marked as OverLogging at the top of call chain.
+			//it will not be marked as OverLogging at the top of call chain.
 			javaLogger.log(Level.WARNING, e.getMessage() + "theFirstOrderInTheSameClassWithJavaLogAndSomeConditions");
 		}
 	}
@@ -132,7 +132,7 @@ public class OverLoggingJavaLogExample {
 			theThirdOrderInTheSameClassWithJavaLogAndSomeConditions();
 		} catch(FileNotFoundException e) {
 			e.printStackTrace();
-			// Not OverLogging, exception thrown from the method in try is not catched here
+			// Not OverLogging, exception thrown from the method in try is not caught here
 			javaLogger.log(Level.WARNING, e.getMessage() + "theSecondOrderInTheSameClassWithJavaLogAndSomeConditions");
 			throw e;
 		}
@@ -191,7 +191,7 @@ public class OverLoggingJavaLogExample {
 			OverLoggingTheFirstOrderClass outer = new OverLoggingTheFirstOrderClass();
 			outer.calleeWithJavaLog();
 		} catch(IOException e) {
-			//it will not marked as OverLogging at the top of call chain.
+			//it will not be marked as OverLogging at the top of call chain.
 			javaLogger.log(Level.WARNING, e.getMessage() + "calleeInOutterClassWithJavaLogAndSomeConditions");
 		}
 	}

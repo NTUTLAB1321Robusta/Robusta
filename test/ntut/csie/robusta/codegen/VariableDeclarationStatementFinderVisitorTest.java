@@ -83,7 +83,7 @@ public class VariableDeclarationStatementFinderVisitorTest {
 	}
 	
 	/**
-	 * check whether visitor can detect two different method which they has the same program code inside.
+	 * check whether visitor can detect two different method which they have the same program code inside.
 	 */
 	@Test
 	public void testVariableDeclarationStatementFinder_DifferentMethodDeclaraionOwnsSameCode_1st() {
@@ -95,7 +95,7 @@ public class VariableDeclarationStatementFinderVisitorTest {
 	
 	/**
 	 * @see #testVariableDeclarationStatementFinder_DifferentMethodDeclaraionOwnsSameCode_1st()
-	 * 從MD2的mi尋找他的VariableDeclarationStatement
+	 * find VariableDeclarationStatement from MD2's mi
 	 */
 	@Test
 	public void testVariableDeclarationStatementFinder_DifferentMethodDeclaraionOwnsSameCode_2rd() {

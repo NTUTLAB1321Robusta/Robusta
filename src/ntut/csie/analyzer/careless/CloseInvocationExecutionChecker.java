@@ -26,7 +26,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 
 /**
- * It will check if any exception may been thrown before
+ * It will check whether any exception would be thrown before the execution of close invocation
  */
 public class CloseInvocationExecutionChecker {
 
@@ -275,7 +275,7 @@ public class CloseInvocationExecutionChecker {
 				return false;
 			}
 		}
-		// doesn't each if statement have else statement
+		// not all if statement has else statement
  		return true;
 	}
 
@@ -292,7 +292,7 @@ public class CloseInvocationExecutionChecker {
 				}
 			}
 		}
-		// doesn't each if statement have else if statement
+		// not all if statement has else if statement
 		return true;
 	}
 
@@ -388,7 +388,7 @@ public class CloseInvocationExecutionChecker {
 	}
 
 	/**
-	 * Return false only if the statements will not throw any exception in 100%.
+	 * Returns false only if the statements will not throw any exception 100%.
 	 */
 	private boolean isUnsafeSiblingStatement(Statement statement) {
 		if (statement.getNodeType() == ASTNode.EMPTY_STATEMENT) {

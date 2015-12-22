@@ -7,7 +7,7 @@ import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CatchClause;
 
 /**
- * 蒐集專案中所有的catch clause
+ * collect all catch clauses in project
  * @author chewei
  */
 

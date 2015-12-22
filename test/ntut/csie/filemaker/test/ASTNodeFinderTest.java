@@ -72,10 +72,10 @@ public class ASTNodeFinderTest {
 	@Test
 	public void testGetNodeFromSpecifiedClass() throws Exception {
 		/**
-		 * 略述
-		 * lineNumber = 1 →  hole program code in java file
-		 * lineNumber of method →  hole method code
-		 * lineNumber of class → hole class code
+		 * brief summary
+		 * lineNumber = 1 →  whole program code in java file
+		 * lineNumber of method →  whole method code
+		 * lineNumber of class → whole class code
 		 * lineNumber of ":" → null (line number not match)
 		 * lineNumber of comment → null
 		 * lineNumber of braces → null (line number not match)
@@ -132,7 +132,7 @@ public class ASTNodeFinderTest {
 		//        but line number got by using astnode is not match to the original line number 
 		lineNumber = 37;
 		ASTNode astNode = ASTNodeFinder.getNodeFromSpecifiedClass(NodeUtilsTestSample.class, projectName, lineNumber);
-		// FIXME the bug need to be fix.
+		// FIXME the bug needs to be fixed.
 		assertEquals("FIXME the bug need to be fix.",lineNumber, compilationUnit.getLineNumber(astNode.getStartPosition()));
 	}
 }

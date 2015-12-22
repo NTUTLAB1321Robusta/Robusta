@@ -9,7 +9,7 @@ import java.io.InputStream;
 
 /**
  * This class contains test examples that would help define Careless Cleanup
- * rules. Test samples that are necessary for defining Careless Cleanup but is
+ * rules. Test samples that are necessary for defining Careless Cleanup but it is
  * already written somewhere else would be kept and commented.
  */
 public class CarelessCleanupDefinitionExample {
@@ -43,7 +43,7 @@ public class CarelessCleanupDefinitionExample {
 
 	/*
 	 * Since Java 7 Oracle introduced AutoCloseable interface and developers
-	 * stared using it instead of Closeable; hence, we need to be able to detect
+	 * started using it instead of Closeable; hence, we need to be able to detect
 	 * Careless Cleanup for resources of AutoCloseable type.
 	 * 
 	 * commented because this example is also written somewhere else but
@@ -148,7 +148,7 @@ public class CarelessCleanupDefinitionExample {
 	// clean up method that is not named "close" would not be detected by the CC
 	// detector
 	// UNLESS it has a "AutoCloseable" parameter and the method contains a close
-	// in it body.
+	// in its body.
 	public void closeMethodNotNamedClosePassedInAutoCloseableResource()
 			throws IOException {
 		ConcreteAutoCloseableOutputStream os = new ConcreteAutoCloseableOutputStream();

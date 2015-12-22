@@ -133,7 +133,7 @@ public class ASTHandler {
 	
 
 	/**
-	 * check whether is checked exception
+	 * check whether it is checked exception
 	 * 
 	 * @param typeBinding
 	 * @return Y:is Checked Exception N: none
@@ -148,12 +148,12 @@ public class ASTHandler {
 	}
 
 	/**
-	 * check whether is required class' instance
+	 * check whether it is required class' instance
 	 * 
 	 * @param typeBinding
 	 * @param typeName
 	 *            required class' name(full name)
-	 * @return Y:是 N:否
+	 * @return Y:yes N:no
 	 */
 	public static boolean isInstance(ITypeBinding typeBinding, String typeName) {
 		

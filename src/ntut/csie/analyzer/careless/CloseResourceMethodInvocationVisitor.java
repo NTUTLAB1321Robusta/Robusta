@@ -40,8 +40,9 @@ public class CloseResourceMethodInvocationVisitor extends ASTVisitor {
 	}
 
 	/**
-	 * Check whether the method invocation is a close invocation or not
-	 * @param root the java file of the method invocation
+	 * Checks the method invocation whether if it's a close invocation or not
+	 * @param root 
+	 * 			the java file of the method invocation
 	 */
 	private static boolean isCloseResourceMethodInvocation(CompilationUnit root,
 			MethodInvocation node) {
@@ -89,7 +90,7 @@ public class CloseResourceMethodInvocationVisitor extends ASTVisitor {
 	/**
 	 * If this node implemented Closeable and named "close", return true.
 	 * Otherwise, return false.
-	 * // TODO Haven't be implement
+	 * // TODO Hasn't been implemented
 	 */
 	private static boolean isNodeACloseCodeAndImplementedCloseable(
 			SuperMethodInvocation node) {

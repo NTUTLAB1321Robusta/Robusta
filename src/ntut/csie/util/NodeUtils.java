@@ -38,7 +38,7 @@ public class NodeUtils {
 	}
 
 	/**
-	 * Tell if the ITypeBinding from a Class/Interface implemented the specific
+	 * Inform whether the ITypeBinding from a Class/Interface implemented the specific
 	 * interface
 	 */
 	public static boolean isITypeBindingImplemented(ITypeBinding bindingClass,
@@ -64,7 +64,7 @@ public class NodeUtils {
 	}
 
 	/**
-	 * tell if MethodInvocation in finally block or not
+	 * tell if MethodInvocation is in finally block or not
 	 */
 	public static boolean isMethodInvocationInFinally(MethodInvocation node) {
 		ASTNode astNode = getSpecifiedParentNode(node, ASTNode.TRY_STATEMENT);
@@ -96,8 +96,8 @@ public class NodeUtils {
 	}
 
 	/**
-	 * from given child node to find a specified parent node.
-	 * @return null if can't find the specified parent node
+	 * from given child node find a specified parent node.
+	 * @return null if it can't find the specified parent node
 	 */
 	public static ASTNode getSpecifiedParentNode(ASTNode startNode, int nodeType) {
 		ASTNode resultNode = null;
@@ -147,7 +147,7 @@ public class NodeUtils {
 	}
 
 	/**
-	 * Return the declared exceptions when it exist. Otherwise it will return
+	 * Return the declared exceptions when it exists. Otherwise it will return
 	 * empty array
 	 */
 	public static ITypeBinding[] getDeclaredExceptions(MethodInvocation node) {
@@ -155,7 +155,7 @@ public class NodeUtils {
 	}
 
 	/**
-	 * Return the declared exceptions when it exist. Otherwise it will return
+	 * Return the declared exceptions when it exists. Otherwise it will return
 	 * empty array
 	 */
 	public static ITypeBinding[] getDeclaredExceptions(
@@ -164,7 +164,7 @@ public class NodeUtils {
 	}
 
 	/**
-	 * Return the declared exceptions when it exist. Otherwise it will return
+	 * Return the declared exceptions when it exists. Otherwise it will return
 	 * empty array
 	 */
 	public static ITypeBinding[] getDeclaredExceptions(
@@ -173,7 +173,7 @@ public class NodeUtils {
 	}
 
 	/**
-	 * Return the declared exceptions when it exist. Otherwise it will return
+	 * Return the declared exceptions when it exists. Otherwise it will return
 	 * empty array
 	 */
 	private static ITypeBinding[] getDeclaredExceptions(
@@ -190,7 +190,7 @@ public class NodeUtils {
 	}
 
 	/**
-	 * Return the resolveExpressionType when it exist. Otherwise it will return
+	 * Return the resolveExpressionType when it exists. Otherwise it will return
 	 * null
 	 */
 	public static ITypeBinding getExpressionBinding(MethodInvocation node) {
@@ -199,7 +199,7 @@ public class NodeUtils {
 	}
 
 	/**
-	 * Return the resolveExpressionType when it exist. Otherwise it will return
+	 * Return the resolveExpressionType when it exists. Otherwise it will return
 	 * null
 	 */
 	public static ITypeBinding getExpressionBinding(ThrowStatement node) {

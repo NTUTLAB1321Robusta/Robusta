@@ -21,7 +21,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
 /**
- * allow user to define manual detect rule
+ * allows user to define manual detection rule
  * @author chewei
  */
 public class DummyHandlerPage extends APropertyPage{
@@ -49,11 +49,11 @@ public class DummyHandlerPage extends APropertyPage{
 	private String log4jText;
 	// text of javaUtillogBtn
 	private String javaUtillogText;
-	// button to pup up extraRuleDialog
+	// button to pop up extraRuleDialog
 	private Button extraRuleBtn;
 	// Library Data
 	private TreeMap<String, Boolean> libMap = new TreeMap<String, Boolean>();
-	//access configure stored in XML 
+	//access configuration that is stored in XML 
 	private SmellSettings smellSettings;
 
 	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
@@ -271,9 +271,9 @@ public class DummyHandlerPage extends APropertyPage{
 		if (javaUtillogBtn.getSelection())
 			spaceSize+=4;
 
-		//ranges is boundary of font location position
+		//ranges is a boundary of font location position
 		int[] ranges = new int[spaceSize];
-		//styles is font style 
+		//styles is a font style 
 		StyleRange[] styles = new StyleRange[spaceSize/2];
 
 		//set index of ranges and styles 
@@ -282,7 +282,7 @@ public class DummyHandlerPage extends APropertyPage{
 
 		//try statement and catch statement corresponding position(these two statement is pair{start position, start position,.... , amount})
 		int[] main = new int[] {0,3,13,15,31,5};
-		//save font style correspond to try statement and catch statement position
+		//save font style corresponding to try statement and catch statement position
 		for (int i=0;i<3;i++)
 			styles[style_i++] = sampleStyles[i];
 		for (int i=0;i<6;i++)
@@ -294,7 +294,7 @@ public class DummyHandlerPage extends APropertyPage{
 		if (sysoBtn.getSelection()) {
 			//SystemOut statement corresponding position(relative position + current statement length)
 			int[] syso = new int[] {11 + textLength,3,38 + textLength,3};
-			//save font style correspond to SystemOut statement position
+			//save font style corresponding to SystemOut statement position
 			for (int i=0;i<4;i++)
 				ranges[range_i++] = syso[i];
 			for (int i=3;i<5;i++)
@@ -305,7 +305,7 @@ public class DummyHandlerPage extends APropertyPage{
 		if (log4jBtn.getSelection()) {
 			//Log4J statement corresponding position(relative position + current statement length)
 			int[] log4j = new int[] {4+textLength,14,23+textLength,6,};
-			//save font style correspond to Log4j statement position
+			//save font style corresponding to Log4j statement position
 			for (int i=0;i<4;i++)
 				ranges[range_i++] = log4j[i];			
 			for (int i=5;i<7;i++)
@@ -316,7 +316,7 @@ public class DummyHandlerPage extends APropertyPage{
 		if (javaUtillogBtn.getSelection()) {
 			//javaUtillog statement corresponding position(relative position + current statement length)
 			int[] javaUtillog = new int[] {4 + textLength,33,43 + textLength,11};
-			//save font style correspond to javaUtillog statement position
+			//save font style corresponding to javaUtillog statement position
 			for (int i=0;i<4;i++)
 				ranges[range_i++] = javaUtillog[i];
 			for (int i=7;i<9;i++)
@@ -350,14 +350,14 @@ public class DummyHandlerPage extends APropertyPage{
 		if(javaUtillogBtn.getSelection())
 			smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_JavaUtilLoggingLogger);
 		
-		// save user define rule
+		// save user defined rule
 		Iterator<String> userDefinedCodeIterator = libMap.keySet().iterator();
 		while(userDefinedCodeIterator.hasNext()) {
 			String key = userDefinedCodeIterator.next();
 			smellSettings.addDummyHandlerPattern(key, libMap.get(key));
 		}
 
-		// save smell configure back to XML
+		// save smell configuration back to XML
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		return true;
 	}

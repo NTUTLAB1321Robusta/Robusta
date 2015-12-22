@@ -245,7 +245,7 @@ public class UnprotectedMainProgramVisitorTest {
 		// check postcondition
 		assertFalse((Boolean)processMainFunction.invoke(mainVisitor, md.getBody().statements()));
 		
-		// case 2 : main body with try block but not catch Exception.class
+		// case 2 : main body with try block but no catch Exception.class
 		methodCollector = new ASTMethodCollector();
 		unit9.accept(methodCollector);
 		mainVisitor = new UnprotectedMainProgramVisitor(unit9);
@@ -306,7 +306,7 @@ public class UnprotectedMainProgramVisitorTest {
 		md = list.get(0);
 		// check precondition
 		assertEquals(1, md.getBody().statements().size());
-		//due to there is not annotation on main function, so the marker will be added at the first line of main function.
+		// due to there is no annotation on main function, so the marker will be added at the first line of main function.
 		assertEquals(4, unit2.getLineNumber(md.getStartPosition()));
 		// test target & check postcondition
 		assertEquals(4, getLineNumber.invoke(mainVisitor, md));

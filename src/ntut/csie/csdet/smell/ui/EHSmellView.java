@@ -177,7 +177,7 @@ public class EHSmellView extends ViewPart implements IShowInSource {
 			//show smell type at second column
 			item.setText(1, smellType);
 
-			//if cursor is at the same line number as MarkerInfo
+			//if cursor is on the same line number as MarkerInfo
 			if (currentLineNumber == msg.getLineNumber()) {
 				item.setBackground(new Color(null,0,255,0));
 			}
@@ -326,7 +326,7 @@ public class EHSmellView extends ViewPart implements IShowInSource {
 		//double click at table can direct developer to corresponding line number
 		smellList.addListener(SWT.DefaultSelection, new Listener() {
 			public void handleEvent(Event e) {
-				//get all table item in table
+				//get all table items from table
 				TableItem[] allItems = smellList.getItems();
 				//get selected table item
 				TableItem[] selection = smellList.getSelection();

@@ -75,7 +75,7 @@ public class RobustaSettingsTest {
 
 	@Test
 	public void testGetProjectDetect() throws Exception {
-		// setting file dose not exist
+		// setting file does not exist
 		robustaSettings.getProjectDetect("src");
 		robustaSettings.writeNewXMLFile(robustaSettingFile.getPath());
 		assertTrue(robustaSettingFile.exists());
@@ -85,7 +85,7 @@ public class RobustaSettingsTest {
 						+ "<RobustaSettings><ProjectDetect FolderName=\"src\" enable=\"true\" />"
 						+ "</RobustaSettings>", fileContent);
 
-		// setting file exist
+		// setting file exists
 		robustaSettings = new RobustaSettings(robustaSettingFile, project);
 		fileContent = readFileContents(robustaSettingFile);
 		assertEquals(
@@ -93,7 +93,7 @@ public class RobustaSettingsTest {
 						+ "<RobustaSettings><ProjectDetect FolderName=\"src\" enable=\"true\" />"
 						+ "</RobustaSettings>", fileContent);
 
-		// setting file exist and add new element
+		// setting file exists and add new element
 		robustaSettings = new RobustaSettings(robustaSettingFile, project);
 		robustaSettings.getProjectDetect("srcTest");
 		robustaSettings.writeNewXMLFile(robustaSettingFile.getPath());
@@ -104,7 +104,7 @@ public class RobustaSettingsTest {
 						+ "<ProjectDetect FolderName=\"srcTest\" enable=\"true\" />"
 						+ "</RobustaSettings>", fileContent);
 
-		// setting file exist and add existed element
+		// setting file exists and add existing element
 		robustaSettings.getProjectDetect("srcTest");
 		robustaSettings.writeNewXMLFile(robustaSettingFile.getPath());
 		fileContent = readFileContents(robustaSettingFile);

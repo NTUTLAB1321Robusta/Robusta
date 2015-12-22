@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * add throw checked exception feature to quick fix marker
+ * add "throw checked exception" feature to quick fix of the marker
  * @author Shiau
  */
 public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
@@ -80,7 +80,7 @@ public class TEQuickFix extends BaseQuickFix implements IMarkerResolution{
 
 					//adjust order of RL annotation TODO need to be fixed
 					//new RLOrderFix().run(marker.getResource(), methodIdx, msgIdx);
-					//high light specified line number (omit this feature temporarily)
+					//highlight specified line number (omit this feature temporarily)
 					//selectSourceLine(marker, methodIdx, catchIdx);
 				}
 			}

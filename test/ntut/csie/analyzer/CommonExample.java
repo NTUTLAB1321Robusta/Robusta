@@ -93,7 +93,7 @@ public class CommonExample {
 	}
 	
 	/**
-	 * to test if there is an expression statement, not a method invocation, exist in catch clause whether the detection can work 
+	 * to test if there is an expression statement, not a method invocation, exists in catch clause and whether the detection can work 
 	 */
 	public void true_systemOutPrintlnWithE() {
 		FileInputStream fis = null;
@@ -277,7 +277,7 @@ public class CommonExample {
 			 */
 			userDefineDummyHandlerFish.swim();
 			/*
-			 * ser defined type1 - when meet a template like "*[javaFilePath].UserDefineDummyHandlerFish.*" - false
+			 * user defined type1 - when meet a template like "*[javaFilePath].UserDefineDummyHandlerFish.*" - false
 		 	 * this "userDefineDummyHandlerFish.toString()" will not be detected, due to its' .toString() is inherited from Object class.
 		 	 * if "userDefineDummyHandlerFish.toString()"'s .toString() is a override method, userDefineDummyHandlerFish.toString() will be detected as "*.toString()".
 			 */

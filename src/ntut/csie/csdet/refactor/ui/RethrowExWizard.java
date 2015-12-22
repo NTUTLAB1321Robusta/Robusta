@@ -5,7 +5,7 @@ import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizard;
 
 /**
- * Refactoring的wizard,wizard之下會有page
+ * this is a  wizard to generate a user page, providing refactoring feature.
  * @author chewei
  */
 

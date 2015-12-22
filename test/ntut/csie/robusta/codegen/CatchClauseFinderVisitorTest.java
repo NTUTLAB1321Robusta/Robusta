@@ -65,7 +65,7 @@ public class CatchClauseFinderVisitorTest {
 
 	@Test
 	public void testCatchClauseFinderVisitor_2CatchClause() {
-		//to get correct position of statement, you should minus the position from ASTVise with 1 
+		//to get correct position of statement, you should subtract the position from ASTVise with 1 
 		int targetCatchClauseStartPosition = 459 - 1;
 		CatchClauseFinderVisitor catchClauseFinder = new CatchClauseFinderVisitor(targetCatchClauseStartPosition);
 		compilationUnit.accept(catchClauseFinder);

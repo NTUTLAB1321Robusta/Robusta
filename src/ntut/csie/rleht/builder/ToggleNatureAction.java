@@ -30,7 +30,7 @@ public class ToggleNatureAction implements IObjectActionDelegate {
 	
 	private static MarkerModel markerModel= new MarkerModel();
 	
-	//add listener on editor that when open or update editor's content, editor will be added annotation
+	//add listener on editor that when its opened or update editor's content, editor will be added annotation
 	private static EditorTracker editorTracker = new EditorTracker(PlatformUI.getWorkbench(), markerModel);;
 
 	/*

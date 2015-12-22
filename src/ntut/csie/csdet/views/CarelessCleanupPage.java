@@ -38,7 +38,7 @@ public class CarelessCleanupPage  extends APropertyPage {
 	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
 	public CarelessCleanupPage(Composite composite, CSPropertyPage page, SmellSettings smellSettings){
 		super(composite,page);
-		//Context of TextBox, when only detected in try statement
+		//This context of TextBox will be shown only if user unchecks the checkbox from CarelessCleanupPage
 		beforeText = "InputStream in = new FileInputStream(inputFile);\n" +
 				"OutputStream out = new FileOutputStream(outputFile);\n" +
 				"try {\n" +
@@ -49,7 +49,7 @@ public class CarelessCleanupPage  extends APropertyPage {
 				"}\n" +
 				"in.close(); // will not be detected";
 
-		//Context of TextBox, when detected whole area
+		//This context of TextBox will be shown only if user checks the checkbox from CarelessCleanupPage
 		afterText =	"InputStream in = new FileInputStream(inputFile);\n" +
 				"OutputStream out = new FileOutputStream(outputFile);\n" +
 				"try {\n" +
@@ -107,7 +107,7 @@ public class CarelessCleanupPage  extends APropertyPage {
 				userDefinedCode = dialog.getLibMap();
 			}
 		});
-		//checked the check box to apply detect rule and change text and text color
+		//check the check box to apply detect rule and change text and text color
 		isOnlyDetectingInTryStatement.setSelection(
 			smellSettings.isExtraRuleExist(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT));
 
@@ -163,7 +163,7 @@ public class CarelessCleanupPage  extends APropertyPage {
 	}
 	
 	/**
-	 * pre-load text style which will be use in program(Try only)   
+	 * pre-load text style which will be used in program(Try only)   
 	 */
 	private void addBeforeSampleStyle(Display display){
 		beforeSampleStyles[0] = createBoldMagentaStyleRange(display); // key word new
@@ -177,7 +177,7 @@ public class CarelessCleanupPage  extends APropertyPage {
 	}
 	
 	/**
-	 *pre-load font style which will be use in program(Whole area)
+	 *pre-load font style which will be used in program(Whole area)
 	 */
 	private void addAfterSampleStyle(Display display){
 		afterSampleStyles[0] = createBoldMagentaStyleRange(display); // key word new
@@ -218,12 +218,12 @@ public class CarelessCleanupPage  extends APropertyPage {
 		if(isOnlyDetectingInTryStatement.getSelection()){
 			// set Template font style apply boundary
 			int[] beforeRange=new int[]{17,3,68,3,102,3,112,32,162,19,184,5,210,5,233,19};
-			//get Template font style
+			// get Template font style
 			StyleRange[] beforeStyles=new StyleRange[8];
 			for(int i=0;i<beforeSampleStyles.length;i++){
 				beforeStyles[i]=beforeSampleStyles[i];
 			}
-			//apply font boundary and style to Template 
+			// apply font boundary and style to Template 
 			templateArea.setStyleRanges(beforeRange, beforeStyles);
 		}
 		
@@ -231,18 +231,18 @@ public class CarelessCleanupPage  extends APropertyPage {
 		if(!isOnlyDetectingInTryStatement.getSelection()){
 			// boundary of Template's font style
 			int[] afterRange=new int[]{17,3,68,3,102,3,112,32,162,19,184,5,210,5,233,23};
-			//get template font style
+			// get template font style
 			StyleRange[] afterStyles=new StyleRange[8];
 			for(int i=0;i<afterSampleStyles.length;i++){
 				afterStyles[i]=afterSampleStyles[i];
 			}
-			//apply font boundary and style to Template 
+			// apply font boundary and style to Template 
 			templateArea.setStyleRanges(afterRange, afterStyles);
 		}
 	}
 	
 	/**
-	 * store user configure
+	 * store user configuration
 	 */
 	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
 	@Override
@@ -251,20 +251,20 @@ public class CarelessCleanupPage  extends APropertyPage {
 		smellSettings.removeExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		
 		/* 
-		 * get user selection to decide whether detect extra rule 
+		 * get user selection to decide whether to detect extra rule 
 		 */
 		if(isOnlyDetectingInTryStatement.getSelection()) {
 			smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		}
 		
-		// save user define rule
+		// save user defined rule
 		Iterator<String> userDefinedCodeIterator = userDefinedCode.keySet().iterator();
 		while(userDefinedCodeIterator.hasNext()) {
 			String key = userDefinedCodeIterator.next();
 			smellSettings.addCarelessCleanupPattern(key, userDefinedCode.get(key));
 		}
 		
-		// save user modify back to XML
+		// save user modification back to XML
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		return true;
 	}

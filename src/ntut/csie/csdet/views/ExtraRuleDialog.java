@@ -32,7 +32,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * allow user to define that what kind of dummy handler should be detected
+ * allows user to define what kind of dummy handler should be detected
  * @author Shiau
  *
  */
@@ -82,18 +82,18 @@ public class ExtraRuleDialog extends Dialog{
 		final GridData gd_testList = new GridData(SWT.FILL, SWT.FILL, true, true);
 		displayTable.setBounds(10, 66, 243, 150);
 		displayTable.setLayoutData(gd_testList);
-		//if user select item on displayTable, then display item name on displaytable 
+		//if user selects item on displayTable, then display the item name on displaytable 
 		displayTable.addListener(SWT.Selection, new Listener(){
 			public void handleEvent(Event e){
 				int selectionIndex = displayTable.getSelectionIndex();
-				//avoid selectionIndex is -1 when displayTable just pup up and then user select one checked box on it
+				//avoid selectionIndex is -1 when displayTable just pop up and then user select one checked box on it
 				if(selectionIndex >= 0){
 					editBtn.setEnabled(true);
 					tempText.setText(displayTable.getItem(selectionIndex).getText());
 				}
 			}
 		});
-		//add double click listener to displayTable that when double click occur, modify dialog pup up
+		//add double click listener to displayTable, when double click occurs, modify dialog will pop up
 		displayTable.addMouseListener(new MouseAdapter() {
 			public void mouseDoubleClick(final MouseEvent e) {
 				int selectionIndex = displayTable.getSelectionIndex();
@@ -122,7 +122,7 @@ public class ExtraRuleDialog extends Dialog{
 		tempText.setBounds(10, 38, 243, 22);
 		tempText.addKeyListener(new KeyAdapter() {
 			public void keyPressed(final KeyEvent e) {
-				//when text has modified, disable warning
+				//when text is modified, disable warning
 				picLabel.setVisible(false);
 				warningLabel.setVisible(false);
 			}
@@ -130,7 +130,7 @@ public class ExtraRuleDialog extends Dialog{
 		
 		Label nameLabel = new Label(container, SWT.NONE);
 		nameLabel.setBounds(10, 10, 97, 22);
-		//according to whether is library or statement to change template
+		//changes its template depending on whether it is library or statement
 		nameLabel.setText(resource.getString("detect.rule"));
 
 		final Button clearBtn = new Button(btnComposite, SWT.NONE);
@@ -167,7 +167,7 @@ public class ExtraRuleDialog extends Dialog{
 		addBtn.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e) {
 				boolean isWarning = addRule();
-				//check whether is duplicate rule then pup up warning
+				//check whether if it's duplicated rule then pop up warning
 				if (isWarning){
 					picLabel.setVisible(true);
 					warningLabel.setVisible(true);
@@ -180,7 +180,7 @@ public class ExtraRuleDialog extends Dialog{
 		removeButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(final SelectionEvent e)
 			{
-				//remove selected library in displayTable(precondition: displayTable is not empty and user select one library listed in it)
+				//remove selected library in displayTable(precondition: displayTable is not empty and user selects one library listed in it)
 				if (displayTable.getItemCount() != 0 && displayTable.getSelectionIndex()!=-1) {
 					displayTable.remove(displayTable.getSelectionIndices());
 					tempText.setText("");
@@ -196,7 +196,7 @@ public class ExtraRuleDialog extends Dialog{
 				int selectionIndex = displayTable.getSelectionIndex();
 				if (selectionIndex >= 0) {
 					String temp = displayTable.getItem(selectionIndex).getText();
-					//pup up modify rule dialog
+					//pop up modify rule dialog
 					EditRuleDialog dialog = new EditRuleDialog(new Shell(),temp,displayTable);
 					dialog.open();
 					tempText.setText(displayTable.getItem(selectionIndex).getText());
@@ -238,7 +238,7 @@ public class ExtraRuleDialog extends Dialog{
 		//initialize rule map 
 		ruleMap.clear();
 		TableItem[] temp = displayTable.getItems();
-		//traverse hole table to check whether each item's text is checked
+		//traverse whole table to check whether each item's text is checked
 		for(int i=0;i<temp.length;i++){
 			ruleMap.put(temp[i].getText(),temp[i].getChecked());
 		}
@@ -269,12 +269,12 @@ public class ExtraRuleDialog extends Dialog{
 				temp = "*." + temp;
 
 			boolean isExist = false;
-			//check whether duplicate library name
+			//check whether there is a duplicated library name
 			for(int i=0;i<displayTable.getItemCount();i++) {
 				if(temp.equals(displayTable.getItem(i).getText()))
 					isExist = true;
 			}
-			//add new library when there are not duplicate library
+			//add new library when there are no duplicated library
 			if (!isExist) {
 				TableItem item = new TableItem(displayTable,SWT.NONE);
 				item.setText(temp);
@@ -289,15 +289,14 @@ public class ExtraRuleDialog extends Dialog{
 	}
 	
 	/**
-	 * 取得設定偵測的Library資料
-	 * get configure for detecting library 
+	 * get configuration for detecting library 
 	 */
 	public TreeMap<String, Boolean> getLibMap() {
 		return ruleMap;
 	}
 	
 	/**
-	 * show all detect template on table 
+	 * show all detection template on table 
 	 */
 	private void setInput() {
 		Iterator<String> libIt = ruleMap.keySet().iterator();

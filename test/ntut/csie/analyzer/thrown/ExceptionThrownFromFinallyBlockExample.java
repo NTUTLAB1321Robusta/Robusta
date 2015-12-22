@@ -49,8 +49,8 @@ public class ExceptionThrownFromFinallyBlockExample {
 	}
 
 	/**
-	 * Eclipse will warning "finally block does not complete normally". And
-	 * Robusta should warning TEIFB bad smell, too.
+	 * Eclipse will warn "finally block does not complete normally". And
+	 * Robusta should warn TEIFB bad smell, too.
 	 */
 	@SuppressWarnings("finally")
 	public void throwExceptionInFinally(byte[] context, File outputFile)
@@ -103,9 +103,7 @@ public class ExceptionThrownFromFinallyBlockExample {
 	}
 
 	/**
-	 * Even though we new an exception, but it won't be thrown without keyword
-	 * "throw". We can easily see that by the method didn't be asked to declared
-	 * an Exception on the interface.
+	 * Without the keyword "throw" an exception won't be thrown even though we create exception object, such as "new Exception"
 	 */
 	public void newExceptionWithoutKeywordThrow() {
 		try {
@@ -235,7 +233,7 @@ public class ExceptionThrownFromFinallyBlockExample {
 	}
 
 	/**
-	 * There is no any ThrowsInFinally
+	 * There isn't any ThrowsInFinally
 	 */
 	public void complexExampleWithoutTEIFB(byte[] context, File outputFile)
 			throws IOException {
@@ -256,7 +254,7 @@ public class ExceptionThrownFromFinallyBlockExample {
 			} finally {
 				try {
 					/*
-					 * IOException and FileNotFoundException will be catch
+					 * IOException and FileNotFoundException will be caught
 					 */
 					fileOutputStream3 = new FileOutputStream(outputFile);
 					fileOutputStream3.write(context);
@@ -276,7 +274,7 @@ public class ExceptionThrownFromFinallyBlockExample {
 		} finally {
 			try {
 				/*
-				 * IOException and FileNotFoundException will be catch
+				 * IOException and FileNotFoundException will be caught
 				 */
 				fileOutputStream.close();
 				fileOutputStream2 = new FileOutputStream(outputFile);
@@ -286,7 +284,7 @@ public class ExceptionThrownFromFinallyBlockExample {
 			} finally {
 				try {
 					/*
-					 * IOException and FileNotFoundException will be catch
+					 * IOException and FileNotFoundException will be caught
 					 */
 					fileOutputStream.close();
 					fileOutputStream3 = new FileOutputStream(outputFile);
@@ -297,7 +295,7 @@ public class ExceptionThrownFromFinallyBlockExample {
 					e.printStackTrace();
 				} finally {
 					try {
-						// IOException will be catch by catch block
+						// IOException will be caught by catch block
 						fileOutputStream3.close();
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -308,8 +306,8 @@ public class ExceptionThrownFromFinallyBlockExample {
 	}
 
 	/**
-	 * Example for Bug before new rule at 2013/11/19. After exit the finally
-	 * block above, the thrown exception in catch block should not be mark as a
+	 * Example Bug before new rule at 2013/11/19. After exit the finally
+	 * block above, the thrown exception in catch block should not be marked as a
 	 * TEIFB
 	 */
 	public static void tryWithFinallyOutOfTryBlock() throws IOException {
@@ -326,8 +324,8 @@ public class ExceptionThrownFromFinallyBlockExample {
 	}
 
 	/**
-	 * Example for Bug before new rule at 2013/11/19. After exit the finally
-	 * block above, the thrown exception in catch block should not be mark as a
+	 * Example Bug before new rule at 2013/11/19. After exit the finally
+	 * block above, the thrown exception in catch block should not be marked as a
 	 * TEIFB
 	 */
 	@SuppressWarnings("finally")
@@ -366,7 +364,7 @@ public class ExceptionThrownFromFinallyBlockExample {
 	}
 
 	/**
-	 * Example for Bug before new rule at 2013/11/19.
+	 * Example Bug before new rule at 2013/11/19.
 	 */
 	public void antGTExample2(byte[] context, File outputFile)
 			throws IOException {
@@ -388,8 +386,8 @@ public class ExceptionThrownFromFinallyBlockExample {
 			FileOutputStream fileOutputStream3 = null;
 			try {
 				/*
-				 * Four statements's exception is IOException only. And it will
-				 * be catch by catch block
+				 * Four statements's exception are IOException only. And it will
+				 * be caught by catch block
 				 */
 				fileOutputStream3 = new FileOutputStream(outputFile);
 				fileOutputStream.close(); // Unsafe for CC

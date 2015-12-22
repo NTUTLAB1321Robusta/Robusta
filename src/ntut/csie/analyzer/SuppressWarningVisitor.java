@@ -42,7 +42,7 @@ public class SuppressWarningVisitor extends ASTVisitor {
 	}
 	
 	public boolean visit(CatchClause node) {
-		// get catch index in catch clauses list
+		// get catch index from catch clauses list
 		int index = -1;
 		TryStatement ts = (TryStatement)NodeUtils.getSpecifiedParentNode(node, ASTNode.TRY_STATEMENT);
 		List<?> cc = ts.catchClauses();
@@ -52,14 +52,14 @@ public class SuppressWarningVisitor extends ASTVisitor {
 				break;
 			}
 		}
-		// tell whether there is suppress warning on catch statement
+		// inform whether there is a suppress warning on catch statement
 		SingleVariableDeclaration svd = (SingleVariableDeclaration) node.getStructuralProperty(CatchClause.EXCEPTION_PROPERTY);
 		List<?> modifyList = svd.modifiers();
 		for (int j = 0; j < modifyList.size(); j++) {
 			if (modifyList.get(j) instanceof Annotation) {
 				Annotation annotation = (Annotation) modifyList.get(j);
 				IAnnotationBinding iab  = annotation.resolveAnnotationBinding();
-				//tell whether annotation type is suppress smell
+				//inform whether annotation type is a suppress smell
 				if (iab.getAnnotationType().getQualifiedName().equals(SuppressSmell.class.getName()))
 					addSuppressWarning(node, iab.getAllMemberValuePairs(), index);
 			}
@@ -76,7 +76,7 @@ public class SuppressWarningVisitor extends ASTVisitor {
 		
 		if (mvpb[0].getValue() instanceof String) {
 			ssmsg.addSmellList((String) mvpb[0].getValue());
-		//check whether annotation content is array
+		//check whether annotation content is an array
 		} else if (mvpb[0].getValue() instanceof Object[]) {
 			Object[] values = (Object[]) mvpb[0].getValue();
 			for (Object obj : values) {

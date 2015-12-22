@@ -63,7 +63,7 @@ public class SmellSettingsTest {
 	
 	@Test
 	public void testGetSmellType() throws Exception {
-		// setting file dose not exist
+		// setting file does not exist
 		smellSettings.getSmellType(SmellSettings.SMELL_CARELESSCLEANUP);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		assertTrue(smellSettingFile.exists());
@@ -73,7 +73,7 @@ public class SmellSettingsTest {
 				"<CodeSmells><SmellTypes name=\"CarelessCleanup\" isDetecting=\"true\" />" +
 				"</CodeSmells>", fileContent);
 		
-		// setting file exist
+		// setting file exists
 		smellSettings = new SmellSettings(smellSettingFile);
 		fileContent = readFileContents(smellSettingFile);
 		assertEquals(
@@ -81,7 +81,7 @@ public class SmellSettingsTest {
 				"<CodeSmells><SmellTypes name=\"CarelessCleanup\" isDetecting=\"true\" />" +
 				"</CodeSmells>", fileContent);
 		
-		// setting file exist and add new element
+		// setting file exists and add new element
 		smellSettings = new SmellSettings(smellSettingFile);
 		smellSettings.getSmellType(SmellSettings.SMELL_DUMMYHANDLER);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
@@ -92,7 +92,7 @@ public class SmellSettingsTest {
 				"<SmellTypes name=\"DummyHandler\" isDetecting=\"true\" />" +
 				"</CodeSmells>", fileContent);
 		
-		// setting file exist and add existed element
+		// setting file exists and add existing element
 		smellSettings.getSmellType(SmellSettings.SMELL_DUMMYHANDLER);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		fileContent = readFileContents(smellSettingFile);
@@ -344,8 +344,8 @@ public class SmellSettingsTest {
 	}
 	
 	/**
-	 * if the instance of SmellSettings has been generated and user modify the same SmellSettings file with other editor at the same time.
-	 * when SmellSettings save, the modification of user made by other editor will vanish.
+	 * if the instance of SmellSettings has been generated and user modify the same SmellSettings file with other editor at the same time, and
+	 * when SmellSettings is saved, the modification of user made by other editor will vanish.
 	 * @throws Exception
 	 */
 	@Test
@@ -523,11 +523,11 @@ public class SmellSettingsTest {
 		/** when bad smell's node is missing*/
 		assertFalse(smellSettings.isExtraRuleExist(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT));
 		
-		/** when bad smell's node is exist but without setting */
+		/** when bad smell's node exists but without setting */
 		smellSettings.getSmellType(SmellSettings.SMELL_CARELESSCLEANUP);
 		assertFalse(smellSettings.isExtraRuleExist(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT));
 		
-		/** when bad smell's node is exist and setting has been specified*/
+		/** when bad smell's node exists and setting has been specified*/
 		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
 		assertTrue(smellSettings.isExtraRuleExist(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT));
@@ -540,7 +540,7 @@ public class SmellSettingsTest {
 		/** when bad smell's node is missing*/
 		assertEquals(0, smellSettings.getSmellSettings(SmellSettings.SMELL_DUMMYHANDLER).size());
 		
-		/** when bad smell is exist and only with extra rule */
+		/** when bad smell exists and only with extra rule */
 		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_ePrintStackTrace);
 		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_JavaUtilLoggingLogger);
 		smellSettings.addExtraRule(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.EXTRARULE_SystemOutPrintln);
@@ -561,7 +561,7 @@ public class SmellSettingsTest {
 		assertTrue(smellSettingFile.delete());
 		smellSettings = new SmellSettings(smellSettingFile.getPath());
 		
-		/** when bad smell is exist and only with bad smell pattern*/
+		/** when bad smell exists and only with bad smell pattern*/
 		assertTrue(smellSettingFile.createNewFile());
 		smellSettings.addDummyHandlerPattern("Java.io.File", true);
 		smellSettings.addDummyHandlerPattern("Java.io.FileInputStream", false);

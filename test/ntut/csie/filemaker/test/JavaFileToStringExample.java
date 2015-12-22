@@ -1,7 +1,7 @@
 package ntut.csie.filemaker.test;
 
 /**
- * 供 JavaFileToStringTest 使用的範例
+ * provide a sample code to JavaFileToStringTest
  * @author pig
  */
 public class JavaFileToStringExample {

@@ -37,10 +37,10 @@ public class UserDefinedMethodAnalyzer {
 	}
 	
 	/**
-	 * check whether library is under user define.
+	 * checks library whether if it's defined by user
 	 * @param node
-	 * @return true，this node is under user define, the caller can add marker on it<br />
-	 * 		   false，this node is not under user define.
+	 * @return true，this node is defined by user, the caller can add marker on it<br />
+	 * 		   false，this node is not defined by user.
 	 */
 	public boolean analyzeLibrary(MethodInvocation node) {
 		if(methodTreeMap.isEmpty()) {
@@ -64,10 +64,10 @@ public class UserDefinedMethodAnalyzer {
 	}
 	
 	/**
-	 * tell whether method is under user define
+	 * tells whether method is defined by user
 	 * @param node
-	 * @return true，this node is under user define, the caller can add marker on it<br />
-	 * 		   false，this node is not under user define.
+	 * @return true，this node is defined by user, the caller can add marker on it<br />
+	 * 		   false，this node is not defined by user.
 	 */
 	public boolean analyzeMethods(MethodInvocation node) {
 		if(methodTreeMap.isEmpty()) {
@@ -112,17 +112,17 @@ public class UserDefinedMethodAnalyzer {
 	 * Analyze extra rule of careless cleanup
 	 */
 	public boolean analyzeExtraRule(MethodInvocation node, CompilationUnit root) {
-		// If use didn't select careless cleanup, do nothing
+		// If user didn't select careless cleanup, do nothing
 		if(methodTreeMap.isEmpty()) {
 			return false;
 		}
 		
-		// If use didn't select this extra rule, do nothing
+		// If user didn't select this extra rule, do nothing
 		if(methodTreeMap.get(SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT) == null) {
 			return false;
 		}
 
-		// Check if parameters implemented closeable
+		// Checks if parameters has implemented Closeable
 		boolean isCloseable = NodeUtils.isParameterImplementedSpecifiedInterface(node, Closeable.class);
 		boolean isAutoCloseable = NodeUtils.isParameterImplementedSpecifiedInterface(node, AutoCloseable.class);
 		
@@ -137,9 +137,9 @@ public class UserDefinedMethodAnalyzer {
 	}
 	
 	/**
-	 * get whether this feature is enable 
-	 * @return
-	 */
+	* get whether this feature is enabled or not 
+	* @return
+	*/
 	public boolean getEnable() {
 		return isEnable;
 	}

@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Quick Fix SuppressSmell Annotation
  * @author Shiau
- * 參考資料：
+ * Reference：
  * SuppressWarnings
  * org.eclipse.jdt.internal.ui.text.correction.SuppressWarningsSubProcessor
  * org.eclipse.jdt.internal.ui.text.correction.QuickFixProcessor
@@ -99,7 +99,7 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 				boolean isok = findMethod(marker.getResource(), Integer.parseInt(methodIdx));
 
 				if (isok) {
-					// if isInCatchClause is true that add SuppressSmell annotation on catch clause or add SuppressSmell annotation on method declare
+					// if isInCatchClause is true then add SuppressSmell annotation on catch clause or add SuppressSmell annotation on method declare
 					if (isInCatchClause) {
 						CatchClause cc = getCatchClause();	
 						SingleVariableDeclaration svd = cc.getException();
@@ -116,7 +116,7 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 
 				boolean isok = findMethod(marker.getResource(), Integer.parseInt(methodIdx));
 				if (isok) {
-					// if isInCatchClause is true that add SuppressSmell annotation on catch clause or add SuppressSmell annotation on method declare
+					// if isInCatchClause is true then add SuppressSmell annotation on catch clause or add SuppressSmell annotation on method declare
 					if (isInCatchClause) {
 						CatchClause cc = getCatchClause();
 
@@ -138,7 +138,8 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 	/**
 	 * get information of method which will be quick fixed
 	 * @param resource
-	 * @param methodIdx		method's Index
+	 * @param methodIdx		
+	 * 				method's Index
 	 * @return	successfully or not
 	 */
 	private boolean findMethod(IResource resource, int methodIdx) {
@@ -377,7 +378,7 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 	}
 	
 	/**
-	 * set the position of cursor游標定位(set the cursor's position the same as the position of robustness level annotation)
+	 * set the position of cursor(set the cursor's position the same as the position of robustness level annotation)
 	 * @param marker
 	 * @param methodIdx
 	 * @throws JavaModelException
@@ -396,14 +397,14 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 				if (isInCatchClause) {
 					CatchClause cc = getCatchClause();
 					Annotation anno  = getExistingAnnotation(cc.getException().modifiers());
-					//high light the the line which has been quick fixed 
+					//highlight the the line which has been quick fixed 
 					editor.selectAndReveal(anno.getStartPosition(), anno.getLength());
 				} else {
 					int srcPos = currentMethodNode.getStartPosition();
 					// due to the line number is 0 base, we need to -1  after get line number
 					int numLine = this.javaFileWhichWillBeQuickFix.getLineNumber(srcPos) - 1;
 					IRegion lineInfo = document.getLineInformation(numLine);
-					//high light the the line which has been quick fixed 
+					//highlight the the line which has been quick fixed 
 					editor.selectAndReveal(lineInfo.getOffset(), lineInfo.getLength());
 				}
 			} catch (BadLocationException e) {

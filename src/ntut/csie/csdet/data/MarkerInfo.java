@@ -7,7 +7,7 @@ import ntut.csie.robusta.marker.AnnotationInfo;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 
 /**
- * 記錄每一種code smell的相關資訊
+ * record each bad smell information
  * @author chewei
  */
 
@@ -46,7 +46,7 @@ public class MarkerInfo {
 	}
 
 	/*
-	 * 除了NT以外目前都用這個，未來應改為與NT相同
+	 * we always use this constructor to create MarkerInfo for all bad smells except nested try bad smell  
 	 */
 	public MarkerInfo(String type, ITypeBinding typeBinding, String statement, int pos, int lineNumber, String exceptionType) {
 		this(type, typeBinding, "", statement, pos, lineNumber, exceptionType, "", null);
@@ -57,7 +57,7 @@ public class MarkerInfo {
 	}
 	
 	/*
-	 * NT 使用，附帶 Method Name 資訊給 Report 用
+	 * this constructor is used to create MarkerInfo for nested try bad smell 
 	 */
 	public MarkerInfo(String type, ITypeBinding typeBinding, String statement,
 			int pos, int lineNumber, String exceptionType, String methodName, List<AnnotationInfo> annotationPosList) {
@@ -122,8 +122,9 @@ public class MarkerInfo {
 	}
 	
 	/**
-	 * 此bad smell是否在try statement中
-	 * false表示不在try裡面， true反之
+	 * to show whether the bad smell is in the try block 
+	 * false means it's in try block
+	 * true means  it isn't in try block
 	 * @return 
 	 */
 	public boolean getIsInTry() {

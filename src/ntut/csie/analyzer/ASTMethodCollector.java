@@ -7,7 +7,7 @@ import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 
 /**
- * 收集所有class中的method
+ * collect all methods in a class 
  * @author allen
  */
 public class ASTMethodCollector extends ASTVisitor {

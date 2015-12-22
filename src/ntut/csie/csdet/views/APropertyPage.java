@@ -18,7 +18,7 @@ public abstract class APropertyPage {
 	}
 
 	/**
-	 * get control's right below coordinate  的右下角座標
+	 * get control's right below coordinate  
 	 * @param control
 	 * @return			right below coordinate
 	 */

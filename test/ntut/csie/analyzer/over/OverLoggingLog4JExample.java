@@ -18,7 +18,7 @@ public class OverLoggingLog4JExample {
 		try {
 			theSecondOrderInTheSameClassWithLog4J();
 		} catch(IOException e) {
-			//it will not marked as OverLogging at the top of call chain.
+			//it will not be marked as OverLogging at the top of call chain.
 			log4jLogger.error(e.getMessage() + "theFirstOrderInTheSameClassWithLog4J");
 		}
 	}
@@ -41,7 +41,7 @@ public class OverLoggingLog4JExample {
 		} catch(IOException e) {
 			e.printStackTrace();
 			System.out.println(e);
-			//there is not logger but a throw e to upper caller in this method, so the detection need to be continued.
+			//there is not logger but there is throw e to upper caller in this method, so that detection needs to be continued.
 			throw e;
 		}
 	}
@@ -65,7 +65,7 @@ public class OverLoggingLog4JExample {
 			OverLoggingTheFirstOrderClass outer = new OverLoggingTheFirstOrderClass();
 			outer.calleeWithLog4J();
 		} catch(IOException e) {
-			//it will not marked as OverLogging at the top of call chain.
+			//it will not be marked as OverLogging at the top of call chain.
 			log4jLogger.error(e.getMessage() + "calleeInOutterClassWithLog4J");
 		}
 	}
@@ -78,7 +78,7 @@ public class OverLoggingLog4JExample {
 			theSecondOrderInTheSameClassWithJavaLogAndSomeConditions();
 			theFifthOrderInTheSameClassWithJavaLogAndSomeConditions();
 		} catch (IOException e) {
-			//it will not marked as OverLogging at the top of call chain.
+			//it will not be marked as OverLogging at the top of call chain.
 			log4jLogger.error(e.getMessage() + "theFirstOrderInTheSameClassWithJavaLogAndSomeConditions");
 		}
 	}
@@ -102,7 +102,7 @@ public class OverLoggingLog4JExample {
 		} catch(FileNotFoundException e) {
 			e.printStackTrace();
 			System.out.println(e);
-			//the detection needs to be continued when it meet a exception casting. 
+			//the detection needs to be continued when it meets an exception casting. 
 			throw new IOException(e);
 		}
 	}
@@ -149,7 +149,7 @@ public class OverLoggingLog4JExample {
 			OverLoggingTheFirstOrderClass outer = new OverLoggingTheFirstOrderClass();
 			outer.calleeWithLog4J();
 		} catch(IOException e) {
-			//it will not marked as OverLogging at the top of call chain.
+			//it will not marked be as OverLogging at the top of call chain.
 			log4jLogger.error(e.getMessage() + "calleeInOutterClassWithLog4JAndSomeConditions");
 		}
 	}

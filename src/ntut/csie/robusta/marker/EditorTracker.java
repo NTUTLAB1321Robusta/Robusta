@@ -22,7 +22,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 /**
- * Tracks the workbench editors and to attach inappropriate annotation models.
+ * Tracks the workbench editors and attaches inappropriate annotation models.
  */
 public class EditorTracker {
 

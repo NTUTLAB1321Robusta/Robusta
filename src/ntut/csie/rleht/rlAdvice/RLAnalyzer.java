@@ -15,7 +15,7 @@ import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.rleht.common.RLBaseVisitor;
 
 /**
- * apply visitor pattern to analyze the exception which may be thrown and method which has been defined robustness level
+ * apply visitor pattern to analyze the exception which may be thrown and methods that have been defined robustness level
  * @author Charles
  * @version 0.0.1
  *  2011/02/10
@@ -74,7 +74,7 @@ public class RLAnalyzer extends RLBaseVisitor {
 
 	/**
 	 * 
-	 * if this visitor visit a MethodInvocation and this MethodInvocation will throw exception, this condition will invoke addMarker().
+	 * if this visitor visits a MethodInvocation and this MethodInvocation will throw exception, this condition will invoke addMarker().
 	 * this addMarker(ASTNode node) method will put code's smell information into RLAdviceMessage.
 	 * this addMarker(ASTNode node) method is different from the method in RLBuilder.class with the same name, addMarker(ASTNode node) in the RLBuilder.class 
 	 * is adding marker in editor according to RLAdviceMessage.
@@ -101,7 +101,7 @@ public class RLAnalyzer extends RLBaseVisitor {
 	}
 	
 	/**
-	 * find out the try statement which is belonged to the input node
+	 * find out the try statement which belongs to the input node
 	 * @param node
 	 * @return
 	 */

@@ -132,8 +132,8 @@ public class ReportBuilderIntergrationTest {
 	}
 	
 	/**
-	 * checked all bad smell type on detecting setting page except dummy handler and empty catch block.
-	 * load user define setting.
+	 * check all bad smell type on detecting setting page except dummy handler and empty catch block.
+	 * load user defined setting.
 	 */
 	private void CreateAllSettings() {
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_DUMMYHANDLER, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
@@ -399,8 +399,8 @@ public class ReportBuilderIntergrationTest {
 	}
 	
 	/**
-	 * checked all bad smell type on detecting setting page.
-	 * this testing is focus on generating report except DummyHandler's and EmptyCatchBlock's report
+	 * check all bad smell type on detecting setting page.
+	 * this testing is focused on generating report except DummyHandler's and EmptyCatchBlock's report
 	 * @throws Exception
 	 */
 	@Test

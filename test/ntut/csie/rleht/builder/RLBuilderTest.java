@@ -110,7 +110,7 @@ public class RLBuilderTest {
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IProject project = workspace.getRoot().getProject(testProjectName);
 		
-		// Add the src folder to ignore folder list to be detect bad smells
+		// Add the src folder to ignore folder list in order to not detect bad smells
 		RobustaSettings robustaSettings = new RobustaSettings(
 				UserDefinedMethodAnalyzer
 						.getRobustaSettingXMLPath(project),

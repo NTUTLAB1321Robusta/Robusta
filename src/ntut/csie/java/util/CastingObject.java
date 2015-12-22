@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.TreeMap;
 
 /**
- * 這個 class是從StackOverFlow找來的。
- * 它的目的是我幫助我們在casting物件時候，透過這些檢查機制，讓java的warning不會出現。
+ * this class is used to cast object type
+ * and through this class we can reduce the casting warning of eclipse
  * @author charles
  *
  */

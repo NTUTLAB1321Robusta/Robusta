@@ -8,19 +8,19 @@ import java.io.IOException;
 public class ClosingResourceBeginningPositionFinderExample {
 
 	public void resourceAssignAndUseMultiTimes(File file1) throws IOException {
-		FileInputStream fis = null;  // First Declared
+		FileInputStream fis = null;  // First Declaration
 		fis = new FileInputStream(file1);
 		fis.available();
 		fis.close();  // First closed
 	}
 
-	public void resourceFromParameters(File file2) throws IOException {  // Second Declared
+	public void resourceFromParameters(File file2) throws IOException {  // Second Declaration
 		FileInputStream fis = null;
 		fis = new FileInputStream(file2);
 		file2.canRead();  // Second closed
 	}
 
-	File file3 = null;  // Third Declared
+	File file3 = null;  // Third Declaration
 	
 	public void resourceFromField() throws IOException {
 		FileInputStream fis = null;
@@ -41,7 +41,7 @@ public class ClosingResourceBeginningPositionFinderExample {
 		}
 	}
 
-	public void invokeGetResourceAndCloseIt() throws Exception {  // Fourth Declared
+	public void invokeGetResourceAndCloseIt() throws Exception {  // Fourth Declaration
 		ClassWithGetResource resourceManager = new ClassWithGetResource();
 		resourceManager.getResource().close();  // Fourth closed
 	}

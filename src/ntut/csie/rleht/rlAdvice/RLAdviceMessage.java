@@ -68,7 +68,7 @@ public class RLAdviceMessage {
 	}
 	
 	/**
-	 * RLinfo is used to record the Robustness level and corresponding exception class of method have defined
+	 * RLinfo is used to record the Robustness level and corresponding exception class of method which has been defined
 	 * @author Charles
 	 *
 	 */
