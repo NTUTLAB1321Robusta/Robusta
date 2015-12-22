@@ -4,11 +4,19 @@ import java.io.IOException;
 
 public class MethodInvocationBeforeClose {
 
-	public void declaredCheckedException() throws IOException {
+	public void declaredCheckedExceptionOnMethodSignature() throws IOException {
 		throw new IOException();
 	}
-
-	public void declaredUncheckedException() throws RuntimeException {
+	
+	public void hasHandledCheckedException(){
+		try{
+			throw new IOException();
+		}catch(IOException e){
+			
+		}
+	}
+	
+	public void declaredUncheckedExceptionOnMethodSignature() throws RuntimeException {
 		throw new RuntimeException();
 	}
 
@@ -18,5 +26,4 @@ public class MethodInvocationBeforeClose {
 
 	public void willNotThrowAnyException() {
 	}
-
 }

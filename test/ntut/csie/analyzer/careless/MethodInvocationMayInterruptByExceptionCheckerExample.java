@@ -7,6 +7,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import ntut.csie.analyzer.careless.closingmethod.ResourceCloser;
 
@@ -58,7 +60,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 	}
 
 	public void closeByUserDefinedMethod(OutputStream zOut) throws IOException {
-		(new MethodInvocationBeforeClose()).declaredCheckedException();
+		(new MethodInvocationBeforeClose()).declaredCheckedExceptionOnMethodSignature();
 		InputStream is = null;
 		try {
 			zOut.write(is.read());
@@ -247,7 +249,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		if (pass) {
 			int a = returnInt();
 		}
-		fis.close();// unsafe
+		fis.close();// safe
 	}
 
 	public void resourceCloseAfterBooleanComparingIfStatementContainVariableDeclaration(
@@ -266,7 +268,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		if (pass == true) {
 			int a = returnInt();
 		}
-		fis.close();// unsafe
+		fis.close();// safe
 	}
 
 	public void resourceCloseAfterBooleanCheckingIfStatementContainBooleanCheckingIfStatementAndVariableDeclaration(
@@ -289,7 +291,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 				int a = returnInt();
 			}
 		}
-		fis.close();// unsafe
+		fis.close();// safe
 	}
 
 	public void resourceCloseAfterBooleanCheckingIfStatementContainNestedBooleanComparingIfStatementAndVariableDeclaration(
@@ -312,7 +314,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 				int a = returnInt();
 			}
 		}
-		fis.close();// unsafe
+		fis.close();// safe
 	}
 
 	public void resourceCloseAfterBooleanCheckingIfElseStatementContainVariableDeclaration(
@@ -332,7 +334,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		if (pass == true) {
 		} else {
 		}
-		fis.close();// unsafe
+		fis.close();// safe
 	}
 
 	public void resourceCloseAfterBooleanCheckingIfElseStatementContainBooleanCheckingIfStatementAndVariableDeclare(
@@ -357,7 +359,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 				int a = returnInt();
 			}
 		}
-		fis.close();// unsafe
+		fis.close();// safe
 	}
 
 	public void resourceCloseAfterBooleanCheckingIfElseStatementContainBooleanComparingIfStatementAndVariableDeclaration(
@@ -438,7 +440,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		if (a && b || returnBoolean()) {
 		} else {
-			fis.close();// unsafe
+			fis.close();// safe
 		}
 	}
 
@@ -499,7 +501,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		if (a && b) {
 			int c = returnInt();
 		}
-		fis.close();// unsafe
+		fis.close();// safe
 	}
 
 	public void resourceCloseAfterCheckingMultiBooleanBooleanIfStatementContainMethodInvocation(
@@ -508,7 +510,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		if (a && b || c && !d) {
 			int cc = returnInt();
 		}
-		fis.close();// unsafe
+		fis.close();// safe
 	}
 
 	public void resourceCloseAfterCheckingMultiBooleanBooleanIfStatementContainVariableDeclaration(
@@ -525,7 +527,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		if (a && b) {
 			int c = returnInt();
-			fis.close();// unsafe
+			fis.close();// safe
 		}
 	}
 
@@ -543,7 +545,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		if (a && b || c && !d) {
 			int cc = returnInt();
-			fis.close();// unsafe
+			fis.close();// safe
 		}
 	}
 
@@ -553,7 +555,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		if (a && b || c && !d) {
 		} else {
 			int cc = returnInt();
-			fis.close();// unsafe
+			fis.close();// safe
 		}
 	}
 
@@ -565,7 +567,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 				int aa = returnInt();
 			}
 		}
-		fis.close();// unsafe
+		fis.close();// safe
 	}
 
 	public void resourceCloseInsideMultiBooleanCheckingIfElseStatementContainMultiBooleanCheckingIfStatementAndMethodInvocation(
@@ -576,7 +578,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 			if (a && b || c && !d) {
 				int as = returnInt();
 			}
-			fis.close();// unsafe
+			fis.close();// safe
 		}
 	}
 
@@ -589,7 +591,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 				int as = returnInt();
 			}
 		}
-		fis.close();// unsafe
+		fis.close();// safe
 	}
 
 	public void resourceCloseAfterMultiBooleanCheckingIfElseStatementContainMultiBooleanCheckingIfStatementAndVariableDeclaration(
@@ -670,7 +672,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 			int intDeclare = returnInt();
 		} else {
 		}
-		fis.close();// unsafe
+		fis.close();// safe
 	}
 
 	public void resourceCloseAfterCheckingInstanceIsNullIfStatementAndAMethodInvocationInsideElseStatement()
@@ -680,7 +682,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		} else {
 			int intDeclare = returnInt();
 		}
-		fis.close();// unsafe
+		fis.close();// safe
 	}
 
 	public void resourceCloseAfterCheckingInstanceIsNullElseIfStatement()
@@ -699,7 +701,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		} else if (fis == null) {
 			int intDeclare = returnInt();
 		}
-		fis.close();// unsafe
+		fis.close();// safe
 	}
 
 	public void resourceCloseAfterCheckingInstanceIsSameIfStatement()
@@ -752,7 +754,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		if (a == b) {
 			int intDeclare = returnInt();
 		}
-		fis.close();// unsafe
+		fis.close();// safe
 	}
 
 	public void resourceCloseAfterCheckingInstanceIsSameElseIfStatementAndAMethodInvocationInside()
@@ -764,7 +766,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		} else if (a == b) {
 			int intDeclare = returnInt();
 		}
-		fis.close();// unsafe
+		fis.close();// safe
 	}
 
 	public void resourceCloseInTheCheckingQualifiedNameSameIfStatement()
@@ -807,7 +809,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		if (false != qualifier.a) {
 			int intDeclare = returnInt();
 		}
-		qualifier.close(); // unsafe
+		qualifier.close(); // safe
 	}
 
 	public void resourceCloseAfterTheCheckingQualifiedNameSameElseStatementAndAMethodInvocationInside()
@@ -817,7 +819,7 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		} else {
 			int intDeclare = returnInt();
 		}
-		qualifier.close(); // unsafe
+		qualifier.close(); // safe
 	}
 
 	public void resourceCloseAfterTheCheckingQualifiedNameSameElseIfStatementAndAMethodInvocationInside()
@@ -827,9 +829,43 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		} else if (false != qualifier.a) {
 			int intDeclare = returnInt();
 		}
-		qualifier.close(); // unsafe
+		qualifier.close(); // safe
 	}
 
+	public void resourceCloseInsideIfStatementAndThereIsAMethodWhichWillThrowCheckedExceptionInIfStatementExpression()
+			throws IOException {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if(fis.read()==0){
+			fis.close(); // unsafe
+		}
+	}
+	
+	public void resourceCloseAfterIfStatementAndThereIsAMethodWhichWillThrowCheckedExceptionInIfStatementExpression()
+			throws IOException {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if(fis.read()==0){
+		}
+		fis.close(); // unsafe
+	}
+	
+	public void resourceCloseAfterIfStatementAndThereIsAMethodWhichWillNotThrowCheckedExceptionInIfStatementExpression()
+			throws IOException {
+		List<Integer> a = new ArrayList<Integer>();
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if(a.size()==0){
+		}
+		fis.close(); // safe
+	}
+	
+	public void resourceCloseInsideIfStatementAndThereIsAMethodWhichWillNotThrowCheckedExceptionInIfStatementExpression()
+			throws IOException {
+		List<Integer> a = new ArrayList<Integer>();
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		if(a.size()==0){
+			fis.close(); // safe
+		}
+	}
+	
 	public void resourceCloseAfterVariableAssignmentStatement()
 			throws Exception {
 		boolean a;
@@ -910,6 +946,35 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		}
 	}
 
+	public void resourceCloseAfterAUnsafeSynchronizedStatement() throws Exception {
+		Integer a = new Integer(1);
+		FileOutputStream fos = new FileOutputStream(new File("D:\\234"));
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		synchronized (a) {
+			try {
+				fos.close();
+				throw new RuntimeException();
+			} catch (IOException e) {
+				// ignore exception
+			}
+		}
+		fis.close();// unsafe
+	}
+	
+	public void resourceCloseAfterASafeSynchronizedStatement() throws Exception {
+		Integer a = new Integer(1);
+		FileOutputStream fos = new FileOutputStream(new File("D:\\234"));
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		synchronized (a) {
+			try {
+				fos.close();
+			} catch (IOException e) {
+				// ignore exception
+			}
+		}
+		fis.close();// safe
+	}
+	
 	public void resourceCloseAfterExceptionTryCatchBlock() throws Exception {
 		FileInputStream fis = new FileInputStream(new File("C:\\123"));
 		try {
@@ -982,6 +1047,195 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 			throw new IOException();
 		} catch (IOException e) {
 		}
-		fis.close();// unsafe
+		fis.close(); //safe
+	}
+	
+	public void resourceCloseAfterTryStatementThatThrowsRuntimeException() throws IOException {
+		FileOutputStream fos = new FileOutputStream(new File("D:\\234"));
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		try {
+			fos.close();
+			throw new RuntimeException();
+		} catch (IOException e) {
+		}
+		fis.close(); //unsafe
+	}
+	
+	public void resourceCloseAfterTryStatementThatCatchGenericException() throws IOException {
+		FileOutputStream fos = new FileOutputStream(new File("D:\\234"));
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		try {
+			fos.close();
+			if(true)
+				throw new RuntimeException();
+		} catch (Exception e) {
+		}
+		fis.close(); //safe
+	}
+	
+	public void resourceCloseAfterTryStatementThatUsesBlanketCatchClause() throws IOException {
+		FileOutputStream fos = new FileOutputStream(new File("D:\\234"));
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		try {
+			fos.close();
+			if(true)
+				throw new RuntimeException();
+		} catch (IOException io) { 
+		} catch (Exception e) {
+		}
+		fis.close(); //safe
+	}
+	
+	public void resourceCloseAfterTryStatementThatCatchesThrowable() throws IOException {
+		FileOutputStream fos = new FileOutputStream(new File("D:\\234"));
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		try {
+			fos.close();
+			if(true)
+				throw new RuntimeException();
+		} catch (IOException io) { 
+		} catch (Throwable e) {
+		}
+		fis.close(); //safe
+	}
+	
+	public void resourceCloseAfterForStatementAndThereIsAMethodWhichWillNotThrowCheckedExceptionInForStatementExpression() throws IOException {
+		List<Integer> list = new ArrayList<Integer>();
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		for(int index=0;index<list.size();index++){
+		}
+		fis.close(); //safe
+	}
+	
+	public void resourceCloseAfterWhileStatementAndThereIsAMethodWhichWillNotThrowCheckedExceptionInWhileStatementExpression() throws IOException {
+		List<Integer> list = new ArrayList<Integer>();
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		while(list.size()==0){
+		}
+		fis.close(); //safe
+	}
+	
+	public void resourceCloseAfterDoStatementAndThereIsAMethodWhichWillNotThrowCheckedExceptionInDoStatementExpression() throws IOException {
+		List<Integer> list = new ArrayList<Integer>();
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		do{
+		}
+		while(list.size()==0);
+		fis.close(); //safe
+	}
+	
+	public void resourceCloseAfterSwitchStatementAndThereIsAMethodWhichWillNotThrowCheckedExceptionInSwitchStatementExpression() throws IOException {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		List<Integer> list = new ArrayList<Integer>();
+		switch(list.size()) { 
+        case 6: 
+            break; 
+        default: 
+        	break; 
+		}
+		fis.close();//safe
+	}
+	
+	public void resourceCloseInsideForStatementAndThereIsAMethodWhichWillNotThrowCheckedExceptionInForStatementExpression() throws IOException {
+		List<Integer> list = new ArrayList<Integer>();
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		for(int index=0;index<list.size();index++){
+			fis.close(); //safe
+		}
+	}
+	
+	public void resourceCloseInsideWhileStatementAndThereIsAMethodWhichWillNotThrowCheckedExceptionInWhileStatementExpression() throws IOException {
+		List<Integer> list = new ArrayList<Integer>();
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		while(list.size()==0){
+			fis.close(); //safe
+		}
+	}
+	
+	public void resourceCloseInsideDoStatementAndThereIsAMethodWhichWillNotThrowCheckedExceptionInDoStatementExpression() throws IOException {
+		List<Integer> list = new ArrayList<Integer>();
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		do{
+			fis.close(); //safe
+		}
+		while(list.size()==0);
+	}
+	
+	public void resourceCloseInsideSwitchStatementAndThereIsAMethodWhichWillNotThrowCheckedExceptionInSwitchStatementExpression() throws IOException {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		List<Integer> list = new ArrayList<Integer>();
+		switch(list.size()) { 
+        case 6: 
+        	fis.close();//safe
+            break; 
+        default: 
+        	break; 
+		}
+	}
+	
+	public void resourceCloseAfterForStatementAndThereIsAMethodWhichWillThrowCheckedExceptionInForStatementExpression() throws IOException {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		for(int index=0;index<fis.read();index++){
+		}
+		fis.close(); //unsafe
+	}
+	
+	public void resourceCloseAfterWhileStatementAndThereIsAMethodWhichWillThrowCheckedExceptionInWhileStatementExpression() throws IOException {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		while(fis.read()==0){
+		}
+		fis.close(); //unsafe
+	}
+	
+	public void resourceCloseAfterDoStatementAndThereIsAMethodWhichWillThrowCheckedExceptionInDoStatementExpression() throws IOException {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		do{
+		}
+		while(fis.read()==0);
+		fis.close(); //unsafe
+	}
+	
+	public void resourceCloseAfterSwitchStatementAndThereIsAMethodWhichWillThrowCheckedExceptionInSwitchStatementExpression() throws IOException {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		switch(fis.read()) { 
+        case 6: 
+            break; 
+        default: 
+        	break; 
+		}
+		fis.close();//unsafe
+	}
+	
+	public void resourceCloseInsideForStatementAndThereIsAMethodWhichWillThrowCheckedExceptionInForStatementExpression() throws IOException {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		for(int index=0;index<fis.read();index++){
+			fis.close(); //unsafe
+		}
+	}
+	
+	public void resourceCloseInsideWhileStatementAndThereIsAMethodWhichWillThrowCheckedExceptionInWhileStatementExpression() throws IOException {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		while(fis.read()==0){
+			fis.close(); //unsafe
+		}
+	}
+	
+	public void resourceCloseInsideDoStatementAndThereIsAMethodWhichWillThrowCheckedExceptionInDoStatementExpression() throws IOException {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		do{
+			fis.close(); //unsafe
+		}
+		while(fis.read()==0);
+	}
+	
+	public void resourceCloseInsideSwitchStatementAndThereIsAMethodWhichWillThrowCheckedExceptionInSwitchStatementExpression() throws IOException {
+		FileInputStream fis = new FileInputStream(new File("C:\\123"));
+		switch(fis.read()) { 
+        case 6: 
+        	fis.close();//unsafe
+            break; 
+        default: 
+        	break; 
+		}
 	}
 }

@@ -159,7 +159,7 @@ public class CarelessCleanupDefinitionTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"aStatementInBetweenDetectionRange",
 				"fis.close()");
-		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
 
 	@Test
@@ -195,9 +195,17 @@ public class CarelessCleanupDefinitionTest {
 	}
 
 	@Test
-	public void testTryBlockCatchingAllPossibleExceptionInBetweenDetectionRange() {
+	public void testTryBlockCatchingAllCheckedExceptionInBetweenDetectionRange() {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
-				"tryBlockCatchingAllPossibleExceptionInBetweenDetectionRange",
+				"tryStatementCatchingAllCheckedExceptionInBetweenDetectionRange",
+				"fis.close()");
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+	}
+	
+	@Test
+	public void testTryBlockCatchingGenericExceptionInBetweenDetectionRange() {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"tryBlockCatchingGenericExceptionInBetweenDetectionRange",
 				"fis.close()");
 		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}

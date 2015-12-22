@@ -19,6 +19,10 @@ import org.eclipse.jdt.core.dom.TryStatement;
 
 public class NodeUtils {
 
+	public static boolean isExceptionCatught(ITypeBinding exceptionDeclared, CatchClause catchClause) {
+		return isITypeBindingExtended(exceptionDeclared, getClassFromCatchClause(catchClause));
+	}
+	
 	/**
 	 * if the bindingClass is extend from looking4Class
 	 */
