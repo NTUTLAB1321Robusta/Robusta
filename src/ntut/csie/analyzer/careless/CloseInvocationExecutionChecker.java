@@ -150,6 +150,11 @@ public class CloseInvocationExecutionChecker {
 		Expression expression = null;
 		List<Expression> initializer = null;
 		List<Expression> updater =  null;
+		boolean isInitializer = true;
+		boolean isUpdater = true;
+		boolean isExpressionSafe = true;
+		
+		
 		boolean safeForStatement = false;
 		if (parent.getNodeType() == ASTNode.FOR_STATEMENT) {
 			forStatement = ((ForStatement) parent);
@@ -157,14 +162,20 @@ public class CloseInvocationExecutionChecker {
 			initializer = forStatement.initializers();
 			updater = forStatement.updaters();
 			CheckedExceptionCollectorVisitor checkExpression = new CheckedExceptionCollectorVisitor();
-			expression.accept(checkExpression);
-			boolean isExpressionSafe = checkExpression.getException().size()==0;
+			if(expression!=null){
+				expression.accept(checkExpression);
+				isExpressionSafe = checkExpression.getException().size()==0;
+			}
 			CheckedExceptionCollectorVisitor checkInitializer = new CheckedExceptionCollectorVisitor();
-			initializer.get(0).accept(checkInitializer);
-			boolean isInitializer = checkInitializer.getException().size()==0;
+			if(initializer.size()>0){
+				initializer.get(0).accept(checkInitializer);
+				isInitializer = checkInitializer.getException().size()==0;
+			}
 			CheckedExceptionCollectorVisitor checkUpdater = new CheckedExceptionCollectorVisitor();
-			updater.get(0).accept(checkUpdater);
-			boolean isUpdater = checkUpdater.getException().size()==0;
+			if(updater.size()>0){
+				updater.get(0).accept(checkUpdater);
+				isUpdater = checkUpdater.getException().size()==0;
+			}
 			return isExpressionSafe && isInitializer && isUpdater;
 		}
 		return safeForStatement;
