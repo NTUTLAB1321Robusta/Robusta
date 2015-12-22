@@ -3,13 +3,6 @@ package ntut.csie.analyzer.careless;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-
-
-
-
-
-
 import ntut.csie.util.BoundaryChecker;
 import ntut.csie.util.CheckedExceptionCollectorVisitor;
 import ntut.csie.util.NodeUtils;
@@ -18,21 +11,24 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CatchClause;
+import org.eclipse.jdt.core.dom.DoStatement;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.ForStatement;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.InfixExpression;
-import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.ParenthesizedExpression;
 import org.eclipse.jdt.core.dom.PrefixExpression;
 import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.Statement;
+import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.SynchronizedStatement;
 import org.eclipse.jdt.core.dom.TryStatement;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
+import org.eclipse.jdt.core.dom.WhileStatement;
 
 /**
  * It will check if any exception may been thrown before
@@ -48,11 +44,7 @@ public class CloseInvocationExecutionChecker {
 		while (startPosition < checkingNode.getStartPosition()) {
 			ASTNode unsafeParentNode = getParentNodeThatMayThrowException(checkingNode);
 			if(unsafeParentNode != null){
-				CheckedExceptionCollectorVisitor checkExceptionVisitor = new CheckedExceptionCollectorVisitor();
-				unsafeParentNode.accept(checkExceptionVisitor);
-				if(checkExceptionVisitor.getException().size()!=0){
-					nodesThatMayThrowException.add(unsafeParentNode);
-				}
+				nodesThatMayThrowException.add(unsafeParentNode);
 			}
 			List<ASTNode> unsafeSiblingNodes = getSiblingNodeThatMayThrowException(checkingNode);
 			if(unsafeSiblingNodes.size() != 0){
@@ -74,7 +66,6 @@ public class CloseInvocationExecutionChecker {
 		
 		// Set the detection area for checkingNode
 		BoundaryChecker boundChecker = new BoundaryChecker(startPosition, checkingNode.getStartPosition());
-
 		ASTNode parentNode = checkingNode.getParent();
 		if (parentNode.getNodeType() == ASTNode.BLOCK) {
 			List<Statement> siblingStatements = ((Block) parentNode).statements();
@@ -97,13 +88,60 @@ public class CloseInvocationExecutionChecker {
 			boolean isParentCatchBlock = (parentType == ASTNode.CATCH_CLAUSE);
 			boolean isSafeIfStaementExpression = isSafeIfStaementExpression(parent);
 			boolean isSafeForStaementExpression = isSafeForStaementExpression(parent);
+			boolean isSafeWhileStaementExpression = isSafeWhileStaementExpression(parent);
+			boolean isSafeDoStaementExpression = isSafeDoStaementExpression(parent);
+			boolean isSafeSwitchStaementExpression = isSafeSwitchStaementExpression(parent);
 			boolean isParentSafeSynchronizedStatement = isSynchronizedStatement(parent);
 
 			if(!(isParentBlock || isParentCatchBlock || isParentFinallBlockOrCatchClause || 
-					isSafeIfStaementExpression || isParentSafeSynchronizedStatement || isSafeForStaementExpression))
+					isSafeIfStaementExpression || isParentSafeSynchronizedStatement ||
+					isSafeForStaementExpression || isSafeWhileStaementExpression ||
+					isSafeDoStaementExpression || isSafeSwitchStaementExpression))
 				return parent;
 		}
 		return null;
+	}
+
+	private boolean isSafeSwitchStaementExpression(ASTNode parent) {
+		SwitchStatement switchStatement = null;
+		Expression expression = null;
+		boolean safeSwitchStatement = false;
+		if (parent.getNodeType() == ASTNode.SWITCH_STATEMENT) {
+			switchStatement = ((SwitchStatement) parent);
+			expression = switchStatement.getExpression();
+			CheckedExceptionCollectorVisitor checkExpression = new CheckedExceptionCollectorVisitor();
+			expression.accept(checkExpression);
+			safeSwitchStatement = checkExpression.getException().size()==0;
+		}
+		return safeSwitchStatement;
+	}
+
+	private boolean isSafeDoStaementExpression(ASTNode parent) {
+		DoStatement doStatement = null;
+		Expression expression = null;
+		boolean safeWhileStatement = false;
+		if (parent.getNodeType() == ASTNode.DO_STATEMENT) {
+			doStatement = ((DoStatement) parent);
+			expression = doStatement.getExpression();
+			CheckedExceptionCollectorVisitor checkExpression = new CheckedExceptionCollectorVisitor();
+			expression.accept(checkExpression);
+			safeWhileStatement = checkExpression.getException().size()==0;
+		}
+		return safeWhileStatement;
+	}
+
+	private boolean isSafeWhileStaementExpression(ASTNode parent) {
+		WhileStatement whileStatement = null;
+		Expression expression = null;
+		boolean safeWhileStatement = false;
+		if (parent.getNodeType() == ASTNode.WHILE_STATEMENT) {
+			whileStatement = ((WhileStatement) parent);
+			expression = whileStatement.getExpression();
+			CheckedExceptionCollectorVisitor checkExpression = new CheckedExceptionCollectorVisitor();
+			expression.accept(checkExpression);
+			safeWhileStatement = checkExpression.getException().size()==0;
+		}
+		return safeWhileStatement;
 	}
 
 	private boolean isSafeForStaementExpression(ASTNode parent) {
@@ -112,7 +150,7 @@ public class CloseInvocationExecutionChecker {
 		Expression expression = null;
 		List<Expression> initializer = null;
 		List<Expression> updater =  null;
-		boolean safeForStatement = true;
+		boolean safeForStatement = false;
 		if (parent.getNodeType() == ASTNode.FOR_STATEMENT) {
 			forStatement = ((ForStatement) parent);
 			expression = forStatement.getExpression();
@@ -121,17 +159,12 @@ public class CloseInvocationExecutionChecker {
 			CheckedExceptionCollectorVisitor checkExpression = new CheckedExceptionCollectorVisitor();
 			expression.accept(checkExpression);
 			boolean isExpressionSafe = checkExpression.getException().size()==0;
-			System.out.println(checkExpression.getException().size());
-			
 			CheckedExceptionCollectorVisitor checkInitializer = new CheckedExceptionCollectorVisitor();
 			initializer.get(0).accept(checkInitializer);
 			boolean isInitializer = checkInitializer.getException().size()==0;
-			System.out.println(checkInitializer.getException().size());
-			
 			CheckedExceptionCollectorVisitor checkUpdater = new CheckedExceptionCollectorVisitor();
 			updater.get(0).accept(checkUpdater);
 			boolean isUpdater = checkUpdater.getException().size()==0;
-			System.out.println(checkUpdater.getException().size());
 			return isExpressionSafe && isInitializer && isUpdater;
 		}
 		return safeForStatement;
@@ -164,22 +197,6 @@ public class CloseInvocationExecutionChecker {
 			expression.accept(checkExpression);
 			safeIfStatement = checkExpression.getException().size()==0;
 		}
-//		if (expression == null) {
-//			return false;
-//		}
-//		if (expression.getNodeType() == ASTNode.SIMPLE_NAME) {
-//			return true;
-//		}
-//		if (expression.getNodeType() == ASTNode.QUALIFIED_NAME) {
-//			return true;
-//		}
-//		if (expression.getNodeType() == ASTNode.PREFIX_EXPRESSION) {
-//			return isSafePrefixExpressionInIfstatement(ifStatement
-//					.getExpression());
-//		}
-//		if (expression.getNodeType() == ASTNode.INFIX_EXPRESSION) {
-//			return isSafeInfixExpressionInIfstatement(expression);
-//		}
 		return safeIfStatement;
 	}
 
@@ -268,8 +285,7 @@ public class CloseInvocationExecutionChecker {
 	private boolean isSafeVariableDelarcation(Statement statement) {
 		if (statement.getNodeType() == ASTNode.VARIABLE_DECLARATION_STATEMENT) {
 			VariableDeclarationStatement variableDeclarationStatement = (VariableDeclarationStatement) statement;
-			List<VariableDeclarationFragment> allStatements = variableDeclarationStatement
-					.fragments();
+			List<VariableDeclarationFragment> allStatements = variableDeclarationStatement.fragments();
 			for (VariableDeclarationFragment fragment : allStatements) {
 				if (fragment.getInitializer() == null) {
 					return true;

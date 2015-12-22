@@ -91,7 +91,7 @@ public class CarelessCleanupVisitorTest {
 		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP,SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		List<MarkerInfo> smellList = visitCompilationAndGetSmellList(CarelessCleanupAdvancedExample.class);
 
-		Assertor.assertMarkerInfoListSize(8, smellList);
+		Assertor.assertMarkerInfoListSize(10, smellList);
 	}
 
 	@Ignore

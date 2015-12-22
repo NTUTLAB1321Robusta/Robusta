@@ -330,7 +330,7 @@ public class CarelessCleanupDefinitionExample {
 		FileInputStream fis = new FileInputStream("C:\\FileNotExist.txt");
 
 		try {
-			methodBeforeClose.declaredCheckedException();
+			methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 		} catch (Exception e) {
 			// handle Exception e
 		}

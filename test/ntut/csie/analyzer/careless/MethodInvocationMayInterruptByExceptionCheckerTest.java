@@ -834,6 +834,42 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 	}
 	
 	@Test
+	public void testResourceCloseInsideIfStatementAndThereIsAMethodWhichWillThrowCheckedExceptionInIfStatementExpression()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInsideIfStatementAndThereIsAMethodWhichWillThrowCheckedExceptionInIfStatementExpression",
+				"fis.close()");
+		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+	}
+	
+	@Test
+	public void testResourceCloseAfterIfStatementAndThereIsAMethodWhichWillThrowCheckedExceptionInIfStatementExpression()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterIfStatementAndThereIsAMethodWhichWillThrowCheckedExceptionInIfStatementExpression",
+				"fis.close()");
+		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+	}
+	
+	@Test
+	public void testResourceCloseAfterIfStatementAndThereIsAMethodWhichWillNotThrowCheckedExceptionInIfStatementExpression()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterIfStatementAndThereIsAMethodWhichWillNotThrowCheckedExceptionInIfStatementExpression",
+				"fis.close()");
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+	}
+	
+	@Test
+	public void testResourceCloseInsideIfStatementAndThereIsAMethodWhichWillNotThrowCheckedExceptionInIfStatementExpression()
+			throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInsideIfStatementAndThereIsAMethodWhichWillNotThrowCheckedExceptionInIfStatementExpression",
+				"fis.close()");
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+	}
+	
+	@Test
 	public void testIsMethodInvocationCaughtWhenResourceCloseAfterVariableAssignmentStatement()
 			throws Exception {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
@@ -1008,6 +1044,141 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 	throws Exception {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"resourceCloseAfterTryStatementThatCatchesThrowable",
+				"fis.close()");
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+	}
+	
+	@Test
+	public void testResourceCloseAfterForStatementAndThereIsAMethodWhichWillNotThrowCheckedExceptionInForStatementExpression()
+	throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterForStatementAndThereIsAMethodWhichWillNotThrowCheckedExceptionInForStatementExpression",
+				"fis.close()");
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+	}
+	
+	@Test
+	public void testResourceCloseAfterWhileStatementAndThereIsAMethodWhichWillNotThrowCheckedExceptionInWhileStatementExpression()
+	throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterWhileStatementAndThereIsAMethodWhichWillNotThrowCheckedExceptionInWhileStatementExpression",
+				"fis.close()");
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+	}
+	
+	@Test
+	public void testResourceCloseAfterDoStatementAndThereIsAMethodWhichWillNotThrowCheckedExceptionInDoStatementExpression()
+	throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterDoStatementAndThereIsAMethodWhichWillNotThrowCheckedExceptionInDoStatementExpression",
+				"fis.close()");
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+	}
+	
+	@Test
+	public void testResourceCloseInsideForStatementAndThereIsAMethodWhichWillNotThrowCheckedExceptionInForStatementExpression()
+	throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInsideForStatementAndThereIsAMethodWhichWillNotThrowCheckedExceptionInForStatementExpression",
+				"fis.close()");
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+	}
+	
+	@Test
+	public void testResourceCloseInsideWhileStatementAndThereIsAMethodWhichWillNotThrowCheckedExceptionInWhileStatementExpression()
+	throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInsideWhileStatementAndThereIsAMethodWhichWillNotThrowCheckedExceptionInWhileStatementExpression",
+				"fis.close()");
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+	}
+	
+	@Test
+	public void testResourceCloseInsideDoStatementAndThereIsAMethodWhichWillNotThrowCheckedExceptionInDoStatementExpression()
+	throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInsideDoStatementAndThereIsAMethodWhichWillNotThrowCheckedExceptionInDoStatementExpression",
+				"fis.close()");
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+	}
+	
+	@Test
+	public void testResourceCloseAfterForStatementAndThereIsAMethodWhichWillThrowCheckedExceptionInForStatementExpression()
+	throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterForStatementAndThereIsAMethodWhichWillThrowCheckedExceptionInForStatementExpression",
+				"fis.close()");
+		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+	}
+	
+	@Test
+	public void testResourceCloseAfterWhileStatementAndThereIsAMethodWhichWillThrowCheckedExceptionInWhileStatementExpression()
+	throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterWhileStatementAndThereIsAMethodWhichWillThrowCheckedExceptionInWhileStatementExpression",
+				"fis.close()");
+		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+	}
+	
+	@Test
+	public void testResourceCloseInsideForStatementAndThereIsAMethodWhichWillThrowCheckedExceptionInForStatementExpression()
+	throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInsideForStatementAndThereIsAMethodWhichWillThrowCheckedExceptionInForStatementExpression",
+				"fis.close()");
+		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+	}
+	
+	@Test
+	public void testResourceCloseInsideWhileStatementAndThereIsAMethodWhichWillThrowCheckedExceptionInWhileStatementExpression()
+	throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInsideWhileStatementAndThereIsAMethodWhichWillThrowCheckedExceptionInWhileStatementExpression",
+				"fis.close()");
+		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+	}
+	
+	@Test
+	public void testResourceCloseInsideDoStatementAndThereIsAMethodWhichWillThrowCheckedExceptionInDoStatementExpression()
+	throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInsideDoStatementAndThereIsAMethodWhichWillThrowCheckedExceptionInDoStatementExpression",
+				"fis.close()");
+		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+	}
+	
+	@Test
+	public void testResourceCloseInsideSwitchStatementAndThereIsAMethodWhichWillThrowCheckedExceptionInSwitchStatementExpression()
+	throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInsideSwitchStatementAndThereIsAMethodWhichWillThrowCheckedExceptionInSwitchStatementExpression",
+				"fis.close()");
+		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+	}
+	
+	@Test
+	public void testResourceCloseInsideSwitchStatementAndThereIsAMethodWhichWillNotThrowCheckedExceptionInSwitchStatementExpression()
+	throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInsideSwitchStatementAndThereIsAMethodWhichWillNotThrowCheckedExceptionInSwitchStatementExpression",
+				"fis.close()");
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+	}
+	
+	@Test
+	public void testResourceCloseAfterSwitchStatementAndThereIsAMethodWhichWillThrowCheckedExceptionInSwitchStatementExpression()
+	throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterSwitchStatementAndThereIsAMethodWhichWillThrowCheckedExceptionInSwitchStatementExpression",
+				"fis.close()");
+		assertEquals(1, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+	}
+	
+	@Test
+	public void testResourceCloseAfterSwitchStatementAndThereIsAMethodWhichWillNotThrowCheckedExceptionInSwitchStatementExpression()
+	throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseAfterSwitchStatementAndThereIsAMethodWhichWillNotThrowCheckedExceptionInSwitchStatementExpression",
 				"fis.close()");
 		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
 	}
