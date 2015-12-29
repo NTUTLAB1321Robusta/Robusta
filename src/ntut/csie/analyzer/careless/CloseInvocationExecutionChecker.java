@@ -145,7 +145,6 @@ public class CloseInvocationExecutionChecker {
 	}
 
 	private boolean isSafeForStaementExpression(ASTNode parent) {
-		
 		ForStatement forStatement = null;
 		Expression expression = null;
 		List<Expression> initializer = null;
@@ -153,7 +152,6 @@ public class CloseInvocationExecutionChecker {
 		boolean isInitializer = true;
 		boolean isUpdater = true;
 		boolean isExpressionSafe = true;
-		
 		
 		boolean safeForStatement = false;
 		if (parent.getNodeType() == ASTNode.FOR_STATEMENT) {
@@ -418,14 +416,12 @@ public class CloseInvocationExecutionChecker {
 			List<ITypeBinding> thrownExceptions = cecv.getException();
 			List<CatchClause> catchClauseList = tryStatement.catchClauses();
 			
-			return (isAllCatchBlockSafe(catchClauseList)
-				&& isAllExceptionCaught(thrownExceptions, catchClauseList));
+			return (isAllCatchBlockSafe(catchClauseList) && isAllExceptionCaught(thrownExceptions, catchClauseList));
 		}
 		return false;
 	}
 
-	private boolean isAllExceptionCaught(List<ITypeBinding> thrownExceptions,
-			List<CatchClause> catchClauseList) {
+	private boolean isAllExceptionCaught(List<ITypeBinding> thrownExceptions, List<CatchClause> catchClauseList) {
 		ArrayList<ITypeBinding> caughtExceptions = new ArrayList<ITypeBinding>();
 		
 		// compare the lists using an utility method
@@ -466,14 +462,20 @@ public class CloseInvocationExecutionChecker {
 			Expression expression = ExpressionExpression.getExpression();
 			if (expression.getNodeType() == ASTNode.ASSIGNMENT) {
 				Assignment assignment = (Assignment) expression;
-				return isExpressionSafe(assignment.getLeftHandSide())
-						&& isExpressionSafe(assignment.getRightHandSide());
+				return isExpressionSafe(assignment.getLeftHandSide()) && isExpressionSafe(assignment.getRightHandSide());
 			}
 			if (expression.getNodeType() == ASTNode.POSTFIX_EXPRESSION) {
 				return true;
 			}
 			if (expression.getNodeType() == ASTNode.PREFIX_EXPRESSION) {
 				return true;
+			}
+			if(expression.getNodeType() == ASTNode.METHOD_INVOCATION){
+				CheckedExceptionCollectorVisitor cecv = new CheckedExceptionCollectorVisitor();
+				expression.accept(cecv);
+				if(cecv.getException().size() == 0){
+					return true;
+				}
 			}
 		}
 		return false;
@@ -491,8 +493,7 @@ public class CloseInvocationExecutionChecker {
 		}
 		if (expression.getNodeType() == ASTNode.ASSIGNMENT) {
 			Assignment assignment = (Assignment) expression;
-			return isExpressionSafe(assignment.getLeftHandSide())
-					&& isExpressionSafe(assignment.getRightHandSide());
+			return isExpressionSafe(assignment.getLeftHandSide()) && isExpressionSafe(assignment.getRightHandSide());
 		}
 		if (expression.getNodeType() == ASTNode.INFIX_EXPRESSION) {
 			return isSafeInfixExpressionInIfstatement(expression);
@@ -505,8 +506,7 @@ public class CloseInvocationExecutionChecker {
 		}
 		if (expression.getNodeType() == ASTNode.PARENTHESIZED_EXPRESSION) {
 			ParenthesizedExpression parenthesizedExpression = (ParenthesizedExpression) expression;
-			Expression expressionOfParenthesizedExpression = parenthesizedExpression
-					.getExpression();
+			Expression expressionOfParenthesizedExpression = parenthesizedExpression.getExpression();
 			return isExpressionSafe(expressionOfParenthesizedExpression);
 		}
 		return false;

@@ -1049,6 +1049,14 @@ public class MethodInvocationMayInterruptByExceptionCheckerTest {
 	}
 	
 	@Test
+	public void testResourceCloseInsideATryStatementAndAfterASibilingIfStattmentWhichHasATryStatment()throws Exception {
+		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
+				"resourceCloseInsideATryStatementAndAfterASibilingIfStattmentWhichHasATryStatment",
+				"fileInputStream.close()");
+		assertEquals(0, checker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(methodInvocation).size());
+	}
+	
+	@Test
 	public void testResourceCloseAfterForStatementAndThereIsAMethodWhichWillNotThrowCheckedExceptionInForStatementExpression()
 	throws Exception {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(

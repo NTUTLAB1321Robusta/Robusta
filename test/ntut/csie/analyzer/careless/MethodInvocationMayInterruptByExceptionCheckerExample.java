@@ -3,6 +3,7 @@ package ntut.csie.analyzer.careless;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -1097,6 +1098,26 @@ public class MethodInvocationMayInterruptByExceptionCheckerExample {
 		} catch (Throwable e) {
 		}
 		fis.close(); //safe
+	}
+	
+	public void resourceCloseInsideATryStatementAndAfterASibilingIfStattmentWhichHasATryStatment() throws FileNotFoundException{
+		FileInputStream fileInputStream = new FileInputStream("");
+		  if (fileInputStream != null) {
+            try {
+          	  fileInputStream.read();
+            }
+            catch (Exception e) {
+                System.err.println("JDBCPieDataset: swallowing exception.");
+            }
+        }
+        if (fileInputStream != null) {
+            try {
+          	  fileInputStream.close();
+            }
+            catch (Exception e) {
+                System.err.println("JDBCPieDataset: swallowing exception.");
+            }
+        }
 	}
 	
 	public void resourceCloseAfterForStatementAndThereIsAMethodWhichWillNotThrowCheckedExceptionInForStatementExpression() throws IOException {
