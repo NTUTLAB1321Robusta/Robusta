@@ -13,11 +13,24 @@ import ntut.csie.util.AbstractBadSmellVisitor;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.IExtendedModifier;
+import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.TryStatement;
+import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
+
 
 public class UnprotectedMainProgramVisitor extends AbstractBadSmellVisitor {
+	
+	public class AnalizeStatementStateProperity{
+		public int tryStatementAmount = 0;
+		public int catchExceptionTryStatementAmount = 0;
+		public int unprotectedStatementAmount = 0;
+		public int variableDeclarationWithLiteralInitializer = 0;
+	}
+	
 	//store Unprotected main Program which is detected
 	private List<MarkerInfo> unprotectedMainList;	
 
@@ -45,49 +58,83 @@ public class UnprotectedMainProgramVisitor extends AbstractBadSmellVisitor {
 		if(node.resolveBinding() == null)
 			return false;
 		if (node.resolveBinding().toString().contains("void main(java.lang.String[])")) {
-			List<?> statements = node.getBody().statements();
-			if(containUnprotectedStatement(statements)) {
-				MarkerInfo markerInfo = new MarkerInfo(
-						RLMarkerAttribute.CS_UNPROTECTED_MAIN, 
-						null,
-						((CompilationUnit)node.getRoot()).getJavaElement().getElementName(), // class name
-						node.toString(),
-						node.getStartPosition(),
-						getLineNumber(node), 
-						null,
-						annotationList);
-				unprotectedMainList.add(markerInfo);				
+			List<?> statements = node.getBody().statements();	
+			if(statements.isEmpty()){
+				return true;
+			}
+			AnalizeStatementStateProperity properity = new AnalizeStatementStateProperity();
+			analizeStatementState(statements, properity);
+			if(properity.unprotectedStatementAmount>1 && properity.unprotectedStatementAmount == properity.variableDeclarationWithLiteralInitializer && properity.catchExceptionTryStatementAmount == properity.tryStatementAmount){
+				return true;
+			}
+			if(properity.tryStatementAmount==0){
+				addMarkerInfo(node, RLMarkerAttribute.CS_UNPROTECTED_MAIN);				
+				return false;
+			}else if(properity.catchExceptionTryStatementAmount == properity.tryStatementAmount && properity.unprotectedStatementAmount == 0){
+				return true;
+			}else if(properity.catchExceptionTryStatementAmount != properity.tryStatementAmount || properity.unprotectedStatementAmount > 0){
+				addMarkerInfo(node, RLMarkerAttribute.CS_UNPROTECTED_MAIN);				
+				return false;
+			}else{
+				addMarkerInfo(node, "can not be refactor!");			
 				return false;
 			}
 		}
 		return true;
 	}
 	
-	/**
-	 * check whether there are statements not placed in try catch(Exception e) statement or try catch(Throwable t) statement in main function
-	 * @param statement
-	 * @return
-	 */
-	private boolean containUnprotectedStatement(List<?> statement) {
-		int unprotectedStatementCount = 0;
-		for(Object s: statement) {
+	private void analizeStatementState(List<?> statements,AnalizeStatementStateProperity properity){
+		for(Object s: statements) {
 			ASTNode node = (ASTNode) s;
-			
-			if(node.getNodeType() == ASTNode.TRY_STATEMENT) {
-				if(doesCatchesAllException((TryStatement) node))
+			if (node.getNodeType() == ASTNode.VARIABLE_DECLARATION_STATEMENT) {
+				boolean isEndWithLiteral = false;
+				VariableDeclarationStatement variableDeclaration = (VariableDeclarationStatement)((ASTNode)s);
+				for(Object fragment : variableDeclaration.fragments()){
+					Expression initializer = ((VariableDeclarationFragment)fragment).getInitializer();
+					if(initializer != null){
+						if(initializer.getClass().getName().endsWith("Literal")){
+							properity.variableDeclarationWithLiteralInitializer++;
+							isEndWithLiteral = true;
+						}
+					}
+					if(initializer == null){
+						properity.variableDeclarationWithLiteralInitializer++;
+						isEndWithLiteral = true;
+					}
+				}
+				if(isEndWithLiteral)
 					continue;
 			}
-			
+			if(((ASTNode)s).getNodeType() == ASTNode.TRY_STATEMENT) {
+				properity.tryStatementAmount++;
+				if(doesCatchesAllException((TryStatement)node)){
+					properity.catchExceptionTryStatementAmount++;
+					continue;
+				}
+			}
 			AnnotationInfo ai = new AnnotationInfo(root.getLineNumber(node.getStartPosition()), 
 					node.getStartPosition(), 
 					node.getLength(), 
 					"Not All statements In Main Enclosed In A Try Statement Catching All Possible Exceptions");
-			annotationList.add(ai);
-			unprotectedStatementCount++;
+			annotationList.add(ai);		
 		}
-		
-		return unprotectedStatementCount != 0? true : false;
+		properity.unprotectedStatementAmount = statements.size() - properity.tryStatementAmount;
 	}
+
+	private void addMarkerInfo(MethodDeclaration node, String MarkerInfoMessage) {
+		MarkerInfo markerInfo = new MarkerInfo(
+				MarkerInfoMessage, 
+				null,
+				((CompilationUnit)node.getRoot()).getJavaElement().getElementName(), // class name
+				node.toString(),
+				node.getStartPosition(),
+				getLineNumber(node), 
+				null,
+				annotationList);
+		unprotectedMainList.add(markerInfo);
+	}
+	
+	
 
 	private boolean doesCatchesAllException(TryStatement tryStatement) {
 		List<CatchClause> catchClauseList = tryStatement.catchClauses();
