@@ -55,9 +55,9 @@ public class SettingPage extends APropertyPage {
 	private Group templateCodeGroup;
 	/** bad smell's template code*/
 	private StyledText templateCode;
-	/** Checkbox of selecting all bad smell to be detected */
+	/** Checkbox for selecting all bad smell to be detected */
 	private Button checkbox_DetectAllSmells;
-	/** Checkbox of highlighting the line of bad smell */
+	/** Checkbox for highlighting the line of bad smell */
 	private Button checkbox_HighlightSmellCode;
 	
 	/** Preference group */

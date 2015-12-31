@@ -50,7 +50,7 @@ public class MarkerModel {
 		badSmellCollector.collectBadSmell();
 		List<MarkerInfo> badSmellList = badSmellCollector.getAllBadSmells();
 		
-		// for each class we scan store all the bad smells found
+		// for each class we scan, store all the bad smells that has been found
 		markerList.addAll(badSmellList);
 		
 		for(int i = 0; i<badSmellList.size(); i++)

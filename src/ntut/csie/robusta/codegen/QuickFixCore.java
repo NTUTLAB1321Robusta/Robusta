@@ -129,9 +129,7 @@ public class QuickFixCore {
 	}
 
 	/**
-	 * When a method without any Robustness Level Annotation, you should use
-	 * this method to create RL Annotation.
-	 * 
+	 * When a method is without any Robustness Level Annotation, you should use this method to create RL Annotation.
 	 * @param level
 	 * @param exceptionType
 	 * @param rootAST
@@ -189,7 +187,7 @@ public class QuickFixCore {
 	}
 
 	/**
-	 * add an exception's declare on method's signature
+	 * add an exception's declaration on method's signature
 	 * 
 	 * @param astRewrite
 	 * @param methodDeclaration
@@ -785,13 +783,12 @@ public class QuickFixCore {
 	}
 
 	/**
-	 * get finally block of specified try statement. if finally block does not
-	 * exist and then create a new finally block.
-	 * 
-	 * @param tryStatement
-	 *            specified try statement
-	 * @param compilationUnit
-	 *            which compilationUnit need to be modified
+	 * get finally block of specified try statement.
+	 * if finally block does not exist then create a new finally block. 
+	 * @param tryStatement 
+	 * 				specified try statement
+	 * @param compilationUnit 
+	 * 				which compilationUnit need to be modified
 	 */
 	public Block getFinallyBlock(TryStatement tryStatement,
 			CompilationUnit compilationUnit) {

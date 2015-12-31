@@ -73,7 +73,7 @@ public class SelectedFolderPage extends APropertyPage {
 
 	}
 
-	// get all java source folders in an eclipse project in the workspace
+	// get all java source folders from an eclipse project in the workspace
 	private String[] getJavaProjectSourceDirectories(String projectName) {
 		ArrayList paths = new ArrayList();
 		IProject project = ResourcesPlugin.getWorkspace().getRoot()
@@ -193,7 +193,7 @@ public class SelectedFolderPage extends APropertyPage {
 
 	private void setUserSetting() {
 		TableItem[] item = selectedFolderList.getItems();
-		// traverse hole table to check whether any checked item 
+		// traverse whole table to check whether there are any checked item 
 		for (int i = 0; i < item.length; i++) {
 			if (isFolderSelect)
 				folderList[i] = isFolderSelect;

@@ -19,7 +19,7 @@ public class CodeSmellRefactoringWizard extends RefactoringWizard {
 	}
 
 	/**
-	 * 設定UserInputWizardPage
+	 * setup UserInputWizardPage
 	 * @param userInputPage
 	 */
 	public void setUserInputPage(UserInputWizardPage userInputPage) {

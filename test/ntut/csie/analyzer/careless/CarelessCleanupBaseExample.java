@@ -21,18 +21,28 @@ public class CarelessCleanupBaseExample {
 	}
 
 	public void closeAfterCheckedException() throws Exception {
-		methodBeforeClose.declaredCheckedException();
+		methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 		fileInputStream.close(); // Unsafe
 	}
 
 	public void closeAfterUncheckedException() throws Exception {
-		methodBeforeClose.declaredUncheckedException();
+		methodBeforeClose.declaredUncheckedExceptionOnMethodSignature();
 		fileInputStream.close(); // Unsafe
 	}
 
 	public void closeAfterNoDeclaredException() throws Exception {
 		methodBeforeClose.didNotDeclareAnyExceptionButThrowUnchecked();
-		fileInputStream.close(); // Unsafe
+		fileInputStream.close(); // safe
+	}
+	
+	public void closeAfterHasHandledCheckedException() throws Exception {
+		methodBeforeClose.hasHandledCheckedException();
+		fileInputStream.close(); // safe
+	}
+	
+	public void closeAfterWillNotThrowAnyException() throws Exception{
+		methodBeforeClose.willNotThrowAnyException();
+		fileInputStream.close(); // safe
 	}
 
 	/**
@@ -40,7 +50,7 @@ public class CarelessCleanupBaseExample {
 	 */
 	public void closeAfterNoDeclaredException2() throws Exception {
 		methodBeforeClose.willNotThrowAnyException();
-		fileInputStream.close(); // Unsafe
+		fileInputStream.close(); // safe
 	}
 
 	public void createAndCloseDirectlyWithCreatedFile() throws Exception {
@@ -55,13 +65,13 @@ public class CarelessCleanupBaseExample {
 
 	public void createAndCloseAfterCheckedException() throws Exception {
 		FileInputStream fis = new FileInputStream(file);
-		methodBeforeClose.declaredCheckedException();
+		methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 		fis.close(); // Unsafe
 	}
 
 	public void createAndCloseAfterUncheckedException() throws Exception {
 		FileInputStream fis = new FileInputStream(file);
-		methodBeforeClose.declaredUncheckedException();
+		methodBeforeClose.declaredUncheckedExceptionOnMethodSignature();
 		fis.close(); // Unsafe
 	}
 
@@ -75,7 +85,7 @@ public class CarelessCleanupBaseExample {
 	public void closeAfterUncheckedExceptionInTryBlock() throws Exception {
 		FileInputStream fis = new FileInputStream(file);
 		try {
-			methodBeforeClose.declaredUncheckedException();
+			methodBeforeClose.declaredUncheckedExceptionOnMethodSignature();
 			fis.close(); // Unsafe
 		} catch (IOException e) {
 		}
@@ -84,8 +94,8 @@ public class CarelessCleanupBaseExample {
 	public void closeInCatchBlock() throws Exception {
 		FileInputStream fis = new FileInputStream(file);
 		try {
-			methodBeforeClose.declaredCheckedException();
-			methodBeforeClose.didNotDeclareAnyExceptionButThrowUnchecked();
+			methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
+			methodBeforeClose.didNotDeclareAnyExceptionButThrowUnchecked();//according to extra rule of test case, "didNotDeclareAnyExceptionButThrowUnchecked" will takwe as close() method. so this line is unsafe 
 		} catch (IOException e) {
 			fis.close(); // Safe
 		}
@@ -94,8 +104,8 @@ public class CarelessCleanupBaseExample {
 	public void closeInFinallyBlock() throws Exception {
 		FileInputStream fis = new FileInputStream(file);
 		try {
-			methodBeforeClose.declaredCheckedException();
-			methodBeforeClose.didNotDeclareAnyExceptionButThrowUnchecked();
+			methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
+			methodBeforeClose.didNotDeclareAnyExceptionButThrowUnchecked();//according to extra rule of test case, "didNotDeclareAnyExceptionButThrowUnchecked" will takwe as close() method 
 		} finally {
 			fis.close(); // Safe
 		}
@@ -105,10 +115,10 @@ public class CarelessCleanupBaseExample {
 			throws Exception {
 		FileInputStream fis = new FileInputStream(file);
 		try {
-			methodBeforeClose.declaredCheckedException();
-			methodBeforeClose.didNotDeclareAnyExceptionButThrowUnchecked();
+			methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
+			methodBeforeClose.didNotDeclareAnyExceptionButThrowUnchecked();//according to extra rule of test case, "didNotDeclareAnyExceptionButThrowUnchecked" will takwe as close() method 
 		} finally {
-			methodBeforeClose.declaredUncheckedException();
+			methodBeforeClose.declaredUncheckedExceptionOnMethodSignature();
 			fis.close(); // Unsafe
 		}
 	}

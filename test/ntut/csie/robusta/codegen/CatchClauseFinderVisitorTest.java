@@ -65,13 +65,13 @@ public class CatchClauseFinderVisitorTest {
 
 	@Test
 	public void testCatchClauseFinderVisitor_2CatchClause() {
-		//to get correct position of statement, you should minus the position from ASTVise with 1 
-		int targetCatchClauseStartPosition = 459 - 1;
+		//to get correct position of statement, you should subtract the position from ASTVise with 1 
+		int targetCatchClauseStartPosition = 475 - 1;
 		CatchClauseFinderVisitor catchClauseFinder = new CatchClauseFinderVisitor(targetCatchClauseStartPosition);
 		compilationUnit.accept(catchClauseFinder);
 		assertEquals("catch (FileNotFoundException e) {\n  e.printStackTrace();\n}\n", catchClauseFinder.getFoundCatchClause().toString());
 		
-		targetCatchClauseStartPosition = 523 - 1;
+		targetCatchClauseStartPosition = 539 - 1;
 		catchClauseFinder = new CatchClauseFinderVisitor(targetCatchClauseStartPosition);
 		compilationUnit.accept(catchClauseFinder);
 		assertEquals("catch (IOException e) {\n  e.printStackTrace();\n}\n", catchClauseFinder.getFoundCatchClause().toString());
@@ -79,7 +79,7 @@ public class CatchClauseFinderVisitorTest {
 	
 	@Test
 	public void testCatchClauseFinderVisitor_1CatchClause() {
-		int targetCatchClauseStartPosition = 703 - 1;
+		int targetCatchClauseStartPosition = 719 - 1;
 		CatchClauseFinderVisitor catchClauseFinder = new CatchClauseFinderVisitor(targetCatchClauseStartPosition);
 		compilationUnit.accept(catchClauseFinder);
 		assertEquals("catch (IOException e) {\n  System.out.println(e);\n}\n", catchClauseFinder.getFoundCatchClause().toString());

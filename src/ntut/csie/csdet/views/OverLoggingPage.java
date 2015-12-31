@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.Shell;
 public class OverLoggingPage extends APropertyPage {	
 	private TreeMap<String, Boolean> libMap = new TreeMap<String, Boolean>();
 
-	//button of detecting casted exception 
+	//button for detecting casted exception 
 	private Button detectTransExBtn;
 	private Button log4jBtn;
 	private Button javaUtillogBtn;
@@ -171,7 +171,7 @@ public class OverLoggingPage extends APropertyPage {
 		callerTemplate.setBounds(detectSettingsLabel.getLocation().x, getLowerRightCoordinate(calleeTemplate).y+10, 485, 132);
 		callerTemplate.setEditable(false);
 
-		//set separateLabel1's length is the same as length of callerLabel
+		//set separateLabel1's length the same as to length of the callerLabel
 		if (getLowerRightCoordinate(separateLabel2).x < 485)
 			separateLabel2.setSize(485, 1);
 		else {
@@ -240,7 +240,7 @@ public class OverLoggingPage extends APropertyPage {
 			smellSettings.addExtraRule(SmellSettings.SMELL_OVERLOGGING, SmellSettings.EXTRARULE_JavaUtilLoggingLogger);
 		
 		
-		// save user define rule
+		// save user defined rule
 		Iterator<String> userDefinedCodeIterator = libMap.keySet().iterator();
 		while(userDefinedCodeIterator.hasNext()) {
 			String key = userDefinedCodeIterator.next();

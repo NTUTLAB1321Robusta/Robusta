@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 
 /**
- * dialog allow user modify user defined rule
+ * dialog allows user to modify user defined rule
  */
 public class EditRuleDialog  extends Dialog{
 	private Text tempText;
@@ -56,7 +56,7 @@ public class EditRuleDialog  extends Dialog{
 		tempText = new Text(container, SWT.BORDER);
 		tempText.addKeyListener(new KeyAdapter() {
 			public void keyPressed(final KeyEvent e) {
-				//if user modify dialog content, disable warring
+				//if user modifies dialog content, disable warning
 				picLabel.setVisible(false);
 				warningLabel.setVisible(false);
 			}
@@ -100,9 +100,9 @@ public class EditRuleDialog  extends Dialog{
 				temp = "*." + temp;
 			
 			boolean isWarning = false;
-			//check whether there are duplicate library name 
+			//check whether if there is a duplicated library name 
 			for(int i=0;i<ruleTable.getItemCount();i++){
-				//if duplicate library name is true then pup up warning
+				//if duplicate library name is true then pop up warning
 				if(temp.equals(ruleTable.getItem(i).getText()))
 					isWarning = true;
 			}

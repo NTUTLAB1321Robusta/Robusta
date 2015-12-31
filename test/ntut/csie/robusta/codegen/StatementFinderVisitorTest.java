@@ -67,17 +67,17 @@ public class StatementFinderVisitorTest {
 
 	@Test
 	public final void testFindExpressionStatementInCatchClause() {
-		int targetStartPosition = 502 - 1;
+		int targetStartPosition = 527 - 1;
 		StatementFinderVisitor statementFinderVisitor = new StatementFinderVisitor(targetStartPosition);
 		compilationUnit.accept(statementFinderVisitor);
 		assertEquals("e.printStackTrace();\n", statementFinderVisitor.getFoundExpressionStatement().toString());
 		
-		targetStartPosition = 556 - 1;
+		targetStartPosition = 581 - 1;
 		statementFinderVisitor = new StatementFinderVisitor(targetStartPosition);
 		compilationUnit.accept(statementFinderVisitor);
 		assertEquals("System.out.println(e);\n", statementFinderVisitor.getFoundExpressionStatement().toString());
 		
-		targetStartPosition = 686 - 1;
+		targetStartPosition = 711 - 1;
 		statementFinderVisitor = new StatementFinderVisitor(targetStartPosition);
 		compilationUnit.accept(statementFinderVisitor);
 		assertEquals("e.printStackTrace();\n", statementFinderVisitor.getFoundExpressionStatement().toString());

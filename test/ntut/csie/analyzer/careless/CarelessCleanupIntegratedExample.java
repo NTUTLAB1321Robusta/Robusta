@@ -22,8 +22,7 @@ public class CarelessCleanupIntegratedExample {
 		}
 		FileInputStream fis = new FileInputStream(file1);
 
-		java.io.OutputStream out = new java.io.BufferedOutputStream(
-				new FileOutputStream(file2));
+		java.io.OutputStream out = new java.io.BufferedOutputStream(new FileOutputStream(file2));
 		try {
 			while (fis.available() != 0) {
 				out.write(fis.read());
@@ -60,7 +59,7 @@ public class CarelessCleanupIntegratedExample {
 		for (int a = 0; a < 10; a++) {
 			try {
 				if (a == 5) {
-					fileOutputStream.close(); // Unsafe
+					fileOutputStream.close(); // safe
 				}
 			} catch (IOException e) {
 				throw e;
@@ -75,13 +74,13 @@ public class CarelessCleanupIntegratedExample {
 		UserDefinedCarelessCleanupMethod udMethod = new UserDefinedCarelessCleanupMethod();
 		UserDefinedCarelessCleanupClass udClass = new UserDefinedCarelessCleanupClass();
 		try {
-			methodBeforeClose.declaredCheckedException();
+			methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 			udMethod.bark(); // Unsafe when user defined
 			udClass.bark(); // Unsafe when user defined
 		} finally {
-			methodBeforeClose.declaredCheckedException();
+			methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 			udMethod.bark(); // Unsafe when user defined
-			udClass.bite(); // Unsafe when user defined
+			udClass.bite(); // safe when user defined
 		}
 	}
 

@@ -31,10 +31,10 @@ public class CarelessCleanupVisitor extends AbstractBadSmellVisitor {
 		// Get all close statements
 		List<MethodInvocation> closeInvocations = collectCloseStamentNode(node);
 
-		// User can decide whether or not to check close invocations that are not in a try statement
+		// User can decide whether to check or not to check the close invocations which are not in a try statement
 		if (isOnlyDetectingInTry) {
 			removeCloseInvocationNotInTry(closeInvocations);
-		}
+		} 
 		
 		// Create MarkerInfo for close invocations that might not be executed due to an exception
 		for (MethodInvocation closeInvocation : closeInvocations) {

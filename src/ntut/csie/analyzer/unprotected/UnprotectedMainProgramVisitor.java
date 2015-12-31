@@ -25,7 +25,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 
 
 public class UnprotectedMainProgramVisitor extends AbstractBadSmellVisitor {	
-	//store Unprotected main Program which is detected
+	//store detected Unprotected main Program
 	private List<MarkerInfo> unprotectedMainList;	
 
 	private CompilationUnit root;
@@ -41,7 +41,7 @@ public class UnprotectedMainProgramVisitor extends AbstractBadSmellVisitor {
 	}
 	
 	/**
-	 * according to configure to decide whether to visit and find out main function
+	 * according to configuration decide whether to visit and find the main function
 	 */
 	public boolean visit(MethodDeclaration node) {
 		if(!isDetectingUnprotectedMainProgramSmell)
@@ -143,19 +143,19 @@ public class UnprotectedMainProgramVisitor extends AbstractBadSmellVisitor {
 	}
 
 	/**
-	 * according to start position to get line number
+	 * according to start position get line number
 	 */
 	private int getLineNumber(MethodDeclaration method) {
 		int position = method.getStartPosition();
 		List<?> modifiers = method.modifiers();
 		for (int i = 0, size = modifiers.size(); i < size; i++) {
-			//if there is an annotation on method signature, according to method declare keyword "public" to get marker position line number 
+			//if there is an annotation on method signature, according to method declaration keyword "public" get marker position line number 
 			if ((!((IExtendedModifier)modifiers.get(i)).isAnnotation()) && (modifiers.get(i).toString().contains("public"))) {
 				position = ((ASTNode)modifiers.get(i)).getStartPosition();
 				break;
 			}
 		}
-		//if there is not an annotation on method signature, according to compilation unit to get marker position line number 
+		//if there is no annotation on method signature, according to compilation unit get marker position line number 
 		return root.getLineNumber(position);
 	}
 

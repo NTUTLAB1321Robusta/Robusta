@@ -149,7 +149,7 @@ public class QuickFixUtils {
 			return;
 		}
 		
-		//check whether there are duplicate exception declaration.
+		//check whether there is duplicated exception declaration.
 		for(SimpleName thrownEx : thrownExceptions) {
 			if(thrownEx.getIdentifier().equals(exceptionName)) {
 				thrownExceptions.add(ast.newSimpleName(exceptionName));
@@ -177,7 +177,7 @@ public class QuickFixUtils {
 		value.setValue(rlary);
 		
 		List<RLMessage> existedRobustnessLevelAnnotation = getExceptionCodeSmells(compilationUnit, methodDeclaration);
-		//check whether has added robust level annotation
+		//check whether it has added robust level annotation
 		if(existedRobustnessLevelAnnotation.size() == 0) {
 			rlary.expressions().add(getRobustnessAnnotation(ast, 1,	RuntimeException.class.getSimpleName()));
 		}else {
@@ -215,7 +215,7 @@ public class QuickFixUtils {
 	 * @param compilationUnit
 	 */
 	private static void addRobustnessAndRTagImporting(CompilationUnit compilationUnit) {
-		// check whether has imported Robustness class and RTag class
+		// check whether Robustness class and RTag class has been imported 
 		List<ImportDeclaration> importList = compilationUnit.imports();
 
 		boolean isImportRobustnessClass = false;
@@ -323,7 +323,7 @@ public class QuickFixUtils {
 	}
 	
 	/**
-	 * generate an exception declaration will been thrown
+	 * generate an exception declaration which will be thrown
 	 * @param ast
 	 * @param exceptionType
 	 * @return
@@ -364,7 +364,7 @@ public class QuickFixUtils {
 	}
 	
 	/**
-	 * cast exception,thrown from catch clause, to another exception type
+	 * cast an exception which is thrown from catch clause to another exception type
 	 * @param cc specified catch clause
 	 * @param ast CompilationUnit
 	 * @param exceptionType another exception type want to be casted to

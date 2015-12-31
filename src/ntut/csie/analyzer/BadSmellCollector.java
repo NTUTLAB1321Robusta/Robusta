@@ -49,7 +49,7 @@ public class BadSmellCollector {
 	/**
 	 * Detect the smells in initializers only
 	 */
-	// TODO:-------------- for some bad smells, we are not checking whether to detect or not------------------------------
+	// TODO:-------------- for some bad smells, we are not checking whether to detect it or not------------------------------
 	private void detectInitializers() { 
 		DummyHandlerVisitor dmhVisitor = new DummyHandlerVisitor(root);
 		EmptyCatchBlockVisitor emptyCatchBlockVisitor = new EmptyCatchBlockVisitor(root);

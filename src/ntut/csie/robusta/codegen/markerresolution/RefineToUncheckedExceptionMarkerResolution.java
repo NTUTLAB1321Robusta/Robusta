@@ -33,7 +33,7 @@ public class RefineToUncheckedExceptionMarkerResolution implements IMarkerResolu
 
 	@Override
 	public void run(IMarker marker) {
-		//user click the marker of empty catch block or dummy handler will invoke specified refactor feature
+		//user clicks the marker of empty catch block or dummy handler that will invoke specified refactor feature
 		String problem;
 		try {
 			problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
@@ -50,7 +50,7 @@ public class RefineToUncheckedExceptionMarkerResolution implements IMarkerResolu
 
 			/*
 			 * 1. pop up refactor dialog (there is a bug because user can select to throw checked exception)
-			 * 2. if user decide to throw some kind of unchecked exception will cause error. 
+			 * 2. if user decide to throw some kind of unchecked exception it will cause error. 
 			 *    we guess the reason may be the constructor of some kind of exception doesn't implement throwable. 
 			 */
 			CodeSmellRefactoringWizard csRefactoringWizard = new CodeSmellRefactoringWizard(refactoring);

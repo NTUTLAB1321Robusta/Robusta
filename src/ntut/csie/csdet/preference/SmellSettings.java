@@ -102,7 +102,7 @@ public class SmellSettings {
 	}
 
 	/**
-	 * input bad smell name option and this function will return bad smell is selected to detect or not 
+	 * input bad smell name option and this function will return the selected bad smell to detect or not  
 	 * @param badSmellName
 	 *            bad smell name wants to be consulted
 	 * @return
@@ -125,7 +125,7 @@ public class SmellSettings {
 	}
 
 	/**
-	 * whether robustness annotation is enable or not
+	 * whether robustness annotation is enabled or not
 	 * 
 	 * 
 	 * @return
@@ -135,7 +135,7 @@ public class SmellSettings {
 	}
 
 	/**
-	 * if input bad smell name is not existing, this function will create a new element named as this bad smell name and set its' isDetecting attribute as true.
+	 * if input bad smell name doesn't exist, this function will create a new element named as this bad smell name and sets its isDetecting attribute as true.
 	 * @param badSmellName
 	 * @return
 	 */
@@ -252,8 +252,9 @@ public class SmellSettings {
 		return patternList;
 	}
 
-	/**此method只有測試呼叫，為dead code
-	 * 讓使用者選擇要尋找的Pattern是Class、Method、或是Class+Method
+	/**
+	 * this method is only used for test case.
+	 * and it simulates user's configuration to detect different bad smell pattern.
 	 * 
 	 * 
 	 * @param smellName
@@ -287,7 +288,7 @@ public class SmellSettings {
 	}
 
 	/**
-	 * return specified bad smell's pattern configure 
+	 * return specified bad smell's pattern configuration 
 	 * 
 	 * @param smellName
 	 * @return
@@ -320,9 +321,9 @@ public class SmellSettings {
 	}
 
 	/**
-	 * patternContent is a peace of special code inputed by user manually, these patternContent
-	 * will be stored and used as pattern to detected bad smell. all patternContent will be deleted 
-	 * only when user delete them in person.  
+	 * patternContent is a piece of special code inputed by user manually, these patternContents
+	 * will be stored and used as patterns to detect bad smells. all patternContents will be deleted 
+	 * only when user deletes them manually.
 	 *  
 	 * @param badSmellName
 	 * @param patternContent
@@ -343,7 +344,7 @@ public class SmellSettings {
 				return;
 			}
 		}
-		// if patternContent is not existing, add a new one.
+		// if patternContent doesn't exist, add a new one.
 		Element pattern = new Element(TAG_PATTERN);
 		pattern.setAttribute(ATTRIBUTE_NAME, patternContent);
 		pattern.setAttribute(ATTRIBUTE_ISDETECTING, String.valueOf(isDetecting));
@@ -357,8 +358,8 @@ public class SmellSettings {
 	}
 
 	/**
-	 * extraRule are options for user. only when user check one of them,
-	 * extraRule will be used to detected bad smell. 
+	 * extraRule are options for user. only when user checks one of them,
+	 * extraRule will be used to detect bad smell. 
 	 * 
 	 * @param badSmellName
 	 * @param ruleName
@@ -399,7 +400,7 @@ public class SmellSettings {
 	 * @param badSmellName
 	 * @param ruleName
 	 * @return true means remove successfully。<br />
-	 *         false means remove fail or extra rule is not existing。
+	 *         false means remove fail or extra rule does not exist。
 	 */
 	public boolean removeExtraRule(String badSmellName, String ruleName) {
 		Element badSmellElement = getSmellType(badSmellName);
@@ -418,7 +419,7 @@ public class SmellSettings {
 			String badSmellName) {
 		TreeMap<String, UserDefinedConstraintsType> libMap = new TreeMap<String, UserDefinedConstraintsType>();
 		Element badSmellElement = getSmellType(badSmellName);
-		// don't detect anything without checking anything any bad smell type
+		// doesn't detect anything without checking anything any bad smell type
 		if (!Boolean.parseBoolean(badSmellElement
 				.getAttributeValue(ATTRIBUTE_ISDETECTING))) {
 			return libMap;
@@ -504,7 +505,7 @@ public class SmellSettings {
 	}
 
 	/**
-	 * check all conditions in configure.
+	 * check all conditions in configuration.
 	 */
 	public void activateAllConditionsIfNotConfugured(String path) {
 		File settingFile = new File(path);

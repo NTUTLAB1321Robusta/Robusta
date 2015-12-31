@@ -42,9 +42,9 @@ import org.eclipse.jdt.internal.corext.callhierarchy.MethodWrapper;
 public class OverLoggingVisitor extends AbstractBadSmellVisitor {
 	private CompilationUnit root;
 	private List<MarkerInfo> overLoggingList = new ArrayList<MarkerInfo>();
-	//store user define rule for logging 
+	//store user defined rule for logging
 	private TreeMap<String, UserDefinedConstraintsType> libMap = new TreeMap<String, UserDefinedConstraintsType>();
-	// configure of bad smell setting
+	// configuration of bad smell setting
 	private SmellSettings smellSettings;
 
 	public OverLoggingVisitor(CompilationUnit root) {
@@ -245,7 +245,7 @@ public class OverLoggingVisitor extends AbstractBadSmellVisitor {
 	}
 	
 	/**
-	 * store over logging which is detected
+	 * store detected over logging
 	 */
 	private void addOverLoggingMarkerInfo(ASTNode node) {
 		ASTNode compilationUnit = NodeUtils.getSpecifiedParentNode(node, ASTNode.COMPILATION_UNIT);

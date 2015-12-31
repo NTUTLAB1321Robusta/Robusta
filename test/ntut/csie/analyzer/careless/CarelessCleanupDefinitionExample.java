@@ -9,7 +9,7 @@ import java.io.InputStream;
 
 /**
  * This class contains test examples that would help define Careless Cleanup
- * rules. Test samples that are necessary for defining Careless Cleanup but is
+ * rules. Test samples that are necessary for defining Careless Cleanup but it is
  * already written somewhere else would be kept and commented.
  */
 public class CarelessCleanupDefinitionExample {
@@ -43,7 +43,7 @@ public class CarelessCleanupDefinitionExample {
 
 	/*
 	 * Since Java 7 Oracle introduced AutoCloseable interface and developers
-	 * stared using it instead of Closeable; hence, we need to be able to detect
+	 * started using it instead of Closeable; hence, we need to be able to detect
 	 * Careless Cleanup for resources of AutoCloseable type.
 	 * 
 	 * commented because this example is also written somewhere else but
@@ -91,7 +91,7 @@ public class CarelessCleanupDefinitionExample {
 	// CC detector
 	public void noncloseableResourceClosing() throws IOException {
 		ConcreteNonCloseable nonCloseableResource = new ConcreteNonCloseable();
-		methodBeforeClose.declaredCheckedException();
+		methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 
 		try {
 			// do something here
@@ -104,7 +104,7 @@ public class CarelessCleanupDefinitionExample {
 	// detector
 	public void closeableResourceClosing() throws IOException {
 		ConcreteCloseable closeableResource = new ConcreteCloseable();
-		methodBeforeClose.declaredCheckedException();
+		methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 
 		try {
 			// do something here
@@ -119,7 +119,7 @@ public class CarelessCleanupDefinitionExample {
 	public void closeableResourceClosingMethodNotNamedClose()
 			throws IOException {
 		ConcreteCloseable resource = new ConcreteCloseable();
-		methodBeforeClose.declaredCheckedException();
+		methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 
 		try {
 			// do something here
@@ -134,7 +134,7 @@ public class CarelessCleanupDefinitionExample {
 	// it body.
 	public void closeMethodNotNamedClosePassedInCloseableResource()
 			throws IOException {
-		methodBeforeClose.declaredCheckedException();
+		methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 
 		try {
 			// do something here
@@ -148,11 +148,11 @@ public class CarelessCleanupDefinitionExample {
 	// clean up method that is not named "close" would not be detected by the CC
 	// detector
 	// UNLESS it has a "AutoCloseable" parameter and the method contains a close
-	// in it body.
+	// in its body.
 	public void closeMethodNotNamedClosePassedInAutoCloseableResource()
 			throws IOException {
 		ConcreteAutoCloseableOutputStream os = new ConcreteAutoCloseableOutputStream();
-		methodBeforeClose.declaredCheckedException();
+		methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 
 		try {
 			// do something here
@@ -194,7 +194,7 @@ public class CarelessCleanupDefinitionExample {
 	public void exceptionBeforeLastResourceAssignment(boolean a)
 			throws IOException {
 		FileInputStream fis = null;
-		methodBeforeClose.declaredCheckedException();
+		methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 
 		fis = new FileInputStream("C:\\FileNotExist.txt");
 
@@ -215,7 +215,7 @@ public class CarelessCleanupDefinitionExample {
 	public void exceptionBeforeLastResourceAssignmentThatMayNotBeExecuted(
 			boolean a) throws IOException {
 		FileInputStream fis = null;
-		methodBeforeClose.declaredCheckedException();
+		fis.read();
 
 		if (a) {
 			fis = new FileInputStream("C:\\FileNotExist.txt");
@@ -231,13 +231,13 @@ public class CarelessCleanupDefinitionExample {
 
 	/*
 	 * Any statement in between a resource's close and last assignment would be
-	 * treated as would or has possibility to raise an exception EXCEPT: 1. a IF
-	 * statement that contains only one or more boolean variables 2. a IF
-	 * statement enclosing a resource's close statement that is checking if the
-	 * resource is NULL 3. a TRY block which has catch block(s) catching all
-	 * possible exception that may be thrown from it 4. a variable
-	 * declaration(without instance assignment or null assignment) 5. a variable
-	 * declaration of primitive types (with/without instance assignment)
+	 * treated as would or has possibility to raise an exception EXCEPT: 
+	 * 1. a IF statement that contains only one or more boolean variables 
+	 * 2. a IF statement enclosing a resource's close statement that is checking if the resource is NULL 
+	 * 3. a TRY statement which has catch block(s) catching all CHECKED exception that may be thrown from it
+	 *  or a TRY statement which has a blanket catch clause  
+	 * 4. a variable declaration(without instance assignment or null assignment) 
+	 * 5. a variable declaration of primitive types (with/without instance assignment)
 	 */
 	public void aStatementInBetweenDetectionRange(boolean a) throws IOException {
 		someRandomClassThatWouldDoRandomThings randomObject = new someRandomClassThatWouldDoRandomThings();
@@ -245,7 +245,7 @@ public class CarelessCleanupDefinitionExample {
 
 		randomObject.doSomething();
 
-		fis.close(); // unsafe
+		fis.close(); // safe
 	}
 
 	public void ifStatementCheckingBooleanVariableInBetweenDetectionRange(
@@ -312,17 +312,25 @@ public class CarelessCleanupDefinitionExample {
 		}
 	}
 
-	/*
-	 * not yet implemented;
-	 */
-	public void tryBlockCatchingAllPossibleExceptionInBetweenDetectionRange(
+	public void tryStatementCatchingAllCheckedExceptionInBetweenDetectionRange(
 			boolean a) throws IOException {
 		FileInputStream fis = new FileInputStream("C:\\FileNotExist.txt");
 
 		try {
-			methodBeforeClose.declaredCheckedException();
+			methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 		} catch (IOException e) {
 			// handle IOException e
+		}
+
+		fis.close(); // safe
+	}
+	
+	public void tryBlockCatchingGenericExceptionInBetweenDetectionRange(
+			boolean a) throws IOException {
+		FileInputStream fis = new FileInputStream("C:\\FileNotExist.txt");
+
+		try {
+			methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 		} catch (Exception e) {
 			// handle Exception e
 		}

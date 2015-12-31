@@ -132,7 +132,7 @@ public class RLChecker {
 		}
 
 		try {
-			// check whether the catch block handle the thrown exception
+			// check whether the catch block handles the thrown exception
 			for (Integer catchIdx : catchList) {
 				RLMessage catchMsg = this.exList.get(catchIdx);
 

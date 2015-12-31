@@ -30,14 +30,14 @@ public class EmptyCatchBlockVisitor extends AbstractBadSmellVisitor {
 	}
 	
 	/**
-	 * 根據設定檔的資訊，決定要不要拜訪整棵樹。
+	 * according to profile, decide whether to visit whole AST tree
 	 */
 	public boolean visit(MethodDeclaration node) {
 		return isDetectingEmptyCatchBlock;
 	}
 	
 	/**
-	 * Shouldn't visit Initializer when the user don't want to detect this kind of bad smells
+	 * Will not visit Initializer when the user doesn't want to detect this kind of bad smells
 	 */
 	public boolean visit(Initializer node) {
 		return isDetectingEmptyCatchBlock;

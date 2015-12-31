@@ -23,7 +23,7 @@ public class CarelessCleanupAdvancedExample {
 	public void closeInBothTryBlockAndFinallyBlock() throws Exception {
 		FileInputStream fis = new FileInputStream(file);
 		try {
-			methodBeforeClose.declaredCheckedException();
+			methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 			methodBeforeClose.didNotDeclareAnyExceptionButThrowUnchecked();
 			fis.close(); // Unsafe
 		} catch (IOException e) {
@@ -34,53 +34,53 @@ public class CarelessCleanupAdvancedExample {
 	}
 
 	/**
-	 * The close action will be reach even if any exception be thrown in that
-	 * try statement. But there is a exception may-been-thrown before this try statement.
+	 * The close action will be reached even if any exception is thrown in that
+	 * try statement. But there is an exception may-been-thrown before this try statement.
 	 */
 	public void safeCloseInTryButSimpleThrowBeforeTry()
 			throws Exception {
 		FileInputStream fis = new FileInputStream(file);
 
-		methodBeforeClose.declaredCheckedException();
+		methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 
 		try {
-			methodBeforeClose.declaredCheckedException();
+			methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 		} finally {
 			fis.close(); // Unsafe
 		}
 	}
 
 	/**
-	 * The close action will be reach even if any exception be thrown in that
-	 * try statement. But there is a exception may-been-thrown before this try statement.
+	 * The close action will be reached even if any exception is thrown in that
+	 * try statement. But there is an exception may-been-thrown before this try statement.
 	 */
 	public void safeCloseInTryButThrowInOtherStatementBeforeTry()
 			throws Exception {
 		FileInputStream fis = new FileInputStream(file);
 
 		if (true) {
-			methodBeforeClose.declaredCheckedException();
+			methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 		}
 
 		try {
-			methodBeforeClose.declaredCheckedException();
+			methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 		} finally {
 			fis.close(); // Unsafe
 		}
 	}
 
 	/**
-	 * The close action will be reach if and only if the resource been created.
+	 * The close action will be reached if and only if the resource has been created.
 	 * Because if "declaredCheckedException" throws an exception, the creation
 	 * won't be reached.
 	 */
 	public void safeCloseInTryWithDidNotThrowBetweenCreationAndClosed() throws Exception {
-		methodBeforeClose.declaredCheckedException();
+		methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 
 		FileInputStream fis = new FileInputStream(file);
 		
 		try {
-			methodBeforeClose.declaredCheckedException();
+			methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 		} finally {
 			fis.close(); // Safe
 		}
@@ -100,7 +100,7 @@ public class CarelessCleanupAdvancedExample {
 	 */
 	class ConcreteCloseable extends SuperCloseable {
 		public void close() {
-			methodBeforeClose.declaredUncheckedException();
+			methodBeforeClose.declaredUncheckedExceptionOnMethodSignature();
 			super.close(); // Safe for Robusta (Not for human) 
 		}
 	}
@@ -117,7 +117,7 @@ public class CarelessCleanupAdvancedExample {
 
 	public void throwExceptionBeforeAssignment(FileOutputStream fos)
 			throws IOException {
-		methodBeforeClose.declaredCheckedException();
+		methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 		
 		try {
 			fileInputStream = new FileInputStream("path");
@@ -209,7 +209,7 @@ public class CarelessCleanupAdvancedExample {
 
 	/**
 	 * It is an example of a bug on CC rule version 2.
-	 * When we detect it, will rise NullPointerException
+	 * When we detect it, it will rise NullPointerException
 	 */
 	public void arbintest4(Resource resource, OutputStream zOut) // TODO: rename: this function name is really bad
 			throws IOException {
@@ -232,20 +232,20 @@ public class CarelessCleanupAdvancedExample {
 		}
 		
 		public void closeResourceByInvokeMyClose() throws Exception {
-			methodBeforeClose.declaredCheckedException();
+			methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 			close(); // Unsafe
 		}
 	}
 
 	public void closeResourceFromGetResourceWithImp() throws Exception {
 		ClassWithGetResource resourceManager = new ClassWithGetResource();
-		methodBeforeClose.declaredUncheckedException();
+		methodBeforeClose.declaredUncheckedExceptionOnMethodSignature();
 		resourceManager.getResourceWithImp().close(); // Unsafe
 	}
 	
 	public void closeResourceFromGetResourceWithInterface() throws Exception {
 		ClassWithGetResource resourceManager = new ClassWithGetResource();
-		methodBeforeClose.declaredCheckedException();
+		methodBeforeClose.declaredCheckedExceptionOnMethodSignature();
 		resourceManager.getResourceWithInterface().close(); // Unsafe
 	}
 }

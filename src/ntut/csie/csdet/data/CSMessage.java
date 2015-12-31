@@ -3,7 +3,7 @@ package ntut.csie.csdet.data;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 
 /**
- * 記錄每一種code smell的相關資訊
+ * record each bad smell information
  * @author chewei
  */
 

@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * when user want to make his program achieve robustness level 1, we provide some way and suggestion to help user.
+ * when user wants to make his program achieve robustness level 1, we provide some way and suggestion to help user.
  * @author Charles
  * @version 0.0.1
  */

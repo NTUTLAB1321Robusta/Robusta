@@ -9,13 +9,13 @@ import org.eclipse.ui.PartInitException;
 public class RLUtils {
 
 	/**
-	 * 字串轉數字
+	 * string cast to integer
 	 * 
 	 * @param str
-	 *            字串
+	 *            string
 	 * @param def
-	 *            預設值(當轉換不成功時，會回傳預設值)
-	 * @return 數字
+	 * 			  default return integer value(if casting is fail then return this value)
+	 * @return integer
 	 */
 	public static int str2int(String str, int def) {
 		if (str == null) {

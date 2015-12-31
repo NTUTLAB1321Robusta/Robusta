@@ -19,8 +19,7 @@ import ntut.csie.robusta.agile.exception.Robustness;
 public class NestedTryStatementExample {
 	
 	/**
-	 * 在finally中出現巢狀try-catch
-	 * 內外層try-catch的exception type為Exception下面中的同一子系列
+	 * there is a nested try block in finally block.
 	 */
 	public void nestedFinally() {
 		try {
@@ -38,10 +37,9 @@ public class NestedTryStatementExample {
 	}
 	
 	/**
-	 * 在catch中出現巢狀try-catch
-	 * 內外層try-catch的exception type為外層Catch的exception type父類別
-	 * 已知於「RetryRefactoringTest」中的「testAddNewVariable」等四個測試會用到，修改時會影響
-	 */
+	 * there is a nested try block in catch block.
+	 * and the exception type between both catch block is in the same exception subset
+	 * */
 	public void nestedCatch_InnerCatchWithParentExceptionTypeOfOuter() {
 		try {
 			throwSocketTimeoutException();
@@ -56,8 +54,8 @@ public class NestedTryStatementExample {
 	}
 	
 	/**
-	 * 在catch中出現巢狀try-catch
-	 * 內外層try-catch的exception type不為Exception下面中的同一子系列
+	 * there is a nested try block in catch block.
+	 * and the exception type between both catch block is not in the same exception subset
 	 */
 	public void nestedCatch_ExceptionOfTwoCatchWithoutParentChildRelations() {
 		try {
@@ -73,8 +71,8 @@ public class NestedTryStatementExample {
 	}
 	
 	/**
-	 * 在catch中出現巢狀try-catch
-	 * 內外層try-catch的exception type為外層Catch的exception type子類別
+	 * there is a nested try block in catch block.
+	 * and the exception type of inner catch block is the subset of outer catch block
 	 */
 	public void nestedCatch_InnerCatchWithChildExceptionTypeOfOuter() {
 		try {
@@ -90,8 +88,8 @@ public class NestedTryStatementExample {
 	}
 	
 	/**
-	 * 在finally中出現巢狀try-catch
-	 * 內外層try-catch的exception type不為Exception下面中的同一子系列
+	 * there is nested try in finally block
+	 * and the exception type between inner and outer catch block is not in the same exception subset
 	 */
 	public void nestedFinallyWithTopException() {
 		try {
@@ -495,7 +493,7 @@ public class NestedTryStatementExample {
 	}
 
 	/**
-	 * Example from Ant, 因為 Junit 版本差異而寫出的 code
+	 * Example from Ant, this code is used to resolve the problem due to different version of JUnit
 	 * Nested try in non-MethodDeclaration node.
 	 * @author pig
 	 */
@@ -516,7 +514,7 @@ public class NestedTryStatementExample {
 
 	/**
 	 * Nested try in constructor(It is also MethodDeclaration).
-	 * 內容同 method「nestedFinally」
+	 * content is the same as method 「nestedFinally」
 	 * @author pig
 	 */
     public NestedTryStatementExample() {

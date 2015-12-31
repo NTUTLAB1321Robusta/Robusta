@@ -31,7 +31,7 @@ public class NestedTryStatementVisitor extends AbstractBadSmellVisitor {
 	}
 	
 	/**
-	 * Get the type of bad smell list of NestedTryStatemnt.
+	 * Get the list which stores nested try bad smell.
 	 * @return
 	 */
 	public List<MarkerInfo> getNestedTryStatementList() {
@@ -39,7 +39,7 @@ public class NestedTryStatementVisitor extends AbstractBadSmellVisitor {
 	}
 
 	/**
-	 * 根據設定檔的資訊，決定要不要拜訪整棵樹。
+	 * according to profile, decide whether to visit whole AST tree.
 	 * @author pig
 	 */
 	@Override

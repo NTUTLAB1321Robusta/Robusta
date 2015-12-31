@@ -141,7 +141,7 @@ public class ASTNodeFinder {
 	}
 	
 	/**
-	 * collect try statement from nested try statemen<br />
+	 * collect try statement from nested try statement<br />
 	 * can decide the location to search try statement, from try block or catch clause<br />
 	 * lacks: if we decide to search in CatchClause, visitor will scan try statement in all CatchClause. we can not decide a specified CatchClause to scan.
 	 * lacks: we only take one level deep nested try statement in consider. 

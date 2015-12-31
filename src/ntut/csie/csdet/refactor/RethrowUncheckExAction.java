@@ -30,7 +30,7 @@ public class RethrowUncheckExAction implements IMarkerResolution{
 
 	@Override
 	public void run(IMarker marker) {
-		//it will invoke specified refactor feature if user select "empty catch block" or "dummy handler" marker. 
+		//it will invoke specified refactor feature if user selects "empty catch block" or "dummy handler" marker. 
 		try {
 			String problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
 			if ((problem != null && problem.equals(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK)) ||
@@ -45,7 +45,7 @@ public class RethrowUncheckExAction implements IMarkerResolution{
 				refactoring.swapTheIndexOfAnnotation();
 			}
 		} catch (Exception e) {
-			//the exception type will be thrown is InterruptedException、CoreException
+			//the exception type which will be thrown is InterruptedException、CoreException
 			logger.error("[Refactor][My Extract Method] EXCEPTION ", e);
 		}
 	}

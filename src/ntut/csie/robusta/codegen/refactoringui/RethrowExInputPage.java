@@ -30,12 +30,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 提供一個介面給user,讓user可以選擇要Rethrow什麼樣的Exception type
+ * provide a user interface where user can select what exception type will be rethrown
  * @author chewei
  */
 public class RethrowExInputPage extends UserInputWizardPage {
 	private static Logger logger = LoggerFactory.getLogger(RethrowExInputPage.class);
-	//input what Excpetion type thrown
+	//input the Exception type to throw
 	private Text exNameField;
 	//exception Type selected by user
 	private IType exType;
@@ -68,7 +68,7 @@ public class RethrowExInputPage extends UserInputWizardPage {
 		//RuntimeException is default exception type
 		exNameField.setText("RuntimeException");
 		
-		//use browse button to pup up selection dialog
+		//use browse button to pop up selection dialog
 		final Button browseButton= new Button(composite, SWT.PUSH);
 		browseButton.setText("&Browse...");
 		GridData data= new GridData();
@@ -81,7 +81,7 @@ public class RethrowExInputPage extends UserInputWizardPage {
 			}			
 		});
 		
-		//press browse button to pup up selection dialog
+		//press browse button to pop up selection dialog
 		browseButton.addSelectionListener(new SelectionAdapter(){
 			@Override
 			public void widgetSelected(SelectionEvent event) {
@@ -123,11 +123,11 @@ public class RethrowExInputPage extends UserInputWizardPage {
 	}
 	
 	/**
-	 * pup up dialog that allow user to select class to throw exception
+	 * pop up dialog that allows user to select a class to throw exception
 	 * @return
 	 */
 	private IType selectExType(){
-		//get project exist in getRethrowExRefactoring
+		//get project which exists in getRethrowExRefactoring
 		IJavaProject project = getRethrowExRefactoring().getProject();
 		
 		try {	

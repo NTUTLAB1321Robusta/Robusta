@@ -27,7 +27,7 @@ import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 
 public class DummyHandlerVisitor extends AbstractBadSmellVisitor {
 	private List<MarkerInfo> dummyHandlerList;
-	//store library name and token of whether detect this library from user setting
+	//store library name and token whether to detect this library from user settings
 	private TreeMap<String, UserDefinedConstraintsType> libMap;
 	private boolean isDetectingDummyHandlerSmell;
 	private CompilationUnit root;
@@ -45,7 +45,7 @@ public class DummyHandlerVisitor extends AbstractBadSmellVisitor {
 		return dummyHandlerList;
 	}
 	/**
-	 * According to configure that visitor decide whether visit all class ASTnode structure or not.
+	 * According to configuration a visitor will decide whether to visit all class ASTnode structure or not.
 	 */
 	public boolean visit(MethodDeclaration node) {
 		// don't visit main(){}
@@ -82,7 +82,7 @@ public class DummyHandlerVisitor extends AbstractBadSmellVisitor {
 	}
 	
 	/**
-	 * Is it a statement has a expression invoking printing or logging?
+	 * Is it a statement that has an expression which invokes printing or logging?
 	 */
 	private boolean isPrintingOrLoggingStatement(Statement statement) {
 		if (statement instanceof ExpressionStatement) {
@@ -93,7 +93,7 @@ public class DummyHandlerVisitor extends AbstractBadSmellVisitor {
 	}
 
 	/**
-	 * Is it an expression invoking printing or logging?
+	 * Is it an expression that invokes printing or logging?
 	 */
 	private boolean isPrintingOrLoggingExpression(Expression expression) {
 		if (expression instanceof MethodInvocation) {
@@ -121,7 +121,7 @@ public class DummyHandlerVisitor extends AbstractBadSmellVisitor {
 		
 		String methodName = methodBinding.getName();
 
-		//remove Greater than marker, Less than marker, and other content between these two marker from library name
+		//remove Greater than marker ">", Less than marker "<", and other content between these two marker from library name
 		if (libName.indexOf("<") != -1)
 			libName = libName.substring(0, libName.indexOf("<"));
 			

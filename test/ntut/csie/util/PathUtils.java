@@ -4,7 +4,7 @@ import ntut.csie.filemaker.JavaProjectMaker;
 
 public class PathUtils {
 	/**
-	 * packageName裡面的.換成斜線
+	 * change "." to "/" in packageName
 	 * @param packageName
 	 * @return
 	 */
@@ -15,10 +15,13 @@ public class PathUtils {
 	}
 	
 	/**
-	 * 取得傳入class的完整路徑
-	 * @param clazz 要取得位置的.class檔
-	 * @param projectName 該.class檔所在的專案名稱
-	 * @return 該.class檔的實際路徑
+	 * get full path of parameter class
+	 * @param clazz 
+	 * 			class file
+	 * @param projectName 
+	 * 			project name of class file 
+	 * @return 
+	 * 			full path of class file
 	 * @author pig
 	 */
 	public static String getPathOfClassUnderSrcFolder(Class<?> clazz, String projectName) {

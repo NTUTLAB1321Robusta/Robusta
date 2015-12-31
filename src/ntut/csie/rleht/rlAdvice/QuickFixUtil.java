@@ -97,7 +97,7 @@ public class QuickFixUtil {
 			rlary.expressions().add(getRLAnnotation(ast, rlValue, exceptionClass));
 		} else {
 			for (RLMessage rlmsg : currentMethodRLList) {
-				//add original annotation and check duplicate annotation. if the annotation is duplicate then ignore it.
+				//add original annotation and check duplicated annotation. if the annotation is duplicated then ignore it.
 				
 				if((!rlmsg.getRLData().getExceptionType().toString().contains(exceptionClass)) && (rlmsg.getRLData().getLevel() == rlValue))				
 					rlary.expressions().add(getRLAnnotation(ast, rlmsg.getRLData().getLevel(), rlmsg.getRLData().getExceptionType()));	
@@ -127,7 +127,7 @@ public class QuickFixUtil {
 	 */
 	@SuppressWarnings("unchecked")
 	private void addImportDeclaration(CompilationUnit actRoot) {
-		// check whether has imported robustness and robustness level class
+		// check whether it has imported robustness and robustness level class
 		List<ImportDeclaration> importList = actRoot.imports();
 
 		boolean isImportRobustnessClass = false;
@@ -201,7 +201,7 @@ public class QuickFixUtil {
 		CatchClause clause = (CatchClause) cc;
 		ThrowStatement throwStatement = currentMethodDeclarationNode.newThrowStatement();
 		
-		//input variable which will be throw
+		// input variable which will be thrown
 		ClassInstanceCreation cic = currentMethodDeclarationNode.newClassInstanceCreation();
 		// throw new RuntimeException()
 		cic.setType(currentMethodDeclarationNode.newSimpleType(currentMethodDeclarationNode.newSimpleName(exceptionClass)));
@@ -217,7 +217,7 @@ public class QuickFixUtil {
 		actRoot.recordModifications();
 		AST ast = currentMethodNode.getAST();
 
-		// add throw exception statement in Catch Caluse
+		// add throw exception statement in Catch Clause
 		// collect all catch clause in method
 		ASTCatchCollect catchCollector = new ASTCatchCollect();
 		currentMethodNode.accept(catchCollector);
@@ -226,9 +226,9 @@ public class QuickFixUtil {
 		for (int i = 0; i < catchList.size(); i++) {
 				addAnnotationRoot(actRoot, currentMethodNode, rlValue, exception);
 				
-				// add throw exception statement in Catch Caluse
+				// add throw exception statement in Catch Clause
 				addThrowStatement(catchList.get(i), ast);
-				//check whether a throw exception statement on method signature 
+				//check whether there is a throw exception statement on method signature 
 				addThrownException(ast, exception, currentMethodNode);
 		}
 	}

@@ -74,7 +74,7 @@ public class InappropriateAnnotationModel implements IAnnotationModel {
 	}
 
 	/**
-	 * Attaches a inappropriate annotation model for the given editor if the
+	 * Attaches inappropriate annotation model for the given editor if the
 	 * editor can be annotated. Does nothing if the model is already attached.
 	 * 
 	 * @param editor

@@ -22,7 +22,7 @@ import org.eclipse.jdt.core.dom.TryStatement;
 public class ExceptionThrownFromFinallyBlockVisitor extends AbstractBadSmellVisitor {
 	private CompilationUnit root;
 	private List<MarkerInfo> thrownInFinallyList;
-	private int finallyStack = 0; // To check if in any finally block
+	private int finallyStack = 0;
 	private Block outermostFinallyBlock = null;
 
 	public ExceptionThrownFromFinallyBlockVisitor(CompilationUnit compilationUnit) {
@@ -31,7 +31,7 @@ public class ExceptionThrownFromFinallyBlockVisitor extends AbstractBadSmellVisi
 	}
 
 	/**
-	 * For finally block, to plus the count of finally in stack Record the outer
+	 * For finally block, to add the count of finally in stack Record the outer
 	 * finally block
 	 * 
 	 * @author pig
@@ -47,7 +47,7 @@ public class ExceptionThrownFromFinallyBlockVisitor extends AbstractBadSmellVisi
 	}
 
 	/**
-	 * For finally block, to minus the count of finally in stack
+	 * For finally block, to subtract the count of finally in stack
 	 * 
 	 * @author pig
 	 */
@@ -61,7 +61,7 @@ public class ExceptionThrownFromFinallyBlockVisitor extends AbstractBadSmellVisi
 	}
 
 	/**
-	 * For each exception be thrown in finally, mark it as a bad smell
+	 * For each exception that has been thrown in finally, mark it as a bad smell
 	 */
 	public boolean visit(MethodInvocation node) {
 		if (isInAnyFinallyBlock()) {
@@ -75,7 +75,7 @@ public class ExceptionThrownFromFinallyBlockVisitor extends AbstractBadSmellVisi
 	}
 
 	/**
-	 * For each exception be thrown in finally, mark it as a bad smell
+	 * For each exception that has been thrown in finally, mark it as a bad smell
 	 */
 	public boolean visit(SuperMethodInvocation node) {
 		if (isInAnyFinallyBlock()) {
@@ -89,7 +89,7 @@ public class ExceptionThrownFromFinallyBlockVisitor extends AbstractBadSmellVisi
 	}
 
 	/**
-	 * For the exception be thrown in finally, mark it as a bad smell
+	 * For the exception which has been thrown in finally, mark it as a bad smell
 	 */
 	public boolean visit(ThrowStatement node) {
 		if (isInAnyFinallyBlock()) {
@@ -104,7 +104,7 @@ public class ExceptionThrownFromFinallyBlockVisitor extends AbstractBadSmellVisi
 	}
 
 	/**
-	 * For the exception be thrown in finally, mark it as a bad smell
+	 * For the exception which has been thrown in finally, mark it as a bad smell
 	 */
 	public boolean visit(ClassInstanceCreation node) {
 		if (isInAnyFinallyBlock()) {

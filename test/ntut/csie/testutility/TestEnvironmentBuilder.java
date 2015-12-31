@@ -59,7 +59,7 @@ public class TestEnvironmentBuilder {
 	}
 
 	private void createEmptySetting() {
-		// remove old setting if it exist
+		// remove old setting if it exists
 		File settingFile = new File(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		if (settingFile.exists()) {
 			assertTrue(settingFile.delete());

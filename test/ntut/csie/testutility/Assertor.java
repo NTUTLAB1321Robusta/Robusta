@@ -39,7 +39,7 @@ public class Assertor {
 	}
 
 	/**
-	 * Record context of each bad smells and it's line number
+	 * Record context of each bad smells and its line number
 	 */
 	private static String colloectMarkerInfoListContents(List<MarkerInfo> list) {
 		StringBuilder sb = new StringBuilder();

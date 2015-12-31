@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * provide a user interface to allow user select what method will be extracted
+ * provide user interface to allow user to select what method will be extracted
  * @author Min, Shiau
  */
 public class ExtractMethodInputPage extends UserInputWizardPage {

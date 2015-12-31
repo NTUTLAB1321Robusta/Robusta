@@ -25,7 +25,7 @@ public class UserDefinedClass {
 			classPattern.swim();
 		} catch (Exception e) {
 			/*
-			 * ser defined type1 - when meet a template like "*[javaFilePath].UserDefineDummyHandlerFish.*" - false
+			 * user defined type1 - when meet a template like "*[javaFilePath].UserDefineDummyHandlerFish.*" - false
 		 	 * this "userDefineDummyHandlerFish.toString()" will not be detected, due to its' .toString() is inherited from Object class.
 		 	 * if "userDefineDummyHandlerFish.toString()"'s .toString() is a override method, userDefineDummyHandlerFish.toString() will be detected as "*.toString()".
 			 */

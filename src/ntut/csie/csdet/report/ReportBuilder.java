@@ -87,7 +87,7 @@ public class ReportBuilder {
 	}
 
 	/**
-	 * Analysis the project to add bad smell info to ReportModel instance
+	 * Analyze the project to add bad smell info to ReportModel instance
 	 * 
 	 * @param project
 	 */
@@ -97,7 +97,7 @@ public class ReportBuilder {
 		try {
 			List<IPackageFragmentRoot> root = getSourcePaths(javaPrj);
 			for (int i = 0; i < root.size(); i++) {
-				//Check if the user dont want to detect some root source folders.
+				//Check if the user doesn't want to detect some root source folders.
 				if(!shouldDetectPackageFragmentRoot(root.get(i)))
 					continue;
 				// get folder's name
@@ -126,7 +126,7 @@ public class ReportBuilder {
 							 * model
 							 */
 							for (int k = 0; k < compilationUnits.length; k++) {
-								// if user canceled the task, we should return immediatly with cancel status
+								// if user cancels the task, we should return immediately with cancel status
 								if(progressMonitor.isCanceled()) {
 									return Status.CANCEL_STATUS;
 								}
@@ -182,8 +182,8 @@ public class ReportBuilder {
 
 	/**
 	 * calculate LOC of class file 
-	 * 
-	 * @param filePath	class的File Path
+	 * @param filePath	
+	 *        File Path of class
 	 * @return LOC of class
 	 */
 	private int countFileLOC(String filePath) {

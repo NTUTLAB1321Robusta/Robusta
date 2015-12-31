@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * before add marker, there is some much preprocess need to be node such as searching statement and collecting smell message 
+ * before adding marker, there are some preprocess needs to be done such as searching statement and collecting smell message 
  * @author Charles
  * @version 0.0.1
  */
@@ -23,7 +23,7 @@ public class GainMarkerInfoUtil {
 	private static Logger logger = LoggerFactory.getLogger(GainMarkerInfoUtil.class);
 	
 	/**
-	 * get smell message of line which is marked
+	 * get smell message of the marked line
 	 * @param marker
 	 * @param actRoot
 	 * @param currentMethodNode
@@ -44,7 +44,7 @@ public class GainMarkerInfoUtil {
 	}
 	
 	/**
-	 * get information of code which is needed to be modified
+	 * get information of a code which is needed to be modified
 	 * @param msgIdx
 	 * @param actRoot
 	 * @param currentMethodNode
@@ -60,7 +60,7 @@ public class GainMarkerInfoUtil {
 	}
 	
 	/**
-	 * find out the line, which is marked, is belonged to which try block 
+	 * find out which marked line belongs to which try block 
 	 * @param node
 	 * @param moveLine
 	 * @return

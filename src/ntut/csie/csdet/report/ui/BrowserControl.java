@@ -66,7 +66,7 @@ public class BrowserControl extends LocationAdapter {
 					//launch editor to open file 
 					IEditorPart edit = openEditor(project, javaFile);
 					Document document = getDocument(javaFile);
-					//high light selected line number
+					//highlight selected line number
 					selectLine(edit, LineString, document);
 				}
 			}
@@ -75,7 +75,8 @@ public class BrowserControl extends LocationAdapter {
 
 	/**
 	 * transform java file into document
-	 * @param javaFile		target java file
+	 * @param javaFile		
+	 * 				target java file
 	 * @return				return file document
 	 */
 	private Document getDocument(IFile javaFile) {
@@ -112,7 +113,7 @@ public class BrowserControl extends LocationAdapter {
 	}
 
 	/**
-	 * high light selected line number
+	 * highlight selected line number
 	 * @param edit
 	 * @param LineString
 	 * @param document
@@ -124,11 +125,11 @@ public class BrowserControl extends LocationAdapter {
 			if (sourceEditor instanceof ITextEditor) {
 				ITextEditor editor = (ITextEditor) sourceEditor;
 				
-				//the code region which will be high light
+				//the code region which will be highlighted
 				IRegion lineInfo = null;
 				lineInfo = getLineInfo(LineString, document, lineInfo);
 				
-				//high light selected line number
+				//highlight selected line number
 				editor.selectAndReveal(lineInfo.getOffset(), lineInfo.getLength());
 			}
 		} catch (NumberFormatException nfe) {
@@ -149,7 +150,7 @@ public class BrowserControl extends LocationAdapter {
 	}
 
 	/**
-	 * 解析URL，取得程式碼行數必要資訊
+	 * parsing URL and getting specified information of line of code
 	 * @param info
 	 */
 	private void parseUrl(String info) {

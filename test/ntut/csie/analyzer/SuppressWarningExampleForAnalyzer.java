@@ -32,7 +32,7 @@ public class SuppressWarningExampleForAnalyzer {
 	/* ------------------------------------ Start ------------------------------------ */
 	
 	/**
-	 * 有 suppress warning 的 unprotected main program
+	 * a unprotected main program with suppress warning
 	 */
 	@SuppressSmell("Unprotected_Main_Program")
 	public static void main(String[] args) {
@@ -40,9 +40,6 @@ public class SuppressWarningExampleForAnalyzer {
 		test.toString();
 	}
 	
-	/**
-	 * method, which has dummy handler, marked suppress warning
-	 */
 	@SuppressSmell("Dummy_Handler")
 	public void withSuppressWaringDummyHandlerOnMethod() {
 		FileInputStream fis = null;
@@ -54,9 +51,6 @@ public class SuppressWarningExampleForAnalyzer {
 		}
 	}
 
-	/**
-	 * catch, which has dummy handler, marked suppress warning
-	 */
 	public void withSuppressWaringDummyHandlerOnCatch() {
 		FileInputStream fis = null;
 		try {
@@ -67,9 +61,6 @@ public class SuppressWarningExampleForAnalyzer {
 		}
 	}
 
-	/**
-	 * catch, which has nested try statement, marked suppress warning
-	 */
 	@SuppressSmell({ "Nested_Try_Statement", "Dummy_Handler" })
 	public void withSuppressWaringNestedTryStatementOnCatch() {
 		try {
@@ -84,9 +75,6 @@ public class SuppressWarningExampleForAnalyzer {
 		}
 	}
 	
-	/**
-	 * method, which has nested try statement, marked suppress warning
-	 */
 	@SuppressSmell({ "Nested_Try_Statement", "Dummy_Handler" })
 	public void withSuppressWaringNestedTryStatementOnMethod() {
 		try {
@@ -103,9 +91,6 @@ public class SuppressWarningExampleForAnalyzer {
 		}
 	}
 
-	/**
-	 * method, which has empty catch block, marked suppress warning
-	 */
 	@SuppressSmell("Empty_Catch_Block")
 	public void withSuppressWaringEmptyCatchBlcokionOnMethod() {
 		FileInputStream fis = null;
@@ -117,9 +102,6 @@ public class SuppressWarningExampleForAnalyzer {
 		}
 	}
 
-	/**
-	 * catch, which has empty catch block, marked suppress warning
-	 */
 	public void withSuppressWaringEmptyCatchBlockOnCatch() {
 		FileInputStream fis = null;
 		try {
@@ -130,9 +112,6 @@ public class SuppressWarningExampleForAnalyzer {
 		}
 	}
 
-	/**
-	 * method, which has careless cleanup, marked suppress warning
-	 */
 	@SuppressSmell("Careless_Cleanup")
 	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
 	public void withSuppressWaringCarelessCleanup(byte[] context, File outputFile) {
@@ -149,11 +128,6 @@ public class SuppressWarningExampleForAnalyzer {
 		}
 	}
 	
-	/**
-	 * method, which has careless cleanup and there is a close invocation in try statement, marked suppress warning
-	 * @param context
-	 * @param outputFile
-	 */
 	@SuppressSmell("Careless_Cleanup")
 	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
 	public void withSuppressWaringCarelessCleanupCloseInTry(byte[] context, File outputFile) {
@@ -169,9 +143,6 @@ public class SuppressWarningExampleForAnalyzer {
 		}
 	}
 	
-	/**
-	 * method, which has careless cleanup and added a vacant finally block, marked suppress warning
-	 */
 	@SuppressSmell("Careless_Cleanup")
 	@Robustness(value = { @RTag(level = 1, exception = java.lang.RuntimeException.class) })
 	public void withSuppressWaringCarelessCleanupCloseInTryAddFinlly(byte[] context, File outputFile) {

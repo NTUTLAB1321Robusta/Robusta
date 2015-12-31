@@ -125,7 +125,7 @@ public class ClosingResourceBeginningPositionFinderTest {
 	}
 
 	/**
-	 * The structure doesn't expect will cause RuntimeException
+	 * The structure doesn't expect that it will cause RuntimeException
 	 */
 	@Test(expected = RuntimeException.class)
 	public void testSetStartPositionByTheExpressionOfMethodInvocationWithWrongFormat() throws Exception {
@@ -133,7 +133,7 @@ public class ClosingResourceBeginningPositionFinderTest {
 				"closeResourceByInvokeMyClose", "this.close()");
 
 		Method method = getMethodSetStartPositionByTheExpressionOfMethodInvocation();
-		// Because reflaction will pack RuntimeException to InvocationTargetException
+		// Because reflection will pack RuntimeException to InvocationTargetException
 		try {
 			method.invoke(finder, methodInvocation);
 		} catch (InvocationTargetException e) {

@@ -73,8 +73,8 @@ public class ClosingResourceBeginningPositionFinder {
 	/**
 	 *  Among the arguments find the furthest beginningPosition 
 	 *  if any of the argument is not  in simple name form or 
-	 *  any of the argument's assignment cannot be found between the range it's 
-	 *  supposed to be in, an exception would be raised
+	 *  any of it's assignment cannot be found between the range it's 
+	 *  supposed to be in, then an exception will be raised
 	 */
 	private void setStartPositionByTheFurthestArgument(MethodInvocation methodInvocation) throws CloseMethodArgumentNotAllInSimpleNameFormException{
 		detectionStartPoint = methodInvocation.getStartPosition();
@@ -105,8 +105,8 @@ public class ClosingResourceBeginningPositionFinder {
 	}
 
 	/**
-	 *  If the method invocation is not in "instance.close()" form or the instance has no assignment between the range
-	 *  it's supposed to be in, an exception would be raised
+	 *  If the method invocation is not in "instance.close()" form or the instance has no assignment 
+	 *  between the range it's supposed to be in, then an exception will be raised
 	 */
 	private void setStartPositionByTheExpressionOfMethodInvocation(MethodInvocation methodInvocation) throws CloseMethodInvocationHasNoExpressionException, ExpressionIsNotInSimpleNameFormException, NoAssignmentStatementOrDeclarationInDetectionRangeException, RetrieveVariableDeclarationPointFailException{
 		Expression expression = methodInvocation.getExpression();

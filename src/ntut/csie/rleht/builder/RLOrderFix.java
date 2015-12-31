@@ -44,7 +44,8 @@ public class RLOrderFix {
 	 * @param resource		
 	 * @param methodIdx		
 	 * @param msgIdx		
-	 * @param selectLine	high light selected line number
+	 * @param selectLine	
+	 * 				highlight selected line number
 	 */
 	public void run(IResource resource, String methodIdx, String msgIdx)
 	{		
@@ -139,7 +140,7 @@ public class RLOrderFix {
 	
 	/**
 	 * Reorder RLList element order. 
-	 * During reordering, check RLList element order is correct or not. 
+	 * During reordering, check RLList element order if it is correct or not. 
 	 * If RLList element is in order then put the element into currentMethodRLList.
 	 * 
 	 * @param newRLList
@@ -174,7 +175,7 @@ public class RLOrderFix {
     }
 	
 	/**
-	 * check RLList element order is correct
+	 * check RLList element order if it is correct
 	 * 
 	 * @param newRLList
 	 * 		new RLlist which is unknown about order
@@ -271,7 +272,7 @@ public class RLOrderFix {
 
 			List<IExtendedModifier> modifiers = method.modifiers();
 			for (int i = 0, size = modifiers.size(); i < size; i++) {
-				//remove annotation which has existed
+				//remove existing annotation
 				if (modifiers.get(i).isAnnotation() && modifiers.get(i).toString().indexOf("Robustness") != -1) {
 					method.modifiers().remove(i);
 					break;
@@ -282,7 +283,7 @@ public class RLOrderFix {
 				method.modifiers().add(0, root);
 			}
 			
-			//store modifying data back document and high light
+			//store modifying data back to document and highlight it
 			applyChange();
 		}
 		catch (Exception ex) {

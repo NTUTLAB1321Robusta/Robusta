@@ -48,7 +48,7 @@ public class CloseResourceMethodInvocationVisitorTest {
 
 	@Test
 	public void testVisitorWithUserDefinedMethodClose() throws Exception {
-		// Create setting file with user defined
+		// Create user defined setting file
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		smellSettings.addCarelessCleanupPattern("*.close", true);
@@ -62,7 +62,7 @@ public class CloseResourceMethodInvocationVisitorTest {
 	
 	@Test
 	public void testVisitorWithUserDefinedMethodBark() throws Exception {
-		// Create setting file with user defined
+		// Create user defined setting file
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		smellSettings.addCarelessCleanupPattern("*.bark", true);
@@ -76,7 +76,7 @@ public class CloseResourceMethodInvocationVisitorTest {
 
 	@Test
 	public void testVisitorWithUserDefinedClassUserDefinedCarelessCleanupClass() throws Exception {
-		// Create setting file with user defined
+		// Create user defined setting file
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		String className = "ntut.csie.analyzer.careless.closingmethod.UserDefinedCarelessCleanupClass"; 
@@ -91,7 +91,7 @@ public class CloseResourceMethodInvocationVisitorTest {
 	
 	@Test
 	public void testVisitorWithUserDefinedFullQualifiedMethods() throws Exception {
-		// Create setting file with user defined
+		// Create user defined setting file
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		smellSettings.addExtraRule(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 		String fullQualifiedName = "ntut.csie.analyzer.careless.closingmethod.UserDefinedCarelessCleanupClass.bark"; 

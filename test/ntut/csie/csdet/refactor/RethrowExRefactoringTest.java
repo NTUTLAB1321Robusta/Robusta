@@ -131,11 +131,11 @@ public class RethrowExRefactoringTest {
 		
 		Method getThrowStatementSourceLine = RethrowExRefactoring.class.getDeclaredMethod("getLineNumberOfThrowExceptionStatement", int.class);
 		getThrowStatementSourceLine.setAccessible(true);
-		/** if high light boundary does not cover try-catch block, this method will return -1;  */
+		/** if highlighted boundary does not cover try-catch block, this method will return -1;  */
 		assertEquals(-1, getThrowStatementSourceLine.invoke(refactoring, -1));
-		/** if high light boundary covers catch statement but not covers throw statement, this method will return -1 */
+		/** if highlighted boundary covers catch statement but does not cover throw statement, this method will return -1 */
 		assertEquals(-1, getThrowStatementSourceLine.invoke(refactoring, 0));
-		/** if high light boundary covers try-catch statement and throw statement, this method will return line number */
+		/** if highlighted boundary covers try-catch statement and throw statement, this method will return the line number */
 		currentMethodNode.set(refactoring, ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit, "false_throwAndSystemOut"));
 		assertEquals(196-1, getThrowStatementSourceLine.invoke(refactoring, 0));
 	}
@@ -227,7 +227,7 @@ public class RethrowExRefactoringTest {
 		assertEquals("import java.util.logging.Level;\n", imports.get(3).toString());
 		assertEquals("import org.apache.log4j.Logger;\n", imports.get(4).toString());
 		
-		/** when first time import library, RL and Robustness will be imported*/
+		/** when importing library at first time, RL and Robustness will be imported*/
 		Method addImportRLDeclaration = RethrowExRefactoring.class.getDeclaredMethod("importRobuatnessLevelLibrary");
 		addImportRLDeclaration.setAccessible(true);
 		addImportRLDeclaration.invoke(refactoring);
@@ -242,7 +242,7 @@ public class RethrowExRefactoringTest {
 		assertEquals("import ntut.csie.robusta.agile.exception.Robustness;\n", imports.get(5).toString());
 		assertEquals("import ntut.csie.robusta.agile.exception.RTag;\n", imports.get(6).toString());
 		
-		/** when second time import library, RL and Robustness will not be imported due to they have been imported */
+		/** when importing library at second time, RL and Robustness will not be imported due to they have been already imported */
 		addImportRLDeclaration.invoke(refactoring);
 		
 		imports = compilationUnit.imports();
@@ -266,7 +266,7 @@ public class RethrowExRefactoringTest {
 		IType exType = JavaCore.create(project).findType("java.io.IOException");
 		refactoring.setUserSelectingExceptionType(exType);
 		
-		/** import the library which has already imported */
+		/** import the library which has been already imported */
 		
 		Method addImportDeclaration = RethrowExRefactoring.class.getDeclaredMethod("importExceptionLibrary");
 		addImportDeclaration.setAccessible(true);
@@ -280,7 +280,7 @@ public class RethrowExRefactoringTest {
 		assertEquals("import java.util.logging.Level;\n", imports.get(3).toString());
 		assertEquals("import org.apache.log4j.Logger;\n", imports.get(4).toString());
 		
-		/** import the library which has not already imported */
+		/** import the library which has not been already imported */
 		exType = JavaCore.create(project).findType("java.io.IOError");
 		refactoring.setUserSelectingExceptionType(exType);
 		addImportDeclaration.invoke(refactoring);
@@ -358,7 +358,7 @@ public class RethrowExRefactoringTest {
 		for(int i = 0; i < catchList.size(); i++) {
 			List<Statement> statements = catchList.get(i).getBody().statements();
 			deleteStatement.invoke(refactoring, statements);
-			//if there are some statement left after invoking deleteStatement. these statement should be some special logic statement.
+			//if there are some statement left after invoking deleteStatement. these statements should be some special logic statement.
 			if(statements.size() > 0) {
 				for(int j = 0; j < statements.size(); j++) {
 					if(statements.get(j).getNodeType() == ASTNode.EXPRESSION_STATEMENT) {
@@ -411,7 +411,7 @@ public class RethrowExRefactoringTest {
 		ASTCatchCollect catchCollector = new ASTCatchCollect();
 		currentMethodNode.accept(catchCollector);
 		addThrowStatement.invoke(refactoring, catchCollector.getMethodList().get(0), currentMethodNode.getAST());
-		// verify whether has added throw statement and has removed System.err.println(e)
+		// verify whether it has added throw statement and has removed System.err.println(e)
 		assertEquals(	"public void true_systemErrPrint(){\n" +
 						"  FileInputStream fis=null;\n" +
 						"  try {\n" +
@@ -452,7 +452,7 @@ public class RethrowExRefactoringTest {
 		assertEquals(1, exceptionList.size());
 		assertEquals("IOException", exceptionList.get(0).toString());
 		
-		//if a method will not throw a specified exception type, it need to add the exception type into method's information. 
+		//if a method will not throw a specified exception type, it needs to add the exception type into method's information. 
 		refactoring.setExceptionType("RuntimeException");
 		// check precondition
 		assertEquals(1, exceptionList.size());

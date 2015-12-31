@@ -29,7 +29,7 @@ public class JavaFileToStringTest {
 	}
 
 	/**
-	 * 確認讀取到的檔案內容如預期
+	 * confirm the loading file content is correct 
 	 * Test method for {@link ntut.csie.filemaker.JavaFileToString#read(java.lang.Class, java.lang.String)}.
 	 */
 	@Test
@@ -63,7 +63,7 @@ public class JavaFileToStringTest {
 	}
 
 	/**
-	 * 確認清空的功能正常
+	 * confirm the clear feature is stable
 	 * Test method for {@link ntut.csie.filemaker.JavaFileToString#clear()}.
 	 */
 	@Test

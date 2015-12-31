@@ -91,7 +91,7 @@ public class ThrownExceptionInFinallyBlockVisitorTest {
 	}
 
 	/**
-	 * This test case will fault if any of the rest test cases fault
+	 * This test case will be fault if any of the rest test cases are fault
 	 */
 	@Test
 	public void visitWithWholeCompilationUnit() {
@@ -109,7 +109,7 @@ public class ThrownExceptionInFinallyBlockVisitorTest {
 		List<MarkerInfo> thrownInFinallyInfos = thrownExceptionInFinallyBlockVisitor
 				.getThrownInFinallyList();
 		assertEquals(1, thrownInFinallyInfos.size());
-		assertEquals(362, thrownInFinallyInfos.get(0).getLineNumber());
+		assertEquals(360, thrownInFinallyInfos.get(0).getLineNumber());
 	}
 
 	@Test
@@ -120,11 +120,11 @@ public class ThrownExceptionInFinallyBlockVisitorTest {
 		List<MarkerInfo> thrownInFinallyInfos = thrownExceptionInFinallyBlockVisitor
 				.getThrownInFinallyList();
 		assertEquals(9, thrownInFinallyInfos.size());
-		assertEquals(185, thrownInFinallyInfos.get(0).getLineNumber());
-		assertEquals(191, thrownInFinallyInfos.get(2).getLineNumber());
-		assertEquals(198, thrownInFinallyInfos.get(4).getLineNumber());
-		assertEquals(219, thrownInFinallyInfos.get(6).getLineNumber());
-		assertEquals(232, thrownInFinallyInfos.get(8).getLineNumber());
+		assertEquals(183, thrownInFinallyInfos.get(0).getLineNumber());
+		assertEquals(189, thrownInFinallyInfos.get(2).getLineNumber());
+		assertEquals(196, thrownInFinallyInfos.get(4).getLineNumber());
+		assertEquals(217, thrownInFinallyInfos.get(6).getLineNumber());
+		assertEquals(230, thrownInFinallyInfos.get(8).getLineNumber());
 	}
 
 	@Test
@@ -144,7 +144,7 @@ public class ThrownExceptionInFinallyBlockVisitorTest {
 		List<MarkerInfo> thrownInFinallyInfos = thrownExceptionInFinallyBlockVisitor
 				.getThrownInFinallyList();
 		assertEquals(1, thrownInFinallyInfos.size());
-		assertEquals(161, thrownInFinallyInfos.get(0).getLineNumber());
+		assertEquals(159, thrownInFinallyInfos.get(0).getLineNumber());
 	}
 
 	@Test
@@ -156,8 +156,8 @@ public class ThrownExceptionInFinallyBlockVisitorTest {
 		List<MarkerInfo> thrownInFinallyInfos = thrownExceptionInFinallyBlockVisitor
 				.getThrownInFinallyList();
 		assertEquals(2, thrownInFinallyInfos.size());
-		assertEquals(132, thrownInFinallyInfos.get(0).getLineNumber());
-		assertEquals(134, thrownInFinallyInfos.get(1).getLineNumber());
+		assertEquals(130, thrownInFinallyInfos.get(0).getLineNumber());
+		assertEquals(132, thrownInFinallyInfos.get(1).getLineNumber());
 	}
 
 	@Test
@@ -177,10 +177,10 @@ public class ThrownExceptionInFinallyBlockVisitorTest {
 		List<MarkerInfo> thrownInFinallyInfos = thrownExceptionInFinallyBlockVisitor
 				.getThrownInFinallyList();
 		assertEquals(4, thrownInFinallyInfos.size());
-		assertEquals(381, thrownInFinallyInfos.get(0).getLineNumber());
-		assertEquals(399, thrownInFinallyInfos.get(1).getLineNumber());
-		assertEquals(401, thrownInFinallyInfos.get(2).getLineNumber());
-		assertEquals(404, thrownInFinallyInfos.get(3).getLineNumber());
+		assertEquals(379, thrownInFinallyInfos.get(0).getLineNumber());
+		assertEquals(397, thrownInFinallyInfos.get(1).getLineNumber());
+		assertEquals(399, thrownInFinallyInfos.get(2).getLineNumber());
+		assertEquals(402, thrownInFinallyInfos.get(3).getLineNumber());
 	}
 
 	@Test
@@ -192,9 +192,9 @@ public class ThrownExceptionInFinallyBlockVisitorTest {
 		List<MarkerInfo> thrownInFinallyInfos = thrownExceptionInFinallyBlockVisitor
 				.getThrownInFinallyList();
 		assertEquals(3, thrownInFinallyInfos.size());
-		assertEquals(420, thrownInFinallyInfos.get(0).getLineNumber());
-		assertEquals(428, thrownInFinallyInfos.get(1).getLineNumber());
-		assertEquals(436, thrownInFinallyInfos.get(2).getLineNumber());
+		assertEquals(418, thrownInFinallyInfos.get(0).getLineNumber());
+		assertEquals(426, thrownInFinallyInfos.get(1).getLineNumber());
+		assertEquals(434, thrownInFinallyInfos.get(2).getLineNumber());
 	}
 
 	@Test
@@ -206,9 +206,9 @@ public class ThrownExceptionInFinallyBlockVisitorTest {
 		List<MarkerInfo> thrownInFinallyInfos = thrownExceptionInFinallyBlockVisitor
 				.getThrownInFinallyList();
 		assertEquals(3, thrownInFinallyInfos.size());
-		assertEquals(460, thrownInFinallyInfos.get(0).getLineNumber());
-		assertEquals(472, thrownInFinallyInfos.get(1).getLineNumber());
-		assertEquals(480, thrownInFinallyInfos.get(2).getLineNumber());
+		assertEquals(458, thrownInFinallyInfos.get(0).getLineNumber());
+		assertEquals(470, thrownInFinallyInfos.get(1).getLineNumber());
+		assertEquals(478, thrownInFinallyInfos.get(2).getLineNumber());
 	}
 
 	@Test
@@ -219,7 +219,7 @@ public class ThrownExceptionInFinallyBlockVisitorTest {
 		List<MarkerInfo> thrownInFinallyInfos = thrownExceptionInFinallyBlockVisitor
 				.getThrownInFinallyList();
 		assertEquals(1, thrownInFinallyInfos.size());
-		assertEquals(494, thrownInFinallyInfos.get(0).getLineNumber());
+		assertEquals(492, thrownInFinallyInfos.get(0).getLineNumber());
 	}
 
 	@Test
@@ -235,7 +235,7 @@ public class ThrownExceptionInFinallyBlockVisitorTest {
 		List<MarkerInfo> thrownInFinallyInfos = thrownExceptionInFinallyBlockVisitor
 				.getThrownInFinallyList();
 		assertEquals(1, thrownInFinallyInfos.size());
-		assertEquals(505, thrownInFinallyInfos.get(0).getLineNumber());
+		assertEquals(503, thrownInFinallyInfos.get(0).getLineNumber());
 	}
 
 	private MethodDeclaration getMethodDeclarationByName(String name) {

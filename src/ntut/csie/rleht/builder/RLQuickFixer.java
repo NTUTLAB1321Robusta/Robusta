@@ -101,7 +101,7 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				markerList.add(new RLQuickFix(resource.getString("err.rl.duplicate") + exception + ")",errMsg));
 			} else if (problem.equals(RLMarkerAttribute.ERR_RL_INSTANCE)) {
 				markerList.add(new RLQuickFix(resource.getString("err.rl.instance") + marker.getAttribute(IMarker.MESSAGE) + ")",errMsg));
-				// there is not a smell name in SuppressSmell
+				// there is not any smell name in SuppressSmell
 			} else if (problem.equals(RLMarkerAttribute.ERR_SS_NO_SMELL)) {
 				boolean inCatch = Boolean.valueOf((String)marker.getAttribute(RLMarkerAttribute.SS_IN_CATCH));
 				String[] smellList;
