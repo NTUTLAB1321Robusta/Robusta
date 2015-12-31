@@ -51,7 +51,7 @@ public class MoveCodeIntoBigOuterTryQuickFix implements IMarkerResolution{
 			return;
 		}
 		
-		quickFixCore.generateBigOuterTryStatement(methodDeclaration);
+		quickFixCore.generateTryStatementForQuickFix(methodDeclaration);
 		quickFixCore.applyChange();
 	}
 	

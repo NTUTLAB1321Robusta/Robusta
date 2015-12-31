@@ -9,6 +9,7 @@ import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.robusta.marker.AnnotationInfo;
 import ntut.csie.util.AbstractBadSmellVisitor;
+import ntut.csie.analyzer.unprotected.UnprotectedMainProgramVisitorData; 
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CatchClause;
@@ -17,20 +18,13 @@ import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.IExtendedModifier;
 import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.TryStatement;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 
 
-public class UnprotectedMainProgramVisitor extends AbstractBadSmellVisitor {
-	
-	public class AnalizeStatementStateProperity{
-		public int tryStatementAmount = 0;
-		public int catchExceptionTryStatementAmount = 0;
-		public int unprotectedStatementAmount = 0;
-		public int variableDeclarationWithLiteralInitializer = 0;
-	}
-	
+public class UnprotectedMainProgramVisitor extends AbstractBadSmellVisitor {	
 	//store Unprotected main Program which is detected
 	private List<MarkerInfo> unprotectedMainList;	
 
@@ -58,11 +52,11 @@ public class UnprotectedMainProgramVisitor extends AbstractBadSmellVisitor {
 		if(node.resolveBinding() == null)
 			return false;
 		if (node.resolveBinding().toString().contains("void main(java.lang.String[])")) {
-			List<?> statements = node.getBody().statements();	
+			List<Statement> statements = node.getBody().statements();	
 			if(statements.isEmpty()){
 				return true;
 			}
-			AnalizeStatementStateProperity properity = new AnalizeStatementStateProperity();
+			UnprotectedMainProgramVisitorData properity = new UnprotectedMainProgramVisitorData();
 			analizeStatementState(statements, properity);
 			if(properity.unprotectedStatementAmount>1 && properity.unprotectedStatementAmount == properity.variableDeclarationWithLiteralInitializer && properity.catchExceptionTryStatementAmount == properity.tryStatementAmount){
 				return true;
@@ -83,7 +77,7 @@ public class UnprotectedMainProgramVisitor extends AbstractBadSmellVisitor {
 		return true;
 	}
 	
-	private void analizeStatementState(List<?> statements,AnalizeStatementStateProperity properity){
+	private void analizeStatementState(List<Statement> statements,UnprotectedMainProgramVisitorData properity){
 		for(Object s: statements) {
 			ASTNode node = (ASTNode) s;
 			if (node.getNodeType() == ASTNode.VARIABLE_DECLARATION_STATEMENT) {
