@@ -631,8 +631,7 @@ public class QuickFixCore {
 		}
 		moveVariableDeclarationStatementOutOfTry(tryStatements, 
 				variableDeclarationStatementWithClassInstanceCreationInitializerOrMethodInvocationInitializer, 
-				statementsAfterLastTryStatement,
-				methodDeclaration);
+				statementsAfterLastTryStatement, methodDeclaration);
 		moveVariableDeclareationWithLiteralInitializerOutOfTryStatement(methodDeclaration, variableDeclarationStatementWithLiterialInitializerOrNullInitializer);
 		for(TryStatement tryStatement : tryStatements){
 			ListRewrite tryStatementBody = astRewrite.getListRewrite(tryStatement.getBody(), Block.STATEMENTS_PROPERTY);
@@ -695,8 +694,17 @@ public class QuickFixCore {
 				expressionForLastTryStatement.add(statement);
 			}
 		}
+		ListRewrite neededToBeRefactoredMethodBody = astRewrite.getListRewrite(methodDeclaration.getBody(), Block.STATEMENTS_PROPERTY);
 		for(Statement statement : expressionForLastTryStatement){
-			lastTryRewrite.insertLast(statement, null);
+			try{
+				lastTryRewrite.insertLast(neededToBeRefactoredMethodBody.createMoveTarget(statement, statement), null);
+			}catch(IllegalArgumentException e){
+				if(e.getMessage().equals("Node is not an existing node")){
+					lastTryRewrite.insertLast(statement, null);
+				}else{
+					throw new IllegalArgumentException(e);
+				}
+			}
 		}
 		int index = tryStatements.size();
 		while(!ExpressionStatement.isEmpty()){
@@ -751,8 +759,7 @@ public class QuickFixCore {
 		int listSize = neededToBeRefactoredMethodBody.getRewrittenList().size();
 		tryStatement.insertLast(neededToBeRefactoredMethodBody.createMoveTarget(
 				(ASTNode) neededToBeRefactoredMethodBody.getRewrittenList().get(0),
-				(ASTNode) neededToBeRefactoredMethodBody.getRewrittenList()
-						.get(listSize - 1)), null);
+				(ASTNode) neededToBeRefactoredMethodBody.getRewrittenList().get(listSize - 1)), null);
 		neededToBeRefactoredMethodBody.insertLast(tryStatementCreatedByQuickFix, null);
 	}
 
