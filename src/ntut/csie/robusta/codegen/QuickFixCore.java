@@ -66,23 +66,7 @@ public class QuickFixCore {
 	protected IOpenable actOpenable = null;
 	/** Java AST root node whick will be Quick Fix */
 	private CompilationUnit compilationUnit = null;
-
 	private ASTRewrite astRewrite = null;
-
-	private int WITHOUT_ANY_TRY_STATEMENT_IN_MAIN_CLASS = 0;
-
-	private int A_TRY_STAMEMENT_WITHOUT_CATCHING_EXCEPTION_AND_THERE_IS_NOT_ANY_STATEMENT_OUT_OF_TRY_STATEMENT = 1;
-
-	private int A_TRY_STAMEMENT_WITHOUT_CATCHING_EXCEPTION_AND_THERE_ARE_SOME_STATEMENTS_OUT_OF_TRY_STATEMENT = 2;
-
-	private int A_TRY_STAMEMENT_CATCHES_EXCEPTION_AND_THERE_ARE_SOME_STATEMENTS_OUT_OF_TRY_STATEMENT = 3;
-
-	private int THERE_ARE_SOME_TRY_STAMEMENTS_AND_PART_OF_THEM_WITHOUT_CATCHING_EXCEPTION_AND_THERE_IS_NOT_ANY_STATEMENT_OUT_OF_TRY_STATEMENT = 4;
-
-	private int THERE_ARE_SOME_TRY_STAMEMENTS_AND_ALL_OF_THEM_CATCH_EXCEPTION_AND_THERE_ARE_SOME_STATEMENTS_OUT_OF_TRY_STATEMENT = 5;
-
-	private int THERE_ARE_SOME_TRY_STAMEMENTS_AND_PART_OF_THEM_DOES_NOT_CATCH_EXCEPTION_AND_THERE_ARE_SOME_STATEMENTS_OUT_OF_TRY_STATEMENT = 6;
-
 	public void setJavaFileModifiable(IResource resource) {
 		IJavaElement javaElement = JavaCore.create(resource);
 
@@ -212,12 +196,8 @@ public class QuickFixCore {
 	 */
 	public void generateThrowExceptionOnMethodSignature(
 			MethodDeclaration methodDeclaration, Class<?> exceptionType) {
-		ListRewrite addingThrownException = astRewrite
-				.getListRewrite(methodDeclaration,
-						MethodDeclaration.THROWN_EXCEPTIONS_PROPERTY);
-		ASTNode simpleName = QuickFixUtils
-				.generateThrowExceptionForDeclaration(
-						methodDeclaration.getAST(), exceptionType);
+		ListRewrite addingThrownException = astRewrite.getListRewrite(methodDeclaration, MethodDeclaration.THROWN_EXCEPTIONS_PROPERTY);
+		ASTNode simpleName = QuickFixUtils.generateThrowExceptionForDeclaration(methodDeclaration.getAST(), exceptionType);
 		addingThrownException.insertLast(simpleName, null);
 	}
 
@@ -332,15 +312,11 @@ public class QuickFixCore {
 			// org.eclipse.jdt.internal.ui.text.correction.CorrectionMarkerResolutionGenerator
 			// run
 			// org.eclipse.jdt.internal.ui.text.correction.ChangeCorrectionProposal
-			// apply與performChange
 			ICompilationUnit cu = (ICompilationUnit) actOpenable;
 			IEditorPart part = EditorUtility.isOpenInEditor(cu);
 			IEditorInput input = part.getEditorInput();
-			IDocument doc = JavaPlugin.getDefault()
-					.getCompilationUnitDocumentProvider().getDocument(input);
-
-			performChange(JavaPlugin.getActivePage().getActiveEditor(), doc,
-					astRewrite);
+			IDocument doc = JavaPlugin.getDefault().getCompilationUnitDocumentProvider().getDocument(input);
+			performChange(JavaPlugin.getActivePage().getActiveEditor(), doc,astRewrite);
 		} catch (CoreException e) {
 			logger.error("[Core Exception] EXCEPTION ", e);
 		}
@@ -829,14 +805,13 @@ public class QuickFixCore {
 	}
 
 	/**
-	 * 將TryStatement裡面某個Node移動到Finally
-	 * 
-	 * @param tryStatement
-	 *            某個Node所屬的TryStatement
+	 * move specified node in try block to finally block
+	 * @param tryStatement 
+	 * 			specified Node belongs to TryStatement
 	 * @param node
-	 *            某個Node
-	 * @param finallyBlock
-	 *            你想移動的那個Finally Block
+	 * 			specified node
+	 * @param finallyBlock 
+	 * 			destination of Finally Block 
 	 */
 	public void moveNodeToFinally(TryStatement tryStatement, ASTNode node,
 			Block finallyBlock) {

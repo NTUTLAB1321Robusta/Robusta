@@ -15,6 +15,7 @@ import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.util.PathUtils;
 
+
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.JavaCore;
@@ -25,6 +26,7 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 
 public class UnprotectedMainProgramVisitorTest {
 	JavaFileToString javaFile2String;
@@ -313,61 +315,6 @@ public class UnprotectedMainProgramVisitorTest {
 			assertTrue(xmlFile.delete());
 
 		javaProjectMaker.deleteProject();
-	}
-
-	@Test
-	public void testProcessMainFunction() throws Exception {
-//		// case 1 : correct example
-//		ASTMethodCollector methodCollector = new ASTMethodCollector();
-//		unit1.accept(methodCollector);
-//		mainVisitor = new UnprotectedMainProgramVisitor(unit1);
-//		List<MethodDeclaration> list = methodCollector.getMethodList();
-//		MethodDeclaration md = list.get(0);
-//		// check precondition
-//		assertEquals(1, md.getBody().statements().size());
-//		// test target
-//		Method processMainFunction = UnprotectedMainProgramVisitor.class
-//				.getDeclaredMethod("containUnprotectedStatement", List.class);
-//		processMainFunction.setAccessible(true);
-//		// check postcondition
-//		assertFalse((Boolean) processMainFunction.invoke(mainVisitor, md
-//				.getBody().statements()));
-//
-//		// case 2 : main body with try block but not catch Exception.class
-//		methodCollector = new ASTMethodCollector();
-//		unit9.accept(methodCollector);
-//		mainVisitor = new UnprotectedMainProgramVisitor(unit9);
-//		list = methodCollector.getMethodList();
-//		md = list.get(0);
-//		// check precondition
-//		assertEquals(1, md.getBody().statements().size());
-//		// test target & check postcondition
-//		assertTrue((Boolean) processMainFunction.invoke(mainVisitor, md
-//				.getBody().statements()));
-//
-//		// case 3 : main body is empty
-//		methodCollector = new ASTMethodCollector();
-//		unit3.accept(methodCollector);
-//		mainVisitor = new UnprotectedMainProgramVisitor(unit3);
-//		list = methodCollector.getMethodList();
-//		md = list.get(0);
-//		// check precondition
-//		assertEquals(0, md.getBody().statements().size());
-//		// test target & check postcondition
-//		assertFalse((Boolean) processMainFunction.invoke(mainVisitor, md
-//				.getBody().statements()));
-//
-//		// case 4 : main body without try block
-//		methodCollector = new ASTMethodCollector();
-//		unit4.accept(methodCollector);
-//		mainVisitor = new UnprotectedMainProgramVisitor(unit4);
-//		list = methodCollector.getMethodList();
-//		md = list.get(0);
-//		// check precondition
-//		assertEquals(2, md.getBody().statements().size());
-//		// test target & check postcondition
-//		assertTrue((Boolean) processMainFunction.invoke(mainVisitor, md
-//				.getBody().statements()));
 	}
 
 	@Test
