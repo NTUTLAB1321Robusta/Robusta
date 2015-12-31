@@ -61,15 +61,18 @@ public class UnprotectedMainProgramVisitor extends AbstractBadSmellVisitor {
 			if(properity.unprotectedStatementAmount>1 && properity.unprotectedStatementAmount == properity.variableDeclarationWithLiteralInitializer && properity.catchExceptionTryStatementAmount == properity.tryStatementAmount){
 				return true;
 			}
-			if(properity.tryStatementAmount==0){
+			if(properity.tryStatementAmount==0 && annotationList.size()>0){
 				addMarkerInfo(node, RLMarkerAttribute.CS_UNPROTECTED_MAIN);				
 				return false;
 			}else if(properity.catchExceptionTryStatementAmount == properity.tryStatementAmount && properity.unprotectedStatementAmount == 0){
 				return true;
-			}else if(properity.catchExceptionTryStatementAmount != properity.tryStatementAmount || properity.unprotectedStatementAmount > 0){
+			}else if((properity.catchExceptionTryStatementAmount != properity.tryStatementAmount) && annotationList.size()>0 || (properity.unprotectedStatementAmount > 0) && annotationList.size()>0){
 				addMarkerInfo(node, RLMarkerAttribute.CS_UNPROTECTED_MAIN);				
 				return false;
-			}else{
+			}else if(properity.unprotectedStatementAmount>0 && annotationList.size()==0){
+				return true;
+			}
+			else{
 				addMarkerInfo(node, "can not be refactor!");			
 				return false;
 			}
