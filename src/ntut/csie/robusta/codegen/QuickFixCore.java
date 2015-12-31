@@ -68,7 +68,7 @@ public class QuickFixCore {
 	private CompilationUnit compilationUnit = null;
 
 	private ASTRewrite astRewrite = null;
-	
+
 	private int WITHOUT_ANY_TRY_STATEMENT_IN_MAIN_CLASS = 0;
 
 	private int A_TRY_STAMEMENT_WITHOUT_CATCHING_EXCEPTION_AND_THERE_IS_NOT_ANY_STATEMENT_OUT_OF_TRY_STATEMENT = 1;
@@ -82,7 +82,6 @@ public class QuickFixCore {
 	private int THERE_ARE_SOME_TRY_STAMEMENTS_AND_ALL_OF_THEM_CATCH_EXCEPTION_AND_THERE_ARE_SOME_STATEMENTS_OUT_OF_TRY_STATEMENT = 5;
 
 	private int THERE_ARE_SOME_TRY_STAMEMENTS_AND_PART_OF_THEM_DOES_NOT_CATCH_EXCEPTION_AND_THERE_ARE_SOME_STATEMENTS_OUT_OF_TRY_STATEMENT = 6;
-
 
 	public void setJavaFileModifiable(IResource resource) {
 		IJavaElement javaElement = JavaCore.create(resource);
@@ -366,7 +365,6 @@ public class QuickFixCore {
 
 	/**
 	 * invoke Quick Fix
-	 * 
 	 * @param activeEditor
 	 * @param document
 	 * @param rewrite
@@ -439,7 +437,8 @@ public class QuickFixCore {
 		return false;
 	}
 
-	private int containUnprotectedStatement(List<?> statement,
+	private void filterUnprotectedStatements(
+			List<?> statement,
 			List<VariableDeclarationStatement> variableDeclarationStatementWithClassInstanceCreationInitializerOrMethiodInvocationInitializer,
 			List<VariableDeclarationStatement> variableDeclarationStatementWithLiterialInitializerOrNullInitializer,
 			List<TryStatement> tryStatements,
@@ -456,75 +455,23 @@ public class QuickFixCore {
 
 			if (node.getNodeType() == ASTNode.VARIABLE_DECLARATION_STATEMENT) {
 				VariableDeclarationStatement variableDeclaration = (VariableDeclarationStatement) node;
-				for(Object fragment : variableDeclaration.fragments()){
-					if(((VariableDeclarationFragment)fragment).getInitializer() != null){
-						if(((VariableDeclarationFragment)fragment).getInitializer().getNodeType()==ASTNode.METHOD_INVOCATION
-								|| ((VariableDeclarationFragment)fragment).getInitializer().getNodeType()==ASTNode.CLASS_INSTANCE_CREATION){
+				for (Object fragment : variableDeclaration.fragments()) {
+					if (((VariableDeclarationFragment) fragment)
+							.getInitializer() != null) {
+						if (((VariableDeclarationFragment) fragment).getInitializer().getNodeType() == ASTNode.METHOD_INVOCATION
+								|| ((VariableDeclarationFragment) fragment).getInitializer().getNodeType() == ASTNode.CLASS_INSTANCE_CREATION) {
 							variableDeclarationStatementWithClassInstanceCreationInitializerOrMethiodInvocationInitializer.add(variableDeclaration);
 						}
-						if(((VariableDeclarationFragment)fragment).getInitializer().getClass().getName().endsWith("Literal")){
+						if (((VariableDeclarationFragment) fragment).getInitializer().getClass().getName().endsWith("Literal")) {
 							variableDeclarationStatementWithLiterialInitializerOrNullInitializer.add(variableDeclaration);
 						}
 					}
-					if(((VariableDeclarationFragment)fragment).getInitializer() == null){
+					if (((VariableDeclarationFragment) fragment).getInitializer() == null) {
 						variableDeclarationStatementWithLiterialInitializerOrNullInitializer.add(variableDeclaration);
 					}
 				}
 			}
 		}
-
-		// without any try statement in main class
-		if (tryStatements.size() == 0) {
-			return WITHOUT_ANY_TRY_STATEMENT_IN_MAIN_CLASS;
-		}
-
-		//there is a try catch statement without catching "Exception" type exception in main class and there is not any statement out of try catch statement
-		if (tryStatements.size() == 1
-				&& !isCatchingAllException((TryStatement) tryStatements.get(0))
-				&& tryStatements.size() == statement.size()) {
-			return A_TRY_STAMEMENT_WITHOUT_CATCHING_EXCEPTION_AND_THERE_IS_NOT_ANY_STATEMENT_OUT_OF_TRY_STATEMENT;
-		}
-
-		//there is a try catch statement without catching "Exception" type exception in main class and there are some statements out of try catch statement
-		if (tryStatements.size() == 1
-				&& tryStatements.size() != statement.size()
-				&& !isCatchingAllException((TryStatement) tryStatements.get(0))) {
-			return A_TRY_STAMEMENT_WITHOUT_CATCHING_EXCEPTION_AND_THERE_ARE_SOME_STATEMENTS_OUT_OF_TRY_STATEMENT;
-		}
-
-		//there is a try catch statement which catches "Exception" type exception in main class and there are some statements out of try catch statement
-		if (tryStatements.size() == 1
-				&& tryStatements.size() != statement.size()
-				&& isCatchingAllException((TryStatement) tryStatements.get(0))) {
-			return A_TRY_STAMEMENT_CATCHES_EXCEPTION_AND_THERE_ARE_SOME_STATEMENTS_OUT_OF_TRY_STATEMENT;
-		}
-
-		//there are some try catch statements in main class and part of try catch statement doesn't catch "Exception" type exception. there are not any statement out of try catch statement 
-		if (tryStatements.size() > 1 && tryStatements.size() == (statement.size() - variableDeclarationStatementWithLiterialInitializerOrNullInitializer.size())) {
-			boolean isAllTryStatementSafe = true;
-			for (TryStatement trynode : tryStatements) {
-				isAllTryStatementSafe = isAllTryStatementSafe && isCatchingAllException(trynode);
-			}
-			if (!isAllTryStatementSafe){
-				return THERE_ARE_SOME_TRY_STAMEMENTS_AND_PART_OF_THEM_WITHOUT_CATCHING_EXCEPTION_AND_THERE_IS_NOT_ANY_STATEMENT_OUT_OF_TRY_STATEMENT;
-			}
-		}
-		
-		if (tryStatements.size() > 1 && tryStatements.size() != statement.size()) {
-			boolean isAllTryStatementSafe = true;
-			for (TryStatement trynode : tryStatements) {
-				isAllTryStatementSafe = isAllTryStatementSafe && isCatchingAllException(trynode);
-			}
-			if (isAllTryStatementSafe){
-		//there are some try catch statements in main class and all try catch statement catch "Exception" type exception. there are some statements out of try catch statement 
-				return THERE_ARE_SOME_TRY_STAMEMENTS_AND_ALL_OF_THEM_CATCH_EXCEPTION_AND_THERE_ARE_SOME_STATEMENTS_OUT_OF_TRY_STATEMENT;
-			}else{
-		//there are some try catch statements in main class and part of try catch statement doesn't catch "Exception" type exception. there are some statements out of try catch statement 
-				return THERE_ARE_SOME_TRY_STAMEMENTS_AND_PART_OF_THEM_DOES_NOT_CATCH_EXCEPTION_AND_THERE_ARE_SOME_STATEMENTS_OUT_OF_TRY_STATEMENT;
-			}
-		}
-		
-		return -1;
 	}
 
 	/**
@@ -557,96 +504,79 @@ public class QuickFixCore {
 	 *            a method which will have a try statement to contain all
 	 *            statement of method
 	 */
-	public void generateBigOuterTryStatement(MethodDeclaration methodDeclaration) {
-		int refactorCase;
+	public void generateTryStatementForQuickFix(
+			MethodDeclaration methodDeclaration) {
 		List<?> statements = methodDeclaration.getBody().statements();
 		List<VariableDeclarationStatement> variableDeclarationStatementWithClassInstanceCreationInitializerOrMethodInvocationInitializer = new ArrayList<VariableDeclarationStatement>();
-		List<VariableDeclarationStatement> variableDeclarationStatementWithLiterialInitializerOrNullInitializer= new ArrayList<VariableDeclarationStatement>();
+		List<VariableDeclarationStatement> variableDeclarationStatementWithLiterialInitializerOrNullInitializer = new ArrayList<VariableDeclarationStatement>();
 		List<Statement> statementsAfterLastTryStatement = new ArrayList<Statement>();
 		List<TryStatement> tryStatements = new ArrayList<TryStatement>();
 		List<Integer> tryStatementsPosition = new ArrayList<Integer>();
-		refactorCase = containUnprotectedStatement(statements,
+		filterUnprotectedStatements(
+				statements,
 				variableDeclarationStatementWithClassInstanceCreationInitializerOrMethodInvocationInitializer,
-				variableDeclarationStatementWithLiterialInitializerOrNullInitializer, tryStatements, tryStatementsPosition);
-		ListRewrite neededToBeRefactoredMethodBody = astRewrite.getListRewrite(
-				methodDeclaration.getBody(), Block.STATEMENTS_PROPERTY);
-		
-		System.out.println(refactorCase);
-		if (refactorCase == WITHOUT_ANY_TRY_STATEMENT_IN_MAIN_CLASS) {
-			TryStatement bigOuterTryStatement = createTryCatchStatement();
-			moveAllStatementInTryStatement(neededToBeRefactoredMethodBody, bigOuterTryStatement);
-		}
-		if (refactorCase == A_TRY_STAMEMENT_WITHOUT_CATCHING_EXCEPTION_AND_THERE_IS_NOT_ANY_STATEMENT_OUT_OF_TRY_STATEMENT) {
-			appendCatchClause(tryStatements, 0);
-		}
-		if (refactorCase == A_TRY_STAMEMENT_WITHOUT_CATCHING_EXCEPTION_AND_THERE_ARE_SOME_STATEMENTS_OUT_OF_TRY_STATEMENT 
-				|| refactorCase == A_TRY_STAMEMENT_CATCHES_EXCEPTION_AND_THERE_ARE_SOME_STATEMENTS_OUT_OF_TRY_STATEMENT) {
-			if (refactorCase == A_TRY_STAMEMENT_WITHOUT_CATCHING_EXCEPTION_AND_THERE_ARE_SOME_STATEMENTS_OUT_OF_TRY_STATEMENT)
-				appendCatchClause(tryStatements, 0);
-			TryStatement tryStatement = tryStatements.get(0);
-			if (tryStatementsPosition.get(0) == 0) {
-				moveStatementsToTheLastOfTryStatement(neededToBeRefactoredMethodBody,
-						(ASTNode)statements.get(1), (ASTNode)statements.get(statements.size()-1), tryStatement);
-			}
-			if (tryStatementsPosition.get(0) == statements.size() - 1) {
-				moveStatementsToTheTopOfTryStatement(neededToBeRefactoredMethodBody, (ASTNode)statements.get(0), (ASTNode)statements.get(tryStatementsPosition.get(0)-1), tryStatement, variableDeclarationStatementWithClassInstanceCreationInitializerOrMethodInvocationInitializer, methodDeclaration);
-			}
-			if (tryStatementsPosition.get(0) != 0 && tryStatementsPosition.get(0) != statements.size() - 1) {
-				moveStatementsToTheTopOfTryStatement(neededToBeRefactoredMethodBody, (ASTNode)statements.get(0),  (ASTNode)statements.get(tryStatementsPosition.get(0)-1), tryStatement, variableDeclarationStatementWithClassInstanceCreationInitializerOrMethodInvocationInitializer, methodDeclaration);
-				moveStatementsToTheLastOfTryStatement(neededToBeRefactoredMethodBody, 
-						(ASTNode)statements.get(tryStatementsPosition.get(0)+1), (ASTNode)statements.get(statements.size()-1), tryStatement);
-			}
-		}
-		if (refactorCase == THERE_ARE_SOME_TRY_STAMEMENTS_AND_PART_OF_THEM_WITHOUT_CATCHING_EXCEPTION_AND_THERE_IS_NOT_ANY_STATEMENT_OUT_OF_TRY_STATEMENT) {
-			for (int index = 0; index < tryStatements.size(); index++) {
-				if(!isCatchingAllException(tryStatements.get(index)))
-					appendCatchClause(tryStatements, index);
-			}
-		}
-		if (refactorCase == THERE_ARE_SOME_TRY_STAMEMENTS_AND_ALL_OF_THEM_CATCH_EXCEPTION_AND_THERE_ARE_SOME_STATEMENTS_OUT_OF_TRY_STATEMENT 
-				|| refactorCase == THERE_ARE_SOME_TRY_STAMEMENTS_AND_PART_OF_THEM_DOES_NOT_CATCH_EXCEPTION_AND_THERE_ARE_SOME_STATEMENTS_OUT_OF_TRY_STATEMENT) {
+				variableDeclarationStatementWithLiterialInitializerOrNullInitializer,
+				tryStatements, tryStatementsPosition);
+		ListRewrite neededToBeRefactoredMethodBody = astRewrite.getListRewrite(methodDeclaration.getBody(), Block.STATEMENTS_PROPERTY);
+		if (tryStatements.size() == 0) {
+			TryStatement tryStatement = createTryCatchStatement();
+			moveAllStatementInTryStatement(neededToBeRefactoredMethodBody, tryStatement);
+		} else {
 			int originalStatementSize = statements.size();
 			int nextPos = 0;
-			for(int index=0;index<tryStatementsPosition.size(); index++){
-				if(refactorCase == THERE_ARE_SOME_TRY_STAMEMENTS_AND_PART_OF_THEM_DOES_NOT_CATCH_EXCEPTION_AND_THERE_ARE_SOME_STATEMENTS_OUT_OF_TRY_STATEMENT){
-					if(!isCatchingAllException(tryStatements.get(index)))
-						appendCatchClause(tryStatements, index);
-				}
-				if(tryStatementsPosition.get(index)==nextPos){
+			for (int index = 0; index < tryStatementsPosition.size(); index++) {
+				if (!isCatchingAllException(tryStatements.get(index)))
+					appendCatchClause(tryStatements, index);
+				if (tryStatementsPosition.get(index) == nextPos) {
 					nextPos++;
 					continue;
 				}
-				moveStatementsToTheTopOfTryStatement(neededToBeRefactoredMethodBody,
-						(ASTNode)statements.get(nextPos), (ASTNode)statements.get(tryStatementsPosition.get(index)-1),
-						tryStatements.get(index), 
+				moveStatementsToTheTopOfTryStatement(
+						neededToBeRefactoredMethodBody,
+						(ASTNode) statements.get(nextPos),
+						(ASTNode) statements.get(tryStatementsPosition.get(index) - 1),
+						tryStatements.get(index),
 						variableDeclarationStatementWithClassInstanceCreationInitializerOrMethodInvocationInitializer,
 						methodDeclaration);
-				nextPos = tryStatementsPosition.get(index)+1;
+				nextPos = tryStatementsPosition.get(index) + 1;
 			}
-			if(tryStatementsPosition.get(tryStatementsPosition.size()-1) < originalStatementSize-1){
-				for(int index = nextPos ;index<statements.size();index++){
-					statementsAfterLastTryStatement.add((Statement)statements.get(index));
+			if (tryStatementsPosition.get(tryStatementsPosition.size() - 1) < originalStatementSize - 1) {
+				for (int index = nextPos; index < statements.size(); index++) {
+					statementsAfterLastTryStatement.add((Statement) statements.get(index));
 				}
 			}
+			Stack<Statement> ExpressionStatement = new Stack<Statement>();
+			Stack<ASTNode> placeHolderStack = new Stack<ASTNode>();
+			for (VariableDeclarationStatement variableDel : variableDeclarationStatementWithClassInstanceCreationInitializerOrMethodInvocationInitializer) {
+				prepareToMoveVariableDeclarationStatementOutOfTry(variableDel, compilationUnit.getAST(), placeHolderStack, ExpressionStatement);
+			}
+			List<Statement> statementsNeededToBeMovedToLastTryStatement = new ArrayList<Statement>();
+			prepareStatementsNeededToBeMovedToLastTryStatement(statementsAfterLastTryStatement, ExpressionStatement, statementsNeededToBeMovedToLastTryStatement);
+			moveStatementToLastTryStatement(tryStatements, methodDeclaration, statementsNeededToBeMovedToLastTryStatement);
+			
+			moveVariableDeclarationStatementOutOfTry(tryStatements, placeHolderStack, ExpressionStatement, methodDeclaration);
+			moveVariableDeclareationWithLiteralInitializerOutOfTryStatement(methodDeclaration, variableDeclarationStatementWithLiterialInitializerOrNullInitializer);
+			for (TryStatement tryStatement : tryStatements) {
+				ListRewrite tryStatementBody = astRewrite.getListRewrite(tryStatement.getBody(), Block.STATEMENTS_PROPERTY);
+				moveReturnAndThrowStatementToTheLastOfTryStatement(tryStatement, tryStatementBody);
+			}
 		}
-		moveVariableDeclarationStatementOutOfTry(tryStatements, 
-				variableDeclarationStatementWithClassInstanceCreationInitializerOrMethodInvocationInitializer, 
-				statementsAfterLastTryStatement, methodDeclaration);
-		moveVariableDeclareationWithLiteralInitializerOutOfTryStatement(methodDeclaration, variableDeclarationStatementWithLiterialInitializerOrNullInitializer);
-		for(TryStatement tryStatement : tryStatements){
-			ListRewrite tryStatementBody = astRewrite.getListRewrite(tryStatement.getBody(), Block.STATEMENTS_PROPERTY);
-			moveReturnAndThrowStatementToTheLastOfTryStatement(tryStatement, tryStatementBody);
-		}
+
 	}
 
 	private void moveVariableDeclareationWithLiteralInitializerOutOfTryStatement(
 			MethodDeclaration methodDeclaration,
 			List<VariableDeclarationStatement> variableDeclarationStatementWithLiterialInitializer) {
-		ListRewrite methodRewrite = astRewrite.getListRewrite(methodDeclaration.getBody(), Block.STATEMENTS_PROPERTY);
-		List<VariableDeclarationStatement> clone = new ArrayList<>(variableDeclarationStatementWithLiterialInitializer);
-		Collections.reverse(clone);//to keep the order of original code, we need to reverse the list element's index before invoke insertFirst() method
-		for(VariableDeclarationStatement statement:clone){
-			methodRewrite.insertFirst(methodRewrite.createMoveTarget(statement, statement), null);
+		ListRewrite methodRewrite = astRewrite.getListRewrite(
+				methodDeclaration.getBody(), Block.STATEMENTS_PROPERTY);
+		List<VariableDeclarationStatement> clone = new ArrayList<>(
+				variableDeclarationStatementWithLiterialInitializer);
+		Collections.reverse(clone);// to keep the order of original code, we
+									// need to reverse the list element's index
+									// before invoke insertFirst() method
+		for (VariableDeclarationStatement statement : clone) {
+			methodRewrite.insertFirst(
+					methodRewrite.createMoveTarget(statement, statement), null);
 		}
 	}
 
@@ -654,90 +584,112 @@ public class QuickFixCore {
 			TryStatement tryStatement, ListRewrite body) {
 		List<Statement> statementInTryStatement = tryStatement.getBody().statements();
 		for (ASTNode node : statementInTryStatement) {
-			if (node.getNodeType() == ASTNode.THROW_STATEMENT
-					|| node.getNodeType() == ASTNode.RETURN_STATEMENT) {
+			if (node.getNodeType() == ASTNode.THROW_STATEMENT || node.getNodeType() == ASTNode.RETURN_STATEMENT) {
 				body.insertLast(body.createMoveTarget(node, node), null);
 			}
 		}
 	}
 
-	private void moveStatementsToTheTopOfTryStatement(ListRewrite neededToBeRefactoredMethodBody,
-			ASTNode moveStartNode, ASTNode moveEndNode, TryStatement tryStatement, 
-			List<VariableDeclarationStatement> variableDeclarationStatement, 
+	private void moveStatementsToTheTopOfTryStatement(
+			ListRewrite neededToBeRefactoredMethodBody, ASTNode moveStartNode,
+			ASTNode moveEndNode, TryStatement tryStatement,
+			List<VariableDeclarationStatement> variableDeclarationStatement,
 			MethodDeclaration methodDeclaration) {
-		ListRewrite body = astRewrite.getListRewrite(tryStatement.getBody(), Block.STATEMENTS_PROPERTY);
-		body.insertFirst(neededToBeRefactoredMethodBody.createMoveTarget(moveStartNode, moveEndNode), null);
+		ListRewrite body = astRewrite.getListRewrite(tryStatement.getBody(),
+				Block.STATEMENTS_PROPERTY);
+		body.insertFirst(neededToBeRefactoredMethodBody.createMoveTarget(
+				moveStartNode, moveEndNode), null);
 	}
 
-	private void moveVariableDeclarationStatementOutOfTry(List<TryStatement> tryStatements,
-			List<VariableDeclarationStatement> variableDeclarationStatementWithClassInstanceCreationInitializerOrMethodInvocationInitializer,
-			List<Statement> statementsAfterLastTryStatement,
+	private void moveVariableDeclarationStatementOutOfTry(
+			List<TryStatement> tryStatements, Stack<ASTNode> placeHolderStack,
+			Stack<Statement> ExpressionStatement,
 			MethodDeclaration methodDeclaration) {
-		if(tryStatements.isEmpty())
+		if (tryStatements.isEmpty())
 			return;
-		Stack<Statement> ExpressionStatement = new Stack<Statement>();
-		Stack<ASTNode> placeHolderStack = new Stack<ASTNode>();
-		for(VariableDeclarationStatement variableDel : variableDeclarationStatementWithClassInstanceCreationInitializerOrMethodInvocationInitializer){
-			prepareToMoveVariableDeclarationStatementOutOfTry(variableDel, compilationUnit.getAST(), placeHolderStack, ExpressionStatement);
-		}
-		int lastNullInExpressionStatement = ExpressionStatement.lastIndexOf(null);
-		int limit = ExpressionStatement.size()-1;
-		List<Statement> expressionForLastTryStatement = new ArrayList<Statement>();
-		while(lastNullInExpressionStatement<limit){
-			expressionForLastTryStatement.add(ExpressionStatement.pop());
-			lastNullInExpressionStatement++;
-		}
-		ListRewrite lastTryRewrite = astRewrite.getListRewrite(tryStatements.get(tryStatements.size()-1).getBody(), Block.STATEMENTS_PROPERTY);
-		Collections.reverse(expressionForLastTryStatement);
-		for(Statement statement : statementsAfterLastTryStatement){
-			if(statement.getNodeType()!=ASTNode.VARIABLE_DECLARATION_STATEMENT){
-				expressionForLastTryStatement.add(statement);
-			}
-		}
-		ListRewrite neededToBeRefactoredMethodBody = astRewrite.getListRewrite(methodDeclaration.getBody(), Block.STATEMENTS_PROPERTY);
-		for(Statement statement : expressionForLastTryStatement){
-			try{
-				lastTryRewrite.insertLast(neededToBeRefactoredMethodBody.createMoveTarget(statement, statement), null);
-			}catch(IllegalArgumentException e){
-				if(e.getMessage().equals("Node is not an existing node")){
-					lastTryRewrite.insertLast(statement, null);
-				}else{
-					throw new IllegalArgumentException(e);
-				}
-			}
-		}
 		int index = tryStatements.size();
-		while(!ExpressionStatement.isEmpty()){
+		while (!ExpressionStatement.isEmpty()) {
 			Statement exp = ExpressionStatement.pop();
-			if(exp==null){
+			if (exp == null) {
 				index--;
 				continue;
 			}
-			ListRewrite tryRewrite = astRewrite.getListRewrite(tryStatements.get(index).getBody(), Block.STATEMENTS_PROPERTY);
-			tryRewrite.insertFirst((ASTNode)exp, null);
+			ListRewrite tryRewrite = astRewrite.getListRewrite(tryStatements
+					.get(index).getBody(), Block.STATEMENTS_PROPERTY);
+			tryRewrite.insertFirst((ASTNode) exp, null);
 		}
-		ListRewrite moveRewrite = astRewrite.getListRewrite(methodDeclaration.getBody(), Block.STATEMENTS_PROPERTY);
-		while(!placeHolderStack.isEmpty()){
+		ListRewrite moveRewrite = astRewrite.getListRewrite(
+				methodDeclaration.getBody(), Block.STATEMENTS_PROPERTY);
+		while (!placeHolderStack.isEmpty()) {
 			moveRewrite.insertFirst(placeHolderStack.pop(), null);
 		}
 	}
 
-	private void moveStatementsToTheLastOfTryStatement(
-		ListRewrite neededToBeRefactoredMethodBody, ASTNode moveStartNode, ASTNode moveEndNode,
-		TryStatement tryStatement) {
-		ListRewrite body = astRewrite.getListRewrite(tryStatement.getBody(), Block.STATEMENTS_PROPERTY);
-		body.insertLast(neededToBeRefactoredMethodBody.createMoveTarget(moveStartNode, moveEndNode),null);
+	private void moveStatementToLastTryStatement(
+			List<TryStatement> tryStatements,
+			MethodDeclaration methodDeclaration,
+			List<Statement> statementsNeededToBeMovedToLastTryStatement) {
+		ListRewrite lastTryRewrite = astRewrite.getListRewrite(tryStatements
+				.get(tryStatements.size() - 1).getBody(),
+				Block.STATEMENTS_PROPERTY);
+		ListRewrite neededToBeRefactoredMethodBody = astRewrite.getListRewrite(
+				methodDeclaration.getBody(), Block.STATEMENTS_PROPERTY);
+		for (Statement statement : statementsNeededToBeMovedToLastTryStatement) {
+			try {
+				lastTryRewrite.insertLast(neededToBeRefactoredMethodBody
+						.createMoveTarget(statement, statement), null);
+			} catch (IllegalArgumentException e) {
+				if (e.getMessage().equals("Node is not an existing node")) {
+					lastTryRewrite.insertLast(statement, null);
+				} else {
+					throw new IllegalArgumentException(e);
+				}
+			}
+		}
 	}
 
-	private void appendCatchClause(List<TryStatement> tryStatements, int tryStatementPositionInList) {
+	private void prepareStatementsNeededToBeMovedToLastTryStatement(
+			List<Statement> statementsAfterLastTryStatement,
+			Stack<Statement> ExpressionStatement,
+			List<Statement> statementsNeededToBeMovedToLastTryStatement) {
+		int lastNullInExpressionStatement = ExpressionStatement
+				.lastIndexOf(null);
+		int limit = ExpressionStatement.size() - 1;
+		while (lastNullInExpressionStatement < limit) {
+			statementsNeededToBeMovedToLastTryStatement.add(ExpressionStatement
+					.pop());
+			lastNullInExpressionStatement++;
+		}
+		Collections.reverse(statementsNeededToBeMovedToLastTryStatement);
+		for (Statement statement : statementsAfterLastTryStatement) {
+			if (statement.getNodeType() != ASTNode.VARIABLE_DECLARATION_STATEMENT) {
+				statementsNeededToBeMovedToLastTryStatement.add(statement);
+			}
+		}
+	}
+
+	private void moveStatementsToTheLastOfTryStatement(
+			ListRewrite neededToBeRefactoredMethodBody, ASTNode moveStartNode,
+			ASTNode moveEndNode, TryStatement tryStatement) {
+		ListRewrite body = astRewrite.getListRewrite(tryStatement.getBody(),
+				Block.STATEMENTS_PROPERTY);
+		body.insertLast(neededToBeRefactoredMethodBody.createMoveTarget(
+				moveStartNode, moveEndNode), null);
+	}
+
+	private void appendCatchClause(List<TryStatement> tryStatements,
+			int tryStatementPositionInList) {
 		AST ast = compilationUnit.getAST();
 		// generate a Try statement
-		TryStatement originalTryStatement = (TryStatement) tryStatements.get(tryStatementPositionInList);
-		ListRewrite catchRewrite = astRewrite.getListRewrite(originalTryStatement, TryStatement.CATCH_CLAUSES_PROPERTY);
+		TryStatement originalTryStatement = (TryStatement) tryStatements
+				.get(tryStatementPositionInList);
+		ListRewrite catchRewrite = astRewrite.getListRewrite(
+				originalTryStatement, TryStatement.CATCH_CLAUSES_PROPERTY);
 		// generate Catch Clause
 		@SuppressWarnings("unchecked")
 		CatchClause cc = ast.newCatchClause();
-		ListRewrite newCreateCatchRewrite = astRewrite.getListRewrite(cc.getBody(), Block.STATEMENTS_PROPERTY);
+		ListRewrite newCreateCatchRewrite = astRewrite.getListRewrite(
+				cc.getBody(), Block.STATEMENTS_PROPERTY);
 		// set the exception type will be caught. ex. catch(Exception ex)
 		SingleVariableDeclaration sv = ast.newSingleVariableDeclaration();
 		sv.setType(ast.newSimpleType(ast.newSimpleName("Exception")));
@@ -751,16 +703,21 @@ public class QuickFixCore {
 		catchRewrite.insertLast(cc, null);
 	}
 
-	private void moveAllStatementInTryStatement(ListRewrite neededToBeRefactoredMethodBody,
+	private void moveAllStatementInTryStatement(
+			ListRewrite neededToBeRefactoredMethodBody,
 			TryStatement tryStatementCreatedByQuickFix) {
 		/* move all statements of method in try block */
 		ListRewrite tryStatement = astRewrite.getListRewrite(
-				tryStatementCreatedByQuickFix.getBody(), Block.STATEMENTS_PROPERTY);
+				tryStatementCreatedByQuickFix.getBody(),
+				Block.STATEMENTS_PROPERTY);
 		int listSize = neededToBeRefactoredMethodBody.getRewrittenList().size();
-		tryStatement.insertLast(neededToBeRefactoredMethodBody.createMoveTarget(
-				(ASTNode) neededToBeRefactoredMethodBody.getRewrittenList().get(0),
-				(ASTNode) neededToBeRefactoredMethodBody.getRewrittenList().get(listSize - 1)), null);
-		neededToBeRefactoredMethodBody.insertLast(tryStatementCreatedByQuickFix, null);
+		tryStatement.insertLast(neededToBeRefactoredMethodBody
+				.createMoveTarget((ASTNode) neededToBeRefactoredMethodBody
+						.getRewrittenList().get(0),
+						(ASTNode) neededToBeRefactoredMethodBody
+								.getRewrittenList().get(listSize - 1)), null);
+		neededToBeRefactoredMethodBody.insertLast(
+				tryStatementCreatedByQuickFix, null);
 	}
 
 	private TryStatement createTryCatchStatement() {
@@ -801,41 +758,53 @@ public class QuickFixCore {
 	 */
 	public void prepareToMoveVariableDeclarationStatementOutOfTry(
 			VariableDeclarationStatement variableDeclarationStatement,
-			AST rootAST, Stack<ASTNode> placeHolderStack, Stack<Statement> ExpressionStatementStack) {
+			AST rootAST, Stack<ASTNode> placeHolderStack,
+			Stack<Statement> ExpressionStatementStack) {
 		Stack<Statement> ExpressionStatement = ExpressionStatementStack;
-		if(variableDeclarationStatement==null){
+		if (variableDeclarationStatement == null) {
 			ExpressionStatement.push(null);
-		}else{
+		} else {
 			/*
-			 * change InputStream fos = new ImputStream(); to InputStream fos = null; and fos = new InputStream();
+			 * change InputStream fos = new ImputStream(); to InputStream fos =
+			 * null; and fos = new InputStream();
 			 */
-				Stack<ASTNode> placeHolders = placeHolderStack;
-				List<?> fragments = variableDeclarationStatement.fragments();
-				VariableDeclarationFragment declarationFragment = (VariableDeclarationFragment)(fragments.get(fragments.size()-1));
-				Expression initializer = declarationFragment.getInitializer();
-				for(Object node : fragments){
-					VariableDeclarationFragment fragment = (VariableDeclarationFragment) node;
-					VariableDeclarationFragment newFragment = rootAST.newVariableDeclarationFragment();
-					newFragment.setName(rootAST.newSimpleName(fragment.getName().toString()));
-					//check variable is primitive type or not. ex. int, double and String ect... 
-					if(variableDeclarationStatement.getType().getNodeType() != ASTNode.PRIMITIVE_TYPE){
-						newFragment.setInitializer(rootAST.newNullLiteral());
-					}
-					ListRewrite variableDeclarationRewrite = astRewrite.getListRewrite(variableDeclarationStatement, VariableDeclarationStatement.FRAGMENTS_PROPERTY);
-					variableDeclarationRewrite.replace(fragment, newFragment, null);
-					ASTNode placeHolder = astRewrite.createMoveTarget(variableDeclarationStatement);
-					placeHolders.push(placeHolder);
-					
-					Assignment assignment = rootAST.newAssignment();
-					assignment.setOperator(Assignment.Operator.ASSIGN);
-					// InputStream fos = null;
-					assignment.setLeftHandSide(rootAST.newSimpleName(fragment.getName().toString()));
-					// fos = new InputStream();
-					ASTNode copyNode = ASTNode.copySubtree(initializer.getAST(), initializer);
-					assignment.setRightHandSide((Expression) copyNode);
-					ExpressionStatement expressionStatement = rootAST.newExpressionStatement(assignment);
-					ExpressionStatement.push(expressionStatement);
+			Stack<ASTNode> placeHolders = placeHolderStack;
+			List<?> fragments = variableDeclarationStatement.fragments();
+			VariableDeclarationFragment declarationFragment = (VariableDeclarationFragment) (fragments
+					.get(fragments.size() - 1));
+			Expression initializer = declarationFragment.getInitializer();
+			for (Object node : fragments) {
+				VariableDeclarationFragment fragment = (VariableDeclarationFragment) node;
+				VariableDeclarationFragment newFragment = rootAST
+						.newVariableDeclarationFragment();
+				newFragment.setName(rootAST.newSimpleName(fragment.getName()
+						.toString()));
+				// check variable is primitive type or not. ex. int, double and
+				// String ect...
+				if (variableDeclarationStatement.getType().getNodeType() != ASTNode.PRIMITIVE_TYPE) {
+					newFragment.setInitializer(rootAST.newNullLiteral());
 				}
+				ListRewrite variableDeclarationRewrite = astRewrite
+						.getListRewrite(variableDeclarationStatement,
+								VariableDeclarationStatement.FRAGMENTS_PROPERTY);
+				variableDeclarationRewrite.replace(fragment, newFragment, null);
+				ASTNode placeHolder = astRewrite
+						.createMoveTarget(variableDeclarationStatement);
+				placeHolders.push(placeHolder);
+
+				Assignment assignment = rootAST.newAssignment();
+				assignment.setOperator(Assignment.Operator.ASSIGN);
+				// InputStream fos = null;
+				assignment.setLeftHandSide(rootAST.newSimpleName(fragment
+						.getName().toString()));
+				// fos = new InputStream();
+				ASTNode copyNode = ASTNode.copySubtree(initializer.getAST(),
+						initializer);
+				assignment.setRightHandSide((Expression) copyNode);
+				ExpressionStatement expressionStatement = rootAST
+						.newExpressionStatement(assignment);
+				ExpressionStatement.push(expressionStatement);
+			}
 		}
 	}
 
