@@ -366,6 +366,7 @@ public class UnprotectedMainProgramVisitorTest {
 		// case 2 : give the other function
 		methodCollector = new ASTMethodCollector();
 		unit1.accept(methodCollector);
+		mainVisitor = new UnprotectedMainProgramVisitor();
 		list = methodCollector.getMethodList();
 		md = list.get(0);
 		// test target & check postcondition

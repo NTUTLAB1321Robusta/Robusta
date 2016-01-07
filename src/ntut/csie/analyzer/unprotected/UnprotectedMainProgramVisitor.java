@@ -29,14 +29,19 @@ public class UnprotectedMainProgramVisitor extends AbstractBadSmellVisitor {
 
 	private CompilationUnit root;
 	private boolean isDetectingUnprotectedMainProgramSmell;
-	ArrayList<AnnotationInfo> annotationList = new ArrayList<AnnotationInfo>(32);
+	ArrayList<AnnotationInfo> annotationList = new ArrayList<AnnotationInfo>();
 
 	public UnprotectedMainProgramVisitor(CompilationUnit root) {
 		this.root = root;
 		unprotectedMainList = new ArrayList<MarkerInfo>();
 		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		isDetectingUnprotectedMainProgramSmell = smellSettings
-				.isDetectingSmell(SmellSettings.SMELL_UNPROTECTEDMAINPROGRAM);
+		isDetectingUnprotectedMainProgramSmell = smellSettings.isDetectingSmell(SmellSettings.SMELL_UNPROTECTEDMAINPROGRAM);
+	}
+	// this constructor is used to run unit test 
+	public UnprotectedMainProgramVisitor() {
+		unprotectedMainList = new ArrayList<MarkerInfo>();
+		SmellSettings smellSettings = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		isDetectingUnprotectedMainProgramSmell = smellSettings.isDetectingSmell(SmellSettings.SMELL_UNPROTECTEDMAINPROGRAM);
 	}
 
 	/**
@@ -58,23 +63,21 @@ public class UnprotectedMainProgramVisitor extends AbstractBadSmellVisitor {
 			}
 			UnprotectedMainProgramVisitorData properity = new UnprotectedMainProgramVisitorData();
 			analizeStatementState(statements, properity);
-			if (properity.unprotectedStatementAmount > 1 && properity.unprotectedStatementAmount == properity.variableDeclarationWithLiteralInitializer && properity.catchExceptionTryStatementAmount == properity.tryStatementAmount) {
+			if(annotationList.size() == 0){
 				return true;
 			}
-			if (properity.tryStatementAmount == 0 && annotationList.size() > 0) {
-				addMarkerInfo(node, RLMarkerAttribute.CS_UNPROTECTED_MAIN);
-				return false;
-			} else if (properity.catchExceptionTryStatementAmount == properity.tryStatementAmount && properity.unprotectedStatementAmount == 0) {
-				return true;
-			} else if ((properity.catchExceptionTryStatementAmount != properity.tryStatementAmount) && annotationList.size() > 0 || (properity.unprotectedStatementAmount > 0) && annotationList.size() > 0) {
-				addMarkerInfo(node, RLMarkerAttribute.CS_UNPROTECTED_MAIN);
-				return false;
-			} else if (properity.unprotectedStatementAmount > 0 && annotationList.size() == 0) {
-				return true;
-			} else {
-				addMarkerInfo(node, "can not be refactor!");
-				return false;
+			if(annotationList.size() > 0){
+				if(properity.unprotectedStatementAmount > 0){
+					addMarkerInfo(node, RLMarkerAttribute.CS_UNPROTECTED_MAIN);
+					return false;
+				}
+				if(properity.catchExceptionTryStatementAmount != properity.tryStatementAmount){
+					addMarkerInfo(node, RLMarkerAttribute.CS_UNPROTECTED_MAIN);
+					return false;
+				}
 			}
+			addMarkerInfo(node, "please keep all statement in a try catch block, whick will catch \"Exception\".");
+			return false;
 		}
 		return true;
 	}

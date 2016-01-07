@@ -523,8 +523,8 @@ public class QuickFixCore {
 			}
 			targetStartPos = getTargetStartPosition(moveTargets);
 		}
-		for(ASTNode exp : expressionStatements){
-			body.insertLast(exp, null);
+		for(ASTNode expressionStatement : expressionStatements){
+			body.insertLast(expressionStatement, null);
 		}
 		expressionStatements.clear();
 	}
