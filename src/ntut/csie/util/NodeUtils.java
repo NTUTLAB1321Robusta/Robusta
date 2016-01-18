@@ -133,23 +133,7 @@ public class NodeUtils {
 		}
 		return methodDeclaration;
 	}
-
-	public static boolean isMethodDeclarationThrowException(ASTNode node) {
-		if (node.getNodeType() == ASTNode.COMPILATION_UNIT) {
-			throw new RuntimeException(
-					"Abatract Syntax Tree traversing error. by Charles.");
-		}
-
-		if (node.getNodeType() == ASTNode.METHOD_DECLARATION) {
-			if (((MethodDeclaration) node).thrownExceptions().size() == 0)
-				return false;
-			else
-				return true;
-		}
-
-		return (isMethodDeclarationThrowException(node.getParent()));
-	}
-
+	
 	/**
 	 * Return the declared exceptions when it exists. Otherwise it will return
 	 * empty array

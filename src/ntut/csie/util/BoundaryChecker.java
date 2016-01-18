@@ -27,12 +27,6 @@ public class BoundaryChecker {
 	/**
 	 * If the start position of this node is in the given interval.
 	 */
-	public boolean isInOpenInterval(ASTNode node) {
-		return isInOpenInterval(node.getStartPosition());
-	}
-	/**
-	 * If the start position of this node is in the given interval.
-	 */
 	public boolean isInClosedInterval(ASTNode node) {
 		return isInClosedInterval(node.getStartPosition());
 	}

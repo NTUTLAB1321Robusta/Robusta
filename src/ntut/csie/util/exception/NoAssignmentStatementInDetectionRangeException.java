@@ -7,17 +7,4 @@ public class NoAssignmentStatementInDetectionRangeException extends ClosingResou
 	public NoAssignmentStatementInDetectionRangeException(){
 		super();
 	}
-	
-	public NoAssignmentStatementInDetectionRangeException(Throwable e){
-		super(e);
-	}
-	
-	public NoAssignmentStatementInDetectionRangeException(String message){
-		super(message);
-	}
-	
-	public NoAssignmentStatementInDetectionRangeException(String message, Throwable e){
-		super(message, e);
-	}
-
 }

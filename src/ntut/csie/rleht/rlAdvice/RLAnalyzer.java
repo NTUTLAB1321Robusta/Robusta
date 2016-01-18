@@ -68,10 +68,6 @@ public class RLAnalyzer extends RLBaseVisitor {
 		return lstRLAdviceMessage;
 	}
 	
-	public void throwEx() throws IOException{
-		throw new IOException();
-	}
-
 	/**
 	 * 
 	 * if this visitor visits a MethodInvocation and this MethodInvocation will throw exception, this condition will invoke addMarker().

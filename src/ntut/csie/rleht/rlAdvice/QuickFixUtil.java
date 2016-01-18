@@ -213,6 +213,7 @@ public class QuickFixUtil {
 		clause.getBody().statements().add(throwStatement);
 	}
 	
+	//this is used for empty catch block's quick fix and refactoring.
 	public void reThrowException(int rlValue, String exception, int msgIdx, CompilationUnit actRoot, ASTNode currentMethodNode) {
 		actRoot.recordModifications();
 		AST ast = currentMethodNode.getAST();

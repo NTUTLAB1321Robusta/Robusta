@@ -33,16 +33,6 @@ public class EditorUtils {
 		return null;
 	}
 
-	public static IProject getProject(IEditorPart part) {
-		IEditorInput editorInput = part.getEditorInput();
-		if (editorInput instanceof IFileEditorInput) {
-			IFile file = ((IFileEditorInput) editorInput).getFile();
-			return file.getProject();
-		} else {
-			return null;
-		}
-	}
-
 	public static IOpenable getJavaInput(IEditorPart part) {
 		IEditorInput editorInput = part.getEditorInput();
 		if (editorInput != null) {
@@ -61,20 +51,5 @@ public class EditorUtils {
 			return je;
 
 		return (IJavaElement) editorInput.getAdapter(IJavaElement.class);
-	}
-
-	public static void selectInEditor(ITextEditor editor, int offset, int length) {
-		IEditorPart active = getActiveEditor();
-		if (active != editor) {
-			editor.getSite().getPage().activate(editor);
-		}
-		editor.selectAndReveal(offset, length);
-	}
-	
-	public static void showMessage(String message){
-		MessageDialog.openInformation(
-				PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-				"Warnning", 
-				message);
 	}
 }

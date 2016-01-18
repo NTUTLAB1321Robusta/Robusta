@@ -8,16 +8,16 @@ public class CloseMethodArgumentNotAllInSimpleNameFormException extends ClosingR
 		super();
 	}
 	
-	public CloseMethodArgumentNotAllInSimpleNameFormException(Throwable e){
-		super(e);
-	}
-	
-	public CloseMethodArgumentNotAllInSimpleNameFormException(String message){
-		super(message);
-	}
-	
-	public CloseMethodArgumentNotAllInSimpleNameFormException(String message, Throwable e){
-		super(message, e);
-	}
+//	public CloseMethodArgumentNotAllInSimpleNameFormException(Throwable e){
+//		super(e);
+//	}
+//	
+//	public CloseMethodArgumentNotAllInSimpleNameFormException(String message){
+//		super(message);
+//	}
+//	
+//	public CloseMethodArgumentNotAllInSimpleNameFormException(String message, Throwable e){
+//		super(message, e);
+//	}
 
 }

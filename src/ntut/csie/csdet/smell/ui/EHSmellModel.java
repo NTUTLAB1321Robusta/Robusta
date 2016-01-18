@@ -51,20 +51,6 @@ public class EHSmellModel {
 		astHandler = new ASTHandler();
 	}
 	
-	public void clear(){
-		if(dummyHandlerList != null) dummyHandlerList.clear();
-		if(emptyCatchList != null) emptyCatchList.clear();
-		if(nestedTryList != null) nestedTryList.clear();
-		if(unprotectedMainList != null) unprotectedMainList.clear();
-		if(smellList != null) smellList.clear();
-
-		methodNode = null;
-		astHandler = null;
-		actRoot = null;
-		actOpenable = null;
-		System.gc();
-	}
-
 	/**
 	 * @param openable
 	 * @param pos
@@ -202,12 +188,6 @@ public class EHSmellModel {
 	}
 	public List<MarkerInfo> getEmptyList() {
 		return emptyCatchList;
-	}
-	public List<MarkerInfo> getnestedTryList() {
-		return nestedTryList;
-	}
-	public List<MarkerInfo> getunprotectedMainList() {
-		return unprotectedMainList;
 	}
 	public List<MarkerInfo> getAllSmellList() {
 		return smellList;

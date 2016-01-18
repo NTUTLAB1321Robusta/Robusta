@@ -305,7 +305,6 @@ public class EHSmellView extends ViewPart implements IShowInSource {
 			if (selection instanceof ITextSelection) {
 				ITextSelection textSelection = (ITextSelection) selection;
 
-				// model.associateWithRL(EditorUtils.getProject(editor));
 				if (!model.createAST(EditorUtils.getJavaInput(editor), textSelection.getOffset())) {
 					setContentDescription("AST could not be created.");
 				}

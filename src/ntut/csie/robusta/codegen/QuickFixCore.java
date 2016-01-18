@@ -228,25 +228,6 @@ public class QuickFixCore {
 		}
 	}
 
-	public void removeExpressionStatement(int removingStartPosition,
-			MethodDeclaration methodDeclaration) {
-		// find ExpressionStatement which will be removed with StartPosition
-		StatementFinderVisitor statementFinderVisitor = new StatementFinderVisitor(
-				removingStartPosition);
-		methodDeclaration.accept(statementFinderVisitor);
-		ASTNode removingNode = statementFinderVisitor
-				.getFoundExpressionStatement();
-
-		// find the block which contains ExpressionStatement which will be
-		// removed
-		ASTNode parentNode = NodeUtils.getSpecifiedParentNode(removingNode,
-				ASTNode.BLOCK);
-
-		ListRewrite modifyingBlock = astRewrite.getListRewrite(parentNode,
-				Block.STATEMENTS_PROPERTY);
-		modifyingBlock.remove(parentNode, null);
-	}
-
 	/**
 	 * add throw new xxxException(e) statement
 	 * 
@@ -449,32 +430,48 @@ public class QuickFixCore {
 	 *            a method which will have a try statement to contain all
 	 *            statement of method
 	 */
-	public void generateTryStatementForQuickFix(MethodDeclaration methodDeclaration) {
+	public void generateTryStatementForQuickFix(
+			MethodDeclaration methodDeclaration) {
 		List<ASTNode> statements = methodDeclaration.getBody().statements();
 		Queue<TryStatement> tryStatements = new LinkedList<>();
 		Queue<ASTNode> moveTargets = new LinkedList<>();
-		classifyStatementsToDifferentQueue(statements, tryStatements, moveTargets);
-		if(tryStatements.isEmpty()){
+		classifyStatementsToDifferentQueue(statements, tryStatements,
+				moveTargets);
+		if (tryStatements.isEmpty()) {
 			TryStatement tryStatement = createTryCatchStatement();
 			moveAllStatementInTryStatement(methodDeclaration, tryStatement);
 			return;
 		}
-		Stack<ASTNode> placeHolders = new Stack<>();
+		Stack<ASTNode> variableDeclarations = new Stack<>();
 		Stack<ASTNode> variableDeclarationEndWithLiteralOrNullInitializer = new Stack<>();
 		while (!tryStatements.isEmpty()) {
 			TryStatement tryStatement = tryStatements.poll();
-			if (!isCatchingAllException(tryStatement)){
+			if (!isCatchingAllException(tryStatement)) {
 				appendCatchClause(tryStatement);
 			}
-			ListRewrite body = astRewrite.getListRewrite(tryStatement.getBody(), Block.STATEMENTS_PROPERTY);
-			ListRewrite neededToBeRefactoredMethodBody = astRewrite.getListRewrite(methodDeclaration.getBody(), Block.STATEMENTS_PROPERTY);
+			ListRewrite body = astRewrite.getListRewrite(
+					tryStatement.getBody(), Block.STATEMENTS_PROPERTY);
+			ListRewrite neededToBeRefactoredMethodBody = astRewrite
+					.getListRewrite(methodDeclaration.getBody(),
+							Block.STATEMENTS_PROPERTY);
 			Stack<ASTNode> expressionStatements = new Stack<>();
 			if (!tryStatements.isEmpty()) {
-				moveStatementsAboveTryStatementInTryBlock(moveTargets, placeHolders, variableDeclarationEndWithLiteralOrNullInitializer, tryStatement, body, expressionStatements);
+				moveStatementsAboveTryStatementInTryBlock(moveTargets,
+						variableDeclarations,
+						variableDeclarationEndWithLiteralOrNullInitializer,
+						tryStatement, body, expressionStatements);
 			} else {
-				moveStatementsAboveTryStatementInTryBlock(moveTargets, placeHolders, variableDeclarationEndWithLiteralOrNullInitializer, tryStatement, body, expressionStatements);
-				moveStatementsBelowTryStatementInTryBlock(moveTargets, placeHolders, variableDeclarationEndWithLiteralOrNullInitializer, tryStatement, body, expressionStatements);
-				insertStatementsToMethodDeclaration(placeHolders, variableDeclarationEndWithLiteralOrNullInitializer, neededToBeRefactoredMethodBody);
+				moveStatementsAboveTryStatementInTryBlock(moveTargets,
+						variableDeclarations,
+						variableDeclarationEndWithLiteralOrNullInitializer,
+						tryStatement, body, expressionStatements);
+				moveStatementsBelowTryStatementInTryBlock(moveTargets,
+						variableDeclarations,
+						variableDeclarationEndWithLiteralOrNullInitializer,
+						tryStatement, body, expressionStatements);
+				insertStatementsToMethodDeclaration(variableDeclarations,
+						variableDeclarationEndWithLiteralOrNullInitializer,
+						neededToBeRefactoredMethodBody);
 			}
 			moveReturnAndThrowStatementToTheLastOfTryStatement(tryStatement);
 		}
@@ -483,9 +480,11 @@ public class QuickFixCore {
 	private void classifyStatementsToDifferentQueue(List<ASTNode> statements,
 			Queue<TryStatement> tryStatements, Queue<ASTNode> moveTargets) {
 		for (ASTNode statement : statements) {
-			if (statement.getNodeType() != ASTNode.VARIABLE_DECLARATION_STATEMENT && statement.getNodeType() != ASTNode.TRY_STATEMENT) {
+			if (statement.getNodeType() != ASTNode.VARIABLE_DECLARATION_STATEMENT
+					&& statement.getNodeType() != ASTNode.TRY_STATEMENT) {
 				ASTNode target = astRewrite.createMoveTarget(statement);
-				target.setProperty("startPosition",statement.getStartPosition());
+				target.setProperty("startPosition",
+						statement.getStartPosition());
 				moveTargets.offer(target);
 			} else if (statement.getNodeType() == ASTNode.TRY_STATEMENT) {
 				tryStatements.offer((TryStatement) statement);
@@ -496,94 +495,126 @@ public class QuickFixCore {
 	}
 
 	private void insertStatementsToMethodDeclaration(
-			Stack<ASTNode> placeHolders,
+			Stack<ASTNode> variableDeclarations,
 			Stack<ASTNode> variableDeclarationEndWithLiteralOrNullInitializer,
 			ListRewrite neededToBeRefactoredMethodBody) {
-		while(!placeHolders.isEmpty()){
-			neededToBeRefactoredMethodBody.insertFirst(placeHolders.pop(), null);
+		while (!variableDeclarations.isEmpty()) {
+			neededToBeRefactoredMethodBody.insertFirst(
+					variableDeclarations.pop(), null);
 		}
-		while(!variableDeclarationEndWithLiteralOrNullInitializer.isEmpty()){
-			neededToBeRefactoredMethodBody.insertFirst(variableDeclarationEndWithLiteralOrNullInitializer.pop(), null);
+		while (!variableDeclarationEndWithLiteralOrNullInitializer.isEmpty()) {
+			neededToBeRefactoredMethodBody.insertFirst(
+					variableDeclarationEndWithLiteralOrNullInitializer.pop(),
+					null);
 		}
 	}
 
 	private void moveStatementsBelowTryStatementInTryBlock(
-			Queue<ASTNode> moveTargets, Stack<ASTNode> placeHolders,
+			Queue<ASTNode> moveTargets, Stack<ASTNode> variableDeclarations,
 			Stack<ASTNode> variableDeclarationEndWithLiteralOrNullInitializer,
 			TryStatement tryStatement, ListRewrite body,
 			Stack<ASTNode> expressionStatements) {
 		int targetStartPos = -1;
 		targetStartPos = getTargetStartPosition(moveTargets);
-		while (targetStartPos > tryStatement.getStartPosition() && !moveTargets.isEmpty()) {
+		while (targetStartPos > tryStatement.getStartPosition()
+				&& !moveTargets.isEmpty()) {
 			ASTNode statement = moveTargets.poll();
 			if (statement.getNodeType() == ASTNode.VARIABLE_DECLARATION_STATEMENT) {
-				identifyVariableDeclaration(placeHolders, variableDeclarationEndWithLiteralOrNullInitializer, expressionStatements, statement);
+				identifyVariableDeclaration(variableDeclarations,
+						variableDeclarationEndWithLiteralOrNullInitializer,
+						expressionStatements, statement);
 			} else {
 				expressionStatements.push(statement);
 			}
 			targetStartPos = getTargetStartPosition(moveTargets);
 		}
-		for(ASTNode expressionStatement : expressionStatements){
+		for (ASTNode expressionStatement : expressionStatements) {
 			body.insertLast(expressionStatement, null);
 		}
 		expressionStatements.clear();
 	}
 
 	private void moveStatementsAboveTryStatementInTryBlock(
-			Queue<ASTNode> moveTargets, Stack<ASTNode> placeHolders,
+			Queue<ASTNode> moveTargets, Stack<ASTNode> variableDeclarations,
 			Stack<ASTNode> variableDeclarationEndWithLiteralOrNullInitializer,
 			TryStatement tryStatement, ListRewrite body,
 			Stack<ASTNode> expressionStatements) {
 		int targetStartPos = -1;
 		targetStartPos = getTargetStartPosition(moveTargets);
-		while (targetStartPos < tryStatement.getStartPosition() && !moveTargets.isEmpty()) {
+		while (targetStartPos < tryStatement.getStartPosition()
+				&& !moveTargets.isEmpty()) {
 			ASTNode statement = moveTargets.poll();
 			if (statement.getNodeType() == ASTNode.VARIABLE_DECLARATION_STATEMENT) {
-				identifyVariableDeclaration(placeHolders, variableDeclarationEndWithLiteralOrNullInitializer, expressionStatements, statement);
+				identifyVariableDeclaration(variableDeclarations,
+						variableDeclarationEndWithLiteralOrNullInitializer,
+						expressionStatements, statement);
 			} else {
 				expressionStatements.push(statement);
 			}
 			targetStartPos = getTargetStartPosition(moveTargets);
 		}
-		while(!expressionStatements.isEmpty()){
+		while (!expressionStatements.isEmpty()) {
 			body.insertFirst(expressionStatements.pop(), null);
 		}
 	}
 
-	private void identifyVariableDeclaration(Stack<ASTNode> placeHolders,
+	private void identifyVariableDeclaration(
+			Stack<ASTNode> variableDeclarations,
 			Stack<ASTNode> variableDeclarationEndWithLiteralOrNullInitializer,
 			Stack<ASTNode> expressionStatements, ASTNode statement) {
 		VariableDeclarationStatement variableDeclarationStatement = (VariableDeclarationStatement) statement;
 		AST rootAST = compilationUnit.getAST();
 		List<?> fragments = variableDeclarationStatement.fragments();
-		VariableDeclarationFragment declarationFragment = (VariableDeclarationFragment) (fragments.get(fragments.size() - 1));
+		VariableDeclarationFragment declarationFragment = (VariableDeclarationFragment) (fragments
+				.get(fragments.size() - 1));
 		Expression initializer = declarationFragment.getInitializer();
-		if (initializer != null && !initializer.getClass().getName().endsWith("Literal")) {
-			for (Object node : fragments) {
-				VariableDeclarationFragment fragment = (VariableDeclarationFragment) node;
-				VariableDeclarationFragment newFragment = rootAST.newVariableDeclarationFragment();
-				newFragment.setName(rootAST.newSimpleName(fragment.getName().toString()));
-				if (variableDeclarationStatement.getType().getNodeType() != ASTNode.PRIMITIVE_TYPE) {
-					newFragment.setInitializer(rootAST.newNullLiteral());
-				}
-				ListRewrite variableDeclarationRewrite = astRewrite.getListRewrite(variableDeclarationStatement, VariableDeclarationStatement.FRAGMENTS_PROPERTY);
-				variableDeclarationRewrite.replace(fragment, newFragment, null);
-				ASTNode placeHolder = astRewrite.createMoveTarget(variableDeclarationStatement);
-				placeHolders.push(placeHolder);
-
-				Assignment assignment = rootAST.newAssignment();
-				assignment.setOperator(Assignment.Operator.ASSIGN);
-				// InputStream fos = null;
-				assignment.setLeftHandSide(rootAST.newSimpleName(fragment.getName().toString()));
-				// fos = new InputStream();
-				ASTNode copyNode = ASTNode.copySubtree(initializer.getAST(), initializer);
-				assignment.setRightHandSide((Expression) copyNode);
-				ExpressionStatement exp = rootAST.newExpressionStatement(assignment);
-				expressionStatements.push(exp);
-			}
-		}else{
-			ASTNode target = astRewrite.createMoveTarget(variableDeclarationStatement);
+		if (initializer != null
+				&& !initializer.getClass().getName().endsWith("Literal")) {
+			separateVariableDeclatrionIntoVariableAssignmentAndExpressionStatement(
+					variableDeclarations, expressionStatements,
+					variableDeclarationStatement, rootAST, fragments,
+					initializer);
+		} else {
+			ASTNode target = astRewrite
+					.createMoveTarget(variableDeclarationStatement);
 			variableDeclarationEndWithLiteralOrNullInitializer.push(target);
+		}
+	}
+
+	private void separateVariableDeclatrionIntoVariableAssignmentAndExpressionStatement(
+			Stack<ASTNode> variableDeclarations,
+			Stack<ASTNode> expressionStatements,
+			VariableDeclarationStatement variableDeclarationStatement,
+			AST rootAST, List<?> fragments, Expression initializer) {
+		for (Object node : fragments) {
+			VariableDeclarationFragment fragment = (VariableDeclarationFragment) node;
+			VariableDeclarationFragment newFragment = rootAST
+					.newVariableDeclarationFragment();
+			newFragment.setName(rootAST.newSimpleName(fragment.getName()
+					.toString()));
+			if (variableDeclarationStatement.getType().getNodeType() != ASTNode.PRIMITIVE_TYPE) {
+				newFragment.setInitializer(rootAST.newNullLiteral());
+			}
+			ListRewrite variableDeclarationRewrite = astRewrite.getListRewrite(
+					variableDeclarationStatement,
+					VariableDeclarationStatement.FRAGMENTS_PROPERTY);
+			variableDeclarationRewrite.replace(fragment, newFragment, null);
+			ASTNode variableDeclaration = astRewrite
+					.createMoveTarget(variableDeclarationStatement);
+			variableDeclarations.push(variableDeclaration);
+			
+			
+			
+			Assignment assignment = rootAST.newAssignment();
+			assignment.setOperator(Assignment.Operator.ASSIGN);
+			assignment.setLeftHandSide(rootAST.newSimpleName(fragment.getName()
+					.toString()));
+			ASTNode copyNode = ASTNode.copySubtree(initializer.getAST(),
+					initializer);
+			assignment.setRightHandSide((Expression) copyNode);
+			ExpressionStatement exp = rootAST
+					.newExpressionStatement(assignment);
+			expressionStatements.push(exp);
 		}
 	}
 
@@ -600,11 +631,15 @@ public class QuickFixCore {
 		return -1;
 	}
 
-	private void moveReturnAndThrowStatementToTheLastOfTryStatement(TryStatement tryStatement) {
-		List<Statement> statementInTryStatement = tryStatement.getBody().statements();
-		ListRewrite body = astRewrite.getListRewrite(tryStatement.getBody(), Block.STATEMENTS_PROPERTY);
+	private void moveReturnAndThrowStatementToTheLastOfTryStatement(
+			TryStatement tryStatement) {
+		List<Statement> statementInTryStatement = tryStatement.getBody()
+				.statements();
+		ListRewrite body = astRewrite.getListRewrite(tryStatement.getBody(),
+				Block.STATEMENTS_PROPERTY);
 		for (ASTNode node : statementInTryStatement) {
-			if (node.getNodeType() == ASTNode.THROW_STATEMENT || node.getNodeType() == ASTNode.RETURN_STATEMENT) {
+			if (node.getNodeType() == ASTNode.THROW_STATEMENT
+					|| node.getNodeType() == ASTNode.RETURN_STATEMENT) {
 				body.insertLast(body.createMoveTarget(node, node), null);
 			}
 		}
@@ -613,7 +648,8 @@ public class QuickFixCore {
 	private void appendCatchClause(TryStatement tryStatement) {
 		AST ast = compilationUnit.getAST();
 		// generate a Try statement
-		ListRewrite catchRewrite = astRewrite.getListRewrite(tryStatement, TryStatement.CATCH_CLAUSES_PROPERTY);
+		ListRewrite catchRewrite = astRewrite.getListRewrite(tryStatement,
+				TryStatement.CATCH_CLAUSES_PROPERTY);
 		// generate Catch Clause
 		@SuppressWarnings("unchecked")
 		CatchClause cc = ast.newCatchClause();
@@ -636,14 +672,18 @@ public class QuickFixCore {
 			MethodDeclaration methodDeclaration,
 			TryStatement tryStatementCreatedByQuickFix) {
 		/* move all statements of method in try block */
-		ListRewrite tryStatement = astRewrite.getListRewrite(tryStatementCreatedByQuickFix.getBody(), Block.STATEMENTS_PROPERTY);
-		ListRewrite neededToBeRefactoredMethodBody = astRewrite.getListRewrite(methodDeclaration.getBody(), Block.STATEMENTS_PROPERTY);
+		ListRewrite tryStatement = astRewrite.getListRewrite(
+				tryStatementCreatedByQuickFix.getBody(),
+				Block.STATEMENTS_PROPERTY);
+		ListRewrite neededToBeRefactoredMethodBody = astRewrite.getListRewrite(
+				methodDeclaration.getBody(), Block.STATEMENTS_PROPERTY);
 		List<ASTNode> statements = methodDeclaration.getBody().statements();
-		for(ASTNode statement : statements){
+		for (ASTNode statement : statements) {
 			ASTNode target = astRewrite.createMoveTarget(statement);
 			tryStatement.insertLast(target, null);
 		}
-		neededToBeRefactoredMethodBody.insertLast(tryStatementCreatedByQuickFix, null);
+		neededToBeRefactoredMethodBody.insertLast(
+				tryStatementCreatedByQuickFix, null);
 	}
 
 	private TryStatement createTryCatchStatement() {
@@ -669,107 +709,4 @@ public class QuickFixCore {
 		catchStatement.add(cc);
 		return bigOuterTryStatement;
 	}
-
-	/**
-	 * 
-	 * move the variable declaration out, which is contained by try statement in
-	 * method.
-	 * 
-	 * @param tryStatement
-	 * @param variableDeclarationStatement
-	 * @param rootAST
-	 *            compilation unit
-	 * @param methodDeclaration
-	 *            method declaration which contains specified try statement
-	 */
-	public void prepareToMoveVariableDeclarationStatementOutOfTry(
-			VariableDeclarationStatement variableDeclarationStatement,
-			AST rootAST, Stack<ASTNode> placeHolderStack,
-			Stack<Statement> ExpressionStatementStack) {
-		Stack<Statement> ExpressionStatement = ExpressionStatementStack;
-		if (variableDeclarationStatement == null) {
-			ExpressionStatement.push(null);
-		} else {
-			/*
-			 * change InputStream fos = new ImputStream(); to InputStream fos =
-			 * null; and fos = new InputStream();
-			 */
-			Stack<ASTNode> placeHolders = placeHolderStack;
-			List<?> fragments = variableDeclarationStatement.fragments();
-			VariableDeclarationFragment declarationFragment = (VariableDeclarationFragment) (fragments
-					.get(fragments.size() - 1));
-			Expression initializer = declarationFragment.getInitializer();
-			for (Object node : fragments) {
-				VariableDeclarationFragment fragment = (VariableDeclarationFragment) node;
-				VariableDeclarationFragment newFragment = rootAST
-						.newVariableDeclarationFragment();
-				newFragment.setName(rootAST.newSimpleName(fragment.getName()
-						.toString()));
-				// check variable is primitive type or not. ex. int, double and
-				// String ect...
-				if (variableDeclarationStatement.getType().getNodeType() != ASTNode.PRIMITIVE_TYPE) {
-					newFragment.setInitializer(rootAST.newNullLiteral());
-				}
-				ListRewrite variableDeclarationRewrite = astRewrite
-						.getListRewrite(variableDeclarationStatement,
-								VariableDeclarationStatement.FRAGMENTS_PROPERTY);
-				variableDeclarationRewrite.replace(fragment, newFragment, null);
-				ASTNode placeHolder = astRewrite
-						.createMoveTarget(variableDeclarationStatement);
-				placeHolders.push(placeHolder);
-
-				Assignment assignment = rootAST.newAssignment();
-				assignment.setOperator(Assignment.Operator.ASSIGN);
-				// InputStream fos = null;
-				assignment.setLeftHandSide(rootAST.newSimpleName(fragment
-						.getName().toString()));
-				// fos = new InputStream();
-				ASTNode copyNode = ASTNode.copySubtree(initializer.getAST(),
-						initializer);
-				assignment.setRightHandSide((Expression) copyNode);
-				ExpressionStatement expressionStatement = rootAST
-						.newExpressionStatement(assignment);
-				ExpressionStatement.push(expressionStatement);
-			}
-		}
-	}
-
-	/**
-	 * get finally block of specified try statement. if finally block does not
-	 * exist then create a new finally block.
-	 * 
-	 * @param tryStatement
-	 *            specified try statement
-	 * @param compilationUnit
-	 *            which compilationUnit need to be modified
-	 */
-	public Block getFinallyBlock(TryStatement tryStatement,
-			CompilationUnit compilationUnit) {
-		if (tryStatement.getFinally() != null) {
-			return tryStatement.getFinally();
-		}
-		Block finallyBody = compilationUnit.getAST().newBlock();
-		astRewrite.set(tryStatement, TryStatement.FINALLY_PROPERTY,
-				finallyBody, null);
-		return finallyBody;
-	}
-
-	/**
-	 * move specified node in try block to finally block
-	 * 
-	 * @param tryStatement
-	 *            specified Node belongs to TryStatement
-	 * @param node
-	 *            specified node
-	 * @param finallyBlock
-	 *            destination of Finally Block
-	 */
-	public void moveNodeToFinally(TryStatement tryStatement, ASTNode node,
-			Block finallyBlock) {
-		ASTNode placeHolder = astRewrite.createMoveTarget(node);
-		ListRewrite moveRewrite = astRewrite.getListRewrite(finallyBlock,
-				Block.STATEMENTS_PROPERTY);
-		moveRewrite.insertLast(placeHolder, null);
-	}
-
 }

@@ -16,7 +16,6 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 
 public class CarelessCleanupVisitor extends AbstractBadSmellVisitor {
 	CompilationUnit root;
-	MethodDeclaration methodDeclaration;
 	boolean isOnlyDetectingInTry;
 	private List<MarkerInfo> carelessCleanupList;
 

@@ -7,16 +7,4 @@ public class RetrieveVariableDeclarationPointFailException extends ClosingResour
 	public RetrieveVariableDeclarationPointFailException(){
 		super();
 	}
-	
-	public RetrieveVariableDeclarationPointFailException(Throwable e){
-		super(e);
-	}
-	
-	public RetrieveVariableDeclarationPointFailException(String message){
-		super(message);
-	}
-	
-	public RetrieveVariableDeclarationPointFailException(String message, Throwable e){
-		super(message, e);
-	}
 }

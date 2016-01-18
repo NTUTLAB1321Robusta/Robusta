@@ -70,11 +70,6 @@ public class CSQuickFix extends BaseQuickFix implements IMarkerResolution, IMark
 	private String markerStartPositionInSourceCode;
 	private int catchClauseIndexOfMarker = -1;
 	
-	public CSQuickFix(String label, boolean inCatch) {
-		this.label = label;
-		this.isInCatchClause = inCatch;
-	}
-	
 	public CSQuickFix(String label, String type, boolean inCatch) {
 		this.label = label;
 		this.badSmellType = type;

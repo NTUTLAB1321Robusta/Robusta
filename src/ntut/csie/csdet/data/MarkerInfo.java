@@ -20,7 +20,6 @@ public class MarkerInfo {
 	private int position;
 	private int lineNumber;
 	private String exceptionType;
-	private List<String> specialProperty = null;
 	private boolean inTry = false;
 	private ITypeBinding[] exceptionMethodThrown;
 	private String methodName;
@@ -82,10 +81,6 @@ public class MarkerInfo {
 		this.exceptionType = exceptionType;
 		this.methodName = methodName;
 		this.annotationInfoList = annotationPosList;
-	}
-	
-	public void addSpecialProperty(String str) {
-		specialProperty.add(str);
 	}
 	
 	public String getCodeSmellType(){
@@ -177,10 +172,6 @@ public class MarkerInfo {
 
 	public void setMethodIndex(int methodIndex) {
 		this.methodIndex = methodIndex;
-	}
-	
-	public void addAnnotation(AnnotationInfo annotationInfo) {
-		this.annotationInfoList.add(annotationInfo);
 	}
 	
 	public List<AnnotationInfo> getAnnotationList() {

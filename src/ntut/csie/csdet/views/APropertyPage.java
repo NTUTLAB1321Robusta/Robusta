@@ -5,18 +5,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 public abstract class APropertyPage {
-	protected CSPropertyPage page;
 	
 	public APropertyPage(Composite composite,CSPropertyPage page){
-		this.page = page;
 	}
 	
 	abstract public boolean storeSettings();
 	
-	protected void setVaild(boolean valid){
-		page.setValid(valid);
-	}
-
 	/**
 	 * get control's right below coordinate  
 	 * @param control

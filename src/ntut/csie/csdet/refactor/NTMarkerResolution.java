@@ -2,8 +2,10 @@ package ntut.csie.csdet.refactor;
 
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.robusta.codegen.QuickFixUtils;
+import ntut.csie.util.PopupDialog;
 
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.NodeFinder;
@@ -33,17 +35,22 @@ public class NTMarkerResolution implements IMarkerResolution {
 	@Override
 	public void run(IMarker marker) {
 		try {
-			String problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
-			if (problem != null
-					&& problem.equals(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT)) {
-				CompilationUnit root = QuickFixUtils.getCompilationUnit(marker.getResource());
-				ASTNode selectedNode = getBadSmellNode(root, marker);
-
-				ExtractMethodRefactoring refactoring = new ExtractMethodRefactoring(
-						root, selectedNode.getStartPosition(), selectedNode.getLength());
-				ExtractMethodWizard refactoringWizard = new ExtractMethodWizard(refactoring);
-				RefactoringWizardOpenOperation operation = new RefactoringWizardOpenOperation(refactoringWizard);
-				operation.run(new Shell(), "Dialog Title");
+			CompilationUnit root = QuickFixUtils.getCompilationUnit(marker.getResource());
+			AST ast = root.getAST();
+			if (ast.apiLevel() <= 3) {// 3 means JLS3_INTERNAL
+				PopupDialog.showDialog("Oops", "This feature only support at Eclipse Kepler");
+			}else{
+				String problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
+				if (problem != null
+						&& problem.equals(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT)) {
+					ASTNode selectedNode = getBadSmellNode(root, marker);
+	
+					ExtractMethodRefactoring refactoring = new ExtractMethodRefactoring(
+							root, selectedNode.getStartPosition(), selectedNode.getLength());
+					ExtractMethodWizard refactoringWizard = new ExtractMethodWizard(refactoring);
+					RefactoringWizardOpenOperation operation = new RefactoringWizardOpenOperation(refactoringWizard);
+					operation.run(new Shell(), "Dialog Title");
+				}
 			}
 		} catch (Exception e) {
 			logger.error("[NTMarkerResolution] EXCEPTION ", e);

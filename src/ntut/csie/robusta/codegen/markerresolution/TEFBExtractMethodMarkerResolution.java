@@ -6,8 +6,10 @@ import ntut.csie.robusta.codegen.refactoring.ExtractMethodAnalyzer;
 import ntut.csie.robusta.codegen.refactoring.TEFBExtractMethodRefactoring;
 import ntut.csie.robusta.codegen.refactoringui.CodeSmellRefactoringWizard;
 import ntut.csie.robusta.codegen.refactoringui.ExtractMethodInputPage;
+import ntut.csie.util.PopupDialog;
 
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.NodeFinder;
@@ -32,26 +34,27 @@ public class TEFBExtractMethodMarkerResolution implements IMarkerResolution {
 
 	@Override
 	public void run(IMarker marker) {
-		String problem;
-		try {
-			problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
-			
-			if(problem == null)
-				return;
-			
-			CompilationUnit root = QuickFixUtils.getCompilationUnit(marker.getResource());
-			ASTNode enclosingNode = findRefactoringNode(marker, root);
-			
-			TEFBExtractMethodRefactoring refactoring = new TEFBExtractMethodRefactoring(root, enclosingNode);
-			CodeSmellRefactoringWizard csRefactoringWizard = new CodeSmellRefactoringWizard(refactoring);
-			csRefactoringWizard.setUserInputPage(new ExtractMethodInputPage("It is your way!"));
-			csRefactoringWizard.setDefaultPageTitle("Extract Method");
-			RefactoringWizardOpenOperation operation = new RefactoringWizardOpenOperation(csRefactoringWizard);
-			operation.run(new Shell(), refactoring.getName());
-			
-		} catch(Exception e) {
-			logger.error(e.getMessage());
-			throw new RuntimeException(e);
+		CompilationUnit root = QuickFixUtils.getCompilationUnit(marker.getResource());
+		AST ast = root.getAST();
+		if (ast.apiLevel() < 8) {// 8 means AST.JLS8
+			PopupDialog.showDialog("Oops", "This feature only support at Eclipse Kepler");
+		}else{
+			String problem;
+			try {
+				problem = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
+				if(problem == null)
+					return;
+				ASTNode enclosingNode = findRefactoringNode(marker, root);
+				TEFBExtractMethodRefactoring refactoring = new TEFBExtractMethodRefactoring(root, enclosingNode);
+				CodeSmellRefactoringWizard csRefactoringWizard = new CodeSmellRefactoringWizard(refactoring);
+				csRefactoringWizard.setUserInputPage(new ExtractMethodInputPage("It is your way!"));
+				csRefactoringWizard.setDefaultPageTitle("Extract Method");
+				RefactoringWizardOpenOperation operation = new RefactoringWizardOpenOperation(csRefactoringWizard);
+				operation.run(new Shell(), refactoring.getName());
+			} catch(Exception e) {
+				logger.error(e.getMessage());
+				throw new RuntimeException(e);
+			}
 		}
 	}
 	

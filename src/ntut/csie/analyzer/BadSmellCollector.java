@@ -27,17 +27,13 @@ public class BadSmellCollector {
 
 	TreeMap<String, List<MarkerInfo>> badSmells;
 	SmellSettings smellSetting;
-	RobustaSettings robustaSettings;
-	IProject project;
 	CompilationUnit root;
 	TreeMap<String, Boolean> smellDetectionCheckList;
 	
 	public BadSmellCollector(IProject project, CompilationUnit root) {
-		this.project = project;
 		this.root = root;
 		this.badSmells = new TreeMap<String, List<MarkerInfo>>();
 		this.smellSetting = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		this.robustaSettings = new RobustaSettings(UserDefinedMethodAnalyzer.getRobustaSettingXMLPath(project), project);
 		this.smellDetectionCheckList = getSmellsSelectedByUser();
 	}
 	

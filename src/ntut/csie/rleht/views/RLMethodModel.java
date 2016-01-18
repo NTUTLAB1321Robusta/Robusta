@@ -35,7 +35,6 @@ import org.eclipse.text.edits.TextEdit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class RLMethodModel {
 	private static Logger logger = LoggerFactory.getLogger(RLMethodModel.class);
 	private List<RLMessage> exceptionList = null;
@@ -56,24 +55,14 @@ public class RLMethodModel {
 		astHandler = new ASTHandler();
 	}
 
-	
-	public void clear(){
-		if(exceptionList != null) exceptionList.clear();
-		if(rlAnnotationList != null) rlAnnotationList.clear();
-		methodNode = null;
-		astHandler = null;
-		actRoot=null;
-		actOpenable=null;
-		System.gc();
-	}
-
 	/**
 	 * 
 	 * @param offset
 	 * @param length
 	 */
 	public void parseDocument(int offset, int length) {
-		ExceptionAnalyzer visitor = new ExceptionAnalyzer(actRoot, offset, length);
+		ExceptionAnalyzer visitor = new ExceptionAnalyzer(actRoot, offset,
+				length);
 		this.actRoot.accept(visitor);
 		this.methodNode = visitor.getCurrentMethodNode();
 		this.rlAnnotationList = visitor.getMethodRLAnnotationList();
@@ -101,9 +90,11 @@ public class RLMethodModel {
 		this.actOpenable = openable;
 
 		// check whether Java version is above 1.5(due to using annotation)
-		IJavaProject project = (IJavaProject) ((IJavaElement) actOpenable).getAncestor(IJavaElement.JAVA_PROJECT);
+		IJavaProject project = (IJavaProject) ((IJavaElement) actOpenable)
+				.getAncestor(IJavaElement.JAVA_PROJECT);
 		String option = project.getOption(JavaCore.COMPILER_SOURCE, true);
-		if (!JavaCore.VERSION_1_5.equals(option) && !JavaCore.VERSION_1_6.equals(option)) {
+		if (!JavaCore.VERSION_1_5.equals(option)
+				&& !JavaCore.VERSION_1_6.equals(option)) {
 			throw createCoreException("java程式不是1.5以上版本！", null);
 		}
 
@@ -120,7 +111,8 @@ public class RLMethodModel {
 	}
 
 	private CoreException createCoreException(String msg, Throwable cause) {
-		return new CoreException(new Status(IStatus.ERROR, RLEHTPlugin.PLUGIN_ID, IStatus.ERROR, msg, cause));
+		return new CoreException(new Status(IStatus.ERROR,
+				RLEHTPlugin.PLUGIN_ID, IStatus.ERROR, msg, cause));
 	}
 
 	/**
@@ -151,18 +143,23 @@ public class RLMethodModel {
 				projectDesc.setNatureIds(newNatures);
 				project.setDescription(projectDesc, null);
 
-				ConsoleLog.info("RLMethodNature added to the " + project.getName() + " Porject.");
+				ConsoleLog.info("RLMethodNature added to the "
+						+ project.getName() + " Porject.");
 			} catch (Exception e) {
-				ErrorLog.getInstance().logError("Error adding the RLMethodNature to the " + project.getName() + " Porject.", e);
+				ErrorLog.getInstance().logError(
+						"Error adding the RLMethodNature to the "
+								+ project.getName() + " Porject.", e);
 			}
 		} else {
-			ConsoleLog.info("The RLMethodNature is already associated with the " + project.getName() + " Porject.");
+			ConsoleLog
+					.info("The RLMethodNature is already associated with the "
+							+ project.getName() + " Porject.");
 		}
 
 	}
 
 	/**
-	 * add robustness level annotation information to specific method 
+	 * add robustness level annotation information to specific method
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean addOrRemoveRLAnnotation(boolean add, int pos) {
@@ -189,20 +186,22 @@ public class RLMethodModel {
 			if (add) {
 				addImportDeclaration();
 
-				//add selected exception @tag annotation 
+				// add selected exception @tag annotation
 				rlary.expressions().add(getRLAnnotation(ast, msg.getRLData()));
 			}
 
-			//add original @tag annotation
+			// add original @tag annotation
 			int idx = 0;
 			for (RLMessage rlmsg : rlAnnotationList) {
 				if (add) {
 					// add
-					rlary.expressions().add(getRLAnnotation(ast, rlmsg.getRLData()));
+					rlary.expressions().add(
+							getRLAnnotation(ast, rlmsg.getRLData()));
 				} else {
 					// remove
 					if (idx++ != pos) {
-						rlary.expressions().add(getRLAnnotation(ast, rlmsg.getRLData()));
+						rlary.expressions().add(
+								getRLAnnotation(ast, rlmsg.getRLData()));
 					}
 				}
 			}
@@ -211,7 +210,8 @@ public class RLMethodModel {
 
 			List<IExtendedModifier> modifiers = method.modifiers();
 			for (int i = 0, size = modifiers.size(); i < size; i++) {
-				if (modifiers.get(i).isAnnotation() && modifiers.get(i).toString().indexOf("Robustness") != -1) {
+				if (modifiers.get(i).isAnnotation()
+						&& modifiers.get(i).toString().indexOf("Robustness") != -1) {
 					method.modifiers().remove(i);
 					break;
 				}
@@ -224,7 +224,8 @@ public class RLMethodModel {
 			ICompilationUnit cu = (ICompilationUnit) actOpenable;
 			Document document = new Document(cu.getBuffer().getContents());
 
-			TextEdit edits = actRoot.rewrite(document, cu.getJavaProject().getOptions(true));
+			TextEdit edits = actRoot.rewrite(document, cu.getJavaProject()
+					.getOptions(true));
 
 			edits.apply(document);
 
@@ -244,7 +245,8 @@ public class RLMethodModel {
 		boolean isImportRobustnessClass = false;
 		boolean isImportRLClass = false;
 		for (ImportDeclaration id : importList) {
-			if (RLData.CLASS_ROBUSTNESS.equals(id.getName().getFullyQualifiedName())) {
+			if (RLData.CLASS_ROBUSTNESS.equals(id.getName()
+					.getFullyQualifiedName())) {
 				isImportRobustnessClass = true;
 			}
 			if (RLData.CLASS_RL.equals(id.getName().getFullyQualifiedName())) {
@@ -293,7 +295,8 @@ public class RLMethodModel {
 
 			List<IExtendedModifier> modifiers = method.modifiers();
 			for (int i = 0, size = modifiers.size(); i < size; i++) {
-				if (modifiers.get(i).isAnnotation() && modifiers.get(i).toString().indexOf("Robustness") != -1) {
+				if (modifiers.get(i).isAnnotation()
+						&& modifiers.get(i).toString().indexOf("Robustness") != -1) {
 					method.modifiers().remove(i);
 					break;
 				}
@@ -306,7 +309,8 @@ public class RLMethodModel {
 			ICompilationUnit cu = (ICompilationUnit) actOpenable;
 			Document document = new Document(cu.getBuffer().getContents());
 
-			TextEdit edits = actRoot.rewrite(document, cu.getJavaProject().getOptions(true));
+			TextEdit edits = actRoot.rewrite(document, cu.getJavaProject()
+					.getOptions(true));
 
 			edits.apply(document);
 
@@ -338,7 +342,8 @@ public class RLMethodModel {
 
 		MemberValuePair level = ast.newMemberValuePair();
 		level.setName(ast.newSimpleName("level"));
-		level.setValue(ast.newNumberLiteral(String.valueOf(rldata.getLevel() <= 0 ? 1 : rldata.getLevel())));
+		level.setValue(ast.newNumberLiteral(String
+				.valueOf(rldata.getLevel() <= 0 ? 1 : rldata.getLevel())));
 
 		rl.values().add(level);
 
@@ -380,7 +385,7 @@ public class RLMethodModel {
 	// ************************************************************************
 	/**
 	 * get cursor position line number
-	 *  
+	 * 
 	 * @param pos
 	 * @return
 	 */
@@ -409,7 +414,8 @@ public class RLMethodModel {
 	}
 
 	public int getPosition() {
-		return (this.methodNode != null ? this.methodNode.getStartPosition() : 0);
+		return (this.methodNode != null ? this.methodNode.getStartPosition()
+				: 0);
 	}
 
 	public List<RLMessage> getExceptionList() {

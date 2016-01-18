@@ -32,10 +32,6 @@ ISelectionChangedListener, IPartListener2, IDoubleClickListener {
 		this.view = view;
 	}
 	
-	public void dispose() {
-		view = null;
-	}
-	
 	// **************************************************************************
 	// * IFileBufferListener
 	// **************************************************************************

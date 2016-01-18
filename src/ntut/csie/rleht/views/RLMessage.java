@@ -43,10 +43,6 @@ public class RLMessage {
 
 	private Map<String, String> handleExMap;
 
-	public RLMessage(int level, ITypeBinding typeBinding, int pos, int lineNumber) {
-		this(level, typeBinding, "", pos, lineNumber);
-	}
-
 	public RLMessage(int level, ITypeBinding typeBinding, String statement, int pos, int lineNumber) {
 
 		this.statement = statement;

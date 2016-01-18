@@ -67,13 +67,6 @@ public class RLEHTPlugin extends AbstractUIPlugin {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
 
-	public static void logDebug(String message) {
-		if (getDefault().isDebugging()) {
-			logger.debug(message);
-			getDefault().getLog().log(new Status(IStatus.INFO, PLUGIN_ID, IStatus.OK, message, null));
-		}
-	}
-
 	public static void logError(String message, Throwable t) {
 		logger.error(message, t);
 		getDefault().getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.ERROR, message, t));

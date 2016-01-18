@@ -85,7 +85,7 @@ public class BaseQuickFix {
 	}
 	
 	/**
-	 * update the change of Editor  (New)
+	 * update the change of Editor (New)
 	 * @param msg
 	 */
 	protected void applyChange(ASTRewrite rewrite) {

@@ -57,39 +57,40 @@ public class ExtractMethodInputPage extends UserInputWizardPage {
 	
 	@Override
 	public void createControl(Composite parent) {	
-		//Define UI
-		Composite composite= new Composite(parent, SWT.NONE);		
-		composite.setLayout(new GridLayout(3, false));
-		setControl(composite);
-
-		/* New Method Text */
-		createLabel(composite, "&Method Name:");
-		newMethodText = createText(composite, SWT.BORDER, "extracted");
-		new Label(composite, SWT.NONE);
-
-		/* New Method Modifier */
-		createLabel(composite, "&Access Modifiers:");
-		Composite modifierGroup = createLayoutComposite(composite, 3);
-		publicRadBtn = createRadioButton(modifierGroup, "public");
-		protectedRadBtn = createRadioButton(modifierGroup, "protected");
-		privateRadBtn = createRadioButton(modifierGroup, "private");
-
-		/* New Method Handler */
-		createLabel(composite, "&Catch Handler:");
-		Composite handlerGroup = createLayoutComposite(composite, 2);
-		printRadBtn = createRadioButton(handlerGroup, "e.printStackTrace();");
-		loggerRadBtn = createRadioButton(handlerGroup, "java.util.logging.Logger");
-
-		Composite previewComposite = createLayoutComposite(composite, 1);
-		createSignaturePreview(previewComposite);
-		//set control action
-		addControlListener();
-
-		//initialize
-		privateRadBtn.setSelection(true);
-		printRadBtn.setSelection(true);
-
-		handleInputChange();
+			//Define UI
+			Composite composite= new Composite(parent, SWT.NONE);		
+			composite.setLayout(new GridLayout(3, false));
+			setControl(composite);
+			
+			/* New Method Text */
+			createLabel(composite, "&Method Name:");
+			newMethodText = createText(composite, SWT.BORDER, "extracted");
+			new Label(composite, SWT.NONE);
+			
+			/* New Method Modifier */
+			createLabel(composite, "&Access Modifiers:");
+			Composite modifierGroup = createLayoutComposite(composite, 3);
+			publicRadBtn = createRadioButton(modifierGroup, "public");
+			protectedRadBtn = createRadioButton(modifierGroup, "protected");
+			privateRadBtn = createRadioButton(modifierGroup, "private");
+			
+			/* New Method Handler */
+			createLabel(composite, "&Catch Handler:");
+			Composite handlerGroup = createLayoutComposite(composite, 2);
+			printRadBtn = createRadioButton(handlerGroup, "e.printStackTrace();");
+			loggerRadBtn = createRadioButton(handlerGroup, "java.util.logging.Logger");
+			
+			Composite previewComposite = createLayoutComposite(composite, 1);
+			createSignaturePreview(previewComposite);
+			//set control action
+			addControlListener();
+			
+			//initialize
+			privateRadBtn.setSelection(true);
+			printRadBtn.setSelection(true);
+			
+			handleInputChange();
+			
 	}
 
 	

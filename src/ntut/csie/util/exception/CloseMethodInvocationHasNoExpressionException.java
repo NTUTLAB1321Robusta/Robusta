@@ -7,16 +7,4 @@ public class CloseMethodInvocationHasNoExpressionException extends ClosingResour
 	public CloseMethodInvocationHasNoExpressionException(){
 		super();
 	}
-	
-	public CloseMethodInvocationHasNoExpressionException(Throwable e){
-		super(e);
-	}
-	
-	public CloseMethodInvocationHasNoExpressionException(String message){
-		super(message);
-	}
-	
-	public CloseMethodInvocationHasNoExpressionException(String message, Throwable e){
-		super(message, e);
-	}
 }

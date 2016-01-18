@@ -15,13 +15,9 @@ public class ConsoleLog {
 
 	public static final int INFO = 10;
 
-	public static final int WARN = 20;
-
 	public static final int ERROR = 30;
 
 	private static MessageConsoleStream consoleStream = null;
-
-	// private static PrintStream consoleStream=null;
 
 	private static MessageConsole console = null;
 
@@ -29,20 +25,7 @@ public class ConsoleLog {
 
 	private static final boolean useConsoleLog = false;
 
-	static {
-		init();
-	}
-
 	protected ConsoleLog() {
-
-	}
-
-	public static void init() {
-//		 console = new MessageConsole("RLEHT Console", null);
-//		 ConsolePlugin.getDefault().getConsoleManager().addConsoles(new
-//		 IConsole[] { console });
-//		 consoleStream = console.newMessageStream();
-//		 ConsolePlugin.getDefault().getConsoleManager().showConsoleView(console);
 
 	}
 
@@ -64,37 +47,11 @@ public class ConsoleLog {
 		}
 	}
 
-	public static void warn(String msg) {
-		if (logLevel >= WARN) {
-			if (useConsoleLog) {
-				consoleStream.println(TITLE + msg);
-			}
-			logger.debug(TITLE + msg);
-		}
-	}
-
-	public static void warn(String msg, Throwable ex) {
-		if (logLevel >= WARN) {
-			if (useConsoleLog) {
-				consoleStream.println(TITLE + msg + "\n" + getExceptionTrace(ex));
-			}
-			logger.debug(TITLE + msg, ex);
-		}
-	}
-
-	public static void error(String msg) {
-		if (logLevel >= ERROR) {
-			if (useConsoleLog) {
-				consoleStream.println(TITLE + msg);
-			}
-			logger.debug(TITLE + msg);
-		}
-	}
-
 	public static void error(String msg, Throwable ex) {
 		if (logLevel >= ERROR) {
 			if (useConsoleLog) {
-				consoleStream.println(TITLE + msg + "\n" + getExceptionTrace(ex));
+				consoleStream.println(TITLE + msg + "\n"
+						+ getExceptionTrace(ex));
 			}
 			logger.debug(TITLE + msg, ex);
 		}
@@ -108,13 +65,4 @@ public class ConsoleLog {
 		}
 		return sb.toString();
 	}
-
-	public static int getLogLevel() {
-		return logLevel;
-	}
-
-	public static void setLogLevel(int logLevel) {
-		ConsoleLog.logLevel = logLevel;
-	}
-
 }

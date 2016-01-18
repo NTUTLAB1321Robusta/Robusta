@@ -7,16 +7,4 @@ public class ExpressionIsNotInSimpleNameFormException extends ClosingResourceBeg
 	public ExpressionIsNotInSimpleNameFormException(){
 		super();
 	}
-	
-	public ExpressionIsNotInSimpleNameFormException(Throwable e){
-		super(e);
-	}
-	
-	public ExpressionIsNotInSimpleNameFormException(String message){
-		super(message);
-	}
-	
-	public ExpressionIsNotInSimpleNameFormException(String message, Throwable e){
-		super(message, e);
-	}
 }

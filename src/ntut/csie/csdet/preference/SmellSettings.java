@@ -55,7 +55,6 @@ public class SmellSettings {
 	public final static String SMELL_OVERLOGGING = "OverLogging";
 	public final static String SMELL_CARELESSCLEANUP = "CarelessCleanup";
 	public final static String SMELL_EXCEPTIONTHROWNFROMFINALLYBLOCK = "ExceptionThrownFromFinallyBlock";
-	public final static String ANNOTATION_ROBUSTNESSLEVEL = "RobustnessLevel";
 	public final static String[] ALL_BAD_SMELLS = new String[] {
 			SMELL_EMPTYCATCHBLOCK, SMELL_DUMMYHANDLER,
 			SMELL_NESTEDTRYSTATEMENT, SMELL_UNPROTECTEDMAINPROGRAM,

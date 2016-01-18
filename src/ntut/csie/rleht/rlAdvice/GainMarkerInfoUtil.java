@@ -22,26 +22,13 @@ import org.slf4j.LoggerFactory;
 public class GainMarkerInfoUtil {
 	private static Logger logger = LoggerFactory.getLogger(GainMarkerInfoUtil.class);
 	
-	/**
-	 * get smell message of the marked line
-	 * @param marker
-	 * @param actRoot
-	 * @param currentMethodNode
-	 * @return
-	 */
-	public RLAdviceMessage findSmellMessage(IMarker marker, CompilationUnit actRoot, ASTNode currentMethodNode){
-		RLAdviceMessage rlAdviceMessage = null;
-		try {
-			String msgIdx;
-			msgIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_MSG_INDEX);
-			RLAnalyzer rlvisitor = new RLAnalyzer(actRoot);
-			currentMethodNode.accept(rlvisitor);
-			rlAdviceMessage = rlvisitor.getExceptionRLAdviceList().get(Integer.parseInt(msgIdx));
-		} catch (CoreException e) {
-			logger.error("[Find RLException] EXCEPTION ", e);
-		}
-		return rlAdviceMessage;
-	}
+//	/**
+//	 * get smell message of the marked line
+//	 * @param marker
+//	 * @param actRoot
+//	 * @param currentMethodNode
+//	 * @return
+//	 */
 	
 	/**
 	 * get information of a code which is needed to be modified

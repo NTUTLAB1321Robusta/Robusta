@@ -28,8 +28,6 @@ public interface RLMarkerAttribute {
 
 	public static final String ERR_SS_FAULT_NAME = "ERR_SS_FAULT_NAME";
 
-	public static final String ERR_SS_DUPLICATE = "ERR_SS_DUPLICATE";
-
 	/** Suppress Smell In Catch */
 	public static final String SS_IN_CATCH = "SS_IN_CATCH";
 
