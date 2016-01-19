@@ -7,7 +7,6 @@ import java.util.Stack;
 
 import ntut.csie.robusta.agile.exception.RTag;
 import ntut.csie.robusta.agile.exception.Robustness;
-import ntut.csie.util.NodeUtils;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
@@ -433,8 +432,8 @@ public class QuickFixCore {
 	public void generateTryStatementForQuickFix(
 			MethodDeclaration methodDeclaration) {
 		List<ASTNode> statements = methodDeclaration.getBody().statements();
-		Queue<TryStatement> tryStatements = new LinkedList<>();
-		Queue<ASTNode> moveTargets = new LinkedList<>();
+		Queue<TryStatement> tryStatements = new LinkedList<TryStatement>();
+		Queue<ASTNode> moveTargets = new LinkedList<ASTNode>();
 		classifyStatementsToDifferentQueue(statements, tryStatements,
 				moveTargets);
 		if (tryStatements.isEmpty()) {
@@ -442,8 +441,8 @@ public class QuickFixCore {
 			moveAllStatementInTryStatement(methodDeclaration, tryStatement);
 			return;
 		}
-		Stack<ASTNode> variableDeclarations = new Stack<>();
-		Stack<ASTNode> variableDeclarationEndWithLiteralOrNullInitializer = new Stack<>();
+		Stack<ASTNode> variableDeclarations = new Stack<ASTNode>();
+		Stack<ASTNode> variableDeclarationEndWithLiteralOrNullInitializer = new Stack<ASTNode>();
 		while (!tryStatements.isEmpty()) {
 			TryStatement tryStatement = tryStatements.poll();
 			if (!isCatchingAllException(tryStatement)) {
@@ -454,7 +453,7 @@ public class QuickFixCore {
 			ListRewrite neededToBeRefactoredMethodBody = astRewrite
 					.getListRewrite(methodDeclaration.getBody(),
 							Block.STATEMENTS_PROPERTY);
-			Stack<ASTNode> expressionStatements = new Stack<>();
+			Stack<ASTNode> expressionStatements = new Stack<ASTNode>();
 			if (!tryStatements.isEmpty()) {
 				moveStatementsAboveTryStatementInTryBlock(moveTargets,
 						variableDeclarations,
@@ -623,7 +622,7 @@ public class QuickFixCore {
 		if (top != null) {
 			Object nextStarPos = top.getProperty("startPosition");
 			if (nextStarPos != null) {
-				return (int) nextStarPos;
+				return (Integer) nextStarPos;
 			} else {
 				return moveTargets.peek().getStartPosition();
 			}
