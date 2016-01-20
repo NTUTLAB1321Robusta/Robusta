@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: ntut.csie.robusta;singleton:=true
-Bundle-Version: 1.6.8.3
+Bundle-Version: 1.6.8.4
 Bundle-Activator: ntut.csie.rleht.RLEHTPlugin
 Bundle-Vendor: %Bundle-Vendor
 Bundle-Localization: plugin
@@ -100,5 +100,5 @@ Export-Package: .,
  org.slf4j.helpers,
  org.slf4j.impl,
  org.slf4j.spi
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: org.apache.tools.ant.taskdefs.optional.junit
