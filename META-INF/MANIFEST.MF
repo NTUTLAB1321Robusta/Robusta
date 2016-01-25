@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: ntut.csie.robusta;singleton:=true
-Bundle-Version: 1.6.8.4
+Bundle-Version: 1.6.9
 Bundle-Activator: ntut.csie.rleht.RLEHTPlugin
 Bundle-Vendor: %Bundle-Vendor
 Bundle-Localization: plugin
@@ -40,7 +40,6 @@ Export-Package: .,
  ntut.csie.analyzer.dummy,
  ntut.csie.analyzer.empty,
  ntut.csie.analyzer.nested,
- ntut.csie.analyzer.over,
  ntut.csie.analyzer.thrown,
  ntut.csie.analyzer.unprotected,
  ntut.csie.csdet.data,

@@ -214,11 +214,11 @@ public class ExceptionAnalyzerTest {
 			methodGetMethodAnnotation.invoke(exceptionAnalyzer, methodlist.get(i));
 			totalRLList.addAll(exceptionAnalyzer.getMethodRLAnnotationList());
 		}
-		assertEquals(6, totalRLList.size());
+		assertEquals(4, totalRLList.size());
 		for (int i = 0; i < totalRLList.size(); i++) {
 			methodAddRLForInt.invoke(exceptionAnalyzer, totalRLList.get(i), i);
 		}
-		assertEquals(6, exceptionAnalyzer.getExceptionList().size());
+		assertEquals(4, exceptionAnalyzer.getExceptionList().size());
 
 		totalRLList =  new ArrayList<RLMessage>();
 		
@@ -228,11 +228,11 @@ public class ExceptionAnalyzerTest {
 			methodGetMethodAnnotation.invoke(exceptionAnalyzer, methodlist.get(i));
 			totalRLList.addAll(exceptionAnalyzer.getMethodRLAnnotationList());
 		}
-		assertEquals(6, totalRLList.size());
+		assertEquals(4, totalRLList.size());
 		for (int i = 0; i < totalRLList.size(); i++) {
 			methodAddRLForString.invoke(exceptionAnalyzer, totalRLList.get(i), "父母親的id哀豬叉踹." + i);
 		}
-		assertEquals(6, exceptionAnalyzer.getExceptionList().size());
+		assertEquals(4, exceptionAnalyzer.getExceptionList().size());
 	}
 
 	@Test
@@ -252,19 +252,15 @@ public class ExceptionAnalyzerTest {
 		
 		assertEquals("java.io.IOException",totalList.get(0).getRLData().getExceptionType().toString());
 		assertEquals("java.io.IOException",totalList.get(1).getRLData().getExceptionType().toString());
-		assertEquals("java.io.IOException",totalList.get(2).getRLData().getExceptionType().toString());
-		assertEquals("java.io.IOException",totalList.get(3).getRLData().getExceptionType().toString());
-		assertEquals("java.io.IOException",totalList.get(4).getRLData().getExceptionType().toString());
-		assertEquals("java.io.IOException",totalList.get(5).getRLData().getExceptionType().toString());
-		assertEquals("java.net.SocketTimeoutException",totalList.get(6).getRLData().getExceptionType().toString());
-		assertEquals("java.io.InterruptedIOException",totalList.get(7).getRLData().getExceptionType().toString());
-		assertEquals("java.net.SocketTimeoutException",totalList.get(8).getRLData().getExceptionType().toString());
-		assertEquals("java.io.InterruptedIOException",totalList.get(9).getRLData().getExceptionType().toString());
-		assertEquals("java.io.InterruptedIOException",totalList.get(10).getRLData().getExceptionType().toString());
-		assertEquals("java.lang.ArithmeticException",totalList.get(11).getRLData().getExceptionType().toString());
-		assertEquals("java.lang.Exception",totalList.get(12).getRLData().getExceptionType().toString());
+		assertEquals("java.net.SocketTimeoutException",totalList.get(2).getRLData().getExceptionType().toString());
+		assertEquals("java.io.InterruptedIOException",totalList.get(3).getRLData().getExceptionType().toString());
+		assertEquals("java.net.SocketTimeoutException",totalList.get(4).getRLData().getExceptionType().toString());
+		assertEquals("java.io.InterruptedIOException",totalList.get(5).getRLData().getExceptionType().toString());
+		assertEquals("java.io.InterruptedIOException",totalList.get(6).getRLData().getExceptionType().toString());
+		assertEquals("java.lang.ArithmeticException",totalList.get(7).getRLData().getExceptionType().toString());
+		assertEquals("java.lang.Exception",totalList.get(8).getRLData().getExceptionType().toString());
 		
-		assertEquals(19, totalList.size());
+		assertEquals(15, totalList.size());
 	}
 
 	@Test
@@ -286,11 +282,11 @@ public class ExceptionAnalyzerTest {
 		assertTrue(methodlist.get(8).toString().equals(totalList.get(1).getStatement().toString()));
 		assertTrue(methodlist.get(9).toString().equals(totalList.get(2).getStatement().toString()));
 		
-		assertEquals(115, totalList.get(0).getLineNumber());
-		assertEquals(131, totalList.get(1).getLineNumber());
-		assertEquals(146, totalList.get(2).getLineNumber());
+		assertEquals(114, totalList.get(0).getLineNumber());
+		assertEquals(130, totalList.get(1).getLineNumber());
+		assertEquals(145, totalList.get(2).getLineNumber());
 		
-		assertEquals(6, totalList.size());
+		assertEquals(4, totalList.size());
 	}
 
 	private void CreateSettings() {

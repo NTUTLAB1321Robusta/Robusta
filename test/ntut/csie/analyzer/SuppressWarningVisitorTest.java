@@ -138,13 +138,11 @@ public class SuppressWarningVisitorTest {
 		assertFalse(ssList.get(0).isInsideCatchStatement());
 		assertEquals("Careless_Cleanup", ssList.get(0).getSmellList().get(0));
 		assertEquals("Nested_Try_Statement", ssList.get(0).getSmellList().get(1));
-		assertEquals(2, ssList.get(1).getSmellList().size());
+		assertEquals(1, ssList.get(1).getSmellList().size());
 		assertEquals("Nested_Try_Statement", ssList.get(1).getSmellList().get(0));
-		assertEquals("Over_Logging", ssList.get(1).getSmellList().get(1));
-		assertEquals(3, ssList.get(2).getSmellList().size());
+		assertEquals(2, ssList.get(2).getSmellList().size());
 		assertEquals("Nested_Try_Statement", ssList.get(2).getSmellList().get(0));
-		assertEquals("Over_Logging", ssList.get(2).getSmellList().get(1));
-		assertEquals("Empty_Catch_Block", ssList.get(2).getSmellList().get(2));
+		assertEquals("Empty_Catch_Block", ssList.get(2).getSmellList().get(1));
 		assertEquals(1, ssList.get(3).getSmellList().size());
 		assertEquals("Dummy_Handler", ssList.get(3).getSmellList().get(0));
 	}

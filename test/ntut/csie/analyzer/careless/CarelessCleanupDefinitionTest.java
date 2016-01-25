@@ -296,7 +296,6 @@ public class CarelessCleanupDefinitionTest {
 		    		"<SmellTypes name=\"UnprotectedMainProgram\" isDetecting=\"false\" />" +
 		    		"<SmellTypes name=\"CarelessCleanup\" isDetecting=\"true\">" +
 		    		"<extraRule name=\"DetectOutOfTryStatement\" /></SmellTypes>" +
-		    		"<SmellTypes name=\"OverLogging\" isDetecting=\"false\" />" +
 		    		"<SmellTypes name=\"ExceptionThrownFromFinallyBlock\" isDetecting=\"false\" />" +
 		    		"<Preferences name=\"ShowRLAnnotationWarning\" enable=\"false\" /></CodeSmells>");
 		} catch (IOException e) {

@@ -99,16 +99,6 @@ public class CSPropertyPage extends org.eclipse.ui.dialogs.PropertyPage {
 		dummyHandlerTabItem.setControl(dummyHandlerComposite);
 		tabPages.add(dummyHandlerPage);
 
-		// add OverLogging Page
-		final TabItem overLoggingTabItem = new TabItem(tabFolder, SWT.NONE);
-		overLoggingTabItem.setText(resource.getString("over.logging"));
-		final Composite overLoggingComposite = new Composite(tabFolder,
-				SWT.NONE);
-		APropertyPage overLoggingPage = new OverLoggingPage(
-				overLoggingComposite, this, smellSettings);
-		overLoggingTabItem.setControl(overLoggingComposite);
-		tabPages.add(overLoggingPage);
-
 		// add CarelessCleanup Page
 		final TabItem carelessCleanupTabItem = new TabItem(tabFolder, SWT.NONE);
 		carelessCleanupTabItem.setText(resource.getString("careless.cleanup"));

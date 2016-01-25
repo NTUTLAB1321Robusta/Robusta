@@ -20,7 +20,7 @@ public class SSMessage {
 	/** Index position inside Catch statement */
 	private int catchIdx;
 
-	public boolean isFaultName = false;
+	private boolean isFaultName = false;
 
 	private String isFaultSmellName;
 	

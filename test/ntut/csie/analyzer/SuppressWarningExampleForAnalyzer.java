@@ -24,8 +24,7 @@ public class SuppressWarningExampleForAnalyzer {
 	 * 3.nested try statement
 	 * 4.empty catch block
 	 * 5.careless cleanup
-	 * 6.over logging
-	 * 7.to be continued...
+	 * 6.to be continued...
 	 */
 	
 	/* ---------------------- With Suppress warning & Tag Example --------------------- */
@@ -159,45 +158,10 @@ public class SuppressWarningExampleForAnalyzer {
 		}
 	}
 	
-	/* ---------------------OverLogging And Nested Try Example--------------------- */
+	/* -----------------------Nested Try Example----------------------------------- */
 	/* -----------------------Call Chain In the Same Class------------------------- */
 	
 	Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
-	
-	public void theFirstOrderInTheSameClass() {
-		try {
-			theSecondOrderInTheSameClass();
-		} catch(@SuppressSmell("Dummy_Handler") IOException e) { // Suppressed DummyHandler
-			logger.log(Level.WARNING, e.getMessage());
-		}
-	}
-	
-	/**
-	 * @SuppressSmell("Over_Logging") on method signature
-	 */
-	@SuppressSmell("Over_Logging")
-	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
-	public void theSecondOrderInTheSameClass() throws IOException {
-		try {
-			theThirdOrderInTheSameClass();
-		} catch(IOException e) {
-			logger.log(Level.WARNING, e.getMessage());
-			throw e;
-		}
-	}
-	
-	/**
-	 * @SuppressSmell("Over_Logging")on catch block
-	 */
-	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
-	public void theThirdOrderInTheSameClass() throws IOException {
-		try {
-			theFourthOrderInTheSameClass();
-		} catch(@SuppressSmell("Over_Logging") IOException e) {
-			logger.log(Level.WARNING, e.getMessage());
-			throw e;
-		}
-	}
 	
 	@SuppressSmell({ "Careless_Cleanup", "Nested_Try_Statement" })
 	@Robustness(value = { @RTag(level = 1, exception = java.io.IOException.class) })
@@ -210,10 +174,10 @@ public class SuppressWarningExampleForAnalyzer {
 			fileOutputStream = new FileOutputStream("");
 			fileOutputStream.close();
 			throw new IOException("IOException throws in callee");
-		} catch(@SuppressSmell({ "Nested_Try_Statement" , "Over_Logging" }) FileNotFoundException e) {
+		} catch(@SuppressSmell({ "Nested_Try_Statement"}) FileNotFoundException e) {
 			logger.log(Level.WARNING, e.getMessage());
 			throw e;
-		} catch(@SuppressSmell({ "Nested_Try_Statement" , "Over_Logging" , "Empty_Catch_Block"}) FileLockInterruptionException e) {
+		} catch(@SuppressSmell({ "Nested_Try_Statement", "Empty_Catch_Block"}) FileLockInterruptionException e) {
 			
 		} catch(@SuppressSmell("Dummy_Handler") IOException e) { // Suppressed DummyHandler
 			logger.log(Level.WARNING, e.getMessage());
@@ -357,34 +321,8 @@ public class SuppressWarningExampleForAnalyzer {
 		}
 	}
 	
-	/* ---------------------OverLogging And Nested Try Example--------------------- */
+	/* -----------------------Nested Try Example----------------------------------- */
 	/* -----------------------Call Chain In the Same Class------------------------- */
-	
-	public void withoutSuppressWaringTheFirstOrderInTheSameClass() {
-		try {
-			withoutSuppressWaringTheSecondOrderInTheSameClass();
-		} catch(IOException e) { // DummyHandler
-			logger.log(Level.WARNING, e.getMessage());
-		}
-	}
-
-	public void withoutSuppressWaringTheSecondOrderInTheSameClass() throws IOException {
-		try {
-			withoutSuppressWaringTheThirdOrderInTheSameClass();
-		} catch(IOException e) {
-			logger.log(Level.WARNING, e.getMessage()); // Over logging
-			throw e;
-		}
-	}
-
-	public void withoutSuppressWaringTheThirdOrderInTheSameClass() throws IOException {
-		try {
-			withoutSuppressWaringTheFourthOrderInTheSameClass();
-		} catch(IOException e) {
-			logger.log(Level.WARNING, e.getMessage()); // Over logging
-			throw e;
-		}
-	}
 	
 	public void withoutSuppressWaringTheFourthOrderInTheSameClass() throws IOException {
 		FileOutputStream fileOutputStream = null;
@@ -395,11 +333,6 @@ public class SuppressWarningExampleForAnalyzer {
 			fileOutputStream = new FileOutputStream("");
 			fileOutputStream.close();  // CC #4
 			throw new IOException("IOException throws in callee");
-//		} catch(FileNotFoundException e) {
-//			logger.log(Level.WARNING, e.getMessage());  // Over logging, if our system can detect FileNotFoundException is a sub class of IOException
-//			throw e;
-		} catch(FileLockInterruptionException e) {
-			
 		} catch(IOException e) { // DummyHandler
 			logger.log(Level.WARNING, e.getMessage());
 		} catch (Exception e) {

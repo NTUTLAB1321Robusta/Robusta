@@ -113,22 +113,6 @@ public class ClassModelTest {
 	}
 	
 	@Test
-	public void testSetOverLogging() {
-		int MAX = 10;
-		List<MarkerInfo> overLoggingList = null;
-		model.addSmellList(overLoggingList);
-		assertEquals(0, model.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING));
-		overLoggingList = new ArrayList<MarkerInfo>();
-		for(int i = 0; i < MAX; i++) {
-			overLoggingList.add(new MarkerInfo(RLMarkerAttribute.CS_OVER_LOGGING, null, null, i, i*2, null, "over", null));
-		}
-		model.addSmellList(overLoggingList);
-		assertEquals(MAX, model.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING));
-		assertEquals(RLMarkerAttribute.CS_OVER_LOGGING, model.getSmellType(2));
-		assertEquals(8, model.getSmellLine(4));
-	}
-	
-	@Test
 	public void testSetCarelessCleanup() {
 		int MAX = 10;
 		List<MarkerInfo> carelessList = null;

@@ -20,7 +20,6 @@ function ChartDrawer(placeholder, densitydata) {
 			bars: {
 				show: true,
 				fill: true,
-				//lineWidth: 3,
 				fillColor: { colors: [ { opacity: 0.75 }, { opacity: 0.75 } ] }
 			},
 			valueLabels: {
@@ -29,7 +28,6 @@ function ChartDrawer(placeholder, densitydata) {
 				align: "center",
 				labelFormatter: function(v) {
 					return v;
-					//return "" + Math.round(v/sum*100) + "%";
 				}
 			}
 		},

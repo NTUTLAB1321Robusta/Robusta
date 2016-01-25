@@ -91,7 +91,6 @@ public class BadSmellDataStorage {
 		try {
 			String path = getFilePath(reportDataFileName, true);
 			outputWriter = new OutputStreamWriter(new FileOutputStream(path), "UTF-8");
-			//fileWriter = new FileWriter(path);
 			xmlOut.output(xmlDocument, outputWriter);
 		} catch (IOException e) {
 			logger.error("[IOException] EXCEPTION ", e);
@@ -122,8 +121,6 @@ public class BadSmellDataStorage {
 				.valueOf(model.getSmellSize(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT))));
 		smellList.addContent(new Element("CarelessCleanup").addContent(String
 				.valueOf(model.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP))));
-		smellList.addContent(new Element("OverLogging").addContent(String
-				.valueOf(model.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING))));
 		smellList.addContent(new Element("ExceptionThrownFromFinallyBlock")
 				.addContent(String.valueOf(model.getSmellSize(RLMarkerAttribute.CS_EXCEPTION_THROWN_FROM_FINALLY_BLOCK))));
 		smellList.addContent(new Element("Total").addContent(String
@@ -164,8 +161,6 @@ public class BadSmellDataStorage {
 			packages.addContent(new Element("CarelessCleanup")
 					.addContent(String.valueOf(packageModel
 							.getSmellSize(RLMarkerAttribute.CS_CARELESS_CLEANUP))));
-			packages.addContent(new Element("OverLogging").addContent(String
-					.valueOf(packageModel.getSmellSize(RLMarkerAttribute.CS_OVER_LOGGING))));
 			packages.addContent(new Element("ExceptionThrownFromFinallyBlock")
 					.addContent(String.valueOf(packageModel
 							.getSmellSize(RLMarkerAttribute.CS_EXCEPTION_THROWN_FROM_FINALLY_BLOCK))));

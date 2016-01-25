@@ -120,20 +120,6 @@ public class SmellSettingsTest {
 	}
 	
 	@Test
-	public void testOverLoggingPattern() throws Exception {
-		smellSettings.addOverLoggingPattern("e.PrintStackTrace", false);
-		smellSettings.writeXMLFile(smellSettingFile.getPath());
-		
-		String fileContent = readFileContents(smellSettingFile);
-		assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-				+ "<CodeSmells><SmellTypes name=\""
-				+ SmellSettings.SMELL_OVERLOGGING
-				+ "\" isDetecting=\"true\">"
-				+ "<pattern name=\"e.PrintStackTrace\" isDetecting=\"false\" />"
-				+ "</SmellTypes></CodeSmells>", fileContent);
-	}
-	
-	@Test
 	public void testAddCarelessCleanupPattern() throws Exception {
 		smellSettings.addCarelessCleanupPattern("*.lib", false);
 		smellSettings.writeXMLFile(smellSettingFile.getPath());
@@ -660,9 +646,6 @@ public class SmellSettingsTest {
 				"<SmellTypes name=\"UnprotectedMainProgram\" isDetecting=\"true\" />" +
 				"<SmellTypes name=\"CarelessCleanup\" isDetecting=\"true\">" +
 				"<extraRule name=\"DetectOutOfTryStatement\" /></SmellTypes>" +
-				"<SmellTypes name=\"OverLogging\" isDetecting=\"true\"><extraRule name=\"DetectWrappingExcetion\" />" +
-				"<extraRule name=\"java.util.logging.Logger\" /><extraRule name=\"org.apache.log4j\" />" +
-				"</SmellTypes>"	+
 				"<SmellTypes name=\"ExceptionThrownFromFinallyBlock\" isDetecting=\"true\" />" +
 				"</CodeSmells>",
 				fileContent);

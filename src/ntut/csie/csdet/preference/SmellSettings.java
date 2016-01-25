@@ -52,17 +52,14 @@ public class SmellSettings {
 	public final static String SMELL_DUMMYHANDLER = "DummyHandler";
 	public final static String SMELL_NESTEDTRYSTATEMENT = "NestedTryStatement";
 	public final static String SMELL_UNPROTECTEDMAINPROGRAM = "UnprotectedMainProgram";
-	public final static String SMELL_OVERLOGGING = "OverLogging";
 	public final static String SMELL_CARELESSCLEANUP = "CarelessCleanup";
 	public final static String SMELL_EXCEPTIONTHROWNFROMFINALLYBLOCK = "ExceptionThrownFromFinallyBlock";
 	public final static String[] ALL_BAD_SMELLS = new String[] {
 			SMELL_EMPTYCATCHBLOCK, SMELL_DUMMYHANDLER,
-			SMELL_NESTEDTRYSTATEMENT, SMELL_UNPROTECTEDMAINPROGRAM,
-			SMELL_OVERLOGGING, SMELL_CARELESSCLEANUP,
+			SMELL_NESTEDTRYSTATEMENT, SMELL_UNPROTECTEDMAINPROGRAM, SMELL_CARELESSCLEANUP,
 			SMELL_EXCEPTIONTHROWNFROMFINALLYBLOCK };
 	
 	
-	public final static String EXTRARULE_OVERLOGGING_DETECTWRAPPINGEXCEPTION = "DetectWrappingExcetion";
 	/** detect out of try statement close method*/
 	public final static String EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT = "DetectOutOfTryStatement";
 
@@ -206,10 +203,6 @@ public class SmellSettings {
 
 	public void addDummyHandlerPattern(String patternName, boolean isDetecting) {
 		addPattern(SMELL_DUMMYHANDLER, patternName, isDetecting);
-	}
-
-	public void addOverLoggingPattern(String patternName, boolean isDetecting) {
-		addPattern(SMELL_OVERLOGGING, patternName, isDetecting);
 	}
 
 	public void addCarelessCleanupPattern(String patternName,
@@ -450,9 +443,6 @@ public class SmellSettings {
 				libMap.put(rule, UserDefinedConstraintsType.FullQulifiedMethod);
 				continue;
 			}
-			if (rule.equals(EXTRARULE_OVERLOGGING_DETECTWRAPPINGEXCEPTION)) {
-				libMap.put(rule, UserDefinedConstraintsType.FullQulifiedMethod);
-			}
 		}
 		// add patterns to libMap
 		List<String> patterns = getAllDetectingPatterns(badSmellName);
@@ -534,12 +524,6 @@ public class SmellSettings {
 		addExtraRule(SMELL_CARELESSCLEANUP,
 				EXTRARULE_CARELESSCLEANUP_ALSO_DETECT_OUT_OF_TRY_STATEMENT);
 
-		setSmellTypeAttribute(SMELL_OVERLOGGING, ATTRIBUTE_ISDETECTING, true);
-		addExtraRule(SMELL_OVERLOGGING,
-				EXTRARULE_OVERLOGGING_DETECTWRAPPINGEXCEPTION);
-		addExtraRule(SMELL_OVERLOGGING, EXTRARULE_JavaUtilLoggingLogger);
-		addExtraRule(SMELL_OVERLOGGING, EXTRARULE_OrgApacheLog4j);
-
 		setSmellTypeAttribute(SMELL_EXCEPTIONTHROWNFROMFINALLYBLOCK,
 				ATTRIBUTE_ISDETECTING, true);
 
@@ -556,8 +540,6 @@ public class SmellSettings {
 				return RLMarkerAttribute.CS_NESTED_TRY_STATEMENT;
 		else if(smellType.equals(SMELL_UNPROTECTEDMAINPROGRAM))
 				return RLMarkerAttribute.CS_UNPROTECTED_MAIN;
-		else if(smellType.equals(SMELL_OVERLOGGING))
-				return RLMarkerAttribute.CS_OVER_LOGGING;
 		else if(smellType.equals(SMELL_CARELESSCLEANUP))
 				return RLMarkerAttribute.CS_CARELESS_CLEANUP;
 		else if(smellType.equals(SMELL_EXCEPTIONTHROWNFROMFINALLYBLOCK))

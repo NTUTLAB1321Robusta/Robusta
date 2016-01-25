@@ -86,10 +86,6 @@ public class BadSmellDataEntityTest {
 		content = carelessCleanupElement.getValue().toString();
 		assertEquals("110", content);
 
-		Element overLoggingElement = smellListElement.getChild("OverLogging");
-		content = overLoggingElement.getValue().toString();
-		assertEquals("21", content);
-
 		Element thrownExceptionInFinallyBlockElement = smellListElement.getChild("ThrownExceptionInFinallyBlock");
 		content = thrownExceptionInFinallyBlockElement.getValue().toString();
 		assertEquals("68", content);

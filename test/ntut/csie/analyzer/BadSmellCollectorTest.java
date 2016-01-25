@@ -78,12 +78,7 @@ public class BadSmellCollectorTest {
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_UNPROTECTEDMAINPROGRAM, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_EXCEPTIONTHROWNFROMFINALLYBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
-		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_OVERLOGGING, SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
-		smellSettings.addExtraRule(SmellSettings.SMELL_OVERLOGGING, SmellSettings.EXTRARULE_OVERLOGGING_DETECTWRAPPINGEXCEPTION);
-		smellSettings.addExtraRule(SmellSettings.SMELL_OVERLOGGING, SmellSettings.EXTRARULE_JavaUtilLoggingLogger);
-		smellSettings.addExtraRule(SmellSettings.SMELL_OVERLOGGING, SmellSettings.EXTRARULE_OrgApacheLog4j);
-		smellSettings.addOverLoggingPattern("org.slf4j.Logger", isDetecting);
-		
+
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 	}
 	
@@ -127,14 +122,13 @@ public class BadSmellCollectorTest {
 		BadSmellCollector collector = new BadSmellCollector(project, root);
 		collector.collectBadSmell();
 
-		Assertor.assertMarkerInfoListSize(9, collector.getBadSmells(RLMarkerAttribute.CS_DUMMY_HANDLER));
+		Assertor.assertMarkerInfoListSize(8, collector.getBadSmells(RLMarkerAttribute.CS_DUMMY_HANDLER));
 		Assertor.assertMarkerInfoListSize(3, collector.getBadSmells(RLMarkerAttribute.CS_CARELESS_CLEANUP));
-		Assertor.assertMarkerInfoListSize(5, collector.getBadSmells(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK));
+		Assertor.assertMarkerInfoListSize(4, collector.getBadSmells(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK));
 		Assertor.assertMarkerInfoListSize(4, collector.getBadSmells(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT));
-		Assertor.assertMarkerInfoListSize(2, collector.getBadSmells(RLMarkerAttribute.CS_OVER_LOGGING));
 		// TODO Example of this bad smell hasn't added to SuppressWarningExampleForAnalyzer
 		assertEquals(0, collector.getBadSmells(RLMarkerAttribute.CS_EXCEPTION_THROWN_FROM_FINALLY_BLOCK).size());
 		assertEquals(0, collector.getBadSmells(RLMarkerAttribute.CS_UNPROTECTED_MAIN).size());
-		assertEquals(23, collector.getAllBadSmells().size());
+		assertEquals(19, collector.getAllBadSmells().size());
 	}
 }

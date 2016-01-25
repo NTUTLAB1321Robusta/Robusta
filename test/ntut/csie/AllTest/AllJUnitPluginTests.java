@@ -12,7 +12,6 @@ import ntut.csie.analyzer.careless.closingmethod.CloseResourceMethodInvocationVi
 import ntut.csie.analyzer.dummy.DummyHandlerVisitorTest;
 import ntut.csie.analyzer.empty.EmptyCatchBlockVisitorTest;
 import ntut.csie.analyzer.nested.NestedTryStatementVisitorTest;
-import ntut.csie.analyzer.over.OverLoggingVisitorTest;
 import ntut.csie.analyzer.thrown.ThrownExceptionInFinallyBlockVisitorTest;
 import ntut.csie.analyzer.unprotected.UnprotectedMainProgramVisitorTest;
 import ntut.csie.csdet.preference.RobustaSettingsTest;
@@ -57,7 +56,6 @@ import org.junit.runners.Suite;
 	DummyHandlerVisitorTest.class,
 	EmptyCatchBlockVisitorTest.class,
 	NestedTryStatementVisitorTest.class,
-	OverLoggingVisitorTest.class,
 	ThrownExceptionInFinallyBlockVisitorTest.class,
 	UnprotectedMainProgramVisitorTest.class,
 	

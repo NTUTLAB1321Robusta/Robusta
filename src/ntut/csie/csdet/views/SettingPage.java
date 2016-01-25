@@ -168,22 +168,6 @@ public class SettingPage extends APropertyPage {
 				"\tlogger.info(e.getMessage());\n" +
 				"}";
 		tempText[4] = new TemplateText(temp, isShowWarning);
-		temp =	"public void A() throws FileNotFoundException {\n" +
-				"\ttry {\n" +
-				"\t\t// Do Something\n" +
-				"\t} catch (FileNotFoundException e) {\n" +
-				"\t\t$logger.info(e);$	//OverLogging\n" +
-				"\t\tthrow e;\n" +
-				"\t}\n" +
-				"}\n" +
-				"public void B() {\n" +
-				"\ttry {\n" +
-				"\t\tA();\t//call method A\n" +
-				"\t} catch (FileNotFoundException e) {\n" +
-				"\t\t$logger.info(e);$	//use log\n" +
-				"\t}\n" +
-				"}";
-		tempText[5] = new TemplateText(temp, isShowWarning);
 		temp =	"public void A(String path) throws FileNotFoundException {\n" +
 				"\tFileOutputStream fos = null;\n" +
 				"\ttry {\n" +
@@ -196,7 +180,7 @@ public class SettingPage extends APropertyPage {
 				"\t}\n" +
 				"}\n";
 				
-		tempText[6] = new TemplateText(temp, isShowWarning);
+		tempText[5] = new TemplateText(temp, isShowWarning);
 				
 		descText = new String[RLMarkerAttribute.CS_TOTAL_TYPE.length];
 		descText[0] = resource.getString("empty.catch.description");
@@ -204,8 +188,7 @@ public class SettingPage extends APropertyPage {
 		descText[2] = resource.getString("nested.try.statement.description");
 		descText[3] = resource.getString("unprotected.main.program.description");
 		descText[4] = resource.getString("careless.cleanup.description");
-		descText[5] = resource.getString("over.logging.description");
-		descText[6] = resource.getString("exception.thrown.from.finally.block.description");
+		descText[5] = resource.getString("exception.thrown.from.finally.block.description");
 	}
 
 	/**
@@ -218,8 +201,7 @@ public class SettingPage extends APropertyPage {
 		smellElements[2] = smellSettings.getSmellType(SmellSettings.SMELL_NESTEDTRYSTATEMENT);
 		smellElements[3] = smellSettings.getSmellType(SmellSettings.SMELL_UNPROTECTEDMAINPROGRAM);
 		smellElements[4] = smellSettings.getSmellType(SmellSettings.SMELL_CARELESSCLEANUP);
-		smellElements[5] = smellSettings.getSmellType(SmellSettings.SMELL_OVERLOGGING);
-		smellElements[6] = smellSettings.getSmellType(SmellSettings.SMELL_EXCEPTIONTHROWNFROMFINALLYBLOCK);
+		smellElements[5] = smellSettings.getSmellType(SmellSettings.SMELL_EXCEPTIONTHROWNFROMFINALLYBLOCK);
 		
 		for(int i = 0; i < RLMarkerAttribute.CS_TOTAL_TYPE.length; i++) {
 			detSmellList[i] = Boolean.parseBoolean(smellElements[i].getAttributeValue(SmellSettings.ATTRIBUTE_ISDETECTING));
@@ -311,7 +293,7 @@ public class SettingPage extends APropertyPage {
 		smellList.setFont(new Font(composite.getDisplay(),"Arial", 11, SWT.NONE));
 		smellList.setLinesVisible(true);
 		smellList.setHeaderVisible(true);
-		smellList.setItemCount(7);
+		smellList.setItemCount(6);
 
 		final TableColumn smellColumn = new TableColumn(smellList, SWT.NONE);
 		String smellColumnDisplayText = resource.getString("settingPage.smell.type");
@@ -410,8 +392,7 @@ public class SettingPage extends APropertyPage {
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_NESTEDTRYSTATEMENT, SmellSettings.ATTRIBUTE_ISDETECTING, item[2].getChecked());
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_UNPROTECTEDMAINPROGRAM, SmellSettings.ATTRIBUTE_ISDETECTING, item[3].getChecked());
 		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_CARELESSCLEANUP, SmellSettings.ATTRIBUTE_ISDETECTING, item[4].getChecked());
-		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_OVERLOGGING, SmellSettings.ATTRIBUTE_ISDETECTING, item[5].getChecked());
-		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_EXCEPTIONTHROWNFROMFINALLYBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, item[6].getChecked());
+		smellSettings.setSmellTypeAttribute(SmellSettings.SMELL_EXCEPTIONTHROWNFROMFINALLYBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, item[5].getChecked());
 
 		smellSettings.setPreferenceAttribute(SmellSettings.PRE_SHOWRLANNOTATIONWARNING, SmellSettings.ATTRIBUTE_ENABLE, preferenceList[0]);
 		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);

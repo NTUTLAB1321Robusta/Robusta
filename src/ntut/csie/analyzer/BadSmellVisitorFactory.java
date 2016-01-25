@@ -5,7 +5,6 @@ import ntut.csie.analyzer.careless.CarelessCleanupVisitor;
 import ntut.csie.analyzer.dummy.DummyHandlerVisitor;
 import ntut.csie.analyzer.empty.EmptyCatchBlockVisitor;
 import ntut.csie.analyzer.nested.NestedTryStatementVisitor;
-import ntut.csie.analyzer.over.OverLoggingVisitor;
 import ntut.csie.analyzer.thrown.ExceptionThrownFromFinallyBlockVisitor;
 import ntut.csie.analyzer.unprotected.UnprotectedMainProgramVisitor;
 import ntut.csie.csdet.preference.SmellSettings;
@@ -23,8 +22,6 @@ public class BadSmellVisitorFactory {
 			return new NestedTryStatementVisitor(root);
 		else if (smellType.equals(SmellSettings.SMELL_UNPROTECTEDMAINPROGRAM))
 			return new UnprotectedMainProgramVisitor(root);
-		else if (smellType.equals(SmellSettings.SMELL_OVERLOGGING))
-			return new OverLoggingVisitor(root);
 		else if (smellType.equals(SmellSettings.SMELL_CARELESSCLEANUP))
 			return new CarelessCleanupVisitor(root, detectCCOutsideTryStatement);
 		else if (smellType

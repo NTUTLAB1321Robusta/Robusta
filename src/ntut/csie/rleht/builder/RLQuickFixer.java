@@ -77,8 +77,6 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				markerList.add(new MoveCodeIntoBigOuterTryQuickFix(UMEncloseAllStatementInTryRefactoringDescription));
 			} else if(problem.equals(RLMarkerAttribute.CS_CARELESS_CLEANUP)){
 				// not going to provide resolution for now.
-			} else if(problem.equals(RLMarkerAttribute.CS_OVER_LOGGING)){
-				// not going to provide resolution for now.
 			} else if(problem.equals(RLMarkerAttribute.CS_EXCEPTION_THROWN_FROM_FINALLY_BLOCK)) {
 				boolean isSupportRefactoring = (Boolean)marker.getAttribute(RLMarkerAttribute.RL_INFO_SUPPORT_REFACTORING);
 				if(isSupportRefactoring)
