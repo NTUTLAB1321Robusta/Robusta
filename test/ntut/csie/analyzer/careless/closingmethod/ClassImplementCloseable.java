@@ -10,4 +10,11 @@ public class ClassImplementCloseable implements Closeable {
 		throw new IOException();
 	}
 
+	public void doSomethingWithoutThrowsExceptionOnSignature() {
+
+	}
+
+	public void doSomethingWhichThrowsExceptionOnSignature() throws IOException {
+		throw new IOException();
+	}
 }

@@ -29,7 +29,7 @@ public class CarelessCleanupVisitor extends AbstractBadSmellVisitor {
 	public boolean visit(MethodDeclaration node) {
 		// Get all close statements
 		List<MethodInvocation> closeInvocations = collectCloseStamentNode(node);
-
+		Closenumber.closeNum = Closenumber.closeNum + closeInvocations.size();
 		// User can decide whether to check or not to check the close invocations which are not in a try statement
 		if (isOnlyDetectingInTry) {
 			removeCloseInvocationNotInTry(closeInvocations);

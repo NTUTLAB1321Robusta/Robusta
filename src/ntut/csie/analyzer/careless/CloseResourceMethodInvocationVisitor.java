@@ -8,9 +8,11 @@ import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.util.NodeUtils;
 
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.IMethodBinding;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SuperMethodInvocation;
@@ -64,20 +66,26 @@ public class CloseResourceMethodInvocationVisitor extends ASTVisitor {
 		}
 
 		if (userDefinedMethodAnalyzer.getEnable()) {
-			defaultResult = isNodeACloseCodeAndImplementedCloseable(node);
+			defaultResult = isNodeACloseCodeAndImplementedCloseable(node) && !isExpressionOfCloseCodeAMethodInvocation(node);
 		}
 
 		return (userDefinedLibResult || userDefinedResult
 				|| userDefinedExtraRule || defaultResult);
 	}
 
+	private static boolean isExpressionOfCloseCodeAMethodInvocation(MethodInvocation node) {
+		if(node.getExpression().getNodeType() == ASTNode.METHOD_INVOCATION){
+			return true;
+		}
+		return false;
+	}
+
 	/**
 	 * If this node implemented Closeable and named "close", return true.
 	 * Otherwise, return false.
 	 */
-	private static boolean isNodeACloseCodeAndImplementedCloseable(
-			MethodInvocation node) {
-		
+	private static boolean isNodeACloseCodeAndImplementedCloseable(MethodInvocation node) {
+	
 		if(node.resolveMethodBinding() == null){
 			return false;
 		}
@@ -85,6 +93,7 @@ public class CloseResourceMethodInvocationVisitor extends ASTVisitor {
 		return isSimpleNameClose(node.getName())
 				&& isIMethodBindingImplementedCloseable(node
 						.resolveMethodBinding());
+		/*取得close invocation之後，把invocation的expression記錄下來，用來當作往回比對掃終點的依據*/
 	}
 
 	/**
@@ -92,11 +101,8 @@ public class CloseResourceMethodInvocationVisitor extends ASTVisitor {
 	 * Otherwise, return false.
 	 * // TODO Hasn't been implemented
 	 */
-	private static boolean isNodeACloseCodeAndImplementedCloseable(
-			SuperMethodInvocation node) {
-		return isSimpleNameClose(node.getName())
-				&& isIMethodBindingImplementedCloseable(node
-						.resolveMethodBinding());
+	private static boolean isNodeACloseCodeAndImplementedCloseable(SuperMethodInvocation node) {
+		return isSimpleNameClose(node.getName()) && isIMethodBindingImplementedCloseable(node.resolveMethodBinding());
 	}
 
 	private static boolean isSimpleNameClose(SimpleName name) {

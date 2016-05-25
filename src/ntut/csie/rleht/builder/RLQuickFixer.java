@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import ntut.csie.aspect.AddAspectsMarkerResoluation;
 import ntut.csie.csdet.refactor.NTMarkerResolution;
 import ntut.csie.csdet.refactor.RethrowUncheckExAction;
 import ntut.csie.rleht.common.RLUtils;
@@ -70,6 +71,7 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 					markerList.add(new RefineRuntimeExceptionQuickFix(DHThrowRuntimeExceptionQuickFixDescription));
 					markerList.add(new RethrowUncheckExAction(DHBThrowCheckedExceptionQuickFixDescription));
 					markerList.add(new ThrowCheckedExceptionQuickFix(DHBThrowUncheckedExceptionRefactoringDescription));
+					markerList.add(new AddAspectsMarkerResoluation("add Adspect"));
 				}
 			} else if(problem.equals(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT)) {
 				markerList.add(new NTMarkerResolution(NTExtractMethodRefactoringDescription));
