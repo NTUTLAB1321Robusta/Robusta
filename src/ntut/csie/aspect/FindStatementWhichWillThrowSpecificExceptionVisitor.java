@@ -3,6 +3,7 @@ package ntut.csie.aspect;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Stack;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
@@ -23,8 +24,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 public class FindStatementWhichWillThrowSpecificExceptionVisitor extends
 		ASTVisitor {
 	private String exceptionType = "";
-	private MethodInvocation methodInvocation;
-
+	Stack<MethodInvocation> methodInvocations = new Stack<MethodInvocation>();
 	public FindStatementWhichWillThrowSpecificExceptionVisitor(String exception) {
 		exceptionType = exception;
 	}
@@ -39,14 +39,17 @@ public class FindStatementWhichWillThrowSpecificExceptionVisitor extends
 		}
 		for (ITypeBinding exception : exceptions) {
 			if (exception.toString().contains(exceptionType)) {
-				methodInvocation = invocation;
-				return false;
+				methodInvocations.push(invocation);
 			}
 		}
 		return true;
 	}
 	
 	public MethodInvocation getMethodInvocationWhichWiThrowException(){
-		return methodInvocation;
+		if(methodInvocations.empty()){
+			return null;
+		}else{
+			return methodInvocations.pop();
+		}
 	}
 }
