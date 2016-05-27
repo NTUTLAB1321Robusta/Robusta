@@ -1,33 +1,29 @@
 package ntut.csie.aspect;
 
-import static org.junit.Assert.*;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Map;
 
 import ntut.csie.analyzer.ASTMethodCollector;
-import ntut.csie.analyzer.BadSmellVisitorFactory;
-import ntut.csie.analyzer.SuppressWarningVisitor;
 import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
-import ntut.csie.analyzer.careless.CarelessCleanupDefinitionExample;
-import ntut.csie.analyzer.careless.ClosingResourceBeginningPositionFinder;
 import ntut.csie.analyzer.dummy.DummyHandlerVisitor;
 import ntut.csie.csdet.data.MarkerInfo;
-import ntut.csie.csdet.data.SSMessage;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.ASTNodeFinder;
+import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.testutility.TestEnvironmentBuilder;
-import ntut.csie.util.AbstractBadSmellVisitor;
+import ntut.csie.util.PathUtils;
 
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.TryStatement;
@@ -43,7 +39,7 @@ public class AddAspectsMarkerResoluationTest {
 	private SmellSettings smellSettings;
 	private List<MarkerInfo> markerInfos;
 	private AddAspectsMarkerResoluation resoluation;
-
+	private Path addAspectsMarkerResoluationExamplePath;
 	@Before
 	public void setUp() throws Exception {
 		setUpTestingEnvironment();
@@ -51,6 +47,10 @@ public class AddAspectsMarkerResoluationTest {
 		markerInfos = visitCompilationAndGetSmellList();
 		setUpMethodIndexOfMarkerInfo();
 		resoluation = new AddAspectsMarkerResoluation("test");
+		addAspectsMarkerResoluationExamplePath = new Path("AddAspectsMarkerResoluationExampleProject" + "/"
+				+ JavaProjectMaker.FOLDERNAME_SOURCE + "/"
+				+ PathUtils.dot2slash(AddAspectsMarkerResoluationExample.class.getName())
+				+ JavaProjectMaker.JAVA_FILE_EXTENSION);
 	}
 
 	private void setUpTestingEnvironment() throws Exception, JavaModelException {
@@ -88,7 +88,7 @@ public class AddAspectsMarkerResoluationTest {
 	@Test
 	public void testGetFirstMethodDeclaration() {
 		int theFirstMarkerInfo = 0;
-		MockMarker marker = getSpecificMarkerByMarkerInfoIndex(theFirstMarkerInfo);
+		IMarker marker = getSpecificMarkerByMarkerInfoIndex(theFirstMarkerInfo);
 		Method method = getPrivateMethodWhichInputIsInterface(resoluation,
 				"getMethodDeclaration", marker);
 		try {
@@ -109,7 +109,7 @@ public class AddAspectsMarkerResoluationTest {
 	@Test
 	public void testGetThirdMethodDeclaration() {
 		int thethirdMarkerInfo = 2;
-		MockMarker marker = getSpecificMarkerByMarkerInfoIndex(thethirdMarkerInfo);
+		IMarker marker = getSpecificMarkerByMarkerInfoIndex(thethirdMarkerInfo);
 		Method method = getPrivateMethodWhichInputIsInterface(resoluation,
 				"getMethodDeclaration", marker);
 		try {
@@ -130,7 +130,7 @@ public class AddAspectsMarkerResoluationTest {
 	@Test
 	public void testGetLastMethodDeclaration() {
 		int theLastMarkerInfo = 4;
-		MockMarker marker = getSpecificMarkerByMarkerInfoIndex(theLastMarkerInfo);
+		IMarker marker = getSpecificMarkerByMarkerInfoIndex(theLastMarkerInfo);
 		Method method = getPrivateMethodWhichInputIsInterface(resoluation,
 				"getMethodDeclaration", marker);
 		try {
@@ -171,7 +171,7 @@ public class AddAspectsMarkerResoluationTest {
 	@Test
 	public void testGetFirstBadSmellLineNumberFromMarker() {
 		int theFirstMarkerInfo = 0;
-		MockMarker marker = getSpecificMarkerByMarkerInfoIndex(theFirstMarkerInfo);
+		IMarker marker = getSpecificMarkerByMarkerInfoIndex(theFirstMarkerInfo);
 		Method method = getPrivateMethodWhichInputIsInterface(resoluation,
 				"getBadSmellLineNumberFromMarker", marker);
 		try {
@@ -189,7 +189,7 @@ public class AddAspectsMarkerResoluationTest {
 	@Test
 	public void testGetThirdBadSmellLineNumberFromMarker() {
 		int theThirdMarkerInfo = 2;
-		MockMarker marker = getSpecificMarkerByMarkerInfoIndex(theThirdMarkerInfo);
+		IMarker marker = getSpecificMarkerByMarkerInfoIndex(theThirdMarkerInfo);
 		Method method = getPrivateMethodWhichInputIsInterface(resoluation,
 				"getBadSmellLineNumberFromMarker", marker);
 		try {
@@ -207,7 +207,7 @@ public class AddAspectsMarkerResoluationTest {
 	@Test
 	public void testGetLastBadSmellLineNumberFromMarker() {
 		int theLastMarkerInfo = 4;
-		MockMarker marker = getSpecificMarkerByMarkerInfoIndex(theLastMarkerInfo);
+		IMarker marker = getSpecificMarkerByMarkerInfoIndex(theLastMarkerInfo);
 		Method method = getPrivateMethodWhichInputIsInterface(resoluation,
 				"getBadSmellLineNumberFromMarker", marker);
 		try {
@@ -445,18 +445,19 @@ public class AddAspectsMarkerResoluationTest {
 		}
 	}
 
-	private MockMarker getSpecificMarkerByMarkerInfoIndex(int index) {
-		MockMarker marker = new MockMarker();
+	private IMarker getSpecificMarkerByMarkerInfoIndex(int index) {
+		IJavaElement javaElement = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot().getFile(addAspectsMarkerResoluationExamplePath));
+		IMarker tempMarker = null;
 		try {
-			marker.setAttribute(RLMarkerAttribute.RL_METHOD_INDEX,
-					Integer.toString(markerInfos.get(index).getMethodIndex()));
-			marker.setAttribute(IMarker.LINE_NUMBER, new Integer(markerInfos
-					.get(index).getLineNumber()));
+			tempMarker = javaElement.getResource().createMarker("test.test");
+			tempMarker.setAttribute(RLMarkerAttribute.RL_METHOD_INDEX, Integer.toString(markerInfos.get(index).getMethodIndex()));
+			tempMarker.setAttribute(IMarker.LINE_NUMBER, new Integer(markerInfos.get(index).getLineNumber()));
 		} catch (CoreException e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
 			Assert.fail("throw exception");
 		}
-		return marker;
+		return tempMarker;
 	}
 
 	private Method getPrivateMethodWhichInputIsInterface(Object calzz,
