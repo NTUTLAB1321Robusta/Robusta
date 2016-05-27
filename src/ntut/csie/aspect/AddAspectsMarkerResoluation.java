@@ -33,7 +33,7 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 	private String label;
 	private String description = "Add a aspectJ file to expose influence of bad smell!";
 	private QuickFixCore quickFixCore;
-	CompilationUnit compilationUnit;
+	private CompilationUnit compilationUnit;
 
 	public AddAspectsMarkerResoluation(String label) {
 		this.label = label;
@@ -98,6 +98,8 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 		compilationUnit = quickFixCore.getCompilationUnit();
 		return QuickFixUtils.getMethodDeclaration(compilationUnit,Integer.parseInt(methodIdx));
 	}
+	
+	
 
 	private List<TryStatement> getAllTryStatementOfMethodDeclaration(
 			MethodDeclaration methodDeclaration) {
@@ -136,14 +138,16 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 	private String getExceptionTypeOfCatchClauseWhichHasBadSmell(
 			int badSmellLineNumber, List<CatchClause> catchClauses) {
 		for (CatchClause catchBlock : catchClauses) {
-			int catchClauseLineNumber = compilationUnit
-					.getLineNumber(catchBlock.getStartPosition());
-			System.out.println("CatchClauseLineNumber" + catchClauseLineNumber);
+			int catchClauseLineNumber = compilationUnit.getLineNumber(catchBlock.getStartPosition());
 			if (badSmellLineNumber == catchClauseLineNumber) {
 				return catchBlock.getException().getType().toString();
 			}
 		}
 		return null;
+	}
+	
+	public void setCompilationUnitForTesting(CompilationUnit compilationUnit){
+		this.compilationUnit = compilationUnit;
 	}
 
 	private TryStatement getTargetTryStetment(List<TryStatement> tryStatements,

@@ -37,6 +37,7 @@ import ntut.csie.robusta.codegen.refactoring.ExtractMethodAnalyzerTest;
 import ntut.csie.robusta.codegen.refactoring.TEFBExtractMethodRefactoringTest;
 import ntut.csie.util.NodeUtilsTest;
 import ntut.csie.util.RLAnnotationFileUtilTest;
+import ntut.csie.aspect.AddAspectsMarkerResoluationTest;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -91,7 +92,8 @@ import org.junit.runners.Suite;
 	EnableRLAnnotationTest.class,
 	CarelessCleanupDefinitionTest.class,
 	
-	RLAnnotationFileUtilTest.class
+	RLAnnotationFileUtilTest.class,
+	AddAspectsMarkerResoluationTest.class
 })
 public class AllJUnitPluginTests {
 }

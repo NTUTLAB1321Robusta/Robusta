@@ -40,8 +40,9 @@ public class AddAspectsMarkerResoluationTest {
 	private TestEnvironmentBuilder environmentBuilder;
 	private CompilationUnit compilationUnit;
 	private DummyHandlerVisitor adVisitor;
-	SmellSettings smellSettings;
-	List<MarkerInfo> markerInfos;
+	private SmellSettings smellSettings;
+	private List<MarkerInfo> markerInfos;
+	private AddAspectsMarkerResoluation resoluation;
 
 	@Before
 	public void setUp() throws Exception {
@@ -49,6 +50,7 @@ public class AddAspectsMarkerResoluationTest {
 		detectPrintStackTrace();
 		markerInfos = visitCompilationAndGetSmellList();
 		setUpMethodIndexOfMarkerInfo();
+		resoluation = new AddAspectsMarkerResoluation("test");
 	}
 
 	private void setUpTestingEnvironment() throws Exception, JavaModelException {
@@ -87,8 +89,6 @@ public class AddAspectsMarkerResoluationTest {
 	public void testGetFirstMethodDeclaration() {
 		int theFirstMarkerInfo = 0;
 		MockMarker marker = getSpecificMarkerByMarkerInfoIndex(theFirstMarkerInfo);
-		AddAspectsMarkerResoluation resoluation = new AddAspectsMarkerResoluation(
-				"test");
 		Method method = getPrivateMethodWhichInputIsInterface(resoluation,
 				"getMethodDeclaration", marker);
 		try {
@@ -98,11 +98,11 @@ public class AddAspectsMarkerResoluationTest {
 					"aspectCaseForOneMethodInvocationWhichWillNotThrowIOException",
 					returnValue.getName().toString());
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		}
 	}
 
@@ -110,8 +110,6 @@ public class AddAspectsMarkerResoluationTest {
 	public void testGetThirdMethodDeclaration() {
 		int thethirdMarkerInfo = 2;
 		MockMarker marker = getSpecificMarkerByMarkerInfoIndex(thethirdMarkerInfo);
-		AddAspectsMarkerResoluation resoluation = new AddAspectsMarkerResoluation(
-				"test");
 		Method method = getPrivateMethodWhichInputIsInterface(resoluation,
 				"getMethodDeclaration", marker);
 		try {
@@ -121,11 +119,11 @@ public class AddAspectsMarkerResoluationTest {
 					"aspectCaseForTwoMethodInvocationAndLastInvocationWillThrowIOException",
 					returnValue.getName().toString());
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		}
 	}
 
@@ -133,8 +131,6 @@ public class AddAspectsMarkerResoluationTest {
 	public void testGetLastMethodDeclaration() {
 		int theLastMarkerInfo = 4;
 		MockMarker marker = getSpecificMarkerByMarkerInfoIndex(theLastMarkerInfo);
-		AddAspectsMarkerResoluation resoluation = new AddAspectsMarkerResoluation(
-				"test");
 		Method method = getPrivateMethodWhichInputIsInterface(resoluation,
 				"getMethodDeclaration", marker);
 		try {
@@ -144,11 +140,11 @@ public class AddAspectsMarkerResoluationTest {
 					"aspectCaseForTwoMethodInvocationAndTheFirstInvocationWillThrowIOException",
 					returnValue.getName().toString());
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		}
 	}
 
@@ -157,8 +153,6 @@ public class AddAspectsMarkerResoluationTest {
 		MethodDeclaration methodDec = ASTNodeFinder
 				.getMethodDeclarationNodeByName(compilationUnit,
 						"testDataForGetAllTryStatementOfMethodDeclaration");
-		AddAspectsMarkerResoluation resoluation = new AddAspectsMarkerResoluation(
-				"test");
 		Method method = getPrivateMethodWhichInputIsObject(resoluation,
 				"getAllTryStatementOfMethodDeclaration", methodDec);
 		try {
@@ -166,11 +160,11 @@ public class AddAspectsMarkerResoluationTest {
 					resoluation, methodDec);
 			Assert.assertEquals(3, List.size());
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		}
 	}
 
@@ -178,19 +172,17 @@ public class AddAspectsMarkerResoluationTest {
 	public void testGetFirstBadSmellLineNumberFromMarker() {
 		int theFirstMarkerInfo = 0;
 		MockMarker marker = getSpecificMarkerByMarkerInfoIndex(theFirstMarkerInfo);
-		AddAspectsMarkerResoluation resoluation = new AddAspectsMarkerResoluation(
-				"test");
 		Method method = getPrivateMethodWhichInputIsInterface(resoluation,
 				"getBadSmellLineNumberFromMarker", marker);
 		try {
 			int returnValue = (Integer) method.invoke(resoluation, marker);
 			Assert.assertEquals(13, returnValue);
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		}
 	}
 
@@ -198,19 +190,17 @@ public class AddAspectsMarkerResoluationTest {
 	public void testGetThirdBadSmellLineNumberFromMarker() {
 		int theThirdMarkerInfo = 2;
 		MockMarker marker = getSpecificMarkerByMarkerInfoIndex(theThirdMarkerInfo);
-		AddAspectsMarkerResoluation resoluation = new AddAspectsMarkerResoluation(
-				"test");
 		Method method = getPrivateMethodWhichInputIsInterface(resoluation,
 				"getBadSmellLineNumberFromMarker", marker);
 		try {
 			int returnValue = (Integer) method.invoke(resoluation, marker);
 			Assert.assertEquals(33, returnValue);
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		}
 	}
 
@@ -218,19 +208,17 @@ public class AddAspectsMarkerResoluationTest {
 	public void testGetLastBadSmellLineNumberFromMarker() {
 		int theLastMarkerInfo = 4;
 		MockMarker marker = getSpecificMarkerByMarkerInfoIndex(theLastMarkerInfo);
-		AddAspectsMarkerResoluation resoluation = new AddAspectsMarkerResoluation(
-				"test");
 		Method method = getPrivateMethodWhichInputIsInterface(resoluation,
 				"getBadSmellLineNumberFromMarker", marker);
 		try {
 			int returnValue = (Integer) method.invoke(resoluation, marker);
 			Assert.assertEquals(55, returnValue);
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		}
 	}
 
@@ -240,8 +228,6 @@ public class AddAspectsMarkerResoluationTest {
 				.getMethodInvocationByMethodNameAndCode(compilationUnit,
 						"testDataForgetMethodReturnType",
 						"a.getTestObjectBWillThrowIOException()").get(0);
-		AddAspectsMarkerResoluation resoluation = new AddAspectsMarkerResoluation(
-				"test");
 		Method method = getPrivateMethodWhichInputIsObject(resoluation,
 				"getMethodReturnType", methodInv);
 		try {
@@ -249,11 +235,11 @@ public class AddAspectsMarkerResoluationTest {
 			Assert.assertEquals("TestObjectBForAddAspectsMarkerResoluation",
 					returnValue);
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		}
 	}
 
@@ -265,19 +251,17 @@ public class AddAspectsMarkerResoluationTest {
 						"aspectCaseForTwoMethodInvocationAndTheFirstInvocationWillThrowIOException",
 						"a.getTestObjectBWillThrowIOException().doSomethingWillNotThrowException()")
 				.get(0);
-		AddAspectsMarkerResoluation resoluation = new AddAspectsMarkerResoluation(
-				"test");
 		Method method = getPrivateMethodWhichInputIsObject(resoluation,
 				"getMethodReturnType", methodInv);
 		try {
 			String returnValue = (String) method.invoke(resoluation, methodInv);
 			Assert.assertEquals("void", returnValue);
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		}
 	}
 
@@ -289,8 +273,6 @@ public class AddAspectsMarkerResoluationTest {
 						"aspectCaseForTwoMethodInvocationAndTheFirstInvocationWillThrowIOException")
 				.get(0);
 		String exceptionType = "IOException";
-		AddAspectsMarkerResoluation resoluation = new AddAspectsMarkerResoluation(
-				"test");
 		Method method = getPrivateMethodWhichTwoInputIsObject(
 				resoluation,
 				"getTheFirstMethodInvocationWhichWillThrowTheSameExceptionAsInput",
@@ -302,11 +284,11 @@ public class AddAspectsMarkerResoluationTest {
 					returnValue.getExpression() + "." + returnValue.getName()
 							+ "()");
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		}
 	}
 
@@ -318,8 +300,6 @@ public class AddAspectsMarkerResoluationTest {
 						"aspectCaseForTwoMethodInvocationAndLastInvocationWillThrowIOException")
 				.get(0);
 		String exceptionType = "IOException";
-		AddAspectsMarkerResoluation resoluation = new AddAspectsMarkerResoluation(
-				"test");
 		Method method = getPrivateMethodWhichTwoInputIsObject(
 				resoluation,
 				"getTheFirstMethodInvocationWhichWillThrowTheSameExceptionAsInput",
@@ -332,11 +312,11 @@ public class AddAspectsMarkerResoluationTest {
 					returnValue.getExpression() + "." + returnValue.getName()
 							+ "()");
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		}
 	}
 
@@ -348,8 +328,6 @@ public class AddAspectsMarkerResoluationTest {
 						"aspectCaseForTwoMethodInvocationAndTheTwoInvocationWillThrowIOException")
 				.get(0);
 		String exceptionType = "IOException";
-		AddAspectsMarkerResoluation resoluation = new AddAspectsMarkerResoluation(
-				"test");
 		Method method = getPrivateMethodWhichTwoInputIsObject(
 				resoluation,
 				"getTheFirstMethodInvocationWhichWillThrowTheSameExceptionAsInput",
@@ -361,11 +339,11 @@ public class AddAspectsMarkerResoluationTest {
 					returnValue.getExpression() + "." + returnValue.getName()
 							+ "()");
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		}
 	}
 
@@ -377,8 +355,6 @@ public class AddAspectsMarkerResoluationTest {
 						"aspectCaseForTwoMethodInvocationAndLastInvocationWillNotThrowIOException")
 				.get(0);
 		String exceptionType = "IOException";
-		AddAspectsMarkerResoluation resoluation = new AddAspectsMarkerResoluation(
-				"test");
 		Method method = getPrivateMethodWhichTwoInputIsObject(
 				resoluation,
 				"getTheFirstMethodInvocationWhichWillThrowTheSameExceptionAsInput",
@@ -388,45 +364,84 @@ public class AddAspectsMarkerResoluationTest {
 					resoluation, exceptionType, tryStatement);
 			Assert.assertNull(returnValue);
 		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		} catch (InvocationTargetException e) {
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		}
 	}
 
+	//this test case will cause eclipse UI and core throw exception
 	@Test
 	public void testGetExceptionTypeOfCatchClauseWhichHasBadSmell() {
-		Integer badSmellLineNumber = new Integer(13);
+		int badSmellLineNumber = 13;
 		TryStatement tryStatement = ASTNodeFinder
 				.getTryStatementNodeListByMethodDeclarationName(
 						compilationUnit,
-						"aspectCaseForTwoMethodInvocationAndLastInvocationWillNotThrowIOException").get(0);
+						"aspectCaseForOneMethodInvocationWhichWillNotThrowIOException").get(0);
 		List<CatchClause> catchClauses = (List<CatchClause>)tryStatement.catchClauses();
-		AddAspectsMarkerResoluation resoluation = new AddAspectsMarkerResoluation("test");
 		Method method = null;
 		try {
 			method = AddAspectsMarkerResoluation.class.getDeclaredMethod("getExceptionTypeOfCatchClauseWhichHasBadSmell",
-					Integer.class, catchClauses.getClass());
+					Integer.TYPE,  List.class);
 		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			Assert.fail(e.getMessage());
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			Assert.fail(e.getMessage());
 		}
 		method.setAccessible(true);
+		resoluation.setCompilationUnitForTesting(compilationUnit);		
 		try {
 			String returnValue = (String) method.invoke(
 					resoluation, badSmellLineNumber, catchClauses);
 			Assert.assertEquals("IOException", returnValue);
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
+			Assert.fail("throw exception");
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
+			Assert.fail("throw exception");
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
+			Assert.fail("throw exception");
+		}
+	}
+	
+	//this test case will cause eclipse UI and core throw exception
+	@Test
+	public void testGetTargetTryStetment() {
+		int badSmellLineNumber = 79;
+		List<TryStatement> tryStatements = ASTNodeFinder.getTryStatementNodeListByMethodDeclarationName(compilationUnit, "testDataForGetAllTryStatementOfMethodDeclaration");
+		Method method = null;
+		try {
+			method = AddAspectsMarkerResoluation.class.getDeclaredMethod("getTargetTryStetment",
+					  List.class, Integer.TYPE);
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+			Assert.fail(e.getMessage());
+		} catch (SecurityException e) {
+			e.printStackTrace();
+			Assert.fail(e.getMessage());
+		}
+		method.setAccessible(true);
+		resoluation.setCompilationUnitForTesting(compilationUnit);		
+		try {
+			TryStatement returnValue = (TryStatement) method.invoke(
+					resoluation, tryStatements, badSmellLineNumber);
+			int returnLineNumber = compilationUnit.getLineNumber(returnValue.getStartPosition());
+			Assert.assertEquals(77, returnLineNumber);
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
 		}
 	}
 
@@ -439,7 +454,7 @@ public class AddAspectsMarkerResoluationTest {
 					.get(index).getLineNumber()));
 		} catch (CoreException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		}
 		return marker;
 	}
@@ -451,11 +466,9 @@ public class AddAspectsMarkerResoluationTest {
 			method = calzz.getClass().getDeclaredMethod(methodName,
 					parameter.getClass().getInterfaces());
 		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		}
 		method.setAccessible(true);
 		return method;
@@ -468,11 +481,9 @@ public class AddAspectsMarkerResoluationTest {
 			method = calzz.getClass().getDeclaredMethod(methodName,
 					parameter.getClass());
 		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		}
 		method.setAccessible(true);
 		return method;
@@ -485,11 +496,9 @@ public class AddAspectsMarkerResoluationTest {
 			method = calzz.getClass().getDeclaredMethod(methodName,
 					firstParameter.getClass(), secondParameter.getClass());
 		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Assert.fail("throw exception");
 		}
 		method.setAccessible(true);
 		return method;

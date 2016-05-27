@@ -66,19 +66,20 @@ public class CloseResourceMethodInvocationVisitor extends ASTVisitor {
 		}
 
 		if (userDefinedMethodAnalyzer.getEnable()) {
-			defaultResult = isNodeACloseCodeAndImplementedCloseable(node) && !isExpressionOfCloseCodeAMethodInvocation(node);
+			defaultResult = isNodeACloseCodeAndImplementedCloseable(node);
+//			defaultResult = isNodeACloseCodeAndImplementedCloseable(node) && !isExpressionOfCloseCodeAMethodInvocation(node);
 		}
 
 		return (userDefinedLibResult || userDefinedResult
 				|| userDefinedExtraRule || defaultResult);
 	}
-
-	private static boolean isExpressionOfCloseCodeAMethodInvocation(MethodInvocation node) {
-		if(node.getExpression().getNodeType() == ASTNode.METHOD_INVOCATION){
-			return true;
-		}
-		return false;
-	}
+//this method will ignore a.b().close() as careless cleanup
+//	private static boolean isExpressionOfCloseCodeAMethodInvocation(MethodInvocation node) {
+//		if(node.getExpression().getNodeType() == ASTNode.METHOD_INVOCATION){
+//			return true;
+//		}
+//		return false;
+//	}
 
 	/**
 	 * If this node implemented Closeable and named "close", return true.
