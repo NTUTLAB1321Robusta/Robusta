@@ -6,7 +6,7 @@ import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.SimpleName;
 
-public class FindTheFirstExpressionOfMethodInvocationVisitor extends ASTVisitor {
+public class FindTheFirstExpressionObjectTypeOfMethodInvocationVisitor extends ASTVisitor {
 	
 	SimpleName theFirstExpression = null;
 	@Override
