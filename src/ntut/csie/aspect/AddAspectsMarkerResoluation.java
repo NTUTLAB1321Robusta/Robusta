@@ -1,5 +1,6 @@
 package ntut.csie.aspect;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ntut.csie.rleht.builder.RLMarkerAttribute;
@@ -37,6 +38,7 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 	private IProject project;
 	private IJavaProject javaproject;
 	public static final String ASPECTJ_FILE_EXTENSION = ".java";
+	public List<String> importObjects = new ArrayList<String>();
 
 	public AddAspectsMarkerResoluation(String label) {
 		this.label = label;
@@ -107,7 +109,9 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 		
 		System.out.println("aspectJFileConetent" + aspectJFileConetent);
 		
-		
+		for(String a :importObjects){
+			System.out.println(a);
+		}
 		
 		
 		project = marker.getResource().getProject();
@@ -177,7 +181,10 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 			MethodInvocation methodWhichWillThrowSpecificException) {
 		FindTheFirstExpressionObjectTypeOfMethodInvocationVisitor theFirstExpressionVisitor = new FindTheFirstExpressionObjectTypeOfMethodInvocationVisitor();
 		methodWhichWillThrowSpecificException.accept(theFirstExpressionVisitor);
-		return theFirstExpressionVisitor.getTheFirstExpression();
+		String objectPackageName = theFirstExpressionVisitor.getTheFirstExpression().resolveTypeBinding().getPackage().toString().replace("package", "");
+		String objectName = theFirstExpressionVisitor.getTheFirstExpression().resolveTypeBinding().getName();
+		importObjects.add(objectPackageName+"."+objectName);
+		return objectName;
 	}
 
 	private String getMethodDeclarationName(MethodDeclaration method) {
@@ -185,12 +192,17 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 	}
 
 	private String getMethodDeclarationReturnType(MethodDeclaration method) {
-		return method.getName().resolveTypeBinding().toString();
+		String objectPackageName = method.getName().resolveTypeBinding().getPackage().toString().replace("package", "");
+		String objectName = method.getName().resolveTypeBinding().getName();
+		importObjects.add(objectPackageName+"."+objectName);
+		return objectName;
 	}
 
 	private String getClassNameOfMethodDeclaration(MethodDeclaration method) {
-		return ((TypeDeclaration) method.getParent()).resolveBinding()
-				.getName().toString();
+		TypeDeclaration classOfMethod = (TypeDeclaration) method.getParent();
+		String className = classOfMethod.resolveBinding().getName().toString();
+		importObjects.add(classOfMethod.getName().resolveTypeBinding().getPackage().toString().replace("package", "")+"."+className);
+		return className;
 	}
 
 	private MethodDeclaration getMethodDeclarationWhichHasBadSmell(

@@ -20,7 +20,7 @@ public class FindTheFirstExpressionObjectTypeOfMethodInvocationVisitor extends A
 		}
 	}
 	
-	public String getTheFirstExpression(){
-		return theFirstExpression.resolveTypeBinding().getName().toString();
+	public SimpleName getTheFirstExpression(){
+		return theFirstExpression;
 	}
 }
