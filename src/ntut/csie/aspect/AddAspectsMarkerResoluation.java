@@ -11,16 +11,23 @@ import java.util.List;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.robusta.codegen.QuickFixCore;
 import ntut.csie.robusta.codegen.QuickFixUtils;
+import ntut.csie.util.PopupDialog;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
@@ -65,8 +72,10 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 		MethodDeclaration methodDeclarationWhichHasBadSmell = getMethodDeclarationWhichHasBadSmell(marker);
 		int badSmellLineNumber = getBadSmellLineNumberFromMarker(marker);
 		List<TryStatement> tryStatements = getAllTryStatementOfMethodDeclaration(methodDeclarationWhichHasBadSmell);
-		TryStatement tryStatementWillBeInject = getTargetTryStetment(tryStatements, badSmellLineNumber);
-		List<CatchClause> catchClauses = tryStatementWillBeInject.catchClauses();
+		TryStatement tryStatementWillBeInject = getTargetTryStetment(
+				tryStatements, badSmellLineNumber);
+		List<CatchClause> catchClauses = tryStatementWillBeInject
+				.catchClauses();
 		String exceptionType = getExceptionTypeOfCatchClauseWhichHasBadSmell(
 				badSmellLineNumber, catchClauses);
 		MethodInvocation methodWhichWillThrowSpecificException = getTheFirstMethodInvocationWhichWillThrowTheSameExceptionAsInput(
@@ -75,7 +84,8 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 		String objectTypeOfInjectedMethod = getTheObjectTypeOfMethodInvocation(methodWhichWillThrowSpecificException);
 		String badSmellType = "";
 		try {
-			badSmellType = (String) marker.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
+			badSmellType = (String) marker
+					.getAttribute(RLMarkerAttribute.RL_MARKER_TYPE);
 		} catch (CoreException e) {
 			e.printStackTrace();
 			throw new RuntimeException();
@@ -83,31 +93,37 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 		badSmellType = badSmellType.replace("_", "");
 
 		String className = getClassNameOfMethodDeclaration(methodDeclarationWhichHasBadSmell);
-		String nameOfMethodWhichHasBadSmell = methodDeclarationWhichHasBadSmell.getName().toString();
+		String nameOfMethodWhichHasBadSmell = methodDeclarationWhichHasBadSmell
+				.getName().toString();
 		String returnTypeOfMethodWhichHasBadSmell = getMethodDeclarationReturnType(methodDeclarationWhichHasBadSmell);
-		
+
 		String injectedMethodName = methodWhichWillThrowSpecificException
 				.getName().toString();
-		String packageChain = "ntut.csie.aspect."+ badSmellType;
+		String packageChain = "ntut.csie.aspect." + badSmellType;
 		project = marker.getResource().getProject();
 		javaproject = JavaCore.create(project);
 		IPackageFragmentRoot root = getSourceFolderOfCurrentProject();
 		createPackage(packageChain, root);
-		String fileContent = buildUpAspectsFile(exceptionType, injectedMethodReturnType,
-				objectTypeOfInjectedMethod, className,
-				nameOfMethodWhichHasBadSmell,
-				returnTypeOfMethodWhichHasBadSmell, injectedMethodName, badSmellType, packageChain);
-		String projectPath = ResourcesPlugin.getWorkspace().getRoot().getLocation().toOSString();
+		String fileContent = buildUpAspectsFile(exceptionType,
+				injectedMethodReturnType, objectTypeOfInjectedMethod,
+				className, nameOfMethodWhichHasBadSmell,
+				returnTypeOfMethodWhichHasBadSmell, injectedMethodName,
+				badSmellType, packageChain);
+		String projectPath = ResourcesPlugin.getWorkspace().getRoot()
+				.getLocation().toOSString();
 		String FilePath = root.getPath().makeAbsolute().toOSString();
-		String fileCreateFile = projectPath+"\\"+FilePath+"\\ntut\\csie\\aspect"+"\\"+badSmellType+"\\"+className+"Aspect.aj";
+		String fileCreateFile = projectPath + "\\" + FilePath
+				+ "\\ntut\\csie\\aspect" + "\\" + badSmellType + "\\"
+				+ className + "Aspect.aj";
 		WriteFile(fileContent, fileCreateFile);
 		refreshPackageExplorer(fileCreateFile);
+		refreshProject();
 	}
 
 	private void refreshPackageExplorer(String fileCreateFile) {
-		IWorkspace workspace= ResourcesPlugin.getWorkspace();
-		IPath location= Path.fromOSString(fileCreateFile);
-		IFile file= workspace.getRoot().getFileForLocation(location);
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IPath location = Path.fromOSString(fileCreateFile);
+		IFile file = workspace.getRoot().getFileForLocation(location);
 		try {
 			file.refreshLocal(IResource.DEPTH_ZERO, null);
 		} catch (CoreException e) {
@@ -115,15 +131,47 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 			e.printStackTrace();
 		}
 	}
+
+	private void refreshProject() {
+		if (project != null) {
+			// save project to a final variable so that it can be used in Job,
+			// it should be safe for that project should not change over time
+			final IProject project2 = project;
+			Job job = new Job("Refreshing Project") {
+				protected IStatus run(IProgressMonitor monitor) {
+					refreshProject(project2);
+					return Status.OK_STATUS;
+				}
+			};
+			job.setPriority(Job.SHORT);
+			job.schedule();
+		}
+	}
 	
+	private void showOneButtonPopUpMenu(final String title, final String msg) {
+		PopupDialog.showDialog(title, msg);
+	}
+
+	private void refreshProject(IProject project) {
+		// build project to refresh
+		try {
+			project.build(IncrementalProjectBuilder.FULL_BUILD,
+					new NullProgressMonitor());
+		} catch (CoreException e) {
+			showOneButtonPopUpMenu("Refresh failed",
+					"Fail to refresh your project, please do it manually");
+		}
+	}
+
 	private String buildUpAspectsFile(String exceptionType,
 			String injectedMethodReturnType, String objectTypeOfInjectedMethod,
 			String className, String nameOfMethodWhichHasBadSmell,
-			String returnTypeOfMethodWhichHasBadSmell, String injectedMethodName, String badSmellType,
-			String packageChain) {
+			String returnTypeOfMethodWhichHasBadSmell,
+			String injectedMethodName, String badSmellType, String packageChain) {
 		String space = " ";
 		String and = "&&";
-		String aspectJClassTitle = "\r\n"+"public aspect " + className + "Aspect {";
+		String aspectJClassTitle = "\r\n" + "public aspect " + className
+				+ "Aspect {";
 		String pointCut = "pointcut find" + injectedMethodName + "("
 				+ objectTypeOfInjectedMethod + " object" + ") : ";
 		String call = "call" + "(" + injectedMethodReturnType + space
@@ -147,11 +195,12 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 		for (String importObj : importObjects) {
 			imports = imports + "import" + importObj + ";\r\n";
 		}
-		
-		String aspectJFileConetent = "package "+packageChain +";"+ "\r\n\r\n" + imports + aspectJClassTitle + "\r\n"
-				+ "\t" + pointCut + call + "\r\n" + "\t" + and + target
-				+ "\r\n" + "\t" + and + withInCode + "\r\n\r\n" + "\t" + around
-				+ "\r\n" + aroundContent;
+
+		String aspectJFileConetent = "package " + packageChain + ";"
+				+ "\r\n\r\n" + imports + aspectJClassTitle + "\r\n" + "\t"
+				+ pointCut + call + "\r\n" + "\t" + and + target + "\r\n"
+				+ "\t" + and + withInCode + "\r\n\r\n" + "\t" + around + "\r\n"
+				+ aroundContent;
 
 		System.out.println("aspectJFileConetent" + aspectJFileConetent);
 		return aspectJFileConetent;
@@ -161,7 +210,8 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 		BufferedWriter writer = null;
 		try {
 			File file = new File(path);
-			writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, false), "utf8"));
+			writer = new BufferedWriter(new OutputStreamWriter(
+					new FileOutputStream(file, false), "utf8"));
 			writer.write(str);
 			writer.newLine();
 		} catch (IOException e) {
@@ -183,13 +233,13 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 
 	private void ignore() {
 	}
-	
-	private IPackageFragmentRoot getSourceFolderOfCurrentProject(){
+
+	private IPackageFragmentRoot getSourceFolderOfCurrentProject() {
 		IPackageFragmentRoot[] roots;
 		try {
 			roots = javaproject.getAllPackageFragmentRoots();
-			for(IPackageFragmentRoot root : roots){
-				if(root.getKind() == IPackageFragmentRoot.K_SOURCE){
+			for (IPackageFragmentRoot root : roots) {
+				if (root.getKind() == IPackageFragmentRoot.K_SOURCE) {
 					return root;
 				}
 			}
@@ -201,8 +251,8 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 	}
 
 	// packageName could be in format like a.b.c.d
-	private void createPackage(String packageName, IPackageFragmentRoot root)  {
-		 try {
+	private void createPackage(String packageName, IPackageFragmentRoot root) {
+		try {
 			root.createPackageFragment(packageName, false, null);
 		} catch (JavaModelException e) {
 			e.printStackTrace();
@@ -267,7 +317,8 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 	private int getBadSmellLineNumberFromMarker(IMarker marker) {
 		int badSmellLineNumber = 0;
 		try {
-			badSmellLineNumber = (Integer) marker.getAttribute(IMarker.LINE_NUMBER);
+			badSmellLineNumber = (Integer) marker
+					.getAttribute(IMarker.LINE_NUMBER);
 		} catch (CoreException e) {
 			e.printStackTrace();
 			throw new RuntimeException();
@@ -277,7 +328,8 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 
 	private String getMethodReturnType(
 			MethodInvocation methodWhichWillThrowSpecificException) {
-		ITypeBinding returnType = methodWhichWillThrowSpecificException.resolveTypeBinding();
+		ITypeBinding returnType = methodWhichWillThrowSpecificException
+				.resolveTypeBinding();
 		return returnType.getName().toString();
 	}
 
@@ -296,9 +348,12 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 			int catchClauseLineNumber = compilationUnit
 					.getLineNumber(catchBlock.getStartPosition());
 			if (badSmellLineNumber == catchClauseLineNumber) {
-				String objectPackageName = catchBlock.getException().getType().resolveBinding().getPackage().toString().replace("package", "");
-				String objectName = catchBlock.getException().getType().resolveBinding().getName();
-				importObjects.add(objectPackageName+"."+objectName);
+				String objectPackageName = catchBlock.getException().getType()
+						.resolveBinding().getPackage().toString()
+						.replace("package", "");
+				String objectName = catchBlock.getException().getType()
+						.resolveBinding().getName();
+				importObjects.add(objectPackageName + "." + objectName);
 				return catchBlock.getException().getType().toString();
 			}
 		}
