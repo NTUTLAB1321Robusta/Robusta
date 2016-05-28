@@ -90,7 +90,7 @@ public class AddAspectsMarkerResoluationTest {
 		int theFirstMarkerInfo = 0;
 		IMarker marker = getSpecificMarkerByMarkerInfoIndex(theFirstMarkerInfo);
 		Method method = getPrivateMethodWhichInputIsInterface(resoluation,
-				"getMethodDeclaration", marker);
+				"getMethodDeclarationWhichHasBadSmell", marker);
 		try {
 			MethodDeclaration returnValue = (MethodDeclaration) method.invoke(
 					resoluation, marker);
@@ -111,7 +111,7 @@ public class AddAspectsMarkerResoluationTest {
 		int thethirdMarkerInfo = 2;
 		IMarker marker = getSpecificMarkerByMarkerInfoIndex(thethirdMarkerInfo);
 		Method method = getPrivateMethodWhichInputIsInterface(resoluation,
-				"getMethodDeclaration", marker);
+				"getMethodDeclarationWhichHasBadSmell", marker);
 		try {
 			MethodDeclaration returnValue = (MethodDeclaration) method.invoke(
 					resoluation, marker);
@@ -132,7 +132,7 @@ public class AddAspectsMarkerResoluationTest {
 		int theLastMarkerInfo = 4;
 		IMarker marker = getSpecificMarkerByMarkerInfoIndex(theLastMarkerInfo);
 		Method method = getPrivateMethodWhichInputIsInterface(resoluation,
-				"getMethodDeclaration", marker);
+				"getMethodDeclarationWhichHasBadSmell", marker);
 		try {
 			MethodDeclaration returnValue = (MethodDeclaration) method.invoke(
 					resoluation, marker);
