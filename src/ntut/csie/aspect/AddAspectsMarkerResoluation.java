@@ -32,13 +32,16 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.TryStatement;
+import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.swt.graphics.Image;
@@ -53,8 +56,7 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 	private CompilationUnit compilationUnit;
 	private IProject project;
 	private IJavaProject javaproject;
-	public static final String ASPECTJ_FILE_EXTENSION = ".java";
-	public List<String> importObjects = new ArrayList<String>();
+	private List<String> importObjects = new ArrayList<String>();
 
 	public AddAspectsMarkerResoluation(String label) {
 		this.label = label;
@@ -74,13 +76,12 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 		List<TryStatement> tryStatements = getAllTryStatementOfMethodDeclaration(methodDeclarationWhichHasBadSmell);
 		TryStatement tryStatementWillBeInject = getTargetTryStetment(
 				tryStatements, badSmellLineNumber);
-		List<CatchClause> catchClauses = tryStatementWillBeInject
-				.catchClauses();
+		List<CatchClause> catchClauses = tryStatementWillBeInject.catchClauses();
 		String exceptionType = getExceptionTypeOfCatchClauseWhichHasBadSmell(
 				badSmellLineNumber, catchClauses);
 		MethodInvocation methodWhichWillThrowSpecificException = getTheFirstMethodInvocationWhichWillThrowTheSameExceptionAsInput(
 				exceptionType, tryStatementWillBeInject);
-		String injectedMethodReturnType = getMethodReturnType(methodWhichWillThrowSpecificException);
+		String injectedMethodReturnType = getMethodInvocationReturnType(methodWhichWillThrowSpecificException);
 		String objectTypeOfInjectedMethod = getTheObjectTypeOfMethodInvocation(methodWhichWillThrowSpecificException);
 		String badSmellType = "";
 		try {
@@ -147,7 +148,7 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 			job.schedule();
 		}
 	}
-	
+
 	private void showOneButtonPopUpMenu(final String title, final String msg) {
 		PopupDialog.showDialog(title, msg);
 	}
@@ -202,7 +203,6 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 				+ "\t" + and + withInCode + "\r\n\r\n" + "\t" + around + "\r\n"
 				+ aroundContent;
 
-		System.out.println("aspectJFileConetent" + aspectJFileConetent);
 		return aspectJFileConetent;
 	}
 
@@ -274,13 +274,22 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 	}
 
 	private String getMethodDeclarationReturnType(MethodDeclaration method) {
-		String objectPackageName = method.getName().resolveTypeBinding()
-				.getPackage().toString().replace("package", "");
-		String objectName = method.getName().resolveTypeBinding().getName();
-		importObjects.add(objectPackageName + "." + objectName);
-		return objectName;
+		ITypeBinding type = method.resolveBinding().getReturnType();
+		if(!type.isPrimitive()){
+			importObjects.add(type.getBinaryName());
+		}
+		return type.getName().toString();
 	}
 
+	private String getMethodInvocationReturnType(MethodInvocation methodWhichWillThrowSpecificException) {
+		IMethodBinding returnType = methodWhichWillThrowSpecificException.resolveMethodBinding();
+		ITypeBinding type = returnType.getReturnType();
+		if(!type.isPrimitive() ){
+			importObjects.add(type.getBinaryName());
+		} 
+		return methodWhichWillThrowSpecificException.resolveTypeBinding().getName().toString();
+	}
+	
 	private String getClassNameOfMethodDeclaration(MethodDeclaration method) {
 		TypeDeclaration classOfMethod = (TypeDeclaration) method.getParent();
 		String className = classOfMethod.resolveBinding().getName().toString();
@@ -288,6 +297,10 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 				.getPackage().toString().replace("package", "")
 				+ "." + className);
 		return className;
+	}
+	
+	public List<String> getImportObjectsForTesting(){
+		return importObjects;
 	}
 
 	private MethodDeclaration getMethodDeclarationWhichHasBadSmell(
@@ -302,8 +315,7 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 		}
 		quickFixCore.setJavaFileModifiable(marker.getResource());
 		compilationUnit = quickFixCore.getCompilationUnit();
-		return QuickFixUtils.getMethodDeclaration(compilationUnit,
-				Integer.parseInt(methodIdx));
+		return QuickFixUtils.getMethodDeclaration(compilationUnit, Integer.parseInt(methodIdx));
 	}
 
 	private List<TryStatement> getAllTryStatementOfMethodDeclaration(
@@ -326,12 +338,6 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 		return badSmellLineNumber;
 	}
 
-	private String getMethodReturnType(
-			MethodInvocation methodWhichWillThrowSpecificException) {
-		ITypeBinding returnType = methodWhichWillThrowSpecificException
-				.resolveTypeBinding();
-		return returnType.getName().toString();
-	}
 
 	private MethodInvocation getTheFirstMethodInvocationWhichWillThrowTheSameExceptionAsInput(
 			String exceptionType, TryStatement tryStatementWillBeInject) {

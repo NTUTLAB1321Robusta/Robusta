@@ -14,7 +14,6 @@ public class TestObjectAForAddAspectsMarkerResoluation {
 		return b;
 	}
 
-
 	public void doSomethingWillThrowIOException() throws IOException{
 
 	}

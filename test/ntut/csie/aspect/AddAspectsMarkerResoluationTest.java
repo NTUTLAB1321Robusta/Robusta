@@ -2,6 +2,7 @@ package ntut.csie.aspect;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 import ntut.csie.analyzer.ASTMethodCollector;
@@ -62,6 +63,10 @@ public class AddAspectsMarkerResoluationTest {
 				.loadClass(TestObjectAForAddAspectsMarkerResoluation.class);
 		environmentBuilder
 				.loadClass(TestObjectBForAddAspectsMarkerResoluation.class);
+		environmentBuilder
+				.loadClass(TestDataForGetMethodDeclatationReturnType.class);
+		environmentBuilder
+				.loadClass(TestDataForGetMethodReturnType.class);
 		compilationUnit = environmentBuilder
 				.getCompilationUnit(AddAspectsMarkerResoluationExample.class);
 		// Get empty setting
@@ -229,7 +234,7 @@ public class AddAspectsMarkerResoluationTest {
 						"testDataForgetMethodReturnType",
 						"a.getTestObjectBWillThrowIOException()").get(0);
 		Method method = getPrivateMethodWhichInputIsObject(resoluation,
-				"getMethodReturnType", methodInv);
+				"getMethodInvocationReturnType", methodInv);
 		try {
 			String returnValue = (String) method.invoke(resoluation, methodInv);
 			Assert.assertEquals("TestObjectBForAddAspectsMarkerResoluation",
@@ -252,7 +257,7 @@ public class AddAspectsMarkerResoluationTest {
 						"a.getTestObjectBWillThrowIOException().doSomethingWillNotThrowException()")
 				.get(0);
 		Method method = getPrivateMethodWhichInputIsObject(resoluation,
-				"getMethodReturnType", methodInv);
+				"getMethodInvocationReturnType", methodInv);
 		try {
 			String returnValue = (String) method.invoke(resoluation, methodInv);
 			Assert.assertEquals("void", returnValue);
@@ -444,7 +449,519 @@ public class AddAspectsMarkerResoluationTest {
 			Assert.fail("throw exception");
 		}
 	}
+	
+	@Test
+	public void testGetMethodDeclarationReturnVoid() {
+		MethodDeclaration methodDec = ASTNodeFinder.getMethodDeclarationNodeByName(TestDataForGetMethodDeclatationReturnType.class,
+				"AddAspectsMarkerResoluationExampleProject",
+				"publicdMethodReturnVoid");
+		Method method = getPrivateMethodWhichInputIsObject(resoluation,
+				"getMethodDeclarationReturnType", methodDec);
+		try {
+			String returnValue = (String) method.invoke(
+					resoluation, methodDec);
+			Assert.assertEquals("void", returnValue);
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		}
+	}
 
+	@Test
+	public void testGetMethodDeclarationReturnString() {
+		MethodDeclaration methodDec = ASTNodeFinder.getMethodDeclarationNodeByName(TestDataForGetMethodDeclatationReturnType.class,
+				"AddAspectsMarkerResoluationExampleProject",
+				"publicdMethodReturnString");
+		Method method = getPrivateMethodWhichInputIsObject(resoluation,
+				"getMethodDeclarationReturnType", methodDec);
+		try {
+			String returnValue = (String) method.invoke(
+					resoluation, methodDec);
+			Assert.assertEquals("String", returnValue);
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		}
+	}
+	
+	@Test
+	public void testGetMethodDeclarationReturnBoolean() {
+		MethodDeclaration methodDec = ASTNodeFinder.getMethodDeclarationNodeByName(TestDataForGetMethodDeclatationReturnType.class,
+				"AddAspectsMarkerResoluationExampleProject",
+				"publicdMethodReturnBoolean");
+		Method method = getPrivateMethodWhichInputIsObject(resoluation,
+				"getMethodDeclarationReturnType", methodDec);
+		try {
+			String returnValue = (String) method.invoke(
+					resoluation, methodDec);
+			Assert.assertEquals("boolean", returnValue);
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		}
+	}
+	
+	@Test
+	public void testGetMethodDeclarationReturnObject() {
+		MethodDeclaration methodDec = ASTNodeFinder.getMethodDeclarationNodeByName(TestDataForGetMethodDeclatationReturnType.class,
+				"AddAspectsMarkerResoluationExampleProject",
+				"publicdMethodReturnArrayList");
+		Method method = getPrivateMethodWhichInputIsObject(resoluation,
+				"getMethodDeclarationReturnType", methodDec);
+		try {
+			String returnValue = (String) method.invoke(
+					resoluation, methodDec);
+			Assert.assertEquals("ArrayList<String>", returnValue);
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		}
+	}
+	
+	@Test
+	public void testGetMethodDeclarationReturnInteger() {
+		MethodDeclaration methodDec = ASTNodeFinder.getMethodDeclarationNodeByName(TestDataForGetMethodDeclatationReturnType.class,
+				"AddAspectsMarkerResoluationExampleProject",
+				"publicdMethodReturnInteger");
+		Method method = getPrivateMethodWhichInputIsObject(resoluation,
+				"getMethodDeclarationReturnType", methodDec);
+		try {
+			String returnValue = (String) method.invoke(
+					resoluation, methodDec);
+			Assert.assertEquals("int", returnValue);
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		}
+	}
+	
+	@Test
+	public void testGetMethodDeclarationReturnDouble() {
+		MethodDeclaration methodDec = ASTNodeFinder.getMethodDeclarationNodeByName(TestDataForGetMethodDeclatationReturnType.class,
+				"AddAspectsMarkerResoluationExampleProject",
+				"publicdMethodReturnDouble");
+		Method method = getPrivateMethodWhichInputIsObject(resoluation,
+				"getMethodDeclarationReturnType", methodDec);
+		try {
+			String returnValue = (String) method.invoke(
+					resoluation, methodDec);
+			Assert.assertEquals("double", returnValue);
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		}
+	}
+	
+	@Test
+	public void testGetMethodInvocationReturnArrayList() {
+		MethodInvocation methodInv = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(TestDataForGetMethodReturnType.class,
+				"AddAspectsMarkerResoluationExampleProject",
+				"TestDataForGetMethodReturnType",
+				"object.publicdMethodReturnArrayList()").get(0);
+		Method method = getPrivateMethodWhichInputIsObject(resoluation,
+				"getMethodInvocationReturnType", methodInv);
+		try {
+			String returnValue = (String) method.invoke(
+					resoluation, methodInv);
+			Assert.assertEquals("ArrayList<String>", returnValue);
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		}
+	}
+	
+	@Test
+	public void testGetMethodInvocationReturnBoolean() {
+		MethodInvocation methodInv = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(TestDataForGetMethodReturnType.class,
+				"AddAspectsMarkerResoluationExampleProject",
+				"TestDataForGetMethodReturnType",
+				"object.publicdMethodReturnBoolean()").get(0);
+		Method method = getPrivateMethodWhichInputIsObject(resoluation,
+				"getMethodInvocationReturnType", methodInv);
+		try {
+			String returnValue = (String) method.invoke(
+					resoluation, methodInv);
+			Assert.assertEquals("boolean", returnValue);
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		}
+	}
+	
+	@Test
+	public void testGetMethodInvocationReturnDouble() {
+		MethodInvocation methodInv = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(TestDataForGetMethodReturnType.class,
+				"AddAspectsMarkerResoluationExampleProject",
+				"TestDataForGetMethodReturnType",
+				"object.publicdMethodReturnDouble()").get(0);
+		Method method = getPrivateMethodWhichInputIsObject(resoluation,
+				"getMethodInvocationReturnType", methodInv);
+		try {
+			String returnValue = (String) method.invoke(
+					resoluation, methodInv);
+			Assert.assertEquals("double", returnValue);
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		}
+	}
+	
+	@Test
+	public void testGetMethodInvocationReturnFloat() {
+		MethodInvocation methodInv = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(TestDataForGetMethodReturnType.class,
+				"AddAspectsMarkerResoluationExampleProject",
+				"TestDataForGetMethodReturnType",
+				"object.publicdMethodReturnFloat()").get(0);
+		Method method = getPrivateMethodWhichInputIsObject(resoluation,
+				"getMethodInvocationReturnType", methodInv);
+		try {
+			String returnValue = (String) method.invoke(
+					resoluation, methodInv);
+			Assert.assertEquals("float", returnValue);
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		}
+	}
+	
+	@Test
+	public void testGetMethodInvocationReturnInteger() {
+		MethodInvocation methodInv = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(TestDataForGetMethodReturnType.class,
+				"AddAspectsMarkerResoluationExampleProject",
+				"TestDataForGetMethodReturnType",
+				"object.publicdMethodReturnInteger()").get(0);
+		Method method = getPrivateMethodWhichInputIsObject(resoluation,
+				"getMethodInvocationReturnType", methodInv);
+		try {
+			String returnValue = (String) method.invoke(
+					resoluation, methodInv);
+			Assert.assertEquals("int", returnValue);
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		}
+	}
+	
+	@Test
+	public void testGetMethodInvocationReturnString() {
+		MethodInvocation methodInv = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(TestDataForGetMethodReturnType.class,
+				"AddAspectsMarkerResoluationExampleProject",
+				"TestDataForGetMethodReturnType",
+				"object.publicdMethodReturnString()").get(0);
+		Method method = getPrivateMethodWhichInputIsObject(resoluation,
+				"getMethodInvocationReturnType", methodInv);
+		try {
+			String returnValue = (String) method.invoke(
+					resoluation, methodInv);
+			Assert.assertEquals("String", returnValue);
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		}
+	}
+	
+	@Test
+	public void testGetMethodInvocationReturnVoid() {
+		MethodInvocation methodInv = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(TestDataForGetMethodReturnType.class,
+				"AddAspectsMarkerResoluationExampleProject",
+				"TestDataForGetMethodReturnType",
+				"object.publicdMethodReturnVoid()").get(0);
+		Method method = getPrivateMethodWhichInputIsObject(resoluation,
+				"getMethodInvocationReturnType", methodInv);
+		try {
+			String returnValue = (String) method.invoke(
+					resoluation, methodInv);
+			Assert.assertEquals("void", returnValue);
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		}
+	}
+	
+	@Test
+	public void testGetClassNameOfMethodDeclaration() {
+		MethodDeclaration methodDec = ASTNodeFinder.getMethodDeclarationNodeByName(TestDataForGetMethodDeclatationReturnType.class,
+				"AddAspectsMarkerResoluationExampleProject",
+				"publicdMethodReturnString");
+		Method method = getPrivateMethodWhichInputIsObject(resoluation,
+				"getClassNameOfMethodDeclaration", methodDec);
+		try {
+			String returnValue = (String) method.invoke(
+					resoluation, methodDec);
+			Assert.assertEquals("TestDataForGetMethodDeclatationReturnType", returnValue);
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		}
+	}
+	
+	@Test
+	public void testImportObjectsFeatureInGetClassNameOfMethodDeclaration() {
+		MethodDeclaration methodDec = ASTNodeFinder.getMethodDeclarationNodeByName(TestDataForGetMethodDeclatationReturnType.class,
+				"AddAspectsMarkerResoluationExampleProject",
+				"publicdMethodReturnString");
+		Method method = getPrivateMethodWhichInputIsObject(resoluation,
+				"getClassNameOfMethodDeclaration", methodDec);
+		try {
+			method.invoke(resoluation, methodDec);
+			List<String> result = resoluation.getImportObjectsForTesting();
+			Assert.assertEquals("ntut.csie.aspect.TestDataForGetMethodDeclatationReturnType", result.get(0).trim());
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		}
+	}
+	
+	@Test
+	public void testImportObjectsFeatureInGetMethodDeclarationReturnArrayList() {
+		MethodDeclaration methodDec = ASTNodeFinder.getMethodDeclarationNodeByName(
+				TestDataForGetMethodDeclatationReturnType.class,
+				"AddAspectsMarkerResoluationExampleProject",
+				"publicdMethodReturnArrayList");
+		Method method = getPrivateMethodWhichInputIsObject(resoluation,
+				"getMethodDeclarationReturnType", methodDec);
+		try {
+			method.invoke(resoluation, methodDec);
+			List<String> result = resoluation.getImportObjectsForTesting();
+			Assert.assertEquals("java.util.ArrayList", result.get(0).trim());
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		}
+	}
+	
+	@Test
+	public void testImportObjectsFeatureInGetMethodDeclarationReturnString() {
+		MethodDeclaration methodDec = ASTNodeFinder.getMethodDeclarationNodeByName(
+				TestDataForGetMethodDeclatationReturnType.class,
+				"AddAspectsMarkerResoluationExampleProject",
+				"publicdMethodReturnString");
+		Method method = getPrivateMethodWhichInputIsObject(resoluation,
+				"getMethodDeclarationReturnType", methodDec);
+		try {
+			method.invoke(resoluation, methodDec);
+			List<String> result = resoluation.getImportObjectsForTesting();
+			Assert.assertEquals("java.lang.String", result.get(0).trim());
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		}
+	}
+	
+	@Test
+	public void testImportObjectsFeatureInGetTheObjectTypeOfMethodInvocation() {
+		MethodInvocation methodInv = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(
+				TestDataForGetMethodReturnType.class,
+				"AddAspectsMarkerResoluationExampleProject",
+				"TestDataForGetMethodReturnType",
+				"object.publicdMethodReturnArrayList()").get(0);
+		Method method = getPrivateMethodWhichInputIsObject(resoluation,
+				"getTheObjectTypeOfMethodInvocation", methodInv);
+		try {
+			method.invoke(resoluation, methodInv);
+			List<String> result = resoluation.getImportObjectsForTesting();
+			Assert.assertEquals("ntut.csie.aspect.TestDataForGetMethodDeclatationReturnType", result.get(0).trim());
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		}
+	}
+	
+	@Test
+	public void testImportObjectsFeatureInGetMethodInvocationReturnArrayList() {
+		MethodInvocation methodInv = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(
+				TestDataForGetMethodReturnType.class,
+				"AddAspectsMarkerResoluationExampleProject",
+				"TestDataForGetMethodReturnType",
+				"object.publicdMethodReturnArrayList()").get(0);
+		Method method = getPrivateMethodWhichInputIsObject(resoluation,
+				"getMethodInvocationReturnType", methodInv);
+		try {
+			method.invoke(resoluation, methodInv);
+			List<String> result = resoluation.getImportObjectsForTesting();
+			Assert.assertEquals("java.util.ArrayList", result.get(0).trim());
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		}
+	}
+	
+	@Test
+	public void testImportObjectsFeatureInGetMethodInvocationReturnString() {
+		MethodInvocation methodInv = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(
+				TestDataForGetMethodReturnType.class,
+				"AddAspectsMarkerResoluationExampleProject",
+				"TestDataForGetMethodReturnType",
+				"object.publicdMethodReturnString()").get(0);
+		Method method = getPrivateMethodWhichInputIsObject(resoluation,
+				"getMethodInvocationReturnType", methodInv);
+		try {
+			method.invoke(resoluation, methodInv);
+			List<String> result = resoluation.getImportObjectsForTesting();
+			Assert.assertEquals("java.lang.String", result.get(0).trim());
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		}
+	}
+	
+	@Test
+	public void testImportObjectsFeatureInGetExceptionTypeOfCatchClauseWhichHasBadSmell() {
+		int badSmellLineNumber = 13;
+		TryStatement tryStatement = ASTNodeFinder
+				.getTryStatementNodeListByMethodDeclarationName(
+						compilationUnit,
+						"aspectCaseForOneMethodInvocationWhichWillNotThrowIOException").get(0);
+		List<CatchClause> catchClauses = (List<CatchClause>)tryStatement.catchClauses();
+		Method method = null;
+		try {
+			method = AddAspectsMarkerResoluation.class.getDeclaredMethod("getExceptionTypeOfCatchClauseWhichHasBadSmell",
+					Integer.TYPE,  List.class);
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+			Assert.fail(e.getMessage());
+		} catch (SecurityException e) {
+			e.printStackTrace();
+			Assert.fail(e.getMessage());
+		}
+		method.setAccessible(true);
+		resoluation.setCompilationUnitForTesting(compilationUnit);		
+		try {
+			method.invoke(resoluation, badSmellLineNumber, catchClauses);
+			List<String> result = resoluation.getImportObjectsForTesting();
+			Assert.assertEquals("java.io.IOException", result.get(0).trim());
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+			Assert.fail("throw exception");
+		}
+	}
+	
 	private IMarker getSpecificMarkerByMarkerInfoIndex(int index) {
 		IJavaElement javaElement = JavaCore.create(ResourcesPlugin.getWorkspace().getRoot().getFile(addAspectsMarkerResoluationExamplePath));
 		IMarker tempMarker = null;
@@ -482,8 +999,10 @@ public class AddAspectsMarkerResoluationTest {
 			method = calzz.getClass().getDeclaredMethod(methodName,
 					parameter.getClass());
 		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
 			Assert.fail("throw exception");
 		} catch (SecurityException e) {
+			e.printStackTrace();
 			Assert.fail("throw exception");
 		}
 		method.setAccessible(true);

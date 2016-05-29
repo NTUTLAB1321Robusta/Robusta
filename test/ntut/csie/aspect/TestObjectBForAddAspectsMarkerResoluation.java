@@ -9,6 +9,4 @@ public class TestObjectBForAddAspectsMarkerResoluation {
 	
 	public void doSomethingWillNotThrowException(){
 	}
-	
-	
 }
