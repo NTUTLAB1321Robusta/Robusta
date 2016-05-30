@@ -274,13 +274,8 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 			MethodInvocation methodWhichWillThrowSpecificException) {
 		FindTheFirstExpressionObjectTypeOfMethodInvocationVisitor theFirstExpressionVisitor = new FindTheFirstExpressionObjectTypeOfMethodInvocationVisitor();
 		methodWhichWillThrowSpecificException.accept(theFirstExpressionVisitor);
-		String objectPackageName = theFirstExpressionVisitor
-				.getTheFirstExpression().resolveTypeBinding().getPackage()
-				.toString().replace("package", "");
-		String objectName = theFirstExpressionVisitor.getTheFirstExpression()
-				.resolveTypeBinding().getName();
-		importObjects.add(objectPackageName + "." + objectName);
-		return objectName;
+		importObjects.add(theFirstExpressionVisitor.getObjectPackageName());
+		return theFirstExpressionVisitor.getObjectName();
 	}
 
 	private String getMethodDeclarationReturnType(MethodDeclaration method) {
