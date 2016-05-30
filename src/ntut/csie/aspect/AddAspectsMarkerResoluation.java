@@ -363,7 +363,7 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 			if (badSmellLineNumber == catchClauseLineNumber) {
 				ITypeBinding exceptionType = catchBlock.getException().getType().resolveBinding();
 				String exceptionPackage = exceptionType.getBinaryName();
-				if(exceptionPackage.equalsIgnoreCase("Open Declaration java.lang.Exception")){
+				if(exceptionPackage.equalsIgnoreCase("java.lang.Exception")){
 					showOneButtonPopUpMenu("Remind you!", "It is not allowed to inject super Exception class in AspectJ!");
 					return null;
 				}else{
