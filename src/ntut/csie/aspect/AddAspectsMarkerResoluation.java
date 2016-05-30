@@ -105,17 +105,18 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 		javaproject = JavaCore.create(project);
 		IPackageFragmentRoot root = getSourceFolderOfCurrentProject();
 		createPackage(packageChain, root);
+		int lineNumberOfMethodWhichWillThrowSpecificException = getStatementLineNumber(methodWhichWillThrowSpecificException);
 		String fileContent = buildUpAspectsFile(exceptionType,
 				injectedMethodReturnType, objectTypeOfInjectedMethod,
 				className, nameOfMethodWhichHasBadSmell,
 				returnTypeOfMethodWhichHasBadSmell, injectedMethodName,
-				badSmellType, packageChain);
+				badSmellType, packageChain, lineNumberOfMethodWhichWillThrowSpecificException);
 		String projectPath = ResourcesPlugin.getWorkspace().getRoot()
 				.getLocation().toOSString();
 		String FilePath = root.getPath().makeAbsolute().toOSString();
 		String filePath = projectPath + "\\" + FilePath
 				+ "\\ntut\\csie\\aspect" + "\\" + badSmellType + "\\"
-				+ className + "Aspect"+exceptionType+"In"+makeFirstCharacterUpperCase(nameOfMethodWhichHasBadSmell)+"Function.aj";
+				+ className + "Aspect"+exceptionType+"In"+makeFirstCharacterUpperCase(nameOfMethodWhichHasBadSmell)+"FunctionAtLine"+lineNumberOfMethodWhichWillThrowSpecificException+".aj";
 		WriteFile(fileContent, filePath);
 		refreshPackageExplorer(filePath);
 		refreshProject();
@@ -172,11 +173,11 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 			String injectedMethodReturnType, String objectTypeOfInjectedMethod,
 			String className, String nameOfMethodWhichHasBadSmell,
 			String returnTypeOfMethodWhichHasBadSmell,
-			String injectedMethodName, String badSmellType, String packageChain) {
+			String injectedMethodName, String badSmellType, String packageChain, int lineNumberOfMethodWhichWillThrowSpecificException) {
 		String space = " ";
 		String and = "&&";
 		String aspectJClassTitle = "\r\n" + "public aspect " + className
-				+ "Aspect"+exceptionType+"In"+makeFirstCharacterUpperCase(nameOfMethodWhichHasBadSmell)+"Function"+" {";
+				+ "Aspect"+exceptionType+"In"+makeFirstCharacterUpperCase(nameOfMethodWhichHasBadSmell)+"FunctionAtLine"+lineNumberOfMethodWhichWillThrowSpecificException+" {";
 		String pointCut = "pointcut find" + makeFirstCharacterUpperCase(injectedMethodName) + "("
 				+ objectTypeOfInjectedMethod + " object" + ") : ";
 		String call = "call" + "(" + injectedMethodReturnType + space
@@ -383,8 +384,7 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 			int badSmellLineNumber) {
 		TryStatement candidate = null;
 		for (TryStatement tryStatement : tryStatements) {
-			int lineNumberOfTryStatement = compilationUnit
-					.getLineNumber(tryStatement.getStartPosition());
+			int lineNumberOfTryStatement = getStatementLineNumber(tryStatement);
 			if (lineNumberOfTryStatement < badSmellLineNumber) {
 				candidate = tryStatement;
 			} else {
@@ -392,6 +392,11 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 			}
 		}
 		return candidate;
+	}
+
+	private int getStatementLineNumber(ASTNode node) {
+		int lineNumberOfTryStatement = compilationUnit.getLineNumber(node.getStartPosition());
+		return lineNumberOfTryStatement;
 	}
 
 	@Override
