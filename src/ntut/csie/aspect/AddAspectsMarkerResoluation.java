@@ -115,10 +115,14 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 		String FilePath = root.getPath().makeAbsolute().toOSString();
 		String fileCreateFile = projectPath + "\\" + FilePath
 				+ "\\ntut\\csie\\aspect" + "\\" + badSmellType + "\\"
-				+ className + "Aspect.aj";
+				+ className + "Aspect"+exceptionType+"In"+makeFirstCharacterUpperCase(nameOfMethodWhichHasBadSmell)+".aj";
 		WriteFile(fileContent, fileCreateFile);
 		refreshPackageExplorer(fileCreateFile);
 		refreshProject();
+	}
+	
+	private String makeFirstCharacterUpperCase(String name){
+		return name.substring(0, 1).toUpperCase() + name.substring(1);
 	}
 
 	private void refreshPackageExplorer(String fileCreateFile) {
@@ -173,7 +177,7 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 		String and = "&&";
 		String aspectJClassTitle = "\r\n" + "public aspect " + className
 				+ "Aspect {";
-		String pointCut = "pointcut find" + injectedMethodName + "("
+		String pointCut = "pointcut find" + makeFirstCharacterUpperCase(injectedMethodName) + "("
 				+ objectTypeOfInjectedMethod + " object" + ") : ";
 		String call = "call" + "(" + injectedMethodReturnType + space
 				+ objectTypeOfInjectedMethod + "." + injectedMethodName
@@ -184,7 +188,7 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 				+ nameOfMethodWhichHasBadSmell + "(..)" + ");";
 
 		String around = injectedMethodReturnType+" around(" + objectTypeOfInjectedMethod + " object"
-				+ ") throws " + exceptionType + " : find" + injectedMethodName
+				+ ") throws " + exceptionType + " : find" + makeFirstCharacterUpperCase(injectedMethodName)
 				+ "(object) {";
 		String aroundContent = "\t" + "  boolean swich = false;" + "\r\n"
 				+ "\t" + "  if(swich){" + "\r\n" + "\t\t" + "throw new "
