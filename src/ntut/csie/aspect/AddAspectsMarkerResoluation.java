@@ -113,11 +113,11 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 		String projectPath = ResourcesPlugin.getWorkspace().getRoot()
 				.getLocation().toOSString();
 		String FilePath = root.getPath().makeAbsolute().toOSString();
-		String fileCreateFile = projectPath + "\\" + FilePath
+		String filePath = projectPath + "\\" + FilePath
 				+ "\\ntut\\csie\\aspect" + "\\" + badSmellType + "\\"
-				+ className + "Aspect"+exceptionType+"In"+makeFirstCharacterUpperCase(nameOfMethodWhichHasBadSmell)+".aj";
-		WriteFile(fileContent, fileCreateFile);
-		refreshPackageExplorer(fileCreateFile);
+				+ className + "Aspect"+exceptionType+"In"+makeFirstCharacterUpperCase(nameOfMethodWhichHasBadSmell)+"Function.aj";
+		WriteFile(fileContent, filePath);
+		refreshPackageExplorer(filePath);
 		refreshProject();
 	}
 	
@@ -176,7 +176,7 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 		String space = " ";
 		String and = "&&";
 		String aspectJClassTitle = "\r\n" + "public aspect " + className
-				+ "Aspect {";
+				+ "Aspect"+exceptionType+"In"+makeFirstCharacterUpperCase(nameOfMethodWhichHasBadSmell)+"Function"+" {";
 		String pointCut = "pointcut find" + makeFirstCharacterUpperCase(injectedMethodName) + "("
 				+ objectTypeOfInjectedMethod + " object" + ") : ";
 		String call = "call" + "(" + injectedMethodReturnType + space
