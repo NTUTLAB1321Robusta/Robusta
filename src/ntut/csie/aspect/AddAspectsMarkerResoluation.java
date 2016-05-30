@@ -77,8 +77,10 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 		TryStatement tryStatementWillBeInject = getTargetTryStetment(
 				tryStatements, badSmellLineNumber);
 		List<CatchClause> catchClauses = tryStatementWillBeInject.catchClauses();
-		String exceptionType = getExceptionTypeOfCatchClauseWhichHasBadSmell(
-				badSmellLineNumber, catchClauses);
+		String exceptionType = getExceptionTypeOfCatchClauseWhichHasBadSmell(badSmellLineNumber, catchClauses);
+		if(exceptionType == null){
+			return;
+		}
 		MethodInvocation methodWhichWillThrowSpecificException = getTheFirstMethodInvocationWhichWillThrowTheSameExceptionAsInput(
 				exceptionType, tryStatementWillBeInject);
 		String injectedMethodReturnType = getMethodInvocationReturnType(methodWhichWillThrowSpecificException);
@@ -359,13 +361,15 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 			int catchClauseLineNumber = compilationUnit
 					.getLineNumber(catchBlock.getStartPosition());
 			if (badSmellLineNumber == catchClauseLineNumber) {
-				String objectPackageName = catchBlock.getException().getType()
-						.resolveBinding().getPackage().toString()
-						.replace("package", "");
-				String objectName = catchBlock.getException().getType()
-						.resolveBinding().getName();
-				importObjects.add(objectPackageName + "." + objectName);
-				return catchBlock.getException().getType().toString();
+				ITypeBinding exceptionType = catchBlock.getException().getType().resolveBinding();
+				String exceptionPackage = exceptionType.getBinaryName();
+				if(exceptionPackage.equalsIgnoreCase("Open Declaration java.lang.Exception")){
+					showOneButtonPopUpMenu("Remind you!", "It is not allowed to inject super Exception class in AspectJ!");
+					return null;
+				}else{
+					importObjects.add(exceptionPackage);
+					return exceptionType.getName().toString();
+				}
 			}
 		}
 		return null;
