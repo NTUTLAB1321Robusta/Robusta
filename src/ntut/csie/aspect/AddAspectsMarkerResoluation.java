@@ -183,14 +183,19 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 				+ returnTypeOfMethodWhichHasBadSmell + space + className + "."
 				+ nameOfMethodWhichHasBadSmell + "(..)" + ");";
 
-		String around = "void around(" + objectTypeOfInjectedMethod + " object"
+		String around = injectedMethodReturnType+" around(" + objectTypeOfInjectedMethod + " object"
 				+ ") throws " + exceptionType + " : find" + injectedMethodName
 				+ "(object) {";
 		String aroundContent = "\t" + "  boolean swich = false;" + "\r\n"
 				+ "\t" + "  if(swich){" + "\r\n" + "\t\t" + "throw new "
-				+ exceptionType + "();" + "\r\n" + "\t" + "  } else {" + "\r\n"
-				+ "\t\t" + "object." + injectedMethodName + "();" + "\r\n"
-				+ "\t" + "  }" + "\r\n" + "\t" + "}" + "\r\n" + "}";
+				+ exceptionType + "();" + "\r\n" + "\t" + "  } else {" + "\r\n";
+		String elseContent = "";
+		if(injectedMethodReturnType.equals("void")){
+			elseContent =  "\t\t" + "object." + injectedMethodName + "();" + "\r\n";
+		}else{
+			elseContent =  "\t\t" + " return object." + injectedMethodName + "();" + "\r\n";
+		}
+		String aroundEnd = "\t" + "  }" + "\r\n" + "\t" + "}" + "\r\n" + "}";
 
 		String imports = "";
 		for (String importObj : importObjects) {
@@ -201,7 +206,7 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 				+ "\r\n\r\n" + imports + aspectJClassTitle + "\r\n" + "\t"
 				+ pointCut + call + "\r\n" + "\t" + and + target + "\r\n"
 				+ "\t" + and + withInCode + "\r\n\r\n" + "\t" + around + "\r\n"
-				+ aroundContent;
+				+ aroundContent + elseContent + aroundEnd;
 
 		return aspectJFileConetent;
 	}
