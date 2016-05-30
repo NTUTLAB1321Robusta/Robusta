@@ -204,7 +204,7 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 
 		String imports = "";
 		for (String importObj : importObjects) {
-			imports = imports + "import" + importObj + ";\r\n";
+			imports = imports + "import " + importObj.trim() + ";\r\n";
 		}
 
 		String aspectJFileConetent = "package " + packageChain + ";"
