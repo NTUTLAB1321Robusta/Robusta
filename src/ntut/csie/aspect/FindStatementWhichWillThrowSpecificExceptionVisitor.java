@@ -38,7 +38,7 @@ public class FindStatementWhichWillThrowSpecificExceptionVisitor extends
 			exceptions.addAll(Arrays.asList(methodBinding.getExceptionTypes()));
 		}
 		for (ITypeBinding exception : exceptions) {
-			if (exception.toString().contains(exceptionType)) {
+			if (exception.getName().toString().equalsIgnoreCase(exceptionType)) {
 				methodInvocations.push(invocation);
 			}
 		}

@@ -6,7 +6,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.robusta.codegen.QuickFixCore;
@@ -276,14 +278,23 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 			MethodInvocation methodWhichWillThrowSpecificException) {
 		FindTheFirstExpressionObjectTypeOfMethodInvocationVisitor theFirstExpressionVisitor = new FindTheFirstExpressionObjectTypeOfMethodInvocationVisitor();
 		methodWhichWillThrowSpecificException.accept(theFirstExpressionVisitor);
-		importObjects.add(theFirstExpressionVisitor.getObjectPackageName());
+		checkIsDuplicate(theFirstExpressionVisitor.getObjectPackageName());
 		return theFirstExpressionVisitor.getObjectName();
+	}
+	
+	private void checkIsDuplicate(String content){
+		for(String importContent : importObjects){
+			if(importContent.equalsIgnoreCase(content.trim())){
+				return;
+			}
+		}
+		importObjects.add(content.trim());
 	}
 
 	private String getMethodDeclarationReturnType(MethodDeclaration method) {
 		ITypeBinding type = method.resolveBinding().getReturnType();
 		if(!type.isPrimitive()){
-			importObjects.add(type.getBinaryName());
+			checkIsDuplicate(type.getBinaryName());
 		}
 		return type.getName().toString();
 	}
@@ -292,7 +303,7 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 		IMethodBinding returnType = methodWhichWillThrowSpecificException.resolveMethodBinding();
 		ITypeBinding type = returnType.getReturnType();
 		if(!type.isPrimitive() ){
-			importObjects.add(type.getBinaryName());
+			checkIsDuplicate(type.getBinaryName());
 		} 
 		return methodWhichWillThrowSpecificException.resolveTypeBinding().getName().toString();
 	}
@@ -300,7 +311,7 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 	private String getClassNameOfMethodDeclaration(MethodDeclaration method) {
 		TypeDeclaration classOfMethod = (TypeDeclaration) method.getParent();
 		String className = classOfMethod.resolveBinding().getName().toString();
-		importObjects.add(classOfMethod.getName().resolveTypeBinding()
+		checkIsDuplicate(classOfMethod.getName().resolveTypeBinding()
 				.getPackage().toString().replace("package", "")
 				+ "." + className);
 		return className;
@@ -367,7 +378,7 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 					showOneButtonPopUpMenu("Remind you!", "It is not allowed to inject super Exception class in AspectJ!");
 					return null;
 				}else{
-					importObjects.add(exceptionPackage);
+					checkIsDuplicate(exceptionPackage);
 					return exceptionType.getName().toString();
 				}
 			}
