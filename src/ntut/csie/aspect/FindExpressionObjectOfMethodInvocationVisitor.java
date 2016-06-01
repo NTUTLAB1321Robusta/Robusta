@@ -9,7 +9,7 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
-public class FindTheFirstExpressionObjectTypeOfMethodInvocationVisitor extends
+public class FindExpressionObjectOfMethodInvocationVisitor extends
 		ASTVisitor {
 
 	String objectName = ""; 

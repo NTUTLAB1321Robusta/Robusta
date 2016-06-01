@@ -276,7 +276,7 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 
 	private String getTheObjectTypeOfMethodInvocation(
 			MethodInvocation methodWhichWillThrowSpecificException) {
-		FindTheFirstExpressionObjectTypeOfMethodInvocationVisitor theFirstExpressionVisitor = new FindTheFirstExpressionObjectTypeOfMethodInvocationVisitor();
+		FindExpressionObjectOfMethodInvocationVisitor theFirstExpressionVisitor = new FindExpressionObjectOfMethodInvocationVisitor();
 		methodWhichWillThrowSpecificException.accept(theFirstExpressionVisitor);
 		checkIsDuplicate(theFirstExpressionVisitor.getObjectPackageName());
 		return theFirstExpressionVisitor.getObjectName();
@@ -360,7 +360,7 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 	private MethodInvocation getTheFirstMethodInvocationWhichWillThrowTheSameExceptionAsInput(
 			String exceptionType, TryStatement tryStatementWillBeInject) {
 		Block body = tryStatementWillBeInject.getBody();
-		FindStatementWhichWillThrowSpecificExceptionVisitor visitor = new FindStatementWhichWillThrowSpecificExceptionVisitor(
+		FindThrowSpecificExceptionStatementVisitor visitor = new FindThrowSpecificExceptionStatementVisitor(
 				exceptionType);
 		body.accept(visitor);
 		return visitor.getMethodInvocationWhichWiThrowException();

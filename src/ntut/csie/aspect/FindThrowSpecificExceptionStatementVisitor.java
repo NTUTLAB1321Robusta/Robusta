@@ -21,11 +21,11 @@ import org.eclipse.jdt.core.dom.VariableDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 
-public class FindStatementWhichWillThrowSpecificExceptionVisitor extends
+public class FindThrowSpecificExceptionStatementVisitor extends
 		ASTVisitor {
 	private String exceptionType = "";
 	Stack<MethodInvocation> methodInvocations = new Stack<MethodInvocation>();
-	public FindStatementWhichWillThrowSpecificExceptionVisitor(String exception) {
+	public FindThrowSpecificExceptionStatementVisitor(String exception) {
 		exceptionType = exception;
 	}
 
