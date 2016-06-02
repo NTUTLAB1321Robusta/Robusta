@@ -220,7 +220,7 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 		return aspectJFileConetent;
 	}
 
-	public void WriteFile(String str, String path) {
+	private void WriteFile(String str, String path) {
 		BufferedWriter writer = null;
 		try {
 			File file = new File(path);

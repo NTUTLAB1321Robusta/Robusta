@@ -12,8 +12,8 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 public class FindExpressionObjectOfMethodInvocationVisitor extends
 		ASTVisitor {
 
-	String objectName = ""; 
-	String objectPackage = "";
+	private String objectName = ""; 
+	private String objectPackage = "";
 	@Override
 	public boolean visit(MethodInvocation invocation) {
 		Expression expression = invocation.getExpression();

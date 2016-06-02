@@ -67,6 +67,8 @@ public class AddAspectsMarkerResoluationTest {
 				.loadClass(TestDataForGetMethodDeclatationReturnType.class);
 		environmentBuilder
 				.loadClass(TestDataForGetMethodReturnType.class);
+		environmentBuilder
+				.loadClass(DifferentTypeOfMethodInvocation.class);
 		compilationUnit = environmentBuilder
 				.getCompilationUnit(AddAspectsMarkerResoluationExample.class);
 		// Get empty setting
@@ -873,6 +875,30 @@ public class AddAspectsMarkerResoluationTest {
 			e.printStackTrace();
 			Assert.fail("throw exception");
 		}
+	}
+	
+	@Test
+	public void testFindExpressionObjectOfMethodInvocationVisitorWhenMeetingMehodInvocationWithoutExpression() {
+		MethodInvocation methodInv = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(
+				DifferentTypeOfMethodInvocation.class,
+				"AddAspectsMarkerResoluationExampleProject",
+				"mehodInvocationWithoutExpression",
+				"doSomethind()").get(0);
+		FindExpressionObjectOfMethodInvocationVisitor visitor = new FindExpressionObjectOfMethodInvocationVisitor();
+		methodInv.accept(visitor);
+		Assert.assertEquals("DifferentTypeOfMethodInvocation", visitor.getObjectName());
+	}
+	
+	@Test
+	public void testFindExpressionObjectOfMethodInvocationVisitorWhenMeetingMehodInvocationWithExpression() {
+		MethodInvocation methodInv = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(
+				DifferentTypeOfMethodInvocation.class,
+				"AddAspectsMarkerResoluationExampleProject",
+				"mehodInvocationWithExpression",
+				"object.doSomethind()").get(0);
+		FindExpressionObjectOfMethodInvocationVisitor visitor = new FindExpressionObjectOfMethodInvocationVisitor();
+		methodInv.accept(visitor);
+		Assert.assertEquals("DifferentTypeOfMethodInvocation", visitor.getObjectName());
 	}
 	
 	@Test

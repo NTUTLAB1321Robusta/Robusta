@@ -24,7 +24,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 public class FindThrowSpecificExceptionStatementVisitor extends
 		ASTVisitor {
 	private String exceptionType = "";
-	Stack<MethodInvocation> methodInvocations = new Stack<MethodInvocation>();
+	private Stack<MethodInvocation> methodInvocations = new Stack<MethodInvocation>();
 	public FindThrowSpecificExceptionStatementVisitor(String exception) {
 		exceptionType = exception;
 	}
