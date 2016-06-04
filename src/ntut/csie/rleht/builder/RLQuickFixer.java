@@ -65,6 +65,7 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				markerList.add(new RefineRuntimeExceptionQuickFix(ECBThrowRuntimeExceptionQuickFixDescription));
 				markerList.add(new RethrowUncheckExAction(ECBThrowCheckedExceptionQuickFixDescription));
 				markerList.add(new ThrowCheckedExceptionQuickFix(ECBThrowUncheckedExceptionRefactoringDescription));
+				markerList.add(new AddAspectsMarkerResoluation("add Adspect"));
 			} else if(problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)) {
 				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
 				if(!methodIdx.equals("-1")) {
