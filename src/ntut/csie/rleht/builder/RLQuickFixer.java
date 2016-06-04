@@ -5,7 +5,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import ntut.csie.aspect.AddAspectsMarkerResoluation;
+import ntut.csie.aspect.AddAspectsMarkerResoluationForCarelessCleanup;
+import ntut.csie.aspect.AddAspectsMarkerResoluationForDummyHandlerAndEmptyCatchBlock;
 import ntut.csie.csdet.refactor.NTMarkerResolution;
 import ntut.csie.csdet.refactor.RethrowUncheckExAction;
 import ntut.csie.rleht.common.RLUtils;
@@ -65,14 +66,14 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				markerList.add(new RefineRuntimeExceptionQuickFix(ECBThrowRuntimeExceptionQuickFixDescription));
 				markerList.add(new RethrowUncheckExAction(ECBThrowCheckedExceptionQuickFixDescription));
 				markerList.add(new ThrowCheckedExceptionQuickFix(ECBThrowUncheckedExceptionRefactoringDescription));
-				markerList.add(new AddAspectsMarkerResoluation("add Adspect"));
+				markerList.add(new AddAspectsMarkerResoluationForDummyHandlerAndEmptyCatchBlock("add Adspect"));
 			} else if(problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)) {
 				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
 				if(!methodIdx.equals("-1")) {
 					markerList.add(new RefineRuntimeExceptionQuickFix(DHThrowRuntimeExceptionQuickFixDescription));
 					markerList.add(new RethrowUncheckExAction(DHBThrowCheckedExceptionQuickFixDescription));
 					markerList.add(new ThrowCheckedExceptionQuickFix(DHBThrowUncheckedExceptionRefactoringDescription));
-					markerList.add(new AddAspectsMarkerResoluation("add Adspect"));
+					markerList.add(new AddAspectsMarkerResoluationForDummyHandlerAndEmptyCatchBlock("add Adspect"));
 				}
 			} else if(problem.equals(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT)) {
 				markerList.add(new NTMarkerResolution(NTExtractMethodRefactoringDescription));
@@ -80,6 +81,7 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 				markerList.add(new MoveCodeIntoBigOuterTryQuickFix(UMEncloseAllStatementInTryRefactoringDescription));
 			} else if(problem.equals(RLMarkerAttribute.CS_CARELESS_CLEANUP)){
 				// not going to provide resolution for now.
+				markerList.add(new AddAspectsMarkerResoluationForCarelessCleanup("add Adspect"));
 			} else if(problem.equals(RLMarkerAttribute.CS_EXCEPTION_THROWN_FROM_FINALLY_BLOCK)) {
 				boolean isSupportRefactoring = (Boolean)marker.getAttribute(RLMarkerAttribute.RL_INFO_SUPPORT_REFACTORING);
 				if(isSupportRefactoring)

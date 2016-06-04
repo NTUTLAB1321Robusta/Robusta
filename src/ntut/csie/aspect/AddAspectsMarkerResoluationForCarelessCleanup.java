@@ -6,13 +6,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
+import ntut.csie.analyzer.careless.CloseInvocationExecutionChecker;
 import ntut.csie.rleht.builder.RLMarkerAttribute;
 import ntut.csie.robusta.codegen.QuickFixCore;
 import ntut.csie.robusta.codegen.QuickFixUtils;
+import ntut.csie.util.MethodInvocationCollectorVisitor;
 import ntut.csie.util.PopupDialog;
 
 import org.eclipse.core.resources.IFile;
@@ -35,32 +36,30 @@ import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.Block;
-import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.TryStatement;
-import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IMarkerResolution;
 import org.eclipse.ui.IMarkerResolution2;
 
-public class AddAspectsMarkerResoluation implements IMarkerResolution,
-		IMarkerResolution2 {
+public class AddAspectsMarkerResoluationForCarelessCleanup implements
+		IMarkerResolution, IMarkerResolution2 {
 	private String label;
 	private String description = "Add a aspectJ file to expose influence of bad smell!";
 	private QuickFixCore quickFixCore;
 	private CompilationUnit compilationUnit;
+	private List<String> importObjects = new ArrayList<String>();
 	private IProject project;
 	private IJavaProject javaproject;
-	private List<String> importObjects = new ArrayList<String>();
 
-	public AddAspectsMarkerResoluation(String label) {
+	public AddAspectsMarkerResoluationForCarelessCleanup(String label) {
 		this.label = label;
 		quickFixCore = new QuickFixCore();
 	}
@@ -72,21 +71,35 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 	}
 
 	@Override
+	public String getDescription() {
+		return description;
+	}
+
+	@Override
+	public Image getImage() {
+		return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_QUICK_FIX);
+	}
+
+	@Override
 	public void run(IMarker marker) {
-		MethodDeclaration methodDeclarationWhichHasBadSmell = getMethodDeclarationWhichHasBadSmell(marker);
 		int badSmellLineNumber = getBadSmellLineNumberFromMarker(marker);
-		List<TryStatement> tryStatements = getAllTryStatementOfMethodDeclaration(methodDeclarationWhichHasBadSmell);
-		TryStatement tryStatementWillBeInject = getTargetTryStetment(
-				tryStatements, badSmellLineNumber);
-		List<CatchClause> catchClauses = tryStatementWillBeInject.catchClauses();
-		String exceptionType = getExceptionTypeOfCatchClauseWhichHasBadSmell(badSmellLineNumber, catchClauses);
-		if(exceptionType == null){
+		MethodDeclaration methodDeclarationWhichHasBadSmell = getMethodDeclarationWhichHasBadSmell(marker);
+		MethodInvocationCollectorVisitor visitor = new MethodInvocationCollectorVisitor();
+		methodDeclarationWhichHasBadSmell.accept(visitor);
+		List<MethodInvocation> methodInvocations = visitor.getMethodInvocations();
+		MethodInvocation closeMethod = getCloseMethodInvocation(methodInvocations, badSmellLineNumber);
+		if (closeMethod == null) {
 			return;
 		}
-		MethodInvocation methodWhichWillThrowSpecificException = getTheFirstMethodInvocationWhichWillThrowTheSameExceptionAsInput(
-				exceptionType, tryStatementWillBeInject);
-		String injectedMethodReturnType = getMethodInvocationReturnType(methodWhichWillThrowSpecificException);
-		String objectTypeOfInjectedMethod = getTheObjectTypeOfMethodInvocation(methodWhichWillThrowSpecificException);
+		CloseInvocationExecutionChecker cieChecker = new CloseInvocationExecutionChecker();
+		List<ASTNode> astNodesThatMayThrowException = cieChecker.getASTNodesThatMayThrowExceptionBeforeCloseInvocation(closeMethod);
+		ExpressionStatement injectedExpressionStatement = (ExpressionStatement) astNodesThatMayThrowException.get(0);
+		MethodInvocation injectedMethodInvocation = (MethodInvocation)injectedExpressionStatement.getExpression();
+		String exceptionType = getInjectedExceptionType(injectedMethodInvocation);
+		if (exceptionType == null) {
+			return;
+		}
+
 		String badSmellType = "";
 		try {
 			badSmellType = (String) marker
@@ -97,39 +110,70 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 		}
 		badSmellType = badSmellType.replace("_", "");
 
+		String injectedMethodReturnType = getMethodInvocationReturnType(injectedMethodInvocation);
 		String className = getClassNameOfMethodDeclaration(methodDeclarationWhichHasBadSmell);
 		String nameOfMethodWhichHasBadSmell = methodDeclarationWhichHasBadSmell
 				.getName().toString();
 		String returnTypeOfMethodWhichHasBadSmell = getMethodDeclarationReturnType(methodDeclarationWhichHasBadSmell);
-
-		String injectedMethodName = methodWhichWillThrowSpecificException
-				.getName().toString();
+		String objectTypeOfInjectedMethod = getTheObjectTypeOfMethodInvocation(injectedMethodInvocation);
+		String injectedMethodName = injectedMethodInvocation.getName()
+				.toString();
 		String packageChain = "ntut.csie.aspect." + badSmellType;
 		project = marker.getResource().getProject();
 		javaproject = JavaCore.create(project);
 		IPackageFragmentRoot root = getSourceFolderOfCurrentProject();
 		createPackage(packageChain, root);
-		int lineNumberOfMethodWhichWillThrowSpecificException = getStatementLineNumber(methodWhichWillThrowSpecificException);
+		int lineNumberOfMethodWhichWillThrowSpecificException = getStatementLineNumber(injectedMethodInvocation);
 		String fileContent = buildUpAspectsFile(exceptionType,
 				injectedMethodReturnType, objectTypeOfInjectedMethod,
 				className, nameOfMethodWhichHasBadSmell,
 				returnTypeOfMethodWhichHasBadSmell, injectedMethodName,
-				badSmellType, packageChain, lineNumberOfMethodWhichWillThrowSpecificException);
+				badSmellType, packageChain,
+				lineNumberOfMethodWhichWillThrowSpecificException);
 		String projectPath = ResourcesPlugin.getWorkspace().getRoot()
 				.getLocation().toOSString();
 		String FilePath = root.getPath().makeAbsolute().toOSString();
 		String filePath = projectPath + "\\" + FilePath
 				+ "\\ntut\\csie\\aspect" + "\\" + badSmellType + "\\"
-				+ className + "Aspect"+exceptionType+"In"+makeFirstCharacterUpperCase(nameOfMethodWhichHasBadSmell)+"FunctionAtLine"+lineNumberOfMethodWhichWillThrowSpecificException+".aj";
+				+ className + "Aspect" + exceptionType + "In"
+				+ makeFirstCharacterUpperCase(nameOfMethodWhichHasBadSmell)
+				+ "FunctionAtLine"
+				+ lineNumberOfMethodWhichWillThrowSpecificException + ".aj";
 		WriteFile(fileContent, filePath);
 		refreshPackageExplorer(filePath);
 		refreshProject();
+
 	}
 	
-	private String makeFirstCharacterUpperCase(String name){
-		return name.substring(0, 1).toUpperCase() + name.substring(1);
-	}
 
+	private void WriteFile(String str, String path) {
+		BufferedWriter writer = null;
+		try {
+			File file = new File(path);
+			writer = new BufferedWriter(new OutputStreamWriter(
+					new FileOutputStream(file, false), "utf8"));
+			writer.write(str);
+			writer.newLine();
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new RuntimeException();
+		} finally {
+			closeWriter(writer);
+		}
+	}
+	
+	private void closeWriter(BufferedWriter writer) {
+		try {
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			ignore();
+		}
+	}
+	
+	private void ignore() {
+	}
+	
 	private void refreshPackageExplorer(String fileCreateFile) {
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IPath location = Path.fromOSString(fileCreateFile);
@@ -157,11 +201,7 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 			job.schedule();
 		}
 	}
-
-	private void showOneButtonPopUpMenu(final String title, final String msg) {
-		PopupDialog.showDialog(title, msg);
-	}
-
+	
 	private void refreshProject(IProject project) {
 		// build project to refresh
 		try {
@@ -173,6 +213,14 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 		}
 	}
 
+	private void showOneButtonPopUpMenu(final String title, final String msg) {
+		PopupDialog.showDialog(title, msg);
+	}
+	
+	private String makeFirstCharacterUpperCase(String name){
+		return name.substring(0, 1).toUpperCase() + name.substring(1);
+	}
+	
 	private String buildUpAspectsFile(String exceptionType,
 			String injectedMethodReturnType, String objectTypeOfInjectedMethod,
 			String className, String nameOfMethodWhichHasBadSmell,
@@ -219,33 +267,23 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 
 		return aspectJFileConetent;
 	}
+	
+	private String getTheObjectTypeOfMethodInvocation(
+			MethodInvocation methodWhichWillThrowSpecificException) {
+		FindExpressionObjectOfMethodInvocationVisitor theFirstExpressionVisitor = new FindExpressionObjectOfMethodInvocationVisitor();
+		methodWhichWillThrowSpecificException.accept(theFirstExpressionVisitor);
+		checkIsDuplicate(theFirstExpressionVisitor.getObjectPackageName());
+		return theFirstExpressionVisitor.getObjectName();
+	}
 
-	private void WriteFile(String str, String path) {
-		BufferedWriter writer = null;
+	// packageName could be in format like a.b.c.d
+	private void createPackage(String packageName, IPackageFragmentRoot root) {
 		try {
-			File file = new File(path);
-			writer = new BufferedWriter(new OutputStreamWriter(
-					new FileOutputStream(file, false), "utf8"));
-			writer.write(str);
-			writer.newLine();
-		} catch (IOException e) {
+			root.createPackageFragment(packageName, false, null);
+		} catch (JavaModelException e) {
 			e.printStackTrace();
 			throw new RuntimeException();
-		} finally {
-			closeWriter(writer);
 		}
-	}
-
-	private void closeWriter(BufferedWriter writer) {
-		try {
-			writer.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-			ignore();
-		}
-	}
-
-	private void ignore() {
 	}
 
 	private IPackageFragmentRoot getSourceFolderOfCurrentProject() {
@@ -264,50 +302,35 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 		return null;
 	}
 
-	// packageName could be in format like a.b.c.d
-	private void createPackage(String packageName, IPackageFragmentRoot root) {
-		try {
-			root.createPackageFragment(packageName, false, null);
-		} catch (JavaModelException e) {
-			e.printStackTrace();
-			throw new RuntimeException();
+	private String getMethodDeclarationReturnType(MethodDeclaration method) {
+		ITypeBinding type = method.resolveBinding().getReturnType();
+		if (!type.isPrimitive()) {
+			checkIsDuplicate(type.getBinaryName());
 		}
+		return type.getName().toString();
 	}
 
-	private String getTheObjectTypeOfMethodInvocation(
+	private String getMethodInvocationReturnType(
 			MethodInvocation methodWhichWillThrowSpecificException) {
-		FindExpressionObjectOfMethodInvocationVisitor theFirstExpressionVisitor = new FindExpressionObjectOfMethodInvocationVisitor();
-		methodWhichWillThrowSpecificException.accept(theFirstExpressionVisitor);
-		checkIsDuplicate(theFirstExpressionVisitor.getObjectPackageName());
-		return theFirstExpressionVisitor.getObjectName();
+		IMethodBinding returnType = methodWhichWillThrowSpecificException
+				.resolveMethodBinding();
+		ITypeBinding type = returnType.getReturnType();
+		if (!type.isPrimitive()) {
+			checkIsDuplicate(type.getBinaryName());
+		}
+		return methodWhichWillThrowSpecificException.resolveTypeBinding()
+				.getName().toString();
 	}
-	
-	private void checkIsDuplicate(String content){
-		for(String importContent : importObjects){
-			if(importContent.equalsIgnoreCase(content.trim())){
+
+	private void checkIsDuplicate(String content) {
+		for (String importContent : importObjects) {
+			if (importContent.equalsIgnoreCase(content.trim())) {
 				return;
 			}
 		}
 		importObjects.add(content.trim());
 	}
 
-	private String getMethodDeclarationReturnType(MethodDeclaration method) {
-		ITypeBinding type = method.resolveBinding().getReturnType();
-		if(!type.isPrimitive()){
-			checkIsDuplicate(type.getBinaryName());
-		}
-		return type.getName().toString();
-	}
-
-	private String getMethodInvocationReturnType(MethodInvocation methodWhichWillThrowSpecificException) {
-		IMethodBinding returnType = methodWhichWillThrowSpecificException.resolveMethodBinding();
-		ITypeBinding type = returnType.getReturnType();
-		if(!type.isPrimitive() ){
-			checkIsDuplicate(type.getBinaryName());
-		} 
-		return methodWhichWillThrowSpecificException.resolveTypeBinding().getName().toString();
-	}
-	
 	private String getClassNameOfMethodDeclaration(MethodDeclaration method) {
 		TypeDeclaration classOfMethod = (TypeDeclaration) method.getParent();
 		String className = classOfMethod.resolveBinding().getName().toString();
@@ -316,9 +339,45 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 				+ "." + className);
 		return className;
 	}
-	
-	public List<String> getImportObjectsForTesting(){
-		return importObjects;
+
+	private String getInjectedExceptionType(MethodInvocation invocation) {
+		// get method signature from a node of constructor call
+		IMethodBinding methodBinding = invocation.resolveMethodBinding();
+		List<ITypeBinding> exceptions = new ArrayList<ITypeBinding>();
+		if (methodBinding != null) {
+			exceptions.addAll(Arrays.asList(methodBinding.getExceptionTypes()));
+		}
+		if (!exceptions.isEmpty()) {
+			
+			ITypeBinding exceptionType = exceptions.get(0);
+			String exceptionPackage = exceptionType.getBinaryName();
+			if(exceptionPackage.equalsIgnoreCase("java.lang.Exception")){
+				showOneButtonPopUpMenu("Remind you!", "It is not allowed to inject super Exception class in AspectJ!");
+				return null;
+			}else{
+				checkIsDuplicate(exceptionPackage);
+				return exceptionType.getName().toString();
+			}
+		}
+		return null;
+	}
+
+	private MethodInvocation getCloseMethodInvocation(
+			List<MethodInvocation> methodInvocations, int badSmellLineNumber) {
+		MethodInvocation candidate = null;
+		for (MethodInvocation methodInv : methodInvocations) {
+			int lineNumberOfCloseInvocation = getStatementLineNumber(methodInv);
+			if(lineNumberOfCloseInvocation == badSmellLineNumber){
+				return methodInv;
+			}
+		}
+		return candidate;
+	}
+
+	private int getStatementLineNumber(ASTNode node) {
+		int lineNumberOfTryStatement = compilationUnit.getLineNumber(node
+				.getStartPosition());
+		return lineNumberOfTryStatement;
 	}
 
 	private MethodDeclaration getMethodDeclarationWhichHasBadSmell(
@@ -333,15 +392,8 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 		}
 		quickFixCore.setJavaFileModifiable(marker.getResource());
 		compilationUnit = quickFixCore.getCompilationUnit();
-		return QuickFixUtils.getMethodDeclaration(compilationUnit, Integer.parseInt(methodIdx));
-	}
-
-	private List<TryStatement> getAllTryStatementOfMethodDeclaration(
-			MethodDeclaration methodDeclaration) {
-		// 取出在method中所有的try block
-		FindAllTryStatementVisitor visitor = new FindAllTryStatementVisitor();
-		methodDeclaration.accept(visitor);
-		return visitor.getTryStatementsList();
+		return QuickFixUtils.getMethodDeclaration(compilationUnit,
+				Integer.parseInt(methodIdx));
 	}
 
 	private int getBadSmellLineNumberFromMarker(IMarker marker) {
@@ -354,69 +406,6 @@ public class AddAspectsMarkerResoluation implements IMarkerResolution,
 			throw new RuntimeException();
 		}
 		return badSmellLineNumber;
-	}
-
-
-	private MethodInvocation getTheFirstMethodInvocationWhichWillThrowTheSameExceptionAsInput(
-			String exceptionType, TryStatement tryStatementWillBeInject) {
-		Block body = tryStatementWillBeInject.getBody();
-		FindThrowSpecificExceptionStatementVisitor visitor = new FindThrowSpecificExceptionStatementVisitor(
-				exceptionType);
-		body.accept(visitor);
-		return visitor.getMethodInvocationWhichWiThrowException();
-	}
-
-	private String getExceptionTypeOfCatchClauseWhichHasBadSmell(
-			int badSmellLineNumber, List<CatchClause> catchClauses) {
-		for (CatchClause catchBlock : catchClauses) {
-			int catchClauseLineNumber = compilationUnit
-					.getLineNumber(catchBlock.getStartPosition());
-			if (badSmellLineNumber == catchClauseLineNumber) {
-				ITypeBinding exceptionType = catchBlock.getException().getType().resolveBinding();
-				String exceptionPackage = exceptionType.getBinaryName();
-				if(exceptionPackage.equalsIgnoreCase("java.lang.Exception")){
-					showOneButtonPopUpMenu("Remind you!", "It is not allowed to inject super Exception class in AspectJ!");
-					return null;
-				}else{
-					checkIsDuplicate(exceptionPackage);
-					return exceptionType.getName().toString();
-				}
-			}
-		}
-		return null;
-	}
-
-	public void setCompilationUnitForTesting(CompilationUnit compilationUnit) {
-		this.compilationUnit = compilationUnit;
-	}
-
-	private TryStatement getTargetTryStetment(List<TryStatement> tryStatements,
-			int badSmellLineNumber) {
-		TryStatement candidate = null;
-		for (TryStatement tryStatement : tryStatements) {
-			int lineNumberOfTryStatement = getStatementLineNumber(tryStatement);
-			if (lineNumberOfTryStatement < badSmellLineNumber) {
-				candidate = tryStatement;
-			} else {
-				break;
-			}
-		}
-		return candidate;
-	}
-
-	private int getStatementLineNumber(ASTNode node) {
-		int lineNumberOfTryStatement = compilationUnit.getLineNumber(node.getStartPosition());
-		return lineNumberOfTryStatement;
-	}
-
-	@Override
-	public String getDescription() {
-		return description;
-	}
-
-	@Override
-	public Image getImage() {
-		return JavaPluginImages.get(JavaPluginImages.IMG_OBJS_QUICK_FIX);
 	}
 
 }

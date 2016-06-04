@@ -39,7 +39,7 @@ public class AddAspectsMarkerResoluationTest {
 	private DummyHandlerVisitor adVisitor;
 	private SmellSettings smellSettings;
 	private List<MarkerInfo> markerInfos;
-	private AddAspectsMarkerResoluation resoluation;
+	private AddAspectsMarkerResoluationForDummyHandlerAndEmptyCatchBlock resoluation;
 	private Path addAspectsMarkerResoluationExamplePath;
 	@Before
 	public void setUp() throws Exception {
@@ -47,7 +47,7 @@ public class AddAspectsMarkerResoluationTest {
 		detectPrintStackTrace();
 		markerInfos = visitCompilationAndGetSmellList();
 		setUpMethodIndexOfMarkerInfo();
-		resoluation = new AddAspectsMarkerResoluation("test");
+		resoluation = new AddAspectsMarkerResoluationForDummyHandlerAndEmptyCatchBlock("test");
 		addAspectsMarkerResoluationExamplePath = new Path("AddAspectsMarkerResoluationExampleProject" + "/"
 				+ JavaProjectMaker.FOLDERNAME_SOURCE + "/"
 				+ PathUtils.dot2slash(AddAspectsMarkerResoluationExample.class.getName())
@@ -390,7 +390,7 @@ public class AddAspectsMarkerResoluationTest {
 		List<CatchClause> catchClauses = (List<CatchClause>)tryStatement.catchClauses();
 		Method method = null;
 		try {
-			method = AddAspectsMarkerResoluation.class.getDeclaredMethod("getExceptionTypeOfCatchClauseWhichHasBadSmell",
+			method = AddAspectsMarkerResoluationForDummyHandlerAndEmptyCatchBlock.class.getDeclaredMethod("getExceptionTypeOfCatchClauseWhichHasBadSmell",
 					Integer.TYPE,  List.class);
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
@@ -424,7 +424,7 @@ public class AddAspectsMarkerResoluationTest {
 		List<TryStatement> tryStatements = ASTNodeFinder.getTryStatementNodeListByMethodDeclarationName(compilationUnit, "testDataForGetAllTryStatementOfMethodDeclaration");
 		Method method = null;
 		try {
-			method = AddAspectsMarkerResoluation.class.getDeclaredMethod("getTargetTryStetment",
+			method = AddAspectsMarkerResoluationForDummyHandlerAndEmptyCatchBlock.class.getDeclaredMethod("getTargetTryStetment",
 					  List.class, Integer.TYPE);
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
@@ -961,7 +961,7 @@ public class AddAspectsMarkerResoluationTest {
 		List<CatchClause> catchClauses = (List<CatchClause>)tryStatement.catchClauses();
 		Method method = null;
 		try {
-			method = AddAspectsMarkerResoluation.class.getDeclaredMethod("getExceptionTypeOfCatchClauseWhichHasBadSmell",
+			method = AddAspectsMarkerResoluationForDummyHandlerAndEmptyCatchBlock.class.getDeclaredMethod("getExceptionTypeOfCatchClauseWhichHasBadSmell",
 					Integer.TYPE,  List.class);
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
