@@ -7,7 +7,7 @@ public class DifferentTypeOfMethodInvocation {
 	public void mehodInvocationWithExpression(){
 		DifferentTypeOfMethodInvocation object = new DifferentTypeOfMethodInvocation();
 		try{
-			object.doSomethind();
+			object.doSomething();
 		}catch(IOException e){
 			e.printStackTrace();
 		}
@@ -15,13 +15,13 @@ public class DifferentTypeOfMethodInvocation {
 	
 	public void mehodInvocationWithoutExpression(){
 		try{
-			doSomethind();
+			doSomething();
 		}catch(IOException e){
 			e.printStackTrace();
 		}
 	}
 	
-	public void doSomethind() throws IOException{
+	public void doSomething() throws IOException{
 		
 	}
 }
