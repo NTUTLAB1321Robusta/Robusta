@@ -883,7 +883,7 @@ public class AddAspectsMarkerResoluationTest {
 				DifferentTypeOfMethodInvocation.class,
 				"AddAspectsMarkerResoluationExampleProject",
 				"mehodInvocationWithoutExpression",
-				"doSomethind()").get(0);
+				"doSomething()").get(0);
 		FindExpressionObjectOfMethodInvocationVisitor visitor = new FindExpressionObjectOfMethodInvocationVisitor();
 		methodInv.accept(visitor);
 		Assert.assertEquals("DifferentTypeOfMethodInvocation", visitor.getObjectName());
@@ -895,7 +895,7 @@ public class AddAspectsMarkerResoluationTest {
 				DifferentTypeOfMethodInvocation.class,
 				"AddAspectsMarkerResoluationExampleProject",
 				"mehodInvocationWithExpression",
-				"object.doSomethind()").get(0);
+				"object.doSomething()").get(0);
 		FindExpressionObjectOfMethodInvocationVisitor visitor = new FindExpressionObjectOfMethodInvocationVisitor();
 		methodInv.accept(visitor);
 		Assert.assertEquals("DifferentTypeOfMethodInvocation", visitor.getObjectName());

@@ -24,7 +24,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 public class FindThrowSpecificExceptionStatementVisitor extends
 		ASTVisitor {
 	private String exceptionType = "";
-	private List<MethodInvocation> methodInvocations = new ArrayList<MethodInvocation>();
+	private Stack<MethodInvocation> methodInvocations = new Stack<MethodInvocation>();
 	public FindThrowSpecificExceptionStatementVisitor(String exception) {
 		exceptionType = exception;
 	}
@@ -39,17 +39,17 @@ public class FindThrowSpecificExceptionStatementVisitor extends
 		}
 		for (ITypeBinding exception : exceptions) {
 			if (exception.getName().toString().equalsIgnoreCase(exceptionType)) {
-				methodInvocations.add(invocation);
+				methodInvocations.push(invocation);
 			}
 		}
 		return true;
 	}
 	
 	public MethodInvocation getMethodInvocationWhichWiThrowException(){
-		if(methodInvocations.isEmpty()){
+		if(methodInvocations.empty()){
 			return null;
 		}else{
-			return methodInvocations.get(0);
+			return methodInvocations.pop();
 		}
 	}
 }
