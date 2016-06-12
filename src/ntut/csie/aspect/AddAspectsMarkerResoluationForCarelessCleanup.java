@@ -244,7 +244,7 @@ public class AddAspectsMarkerResoluationForCarelessCleanup implements
 				+ ") throws " + exceptionType + " : find" + makeFirstCharacterUpperCase(injectedMethodName)
 				+ "(object) {";
 		String aroundContent = "\t" + "  boolean aspectSwitch = false;" + "\r\n"
-				+ "\t" + "  if(swich){" + "\r\n" + "\t\t" + "throw new "
+				+ "\t" + "  if(aspectSwitch){" + "\r\n" + "\t\t" + "throw new "
 				+ exceptionType + "();" + "\r\n" + "\t" + "  } else {" + "\r\n";
 		String elseContent = "";
 		if(injectedMethodReturnType.equals("void")){
