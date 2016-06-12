@@ -69,6 +69,8 @@ public class AddAspectsMarkerResoluationTest {
 				.loadClass(TestDataForGetMethodReturnType.class);
 		environmentBuilder
 				.loadClass(DifferentTypeOfMethodInvocation.class);
+		environmentBuilder
+		        .loadClass(TestDataForFindTheFirstThrowSpecificExceptionStatement.class);
 		compilationUnit = environmentBuilder
 				.getCompilationUnit(AddAspectsMarkerResoluationExample.class);
 		// Get empty setting
@@ -986,6 +988,21 @@ public class AddAspectsMarkerResoluationTest {
 			e.printStackTrace();
 			Assert.fail("throw exception");
 		}
+	}
+	
+	@Test
+	public void testFindTheFirstThrowSpecificExceptionStatement() {
+		MethodDeclaration methodDec = ASTNodeFinder.
+				getMethodDeclarationNodeByName(TestDataForFindTheFirstThrowSpecificExceptionStatement.class,
+				"AddAspectsMarkerResoluationExampleProject",
+				"doSomething");
+		FindAllMethodInvocationVisitor getAllMethodInvocation = new FindAllMethodInvocationVisitor("IOException");
+		methodDec.accept(getAllMethodInvocation);
+		MethodInvocation methodInv = getAllMethodInvocation.getTheFirstInvocatingMethodInvocation();
+		FindThrowSpecificExceptionStatementVisitor getTheFirstMethodInvocationWithSpecificException = new FindThrowSpecificExceptionStatementVisitor("IOException");
+		methodInv.accept(getTheFirstMethodInvocationWithSpecificException);
+		
+		Assert.assertEquals("output.flush()", getTheFirstMethodInvocationWithSpecificException.getMethodInvocationWhichWiThrowException().toString());
 	}
 	
 	private IMarker getSpecificMarkerByMarkerInfoIndex(int index) {

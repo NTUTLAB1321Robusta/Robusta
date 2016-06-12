@@ -362,10 +362,12 @@ public class AddAspectsMarkerResoluationForDummyHandlerAndEmptyCatchBlock implem
 	private MethodInvocation getTheFirstMethodInvocationWhichWillThrowTheSameExceptionAsInput(
 			String exceptionType, TryStatement tryStatementWillBeInject) {
 		Block body = tryStatementWillBeInject.getBody();
-		FindThrowSpecificExceptionStatementVisitor visitor = new FindThrowSpecificExceptionStatementVisitor(
-				exceptionType);
-		body.accept(visitor);
-		return visitor.getMethodInvocationWhichWiThrowException();
+		FindAllMethodInvocationVisitor getAllMethodInvocation = new FindAllMethodInvocationVisitor(exceptionType);
+		body.accept(getAllMethodInvocation);
+		MethodInvocation methodInv = getAllMethodInvocation.getTheFirstInvocatingMethodInvocation();
+		FindThrowSpecificExceptionStatementVisitor getTheFirstMethodInvocationWithSpecificException = new FindThrowSpecificExceptionStatementVisitor(exceptionType);
+		methodInv.accept(getTheFirstMethodInvocationWithSpecificException);
+		return getTheFirstMethodInvocationWithSpecificException.getMethodInvocationWhichWiThrowException();
 	}
 
 	private String getExceptionTypeOfCatchClauseWhichHasBadSmell(
