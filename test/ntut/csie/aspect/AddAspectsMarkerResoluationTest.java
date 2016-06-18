@@ -1008,7 +1008,7 @@ public class AddAspectsMarkerResoluationTest {
 			}
 		}
 		
-		Assert.assertEquals("output.flush()", getTheFirstMethodInvocationWithSpecificException.getMethodInvocationWhichWiThrowException().toString());
+		Assert.assertEquals("output.flush()", getTheFirstMethodInvocationWithSpecificException.getMethodInvocationWhichWillThrowException().toString());
 	}
 	
 	private IMarker getSpecificMarkerByMarkerInfoIndex(int index) {

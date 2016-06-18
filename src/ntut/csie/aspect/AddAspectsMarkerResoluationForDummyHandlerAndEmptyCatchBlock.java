@@ -375,7 +375,7 @@ public class AddAspectsMarkerResoluationForDummyHandlerAndEmptyCatchBlock implem
 			}
 		}
 		
-		return getTheFirstMethodInvocationWithSpecificException.getMethodInvocationWhichWiThrowException();
+		return getTheFirstMethodInvocationWithSpecificException.getMethodInvocationWhichWillThrowException();
 	}
 
 	private String getExceptionTypeOfCatchClauseWhichHasBadSmell(

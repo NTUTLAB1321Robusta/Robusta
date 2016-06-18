@@ -45,7 +45,7 @@ public class FindThrowSpecificExceptionStatementVisitor extends
 		return true;
 	}
 	
-	public MethodInvocation getMethodInvocationWhichWiThrowException(){
+	public MethodInvocation getMethodInvocationWhichWillThrowException(){
 		if(methodInvocations.empty()){
 			return null;
 		}else{
