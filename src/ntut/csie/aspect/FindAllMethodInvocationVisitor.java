@@ -1,17 +1,18 @@
 package ntut.csie.aspect;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.IMethodBinding;
+import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 
 public class FindAllMethodInvocationVisitor extends ASTVisitor {
-	String exceptionType;
 	List<MethodInvocation> allInvocation = new ArrayList<MethodInvocation>();
 
-	public FindAllMethodInvocationVisitor(String exception) {
-		exceptionType = exception;
+	public FindAllMethodInvocationVisitor() {
 	}
 
 	@Override
@@ -20,9 +21,9 @@ public class FindAllMethodInvocationVisitor extends ASTVisitor {
 		return false;
 	}
 
-	public MethodInvocation getTheFirstInvocatingMethodInvocation() {
+	public List<MethodInvocation> getMethodInvocations() {
 		if (!allInvocation.isEmpty()) {
-			return allInvocation.get(0);
+			return allInvocation;
 		}
 		return null;
 	}

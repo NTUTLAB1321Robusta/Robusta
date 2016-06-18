@@ -458,7 +458,7 @@ public class AddAspectsMarkerResoluationTest {
 	public void testGetMethodDeclarationReturnVoid() {
 		MethodDeclaration methodDec = ASTNodeFinder.getMethodDeclarationNodeByName(TestDataForGetMethodDeclatationReturnType.class,
 				"AddAspectsMarkerResoluationExampleProject",
-				"publicdMethodReturnVoid");
+				"publicMethodReturnVoid");
 		Method method = getPrivateMethodWhichInputIsObject(resoluation,
 				"getMethodDeclarationReturnType", methodDec);
 		try {
@@ -481,7 +481,7 @@ public class AddAspectsMarkerResoluationTest {
 	public void testGetMethodDeclarationReturnString() {
 		MethodDeclaration methodDec = ASTNodeFinder.getMethodDeclarationNodeByName(TestDataForGetMethodDeclatationReturnType.class,
 				"AddAspectsMarkerResoluationExampleProject",
-				"publicdMethodReturnString");
+				"publicMethodReturnString");
 		Method method = getPrivateMethodWhichInputIsObject(resoluation,
 				"getMethodDeclarationReturnType", methodDec);
 		try {
@@ -504,7 +504,7 @@ public class AddAspectsMarkerResoluationTest {
 	public void testGetMethodDeclarationReturnBoolean() {
 		MethodDeclaration methodDec = ASTNodeFinder.getMethodDeclarationNodeByName(TestDataForGetMethodDeclatationReturnType.class,
 				"AddAspectsMarkerResoluationExampleProject",
-				"publicdMethodReturnBoolean");
+				"publicMethodReturnBoolean");
 		Method method = getPrivateMethodWhichInputIsObject(resoluation,
 				"getMethodDeclarationReturnType", methodDec);
 		try {
@@ -527,7 +527,7 @@ public class AddAspectsMarkerResoluationTest {
 	public void testGetMethodDeclarationReturnObject() {
 		MethodDeclaration methodDec = ASTNodeFinder.getMethodDeclarationNodeByName(TestDataForGetMethodDeclatationReturnType.class,
 				"AddAspectsMarkerResoluationExampleProject",
-				"publicdMethodReturnArrayList");
+				"publicMethodReturnArrayList");
 		Method method = getPrivateMethodWhichInputIsObject(resoluation,
 				"getMethodDeclarationReturnType", methodDec);
 		try {
@@ -550,7 +550,7 @@ public class AddAspectsMarkerResoluationTest {
 	public void testGetMethodDeclarationReturnInteger() {
 		MethodDeclaration methodDec = ASTNodeFinder.getMethodDeclarationNodeByName(TestDataForGetMethodDeclatationReturnType.class,
 				"AddAspectsMarkerResoluationExampleProject",
-				"publicdMethodReturnInteger");
+				"publicMethodReturnInteger");
 		Method method = getPrivateMethodWhichInputIsObject(resoluation,
 				"getMethodDeclarationReturnType", methodDec);
 		try {
@@ -573,7 +573,7 @@ public class AddAspectsMarkerResoluationTest {
 	public void testGetMethodDeclarationReturnDouble() {
 		MethodDeclaration methodDec = ASTNodeFinder.getMethodDeclarationNodeByName(TestDataForGetMethodDeclatationReturnType.class,
 				"AddAspectsMarkerResoluationExampleProject",
-				"publicdMethodReturnDouble");
+				"publicMethodReturnDouble");
 		Method method = getPrivateMethodWhichInputIsObject(resoluation,
 				"getMethodDeclarationReturnType", methodDec);
 		try {
@@ -597,7 +597,7 @@ public class AddAspectsMarkerResoluationTest {
 		MethodInvocation methodInv = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(TestDataForGetMethodReturnType.class,
 				"AddAspectsMarkerResoluationExampleProject",
 				"TestDataForGetMethodReturnType",
-				"object.publicdMethodReturnArrayList()").get(0);
+				"object.publicMethodReturnArrayList()").get(0);
 		Method method = getPrivateMethodWhichInputIsObject(resoluation,
 				"getMethodInvocationReturnType", methodInv);
 		try {
@@ -621,7 +621,7 @@ public class AddAspectsMarkerResoluationTest {
 		MethodInvocation methodInv = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(TestDataForGetMethodReturnType.class,
 				"AddAspectsMarkerResoluationExampleProject",
 				"TestDataForGetMethodReturnType",
-				"object.publicdMethodReturnBoolean()").get(0);
+				"object.publicMethodReturnBoolean()").get(0);
 		Method method = getPrivateMethodWhichInputIsObject(resoluation,
 				"getMethodInvocationReturnType", methodInv);
 		try {
@@ -645,7 +645,7 @@ public class AddAspectsMarkerResoluationTest {
 		MethodInvocation methodInv = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(TestDataForGetMethodReturnType.class,
 				"AddAspectsMarkerResoluationExampleProject",
 				"TestDataForGetMethodReturnType",
-				"object.publicdMethodReturnDouble()").get(0);
+				"object.publicMethodReturnDouble()").get(0);
 		Method method = getPrivateMethodWhichInputIsObject(resoluation,
 				"getMethodInvocationReturnType", methodInv);
 		try {
@@ -669,7 +669,7 @@ public class AddAspectsMarkerResoluationTest {
 		MethodInvocation methodInv = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(TestDataForGetMethodReturnType.class,
 				"AddAspectsMarkerResoluationExampleProject",
 				"TestDataForGetMethodReturnType",
-				"object.publicdMethodReturnFloat()").get(0);
+				"object.publicMethodReturnFloat()").get(0);
 		Method method = getPrivateMethodWhichInputIsObject(resoluation,
 				"getMethodInvocationReturnType", methodInv);
 		try {
@@ -693,7 +693,7 @@ public class AddAspectsMarkerResoluationTest {
 		MethodInvocation methodInv = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(TestDataForGetMethodReturnType.class,
 				"AddAspectsMarkerResoluationExampleProject",
 				"TestDataForGetMethodReturnType",
-				"object.publicdMethodReturnInteger()").get(0);
+				"object.publicMethodReturnInteger()").get(0);
 		Method method = getPrivateMethodWhichInputIsObject(resoluation,
 				"getMethodInvocationReturnType", methodInv);
 		try {
@@ -717,7 +717,7 @@ public class AddAspectsMarkerResoluationTest {
 		MethodInvocation methodInv = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(TestDataForGetMethodReturnType.class,
 				"AddAspectsMarkerResoluationExampleProject",
 				"TestDataForGetMethodReturnType",
-				"object.publicdMethodReturnString()").get(0);
+				"object.publicMethodReturnString()").get(0);
 		Method method = getPrivateMethodWhichInputIsObject(resoluation,
 				"getMethodInvocationReturnType", methodInv);
 		try {
@@ -741,7 +741,7 @@ public class AddAspectsMarkerResoluationTest {
 		MethodInvocation methodInv = ASTNodeFinder.getMethodInvocationByMethodNameAndCode(TestDataForGetMethodReturnType.class,
 				"AddAspectsMarkerResoluationExampleProject",
 				"TestDataForGetMethodReturnType",
-				"object.publicdMethodReturnVoid()").get(0);
+				"object.publicMethodReturnVoid()").get(0);
 		Method method = getPrivateMethodWhichInputIsObject(resoluation,
 				"getMethodInvocationReturnType", methodInv);
 		try {
@@ -764,7 +764,7 @@ public class AddAspectsMarkerResoluationTest {
 	public void testGetClassNameOfMethodDeclaration() {
 		MethodDeclaration methodDec = ASTNodeFinder.getMethodDeclarationNodeByName(TestDataForGetMethodDeclatationReturnType.class,
 				"AddAspectsMarkerResoluationExampleProject",
-				"publicdMethodReturnString");
+				"publicMethodReturnString");
 		Method method = getPrivateMethodWhichInputIsObject(resoluation,
 				"getClassNameOfMethodDeclaration", methodDec);
 		try {
@@ -787,7 +787,7 @@ public class AddAspectsMarkerResoluationTest {
 	public void testImportObjectsFeatureInGetClassNameOfMethodDeclaration() {
 		MethodDeclaration methodDec = ASTNodeFinder.getMethodDeclarationNodeByName(TestDataForGetMethodDeclatationReturnType.class,
 				"AddAspectsMarkerResoluationExampleProject",
-				"publicdMethodReturnString");
+				"publicMethodReturnString");
 		Method method = getPrivateMethodWhichInputIsObject(resoluation,
 				"getClassNameOfMethodDeclaration", methodDec);
 		try {
@@ -811,7 +811,7 @@ public class AddAspectsMarkerResoluationTest {
 		MethodDeclaration methodDec = ASTNodeFinder.getMethodDeclarationNodeByName(
 				TestDataForGetMethodDeclatationReturnType.class,
 				"AddAspectsMarkerResoluationExampleProject",
-				"publicdMethodReturnArrayList");
+				"publicMethodReturnArrayList");
 		Method method = getPrivateMethodWhichInputIsObject(resoluation,
 				"getMethodDeclarationReturnType", methodDec);
 		try {
@@ -835,7 +835,7 @@ public class AddAspectsMarkerResoluationTest {
 		MethodDeclaration methodDec = ASTNodeFinder.getMethodDeclarationNodeByName(
 				TestDataForGetMethodDeclatationReturnType.class,
 				"AddAspectsMarkerResoluationExampleProject",
-				"publicdMethodReturnString");
+				"publicMethodReturnString");
 		Method method = getPrivateMethodWhichInputIsObject(resoluation,
 				"getMethodDeclarationReturnType", methodDec);
 		try {
@@ -860,7 +860,7 @@ public class AddAspectsMarkerResoluationTest {
 				TestDataForGetMethodReturnType.class,
 				"AddAspectsMarkerResoluationExampleProject",
 				"TestDataForGetMethodReturnType",
-				"object.publicdMethodReturnArrayList()").get(0);
+				"object.publicMethodReturnArrayList()").get(0);
 		Method method = getPrivateMethodWhichInputIsObject(resoluation,
 				"getTheObjectTypeOfMethodInvocation", methodInv);
 		try {
@@ -909,7 +909,7 @@ public class AddAspectsMarkerResoluationTest {
 				TestDataForGetMethodReturnType.class,
 				"AddAspectsMarkerResoluationExampleProject",
 				"TestDataForGetMethodReturnType",
-				"object.publicdMethodReturnArrayList()").get(0);
+				"object.publicMethodReturnArrayList()").get(0);
 		Method method = getPrivateMethodWhichInputIsObject(resoluation,
 				"getMethodInvocationReturnType", methodInv);
 		try {
@@ -934,7 +934,7 @@ public class AddAspectsMarkerResoluationTest {
 				TestDataForGetMethodReturnType.class,
 				"AddAspectsMarkerResoluationExampleProject",
 				"TestDataForGetMethodReturnType",
-				"object.publicdMethodReturnString()").get(0);
+				"object.publicMethodReturnString()").get(0);
 		Method method = getPrivateMethodWhichInputIsObject(resoluation,
 				"getMethodInvocationReturnType", methodInv);
 		try {
@@ -996,11 +996,17 @@ public class AddAspectsMarkerResoluationTest {
 				getMethodDeclarationNodeByName(TestDataForFindTheFirstThrowSpecificExceptionStatement.class,
 				"AddAspectsMarkerResoluationExampleProject",
 				"doSomething");
-		FindAllMethodInvocationVisitor getAllMethodInvocation = new FindAllMethodInvocationVisitor("IOException");
+		FindAllMethodInvocationVisitor getAllMethodInvocation = new FindAllMethodInvocationVisitor();
 		methodDec.accept(getAllMethodInvocation);
-		MethodInvocation methodInv = getAllMethodInvocation.getTheFirstInvocatingMethodInvocation();
-		FindThrowSpecificExceptionStatementVisitor getTheFirstMethodInvocationWithSpecificException = new FindThrowSpecificExceptionStatementVisitor("IOException");
-		methodInv.accept(getTheFirstMethodInvocationWithSpecificException);
+		List<MethodInvocation> methodInv = getAllMethodInvocation.getMethodInvocations();
+		FindThrowSpecificExceptionStatementVisitor getTheFirstMethodInvocationWithSpecificException = null;
+		for(MethodInvocation method : methodInv){
+			getTheFirstMethodInvocationWithSpecificException = new FindThrowSpecificExceptionStatementVisitor("IOException");
+			method .accept(getTheFirstMethodInvocationWithSpecificException);
+			if(getTheFirstMethodInvocationWithSpecificException.isGetAMethodInvocationWhichWiThrowException()){
+				break;
+			}
+		}
 		
 		Assert.assertEquals("output.flush()", getTheFirstMethodInvocationWithSpecificException.getMethodInvocationWhichWiThrowException().toString());
 	}

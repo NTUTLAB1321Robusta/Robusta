@@ -52,4 +52,8 @@ public class FindThrowSpecificExceptionStatementVisitor extends
 			return methodInvocations.pop();
 		}
 	}
+	
+	public boolean isGetAMethodInvocationWhichWiThrowException(){
+		return !methodInvocations.empty();
+	}
 }

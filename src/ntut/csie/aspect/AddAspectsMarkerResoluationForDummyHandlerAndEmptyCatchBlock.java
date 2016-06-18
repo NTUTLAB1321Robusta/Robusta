@@ -294,7 +294,8 @@ public class AddAspectsMarkerResoluationForDummyHandlerAndEmptyCatchBlock implem
 	}
 
 	private String getMethodDeclarationReturnType(MethodDeclaration method) {
-		ITypeBinding type = method.resolveBinding().getReturnType();
+		IMethodBinding methodBinding = method.resolveBinding();
+		ITypeBinding type = methodBinding.getReturnType();
 		if(!type.isPrimitive()){
 			checkIsDuplicate(type.getBinaryName());
 		}
@@ -362,11 +363,18 @@ public class AddAspectsMarkerResoluationForDummyHandlerAndEmptyCatchBlock implem
 	private MethodInvocation getTheFirstMethodInvocationWhichWillThrowTheSameExceptionAsInput(
 			String exceptionType, TryStatement tryStatementWillBeInject) {
 		Block body = tryStatementWillBeInject.getBody();
-		FindAllMethodInvocationVisitor getAllMethodInvocation = new FindAllMethodInvocationVisitor(exceptionType);
+		FindAllMethodInvocationVisitor getAllMethodInvocation = new FindAllMethodInvocationVisitor();
 		body.accept(getAllMethodInvocation);
-		MethodInvocation methodInv = getAllMethodInvocation.getTheFirstInvocatingMethodInvocation();
-		FindThrowSpecificExceptionStatementVisitor getTheFirstMethodInvocationWithSpecificException = new FindThrowSpecificExceptionStatementVisitor(exceptionType);
-		methodInv.accept(getTheFirstMethodInvocationWithSpecificException);
+		List<MethodInvocation> methodInv = getAllMethodInvocation.getMethodInvocations();
+		FindThrowSpecificExceptionStatementVisitor getTheFirstMethodInvocationWithSpecificException = null;
+		for(MethodInvocation method : methodInv){
+			getTheFirstMethodInvocationWithSpecificException = new FindThrowSpecificExceptionStatementVisitor(exceptionType);
+			method.accept(getTheFirstMethodInvocationWithSpecificException);
+			if(getTheFirstMethodInvocationWithSpecificException.isGetAMethodInvocationWhichWiThrowException()){
+				break;
+			}
+		}
+		
 		return getTheFirstMethodInvocationWithSpecificException.getMethodInvocationWhichWiThrowException();
 	}
 
