@@ -1,0 +1,19 @@
+package ntut.csie.test.DummyHandler;
+
+import ntut.csie.failFastUT.Dummy.dummyExample;
+import java.io.IOException;
+import java.io.FileWriter;
+
+public aspect dummyExampleAspectException {
+	before() throws IOException: (call(* *(..) throws IOException) || call(*.new(..) throws IOException)) && within(dummyExample){
+
+	String name = thisJoinPoint.getSignature().getName();
+	if (thisJoinPoint.getKind().equals("constructor-call"))
+		name = thisJoinPoint.getSignature().getDeclaringTypeName().substring(thisJoinPoint.getSignature().getDeclaringTypeName().lastIndexOf(".") + 1);
+	String resp = AspectJSwitch.getInstance().nextAction(name);
+	if (resp.equals("f(IOException)"))
+		throw new IOException();
+
+	}
+	
+}

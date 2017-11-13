@@ -4,14 +4,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-
+import ntut.csie.testutility.TestEnvironmentBuilder;
 import ntut.csie.analyzer.UserDefineDummyHandlerFish;
 import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
+import ntut.csie.analyzer.dummy.DummyHandlerVisitor;
+import ntut.csie.analyzer.dummy.example.PrintOrLogBySuperMethod;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
+import ntut.csie.testutility.TestEnvironmentBuilder;
 import ntut.csie.util.PathUtils;
-
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.JavaCore;
@@ -23,63 +25,33 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class EmptyCatchBlockVisitorTest {
-	JavaFileToString javaFile2String;
-	JavaProjectMaker javaProjectMaker;
 	CompilationUnit compilationUnit;
 	EmptyCatchBlockVisitor emptyCatchBlockVisitor;
-	
+	private TestEnvironmentBuilder environmentBuilder;
+	SmellSettings smellSettings;
 	public EmptyCatchBlockVisitorTest() {
 	}
 	
 	@Before
 	public void setUp() throws Exception {
-		String testProjectName = "EmptyCatchBlockTest";
-		javaProjectMaker = new JavaProjectMaker(testProjectName);
-		javaProjectMaker.setJREDefaultContainer();
-		
-		javaProjectMaker.addJarFromProjectToBuildPath(JavaProjectMaker.FOLDERNAME_LIB_JAR + "/log4j-1.2.15.jar");
-
-		javaFile2String = new JavaFileToString();
-		javaFile2String.read(EmptyCatchBlockExample.class, JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker.createJavaFile(
-				EmptyCatchBlockExample.class.getPackage().getName(),
-				EmptyCatchBlockExample.class.getSimpleName() +  JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + EmptyCatchBlockExample.class.getPackage().getName() + ";\n"
-						+ javaFile2String.getFileContent());
-
-		javaFile2String.clear();
-		javaFile2String.read(UserDefineDummyHandlerFish.class, JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker.createJavaFile(
-				UserDefineDummyHandlerFish.class.getPackage().getName(),
-				UserDefineDummyHandlerFish.class.getSimpleName() + JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package " + UserDefineDummyHandlerFish.class.getPackage().getName() + ";\n"
-				+ javaFile2String.getFileContent());
-		
-		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(EmptyCatchBlockExample.class, testProjectName));
-		ASTParser parser = ASTParser.newParser(AST.JLS3);
-		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin.getWorkspace().getRoot().getFile(path)));
-		parser.setResolveBindings(true);
-
-		compilationUnit = (CompilationUnit) parser.createAST(null); 
+		environmentBuilder = new TestEnvironmentBuilder("EmptyCatchBlockTest");
+		environmentBuilder.createEnvironment();
+		smellSettings = environmentBuilder.getSmellSettings();
+		Class<?> testedClass = EmptyCatchBlockExample.class;
+		environmentBuilder.loadClass(testedClass);
+		compilationUnit = environmentBuilder.getCompilationUnit(testedClass);
 		compilationUnit.recordModifications();
 	}
 
 	@After
 	public void tearDown() throws Exception {
-		File smellSettingsFile = new File(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		if(smellSettingsFile.exists()) {
-			smellSettingsFile.delete();
-		}
-		javaProjectMaker.deleteProject();
+		environmentBuilder.cleanEnvironment();
 	}
 	
 	@Test
 	public void testVisitNode_withSettingFileAndIsDetectingFalse() {
 		int emptyCatchSmellCount = 0;
-		SmellSettings smellSetting = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		smellSetting.setSmellTypeAttribute(SmellSettings.SMELL_EMPTYCATCHBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, false);
-		smellSetting.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		modifyIsDetectingStatus(false);
 		assertTrue(new File(UserDefinedMethodAnalyzer.SETTINGFILEPATH).exists());
 		emptyCatchBlockVisitor = new EmptyCatchBlockVisitor(compilationUnit);
 		compilationUnit.accept(emptyCatchBlockVisitor);
@@ -91,17 +63,15 @@ public class EmptyCatchBlockVisitorTest {
 	
 	@Test
 	public void testVisitNode_withSettingFileAndIsDetectingTrue() {
-		int emptySmellCount = 0;
-		SmellSettings smellSetting = new SmellSettings(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		smellSetting.setSmellTypeAttribute(SmellSettings.SMELL_EMPTYCATCHBLOCK, SmellSettings.ATTRIBUTE_ISDETECTING, true);
-		smellSetting.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		int emptyCatchSmellCount = 0;
+		modifyIsDetectingStatus(true);
 		assertTrue(new File(UserDefinedMethodAnalyzer.SETTINGFILEPATH).exists());
 		emptyCatchBlockVisitor = new EmptyCatchBlockVisitor(compilationUnit);
-		compilationUnit.accept(emptyCatchBlockVisitor);
+		compilationUnit.accept(emptyCatchBlockVisitor);		
 		if(emptyCatchBlockVisitor.getEmptyCatchList() != null)
-			emptySmellCount = emptyCatchBlockVisitor.getEmptyCatchList().size();
+			emptyCatchSmellCount = emptyCatchBlockVisitor.getEmptyCatchList().size();
 		
-		assertEquals(7, emptySmellCount);
+		assertEquals(7, emptyCatchSmellCount);
 	}
 
 	@Test
@@ -113,5 +83,13 @@ public class EmptyCatchBlockVisitorTest {
 			emptyCatchSmellCount = emptyCatchBlockVisitor.getEmptyCatchList().size();
 		
 		assertEquals(7, emptyCatchSmellCount);
+	}
+	private void modifyIsDetectingStatus(boolean isDetecting) {
+		SmellSettings smellSetting = new SmellSettings(
+				UserDefinedMethodAnalyzer.SETTINGFILEPATH);
+		smellSetting.setSmellTypeAttribute(
+				SmellSettings.SMELL_EMPTYCATCHBLOCK,
+				SmellSettings.ATTRIBUTE_ISDETECTING, isDetecting);
+		smellSetting.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 	}
 }

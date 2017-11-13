@@ -1,0 +1,19 @@
+package ntut.csie.test.EmptyCatchBlock;
+
+import ntut.csie.aspect.AspectDemo;
+import java.sql.SQLException;
+import java.sql.DriverManager;
+
+public aspect AspectDemoAspectException {
+	before() throws SQLException: (call(* *(..) throws SQLException) || call(*.new(..) throws SQLException)) && within(AspectDemo){
+
+	String name = thisJoinPoint.getSignature().getName();
+	if (thisJoinPoint.getKind().equals("constructor-call"))
+		name = thisJoinPoint.getSignature().getDeclaringTypeName().substring(thisJoinPoint.getSignature().getDeclaringTypeName().lastIndexOf(".") + 1);
+	String resp = AspectJSwitch.getInstance().nextAction(name);
+	if (resp.equals("f(SQLException)"))
+		throw new SQLException();
+
+	}
+	
+}

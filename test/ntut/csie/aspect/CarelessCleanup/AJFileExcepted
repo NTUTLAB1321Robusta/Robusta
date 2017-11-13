@@ -1,0 +1,28 @@
+package ntut.csie.test.CarelessCleanup;
+
+import ntut.csie.failFastUT.CarelessCleanup.carelessCleanupExample;
+import java.io.IOException;
+
+public aspect carelessCleanupExampleAspectException {
+	before(): (call(* *.close(..) throws IOException)) && within(carelessCleanupExample){
+
+	String name = thisJoinPoint.getSignature().getName();
+	if (thisJoinPoint.getKind().equals("constructor-call"))
+		name = thisJoinPoint.getSignature().getDeclaringTypeName().substring(thisJoinPoint.getSignature().getDeclaringTypeName().lastIndexOf(".") + 1);
+	String resp = AspectJSwitch.getInstance().nextAction(name);
+	if (resp.equals("f(RuntimeException)"))
+		throw new RuntimeException("erase bad smell");
+
+	}
+	before() throws IOException: (call(* *(..) throws IOException) || call(*.new(..) throws IOException)) && within(carelessCleanupExample){
+
+	String name = thisJoinPoint.getSignature().getName();
+	if (thisJoinPoint.getKind().equals("constructor-call"))
+		name = thisJoinPoint.getSignature().getDeclaringTypeName().substring(thisJoinPoint.getSignature().getDeclaringTypeName().lastIndexOf(".") + 1);
+	String resp = AspectJSwitch.getInstance().nextAction(name);
+	if (resp.equals("f(IOException)"))
+		throw new IOException();
+
+	}
+	
+}

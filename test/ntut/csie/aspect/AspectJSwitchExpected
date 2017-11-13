@@ -1,0 +1,47 @@
+package ntut.csie.aspect;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+
+public class AspectJSwitch {
+	private static AspectJSwitch instance;
+	private List<String> opres = new ArrayList<String>();
+	public Iterator<String> iterator = null;
+	
+
+	private AspectJSwitch() {
+	}	
+
+	public static AspectJSwitch getInstance() {
+		if (instance == null)
+			instance = new AspectJSwitch();
+		return instance;
+	}	
+
+	public void initResponse() {
+		opres.clear();
+	}	
+
+	public void addResponse(String opRes) {
+		opres.add(opRes);
+	}	
+
+	public void toBeforeFirstResponse() {
+		iterator = opres.iterator();
+	}	
+
+	public synchronized String nextAction(String op) {
+		String ret = "s";
+		for (String action : opres)
+			if (action.startsWith(op + "/")) {
+				String[] parts = action.split("/");
+				ret = parts[1];
+				opres.remove(action);
+				break;
+			}
+		return ret;
+	}	
+
+}

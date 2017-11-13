@@ -7,12 +7,14 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.List;
-
+import ntut.csie.testutility.TestEnvironmentBuilder;
 import ntut.csie.analyzer.ASTMethodCollector;
 import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
+import ntut.csie.analyzer.nested.NestedTryStatementExample;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
+import ntut.csie.testutility.TestEnvironmentBuilder;
 import ntut.csie.util.PathUtils;
 
 
@@ -35,286 +37,64 @@ public class UnprotectedMainProgramVisitorTest {
 			unit9;
 	SmellSettings smellSettings;
 	UnprotectedMainProgramVisitor mainVisitor;
-
+	private TestEnvironmentBuilder environmentBuilder;
 	@Before
 	public void setUp() throws Exception {
 		String testProjectName = "UnprotectedMainProgramTest";
-		javaFile2String = new JavaFileToString();
-		javaProjectMaker = new JavaProjectMaker(testProjectName);
-		javaProjectMaker.packageAgileExceptionClassesToJarIntoLibFolder(
-				JavaProjectMaker.FOLDERNAME_LIB_JAR,
-				JavaProjectMaker.FOLDERNAME_BIN_CLASS);
-		javaProjectMaker.addJarFromTestProjectToBuildPath("/"
-				+ JavaProjectMaker.RL_LIBRARY_PATH);
-		javaProjectMaker.setJREDefaultContainer();
+		environmentBuilder = new TestEnvironmentBuilder("UnprotectedMainProgramTest");
+		environmentBuilder.createEnvironment();
+		smellSettings = environmentBuilder.getSmellSettings();
 
 		// unit1
-		javaFile2String.read(UnprotectedMainProgramExample.class,
-				JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker.createJavaFile(
-				UnprotectedMainProgramExample.class.getPackage().getName(),
-				UnprotectedMainProgramExample.class.getSimpleName()
-						+ JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package "
-						+ UnprotectedMainProgramExample.class.getPackage()
-								.getName() + ";\n"
-						+ javaFile2String.getFileContent());
-		javaFile2String.clear();
-		// unit2
-		javaFile2String.read(
-				UnprotectedMainProgramWithCatchThrowableExample.class,
-				JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker
-				.createJavaFile(
-						UnprotectedMainProgramWithCatchThrowableExample.class
-								.getPackage().getName(),
-						UnprotectedMainProgramWithCatchThrowableExample.class
-								.getSimpleName()
-								+ JavaProjectMaker.JAVA_FILE_EXTENSION,
-						"package "
-								+ UnprotectedMainProgramWithCatchThrowableExample.class
-										.getPackage().getName() + ";\n"
-								+ javaFile2String.getFileContent());
-		javaFile2String.clear();
-		// unit3
-		javaFile2String.read(
-				UnprotectedMainProgramWithoutStatementExample.class,
-				JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker
-				.createJavaFile(
-						UnprotectedMainProgramWithoutStatementExample.class
-								.getPackage().getName(),
-						UnprotectedMainProgramWithoutStatementExample.class
-								.getSimpleName()
-								+ JavaProjectMaker.JAVA_FILE_EXTENSION,
-						"package "
-								+ UnprotectedMainProgramWithoutStatementExample.class
-										.getPackage().getName() + ";\n"
-								+ javaFile2String.getFileContent());
-		javaFile2String.clear();
-		// unit4
-		javaFile2String.read(UnprotectedMainProgramWithoutTryExample.class,
-				JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker.createJavaFile(
-				UnprotectedMainProgramWithoutTryExample.class.getPackage()
-						.getName(),
-				UnprotectedMainProgramWithoutTryExample.class.getSimpleName()
-						+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
-						+ UnprotectedMainProgramWithoutTryExample.class
-								.getPackage().getName() + ";\n"
-						+ javaFile2String.getFileContent());
-		javaFile2String.clear();
-		// unit5
-		javaFile2String.read(
-				UnprotectedmainProgramWithTryAtFirstStatement.class,
-				JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker
-				.createJavaFile(
-						UnprotectedmainProgramWithTryAtFirstStatement.class
-								.getPackage().getName(),
-						UnprotectedmainProgramWithTryAtFirstStatement.class
-								.getSimpleName()
-								+ JavaProjectMaker.JAVA_FILE_EXTENSION,
-						"package "
-								+ UnprotectedmainProgramWithTryAtFirstStatement.class
-										.getPackage().getName() + ";\n"
-								+ javaFile2String.getFileContent());
-		javaFile2String.clear();
-		// unit6
-		javaFile2String.read(
-				UnprotectedMainProgramWithTryAtMiddleStatement.class,
-				JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker
-				.createJavaFile(
-						UnprotectedMainProgramWithTryAtMiddleStatement.class
-								.getPackage().getName(),
-						UnprotectedMainProgramWithTryAtMiddleStatement.class
-								.getSimpleName()
-								+ JavaProjectMaker.JAVA_FILE_EXTENSION,
-						"package "
-								+ UnprotectedMainProgramWithTryAtMiddleStatement.class
-										.getPackage().getName() + ";\n"
-								+ javaFile2String.getFileContent());
-		javaFile2String.clear();
-		// unit7
-		javaFile2String.read(
-				UnprotectedMainProgramWithTryAtLastStatement.class,
-				JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker
-				.createJavaFile(
-						UnprotectedMainProgramWithTryAtLastStatement.class
-								.getPackage().getName(),
-						UnprotectedMainProgramWithTryAtLastStatement.class
-								.getSimpleName()
-								+ JavaProjectMaker.JAVA_FILE_EXTENSION,
-						"package "
-								+ UnprotectedMainProgramWithTryAtLastStatement.class
-										.getPackage().getName() + ";\n"
-								+ javaFile2String.getFileContent());
-		javaFile2String.clear();
-		// unit8
-		javaFile2String.read(UnprotectedMainProgramWithTry.class,
-				JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker.createJavaFile(
-				UnprotectedMainProgramWithTry.class.getPackage().getName(),
-				UnprotectedMainProgramWithTry.class.getSimpleName()
-						+ JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package "
-						+ UnprotectedMainProgramWithTry.class.getPackage()
-								.getName() + ";\n"
-						+ javaFile2String.getFileContent());
-		javaFile2String.clear();
-		// unit9
-		javaFile2String.read(
-				UnprotectedMainProgramWithoutCatchRightExceptionExample.class,
-				JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker
-				.createJavaFile(
-						UnprotectedMainProgramWithoutCatchRightExceptionExample.class
-								.getPackage().getName(),
-						UnprotectedMainProgramWithoutCatchRightExceptionExample.class
-								.getSimpleName()
-								+ JavaProjectMaker.JAVA_FILE_EXTENSION,
-						"package "
-								+ UnprotectedMainProgramWithoutCatchRightExceptionExample.class
-										.getPackage().getName() + ";\n"
-								+ javaFile2String.getFileContent());
-		javaFile2String.clear();
-
-		CreateSettings();
-		/** unit1 */
-		Path path1 = new Path(PathUtils.getPathOfClassUnderSrcFolder(
-				UnprotectedMainProgramExample.class, testProjectName));
-
-		ASTParser parser = ASTParser.newParser(AST.JLS3);
-		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-
-		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin
-				.getWorkspace().getRoot().getFile(path1)));
-		parser.setResolveBindings(true);
-
-		unit1 = (CompilationUnit) parser.createAST(null);
+		Class<?> testedClass1 = UnprotectedMainProgramExample.class;
+		environmentBuilder.loadClass(testedClass1);
+		unit1 = environmentBuilder.getCompilationUnit(testedClass1);
 		unit1.recordModifications();
-		/** unit2 */
-		Path path2 = new Path(PathUtils.getPathOfClassUnderSrcFolder(
-				UnprotectedMainProgramWithCatchThrowableExample.class,
-				testProjectName));
-
-		parser = ASTParser.newParser(AST.JLS3);
-		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-
-		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin
-				.getWorkspace().getRoot().getFile(path2)));
-		parser.setResolveBindings(true);
-
-		unit2 = (CompilationUnit) parser.createAST(null);
+		// unit2
+		Class<?> testedClass2 = UnprotectedMainProgramWithCatchThrowableExample.class;
+		environmentBuilder.loadClass(testedClass2);
+		unit2 = environmentBuilder.getCompilationUnit(testedClass2);
 		unit2.recordModifications();
-		/** unit3 */
-		Path path3 = new Path(PathUtils.getPathOfClassUnderSrcFolder(
-				UnprotectedMainProgramWithoutStatementExample.class,
-				testProjectName));
-
-		parser = ASTParser.newParser(AST.JLS3);
-		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-
-		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin
-				.getWorkspace().getRoot().getFile(path3)));
-		parser.setResolveBindings(true);
-
-		unit3 = (CompilationUnit) parser.createAST(null);
+		// unit3
+		Class<?> testedClass3 = UnprotectedMainProgramWithoutStatementExample.class;
+		environmentBuilder.loadClass(testedClass3);
+		unit3 = environmentBuilder.getCompilationUnit(testedClass3);
 		unit3.recordModifications();
-		/** unit4 */
-		Path path4 = new Path(PathUtils.getPathOfClassUnderSrcFolder(
-				UnprotectedMainProgramWithoutTryExample.class, testProjectName));
-
-		parser = ASTParser.newParser(AST.JLS3);
-		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-
-		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin
-				.getWorkspace().getRoot().getFile(path4)));
-		parser.setResolveBindings(true);
-
-		unit4 = (CompilationUnit) parser.createAST(null);
+		// unit4
+		Class<?> testedClass4 = UnprotectedMainProgramWithoutTryExample.class;
+		environmentBuilder.loadClass(testedClass4);
+		unit4 = environmentBuilder.getCompilationUnit(testedClass4);
 		unit4.recordModifications();
-		/** unit5 */
-		Path path5 = new Path(PathUtils.getPathOfClassUnderSrcFolder(
-				UnprotectedmainProgramWithTryAtFirstStatement.class,
-				testProjectName));
-
-		parser = ASTParser.newParser(AST.JLS3);
-		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-
-		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin
-				.getWorkspace().getRoot().getFile(path5)));
-		parser.setResolveBindings(true);
-
-		unit5 = (CompilationUnit) parser.createAST(null);
+		// unit5
+		Class<?> testedClass5 = UnprotectedmainProgramWithTryAtFirstStatement.class;
+		environmentBuilder.loadClass(testedClass5);
+		unit5 = environmentBuilder.getCompilationUnit(testedClass5);
 		unit5.recordModifications();
-		/** unit6 */
-		Path path6 = new Path(PathUtils.getPathOfClassUnderSrcFolder(
-				UnprotectedMainProgramWithTryAtMiddleStatement.class,
-				testProjectName));
-
-		parser = ASTParser.newParser(AST.JLS3);
-		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-
-		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin
-				.getWorkspace().getRoot().getFile(path6)));
-		parser.setResolveBindings(true);
-
-		unit6 = (CompilationUnit) parser.createAST(null);
+		// unit6
+		Class<?> testedClass6 = UnprotectedMainProgramWithTryAtMiddleStatement.class;
+		environmentBuilder.loadClass(testedClass6);
+		unit6 = environmentBuilder.getCompilationUnit(testedClass6);
 		unit6.recordModifications();
-		/** unit7 */
-		Path path7 = new Path(PathUtils.getPathOfClassUnderSrcFolder(
-				UnprotectedMainProgramWithTryAtLastStatement.class,
-				testProjectName));
-
-		parser = ASTParser.newParser(AST.JLS3);
-		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-
-		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin
-				.getWorkspace().getRoot().getFile(path7)));
-		parser.setResolveBindings(true);
-
-		unit7 = (CompilationUnit) parser.createAST(null);
+		// unit7
+		Class<?> testedClass7 = UnprotectedMainProgramWithTryAtLastStatement.class;
+		environmentBuilder.loadClass(testedClass7);
+		unit7 = environmentBuilder.getCompilationUnit(testedClass7);
 		unit7.recordModifications();
-		/** unit8 */
-		Path path8 = new Path(PathUtils.getPathOfClassUnderSrcFolder(
-				UnprotectedMainProgramWithTry.class, testProjectName));
-
-		parser = ASTParser.newParser(AST.JLS3);
-		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-
-		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin
-				.getWorkspace().getRoot().getFile(path8)));
-		parser.setResolveBindings(true);
-
-		unit8 = (CompilationUnit) parser.createAST(null);
+		// unit8
+		Class<?> testedClass8 = UnprotectedMainProgramWithTry.class;
+		environmentBuilder.loadClass(testedClass8);
+		unit8 = environmentBuilder.getCompilationUnit(testedClass8);
 		unit8.recordModifications();
-		/** unit9 */
-		Path path9 = new Path(PathUtils.getPathOfClassUnderSrcFolder(
-				UnprotectedMainProgramWithoutCatchRightExceptionExample.class,
-				testProjectName));
-
-		parser = ASTParser.newParser(AST.JLS3);
-		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-
-		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin
-				.getWorkspace().getRoot().getFile(path9)));
-		parser.setResolveBindings(true);
-
-		unit9 = (CompilationUnit) parser.createAST(null);
+		// unit9
+		Class<?> testedClass9 = UnprotectedMainProgramWithoutCatchRightExceptionExample.class;
+		environmentBuilder.loadClass(testedClass9);
+		unit9 = environmentBuilder.getCompilationUnit(testedClass9);
 		unit9.recordModifications();
 	}
 
 	@After
 	public void tearDown() throws Exception {
-		File xmlFile = new File(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-
-		if (xmlFile.exists())
-			assertTrue(xmlFile.delete());
-
-		javaProjectMaker.deleteProject();
+		environmentBuilder.cleanEnvironment();
 	}
 
 	@Test
@@ -469,14 +249,5 @@ public class UnprotectedMainProgramVisitorTest {
 		mainVisitor = new UnprotectedMainProgramVisitor(unit8);
 		unit8.accept(mainVisitor);
 		assertEquals(1, mainVisitor.getUnprotectedMainList().size());
-	}
-
-	private void CreateSettings() {
-		smellSettings = new SmellSettings(
-				UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		smellSettings.setSmellTypeAttribute(
-				SmellSettings.SMELL_UNPROTECTEDMAINPROGRAM,
-				SmellSettings.ATTRIBUTE_ISDETECTING, true);
-		smellSettings.writeXMLFile(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 	}
 }

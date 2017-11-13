@@ -1,0 +1,74 @@
+package ntut.csie.TestAspectPackage;
+
+import org.junit.Test;
+import ntut.csie.aspect.ExceptionThrownFromFinallyBlock.AspectJSwitch;
+import org.junit.Assert;
+import ntut.csie.failFastUT.Thrown.thrownFromFinallyExample;
+import java.io.IOException;
+
+public class testThrownFromFinallyExampleMethodUseAspetctJ {
+
+	private AspectJSwitch repo = AspectJSwitch.getInstance();
+
+	@Test
+	public void testCloseThrowExceptionInDemo() {
+		repo.initResponse();
+		repo.addResponse("close/f(IOException)");
+		repo.toBeforeFirstResponse();
+		try{
+			thrownFromFinallyExample.demo();
+		} catch (Exception e) {
+			Assert.fail("It is a bad smell for ExceptionThrownFromFinallyBlock.");
+		}
+	}
+}
+@end
+package ntut.csie.TestAspectPackage;
+
+import org.junit.Test;
+import ntut.csie.aspect.ExceptionThrownFromFinallyBlock.AspectJSwitch;
+import org.junit.Assert;
+import ntut.csie.failFastUT.Thrown.thrownFromFinallyExample;
+import java.io.IOException;
+
+public class testThrownFromFinallyExampleMethodUseAspetctJ {
+
+	private AspectJSwitch repo = AspectJSwitch.getInstance();
+
+	@Test
+	public void testCloseThrowExceptionInDemo() {
+		repo.initResponse();
+		repo.addResponse("close/f(IOException)");
+		repo.toBeforeFirstResponse();
+		try{
+			thrownFromFinallyExample.demo();
+		} catch (Exception e) {
+			Assert.fail("It is a bad smell for ExceptionThrownFromFinallyBlock.");
+		}
+	}
+}
+@end
+package ntut.csie.TestAspectPackage;
+
+import org.junit.Test;
+import ntut.csie.aspect.ExceptionThrownFromFinallyBlock.AspectJSwitch;
+import org.junit.Assert;
+import ntut.csie.failFastUT.Thrown.thrownFromFinallyExample;
+import java.sql.SQLException;
+
+public class testThrownFromFinallyExampleMethodUseAspetctJ {
+
+	private AspectJSwitch repo = AspectJSwitch.getInstance();
+
+	@Test
+	public void testThrowExThrowExceptionInDemo() {
+		repo.initResponse();
+		repo.addResponse("throwEx/f(SQLException)");
+		repo.toBeforeFirstResponse();
+		try{
+			thrownFromFinallyExample.demo();
+		} catch (Exception e) {
+			Assert.fail("It is a bad smell for ExceptionThrownFromFinallyBlock.");
+		}
+	}
+}

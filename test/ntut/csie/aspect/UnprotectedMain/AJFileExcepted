@@ -1,0 +1,17 @@
+package ntut.csie.TestAspectPackage;
+
+import ntut.csie.failFastUT.UnprotectedMain.NoEHBlockInMainExample;
+
+public aspect NoEHBlockInMainExampleAspectException {
+	before()  : (call(* *(..) ) || call(*.new(..) )) && within(NoEHBlockInMainExample) && withincode(* main(..) ){
+
+	String name = thisJoinPoint.getSignature().getName();
+	if (thisJoinPoint.getKind().equals("constructor-call"))
+		name = thisJoinPoint.getSignature().getDeclaringTypeName().substring(thisJoinPoint.getSignature().getDeclaringTypeName().lastIndexOf(".") + 1);
+	String resp = AspectJSwitch.getInstance().nextAction(name);
+	if (resp.equals("f(RuntimeException)"))
+		throw new RuntimeException();
+
+	}
+	
+}

@@ -1,4 +1,4 @@
-package ntut.csie.analyzer.nested;
+ package ntut.csie.analyzer.nested;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -6,10 +6,13 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 
 import ntut.csie.analyzer.UserDefinedMethodAnalyzer;
+import ntut.csie.analyzer.empty.EmptyCatchBlockExample;
+import ntut.csie.analyzer.empty.EmptyCatchBlockVisitor;
 import ntut.csie.csdet.preference.SmellSettings;
 import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.testutility.Assertor;
+import ntut.csie.testutility.TestEnvironmentBuilder;
 import ntut.csie.util.PathUtils;
 
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -23,50 +26,18 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class NestedTryStatementVisitorTest {
-	JavaFileToString javaFile2String;
-	JavaProjectMaker javaProjectMaker;
 	CompilationUnit compilationUnit;
-	NestedTryStatementVisitor nestedTryStatementVisitor;
+	private TestEnvironmentBuilder environmentBuilder;
 	SmellSettings smellSettings;
-
+	NestedTryStatementVisitor nestedTryStatementVisitor;
 	@Before
 	public void setUp() throws Exception {
-		String testProjectName = "NestedTryStatementExampleProject";
-		javaFile2String = new JavaFileToString();
-		javaProjectMaker = new JavaProjectMaker(testProjectName);
-		javaProjectMaker.packageAgileExceptionClassesToJarIntoLibFolder(
-				JavaProjectMaker.FOLDERNAME_LIB_JAR,
-				JavaProjectMaker.FOLDERNAME_BIN_CLASS);
-		javaProjectMaker.addJarFromTestProjectToBuildPath("/"
-				+ JavaProjectMaker.RL_LIBRARY_PATH);
-		javaProjectMaker.setJREDefaultContainer();
-
-		javaFile2String.read(NestedTryStatementExample.class,
-				JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker.createJavaFile(
-				NestedTryStatementExample.class.getPackage().getName(),
-				NestedTryStatementExample.class.getSimpleName()
-						+ JavaProjectMaker.JAVA_FILE_EXTENSION,
-				"package "
-						+ NestedTryStatementExample.class.getPackage()
-								.getName() + ";\n"
-						+ javaFile2String.getFileContent());
-		javaFile2String.clear();
-
-		Path nestedTryExamplePath = new Path(
-				PathUtils.getPathOfClassUnderSrcFolder(
-						NestedTryStatementExample.class, testProjectName));
-
-		ASTParser parser = ASTParser.newParser(AST.JLS3);
-		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-
-		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin
-				.getWorkspace().getRoot().getFile(nestedTryExamplePath)));
-		parser.setResolveBindings(true);
-		// generate setting XML file
-		createSettings(true);
-
-		compilationUnit = (CompilationUnit) parser.createAST(null);
+		environmentBuilder = new TestEnvironmentBuilder("NestedTryStatementExampleProject");
+		environmentBuilder.createEnvironment();
+		smellSettings = environmentBuilder.getSmellSettings();
+		Class<?> testedClass = NestedTryStatementExample.class;
+		environmentBuilder.loadClass(testedClass);
+		compilationUnit = environmentBuilder.getCompilationUnit(testedClass);
 		compilationUnit.recordModifications();
 		nestedTryStatementVisitor = new NestedTryStatementVisitor(
 				compilationUnit);
@@ -74,11 +45,7 @@ public class NestedTryStatementVisitorTest {
 
 	@After
 	public void tearDown() throws Exception {
-		javaProjectMaker.deleteProject();
-		File settingFile = new File(UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		if (settingFile.exists()) {
-			assertTrue(settingFile.delete());
-		}
+		environmentBuilder.cleanEnvironment();
 	}
 
 	@Test
@@ -93,7 +60,7 @@ public class NestedTryStatementVisitorTest {
 
 	@Test
 	public void testNestedTryStatementVisitor_doNotDetect() {
-		createSettings(false);
+		modifyIsDetectingStatus(false);
 		nestedTryStatementVisitor = new NestedTryStatementVisitor(
 				compilationUnit);
 
@@ -105,7 +72,7 @@ public class NestedTryStatementVisitorTest {
 				nestedTryStatementVisitor.getNestedTryStatementList());
 	}
 
-	private void createSettings(boolean isDetecting) {
+	private void modifyIsDetectingStatus(boolean isDetecting) {
 		smellSettings = new SmellSettings(
 				UserDefinedMethodAnalyzer.SETTINGFILEPATH);
 		smellSettings.setSmellTypeAttribute(

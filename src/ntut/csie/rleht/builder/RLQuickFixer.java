@@ -7,6 +7,8 @@ import java.util.ResourceBundle;
 
 import ntut.csie.aspect.AddAspectsMarkerResoluationForCarelessCleanup;
 import ntut.csie.aspect.AddAspectsMarkerResoluationForDummyHandlerAndEmptyCatchBlock;
+import ntut.csie.aspect.AddAspectsMarkerResolutionForThrowFromFinally;
+import ntut.csie.aspect.AddAspectsMarkerResolutionForUnprotectedMain;
 import ntut.csie.csdet.refactor.NTMarkerResolution;
 import ntut.csie.csdet.refactor.RethrowUncheckExAction;
 import ntut.csie.rleht.common.RLUtils;
@@ -31,11 +33,11 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 	private ResourceBundle resource = ResourceBundle.getBundle("robusta", new Locale("en", "US"));
 	
 	private String ECBThrowRuntimeExceptionQuickFixDescription = "Quick Fix==>Throw RuntimeException";
-	private String ECBThrowCheckedExceptionQuickFixDescription = "Quick Fix==>Throw Checked Exception";
+	private String ECBThrowUncheckedExceptionQuickFixDescription = "Quick Fix==>Throw Unchecked Exception";
 	private String ECBThrowUncheckedExceptionRefactoringDescription = "Refactor==>Throw Unchecked Excetpion";
 	
 	private String DHThrowRuntimeExceptionQuickFixDescription = "Quick Fix==>Throw RuntimeException";
-	private String DHBThrowCheckedExceptionQuickFixDescription = "Quick Fix==>Throw Checked Exception";
+	private String DHBThrowUncheckedExceptionQuickFixDescription = "Quick Fix==>Throw Unchecked Exception";
 	private String DHBThrowUncheckedExceptionRefactoringDescription = "Refactor==>Throw Unchecked Excetpion";
 	
 	// should be quick fix
@@ -64,28 +66,32 @@ public class RLQuickFixer implements IMarkerResolutionGenerator {
 			 */
 			if(problem.equals(RLMarkerAttribute.CS_EMPTY_CATCH_BLOCK)) {
 				markerList.add(new RefineRuntimeExceptionQuickFix(ECBThrowRuntimeExceptionQuickFixDescription));
-				markerList.add(new RethrowUncheckExAction(ECBThrowCheckedExceptionQuickFixDescription));
+				markerList.add(new RethrowUncheckExAction(ECBThrowUncheckedExceptionQuickFixDescription));
 				markerList.add(new ThrowCheckedExceptionQuickFix(ECBThrowUncheckedExceptionRefactoringDescription));
-				markerList.add(new AddAspectsMarkerResoluationForDummyHandlerAndEmptyCatchBlock("add Adspect"));
+				markerList.add(new AddAspectsMarkerResoluationForDummyHandlerAndEmptyCatchBlock("add Aspect"));
 			} else if(problem.equals(RLMarkerAttribute.CS_DUMMY_HANDLER)) {
 				String methodIdx = (String) marker.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
 				if(!methodIdx.equals("-1")) {
 					markerList.add(new RefineRuntimeExceptionQuickFix(DHThrowRuntimeExceptionQuickFixDescription));
-					markerList.add(new RethrowUncheckExAction(DHBThrowCheckedExceptionQuickFixDescription));
+					markerList.add(new RethrowUncheckExAction(DHBThrowUncheckedExceptionQuickFixDescription));
 					markerList.add(new ThrowCheckedExceptionQuickFix(DHBThrowUncheckedExceptionRefactoringDescription));
-					markerList.add(new AddAspectsMarkerResoluationForDummyHandlerAndEmptyCatchBlock("add Adspect"));
+					markerList.add(new AddAspectsMarkerResoluationForDummyHandlerAndEmptyCatchBlock("add Aspect"));
 				}
 			} else if(problem.equals(RLMarkerAttribute.CS_NESTED_TRY_STATEMENT)) {
 				markerList.add(new NTMarkerResolution(NTExtractMethodRefactoringDescription));
 			} else if(problem.equals(RLMarkerAttribute.CS_UNPROTECTED_MAIN)) {
+				markerList.add(new AddAspectsMarkerResolutionForUnprotectedMain("add Aspect"));
 				markerList.add(new MoveCodeIntoBigOuterTryQuickFix(UMEncloseAllStatementInTryRefactoringDescription));
 			} else if(problem.equals(RLMarkerAttribute.CS_CARELESS_CLEANUP)){
 				// not going to provide resolution for now.
-				markerList.add(new AddAspectsMarkerResoluationForCarelessCleanup("add Adspect"));
+				markerList.add(new AddAspectsMarkerResoluationForCarelessCleanup("add Aspect"));
 			} else if(problem.equals(RLMarkerAttribute.CS_EXCEPTION_THROWN_FROM_FINALLY_BLOCK)) {
 				boolean isSupportRefactoring = (Boolean)marker.getAttribute(RLMarkerAttribute.RL_INFO_SUPPORT_REFACTORING);
-				if(isSupportRefactoring)
+				if(isSupportRefactoring){
+					markerList.add(new AddAspectsMarkerResolutionForThrowFromFinally("add Aspect"));
 					markerList.add(new TEFBExtractMethodMarkerResolution(TEFFBExtractMethodRefactoringDescription));
+				}
+					
 			}
 			
 			/*

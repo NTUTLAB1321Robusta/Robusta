@@ -1,0 +1,60 @@
+package ntut.csie.test.CarelessCleanup;
+
+import org.junit.Test;
+import ntut.csie.aspect.CarelessCleanup.AspectJSwitch;
+import org.junit.Assert;
+import ntut.csie.failFastUT.CarelessCleanup.carelessCleanupExample;
+import java.io.IOException;
+
+public class testCarelessCleanupExampleMethodUseAspetctJ {
+
+	private AspectJSwitch repo = AspectJSwitch.getInstance();
+
+	@Test
+	public void testReadThrowExceptionInCarelessCleanup() {
+		repo.initResponse();
+		repo.addResponse("read/f(IOException)");
+		repo.addResponse("close/f(RuntimeException)");
+		repo.toBeforeFirstResponse();
+		try{
+			carelessCleanupExample.carelessCleanup();
+			Assert.fail("It is a bad smell for CarelessCleanup.");
+		}catch (RuntimeException e) {
+			Assert.assertEquals("erase bad smell",e.getMessage());
+		}catch (Exception e) {
+			Assert.fail("It is a bad smell for CarelessCleanup.");
+		}
+	}
+}
+@end
+
+package ntut.csie.test.CarelessCleanup;
+
+import org.junit.Test;
+import ntut.csie.aspect.CarelessCleanup.AspectJSwitch;
+import org.junit.Assert;
+import ntut.csie.failFastUT.CarelessCleanup.carelessCleanupExample;
+import java.io.IOException;
+
+public class testCarelessCleanupExampleMethodUseAspetctJ {
+
+	private AspectJSwitch repo = AspectJSwitch.getInstance();
+
+	@Test
+	public void testReadThrowExceptionInCarelessCleanup() {
+		repo.initResponse();
+		repo.addResponse("read/f(IOException)");
+		repo.addResponse("close/f(RuntimeException)");
+		repo.toBeforeFirstResponse();
+		try{
+			carelessCleanupExample.carelessCleanup();
+			Assert.fail("It is a bad smell for CarelessCleanup.");
+		}catch (RuntimeException e) {
+			Assert.assertEquals("erase bad smell",e.getMessage());
+		}catch (Exception e) {
+			Assert.fail("It is a bad smell for CarelessCleanup.");
+		}
+	}
+	
+}
+@end

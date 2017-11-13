@@ -108,5 +108,4 @@ public class TestEnvironmentBuilder {
 	public SmellSettings getSmellSettings() {
 		return smellSettings;
 	}
-
 }

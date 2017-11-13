@@ -46,7 +46,7 @@ public class CarelessCleanupExampleFoundInEzScrumTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"closeAppendedAfterMethodInvocationAndThereISAMethodInvocationAbove",
 				"object.getClosableObj().close()");
-		assertFalse(contains(carelessCleanupSuspectList, methodInvocation));
+		assertTrue(contains(carelessCleanupSuspectList, methodInvocation));
 	}
 
 	@Test
@@ -56,7 +56,7 @@ public class CarelessCleanupExampleFoundInEzScrumTest {
 		MethodInvocation methodInvocation = getMethodInvocationByMethodNameAndCode(
 				"closeAppendedAfterMethodInvocationAndThereISAMethodInvocationAboveWhichWillThrowIOException",
 				"object.getClosableObj().close()");
-		assertFalse(contains(carelessCleanupSuspectList, methodInvocation));
+		assertTrue(contains(carelessCleanupSuspectList, methodInvocation));
 	}
 
 	/* 
@@ -68,7 +68,6 @@ public class CarelessCleanupExampleFoundInEzScrumTest {
 				.getMethodInvocationByMethodNameAndCode(compilationUnit,
 						methodName, code);
 		assertEquals(methodInvocation.size(), 1);
-
 		return methodInvocation.get(0);
 	}
 
@@ -84,7 +83,7 @@ public class CarelessCleanupExampleFoundInEzScrumTest {
 		boolean contains = false;
 		for(MethodInvocation methodInvocationInList : list) {
 			if(methodInvocationInList.toString().equals(methodInvocationPassedIn.toString()))
-				contains = true;
+				contains = true;	
 		}
 		return contains;
 	}

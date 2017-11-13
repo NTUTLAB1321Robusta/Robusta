@@ -1,0 +1,26 @@
+package ntut.csie.test.EmptyCatchBlock;
+
+import org.junit.Test;
+import ntut.csie.aspect.EmptyCatchBlock.AspectJSwitch;
+import org.junit.Assert;
+import ntut.csie.failFastUT.Empty.emptyExample;
+import java.sql.SQLException;
+import java.sql.DriverManager;
+
+public class testEmptyExampleMethodUseAspetctJ {
+
+	private AspectJSwitch repo = AspectJSwitch.getInstance();
+
+	@Test
+	public void testGetConnectionThrowExceptionInDemo() {
+		repo.initResponse();
+		repo.addResponse("getConnection/f(SQLException)");
+		repo.toBeforeFirstResponse();
+		try{
+			emptyExample.demo();
+			Assert.fail("It is a bad smell for EmptyCatchBlock.");
+		} catch (Exception e) {
+			Assert.assertEquals(null, e.getMessage());
+		}
+	}
+}

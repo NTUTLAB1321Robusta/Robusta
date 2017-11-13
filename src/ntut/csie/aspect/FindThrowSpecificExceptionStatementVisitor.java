@@ -53,6 +53,7 @@ public class FindThrowSpecificExceptionStatementVisitor extends
 		}
 	}
 	
+	
 	public boolean isGetAMethodInvocationWhichWiThrowException(){
 		return !methodInvocations.empty();
 	}

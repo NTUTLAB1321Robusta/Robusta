@@ -1,0 +1,24 @@
+package ntut.csie.TestAspectPackage;
+
+import org.junit.Test;
+import ntut.csie.aspect.UnprotectedMainProgram.AspectJSwitch;
+import org.junit.Assert;
+import ntut.csie.failFastUT.UnprotectedMain.ShouldNotCreateUTInCatchAndFinallyExample;
+
+public class testShouldNotCreateUTInCatchAndFinallyExampleMethodUseAspetctJ {
+
+	private AspectJSwitch repo = AspectJSwitch.getInstance();
+
+	@Test
+	public void testThrowIO1ThrowExceptionInMain() {
+		repo.initResponse();
+		repo.addResponse("throwIO1/f(RuntimeException)");
+		repo.toBeforeFirstResponse();
+		try{
+			String[] args={};
+			ShouldNotCreateUTInCatchAndFinallyExample.main(args);
+		}catch (Exception e) {
+			Assert.fail("It is a bad smell for UnprotectedMainProgram.");
+		}
+	}
+}

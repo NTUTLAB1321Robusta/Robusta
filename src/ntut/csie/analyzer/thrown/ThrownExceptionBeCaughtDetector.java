@@ -67,13 +67,12 @@ public class ThrownExceptionBeCaughtDetector {
 
 	private boolean isAnyOfTheseExceptionsBeenThrowOut(ASTNode statement) {
 		final int statementStartAt = statement.getStartPosition();
-
 		TryStatement tryStatement = getParentTryStatementWithinRangeToDetect(statement);
-
 		/*
 		 * Is there any exception may be thrown out? Go through each parent
 		 * which is try statement
 		 */
+		
 		while (thrownExceptions.size() > 0) {
 			/*
 			 * There aren't any more catch, but still are there some exceptions will be
@@ -109,18 +108,16 @@ public class ThrownExceptionBeCaughtDetector {
 	private TryStatement getParentTryStatementWithinRangeToDetect(ASTNode node) {
 		TryStatement tryStatement = (TryStatement) NodeUtils
 				.getSpecifiedParentNode(node, ASTNode.TRY_STATEMENT);
-
+		
 		if (tryStatement == null) {
 			return null;
 		}
-
-		// if the try statement is in the area that it should be detected
+		// if the try statement is in the area(block) that it should be detected
 		if (tryStatement.getStartPosition() >= onlyDetectInThisBlock
 				.getStartPosition()
 				&& tryStatement.getLength() < onlyDetectInThisBlock.getLength()) {
 			return tryStatement;
 		}
-
 		return null;
 	}
 

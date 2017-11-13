@@ -21,7 +21,7 @@ import org.eclipse.jdt.core.dom.TryStatement;
 
 public class ExceptionThrownFromFinallyBlockVisitor extends AbstractBadSmellVisitor {
 	private CompilationUnit root;
-	private List<MarkerInfo> thrownInFinallyList;
+	private List<MarkerInfo> thrownInFinallyList;//Exceptions thrown in finally will be in here
 	private int finallyStack = 0;
 	private Block outermostFinallyBlock = null;
 
@@ -62,6 +62,7 @@ public class ExceptionThrownFromFinallyBlockVisitor extends AbstractBadSmellVisi
 
 	/**
 	 * For each exception that has been thrown in finally, mark it as a bad smell
+	 * (According to the type of the statement that you have visited)
 	 */
 	public boolean visit(MethodInvocation node) {
 		if (isInAnyFinallyBlock()) {

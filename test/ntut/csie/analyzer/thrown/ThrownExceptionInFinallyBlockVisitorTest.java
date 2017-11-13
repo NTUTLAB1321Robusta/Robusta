@@ -15,10 +15,12 @@ import ntut.csie.filemaker.JavaFileToString;
 import ntut.csie.filemaker.JavaProjectMaker;
 import ntut.csie.testutility.Assertor;
 import ntut.csie.util.PathUtils;
+import ntut.csie.testutility.TestEnvironmentBuilder;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -29,47 +31,23 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class ThrownExceptionInFinallyBlockVisitorTest {
-	JavaProjectMaker javaProjectMaker;
-	JavaFileToString javaFile2String;
 	CompilationUnit compilationUnit;
 	ExceptionThrownFromFinallyBlockVisitor thrownExceptionInFinallyBlockVisitor;
 	SmellSettings smellSettings;
 	List<MethodDeclaration> methodList;
-
+	private TestEnvironmentBuilder environmentBuilder;
+	
 	@Before
 	public void setUp() throws Exception {
-		String testProjectName = "ThrownExceptionInFinallyBlockTest";
-		javaProjectMaker = new JavaProjectMaker(testProjectName);
-		javaProjectMaker.packageAgileExceptionClassesToJarIntoLibFolder(
-				JavaProjectMaker.FOLDERNAME_LIB_JAR,
-				JavaProjectMaker.FOLDERNAME_BIN_CLASS);
-		javaProjectMaker.addJarFromTestProjectToBuildPath("/"
-				+ JavaProjectMaker.RL_LIBRARY_PATH);
-		javaProjectMaker.setJREDefaultContainer();
-
-		javaFile2String = new JavaFileToString();
-		javaFile2String.read(ExceptionThrownFromFinallyBlockExample.class,
-				JavaProjectMaker.FOLDERNAME_TEST);
-		javaProjectMaker.createJavaFile(
-				ExceptionThrownFromFinallyBlockExample.class.getPackage()
-						.getName(),
-				ExceptionThrownFromFinallyBlockExample.class.getSimpleName()
-						+ JavaProjectMaker.JAVA_FILE_EXTENSION, "package "
-						+ ExceptionThrownFromFinallyBlockExample.class
-								.getPackage().getName() + ";\n"
-						+ javaFile2String.getFileContent());
-
-		Path path = new Path(PathUtils.getPathOfClassUnderSrcFolder(
-				ExceptionThrownFromFinallyBlockExample.class, testProjectName));
-
-		ASTParser parser = ASTParser.newParser(AST.JLS3);
-		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-
-		parser.setSource(JavaCore.createCompilationUnitFrom(ResourcesPlugin
-				.getWorkspace().getRoot().getFile(path)));
-		parser.setResolveBindings(true);
-
-		compilationUnit = (CompilationUnit) parser.createAST(null);
+		environmentBuilder = new TestEnvironmentBuilder("ThrownExceptionInFinallyBlockTest");
+		environmentBuilder.createEnvironment();
+		
+		environmentBuilder.loadClass(ExceptionThrownFromFinallyBlockExample.class);
+		
+		compilationUnit = environmentBuilder.getCompilationUnit(ExceptionThrownFromFinallyBlockExample.class);
+		smellSettings = environmentBuilder.getSmellSettings();
+		
+		
 		compilationUnit.recordModifications();
 
 		thrownExceptionInFinallyBlockVisitor = new ExceptionThrownFromFinallyBlockVisitor(
@@ -83,11 +61,7 @@ public class ThrownExceptionInFinallyBlockVisitorTest {
 
 	@After
 	public void tearDown() throws Exception {
-		File smellSettingsFile = new File(
-				UserDefinedMethodAnalyzer.SETTINGFILEPATH);
-		if (smellSettingsFile.exists())
-			smellSettingsFile.delete();
-		javaProjectMaker.deleteProject();
+		environmentBuilder.cleanEnvironment();		
 	}
 
 	/**
@@ -96,18 +70,19 @@ public class ThrownExceptionInFinallyBlockVisitorTest {
 	@Test
 	public void visitWithWholeCompilationUnit() {
 		compilationUnit.accept(thrownExceptionInFinallyBlockVisitor);
-
 		Assertor.assertMarkerInfoListSize(32,
 				thrownExceptionInFinallyBlockVisitor.getThrownInFinallyList());
 	}
 
 	@Test
 	public void visitWithSuperMethodInvocation() throws Exception {
+		//Find the MethodDeclarations' which are named "superMethodInvocation"
+		//It's the usage to find the corresponding test functions
 		MethodDeclaration method = getMethodDeclarationByName("superMethodInvocation");
 		method.accept(thrownExceptionInFinallyBlockVisitor);
-
 		List<MarkerInfo> thrownInFinallyInfos = thrownExceptionInFinallyBlockVisitor
-				.getThrownInFinallyList();
+			.getThrownInFinallyList();
+		
 		assertEquals(1, thrownInFinallyInfos.size());
 		assertEquals(360, thrownInFinallyInfos.get(0).getLineNumber());
 	}
@@ -116,9 +91,9 @@ public class ThrownExceptionInFinallyBlockVisitorTest {
 	public void visitWithComplexExampleWithTEIFB() throws Exception {
 		MethodDeclaration method = getMethodDeclarationByName("complexExampleWithTEIFB");
 		method.accept(thrownExceptionInFinallyBlockVisitor);
-
 		List<MarkerInfo> thrownInFinallyInfos = thrownExceptionInFinallyBlockVisitor
-				.getThrownInFinallyList();
+			.getThrownInFinallyList();
+		//Choose five of the nine bad smells to check whether the chosen bad smells are marked
 		assertEquals(9, thrownInFinallyInfos.size());
 		assertEquals(183, thrownInFinallyInfos.get(0).getLineNumber());
 		assertEquals(189, thrownInFinallyInfos.get(2).getLineNumber());
@@ -140,9 +115,9 @@ public class ThrownExceptionInFinallyBlockVisitorTest {
 	public void visitWithThrownStatementInTryBlockInFinally() throws Exception {
 		MethodDeclaration method = getMethodDeclarationByName("thrownStatementInTryBlockInFinally");
 		method.accept(thrownExceptionInFinallyBlockVisitor);
-
 		List<MarkerInfo> thrownInFinallyInfos = thrownExceptionInFinallyBlockVisitor
-				.getThrownInFinallyList();
+			.getThrownInFinallyList();
+		
 		assertEquals(1, thrownInFinallyInfos.size());
 		assertEquals(159, thrownInFinallyInfos.get(0).getLineNumber());
 	}
@@ -152,9 +127,9 @@ public class ThrownExceptionInFinallyBlockVisitorTest {
 			throws Exception {
 		MethodDeclaration method = getMethodDeclarationByName("thrownStatementInCatchOrFinallyBlockInFinally");
 		method.accept(thrownExceptionInFinallyBlockVisitor);
-
 		List<MarkerInfo> thrownInFinallyInfos = thrownExceptionInFinallyBlockVisitor
-				.getThrownInFinallyList();
+			.getThrownInFinallyList();
+		
 		assertEquals(2, thrownInFinallyInfos.size());
 		assertEquals(130, thrownInFinallyInfos.get(0).getLineNumber());
 		assertEquals(132, thrownInFinallyInfos.get(1).getLineNumber());
@@ -173,9 +148,9 @@ public class ThrownExceptionInFinallyBlockVisitorTest {
 	public void visitWithAntGTExample2() throws Exception {
 		MethodDeclaration method = getMethodDeclarationByName("antGTExample2");
 		method.accept(thrownExceptionInFinallyBlockVisitor);
-
 		List<MarkerInfo> thrownInFinallyInfos = thrownExceptionInFinallyBlockVisitor
-				.getThrownInFinallyList();
+			.getThrownInFinallyList();
+		
 		assertEquals(4, thrownInFinallyInfos.size());
 		assertEquals(379, thrownInFinallyInfos.get(0).getLineNumber());
 		assertEquals(397, thrownInFinallyInfos.get(1).getLineNumber());
@@ -188,9 +163,9 @@ public class ThrownExceptionInFinallyBlockVisitorTest {
 			throws Exception {
 		MethodDeclaration method = getMethodDeclarationByName("throwInFinallyInEachBlockOfTryStatement");
 		method.accept(thrownExceptionInFinallyBlockVisitor);
-
 		List<MarkerInfo> thrownInFinallyInfos = thrownExceptionInFinallyBlockVisitor
-				.getThrownInFinallyList();
+			.getThrownInFinallyList();
+		
 		assertEquals(3, thrownInFinallyInfos.size());
 		assertEquals(418, thrownInFinallyInfos.get(0).getLineNumber());
 		assertEquals(426, thrownInFinallyInfos.get(1).getLineNumber());
@@ -202,9 +177,9 @@ public class ThrownExceptionInFinallyBlockVisitorTest {
 			throws Exception {
 		MethodDeclaration method = getMethodDeclarationByName("throwInEachBlockOfTryStatementInFinally");
 		method.accept(thrownExceptionInFinallyBlockVisitor);
-
 		List<MarkerInfo> thrownInFinallyInfos = thrownExceptionInFinallyBlockVisitor
-				.getThrownInFinallyList();
+			.getThrownInFinallyList();
+		
 		assertEquals(3, thrownInFinallyInfos.size());
 		assertEquals(458, thrownInFinallyInfos.get(0).getLineNumber());
 		assertEquals(470, thrownInFinallyInfos.get(1).getLineNumber());
@@ -215,9 +190,9 @@ public class ThrownExceptionInFinallyBlockVisitorTest {
 	public void visitWithThrownInConstructor() {
 		MethodDeclaration method = getMethodDeclarationByName("ExceptionThrownFromFinallyBlockExample");
 		method.accept(thrownExceptionInFinallyBlockVisitor);
-
 		List<MarkerInfo> thrownInFinallyInfos = thrownExceptionInFinallyBlockVisitor
-				.getThrownInFinallyList();
+			.getThrownInFinallyList();
+		
 		assertEquals(1, thrownInFinallyInfos.size());
 		assertEquals(492, thrownInFinallyInfos.get(0).getLineNumber());
 	}
@@ -228,6 +203,7 @@ public class ThrownExceptionInFinallyBlockVisitorTest {
 		ASTInitializerCollector initializerCollector = new ASTInitializerCollector();
 		compilationUnit.accept(initializerCollector);
 		List<Initializer> initializers = initializerCollector.getInitializerList();
+	
 		for (Initializer eachInitializer : initializers) {
 			eachInitializer.accept(thrownExceptionInFinallyBlockVisitor);
 		}
@@ -237,7 +213,7 @@ public class ThrownExceptionInFinallyBlockVisitorTest {
 		assertEquals(1, thrownInFinallyInfos.size());
 		assertEquals(503, thrownInFinallyInfos.get(0).getLineNumber());
 	}
-
+	
 	private MethodDeclaration getMethodDeclarationByName(String name) {
 		return ASTNodeFinder.getMethodDeclarationNodeByName(compilationUnit,
 				name);

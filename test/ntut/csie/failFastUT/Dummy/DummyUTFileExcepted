@@ -1,0 +1,50 @@
+package ntut.csie.test.DummyHandler;
+
+import org.junit.Test;
+import ntut.csie.aspect.DummyHandler.AspectJSwitch;
+import org.junit.Assert;
+import ntut.csie.failFastUT.Dummy.dummyExample;
+import java.io.IOException;
+import java.io.FileWriter;
+
+public class testDummyExampleMethodUseAspetctJ {
+
+	private AspectJSwitch repo = AspectJSwitch.getInstance();
+
+	@Test
+	public void testWriteThrowExceptionInDemo() {
+		repo.initResponse();
+		repo.addResponse("write/f(IOException)");
+		repo.toBeforeFirstResponse();
+		try{
+			dummyExample.demo();
+			Assert.fail("It is a bad smell for DummyHandler.");
+		} catch (Exception e) {
+			Assert.assertEquals(null, e.getMessage());
+		}
+	}
+	@Test
+	public void testFlushThrowExceptionInDemo() {
+		repo.initResponse();
+		repo.addResponse("flush/f(IOException)");
+		repo.toBeforeFirstResponse();
+		try{
+			dummyExample.demo();
+			Assert.fail("It is a bad smell for DummyHandler.");
+		} catch (Exception e) {
+			Assert.assertEquals(null, e.getMessage());
+		}
+	}
+	@Test
+	public void testCloseThrowExceptionInDemo() {
+		repo.initResponse();
+		repo.addResponse("close/f(IOException)");
+		repo.toBeforeFirstResponse();
+		try{
+			dummyExample.demo();
+			Assert.fail("It is a bad smell for DummyHandler.");
+		} catch (Exception e) {
+			Assert.assertEquals(null, e.getMessage());
+		}
+	}
+}

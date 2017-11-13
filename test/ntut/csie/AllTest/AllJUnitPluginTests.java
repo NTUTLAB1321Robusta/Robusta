@@ -14,6 +14,11 @@ import ntut.csie.analyzer.empty.EmptyCatchBlockVisitorTest;
 import ntut.csie.analyzer.nested.NestedTryStatementVisitorTest;
 import ntut.csie.analyzer.thrown.ThrownExceptionInFinallyBlockVisitorTest;
 import ntut.csie.analyzer.unprotected.UnprotectedMainProgramVisitorTest;
+import ntut.csie.config.CarelessCleanupConfigTest;
+import ntut.csie.config.DummyHandleConfigTest;
+import ntut.csie.config.EmptyCatchBlockConfigTest;
+import ntut.csie.config.UnprotectrdMainConfigTest;
+import ntut.csie.config.thrownExceptionFromFinallyConfigTest;
 import ntut.csie.csdet.preference.RobustaSettingsTest;
 import ntut.csie.csdet.quickfix.BaseQuickFixTest;
 import ntut.csie.csdet.refactor.RethrowExRefactoringTest;
@@ -24,6 +29,16 @@ import ntut.csie.csdet.report.ReportBuilderIntergrationTest;
 import ntut.csie.csdet.report.ReportBuilderTest;
 import ntut.csie.csdet.report.ReportContentCreatorTest;
 import ntut.csie.csdet.report.TrendReportDocumentTest;
+import ntut.csie.failFastUT.CarelessCleanup.testBuildUTFileForCarelessCleanup;
+import ntut.csie.failFastUT.Dummy.testBuildUTFileForDummy;
+import ntut.csie.failFastUT.Thrown.testBuildUTFileForThrown;
+import ntut.csie.failFastUT.UnprotectedMain.testCreateUTBetweenEHBlock;
+import ntut.csie.failFastUT.UnprotectedMain.testCreateUTOutsideTry;
+import ntut.csie.failFastUT.UnprotectedMain.testNoEHBlockInMain;
+import ntut.csie.failFastUT.UnprotectedMain.testShouldNotCreateUTInCatch;
+import ntut.csie.failFastUT.UnprotectedMain.testShouldNotCreateUTInCatchAndFinally;
+import ntut.csie.failFastUT.UnprotectedMain.ShouldNotCreateUTInCatchExample;
+import ntut.csie.failFastUT.UnprotectedMain.testShouldNotCreateUTInFinally;
 import ntut.csie.filemaker.test.ASTNodeFinderTest;
 import ntut.csie.rleht.builder.RLBuilderTest;
 import ntut.csie.rleht.views.ExceptionAnalyzerTest;
@@ -38,6 +53,11 @@ import ntut.csie.robusta.codegen.refactoring.TEFBExtractMethodRefactoringTest;
 import ntut.csie.util.NodeUtilsTest;
 import ntut.csie.util.RLAnnotationFileUtilTest;
 import ntut.csie.aspect.AddAspectsMarkerResoluationTest;
+import ntut.csie.aspect.CarelessCleanup.TestGenerateAspectJFileForCarelessCleanup;
+import ntut.csie.aspect.Dummy.TestGenerateAspectJFileForDummy;
+import ntut.csie.aspect.Empty.TestGenerateAspectJFileForEmpty;
+import ntut.csie.aspect.Thrown.TestGenerateAspectJFileForThrowFromFinally;
+import ntut.csie.aspect.UnprotectedMain.TestGenerateAspectJFileForUnprotectedMain;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -93,7 +113,30 @@ import org.junit.runners.Suite;
 	CarelessCleanupDefinitionTest.class,
 	
 	RLAnnotationFileUtilTest.class,
-	AddAspectsMarkerResoluationTest.class
+//	AddAspectsMarkerResoluationTest.class
+	DummyHandleConfigTest.class,
+	EmptyCatchBlockConfigTest.class,
+	UnprotectrdMainConfigTest.class,
+	thrownExceptionFromFinallyConfigTest.class,
+	CarelessCleanupConfigTest.class,
+	
+	
+	TestGenerateAspectJFileForDummy.class,
+	TestGenerateAspectJFileForEmpty.class,
+	TestGenerateAspectJFileForUnprotectedMain.class,
+	TestGenerateAspectJFileForThrowFromFinally.class,
+	TestGenerateAspectJFileForCarelessCleanup.class,
+	
+	testBuildUTFileForThrown.class,
+	testCreateUTBetweenEHBlock.class,
+	testCreateUTOutsideTry.class,
+	testNoEHBlockInMain.class,
+	testShouldNotCreateUTInCatch.class,
+	testShouldNotCreateUTInCatchAndFinally.class,
+	testShouldNotCreateUTInFinally.class,
+	testBuildUTFileForDummy.class,
+	testBuildUTFileForCarelessCleanup.class,
+	
 })
 public class AllJUnitPluginTests {
 }

@@ -1,0 +1,49 @@
+package ntut.csie.TestAspectPackage;
+
+import org.junit.Test;
+import ntut.csie.aspect.UnprotectedMainProgram.AspectJSwitch;
+import org.junit.Assert;
+import ntut.csie.failFastUT.UnprotectedMain.CreateUTOutsideTryExample;
+
+public class testCreateUTOutsideTryExampleMethodUseAspetctJ {
+
+	private AspectJSwitch repo = AspectJSwitch.getInstance();
+
+	@Test
+	public void testThrowIO1ThrowExceptionInMain() {
+		repo.initResponse();
+		repo.addResponse("throwIO1/f(RuntimeException)");
+		repo.toBeforeFirstResponse();
+		try{
+			String[] args={};
+			CreateUTOutsideTryExample.main(args);
+		}catch (Exception e) {
+			Assert.fail("It is a bad smell for UnprotectedMainProgram.");
+		}
+	}
+	@Test
+	public void testThrowIO3ThrowExceptionInMain() {
+		repo.initResponse();
+		repo.addResponse("throwIO3/f(RuntimeException)");
+		repo.toBeforeFirstResponse();
+		try{
+			String[] args={};
+			CreateUTOutsideTryExample.main(args);
+		}catch (Exception e) {
+			Assert.fail("It is a bad smell for UnprotectedMainProgram.");
+		}
+	}
+	@Test
+	public void testPrint1ThrowExceptionInMain() {
+		repo.initResponse();
+		repo.addResponse("print1/f(RuntimeException)");
+		repo.toBeforeFirstResponse();
+		try{
+			String[] args={};
+			CreateUTOutsideTryExample.main(args);
+		}catch (Exception e) {
+			Assert.fail("It is a bad smell for UnprotectedMainProgram.");
+		}
+	}
+	
+}

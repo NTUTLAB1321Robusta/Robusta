@@ -1,8 +1,13 @@
 package ntut.csie.aspect;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-
 import java.util.List;
 
 import ntut.csie.rleht.builder.RLMarkerAttribute;
@@ -29,25 +34,16 @@ import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.Block;
-import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.IMethodBinding;
-
-import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
-import org.eclipse.jdt.core.dom.TryStatement;
-
-import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.internal.ui.JavaPluginImages;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IMarkerResolution;
 import org.eclipse.ui.IMarkerResolution2;
 
-public class AddAspectsMarkerResoluationForDummyHandlerAndEmptyCatchBlock
-		implements IMarkerResolution, IMarkerResolution2 {
+public class AddAspectsMarkerResolutionForThrowFromFinally implements
+		IMarkerResolution, IMarkerResolution2 {
 	private String label;
 	private String description = "Add a aspectJ file to expose influence of bad smell!";
 	private QuickFixCore quickFixCore;
@@ -58,16 +54,15 @@ public class AddAspectsMarkerResoluationForDummyHandlerAndEmptyCatchBlock
 	private IMarker marker;
 	private String packageFilePath;
 	private String projectPath;
+	private MethodDeclaration methodDeclarationWhichHasBadSmell;
 
-	public AddAspectsMarkerResoluationForDummyHandlerAndEmptyCatchBlock(
-			String label) {
+	public AddAspectsMarkerResolutionForThrowFromFinally(String label) {
 		this.label = label;
 		quickFixCore = new QuickFixCore();
 	}
 
 	@Override
 	public String getLabel() {
-		// TODO Auto-generated method stub
 		return label;
 	}
 
@@ -78,12 +73,31 @@ public class AddAspectsMarkerResoluationForDummyHandlerAndEmptyCatchBlock
 	@Override
 	public void run(IMarker markerInRun) {
 		marker = markerInRun;
+
 		BadSmellTypeConfig config = new BadSmellTypeConfig(markerInRun);
 
 		generateAspectJFile(config);
 		generateUtFileForAspectJ(config);
 
 		refreshProject();
+	}
+
+	private MethodDeclaration getMethodDeclarationWhichHasBadSmell(
+			IMarker marker) {
+		String methodIdx = "";
+		try {
+			methodIdx = (String) marker
+					.getAttribute(RLMarkerAttribute.RL_METHOD_INDEX);
+
+		} catch (CoreException e) {
+			e.printStackTrace();
+			throw new RuntimeException();
+		}
+		quickFixCore.setJavaFileModifiable(marker.getResource());
+		compilationUnit = quickFixCore.getCompilationUnit();
+
+		return QuickFixUtils.getMethodDeclaration(compilationUnit,
+				Integer.parseInt(methodIdx));
 	}
 
 	private void generateUtFileForAspectJ(BadSmellTypeConfig config) {
@@ -93,8 +107,8 @@ public class AddAspectsMarkerResoluationForDummyHandlerAndEmptyCatchBlock
 
 		// find method name
 		// 命名需要修正
-		List<MethodInvocation> allMethodWhichWillThrowException = getMethodInvocationWhichWillThrowExceptionAsInput(
-				config.getExceptionType(), config.getTryStatementWillBeInject());
+
+		String oneMethodInFinal = config.getMethodInFinal();
 
 		// create a test file
 		String testFilePath = projectPath + "\\" + packageFilePath
@@ -107,42 +121,6 @@ public class AddAspectsMarkerResoluationForDummyHandlerAndEmptyCatchBlock
 		WriteFile(testFileContent, testFilePath);
 		refreshPackageExplorer(testFilePath);
 
-	}
-
-	private void generateAspectJFile(BadSmellTypeConfig config) {
-
-		String nameOfMethodWhichHasBadSmell = config
-				.getMethodDeclarationWhichHasBadSmell().getName().toString();
-		String packageChain = "ntut.csie.aspect." + config.getBadSmellType();
-		createPackage(packageChain);
-
-		projectPath = ResourcesPlugin.getWorkspace().getRoot().getLocation()
-				.toOSString();
-
-		String filePathAspectJFile = projectPath + "\\" + packageFilePath
-				+ "\\ntut\\csie\\aspect" + "\\" + config.getBadSmellType()
-				+ "\\" + config.getClassName() +"AspectException.aj";
-		String filePathAspectJSwitch = projectPath + "\\" + packageFilePath
-				+ "\\ntut\\csie\\aspect" + "\\" + config.getBadSmellType()
-				+ "\\" + "AspectJSwitch.java";
-
-		String aspectJFileContent = config.buildUpAspectsFile(packageChain,
-				filePathAspectJFile);
-		String aspectJSwitchFileContent = buildUpAspectJSwitch(packageChain);
-
-		WriteFile(aspectJFileContent, filePathAspectJFile);
-		WriteFile(aspectJSwitchFileContent, filePathAspectJSwitch);
-
-		refreshPackageExplorer(filePathAspectJFile);
-		refreshPackageExplorer(filePathAspectJSwitch);
-
-	}
-
-	private boolean checkMethodHasDot(String objectMethod) {
-		if (objectMethod.contains("."))
-			return true;
-
-		return false;
 	}
 
 	public String buildTestFile(BadSmellTypeConfig config, String packageName,
@@ -184,61 +162,74 @@ public class AddAspectsMarkerResoluationForDummyHandlerAndEmptyCatchBlock
 		for (String importObj : config.getImportObjects())
 			imports = imports + "import " + importObj.trim() + ";\r\n";
 		beforeContent += imports;
-		String testMethodName = "";
-		for (String testOneMethod : config
-				.getAllMethodThrowInSpecificExceptionList()) {
-			if (result.indexOf(testOneMethod) < 0) {
-				String generateOneTestCase = "\n\t@Test"
-						+ "\n\t"
-						+ "public void test"
-						+ makeFirstCharacterUpperCase(testOneMethod)
-						+ "ThrowExceptionIn"
-						+ makeFirstCharacterUpperCase(config
-								.getMethodDeclarationWhichHasBadSmell()
-								.getName().toString())
-						+ "() {\n\t\trepo.initResponse();"
-						+ "\n\t\trepo.addResponse(\""
-						+ testOneMethod
-						+ "/f("
-						+ config.getExceptionType()
-						+ ")\");"
-						+ "\n\t\trepo.toBeforeFirstResponse();"
-						+ "\n\t\ttry{\n\t\t\t"
-						+ config.getClassName()
-						+ "."
-						+ config.getMethodDeclarationWhichHasBadSmell()
-								.getName().toString()
-						+ "();\n\t\t\tAssert.fail(\"It is a bad smell for "
-						+ config.getBadSmellType()
-						+ ".\");"
-						+ "\n\t\t} catch (Exception e) {\n\t\t\tAssert.assertEquals(null, e.getMessage());"
-						+ "\n\t\t}" + "\n\t}";
-				appendNewTestCase = appendNewTestCase + generateOneTestCase;
-			}
-
-		}
+		String generateOneTestCase = "\n\t@Test"
+				+ "\n\t"
+				+ "public void test"
+				+ makeFirstCharacterUpperCase(config.getMethodInFinal())
+				+ "ThrowExceptionIn"
+				+ makeFirstCharacterUpperCase(config
+						.getMethodDeclarationWhichHasBadSmell().getName()
+						.toString())
+				+ "() {\n\t\trepo.initResponse();"
+				+ "\n\t\trepo.addResponse(\""
+				+ config.getMethodInFinal()
+				+ "/f("
+				+ config.getExceptionType()
+				+ ")\");"
+				+ "\n\t\trepo.toBeforeFirstResponse();"
+				+ "\n\t\ttry{\n\t\t\t"
+				+ config.getClassName()
+				+ "."
+				+ config.getMethodDeclarationWhichHasBadSmell().getName()
+						.toString()
+				+ "();\n\t\t} catch (Exception e) {\n\t\t\tAssert.fail(\"It is a bad smell for "
+				+ config.getBadSmellType() + ".\");" + "\n\t\t}" + "\n\t}";
+		appendNewTestCase = appendNewTestCase + generateOneTestCase;
 		if (!filePathUnitTest.exists())
 			testFileContent = beforeContent + generateTestFile
 					+ appendNewTestCase + "\n}";
-		else
-			testFileContent = result + appendNewTestCase + "\n}";
-
+		else {
+			if (result.replaceAll("\\s", "").contains(
+					appendNewTestCase.replaceAll("\\s", "")))
+				testFileContent = result + "\n}";
+			else
+				testFileContent = result + appendNewTestCase + "\n}";
+		}
 		return testFileContent;
-	}
 
-	private List<MethodInvocation> getMethodInvocationWhichWillThrowExceptionAsInput(
-			String exceptionType, TryStatement tryStatementWillBeInject) {
-		Block body = tryStatementWillBeInject.getBody();
-		FindAllMethodInvocationVisitor getAllMethodInvocation = new FindAllMethodInvocationVisitor();
-		body.accept(getAllMethodInvocation);
-		List<MethodInvocation> methodThrowExceptionList = getAllMethodInvocation
-				.getMethodInvocations();
-
-		return methodThrowExceptionList;
 	}
 
 	private String makeFirstCharacterUpperCase(String name) {
 		return name.substring(0, 1).toUpperCase() + name.substring(1);
+	}
+
+	private void generateAspectJFile(BadSmellTypeConfig config) {
+
+		String nameOfMethodWhichHasBadSmell = config
+				.getMethodDeclarationWhichHasBadSmell().getName().toString();
+		String packageChain = "ntut.csie.aspect." + config.getBadSmellType();
+		createPackage(packageChain);
+
+		projectPath = ResourcesPlugin.getWorkspace().getRoot().getLocation()
+				.toOSString();
+
+		String filePathAspectJFile = projectPath + "\\" + packageFilePath
+				+ "\\ntut\\csie\\aspect" + "\\" + config.getBadSmellType()
+				+ "\\" + config.getClassName() + "AspectException.aj";
+		String filePathAspectJSwitch = projectPath + "\\" + packageFilePath
+				+ "\\ntut\\csie\\aspect" + "\\" + config.getBadSmellType()
+				+ "\\" + "AspectJSwitch.java";
+
+		String aspectJFileContent = config.buildUpAspectsFile(packageChain,
+				filePathAspectJFile);
+		String aspectJSwitchFileContent = buildUpAspectJSwitch(packageChain);
+
+		WriteFile(aspectJFileContent, filePathAspectJFile);
+		WriteFile(aspectJSwitchFileContent, filePathAspectJSwitch);
+
+		refreshPackageExplorer(filePathAspectJFile);
+		refreshPackageExplorer(filePathAspectJSwitch);
+
 	}
 
 	private void refreshPackageExplorer(String fileCreateFile) {
@@ -248,39 +239,7 @@ public class AddAspectsMarkerResoluationForDummyHandlerAndEmptyCatchBlock
 		try {
 			file.refreshLocal(IResource.DEPTH_ZERO, null);
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-	}
-
-	private void refreshProject() {
-		if (project != null) {
-			// save project to a final variable so that it can be used in Job,
-			// it should be safe for that project should not change over time
-			final IProject project2 = project;
-			Job job = new Job("Refreshing Project") {
-				protected IStatus run(IProgressMonitor monitor) {
-					refreshProject(project2);
-					return Status.OK_STATUS;
-				}
-			};
-			job.setPriority(Job.SHORT);
-			job.schedule();
-		}
-	}
-
-	private void showOneButtonPopUpMenu(final String title, final String msg) {
-		PopupDialog.showDialog(title, msg);
-	}
-
-	private void refreshProject(IProject project) {
-		// build project to refresh
-		try {
-			project.build(IncrementalProjectBuilder.FULL_BUILD,
-					new NullProgressMonitor());
-		} catch (CoreException e) {
-			showOneButtonPopUpMenu("Refresh failed",
-					"Fail to refresh your project, please do it manually");
 		}
 	}
 
@@ -335,6 +294,52 @@ public class AddAspectsMarkerResoluationForDummyHandlerAndEmptyCatchBlock
 
 	}
 
+	private void refreshProject() {
+		if (project != null) {
+			// save project to a final variable so that it can be used in Job,
+			// it should be safe for that project should not change over time
+			final IProject project2 = project;
+			Job job = new Job("Refreshing Project") {
+				protected IStatus run(IProgressMonitor monitor) {
+					refreshProject(project2);
+					return Status.OK_STATUS;
+				}
+			};
+			job.setPriority(Job.SHORT);
+			job.schedule();
+		}
+	}
+
+	private void showOneButtonPopUpMenu(final String title, final String msg) {
+		PopupDialog.showDialog(title, msg);
+	}
+
+	private void refreshProject(IProject project) {
+		// build project to refresh
+		try {
+			project.build(IncrementalProjectBuilder.FULL_BUILD,
+					new NullProgressMonitor());
+		} catch (CoreException e) {
+			showOneButtonPopUpMenu("Refresh failed",
+					"Fail to refresh your project, please do it manually");
+		}
+	}
+
+	// packageName could be in format like a.b.c.d
+	public void createPackage(String packageName) {
+		try {
+			project = marker.getResource().getProject();
+			javaproject = JavaCore.create(project);
+			IPackageFragmentRoot root = getSourceFolderOfCurrentProject();
+			String ss = root.createPackageFragment(packageName, false, null)
+					.getPath().toString();
+			packageFilePath = root.getPath().makeAbsolute().toOSString();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException();
+		}
+	}
+
 	public void WriteFile(String str, String path) {
 		BufferedWriter writer = null;
 		try {
@@ -377,29 +382,6 @@ public class AddAspectsMarkerResoluationForDummyHandlerAndEmptyCatchBlock
 			throw new RuntimeException();
 		}
 		return null;
-	}
-
-	// packageName could be in format like a.b.c.d
-	public void createPackage(String packageName) {
-		try {
-			project = marker.getResource().getProject();
-			javaproject = JavaCore.create(project);
-			IPackageFragmentRoot root = getSourceFolderOfCurrentProject();
-			String ss = root.createPackageFragment(packageName, false, null)
-					.getPath().toString();
-			packageFilePath = root.getPath().makeAbsolute().toOSString();
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException();
-		}
-	}
-
-	public List<String> getImportObjectsForTesting() {
-		return importObjects;
-	}
-
-	public void setCompilationUnitForTesting(CompilationUnit compilationUnit) {
-		this.compilationUnit = compilationUnit;
 	}
 
 	@Override

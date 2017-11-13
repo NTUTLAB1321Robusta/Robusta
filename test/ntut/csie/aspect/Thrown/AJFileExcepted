@@ -1,0 +1,58 @@
+package ntut.csie.TestAspectPackage;
+
+import ntut.csie.failFastUT.Thrown.thrownFromFinallyExample;
+import java.io.IOException;
+
+public aspect thrownFromFinallyExampleAspectException {
+	before() throws IOException: (call(* *(..) throws IOException) || call(*.new(..) throws IOException)) && within(thrownFromFinallyExample){
+
+	String name = thisJoinPoint.getSignature().getName();
+	if (thisJoinPoint.getKind().equals("constructor-call"))
+		name = thisJoinPoint.getSignature().getDeclaringTypeName().substring(thisJoinPoint.getSignature().getDeclaringTypeName().lastIndexOf(".") + 1);
+	String resp = AspectJSwitch.getInstance().nextAction(name);
+	if (resp.equals("f(IOException)"))
+		throw new IOException();
+
+	}
+	
+}
+@end
+
+package ntut.csie.TestAspectPackage;
+
+import ntut.csie.failFastUT.Thrown.thrownFromFinallyExample;
+import java.io.IOException;
+
+public aspect thrownFromFinallyExampleAspectException {
+	before() throws IOException: (call(* *(..) throws IOException) || call(*.new(..) throws IOException)) && within(thrownFromFinallyExample){
+
+	String name = thisJoinPoint.getSignature().getName();
+	if (thisJoinPoint.getKind().equals("constructor-call"))
+		name = thisJoinPoint.getSignature().getDeclaringTypeName().substring(thisJoinPoint.getSignature().getDeclaringTypeName().lastIndexOf(".") + 1);
+	String resp = AspectJSwitch.getInstance().nextAction(name);
+	if (resp.equals("f(IOException)"))
+		throw new IOException();
+
+	}
+	
+}
+@end
+
+package ntut.csie.TestAspectPackage;
+
+import ntut.csie.failFastUT.Thrown.thrownFromFinallyExample;
+import java.sql.SQLException;
+
+public aspect thrownFromFinallyExampleAspectException {
+	before() throws SQLException: (call(* *(..) throws SQLException) || call(*.new(..) throws SQLException)) && within(thrownFromFinallyExample){
+
+	String name = thisJoinPoint.getSignature().getName();
+	if (thisJoinPoint.getKind().equals("constructor-call"))
+		name = thisJoinPoint.getSignature().getDeclaringTypeName().substring(thisJoinPoint.getSignature().getDeclaringTypeName().lastIndexOf(".") + 1);
+	String resp = AspectJSwitch.getInstance().nextAction(name);
+	if (resp.equals("f(SQLException)"))
+		throw new SQLException();
+
+	}
+	
+}

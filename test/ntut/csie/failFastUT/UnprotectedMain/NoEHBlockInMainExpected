@@ -1,0 +1,36 @@
+package ntut.csie.TestAspectPackage;
+
+import org.junit.Test;
+import ntut.csie.aspect.UnprotectedMainProgram.AspectJSwitch;
+import org.junit.Assert;
+import ntut.csie.failFastUT.UnprotectedMain.NoEHBlockInMainExample;
+
+public class testNoEHBlockInMainExampleMethodUseAspetctJ {
+
+	private AspectJSwitch repo = AspectJSwitch.getInstance();
+
+	@Test
+	public void testDemoThrowExceptionInMain() {
+		repo.initResponse();
+		repo.addResponse("demo/f(RuntimeException)");
+		repo.toBeforeFirstResponse();
+		try{
+			String[] args={};
+			NoEHBlockInMainExample.main(args);
+		} catch (Exception e) {
+			Assert.fail("It is a bad smell for UnprotectedMainProgram.");
+		}
+	}
+	@Test
+	public void testPrintlnThrowExceptionInMain() {
+		repo.initResponse();
+		repo.addResponse("println/f(RuntimeException)");
+		repo.toBeforeFirstResponse();
+		try{
+			String[] args={};
+			NoEHBlockInMainExample.main(args);
+		} catch (Exception e) {
+			Assert.fail("It is a bad smell for UnprotectedMainProgram.");
+		}
+	}
+}
